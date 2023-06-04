@@ -1,0 +1,17 @@
+/backend/.gradle/
+/backend/build/
+/backend/buildSrc/.gradle/
+/backend/buildSrc/build/
+/backend/volumes/
+/frontend/node_modules/
+/frontend/build/
+/frontend/apis/
+
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+/backend/core/build/
