@@ -52,7 +52,7 @@ components:
       type: string
       enum:
         - GOOGLE
-        - FACEBOOK
+        - ORCID
 
   securitySchemes:
     PublicAuth:
