@@ -1,0 +1,71 @@
+openapi: 3.0.1
+info:
+  title: FA server API
+  description: 'FA server API'
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /api/authorize:
+    post:
+      summary: Authorize
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizeRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizeResponse'
+      security:
+        - PublicAuth: [ ]
+      operationId: authorize
+      tags: [ auth ]
+
+components:
+  schemas:
+    AuthorizeRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          maxLength: 1024
+        type:
+          $ref: '#/components/schemas/OauthType'
+      required:
+        - code
+        - type
+
+    AuthorizeResponse:
+      type: object
+      properties:
+        token:
+          type: string
+
+    OauthType:
+      type: string
+      enum:
+        - GOOGLE
+        - FACEBOOK
+
+  securitySchemes:
+    PublicAuth:
+      description: Public access
+      type: http
+      scheme: mutual
+
+    ServiceBasicAuth:
+      description: Basic authorization for service methods
+      type: http
+      scheme: basic
+
+    TokenAuth:
+      description: Access with auth JWT token
+      type: http
+      scheme: bearer

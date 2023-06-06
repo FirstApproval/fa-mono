@@ -1,0 +1,88 @@
+package {{apiPackage}}
+
+import io.netty.handler.ssl.SslContextBuilder
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory.INSTANCE
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.context.annotation.Bean
+import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.web.reactive.function.client.ExchangeStrategies
+import java.net.URL
+import {{apiPackage}}.auth.HttpBasicAuth
+import org.springframework.http.client.reactive.ReactorClientHttpConnector
+import reactor.netty.http.client.HttpClient
+
+private const val WEBCLIENT_MAX_IN_MEMORY_SIZE = 40 * 1024 * 1024
+{{#lambda}}
+
+{{#securitySchemesConfigs}}
+{{#classNames}}
+const val {{#upperUnderscore}}{{projectName}}{{/upperUnderscore}}_{{#upperUnderscore}}{{schemeName}}{{/upperUnderscore}}_{{#upperUnderscore}}{{.}}{{/upperUnderscore}}_API = "{{#lowerUnderscore}}{{schemeName}}{{/lowerUnderscore}}_{{#lowerUnderscore}}{{.}}{{/lowerUnderscore}}_api"
+{{/classNames}}
+
+@AutoConfiguration
+@EnableConfigurationProperties(
+    {{#pascalcase}}{{projectName}}{{/pascalcase}}ServerProperties::class,
+    {{#isBasicAuth}}{{#pascalcase}}{{projectName}}{{/pascalcase}}{{#pascalcase}}{{schemeName}}{{/pascalcase}}CredentialsProperties::class,{{/isBasicAuth}}
+    {{#isBearerAuth}}{{#pascalcase}}{{projectName}}{{/pascalcase}}{{#pascalcase}}{{schemeName}}{{/pascalcase}}CredentialsProperties::class,{{/isBearerAuth}}
+)
+@ConditionalOnProperty("{{#kebabCase}}{{projectName}}{{/kebabCase}}.url")
+class {{schemeName}}ClientConfig(
+    private val {{#camelcase}}{{projectName}}{{/camelcase}}ServerProperties: {{#pascalcase}}{{projectName}}{{/pascalcase}}ServerProperties,
+    {{#isBasicAuth}}private val {{#camelcase}}{{projectName}}{{/camelcase}}{{schemeName}}CredentialsProperties: {{#pascalcase}}{{projectName}}{{/pascalcase}}{{#pascalcase}}{{schemeName}}{{/pascalcase}}CredentialsProperties,{{/isBasicAuth}}
+    {{#isBearerAuth}}private val {{#camelcase}}{{projectName}}{{/camelcase}}{{schemeName}}CredentialsProperties: {{#pascalcase}}{{projectName}}{{/pascalcase}}{{#pascalcase}}{{schemeName}}{{/pascalcase}}CredentialsProperties,{{/isBearerAuth}}
+) {
+    {{#classNames}}
+
+    {{#isBasicAuth}}@ConditionalOnProperty("{{#kebabCase}}{{projectName}}{{/kebabCase}}.{{#kebabCase}}{{schemeName}}{{/kebabCase}}.login"){{/isBasicAuth}}
+    {{#isBearerAuth}}@ConditionalOnProperty("{{#kebabCase}}{{projectName}}{{/kebabCase}}.{{#kebabCase}}{{schemeName}}{{/kebabCase}}.token"){{/isBearerAuth}}
+    @Bean({{#upperUnderscore}}{{projectName}}{{/upperUnderscore}}_{{#upperUnderscore}}{{schemeName}}{{/upperUnderscore}}_{{#upperUnderscore}}{{.}}{{/upperUnderscore}}_API)
+    fun {{#camelcase}}{{.}}{{/camelcase}}Api(): {{#pascalcase}}{{.}}{{/pascalcase}}Api {
+        val sslContext = SslContextBuilder
+            .forClient()
+            .trustManager(INSTANCE)
+            .build()
+        val httpClient: HttpClient = HttpClient.create().secure { t -> t.sslContext(sslContext) }
+        val webClient = ApiClient.buildWebClientBuilder()
+            .clientConnector(ReactorClientHttpConnector(httpClient))
+            .exchangeStrategies(ExchangeStrategies.builder()
+                .codecs { it.defaultCodecs().maxInMemorySize(WEBCLIENT_MAX_IN_MEMORY_SIZE) }
+                .build())
+         .build()
+        val apiClient = ApiClient(webClient)
+        {{#isBasicAuth}}
+        apiClient.setUsername({{#camelcase}}{{projectName}}{{/camelcase}}{{schemeName}}CredentialsProperties.login)
+        apiClient.setPassword({{#camelcase}}{{projectName}}{{/camelcase}}{{schemeName}}CredentialsProperties.password)
+        {{/isBasicAuth}}
+        {{#isBearerAuth}}
+        apiClient.setBearerToken({{#camelcase}}{{projectName}}{{/camelcase}}{{schemeName}}CredentialsProperties.token)
+        {{/isBearerAuth}}
+        return {{#pascalcase}}{{.}}{{/pascalcase}}Api(apiClient.apply {
+            basePath = {{#camelcase}}{{projectName}}{{/camelcase}}ServerProperties.url.toString()
+        })
+    }
+    {{/classNames}}
+}
+
+{{#isBasicAuth}}
+@ConfigurationProperties("{{#kebabCase}}{{projectName}}{{/kebabCase}}.{{#kebabCase}}{{schemeName}}{{/kebabCase}}")
+class {{#pascalcase}}{{projectName}}{{/pascalcase}}{{#pascalcase}}{{schemeName}}{{/pascalcase}}CredentialsProperties {
+    lateinit var login: String
+    lateinit var password: String
+}
+{{/isBasicAuth}}
+{{#isBearerAuth}}
+@ConfigurationProperties("{{#kebabCase}}{{projectName}}{{/kebabCase}}.{{#kebabCase}}{{schemeName}}{{/kebabCase}}")
+class {{#pascalcase}}{{projectName}}{{/pascalcase}}{{#pascalcase}}{{schemeName}}{{/pascalcase}}CredentialsProperties {
+    lateinit var token: String
+}
+{{/isBearerAuth}}
+
+{{/securitySchemesConfigs}}
+@ConfigurationProperties("{{#kebabCase}}{{projectName}}{{/kebabCase}}")
+class {{#pascalcase}}{{projectName}}{{/pascalcase}}ServerProperties {
+    lateinit var url: URL
+}
+{{/lambda}}

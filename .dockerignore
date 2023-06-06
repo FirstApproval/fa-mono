@@ -1,0 +1,10 @@
+.git
+.idea
+backend/volumes
+**/build
+**/dist
+**/.angular
+**/.gradle
+**/Dockerfile
+**/node_modules
+**/apis
