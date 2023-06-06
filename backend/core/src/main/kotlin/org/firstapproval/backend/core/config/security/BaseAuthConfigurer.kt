@@ -6,7 +6,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.security.web.util.matcher.OrRequestMatcher
 import org.springframework.security.web.util.matcher.RequestMatcher
 
-@Suppress("UNCHECKED_CAST")
 abstract class BaseAuthConfigurer<T : AbstractHttpConfigurer<T, HttpSecurity>> :
     AbstractHttpConfigurer<T, HttpSecurity>() {
     protected lateinit var requestMatcher: RequestMatcher

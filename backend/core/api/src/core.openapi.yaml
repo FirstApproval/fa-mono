@@ -60,11 +60,6 @@ components:
       type: http
       scheme: mutual
 
-    ServiceBasicAuth:
-      description: Basic authorization for service methods
-      type: http
-      scheme: basic
-
     TokenAuth:
       description: Access with auth JWT token
       type: http
