@@ -1,9 +1,5 @@
 name: Build and push image to ECR
-on:
-  push:
-    branches:
-      - master
-  workflow_dispatch:
+on: workflow_dispatch
 jobs:
   build-and-push:
     name: Build and Push to ECR
