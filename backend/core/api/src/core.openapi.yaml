@@ -7,9 +7,72 @@ servers:
   - url: http://localhost:8080
 
 paths:
+  /api/authorize-oauth:
+    post:
+      summary: Authorize via oauth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizeOauthRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizeResponse'
+      security:
+        - PublicAuth: [ ]
+      operationId: authorizeOauth
+      tags: [ auth ]
+
+  /api/register:
+    post:
+      summary: Start registration with email password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistrationResponse'
+      security:
+        - PublicAuth: [ ]
+      operationId: register
+      tags: [ auth ]
+
+  /api/register/submit:
+    post:
+      summary: Submit registration with email password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizeResponse'
+      security:
+        - PublicAuth: [ ]
+      operationId: register
+      tags: [ auth ]
+
   /api/authorize:
     post:
-      summary: Authorize
+      summary: Authorize using email password
       requestBody:
         content:
           application/json:
@@ -30,7 +93,48 @@ paths:
 
 components:
   schemas:
+    SubmitRegistrationRequest:
+      type: object
+      properties:
+        registrationToken:
+          type: string
+        code:
+          type: string
+      required:
+        - registrationToken
+        - code
+
+    RegistrationRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    RegistrationResponse:
+      type: object
+      properties:
+        registrationToken:
+          type: string
+      required:
+        - registrationToken
+
     AuthorizeRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    AuthorizeOauthRequest:
       type: object
       properties:
         code:
