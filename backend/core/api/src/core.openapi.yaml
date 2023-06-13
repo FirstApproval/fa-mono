@@ -52,18 +52,13 @@ components:
       type: string
       enum:
         - GOOGLE
-        - FACEBOOK
+        - ORCID
 
   securitySchemes:
     PublicAuth:
       description: Public access
       type: http
       scheme: mutual
-
-    ServiceBasicAuth:
-      description: Basic authorization for service methods
-      type: http
-      scheme: basic
 
     TokenAuth:
       description: Access with auth JWT token
