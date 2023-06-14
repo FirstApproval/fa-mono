@@ -162,7 +162,6 @@ class UserService(
     @SchedulerLock(name = "UserService.clearUncompletedRegistrations")
     @Transactional
     fun clearUncompletedRegistrations() {
-        println(ZonedDateTime.now())
         emailRegistrationConfirmationRepository.deleteByCreationTimeBefore(ZonedDateTime.now().minusDays(7))
     }
 
