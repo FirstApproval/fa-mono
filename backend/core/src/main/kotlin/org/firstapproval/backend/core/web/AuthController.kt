@@ -1,8 +1,7 @@
 package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.AuthApi
-import org.firstapproval.api.server.model.AuthorizeRequest
-import org.firstapproval.api.server.model.AuthorizeResponse
+import org.firstapproval.api.server.model.*
 import org.firstapproval.backend.core.config.security.JwtService
 import org.firstapproval.backend.core.domain.user.OauthType.GOOGLE
 import org.firstapproval.backend.core.domain.user.OauthUser
@@ -20,4 +19,16 @@ class AuthController(private val jwtService: JwtService, private val userService
         val token = jwtService.generate(mapOf("sub" to user.id))
         return ok(AuthorizeResponse().token(token))
     }
+
+    override fun startRegistration(registrationRequest: RegistrationRequest): ResponseEntity<RegistrationResponse> {
+        val registrationToken = userService.startUserRegistration(registrationRequest.email, registrationRequest.password)
+        return ok().body(RegistrationResponse(registrationToken))
+    }
+
+    override fun confirmRegistration(submitRegistrationRequest: SubmitRegistrationRequest): ResponseEntity<AuthorizeResponse> {
+        val user = userService.finishRegistration(submitRegistrationRequest.registrationToken, submitRegistrationRequest.code)
+        val token = jwtService.generate(mapOf("sub" to user.id))
+        return ok(AuthorizeResponse().token(token))
+    }
+
 }

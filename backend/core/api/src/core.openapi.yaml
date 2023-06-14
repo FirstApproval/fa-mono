@@ -28,7 +28,7 @@ paths:
       operationId: authorizeOauth
       tags: [ auth ]
 
-  /api/register:
+  /api/registration/start:
     post:
       summary: Start registration with email password
       requestBody:
@@ -46,17 +46,17 @@ paths:
                 $ref: '#/components/schemas/RegistrationResponse'
       security:
         - PublicAuth: [ ]
-      operationId: register
+      operationId: startRegistration
       tags: [ auth ]
 
-  /api/register/submit:
+  /api/register/confirm:
     post:
-      summary: Submit registration with email password
+      summary: Confirm registration with email password
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegistrationRequest'
+              $ref: '#/components/schemas/SubmitRegistrationRequest'
         required: true
       responses:
         200:
@@ -67,8 +67,97 @@ paths:
                 $ref: '#/components/schemas/AuthorizeResponse'
       security:
         - PublicAuth: [ ]
-      operationId: register
+      operationId: confirmRegistration
       tags: [ auth ]
+
+  /api/send-password-reset-link:
+    post:
+      summary: Send password reset link
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendPasswordResetLinkRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+      security:
+        - PublicAuth: [ ]
+      operationId: sendPasswordResetLink
+      tags: [ auth ]
+
+  /api/request-password-reset:
+    post:
+      summary: Request password reset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestPasswordResetRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+      security:
+        - PublicAuth: [ ]
+      operationId: requestPasswordReset
+      tags: [ user ]
+
+  /api/reset-password:
+    post:
+      summary: Reset password with reset id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizeResponse'
+      security:
+        - PublicAuth: [ ]
+      operationId: resetPassword
+      tags: [ user ]
+
+  /api/change-password:
+    post:
+      summary: Change password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordChangeRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: changePassword
+      tags: [ user ]
+
+  /api/set-password:
+    post:
+      summary: Change password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetPasswordRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: setPassword
+      tags: [ user ]
 
   /api/authorize:
     post:
@@ -98,6 +187,7 @@ components:
       properties:
         registrationToken:
           type: string
+          format: uuid
         code:
           type: string
       required:
@@ -120,8 +210,60 @@ components:
       properties:
         registrationToken:
           type: string
+          format: uuid
       required:
         - registrationToken
+
+    PasswordChangeRequest:
+      type: object
+      properties:
+        newPassword:
+          type: string
+          minLength: 6
+        previousPassword:
+          type: string
+          minLength: 6
+      required:
+        - newPassword
+        - previousPassword
+
+    SetPasswordRequest:
+      type: object
+      properties:
+        newPassword:
+          type: string
+          minLength: 6
+      required:
+        - newPassword
+
+    PasswordResetRequest:
+      type: object
+      properties:
+        password:
+          type: string
+          minLength: 6
+        passwordResetRequestId:
+          type: string
+          format: uuid
+      required:
+        - password
+        - code
+
+    RequestPasswordResetRequest:
+      type: object
+      properties:
+        email:
+          type: string
+      required:
+        - email
+
+    SendPasswordResetLinkRequest:
+      type: object
+      properties:
+        email:
+          type: string
+      required:
+        - email
 
     AuthorizeRequest:
       type: object
@@ -151,6 +293,8 @@ components:
       properties:
         token:
           type: string
+      required:
+        - token
 
     OauthType:
       type: string
