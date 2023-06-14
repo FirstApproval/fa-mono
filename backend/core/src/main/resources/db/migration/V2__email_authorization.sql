@@ -16,3 +16,11 @@ CREATE TABLE password_reset_confirmations
     user_id UUID NOT NULL REFERENCES users,
     creation_time TIMESTAMP NOT NULL
 );
+
+CREATE TABLE shedlock
+(
+    name       TEXT PRIMARY KEY,
+    lock_until TIMESTAMP NULL,
+    locked_at  TIMESTAMP NULL,
+    locked_by  TEXT
+)

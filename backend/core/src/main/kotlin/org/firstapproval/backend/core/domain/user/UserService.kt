@@ -1,5 +1,6 @@
 package org.firstapproval.backend.core.domain.user
 
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmation
 import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmationRepository
 import org.firstapproval.backend.core.domain.user.OauthType.GOOGLE
@@ -7,11 +8,13 @@ import org.firstapproval.backend.core.domain.user.OauthType.ORCID
 import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmation
 import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmationRepository
 import org.firstapproval.backend.core.utils.generateCode
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation.REPEATABLE_READ
 import org.springframework.transaction.annotation.Transactional
+import java.time.ZonedDateTime
 import java.util.*
 import java.util.UUID.*
 
@@ -22,7 +25,7 @@ class UserService(
     private val userRepository: UserRepository,
     private val emailRegistrationConfirmationRepository: EmailRegistrationConfirmationRepository,
     private val passwordResetConfirmationRepository: PasswordResetConfirmationRepository,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
 ) {
 
     @Transactional(isolation = REPEATABLE_READ)
@@ -56,7 +59,7 @@ class UserService(
 
     @Transactional
     fun requestPasswordReset(email: String) {
-        val user = userRepository.findByEmail(email)
+        val user = userRepository.findByEmail(email) ?: return
         val passwordResetRequestId = randomUUID()
         // TODO SEND EMAIL TO USER WITH RESET LINK
         passwordResetConfirmationRepository.save(PasswordResetConfirmation(id = passwordResetRequestId, user = user))
@@ -72,7 +75,7 @@ class UserService(
 
     @Transactional(readOnly = true)
     fun checkUserEmailPassword(email: String, password: String): User {
-        val user = userRepository.findByEmail(email)
+        val user = userRepository.findByEmail(email)!!
         if (!passwordEncoder.matches(password, user.password)) {
             throw IllegalArgumentException("Wrong password")
         } else {
@@ -105,6 +108,7 @@ class UserService(
         if (emailRegistrationConfirmation.code != code) {
             throw AccessDeniedException("ACCESS DENIED")
         }
+        emailRegistrationConfirmationRepository.delete(emailRegistrationConfirmation)
         return userRepository.save(
             User(
                 id = randomUUID(),
@@ -154,8 +158,20 @@ class UserService(
         )
     }
 
-    // TODO Crones which will clear registration confirmations and password reset confirmations
-    // TODO Set up rate limits for reset password/registration/authorization etc
+    @Scheduled(cron = "\${clear-uncompleted-registrations.cron}")
+    @SchedulerLock(name = "UserService.clearUncompletedRegistrations")
+    @Transactional
+    fun clearUncompletedRegistrations() {
+        println(ZonedDateTime.now())
+        emailRegistrationConfirmationRepository.deleteByCreationTimeBefore(ZonedDateTime.now().minusDays(7))
+    }
+
+    @Scheduled(cron = "\${clear-password-reset-requests.cron}")
+    @SchedulerLock(name = "UserService.clearPasswordResetExpiredRequests")
+    @Transactional
+    fun clearPasswordResetExpiredRequests() {
+        passwordResetConfirmationRepository.deleteByCreationTimeBefore(ZonedDateTime.now().minusHours(2))
+    }
 }
 
 data class OauthUser(

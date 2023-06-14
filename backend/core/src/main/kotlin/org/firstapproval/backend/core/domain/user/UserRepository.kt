@@ -9,5 +9,5 @@ interface UserRepository : JpaRepository<User, UUID> {
     fun findByGoogleIdOrEmail(googleId: String, email: String?): User?
     fun findByOrcidId(orcidId: String): User?
     fun findByOrcidIdOrEmail(orcidId: String, email: String?): User?
-    fun findByEmail(email: String): User
+    fun findByEmail(email: String): User?
 }
