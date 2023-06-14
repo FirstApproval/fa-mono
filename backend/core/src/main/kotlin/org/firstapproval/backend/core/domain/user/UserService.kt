@@ -103,6 +103,7 @@ class UserService(
         userRepository.save(user)
     }
 
+    @Transactional
     fun finishRegistration(registrationToken: UUID, code: String): User {
         val emailRegistrationConfirmation = emailRegistrationConfirmationRepository.getReferenceById(registrationToken)
         if (emailRegistrationConfirmation.code != code) {
