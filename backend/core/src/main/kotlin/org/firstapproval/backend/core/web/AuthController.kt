@@ -13,9 +13,15 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class AuthController(private val jwtService: JwtService, private val userService: UserService) : AuthApi {
 
-    override fun authorize(request: AuthorizeRequest): ResponseEntity<AuthorizeResponse> {
+    override fun authorizeOauth(request: AuthorizeOauthRequest): ResponseEntity<AuthorizeResponse> {
         // TODO change code for id_token and generate our internal token
         val user = userService.saveOrUpdate(OauthUser("123", null, GOOGLE)) // MOCK
+        val token = jwtService.generate(mapOf("sub" to user.id))
+        return ok(AuthorizeResponse().token(token))
+    }
+
+    override fun authorize(authorizeRequest: AuthorizeRequest): ResponseEntity<AuthorizeResponse> {
+        val user = userService.checkUserEmailPassword(authorizeRequest.email, authorizeRequest.password)
         val token = jwtService.generate(mapOf("sub" to user.id))
         return ok(AuthorizeResponse().token(token))
     }

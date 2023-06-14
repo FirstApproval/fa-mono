@@ -70,24 +70,7 @@ paths:
       operationId: confirmRegistration
       tags: [ auth ]
 
-  /api/send-password-reset-link:
-    post:
-      summary: Send password reset link
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SendPasswordResetLinkRequest'
-        required: true
-      responses:
-        200:
-          description: Success
-      security:
-        - PublicAuth: [ ]
-      operationId: sendPasswordResetLink
-      tags: [ auth ]
-
-  /api/request-password-reset:
+  /api/user/request-password-reset:
     post:
       summary: Request password reset
       requestBody:
@@ -104,7 +87,7 @@ paths:
       operationId: requestPasswordReset
       tags: [ user ]
 
-  /api/reset-password:
+  /api/user/reset-password:
     post:
       summary: Reset password with reset id
       requestBody:
@@ -125,7 +108,7 @@ paths:
       operationId: resetPassword
       tags: [ user ]
 
-  /api/change-password:
+  /api/user/change-password:
     post:
       summary: Change password
       requestBody:
@@ -142,9 +125,9 @@ paths:
       operationId: changePassword
       tags: [ user ]
 
-  /api/set-password:
+  /api/user/set-password:
     post:
-      summary: Change password
+      summary: Set password
       requestBody:
         content:
           application/json:

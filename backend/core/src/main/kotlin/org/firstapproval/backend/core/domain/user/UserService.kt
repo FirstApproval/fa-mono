@@ -66,7 +66,18 @@ class UserService(
     fun resetPassword(passwordResetRequestId: UUID, password: String): User {
         val passwordResetRequest = passwordResetConfirmationRepository.getReferenceById(passwordResetRequestId)
         passwordResetRequest.user.password = passwordEncoder.encode(password)
+        passwordResetConfirmationRepository.delete(passwordResetRequest)
         return passwordResetRequest.user
+    }
+
+    @Transactional(readOnly = true)
+    fun checkUserEmailPassword(email: String, password: String): User {
+        val user = userRepository.findByEmail(email)
+        if (!passwordEncoder.matches(password, user.password)) {
+            throw IllegalArgumentException("Wrong password")
+        } else {
+            return user
+        }
     }
 
     @Transactional
@@ -74,17 +85,19 @@ class UserService(
         if (user.password != null) {
             throw AccessDeniedException("Password already set")
         } else {
-            user.password = password
+            user.password = passwordEncoder.encode(password)
         }
+        userRepository.save(user)
     }
 
     @Transactional
     fun changePassword(user: User, newPassword: String, previousPassword: String) {
-        if (!passwordEncoder.matches(user.password!!, previousPassword)) {
+        if (!passwordEncoder.matches(previousPassword, user.password!!)) {
             throw IllegalArgumentException("wrong password")
         } else {
-            user.password = newPassword
+            user.password = passwordEncoder.encode(newPassword)
         }
+        userRepository.save(user)
     }
 
     fun finishRegistration(registrationToken: UUID, code: String): User {
