@@ -153,6 +153,8 @@ class UserService(
             )
         )
     }
+
+    // TODO Crones which will clear registration confirmations and password reset confirmations
 }
 
 data class OauthUser(
