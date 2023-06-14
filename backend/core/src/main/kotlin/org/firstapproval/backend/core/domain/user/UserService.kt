@@ -158,6 +158,30 @@ class UserService(
         )
     }
 
+
+    @Scheduled(cron = "\${clear-uncompleted.cron}")
+    @SchedulerLock(name = "UserService.clearUncompleted")
+    @Transactional
+    fun clearUncompleted() {
+        emailRegistrationConfirmationRepository.deleteByCreationTimeBefore(now().minusDays(7))
+        passwordResetConfirmationRepository.deleteByCreationTimeBefore(now().minusHours(2))
+    }
+
+    @Scheduled(cron = "\${clear-rate-limits.cron}")
+    @SchedulerLock(name = "UserService.clearRateLimits")
+    @Transactional
+    fun clearRateLimits() {
+        authorizationLimitRepository.deleteByCreationTimeBefore(now().minusMinutes(30))
+        emailRegistrationConfirmationRepository.findByLastTryTimeNotNullAndLastTryTimeBefore(now().minusMinutes(30)).forEach {
+            it.attemptCount = 1
+            it.lastTryTime = null
+        }
+        passwordResetConfirmationRepository.findByLastTryTimeNotNullAndLastTryTimeBefore(now().minusMinutes(30)).forEach {
+            it.attemptCount = 1
+            it.lastTryTime = null
+        }
+    }
+
     private fun saveOrUpdateGoogleUser(oauthUser: OauthUser): User {
         val user = if (oauthUser.email != null) {
             userRepository.findByGoogleIdOrEmail(oauthUser.externalId, oauthUser.email)
@@ -196,29 +220,6 @@ class UserService(
                 email = oauthUser.email,
             )
         )
-    }
-
-    @Scheduled(cron = "\${clear-uncompleted.cron}")
-    @SchedulerLock(name = "UserService.clearUncompleted")
-    @Transactional
-    fun clearUncompleted() {
-        emailRegistrationConfirmationRepository.deleteByCreationTimeBefore(now().minusDays(7))
-        passwordResetConfirmationRepository.deleteByCreationTimeBefore(now().minusHours(2))
-    }
-
-    @Scheduled(cron = "\${clear-rate-limits.cron}")
-    @SchedulerLock(name = "UserService.clearRateLimits")
-    @Transactional
-    fun clearRateLimits() {
-        authorizationLimitRepository.deleteByCreationTimeBefore(now().minusMinutes(30))
-        emailRegistrationConfirmationRepository.findByLastTryTimeNotNullAndLastTryTimeBefore(now().minusMinutes(30)).forEach {
-            it.attemptCount = 1
-            it.lastTryTime = null
-        }
-        passwordResetConfirmationRepository.findByLastTryTimeNotNullAndLastTryTimeBefore(now().minusMinutes(30)).forEach {
-            it.attemptCount = 1
-            it.lastTryTime = null
-        }
     }
 }
 
