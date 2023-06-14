@@ -7,4 +7,8 @@ import java.util.*
 interface EmailRegistrationConfirmationRepository: JpaRepository<EmailRegistrationConfirmation, UUID> {
 
     fun deleteByCreationTimeBefore(date: ZonedDateTime)
+
+    fun findByEmail(email: String): EmailRegistrationConfirmation?
+
+    fun findByLastTryTimeNotNullAndLastTryTimeBefore(date: ZonedDateTime): List<EmailRegistrationConfirmation>
 }

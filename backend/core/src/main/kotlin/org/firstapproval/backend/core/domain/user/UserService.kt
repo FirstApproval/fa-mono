@@ -5,6 +5,8 @@ import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfi
 import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmationRepository
 import org.firstapproval.backend.core.domain.user.OauthType.GOOGLE
 import org.firstapproval.backend.core.domain.user.OauthType.ORCID
+import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimit
+import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimitRepository
 import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmation
 import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmationRepository
 import org.firstapproval.backend.core.utils.generateCode
@@ -14,11 +16,16 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation.REPEATABLE_READ
 import org.springframework.transaction.annotation.Transactional
-import java.time.ZonedDateTime
+import java.time.ZonedDateTime.now
 import java.util.*
 import java.util.UUID.*
+import javax.naming.LimitExceededException
 
 const val EMAIL_CONFIRMATION_CODE_LENGTH = 6
+
+const val SEND_EMAIL_LIMIT = 3
+
+const val AUTHORIZATION_RATE_LIMIT = 4
 
 @Service
 class UserService(
@@ -26,6 +33,7 @@ class UserService(
     private val emailRegistrationConfirmationRepository: EmailRegistrationConfirmationRepository,
     private val passwordResetConfirmationRepository: PasswordResetConfirmationRepository,
     private val passwordEncoder: PasswordEncoder,
+    private val authorizationLimitRepository: AuthorizationLimitRepository
 ) {
 
     @Transactional(isolation = REPEATABLE_READ)
@@ -43,26 +51,46 @@ class UserService(
 
     @Transactional
     fun startUserRegistration(email: String, password: String): UUID {
-        val code = generateCode(EMAIL_CONFIRMATION_CODE_LENGTH)
-        val registrationToken = randomUUID()
-        // TODO SEND EMAIL AND CODE
-        emailRegistrationConfirmationRepository.save(
-            EmailRegistrationConfirmation(
-                id = registrationToken,
-                email = email,
-                password = passwordEncoder.encode(password),
-                code = code
-            )
-        )
-        return registrationToken
+        val prevTry = emailRegistrationConfirmationRepository.findByEmail(email)
+        if (prevTry != null) {
+            if (prevTry.attemptCount >= SEND_EMAIL_LIMIT) {
+                throw LimitExceededException("limit exceeded")
+            }
+            prevTry.lastTryTime = now()
+            prevTry.attemptCount += 1
+            prevTry.password = passwordEncoder.encode(password)
+            // TODO SEND EMAIL AND CODE
+            return prevTry.id
+        } else {
+            val code = generateCode(EMAIL_CONFIRMATION_CODE_LENGTH)
+            val registrationToken = randomUUID()
+            // TODO SEND EMAIL AND CODE
+            return emailRegistrationConfirmationRepository.save(
+                EmailRegistrationConfirmation(
+                    id = registrationToken,
+                    email = email,
+                    password = passwordEncoder.encode(password),
+                    code = code
+                )
+            ).id
+        }
     }
 
     @Transactional
     fun requestPasswordReset(email: String) {
         val user = userRepository.findByEmail(email) ?: return
         val passwordResetRequestId = randomUUID()
+        val previousTry = passwordResetConfirmationRepository.findByUserId(user.id)
+        if (previousTry != null) {
+            if (previousTry.attemptCount >= SEND_EMAIL_LIMIT) {
+                throw LimitExceededException("resend email limit exceeded")
+            }
+            previousTry.attemptCount += 1
+            previousTry.lastTryTime = now()
+        } else {
+            passwordResetConfirmationRepository.save(PasswordResetConfirmation(id = passwordResetRequestId, user = user))
+        }
         // TODO SEND EMAIL TO USER WITH RESET LINK
-        passwordResetConfirmationRepository.save(PasswordResetConfirmation(id = passwordResetRequestId, user = user))
     }
 
     @Transactional
@@ -73,13 +101,24 @@ class UserService(
         return passwordResetRequest.user
     }
 
-    @Transactional(readOnly = true)
-    fun checkUserEmailPassword(email: String, password: String): User {
-        val user = userRepository.findByEmail(email)!!
-        if (!passwordEncoder.matches(password, user.password)) {
-            throw IllegalArgumentException("Wrong password")
+    @Transactional
+    fun checkUserEmailPassword(email: String, password: String): User? {
+        val rateLimit = authorizationLimitRepository.findByEmail(email)
+        if (rateLimit != null) {
+            if (rateLimit.count >= AUTHORIZATION_RATE_LIMIT) {
+                throw LimitExceededException()
+            } else {
+                rateLimit.count += 1
+            }
         } else {
-            return user
+            authorizationLimitRepository.save(AuthorizationLimit(id = randomUUID(), email = email))
+        }
+        authorizationLimitRepository.flush()
+        val user = userRepository.findByEmail(email) ?: return null
+        return if (!passwordEncoder.matches(password, user.password)) {
+            null
+        } else {
+            user
         }
     }
 
@@ -159,18 +198,27 @@ class UserService(
         )
     }
 
-    @Scheduled(cron = "\${clear-uncompleted-registrations.cron}")
-    @SchedulerLock(name = "UserService.clearUncompletedRegistrations")
+    @Scheduled(cron = "\${clear-uncompleted.cron}")
+    @SchedulerLock(name = "UserService.clearUncompleted")
     @Transactional
-    fun clearUncompletedRegistrations() {
-        emailRegistrationConfirmationRepository.deleteByCreationTimeBefore(ZonedDateTime.now().minusDays(7))
+    fun clearUncompleted() {
+        emailRegistrationConfirmationRepository.deleteByCreationTimeBefore(now().minusDays(7))
+        passwordResetConfirmationRepository.deleteByCreationTimeBefore(now().minusHours(2))
     }
 
-    @Scheduled(cron = "\${clear-password-reset-requests.cron}")
-    @SchedulerLock(name = "UserService.clearPasswordResetExpiredRequests")
+    @Scheduled(cron = "\${clear-rate-limits.cron}")
+    @SchedulerLock(name = "UserService.clearRateLimits")
     @Transactional
-    fun clearPasswordResetExpiredRequests() {
-        passwordResetConfirmationRepository.deleteByCreationTimeBefore(ZonedDateTime.now().minusHours(2))
+    fun clearRateLimits() {
+        authorizationLimitRepository.deleteByCreationTimeBefore(now().minusMinutes(30))
+        emailRegistrationConfirmationRepository.findByLastTryTimeNotNullAndLastTryTimeBefore(now().minusMinutes(30)).forEach {
+            it.attemptCount = 1
+            it.lastTryTime = null
+        }
+        passwordResetConfirmationRepository.findByLastTryTimeNotNullAndLastTryTimeBefore(now().minusMinutes(30)).forEach {
+            it.attemptCount = 1
+            it.lastTryTime = null
+        }
     }
 }
 

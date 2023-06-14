@@ -278,8 +278,6 @@ components:
       properties:
         token:
           type: string
-      required:
-        - token
 
     OauthType:
       type: string

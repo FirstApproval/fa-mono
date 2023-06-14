@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
+import javax.naming.LimitExceededException
 
 @ControllerAdvice
 class ExceptionHandler : ResponseEntityExceptionHandler() {
@@ -46,6 +47,13 @@ class ExceptionHandler : ResponseEntityExceptionHandler() {
         log.warn(e) { e.message }
         return response(FORBIDDEN, description = e.message)
     }
+
+    @ExceptionHandler
+    fun handle(e: LimitExceededException): ResponseEntity<Any> {
+        log.warn(e) { e.message }
+        return response(TOO_MANY_REQUESTS, description = e.message)
+    }
+
 
     @ExceptionHandler(
         ObjectRetrievalFailureException::class,

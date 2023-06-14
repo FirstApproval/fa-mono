@@ -2,7 +2,7 @@ package org.firstapproval.backend.core.domain.user.password
 
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
-import jakarta.persistence.ManyToOne
+import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import org.firstapproval.backend.core.domain.user.User
 import java.time.ZonedDateTime
@@ -14,7 +14,9 @@ import java.util.*
 class PasswordResetConfirmation (
     @Id
     var id: UUID,
-    @ManyToOne
+    @OneToOne
     var user: User,
+    var attemptCount: Int = 1,
+    var lastTryTime: ZonedDateTime? = now(),
     var creationTime: ZonedDateTime = now(),
 )

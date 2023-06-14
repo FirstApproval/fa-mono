@@ -6,5 +6,7 @@ import java.util.*
 
 interface PasswordResetConfirmationRepository: JpaRepository<PasswordResetConfirmation, UUID> {
 
+    fun findByUserId(userId: UUID): PasswordResetConfirmation?
     fun deleteByCreationTimeBefore(date: ZonedDateTime)
+    fun findByLastTryTimeNotNullAndLastTryTimeBefore(date: ZonedDateTime): List<PasswordResetConfirmation>
 }

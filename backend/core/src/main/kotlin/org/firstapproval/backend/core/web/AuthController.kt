@@ -21,7 +21,7 @@ class AuthController(private val jwtService: JwtService, private val userService
     }
 
     override fun authorize(authorizeRequest: AuthorizeRequest): ResponseEntity<AuthorizeResponse> {
-        val user = userService.checkUserEmailPassword(authorizeRequest.email, authorizeRequest.password)
+        val user = userService.checkUserEmailPassword(authorizeRequest.email, authorizeRequest.password) ?: return ok(AuthorizeResponse())
         val token = jwtService.generate(mapOf("sub" to user.id))
         return ok(AuthorizeResponse().token(token))
     }

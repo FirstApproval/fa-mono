@@ -25,7 +25,7 @@ class UserController(
     override fun resetPassword(passwordResetRequest: PasswordResetRequest): ResponseEntity<AuthorizeResponse> {
         val user = userService.resetPassword(passwordResetRequest.passwordResetRequestId, passwordResetRequest.password)
         val token = jwtService.generate(mapOf("sub" to user.id))
-        return ok(AuthorizeResponse(token))
+        return ok(AuthorizeResponse().token(token))
     }
 
     override fun changePassword(passwordChangeRequest: PasswordChangeRequest): ResponseEntity<Void> {

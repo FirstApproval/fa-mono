@@ -15,7 +15,9 @@ class EmailRegistrationConfirmation(
     @Id
     var id: UUID,
     val email: String,
-    val password: String,
+    var password: String,
     val code: String,
+    var attemptCount: Int = 1,
+    var lastTryTime:  ZonedDateTime? = now(),
     var creationTime: ZonedDateTime = now()
 )
