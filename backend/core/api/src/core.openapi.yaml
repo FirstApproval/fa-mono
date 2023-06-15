@@ -28,6 +28,21 @@ paths:
       operationId: authorize
       tags: [ auth ]
 
+  /api/authorization-links:
+    get:
+      summary: Authorization google link
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizationLinksResponse'
+      security:
+        - PublicAuth: [ ]
+      operationId: authorizationLinks
+      tags: [ auth ]
+
 components:
   schemas:
     AuthorizeRequest:
@@ -35,7 +50,7 @@ components:
       properties:
         code:
           type: string
-          maxLength: 1024
+          maxLength: 2048
         type:
           $ref: '#/components/schemas/OauthType'
       required:
@@ -48,11 +63,18 @@ components:
         token:
           type: string
 
+    AuthorizationLinksResponse:
+      type: object
+      properties:
+        google:
+          type: string
+          maxLength: 2048
+
     OauthType:
       type: string
       enum:
         - GOOGLE
-        - ORCID
+        - FACEBOOK
 
   securitySchemes:
     PublicAuth:
