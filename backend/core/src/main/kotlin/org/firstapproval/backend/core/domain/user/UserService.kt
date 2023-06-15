@@ -109,12 +109,15 @@ class UserService(
             throw AccessDeniedException("ACCESS DENIED")
         }
         emailRegistrationConfirmationRepository.delete(emailRegistrationConfirmation)
+        val username = emailRegistrationConfirmation.email.split("@").first()
+        val userByUsername = userRepository.findByUsername(username)
+        val userId = randomUUID()
         return userRepository.save(
             User(
-                id = randomUUID(),
+                id = userId,
                 email = emailRegistrationConfirmation.email,
                 password = emailRegistrationConfirmation.password,
-                username = "username"
+                username = if (userByUsername != null) userId.toString() else username
             )
         )
     }
