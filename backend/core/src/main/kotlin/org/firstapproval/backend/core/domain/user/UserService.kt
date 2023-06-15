@@ -1,9 +1,18 @@
 package org.firstapproval.backend.core.domain.user
 
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
+import org.firstapproval.backend.core.domain.auth.OauthUser
+import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmation
+import org.firstapproval.backend.core.domain.user.OauthType.FACEBOOK
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmation
 import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmationRepository
 import org.firstapproval.backend.core.domain.user.OauthType.GOOGLE
+import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimit
+import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmation
+import org.firstapproval.backend.core.utils.generateCode
+import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.security.access.AccessDeniedException
 import org.firstapproval.backend.core.domain.user.OauthType.ORCID
 import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimit
 import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimitRepository
@@ -26,6 +35,9 @@ const val EMAIL_CONFIRMATION_CODE_LENGTH = 6
 const val SEND_EMAIL_LIMIT = 3
 
 const val AUTHORIZATION_RATE_LIMIT = 4
+import java.util.UUID
+import java.util.UUID.randomUUID
+import java.util.function.Supplier
 
 @Service
 class UserService(
@@ -38,10 +50,25 @@ class UserService(
 
     @Transactional(isolation = REPEATABLE_READ)
     fun saveOrUpdate(oauthUser: OauthUser): User {
-        return when (oauthUser.type) {
-            GOOGLE -> saveOrUpdateGoogleUser(oauthUser)
-            ORCID -> saveOrUpdateOrcidUser(oauthUser)
+        val userSupplier = when (oauthUser.type) {
+            GOOGLE -> Supplier<User?> {
+                if (oauthUser.email != null) {
+                    userRepository.findByGoogleIdOrEmail(oauthUser.externalId, oauthUser.email)
+                } else {
+                    userRepository.findByGoogleId(oauthUser.externalId)
+                }
+            }
+
+            FACEBOOK -> Supplier<User?> {
+                if (oauthUser.email != null) {
+                    userRepository.findByFacebookIdOrEmail(oauthUser.externalId, oauthUser.email)
+                } else {
+                    userRepository.findByFacebookId(oauthUser.externalId)
+                }
+            }
         }
+
+        return saveOrUpdateUser(userSupplier, oauthUser)
     }
 
     @Transactional
@@ -182,54 +209,42 @@ class UserService(
         }
     }
 
-    private fun saveOrUpdateGoogleUser(oauthUser: OauthUser): User {
-        val user = if (oauthUser.email != null) {
-            userRepository.findByGoogleIdOrEmail(oauthUser.externalId, oauthUser.email)
-        } else {
-            userRepository.findByGoogleId(oauthUser.externalId)
-        }
+    private fun saveOrUpdateUser(findUserFunc: Supplier<User?>, oauthUser: OauthUser): User {
+        val user = findUserFunc.get()
         if (user != null) {
             user.email = oauthUser.email
-            user.googleId = oauthUser.externalId
-            return user
-        }
-        return userRepository.save(
-            User(
-                id = randomUUID(),
-                googleId = oauthUser.externalId,
-                email = oauthUser.email,
-            )
-        )
-    }
+            user.firstName = oauthUser.firstName
+            user.lastName = oauthUser.lastName
+            user.middleName = oauthUser.middleName
+            user.fullName = oauthUser.fullName
 
-    private fun saveOrUpdateOrcidUser(oauthUser: OauthUser): User {
-        val user = if (oauthUser.email != null) {
-            userRepository.findByOrcidIdOrEmail(oauthUser.externalId, oauthUser.email)
-        } else {
-            userRepository.findByOrcidId(oauthUser.externalId)
-        }
-        if (user != null) {
-            user.email = oauthUser.email
-            user.orcidId = oauthUser.externalId
+            when (oauthUser.type) {
+                GOOGLE -> user.googleId = oauthUser.externalId
+                FACEBOOK -> user.facebookId = oauthUser.externalId
+            }
+
             return user
         }
+
+        val userByUsername = userRepository.findByUsername(oauthUser.username)
+        val id = randomUUID()
         return userRepository.save(
             User(
-                id = randomUUID(),
-                orcidId = oauthUser.externalId,
+                id = id,
+                username = if (userByUsername != null) id.toString() else oauthUser.username,
+                googleId = if (oauthUser.type == GOOGLE) oauthUser.externalId else null,
+                facebookId = if (oauthUser.type == FACEBOOK) oauthUser.externalId else null,
                 email = oauthUser.email,
+                firstName = oauthUser.firstName,
+                lastName = oauthUser.lastName,
+                middleName = oauthUser.middleName,
+                fullName = oauthUser.fullName
             )
         )
     }
 }
 
-data class OauthUser(
-    val externalId: String,
-    val email: String?,
-    val type: OauthType
-)
-
 enum class OauthType {
     GOOGLE,
-    ORCID
+    FACEBOOK
 }

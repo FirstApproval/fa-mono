@@ -12,8 +12,13 @@ import java.util.*
 class User(
     @Id
     var id: UUID,
+    var username: String,
+    var firstName: String? = null,
+    var middleName: String? = null,
+    var lastName: String? = null,
+    var fullName: String? = null,
     var googleId: String? = null,
-    var orcidId: String? = null,
+    var facebookId: String? = null,
     var email: String? = null,
     var password: String? = null,
     var creationTime: ZonedDateTime = now(),
