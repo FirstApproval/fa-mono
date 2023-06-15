@@ -3,21 +3,14 @@ package org.firstapproval.backend.core.domain.user
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import org.firstapproval.backend.core.domain.auth.OauthUser
 import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmation
-import org.firstapproval.backend.core.domain.user.OauthType.FACEBOOK
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
-import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmation
 import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmationRepository
+import org.firstapproval.backend.core.domain.user.OauthType.FACEBOOK
 import org.firstapproval.backend.core.domain.user.OauthType.GOOGLE
-import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimit
-import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmation
-import org.firstapproval.backend.core.utils.generateCode
-import org.springframework.scheduling.annotation.Scheduled
-import org.springframework.security.access.AccessDeniedException
-import org.firstapproval.backend.core.domain.user.OauthType.ORCID
 import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimit
 import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimitRepository
 import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmation
 import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmationRepository
+import org.firstapproval.backend.core.exception.RecordConflictException
 import org.firstapproval.backend.core.utils.generateCode
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.access.AccessDeniedException
@@ -28,16 +21,14 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime.now
 import java.util.*
 import java.util.UUID.*
+import java.util.function.*
 import javax.naming.LimitExceededException
 
 const val EMAIL_CONFIRMATION_CODE_LENGTH = 6
 
-const val SEND_EMAIL_LIMIT = 3
+const val SEND_EMAIL_LIMIT = 2
 
 const val AUTHORIZATION_RATE_LIMIT = 4
-import java.util.UUID
-import java.util.UUID.randomUUID
-import java.util.function.Supplier
 
 @Service
 class UserService(
@@ -78,10 +69,14 @@ class UserService(
 
     @Transactional
     fun startUserRegistration(email: String, password: String): UUID {
+        // TODO THINK ABOUT DUPLICATES OF EMAILS
         val prevTry = emailRegistrationConfirmationRepository.findByEmail(email)
         if (prevTry != null) {
             if (prevTry.attemptCount >= SEND_EMAIL_LIMIT) {
                 throw LimitExceededException("limit exceeded")
+            }
+            if (userRepository.existsByEmail(prevTry.email)) {
+                throw RecordConflictException("user already exists")
             }
             prevTry.lastTryTime = now()
             prevTry.attemptCount += 1
@@ -89,18 +84,39 @@ class UserService(
             // TODO SEND EMAIL AND CODE
             return prevTry.id
         } else {
+            if (userRepository.existsByEmail(email)) {
+                throw RecordConflictException("user already exists")
+            }
             val code = generateCode(EMAIL_CONFIRMATION_CODE_LENGTH)
             val registrationToken = randomUUID()
-            // TODO SEND EMAIL AND CODE
-            return emailRegistrationConfirmationRepository.save(
+            emailRegistrationConfirmationRepository.save(
                 EmailRegistrationConfirmation(
                     id = registrationToken,
                     email = email,
                     password = passwordEncoder.encode(password),
                     code = code
                 )
-            ).id
+            )
+            // TODO SEND EMAIL AND CODE
+            return registrationToken
         }
+    }
+
+    @Transactional
+    fun finishRegistration(registrationToken: UUID, code: String): User {
+        val emailRegistrationConfirmation = emailRegistrationConfirmationRepository.getReferenceById(registrationToken)
+        if (emailRegistrationConfirmation.code != code) {
+            throw AccessDeniedException("ACCESS DENIED")
+        }
+        emailRegistrationConfirmationRepository.delete(emailRegistrationConfirmation)
+        return userRepository.save(
+            User(
+                id = randomUUID(),
+                email = emailRegistrationConfirmation.email,
+                password = emailRegistrationConfirmation.password,
+                username = "username"
+            )
+        )
     }
 
     @Transactional
@@ -168,23 +184,6 @@ class UserService(
         }
         userRepository.save(user)
     }
-
-    @Transactional
-    fun finishRegistration(registrationToken: UUID, code: String): User {
-        val emailRegistrationConfirmation = emailRegistrationConfirmationRepository.getReferenceById(registrationToken)
-        if (emailRegistrationConfirmation.code != code) {
-            throw AccessDeniedException("ACCESS DENIED")
-        }
-        emailRegistrationConfirmationRepository.delete(emailRegistrationConfirmation)
-        return userRepository.save(
-            User(
-                id = randomUUID(),
-                email = emailRegistrationConfirmation.email,
-                password = emailRegistrationConfirmation.password
-            )
-        )
-    }
-
 
     @Scheduled(cron = "\${clear-uncompleted.cron}")
     @SchedulerLock(name = "UserService.clearUncompleted")

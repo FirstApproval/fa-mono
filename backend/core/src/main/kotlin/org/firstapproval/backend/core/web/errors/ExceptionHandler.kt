@@ -3,6 +3,7 @@ package org.firstapproval.backend.core.web.errors
 import jakarta.persistence.EntityNotFoundException
 import jakarta.validation.ConstraintViolationException
 import mu.KotlinLogging.logger
+import org.firstapproval.backend.core.exception.RecordConflictException
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -64,6 +65,12 @@ class ExceptionHandler : ResponseEntityExceptionHandler() {
     fun handleNotFound(e: Exception): ResponseEntity<Any> {
         log.warn(e.message, e)
         return response(NOT_FOUND, description = e.message)
+    }
+
+    @ExceptionHandler
+    fun handleConflictException(e: RecordConflictException): ResponseEntity<Any> {
+        log.warn(e.message, e)
+        return response(CONFLICT, description = e.message)
     }
 
     @ExceptionHandler
