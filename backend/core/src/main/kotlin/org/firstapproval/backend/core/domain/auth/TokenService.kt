@@ -36,7 +36,7 @@ class TokenService(
         val user = userService.saveOrUpdate(oauthUser)
         return jwtService.generate(
             mapOf(
-                "sub" to "user.id",
+                "sub" to user.id,
                 "userInfo" to mapOf(
                     "username" to user.username,
                     "email" to user.email
