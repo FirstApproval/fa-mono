@@ -158,7 +158,6 @@ class UserService(
         } else {
             authorizationLimitRepository.save(AuthorizationLimit(id = randomUUID(), email = email))
         }
-        authorizationLimitRepository.flush()
         val user = userRepository.findByEmail(email) ?: return null
         return if (!passwordEncoder.matches(password, user.password)) {
             null

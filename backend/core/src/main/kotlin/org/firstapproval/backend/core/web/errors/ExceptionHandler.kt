@@ -55,7 +55,6 @@ class ExceptionHandler : ResponseEntityExceptionHandler() {
         return response(TOO_MANY_REQUESTS, description = e.message)
     }
 
-
     @ExceptionHandler(
         ObjectRetrievalFailureException::class,
         EntityNotFoundException::class,
