@@ -7,6 +7,42 @@ servers:
   - url: http://localhost:8080
 
 paths:
+  /api/authorize:
+    post:
+      summary: Authorize using email password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizeRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizeResponse'
+      security:
+        - PublicAuth: [ ]
+      operationId: authorize
+      tags: [ auth ]
+
+  /api/oauth-authorization-links:
+    get:
+      summary: Authorization oauth links
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizationLinksResponse'
+      security:
+        - PublicAuth: [ ]
+      operationId: authorizationLinks
+      tags: [ auth ]
+
   /api/authorize-oauth:
     post:
       summary: Authorize via oauth
@@ -47,7 +83,7 @@ paths:
       security:
         - PublicAuth: [ ]
       operationId: startRegistration
-      tags: [ auth ]
+      tags: [ registration ]
 
   /api/register/confirm:
     post:
@@ -68,7 +104,7 @@ paths:
       security:
         - PublicAuth: [ ]
       operationId: confirmRegistration
-      tags: [ auth ]
+      tags: [ registration ]
 
   /api/user/request-password-reset:
     post:
@@ -141,42 +177,6 @@ paths:
         - TokenAuth: [ ]
       operationId: setPassword
       tags: [ user ]
-
-  /api/authorize:
-    post:
-      summary: Authorize using email password
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AuthorizeRequest'
-        required: true
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthorizeResponse'
-      security:
-        - PublicAuth: [ ]
-      operationId: authorize
-      tags: [ auth ]
-
-  /api/authorization-links:
-    get:
-      summary: Authorization google link
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthorizationLinksResponse'
-      security:
-        - PublicAuth: [ ]
-      operationId: authorizationLinks
-      tags: [ auth ]
 
 components:
   schemas:
