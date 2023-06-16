@@ -105,7 +105,7 @@ class UserService(
     fun finishRegistration(registrationToken: UUID, code: String): User {
         val emailRegistrationConfirmation = emailRegistrationConfirmationRepository.getReferenceById(registrationToken)
         if (emailRegistrationConfirmation.code != code) {
-            throw AccessDeniedException("ACCESS DENIED")
+            throw AccessDeniedException("access denied")
         }
         emailRegistrationConfirmationRepository.delete(emailRegistrationConfirmation)
         val username = emailRegistrationConfirmation.email.split("@").first()
