@@ -1,6 +1,9 @@
 package org.firstapproval.backend.core.domain.user
 
+import jakarta.mail.internet.MimeMessage
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
+import org.firstapproval.backend.core.config.Properties.EmailProperties
+import org.firstapproval.backend.core.config.Properties.FrontendProperties
 import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmation
 import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmationRepository
 import org.firstapproval.backend.core.domain.user.OauthType.GOOGLE
@@ -10,15 +13,21 @@ import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimitRepos
 import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmation
 import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmationRepository
 import org.firstapproval.backend.core.utils.generateCode
+import org.springframework.mail.SimpleMailMessage
+import org.springframework.mail.javamail.JavaMailSender
+import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation.REPEATABLE_READ
 import org.springframework.transaction.annotation.Transactional
+import org.thymeleaf.context.Context
+import org.thymeleaf.spring6.SpringTemplateEngine
+import java.nio.charset.StandardCharsets
 import java.time.ZonedDateTime.now
-import java.util.*
-import java.util.UUID.*
+import java.util.UUID
+import java.util.UUID.randomUUID
 import javax.naming.LimitExceededException
 
 const val EMAIL_CONFIRMATION_CODE_LENGTH = 6
@@ -33,7 +42,11 @@ class UserService(
     private val emailRegistrationConfirmationRepository: EmailRegistrationConfirmationRepository,
     private val passwordResetConfirmationRepository: PasswordResetConfirmationRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val authorizationLimitRepository: AuthorizationLimitRepository
+    private val authorizationLimitRepository: AuthorizationLimitRepository,
+    private val emailSender: JavaMailSender,
+    private val templateEngine: SpringTemplateEngine,
+    private val emailProperties: EmailProperties,
+    private val frontendProperties: FrontendProperties
 ) {
 
     @Transactional(isolation = REPEATABLE_READ)
@@ -59,12 +72,19 @@ class UserService(
             prevTry.lastTryTime = now()
             prevTry.attemptCount += 1
             prevTry.password = passwordEncoder.encode(password)
-            // TODO SEND EMAIL AND CODE
+            // TODO CREATE LINK
+            val code = generateCode(EMAIL_CONFIRMATION_CODE_LENGTH)
+            val link = "${frontendProperties.url}/${code}"
+            val message = createMessage(code, link, email)
+            emailSender.send(message)
             return prevTry.id
         } else {
             val code = generateCode(EMAIL_CONFIRMATION_CODE_LENGTH)
             val registrationToken = randomUUID()
-            // TODO SEND EMAIL AND CODE
+            // TODO CREATE LINK
+            val link = "${frontendProperties.url}/${code}"
+            val message = createMessage(code, link, email)
+            emailSender.send(message)
             return emailRegistrationConfirmationRepository.save(
                 EmailRegistrationConfirmation(
                     id = registrationToken,
@@ -91,6 +111,13 @@ class UserService(
             passwordResetConfirmationRepository.save(PasswordResetConfirmation(id = passwordResetRequestId, user = user))
         }
         // TODO SEND EMAIL TO USER WITH RESET LINK
+        val link = "${frontendProperties.url}/id"
+        val message = SimpleMailMessage()
+        message.setFrom(emailProperties.from)
+        message.setTo(email)
+        message.setSubject(createSubject())
+        message.setText(link)
+        emailSender.send(message)
     }
 
     @Transactional
@@ -221,6 +248,26 @@ class UserService(
             )
         )
     }
+
+    private fun createMessage(code: String, link: String, email: String): MimeMessage {
+        val message = emailSender.createMimeMessage()
+        val helper = MimeMessageHelper(message, StandardCharsets.UTF_8.name())
+        val context = Context()
+        val model: MutableMap<String, Any> = HashMap()
+        model["code"] = code
+        model["link"] = link
+        model["email"] = email
+        context.setVariables(model)
+        val html = templateEngine.process("email-template", context)
+        helper.setFrom(emailProperties.from)
+        helper.setTo(email)
+        helper.setText(html, true)
+        helper.setSubject(createSubject())
+
+        return message
+    }
+
+    private fun createSubject() = "[FirstApproval] Confirming an email address"
 }
 
 data class OauthUser(

@@ -1,5 +1,7 @@
 ALTER TABLE users
-    ADD COLUMN password TEXT;
+    ADD COLUMN password TEXT,
+    ADD COLUMN first_name TEXT,
+    ADD COLUMN last_name TEXT;
 
 CREATE TABLE email_registration_confirmations
 (
