@@ -26,7 +26,7 @@ import javax.naming.LimitExceededException
 
 const val EMAIL_CONFIRMATION_CODE_LENGTH = 6
 
-const val SEND_EMAIL_LIMIT = 2
+const val SEND_EMAIL_LIMIT = 1
 
 const val AUTHORIZATION_RATE_LIMIT = 4
 
@@ -200,11 +200,11 @@ class UserService(
     fun clearRateLimits() {
         authorizationLimitRepository.deleteByCreationTimeBefore(now().minusMinutes(30))
         emailRegistrationConfirmationRepository.findByLastTryTimeNotNullAndLastTryTimeBefore(now().minusMinutes(30)).forEach {
-            it.attemptCount = 1
+            it.attemptCount = 0
             it.lastTryTime = null
         }
         passwordResetConfirmationRepository.findByLastTryTimeNotNullAndLastTryTimeBefore(now().minusMinutes(30)).forEach {
-            it.attemptCount = 1
+            it.attemptCount = 0
             it.lastTryTime = null
         }
     }
