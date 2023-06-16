@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.postForObject
 import org.springframework.web.util.UriComponentsBuilder
-import java.util.UUID.fromString
+import java.util.UUID.*
 
 @Service
 class TokenService(
@@ -64,9 +64,9 @@ class TokenService(
                 clientSecret = oauthProperties.google.clientSecret,
             ), null
         ).require()
-        val claims = jwtService.parseGoogle(tokens.id_token)
+        val claims = jwtService.parseGoogle(tokens.idToken)
         val email = claims["email"] as String
-        val profileResource = exchangeTokenForResources<GoogleProfile>(oauthProperties.google.dataUrl, tokens.access_token)
+        val profileResource = exchangeTokenForResources<GoogleProfile>(oauthProperties.google.dataUrl, tokens.accessToken)
         return OauthUser(
             externalId = claims["sub"] as String,
             email = email,
@@ -91,7 +91,7 @@ class TokenService(
         val userData = restTemplate.postForObject<FacebookOauthUserData>(
             UriComponentsBuilder.fromHttpUrl(oauthProperties.facebook.dataUrl)
                 .queryParam("fields", "email")
-                .queryParam("access_token", oauthTokenResponse.access_token)
+                .queryParam("access_token", oauthTokenResponse.accessToken)
                 .build().toUriString()
         )
         return OauthUser(userData.id, userData.email, userData.email?.split("@")?.first() ?: userData.id, FACEBOOK)

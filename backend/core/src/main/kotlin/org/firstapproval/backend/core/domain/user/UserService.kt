@@ -69,7 +69,6 @@ class UserService(
 
     @Transactional
     fun startUserRegistration(email: String, password: String): UUID {
-        // TODO THINK ABOUT DUPLICATES OF EMAILS
         val prevTry = emailRegistrationConfirmationRepository.findByEmail(email)
         if (prevTry != null) {
             if (prevTry.attemptCount >= SEND_EMAIL_LIMIT) {

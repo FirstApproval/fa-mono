@@ -6,12 +6,6 @@ import org.firstapproval.backend.core.config.Properties.OauthProperties
 import org.firstapproval.backend.core.domain.auth.TokenService
 import org.firstapproval.backend.core.domain.user.OauthType
 import org.firstapproval.backend.core.domain.user.UserService
-import org.firstapproval.api.server.model.AuthorizationLinksResponse
-import org.firstapproval.api.server.model.AuthorizeRequest
-import org.firstapproval.api.server.model.AuthorizeResponse
-import org.firstapproval.backend.core.config.Properties.OauthProperties
-import org.firstapproval.backend.core.domain.auth.TokenService
-import org.firstapproval.backend.core.domain.user.OauthType
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
