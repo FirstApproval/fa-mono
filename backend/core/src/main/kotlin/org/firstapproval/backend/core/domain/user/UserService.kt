@@ -4,14 +4,16 @@ import jakarta.mail.internet.MimeMessage
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import org.firstapproval.backend.core.config.Properties.EmailProperties
 import org.firstapproval.backend.core.config.Properties.FrontendProperties
+import org.firstapproval.backend.core.domain.auth.OauthUser
 import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmation
 import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmationRepository
+import org.firstapproval.backend.core.domain.user.OauthType.FACEBOOK
 import org.firstapproval.backend.core.domain.user.OauthType.GOOGLE
-import org.firstapproval.backend.core.domain.user.OauthType.ORCID
 import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimit
 import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimitRepository
 import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmation
 import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmationRepository
+import org.firstapproval.backend.core.exception.RecordConflictException
 import org.firstapproval.backend.core.utils.generateCode
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
@@ -26,13 +28,14 @@ import org.thymeleaf.context.Context
 import org.thymeleaf.spring6.SpringTemplateEngine
 import java.nio.charset.StandardCharsets
 import java.time.ZonedDateTime.now
-import java.util.UUID
-import java.util.UUID.randomUUID
+import java.util.*
+import java.util.UUID.*
+import java.util.function.*
 import javax.naming.LimitExceededException
 
 const val EMAIL_CONFIRMATION_CODE_LENGTH = 6
 
-const val SEND_EMAIL_LIMIT = 3
+const val SEND_EMAIL_LIMIT = 1
 
 const val AUTHORIZATION_RATE_LIMIT = 4
 
@@ -51,10 +54,25 @@ class UserService(
 
     @Transactional(isolation = REPEATABLE_READ)
     fun saveOrUpdate(oauthUser: OauthUser): User {
-        return when (oauthUser.type) {
-            GOOGLE -> saveOrUpdateGoogleUser(oauthUser)
-            ORCID -> saveOrUpdateOrcidUser(oauthUser)
+        val userSupplier = when (oauthUser.type) {
+            GOOGLE -> Supplier<User?> {
+                if (oauthUser.email != null) {
+                    userRepository.findByGoogleIdOrEmail(oauthUser.externalId, oauthUser.email)
+                } else {
+                    userRepository.findByGoogleId(oauthUser.externalId)
+                }
+            }
+
+            FACEBOOK -> Supplier<User?> {
+                if (oauthUser.email != null) {
+                    userRepository.findByFacebookIdOrEmail(oauthUser.externalId, oauthUser.email)
+                } else {
+                    userRepository.findByFacebookId(oauthUser.externalId)
+                }
+            }
         }
+
+        return saveOrUpdateUser(userSupplier, oauthUser)
     }
 
     @Transactional
@@ -69,6 +87,9 @@ class UserService(
             if (prevTry.attemptCount >= SEND_EMAIL_LIMIT) {
                 throw LimitExceededException("limit exceeded")
             }
+            if (userRepository.existsByEmail(prevTry.email)) {
+                throw RecordConflictException("user already exists")
+            }
             prevTry.lastTryTime = now()
             prevTry.attemptCount += 1
             prevTry.password = passwordEncoder.encode(password)
@@ -79,21 +100,45 @@ class UserService(
             emailSender.send(message)
             return prevTry.id
         } else {
+            if (userRepository.existsByEmail(email)) {
+                throw RecordConflictException("user already exists")
+            }
             val code = generateCode(EMAIL_CONFIRMATION_CODE_LENGTH)
             val registrationToken = randomUUID()
-            // TODO CREATE LINK
-            val link = "${frontendProperties.url}/${code}"
-            val message = createMessage(code, link, email)
-            emailSender.send(message)
-            return emailRegistrationConfirmationRepository.save(
+            emailRegistrationConfirmationRepository.save(
                 EmailRegistrationConfirmation(
                     id = registrationToken,
                     email = email,
                     password = passwordEncoder.encode(password),
                     code = code
                 )
-            ).id
+            )
+            // TODO CREATE LINK
+            val link = "${frontendProperties.url}/${code}"
+            val message = createMessage(code, link, email)
+            emailSender.send(message)
+            return registrationToken
         }
+    }
+
+    @Transactional
+    fun finishRegistration(registrationToken: UUID, code: String): User {
+        val emailRegistrationConfirmation = emailRegistrationConfirmationRepository.getReferenceById(registrationToken)
+        if (emailRegistrationConfirmation.code != code) {
+            throw AccessDeniedException("access denied")
+        }
+        emailRegistrationConfirmationRepository.delete(emailRegistrationConfirmation)
+        val username = emailRegistrationConfirmation.email.split("@").first()
+        val userByUsername = userRepository.findByUsername(username)
+        val userId = randomUUID()
+        return userRepository.save(
+            User(
+                id = userId,
+                email = emailRegistrationConfirmation.email,
+                password = emailRegistrationConfirmation.password,
+                username = if (userByUsername != null) userId.toString() else username
+            )
+        )
     }
 
     @Transactional
@@ -140,7 +185,6 @@ class UserService(
         } else {
             authorizationLimitRepository.save(AuthorizationLimit(id = randomUUID(), email = email))
         }
-        authorizationLimitRepository.flush()
         val user = userRepository.findByEmail(email) ?: return null
         return if (!passwordEncoder.matches(password, user.password)) {
             null
@@ -169,23 +213,6 @@ class UserService(
         userRepository.save(user)
     }
 
-    @Transactional
-    fun finishRegistration(registrationToken: UUID, code: String): User {
-        val emailRegistrationConfirmation = emailRegistrationConfirmationRepository.getReferenceById(registrationToken)
-        if (emailRegistrationConfirmation.code != code) {
-            throw AccessDeniedException("ACCESS DENIED")
-        }
-        emailRegistrationConfirmationRepository.delete(emailRegistrationConfirmation)
-        return userRepository.save(
-            User(
-                id = randomUUID(),
-                email = emailRegistrationConfirmation.email,
-                password = emailRegistrationConfirmation.password
-            )
-        )
-    }
-
-
     @Scheduled(cron = "\${clear-uncompleted.cron}")
     @SchedulerLock(name = "UserService.clearUncompleted")
     @Transactional
@@ -200,51 +227,45 @@ class UserService(
     fun clearRateLimits() {
         authorizationLimitRepository.deleteByCreationTimeBefore(now().minusMinutes(30))
         emailRegistrationConfirmationRepository.findByLastTryTimeNotNullAndLastTryTimeBefore(now().minusMinutes(30)).forEach {
-            it.attemptCount = 1
+            it.attemptCount = 0
             it.lastTryTime = null
         }
         passwordResetConfirmationRepository.findByLastTryTimeNotNullAndLastTryTimeBefore(now().minusMinutes(30)).forEach {
-            it.attemptCount = 1
+            it.attemptCount = 0
             it.lastTryTime = null
         }
     }
 
-    private fun saveOrUpdateGoogleUser(oauthUser: OauthUser): User {
-        val user = if (oauthUser.email != null) {
-            userRepository.findByGoogleIdOrEmail(oauthUser.externalId, oauthUser.email)
-        } else {
-            userRepository.findByGoogleId(oauthUser.externalId)
-        }
+    private fun saveOrUpdateUser(findUserFunc: Supplier<User?>, oauthUser: OauthUser): User {
+        val user = findUserFunc.get()
         if (user != null) {
             user.email = oauthUser.email
-            user.googleId = oauthUser.externalId
-            return user
-        }
-        return userRepository.save(
-            User(
-                id = randomUUID(),
-                googleId = oauthUser.externalId,
-                email = oauthUser.email,
-            )
-        )
-    }
+            user.firstName = oauthUser.firstName
+            user.lastName = oauthUser.lastName
+            user.middleName = oauthUser.middleName
+            user.fullName = oauthUser.fullName
 
-    private fun saveOrUpdateOrcidUser(oauthUser: OauthUser): User {
-        val user = if (oauthUser.email != null) {
-            userRepository.findByOrcidIdOrEmail(oauthUser.externalId, oauthUser.email)
-        } else {
-            userRepository.findByOrcidId(oauthUser.externalId)
-        }
-        if (user != null) {
-            user.email = oauthUser.email
-            user.orcidId = oauthUser.externalId
+            when (oauthUser.type) {
+                GOOGLE -> user.googleId = oauthUser.externalId
+                FACEBOOK -> user.facebookId = oauthUser.externalId
+            }
+
             return user
         }
+
+        val userByUsername = userRepository.findByUsername(oauthUser.username)
+        val id = randomUUID()
         return userRepository.save(
             User(
-                id = randomUUID(),
-                orcidId = oauthUser.externalId,
+                id = id,
+                username = if (userByUsername != null) id.toString() else oauthUser.username,
+                googleId = if (oauthUser.type == GOOGLE) oauthUser.externalId else null,
+                facebookId = if (oauthUser.type == FACEBOOK) oauthUser.externalId else null,
                 email = oauthUser.email,
+                firstName = oauthUser.firstName,
+                lastName = oauthUser.lastName,
+                middleName = oauthUser.middleName,
+                fullName = oauthUser.fullName
             )
         )
     }
@@ -270,13 +291,8 @@ class UserService(
     private fun createSubject() = "[FirstApproval] Confirming an email address"
 }
 
-data class OauthUser(
-    val externalId: String,
-    val email: String?,
-    val type: OauthType
-)
-
 enum class OauthType {
     GOOGLE,
-    ORCID
+    FACEBOOK
 }
+

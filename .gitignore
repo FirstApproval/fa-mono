@@ -5,7 +5,7 @@
 /backend/volumes/
 /frontend/node_modules/
 /frontend/build/
-/frontend/apis/
+/frontend/src/apis/
 volumes/
 
 .idea
@@ -16,3 +16,4 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 /backend/core/build/
+
