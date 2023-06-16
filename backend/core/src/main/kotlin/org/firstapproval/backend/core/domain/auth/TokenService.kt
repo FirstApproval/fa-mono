@@ -1,5 +1,6 @@
 package org.firstapproval.backend.core.domain.auth
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import org.firstapproval.backend.core.config.DEFAULT_REST_TEMPLATE
 import org.firstapproval.backend.core.config.Properties.OauthProperties
 import org.firstapproval.backend.core.config.security.AuthToken
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.postForObject
 import org.springframework.web.util.UriComponentsBuilder
-import java.util.UUID.*
+import java.util.UUID.fromString
 
 @Service
 class TokenService(
@@ -118,9 +119,9 @@ class TokenService(
             .build().toUriString()
 }
 
-data class TokensResponse(val id_token: String, val access_token: String)
+data class TokensResponse(@JsonProperty("id_token") val idToken: String, @JsonProperty("access_token") val accessToken: String)
 
-data class OauthAccessTokenResponse(val access_token: String)
+data class OauthAccessTokenResponse(@JsonProperty("access_token") val accessToken: String)
 
 data class OauthUser(
     val externalId: String,
