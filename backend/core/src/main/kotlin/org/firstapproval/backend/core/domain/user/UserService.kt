@@ -1,6 +1,6 @@
 package org.firstapproval.backend.core.domain.user
 
-import jakarta.mail.internet.MimeMessage
+import mu.KotlinLogging.logger
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import org.firstapproval.backend.core.config.Properties.EmailProperties
 import org.firstapproval.backend.core.config.Properties.FrontendProperties
@@ -52,6 +52,8 @@ class UserService(
     private val frontendProperties: FrontendProperties
 ) {
 
+    val log = logger {}
+
     @Transactional(isolation = REPEATABLE_READ)
     fun saveOrUpdate(oauthUser: OauthUser): User {
         val userSupplier = when (oauthUser.type) {
@@ -81,44 +83,59 @@ class UserService(
     }
 
     @Transactional
-    fun startUserRegistration(email: String, password: String): UUID {
+    fun startUserRegistration(email: String, password: String, firstName: String?, lastName: String?): UUID {
         val prevTry = emailRegistrationConfirmationRepository.findByEmail(email)
-        if (prevTry != null) {
-            if (prevTry.attemptCount >= SEND_EMAIL_LIMIT) {
-                throw LimitExceededException("limit exceeded")
-            }
-            if (userRepository.existsByEmail(prevTry.email)) {
-                throw RecordConflictException("user already exists")
-            }
-            prevTry.lastTryTime = now()
-            prevTry.attemptCount += 1
-            prevTry.password = passwordEncoder.encode(password)
-            // TODO CREATE LINK
-            val code = generateCode(EMAIL_CONFIRMATION_CODE_LENGTH)
-            val link = "${frontendProperties.url}/${code}"
-            val message = createMessage(code, link, email)
-            emailSender.send(message)
-            return prevTry.id
+        return if (prevTry != null) {
+            alreadyStartedRegistration(prevTry, password, firstName, lastName)
         } else {
-            if (userRepository.existsByEmail(email)) {
-                throw RecordConflictException("user already exists")
-            }
-            val code = generateCode(EMAIL_CONFIRMATION_CODE_LENGTH)
-            val registrationToken = randomUUID()
-            emailRegistrationConfirmationRepository.save(
-                EmailRegistrationConfirmation(
-                    id = registrationToken,
-                    email = email,
-                    password = passwordEncoder.encode(password),
-                    code = code
-                )
-            )
-            // TODO CREATE LINK
-            val link = "${frontendProperties.url}/${code}"
-            val message = createMessage(code, link, email)
-            emailSender.send(message)
-            return registrationToken
+            newAttemptForRegistration(email, password, firstName, lastName)
         }
+    }
+
+    private fun alreadyStartedRegistration(
+        prevTry: EmailRegistrationConfirmation,
+        password: String,
+        firstName: String?,
+        lastName: String?
+    ): UUID {
+        if (prevTry.attemptCount >= SEND_EMAIL_LIMIT) {
+            throw LimitExceededException("limit exceeded")
+        }
+        if (userRepository.existsByEmail(prevTry.email)) {
+            throw RecordConflictException("user already exists")
+        }
+        prevTry.lastTryTime = now()
+        prevTry.attemptCount += 1
+        prevTry.firstName = firstName
+        prevTry.lastName = lastName
+        prevTry.password = passwordEncoder.encode(password)
+        // TODO CREATE LINK
+        val code = generateCode(EMAIL_CONFIRMATION_CODE_LENGTH)
+        val link = "${frontendProperties.url}/${code}"
+        sendRegistrationMessageEmail(code, link, prevTry.email)
+        return prevTry.id
+    }
+
+    private fun newAttemptForRegistration(email: String, password: String, firstName: String?, lastName: String?): UUID {
+        if (userRepository.existsByEmail(email)) {
+            throw RecordConflictException("user already exists")
+        }
+        val code = generateCode(EMAIL_CONFIRMATION_CODE_LENGTH)
+        val registrationToken = randomUUID()
+        emailRegistrationConfirmationRepository.save(
+            EmailRegistrationConfirmation(
+                id = registrationToken,
+                email = email,
+                password = passwordEncoder.encode(password),
+                code = code,
+                firstName = firstName,
+                lastName = lastName
+            )
+        )
+        // TODO CREATE LINK
+        val link = "${frontendProperties.url}/${code}"
+        sendRegistrationMessageEmail(code, link, email)
+        return registrationToken
     }
 
     @Transactional
@@ -136,6 +153,8 @@ class UserService(
                 id = userId,
                 email = emailRegistrationConfirmation.email,
                 password = emailRegistrationConfirmation.password,
+                firstName = emailRegistrationConfirmation.firstName,
+                lastName = emailRegistrationConfirmation.lastName,
                 username = if (userByUsername != null) userId.toString() else username
             )
         )
@@ -144,7 +163,6 @@ class UserService(
     @Transactional
     fun requestPasswordReset(email: String) {
         val user = userRepository.findByEmail(email) ?: return
-        val passwordResetRequestId = randomUUID()
         val previousTry = passwordResetConfirmationRepository.findByUserId(user.id)
         if (previousTry != null) {
             if (previousTry.attemptCount >= SEND_EMAIL_LIMIT) {
@@ -152,17 +170,12 @@ class UserService(
             }
             previousTry.attemptCount += 1
             previousTry.lastTryTime = now()
+            sendEmailForPassportReset(email, previousTry.id.toString())
         } else {
+            val passwordResetRequestId = randomUUID()
             passwordResetConfirmationRepository.save(PasswordResetConfirmation(id = passwordResetRequestId, user = user))
+            sendEmailForPassportReset(email, passwordResetRequestId.toString())
         }
-        // TODO SEND EMAIL TO USER WITH RESET LINK
-        val link = "${frontendProperties.url}/id"
-        val message = SimpleMailMessage()
-        message.setFrom(emailProperties.from)
-        message.setTo(email)
-        message.setSubject(createSubject())
-        message.setText(link)
-        emailSender.send(message)
     }
 
     @Transactional
@@ -270,7 +283,11 @@ class UserService(
         )
     }
 
-    private fun createMessage(code: String, link: String, email: String): MimeMessage {
+    private fun sendRegistrationMessageEmail(code: String, link: String, email: String) {
+        if (emailProperties.noopMode) {
+            log.info { code }
+            return
+        }
         val message = emailSender.createMimeMessage()
         val helper = MimeMessageHelper(message, StandardCharsets.UTF_8.name())
         val context = Context()
@@ -284,8 +301,22 @@ class UserService(
         helper.setTo(email)
         helper.setText(html, true)
         helper.setSubject(createSubject())
+        emailSender.send(message)
+    }
 
-        return message
+    private fun sendEmailForPassportReset(email: String, resetId: String) {
+        // TODO SEND EMAIL TO USER WITH RESET LINK
+        val link = "${frontendProperties.url}/$resetId"
+        if (emailProperties.noopMode) {
+            log.info { link }
+            return
+        }
+        val message = SimpleMailMessage()
+        message.from = emailProperties.from
+        message.setTo(email)
+        message.subject = createSubject()
+        message.text = link
+        emailSender.send(message)
     }
 
     private fun createSubject() = "[FirstApproval] Confirming an email address"

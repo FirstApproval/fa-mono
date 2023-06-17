@@ -15,6 +15,8 @@ class EmailRegistrationConfirmation(
     @Id
     var id: UUID,
     val email: String,
+    var firstName: String?,
+    var lastName: String?,
     var password: String,
     val code: String,
     var attemptCount: Int = 1,

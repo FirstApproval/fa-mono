@@ -5,6 +5,8 @@ CREATE TABLE email_registration_confirmations
 (
     id            UUID PRIMARY KEY,
     email         TEXT      NOT NULL,
+    first_name    TEXT,
+    last_name     TEXT,
     password      TEXT      NOT NULL UNIQUE,
     code          TEXT      NOT NULL,
     attempt_count INT       NOT NULL DEFAULT 0,

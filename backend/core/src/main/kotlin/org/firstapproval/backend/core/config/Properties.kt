@@ -1,7 +1,6 @@
 package org.firstapproval.backend.core.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
 import java.net.URL
 import java.time.Duration
@@ -60,5 +59,6 @@ class Properties {
         var smtpAuth by notNull<Boolean>()
         var smtpStarttlsEnable by notNull<Boolean>()
         var smtpSslEnable by notNull<Boolean>()
+        var noopMode by notNull<Boolean>()
     }
 }

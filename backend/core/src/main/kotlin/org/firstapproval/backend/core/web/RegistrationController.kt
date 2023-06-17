@@ -16,7 +16,12 @@ class RegistrationController(
     private val userService: UserService
 ) : RegistrationApi {
     override fun startRegistration(registrationRequest: RegistrationRequest): ResponseEntity<RegistrationResponse> {
-        val registrationToken = userService.startUserRegistration(registrationRequest.email, registrationRequest.password)
+        val registrationToken = userService.startUserRegistration(
+            registrationRequest.email,
+            registrationRequest.password,
+            registrationRequest.firstName,
+            registrationRequest.lastName
+        )
         return ResponseEntity.ok().body(RegistrationResponse(registrationToken))
     }
 
