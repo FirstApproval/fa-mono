@@ -1,18 +1,25 @@
 import { OauthType } from 'src/apis/first-approval-api';
-import { authService } from './auth';
+
+import { authService } from './service';
+
+const ACCESS_TOKEN_KEY = 'access-token';
 
 export class AuthStore {
   token: string | undefined;
 
-  exchangeToken(code: string): void {
-    authService
-      .authorize({ code, type: OauthType.GOOGLE })
-      .then((response) => {
-        this.token = response.data.token;
-      })
-      .catch((e) => {
-        console.error(e);
-      });
+  constructor() {
+    const token = localStorage.getItem(ACCESS_TOKEN_KEY);
+    if (token !== null) {
+      this.token = token;
+    }
+  }
+
+  async exchangeToken(code: string): Promise<void> {
+    const response = await authService.authorize({
+      code,
+      type: OauthType.GOOGLE
+    });
+    this.token = response.data.token;
   }
 }
 
