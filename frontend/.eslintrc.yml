@@ -2,6 +2,7 @@ env:
   browser: true
   es2021: true
 extends:
+  - prettier
   - standard-with-typescript
   - plugin:react/recommended
 parserOptions:
@@ -10,7 +11,12 @@ parserOptions:
   sourceType: module
 plugins:
   - react
+  - prettier
 rules: {
   "react/react-in-jsx-scope": "off",
   "react/jsx-uses-react": "off",
+  "prettier/prettier": "error",
+  "@typescript-eslint/semi": "off",
+  "@typescript-eslint/member-delimiter-style": "off",
+  "@typescript-eslint/space-before-function-paren": "off"
 }

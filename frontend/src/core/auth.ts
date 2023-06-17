@@ -1,3 +1,5 @@
-import { AuthStore } from './AuthStore'
+import { AuthStore } from './AuthStore';
+import { AuthApi } from '../apis/first-approval-api';
 
-export const authStore = new AuthStore()
+export const authService = new AuthApi();
+export const authStore = new AuthStore();

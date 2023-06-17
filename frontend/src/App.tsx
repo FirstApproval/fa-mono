@@ -17,6 +17,7 @@ enum Page {
   SIGN_UP_NAME,
   SIGN_UP_PASSWORD,
 }
+
 const App: FunctionComponent = () => {
   const [page, setPage] = useState(Page.SIGN_IN)
 
