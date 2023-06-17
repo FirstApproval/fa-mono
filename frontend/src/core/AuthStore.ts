@@ -1,6 +1,7 @@
 import { OauthType } from 'src/apis/first-approval-api';
 
 import { authService } from './service';
+import { makeObservable, observable } from 'mobx';
 
 const ACCESS_TOKEN_KEY = 'access-token';
 
@@ -8,6 +9,10 @@ export class AuthStore {
   token: string | undefined;
 
   constructor() {
+    makeObservable(this, {
+      token: observable
+    });
+
     const token = localStorage.getItem(ACCESS_TOKEN_KEY);
     if (token !== null) {
       this.token = token;

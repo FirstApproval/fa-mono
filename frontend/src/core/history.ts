@@ -15,8 +15,7 @@ export const usePath = (): { path: string; queryParams: URLSearchParams } => {
   };
 
   useEffect(() => {
-    const unlisten = history.listen(listener as Listener);
-    return unlisten;
+    return history.listen(listener as Listener);
   }, []);
 
   return { path, queryParams };

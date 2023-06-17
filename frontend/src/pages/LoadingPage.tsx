@@ -1,20 +1,18 @@
 import { type FunctionComponent } from 'react';
-import { Button } from '@mui/material';
+import { LinearProgress } from '@mui/material';
 import styled from '@emotion/styled';
 
-export const HomePage: FunctionComponent = () => {
+export const LoadingPage: FunctionComponent = () => {
   return (
     <Parent>
       <FlexHeader>
         <Logo>First Approval</Logo>
-        <FlexHeaderRight>
-          <Button variant="outlined" size={'large'}>
-            Sign out
-          </Button>
-        </FlexHeaderRight>
+        <FlexHeaderRight></FlexHeaderRight>
       </FlexHeader>
       <FlexBodyCenter>
-        <FlexBody></FlexBody>
+        <FlexBody>
+          <LinearProgress />
+        </FlexBody>
       </FlexBodyCenter>
     </Parent>
   );
