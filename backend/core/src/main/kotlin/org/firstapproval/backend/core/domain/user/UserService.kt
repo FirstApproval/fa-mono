@@ -170,11 +170,11 @@ class UserService(
             }
             previousTry.attemptCount += 1
             previousTry.lastTryTime = now()
-            sendEmailForPassportReset(email, previousTry.id.toString())
+            sendEmailForPasswordReset(email, previousTry.id.toString())
         } else {
             val passwordResetRequestId = randomUUID()
             passwordResetConfirmationRepository.save(PasswordResetConfirmation(id = passwordResetRequestId, user = user))
-            sendEmailForPassportReset(email, passwordResetRequestId.toString())
+            sendEmailForPasswordReset(email, passwordResetRequestId.toString())
         }
     }
 
@@ -304,7 +304,7 @@ class UserService(
         emailSender.send(message)
     }
 
-    private fun sendEmailForPassportReset(email: String, resetId: String) {
+    private fun sendEmailForPasswordReset(email: String, resetId: String) {
         // TODO SEND EMAIL TO USER WITH RESET LINK
         val link = "${frontendProperties.url}/$resetId"
         if (emailProperties.noopMode) {
