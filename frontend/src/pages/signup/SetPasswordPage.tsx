@@ -1,5 +1,11 @@
 import { type FunctionComponent } from 'react';
-import { Button, InputAdornment, TextField } from '@mui/material';
+import {
+  Alert,
+  Button,
+  InputAdornment,
+  Snackbar,
+  TextField
+} from '@mui/material';
 import styled from '@emotion/styled';
 import { ArrowForward, LockOutlined } from '@mui/icons-material';
 import { observer } from 'mobx-react-lite';
@@ -7,11 +13,14 @@ import { type SignUpStore } from './SignUpStore';
 
 interface SetPasswordPageProps {
   store: SignUpStore;
+  onSignInClick: () => void;
   onContinueClick: () => void;
 }
 
 export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
   observer((props: SetPasswordPageProps) => {
+    const isError = props.store.isError;
+
     return (
       <Parent>
         <FlexHeader>
@@ -20,8 +29,8 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
             <Button
               variant="outlined"
               size={'large'}
-              onClick={props.onContinueClick}>
-              Sign up
+              onClick={props.onSignInClick}>
+              Sign in
             </Button>
           </FlexHeaderRight>
         </FlexHeader>
@@ -31,6 +40,10 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
             <EmailLabel>Now, set your password:</EmailLabel>
             <div>
               <FullWidthTextField
+                value={props.store.password}
+                onChange={(e) => {
+                  props.store.password = e.currentTarget.value;
+                }}
                 type={'password'}
                 label="Password 8+ characters"
                 variant="outlined"
@@ -52,6 +65,23 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
             </FullWidthButton>
           </FlexBody>
         </FlexBodyCenter>
+        {isError && (
+          <Snackbar
+            open={isError}
+            autoHideDuration={6000}
+            onClose={() => {
+              props.store.isError = false;
+            }}>
+            <Alert
+              onClose={() => {
+                props.store.isError = false;
+              }}
+              severity="error"
+              sx={{ width: '100%' }}>
+              Registration failed
+            </Alert>
+          </Snackbar>
+        )}
       </Parent>
     );
   });

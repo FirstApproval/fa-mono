@@ -7,6 +7,7 @@ import { observer } from 'mobx-react-lite';
 
 interface EnterNamePageProps {
   store: SignUpStore;
+  onSignInClick: () => void;
   onContinueClick: () => void;
 }
 
@@ -20,8 +21,8 @@ export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
             <Button
               variant="outlined"
               size={'large'}
-              onClick={props.onContinueClick}>
-              Sign up
+              onClick={props.onSignInClick}>
+              Sign in
             </Button>
           </FlexHeaderRight>
         </FlexHeader>

@@ -76,6 +76,9 @@ const App: FunctionComponent = observer(() => {
       {page === Page.SIGN_UP && (
         <SignUpPage
           store={signUpStore}
+          onSignInClick={() => {
+            setPage(Page.SIGN_IN);
+          }}
           onContinueClick={() => {
             setPage(Page.SIGN_UP_NAME);
           }}
@@ -84,13 +87,24 @@ const App: FunctionComponent = observer(() => {
       {page === Page.SIGN_UP_NAME && (
         <EnterNamePage
           store={signUpStore}
+          onSignInClick={() => {
+            setPage(Page.SIGN_IN);
+          }}
           onContinueClick={() => {
             setPage(Page.SIGN_UP_PASSWORD);
           }}
         />
       )}
       {page === Page.SIGN_UP_PASSWORD && (
-        <SetPasswordPage onContinueClick={() => {}} />
+        <SetPasswordPage
+          store={signUpStore}
+          onSignInClick={() => {
+            setPage(Page.SIGN_IN);
+          }}
+          onContinueClick={() => {
+            void signUpStore.submitRequestData();
+          }}
+        />
       )}
       {authError && (
         <Snackbar

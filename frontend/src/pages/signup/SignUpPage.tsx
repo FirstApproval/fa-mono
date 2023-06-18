@@ -12,12 +12,13 @@ import google from '../login/asset/Google logo.svg';
 import linked from '../login/asset/LinkedIn logo.svg';
 import facebook from '../login/asset/Facebook logo.svg';
 import orcid from '../login/asset/ORCID logo.svg';
-import { ArrowForward, LockOutlined, MailOutlined } from '@mui/icons-material';
+import { ArrowForward, MailOutlined } from '@mui/icons-material';
 import { type SignUpStore } from './SignUpStore';
 import { observer } from 'mobx-react-lite';
 
 interface SignUpPageProps {
   store: SignUpStore;
+  onSignInClick: () => void;
   onContinueClick: () => void;
 }
 
@@ -28,8 +29,11 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
         <FlexHeader>
           <Logo>First Approval</Logo>
           <FlexHeaderRight>
-            <Button variant="outlined" size={'large'}>
-              Sign up
+            <Button
+              variant="outlined"
+              size={'large'}
+              onClick={props.onSignInClick}>
+              Sign in
             </Button>
           </FlexHeaderRight>
         </FlexHeader>
