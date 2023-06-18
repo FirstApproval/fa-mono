@@ -1,4 +1,5 @@
-import styled from '@emotion/styled/dist/emotion-styled.cjs';
+import styled from '@emotion/styled';
+import { Button } from '@mui/material';
 
 export const Parent = styled('div')`
   width: 100%;
@@ -28,4 +29,14 @@ export const FlexBody = styled('div')`
 export const Logo = styled('div')`
   font-weight: 860;
   font-size: 20px;
+`;
+
+export const FullWidthButton = styled(Button)`
+  width: 100%;
+`;
+
+export const SignInHeader = styled('div')`
+  font-weight: 700;
+  font-size: 48px;
+  margin-bottom: 16px;
 `;

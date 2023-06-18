@@ -9,7 +9,8 @@ import {
   FlexHeader,
   FlexHeaderRight,
   Logo,
-  Parent
+  Parent,
+  SignInHeader
 } from '../common.styled';
 
 interface EmailVerificationPageProps {
@@ -83,12 +84,6 @@ export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps
       </Parent>
     );
   });
-
-const SignInHeader = styled('div')`
-  font-weight: 700;
-  font-size: 48px;
-  margin-bottom: 16px;
-`;
 
 const FullWidthTextField = styled(TextField)`
   width: 100%;

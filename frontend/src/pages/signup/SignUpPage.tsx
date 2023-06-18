@@ -16,8 +16,10 @@ import {
   FlexBodyCenter,
   FlexHeader,
   FlexHeaderRight,
+  FullWidthButton,
   Logo,
-  Parent
+  Parent,
+  SignInHeader
 } from '../common.styled';
 
 interface SignUpPageProps {
@@ -88,16 +90,6 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
     );
   }
 );
-
-const SignInHeader = styled('div')`
-  font-weight: 700;
-  font-size: 48px;
-  margin-bottom: 16px;
-`;
-
-const FullWidthButton = styled(Button)`
-  width: 100%;
-`;
 
 const FullWidthTextField = styled(TextField)`
   width: 100%;
