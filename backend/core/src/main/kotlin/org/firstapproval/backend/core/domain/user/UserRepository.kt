@@ -10,4 +10,6 @@ interface UserRepository : JpaRepository<User, UUID> {
     fun findByFacebookId(faceBookId: String): User?
     fun findByFacebookIdOrEmail(faceBookId: String, email: String?): User?
     fun findByUsername(email: String?): User?
+    fun findByEmail(email: String): User?
+    fun existsByEmail(email: String): Boolean
 }
