@@ -64,7 +64,7 @@ const App: FunctionComponent = observer(() => {
           }}
           onContinueClick={() => {
             if (!signUpStore.isSubmitting) {
-              void signUpStore.submitRequestData().then(() => {
+              void signUpStore.submitRegistrationRequest().then(() => {
                 if (!signUpStore.isError) {
                   setPage(Page.EMAIL_VERIFICATION);
                 }
@@ -80,7 +80,7 @@ const App: FunctionComponent = observer(() => {
             setPage(Page.SIGN_IN);
           }}
           onContinueClick={() => {
-            void signUpStore.submitRequestData().then(() => {
+            void signUpStore.submitRegistrationRequest().then(() => {
               setPage(Page.EMAIL_VERIFICATION);
             });
           }}

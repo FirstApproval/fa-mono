@@ -1,9 +1,11 @@
 import { makeObservable, observable } from 'mobx';
 import {
   type RegistrationRequest,
-  type RegistrationResponse
+  type RegistrationResponse,
+  type SubmitRegistrationRequest
 } from '../../apis/first-approval-api';
 import { registrationService } from '../../core/service';
+import { authStore } from '../../core/auth';
 
 export class SignUpStore {
   email: string = '';
@@ -29,7 +31,7 @@ export class SignUpStore {
     });
   }
 
-  getRequestData(): RegistrationRequest {
+  getRegistrationRequestData(): RegistrationRequest {
     return {
       firstName: this.firstName,
       lastName: this.lastName,
@@ -38,13 +40,38 @@ export class SignUpStore {
     };
   }
 
-  async submitRequestData(): Promise<void> {
-    const request = this.getRequestData();
+  getSubmitRegistrationRequestData(): SubmitRegistrationRequest | undefined {
+    if (this.lastResponse === undefined) return undefined;
+    return {
+      registrationToken: this.lastResponse.registrationToken,
+      code: this.code
+    };
+  }
+
+  async submitRegistrationRequest(): Promise<void> {
+    const request = this.getRegistrationRequestData();
     this.isError = false;
     this.isSubmitting = true;
     try {
       const response = await registrationService.startRegistration(request);
       this.lastResponse = response.data;
+    } catch (e) {
+      this.isError = true;
+    } finally {
+      this.isSubmitting = false;
+    }
+  }
+
+  async submitSubmitRegistrationRequest(): Promise<void> {
+    const request = this.getSubmitRegistrationRequestData();
+    if (request === undefined) {
+      return;
+    }
+    this.isError = false;
+    this.isSubmitting = true;
+    try {
+      const response = await registrationService.confirmRegistration(request);
+      authStore.token = response.data.token;
     } catch (e) {
       this.isError = true;
     } finally {

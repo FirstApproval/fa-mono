@@ -37,9 +37,13 @@ export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps
             </EmailLabel>
             <div>
               <FullWidthTextField
-                value={props.store.password}
+                value={props.store.code}
                 onChange={(e) => {
-                  props.store.password = e.currentTarget.value;
+                  const code = e.currentTarget.value;
+                  props.store.code = code;
+                  if (code.length === 6) {
+                    void props.store.submitSubmitRegistrationRequest();
+                  }
                 }}
                 label="Enter 6-digit code"
                 variant="outlined"
@@ -65,7 +69,7 @@ export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps
               }}
               severity="error"
               sx={{ width: '100%' }}>
-              Registration failed
+              Verification failed
             </Alert>
           </Snackbar>
         )}

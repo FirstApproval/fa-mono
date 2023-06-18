@@ -2,6 +2,7 @@ import { type FunctionComponent } from 'react';
 import {
   Alert,
   Button,
+  CircularProgress,
   InputAdornment,
   Snackbar,
   TextField
@@ -56,13 +57,16 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
                 }}
               />
             </div>
-            <FullWidthButton
-              variant="contained"
-              size={'large'}
-              endIcon={<ArrowForward />}
-              onClick={props.onContinueClick}>
-              Continue
-            </FullWidthButton>
+            {props.store.isSubmitting && <CircularProgress />}
+            {!props.store.isSubmitting && (
+              <FullWidthButton
+                variant="contained"
+                size={'large'}
+                endIcon={<ArrowForward />}
+                onClick={props.onContinueClick}>
+                Continue
+              </FullWidthButton>
+            )}
           </FlexBody>
         </FlexBodyCenter>
         {isError && (
