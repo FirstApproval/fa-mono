@@ -79,11 +79,6 @@ const App: FunctionComponent = observer(() => {
           onSignInClick={() => {
             setPage(Page.SIGN_IN);
           }}
-          onContinueClick={() => {
-            void signUpStore.submitRegistrationRequest().then(() => {
-              setPage(Page.EMAIL_VERIFICATION);
-            });
-          }}
         />
       )}
     </ThemeProvider>

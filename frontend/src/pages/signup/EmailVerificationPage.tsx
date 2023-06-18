@@ -3,11 +3,18 @@ import { Alert, Button, Link, Snackbar, TextField } from '@mui/material';
 import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
 import { type SignUpStore } from './SignUpStore';
+import {
+  FlexBody,
+  FlexBodyCenter,
+  FlexHeader,
+  FlexHeaderRight,
+  Logo,
+  Parent
+} from '../common.styled';
 
 interface EmailVerificationPageProps {
   store: SignUpStore;
   onSignInClick: () => void;
-  onContinueClick: () => void;
 }
 
 export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps> =
@@ -77,31 +84,6 @@ export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps
     );
   });
 
-const Parent = styled('div')`
-  width: 100%;
-`;
-
-const FlexHeader = styled('div')`
-  display: flex;
-  padding: 40px;
-  align-items: center;
-`;
-
-const FlexHeaderRight = styled('div')`
-  margin-left: auto;
-`;
-
-const FlexBodyCenter = styled('div')`
-  display: flex;
-  justify-content: center;
-`;
-
-const FlexBody = styled('div')`
-  width: 580px;
-  padding-left: 40px;
-  padding-right: 40px;
-`;
-
 const SignInHeader = styled('div')`
   font-weight: 700;
   font-size: 48px;
@@ -117,11 +99,6 @@ const EmailLabel = styled('div')`
   margin-top: 24px;
   margin-bottom: 32px;
   font-weight: 400;
-  font-size: 20px;
-`;
-
-const Logo = styled('div')`
-  font-weight: 860;
   font-size: 20px;
 `;
 

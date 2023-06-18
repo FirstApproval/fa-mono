@@ -9,6 +9,14 @@ import {
 } from '@mui/material';
 import styled from '@emotion/styled';
 import { LoginOauth } from './LoginOauth';
+import {
+  FlexBody,
+  FlexBodyCenter,
+  FlexHeader,
+  FlexHeaderRight,
+  Logo,
+  Parent
+} from '../common.styled';
 
 interface SignInPageProps {
   authError: boolean;
@@ -84,31 +92,6 @@ export const SignInPage: FunctionComponent<SignInPageProps> = (
   );
 };
 
-const Parent = styled('div')`
-  width: 100%;
-`;
-
-const FlexHeader = styled('div')`
-  display: flex;
-  padding: 40px;
-  align-items: center;
-`;
-
-const FlexHeaderRight = styled('div')`
-  margin-left: auto;
-`;
-
-const FlexBodyCenter = styled('div')`
-  display: flex;
-  justify-content: center;
-`;
-
-const FlexBody = styled('div')`
-  width: 580px;
-  padding-left: 40px;
-  padding-right: 40px;
-`;
-
 const SignInHeader = styled('div')`
   font-weight: 700;
   font-size: 48px;
@@ -131,11 +114,6 @@ const EmailLabel = styled('div')`
 
 const ForgotPasswordLabel = styled('div')`
   margin-bottom: 24px;
-`;
-
-const Logo = styled('div')`
-  font-weight: 860;
-  font-size: 20px;
 `;
 
 const DividerWrap = styled(Divider)`
