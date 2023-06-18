@@ -20,7 +20,7 @@ export class AuthStore {
   }
 
   async exchangeToken(code: string): Promise<void> {
-    const response = await authService.authorize({
+    const response = await authService.authorizeOauth({
       code,
       type: OauthType.GOOGLE
     });

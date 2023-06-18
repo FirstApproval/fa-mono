@@ -2,48 +2,66 @@ import { type FunctionComponent } from 'react';
 import { Button, TextField } from '@mui/material';
 import styled from '@emotion/styled';
 import { ArrowForward } from '@mui/icons-material';
+import { type SignUpStore } from './SignUpStore';
+import { observer } from 'mobx-react-lite';
 
 interface EnterNamePageProps {
-  onSignUpClick: () => void;
+  store: SignUpStore;
+  onContinueClick: () => void;
 }
 
-export const EnterNamePage: FunctionComponent<EnterNamePageProps> = (
-  props: EnterNamePageProps
-) => {
-  return (
-    <Parent>
-      <FlexHeader>
-        <Logo>First Approval</Logo>
-        <FlexHeaderRight>
-          <Button
-            variant="outlined"
-            size={'large'}
-            onClick={props.onSignUpClick}>
-            Sign up
-          </Button>
-        </FlexHeaderRight>
-      </FlexHeader>
-      <FlexBodyCenter>
-        <FlexBody>
-          <SignInHeader>Welcome</SignInHeader>
-          <EmailLabel>To start, what&apos;s your name?</EmailLabel>
-          <div>
-            <FullWidthTextField label="Name" variant="outlined" />
-          </div>
-          <div>
-            <FullWidthTextField label="Surname" variant="outlined" />
-          </div>
-          <FullWidthButton
-            variant="contained"
-            size={'large'}
-            endIcon={<ArrowForward />}>
-            Continue
-          </FullWidthButton>
-        </FlexBody>
-      </FlexBodyCenter>
-    </Parent>
-  );
-};
+export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
+  (props: EnterNamePageProps) => {
+    return (
+      <Parent>
+        <FlexHeader>
+          <Logo>First Approval</Logo>
+          <FlexHeaderRight>
+            <Button
+              variant="outlined"
+              size={'large'}
+              onClick={props.onContinueClick}>
+              Sign up
+            </Button>
+          </FlexHeaderRight>
+        </FlexHeader>
+        <FlexBodyCenter>
+          <FlexBody>
+            <SignInHeader>Welcome</SignInHeader>
+            <EmailLabel>To start, what&apos;s your name?</EmailLabel>
+            <div>
+              <FullWidthTextField
+                value={props.store.firstName}
+                onChange={(e) => {
+                  props.store.firstName = e.currentTarget.value;
+                }}
+                label="Name"
+                variant="outlined"
+              />
+            </div>
+            <div>
+              <FullWidthTextField
+                value={props.store.lastName}
+                onChange={(e) => {
+                  props.store.lastName = e.currentTarget.value;
+                }}
+                label="Surname"
+                variant="outlined"
+              />
+            </div>
+            <FullWidthButton
+              variant="contained"
+              size={'large'}
+              endIcon={<ArrowForward />}
+              onClick={props.onContinueClick}>
+              Continue
+            </FullWidthButton>
+          </FlexBody>
+        </FlexBodyCenter>
+      </Parent>
+    );
+  }
+);
 
 const Parent = styled('div')`
   width: 100%;

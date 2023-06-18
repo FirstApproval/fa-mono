@@ -4,7 +4,7 @@ import { SignInPage } from './pages/login/SignInPage';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import { theme } from './theme';
-import { SignUpPage } from './pages/login/SignUpPage';
+import { SignUpPage } from './pages/signup/SignUpPage';
 import { EnterNamePage } from './pages/signup/EnterNamePage';
 import { SetPasswordPage } from './pages/signup/SetPasswordPage';
 import { usePath } from './core/history';
@@ -13,6 +13,7 @@ import { LoadingPage } from './pages/LoadingPage';
 import { Alert, Snackbar } from '@mui/material';
 import { HomePage } from './pages/HomePage';
 import { observer } from 'mobx-react-lite';
+import { SignUpStore } from './pages/signup/SignUpStore';
 
 enum Page {
   LOADING,
@@ -32,6 +33,8 @@ const App: FunctionComponent = observer(() => {
   const { path, queryParams } = usePath();
 
   const [authError, setAuthError] = useState(false);
+
+  const [signUpStore] = useState(() => new SignUpStore());
 
   useEffect(() => {
     if (path === '/google-callback') {
@@ -70,10 +73,24 @@ const App: FunctionComponent = observer(() => {
           }}
         />
       )}
-      {page === Page.SIGN_UP && <SignUpPage onContinueClick={() => {}} />}
-      {page === Page.SIGN_UP_NAME && <EnterNamePage onSignUpClick={() => {}} />}
+      {page === Page.SIGN_UP && (
+        <SignUpPage
+          store={signUpStore}
+          onContinueClick={() => {
+            setPage(Page.SIGN_UP_NAME);
+          }}
+        />
+      )}
+      {page === Page.SIGN_UP_NAME && (
+        <EnterNamePage
+          store={signUpStore}
+          onContinueClick={() => {
+            setPage(Page.SIGN_UP_PASSWORD);
+          }}
+        />
+      )}
       {page === Page.SIGN_UP_PASSWORD && (
-        <SetPasswordPage onSignUpClick={() => {}} />
+        <SetPasswordPage onContinueClick={() => {}} />
       )}
       {authError && (
         <Snackbar
