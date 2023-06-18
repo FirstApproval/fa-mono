@@ -9,6 +9,7 @@ import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfi
 import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmationRepository
 import org.firstapproval.backend.core.domain.user.OauthType.FACEBOOK
 import org.firstapproval.backend.core.domain.user.OauthType.GOOGLE
+import org.firstapproval.backend.core.domain.user.OauthType.LINKEDIN
 import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimit
 import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimitRepository
 import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmation
@@ -70,6 +71,14 @@ class UserService(
                     userRepository.findByFacebookIdOrEmail(oauthUser.externalId, oauthUser.email)
                 } else {
                     userRepository.findByFacebookId(oauthUser.externalId)
+                }
+            }
+
+            LINKEDIN -> Supplier<User?> {
+                if (oauthUser.email != null) {
+                    userRepository.findByLinkedinIdOrEmail(oauthUser.externalId, oauthUser.email)
+                } else {
+                    userRepository.findByLinkedinId(oauthUser.externalId)
                 }
             }
         }
@@ -261,6 +270,7 @@ class UserService(
             when (oauthUser.type) {
                 GOOGLE -> user.googleId = oauthUser.externalId
                 FACEBOOK -> user.facebookId = oauthUser.externalId
+                LINKEDIN -> user.linkedinId = oauthUser.externalId
             }
 
             return user
@@ -274,6 +284,7 @@ class UserService(
                 username = if (userByUsername != null) id.toString() else oauthUser.username,
                 googleId = if (oauthUser.type == GOOGLE) oauthUser.externalId else null,
                 facebookId = if (oauthUser.type == FACEBOOK) oauthUser.externalId else null,
+                linkedinId = if (oauthUser.type == LINKEDIN) oauthUser.externalId else null,
                 email = oauthUser.email,
                 firstName = oauthUser.firstName,
                 lastName = oauthUser.lastName,
@@ -324,6 +335,7 @@ class UserService(
 
 enum class OauthType {
     GOOGLE,
-    FACEBOOK
+    FACEBOOK,
+    LINKEDIN
 }
 
