@@ -1,10 +1,12 @@
 import { type FunctionComponent, useEffect, useState } from 'react';
 import {
+  Alert,
   Button,
   CircularProgress,
   Divider,
   IconButton,
   Link,
+  Snackbar,
   TextField
 } from '@mui/material';
 import styled from '@emotion/styled';
@@ -15,12 +17,15 @@ import orcid from './asset/ORCID logo.svg';
 import { loadAuthUrls } from 'src/core/AuthStore';
 
 interface SignInPageProps {
+  authError: boolean;
+  setAuthError: (value: boolean) => void;
   onSignUpClick: () => void;
 }
 
 export const SignInPage: FunctionComponent<SignInPageProps> = (
   props: SignInPageProps
 ) => {
+  const { authError, setAuthError } = props;
   const [authUrls, setAuthUrls] = useState<{ google?: string }>();
 
   useEffect(() => {
@@ -91,6 +96,23 @@ export const SignInPage: FunctionComponent<SignInPageProps> = (
           </FooterWrap>
         </FlexBody>
       </FlexBodyCenter>
+      {authError && (
+        <Snackbar
+          open={authError}
+          autoHideDuration={6000}
+          onClose={() => {
+            setAuthError(false);
+          }}>
+          <Alert
+            onClose={() => {
+              setAuthError(false);
+            }}
+            severity="error"
+            sx={{ width: '100%' }}>
+            Authorization failed
+          </Alert>
+        </Snackbar>
+      )}
     </Parent>
   );
 };

@@ -1,4 +1,4 @@
-import { OauthType } from 'src/apis/first-approval-api';
+import { type OauthType } from 'src/apis/first-approval-api';
 
 import { authService } from './service';
 import { makeObservable, observable } from 'mobx';
@@ -19,10 +19,10 @@ export class AuthStore {
     }
   }
 
-  async exchangeToken(code: string): Promise<void> {
+  async exchangeToken(code: string, type: OauthType): Promise<void> {
     const response = await authService.authorizeOauth({
       code,
-      type: OauthType.GOOGLE
+      type
     });
     this.token = response.data.token;
   }
