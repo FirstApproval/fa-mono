@@ -1,10 +1,10 @@
 package org.firstapproval.backend.core.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
 import java.net.URL
 import java.time.Duration
+import kotlin.properties.Delegates.notNull
 
 class Properties {
     @Component
@@ -39,5 +39,26 @@ class Properties {
             lateinit var dataUrl: String
             lateinit var scopes: String
         }
+    }
+
+    @Component
+    @ConfigurationProperties("frontend")
+    class FrontendProperties {
+        lateinit var url: URL
+    }
+
+    @Component
+    @ConfigurationProperties("email")
+    class EmailProperties {
+        lateinit var host: String
+        var port by notNull<Int>()
+        lateinit var username: String
+        lateinit var password: String
+        lateinit var from: String
+        lateinit var transportProtocol: String
+        var smtpAuth by notNull<Boolean>()
+        var smtpStarttlsEnable by notNull<Boolean>()
+        var smtpSslEnable by notNull<Boolean>()
+        var noopMode by notNull<Boolean>()
     }
 }

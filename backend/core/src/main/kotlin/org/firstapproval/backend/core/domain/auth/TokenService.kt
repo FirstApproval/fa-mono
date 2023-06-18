@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.postForObject
 import org.springframework.web.util.UriComponentsBuilder
-import java.util.UUID.fromString
+import java.util.UUID.*
 
 @Service
 class TokenService(
@@ -34,12 +34,16 @@ class TokenService(
             FACEBOOK -> getFacebookUser(code)
         }
         val user = userService.saveOrUpdate(oauthUser)
+        return generateForUser(user.id.toString(), oauthUser.username, oauthUser.email)
+    }
+
+    fun generateForUser(userId: String, username: String, email: String?): String {
         return jwtService.generate(
             mapOf(
-                "sub" to user.id,
+                "sub" to userId,
                 "userInfo" to mapOf(
-                    "username" to user.username,
-                    "email" to user.email
+                    "username" to username,
+                    "email" to email
                 )
             )
         )
