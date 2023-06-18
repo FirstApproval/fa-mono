@@ -12,6 +12,7 @@ import { HomePage } from './pages/HomePage';
 import { observer } from 'mobx-react-lite';
 import { SignUpStore } from './pages/signup/SignUpStore';
 import { Page, useRouter } from './core/router';
+import { EmailVerificationPage } from './pages/signup/EmailVerificationPage';
 
 const App: FunctionComponent = observer(() => {
   const [authError, setAuthError] = useState(false);
@@ -62,7 +63,26 @@ const App: FunctionComponent = observer(() => {
             setPage(Page.SIGN_IN);
           }}
           onContinueClick={() => {
-            void signUpStore.submitRequestData();
+            if (!signUpStore.isSubmitting) {
+              void signUpStore.submitRequestData().then(() => {
+                if (!signUpStore.isError) {
+                  setPage(Page.EMAIL_VERIFICATION);
+                }
+              });
+            }
+          }}
+        />
+      )}
+      {page === Page.EMAIL_VERIFICATION && (
+        <EmailVerificationPage
+          store={signUpStore}
+          onSignInClick={() => {
+            setPage(Page.SIGN_IN);
+          }}
+          onContinueClick={() => {
+            void signUpStore.submitRequestData().then(() => {
+              setPage(Page.EMAIL_VERIFICATION);
+            });
           }}
         />
       )}

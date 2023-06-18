@@ -1,24 +1,17 @@
 import { type FunctionComponent } from 'react';
-import {
-  Alert,
-  Button,
-  InputAdornment,
-  Snackbar,
-  TextField
-} from '@mui/material';
+import { Alert, Button, Link, Snackbar, TextField } from '@mui/material';
 import styled from '@emotion/styled';
-import { ArrowForward, LockOutlined } from '@mui/icons-material';
 import { observer } from 'mobx-react-lite';
 import { type SignUpStore } from './SignUpStore';
 
-interface SetPasswordPageProps {
+interface EmailVerificationPageProps {
   store: SignUpStore;
   onSignInClick: () => void;
   onContinueClick: () => void;
 }
 
-export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
-  observer((props: SetPasswordPageProps) => {
+export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps> =
+  observer((props: EmailVerificationPageProps) => {
     const isError = props.store.isError;
 
     return (
@@ -38,7 +31,7 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
           <FlexBody>
             <SignInHeader>Check your email</SignInHeader>
             <EmailLabel>
-              We&apos;ve sent you a six-digit confirmation code to
+              We&apos;ve sent you a six-digit confirmation code to{' '}
               <b>{props.store.email}</b>. Please enter it below to confirm your
               email address.
             </EmailLabel>
@@ -48,25 +41,15 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
                 onChange={(e) => {
                   props.store.password = e.currentTarget.value;
                 }}
-                type={'password'}
-                label="Password 8+ characters"
+                label="Enter 6-digit code"
                 variant="outlined"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockOutlined />
-                    </InputAdornment>
-                  )
-                }}
               />
             </div>
-            <FullWidthButton
-              variant="contained"
-              size={'large'}
-              endIcon={<ArrowForward />}
-              onClick={props.onContinueClick}>
-              Continue
-            </FullWidthButton>
+            <ForgotPasswordLabel>
+              <Link href="#" color="inherit">
+                Send code again
+              </Link>
+            </ForgotPasswordLabel>
           </FlexBody>
         </FlexBodyCenter>
         {isError && (
@@ -121,10 +104,6 @@ const SignInHeader = styled('div')`
   margin-bottom: 16px;
 `;
 
-const FullWidthButton = styled(Button)`
-  width: 100%;
-`;
-
 const FullWidthTextField = styled(TextField)`
   width: 100%;
   margin-bottom: 20px;
@@ -132,10 +111,18 @@ const FullWidthTextField = styled(TextField)`
 
 const EmailLabel = styled('div')`
   margin-top: 24px;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
+  font-weight: 400;
+  font-size: 20px;
 `;
 
 const Logo = styled('div')`
   font-weight: 860;
+  font-size: 20px;
+`;
+
+const ForgotPasswordLabel = styled('div')`
+  margin-top: 16px;
+  font-weight: 400;
   font-size: 20px;
 `;

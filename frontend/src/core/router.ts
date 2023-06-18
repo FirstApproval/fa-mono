@@ -12,7 +12,8 @@ export enum Page {
   HOME_PAGE,
 
   SIGN_UP_NAME,
-  SIGN_UP_PASSWORD
+  SIGN_UP_PASSWORD,
+  EMAIL_VERIFICATION
 }
 
 export const useRouter = (
@@ -22,11 +23,11 @@ export const useRouter = (
   const { path, queryParams } = usePath();
 
   useEffect(() => {
-    let type;
-    let code;
+    let authType;
+    let authCode;
     if (path === '/google-callback') {
-      type = OauthType.GOOGLE;
-      code = queryParams.get('code') ?? undefined;
+      authType = OauthType.GOOGLE;
+      authCode = queryParams.get('code') ?? undefined;
     } else {
       const token = authStore.token;
       if (token !== undefined) {
@@ -36,9 +37,9 @@ export const useRouter = (
       }
     }
 
-    if (type !== undefined && code !== undefined) {
+    if (authType !== undefined && authCode !== undefined) {
       authStore
-        .exchangeToken(code, type)
+        .exchangeToken(authCode, authType)
         .then(() => {
           window.history.replaceState({}, document.title, '/');
           setPage(Page.HOME_PAGE);
