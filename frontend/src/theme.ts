@@ -23,6 +23,13 @@ export const theme = createTheme({
           borderColor: '#040036'
         }
       }
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        input: {
+          padding: '13px 14px !important'
+        }
+      }
     }
   }
 });

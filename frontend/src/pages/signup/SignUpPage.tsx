@@ -45,13 +45,14 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
         </FlexHeader>
         <FlexBodyCenter>
           <FlexBody>
-            <Header>Sign up</Header>
+            <Header>Sign up for free</Header>
             <EmailLabel>
               Join the future of scientific discovery today
             </EmailLabel>
-            <div>
+            <div style={{ marginBottom: '12px' }}>
               <FullWidthTextField
                 value={props.store.email}
+                type={'email'}
                 onChange={(e) => {
                   props.store.email = e.currentTarget.value;
                 }}
@@ -75,7 +76,7 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
             </FullWidthButton>
             <DividerWrap>or</DividerWrap>
             <LoginOauth />
-            <DividerWrap />
+            <DividerWrap2 />
             <CreateAccount>
               Already have an account? <Link href="#">Sign in</Link>
             </CreateAccount>
@@ -99,17 +100,24 @@ const FullWidthTextField = styled(TextField)`
 const EmailLabel = styled('div')`
   font-weight: 400;
   font-size: 20px;
-  margin-top: 24px;
-  margin-bottom: 24px;
+  margin-top: 28px;
+  margin-bottom: 32px;
 `;
 
 const DividerWrap = styled(Divider)`
-  margin-top: 40px;
+  margin-top: 32px;
+  margin-bottom: 40px;
+  width: 100%;
+`;
+
+const DividerWrap2 = styled(Divider)`
+  margin-top: 42px;
   margin-bottom: 40px;
   width: 100%;
 `;
 
 const CreateAccount = styled('div')`
+  margin-top: 48px;
   font-weight: 400;
   font-size: 20px;
 `;

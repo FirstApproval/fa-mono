@@ -45,6 +45,10 @@ export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps
             </EmailLabel>
             <div>
               <FullWidthTextField
+                error={props.store.isCodeError}
+                helperText={
+                  props.store.isCodeError ? 'Invalid code' : undefined
+                }
                 value={props.store.code}
                 onChange={(e) => {
                   const code = e.currentTarget.value;

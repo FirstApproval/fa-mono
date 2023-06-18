@@ -6,6 +6,7 @@ import {
 } from '../../apis/first-approval-api';
 import { registrationService } from '../../core/service';
 import { authStore } from '../../core/auth';
+import { type AxiosError } from 'axios';
 
 export class SignUpStore {
   email: string = '';
@@ -17,6 +18,7 @@ export class SignUpStore {
   lastResponse: RegistrationResponse | undefined;
 
   isError = false;
+  isCodeError = false;
   isSubmitting = false;
 
   constructor() {
@@ -27,6 +29,7 @@ export class SignUpStore {
       password: observable,
       code: observable,
       isError: observable,
+      isCodeError: observable,
       isSubmitting: observable
     });
   }
@@ -68,12 +71,19 @@ export class SignUpStore {
       return;
     }
     this.isError = false;
+    this.isCodeError = false;
     this.isSubmitting = true;
     try {
       const response = await registrationService.confirmRegistration(request);
       authStore.token = response.data.token;
     } catch (e) {
-      this.isError = true;
+      const error = e as AxiosError;
+      const code = error.response?.status;
+      if (code !== undefined && code === 403) {
+        this.isCodeError = true;
+      } else {
+        this.isError = true;
+      }
     } finally {
       this.isSubmitting = false;
     }

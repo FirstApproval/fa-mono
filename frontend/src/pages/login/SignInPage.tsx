@@ -50,7 +50,12 @@ export const SignInPage: FunctionComponent<SignInPageProps> = (
           <LoginOauth />
           <EmailLabel>or use your email to sign in:</EmailLabel>
           <div>
-            <FullWidthTextField label="Email" variant="outlined" />
+            <FullWidthTextField
+              type={'email'}
+              label="Email"
+              variant="outlined"
+              size={'medium'}
+            />
           </div>
           <div>
             <FullWidthTextField label="Password" variant="outlined" />
@@ -100,17 +105,19 @@ const FullWidthTextField = styled(TextField)`
 `;
 
 const EmailLabel = styled('div')`
-  margin-top: 24px;
+  margin-top: 32px;
   margin-bottom: 24px;
+  font-weight: 400;
+  font-size: 20px;
 `;
 
 const ForgotPasswordLabel = styled('div')`
-  margin-bottom: 24px;
+  margin-bottom: 36px;
 `;
 
 const DividerWrap = styled(Divider)`
-  margin-top: 40px;
-  margin-bottom: 40px;
+  margin-top: 44px;
+  margin-bottom: 48px;
   width: 100%;
 `;
 

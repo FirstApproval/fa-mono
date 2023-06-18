@@ -7,7 +7,7 @@ export const Parent = styled('div')`
 
 export const FlexHeader = styled('div')`
   display: flex;
-  padding: 40px;
+  padding: 40px 40px 8px 40px;
   align-items: center;
 `;
 
@@ -38,5 +38,5 @@ export const FullWidthButton = styled(Button)`
 export const Header = styled('div')`
   font-weight: 700;
   font-size: 48px;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 `;
