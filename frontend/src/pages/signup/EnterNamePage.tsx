@@ -12,7 +12,7 @@ import {
   FullWidthButton,
   Logo,
   Parent,
-  SignInHeader
+  Header
 } from '../common.styled';
 
 interface EnterNamePageProps {
@@ -38,7 +38,7 @@ export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
         </FlexHeader>
         <FlexBodyCenter>
           <FlexBody>
-            <SignInHeader>Welcome</SignInHeader>
+            <Header>Welcome</Header>
             <EmailLabel>To start, what&apos;s your name?</EmailLabel>
             <div>
               <FullWidthTextField

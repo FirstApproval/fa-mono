@@ -19,7 +19,7 @@ import {
   FullWidthButton,
   Logo,
   Parent,
-  SignInHeader
+  Header
 } from '../common.styled';
 
 interface SignUpPageProps {
@@ -45,7 +45,7 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
         </FlexHeader>
         <FlexBodyCenter>
           <FlexBody>
-            <SignInHeader>Sign up</SignInHeader>
+            <Header>Sign up</Header>
             <EmailLabel>
               Join the future of scientific discovery today
             </EmailLabel>

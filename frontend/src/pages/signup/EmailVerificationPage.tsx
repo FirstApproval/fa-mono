@@ -10,7 +10,7 @@ import {
   FlexHeaderRight,
   Logo,
   Parent,
-  SignInHeader
+  Header
 } from '../common.styled';
 
 interface EmailVerificationPageProps {
@@ -37,7 +37,7 @@ export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps
         </FlexHeader>
         <FlexBodyCenter>
           <FlexBody>
-            <SignInHeader>Check your email</SignInHeader>
+            <Header>Check your email</Header>
             <EmailLabel>
               We&apos;ve sent you a six-digit confirmation code to{' '}
               <b>{props.store.email}</b>. Please enter it below to confirm your

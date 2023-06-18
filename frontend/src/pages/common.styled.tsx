@@ -35,7 +35,7 @@ export const FullWidthButton = styled(Button)`
   width: 100%;
 `;
 
-export const SignInHeader = styled('div')`
+export const Header = styled('div')`
   font-weight: 700;
   font-size: 48px;
   margin-bottom: 16px;

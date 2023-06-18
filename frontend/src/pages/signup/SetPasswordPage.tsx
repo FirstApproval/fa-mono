@@ -19,7 +19,7 @@ import {
   FullWidthButton,
   Logo,
   Parent,
-  SignInHeader
+  Header
 } from '../common.styled';
 
 interface SetPasswordPageProps {
@@ -47,7 +47,7 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
         </FlexHeader>
         <FlexBodyCenter>
           <FlexBody>
-            <SignInHeader>Welcome, {props.store.firstName}</SignInHeader>
+            <Header>Welcome, {props.store.firstName}</Header>
             <EmailLabel>Now, set your password:</EmailLabel>
             <div>
               <FullWidthTextField

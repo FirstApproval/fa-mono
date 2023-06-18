@@ -17,7 +17,7 @@ import {
   FullWidthButton,
   Logo,
   Parent,
-  SignInHeader
+  Header
 } from '../common.styled';
 
 interface SignInPageProps {
@@ -46,7 +46,7 @@ export const SignInPage: FunctionComponent<SignInPageProps> = (
       </FlexHeader>
       <FlexBodyCenter>
         <FlexBody>
-          <SignInHeader>Sign in</SignInHeader>
+          <Header>Sign in</Header>
           <LoginOauth />
           <EmailLabel>or use your email to sign in:</EmailLabel>
           <div>
