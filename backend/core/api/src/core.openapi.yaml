@@ -203,7 +203,7 @@ components:
           type: string
         password:
           type: string
-          minLength: 6
+          minLength: 8
       required:
         - email
         - password
@@ -222,10 +222,10 @@ components:
       properties:
         newPassword:
           type: string
-          minLength: 6
+          minLength: 8
         previousPassword:
           type: string
-          minLength: 6
+          minLength: 8
       required:
         - newPassword
         - previousPassword
@@ -235,7 +235,7 @@ components:
       properties:
         newPassword:
           type: string
-          minLength: 6
+          minLength: 8
       required:
         - newPassword
 
@@ -244,7 +244,7 @@ components:
       properties:
         password:
           type: string
-          minLength: 6
+          minLength: 8
         passwordResetRequestId:
           type: string
           format: uuid
@@ -275,7 +275,7 @@ components:
           type: string
         password:
           type: string
-          minLength: 6
+          minLength: 8
       required:
         - email
         - password
