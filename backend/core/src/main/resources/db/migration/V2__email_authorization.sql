@@ -9,7 +9,7 @@ CREATE TABLE email_registration_confirmations
     last_name     TEXT,
     password      TEXT      NOT NULL UNIQUE,
     code          TEXT      NOT NULL,
-    attempt_count INT       NOT NULL DEFAULT 0,
+    attempt_count INT       NOT NULL,
     last_try_time TIMESTAMP,
     creation_time TIMESTAMP NOT NULL
 );
@@ -18,7 +18,7 @@ CREATE TABLE password_reset_confirmations
 (
     id            UUID PRIMARY KEY,
     user_id       UUID      NOT NULL REFERENCES users UNIQUE,
-    attempt_count INT       NOT NULL DEFAULT 0,
+    attempt_count INT       NOT NULL,
     last_try_time TIMESTAMP,
     creation_time TIMESTAMP NOT NULL
 );
