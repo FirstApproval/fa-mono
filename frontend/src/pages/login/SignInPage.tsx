@@ -1,20 +1,14 @@
-import { type FunctionComponent, useEffect, useState } from 'react';
+import { type FunctionComponent } from 'react';
 import {
   Alert,
   Button,
-  CircularProgress,
   Divider,
-  IconButton,
   Link,
   Snackbar,
   TextField
 } from '@mui/material';
 import styled from '@emotion/styled';
-import google from './asset/Google logo.svg';
-import linked from './asset/LinkedIn logo.svg';
-import facebook from './asset/Facebook logo.svg';
-import orcid from './asset/ORCID logo.svg';
-import { loadAuthUrls } from 'src/core/AuthStore';
+import { LoginOauth } from './LoginOauth';
 
 interface SignInPageProps {
   authError: boolean;
@@ -26,13 +20,6 @@ export const SignInPage: FunctionComponent<SignInPageProps> = (
   props: SignInPageProps
 ) => {
   const { authError, setAuthError } = props;
-  const [authUrls, setAuthUrls] = useState<{ google?: string }>();
-
-  useEffect(() => {
-    void loadAuthUrls().then((authUrls) => {
-      setAuthUrls(authUrls);
-    });
-  }, []);
 
   return (
     <Parent>
@@ -50,27 +37,7 @@ export const SignInPage: FunctionComponent<SignInPageProps> = (
       <FlexBodyCenter>
         <FlexBody>
           <SignInHeader>Sign in</SignInHeader>
-          {authUrls === undefined && <CircularProgress />}
-          {authUrls !== undefined && (
-            <div style={{ display: 'flex' }}>
-              <FullWidthButton
-                variant="outlined"
-                size={'large'}
-                startIcon={<img src={google} />}
-                href={authUrls.google}>
-                Sign in with Google
-              </FullWidthButton>
-              <IconButtonWrap>
-                <img src={orcid} />
-              </IconButtonWrap>
-              <IconButtonWrap>
-                <img src={facebook} />
-              </IconButtonWrap>
-              <IconButtonWrap>
-                <img src={linked} />
-              </IconButtonWrap>
-            </div>
-          )}
+          <LoginOauth />
           <EmailLabel>or use your email to sign in:</EmailLabel>
           <div>
             <FullWidthTextField label="Email" variant="outlined" />
@@ -188,8 +155,4 @@ const FooterWrap = styled('div')`
   font-weight: 400;
   font-size: 12px;
   color: #68676e;
-`;
-
-const IconButtonWrap = styled(IconButton)`
-  margin-left: 24px;
 `;

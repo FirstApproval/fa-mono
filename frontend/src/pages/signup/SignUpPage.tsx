@@ -2,19 +2,15 @@ import { type FunctionComponent } from 'react';
 import {
   Button,
   Divider,
-  IconButton,
   InputAdornment,
   Link,
   TextField
 } from '@mui/material';
 import styled from '@emotion/styled';
-import google from '../login/asset/Google logo.svg';
-import linked from '../login/asset/LinkedIn logo.svg';
-import facebook from '../login/asset/Facebook logo.svg';
-import orcid from '../login/asset/ORCID logo.svg';
 import { ArrowForward, MailOutlined } from '@mui/icons-material';
 import { type SignUpStore } from './SignUpStore';
 import { observer } from 'mobx-react-lite';
+import { LoginOauth } from '../login/LoginOauth';
 
 interface SignUpPageProps {
   store: SignUpStore;
@@ -68,23 +64,7 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
               Continue with email
             </FullWidthButton>
             <DividerWrap>or</DividerWrap>
-            <div style={{ display: 'flex' }}>
-              <FullWidthButton
-                variant="outlined"
-                size={'large'}
-                startIcon={<img src={google} />}>
-                Sign in with Google
-              </FullWidthButton>
-              <IconButtonWrap>
-                <img src={orcid} />
-              </IconButtonWrap>
-              <IconButtonWrap>
-                <img src={facebook} />
-              </IconButtonWrap>
-              <IconButtonWrap>
-                <img src={linked} />
-              </IconButtonWrap>
-            </div>
+            <LoginOauth />
             <DividerWrap />
             <CreateAccount>
               Already have an account? <Link href="#">Sign in</Link>
@@ -170,8 +150,4 @@ const FooterWrap = styled('div')`
   font-weight: 400;
   font-size: 12px;
   color: #68676e;
-`;
-
-const IconButtonWrap = styled(IconButton)`
-  margin-left: 24px;
 `;
