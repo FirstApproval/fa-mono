@@ -28,6 +28,7 @@ class Properties {
     class OauthProperties {
         var google = OauthProviderProperties()
         var facebook = OauthProviderProperties()
+        var linkedin = OauthProviderProperties()
 
         class OauthProviderProperties {
             lateinit var clientId: String
@@ -37,6 +38,7 @@ class Properties {
             lateinit var tokenUrl: String
             lateinit var certsUrl: String
             lateinit var dataUrl: String
+            lateinit var dataUrl2: String
             lateinit var scopes: String
         }
     }
