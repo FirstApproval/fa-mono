@@ -304,12 +304,16 @@ components:
         google:
           type: string
           maxLength: 2048
+        linkedin:
+            type: string
+            maxLength: 2048
 
     OauthType:
       type: string
       enum:
         - GOOGLE
         - FACEBOOK
+        - LINKEDIN
 
   securitySchemes:
     PublicAuth:

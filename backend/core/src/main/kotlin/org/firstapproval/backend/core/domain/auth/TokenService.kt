@@ -6,8 +6,7 @@ import org.firstapproval.backend.core.config.Properties.OauthProperties
 import org.firstapproval.backend.core.config.security.AuthToken
 import org.firstapproval.backend.core.config.security.JwtService
 import org.firstapproval.backend.core.domain.user.OauthType
-import org.firstapproval.backend.core.domain.user.OauthType.FACEBOOK
-import org.firstapproval.backend.core.domain.user.OauthType.GOOGLE
+import org.firstapproval.backend.core.domain.user.OauthType.*
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.utils.require
 import org.springframework.beans.factory.annotation.Qualifier
@@ -16,6 +15,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod.GET
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.getForObject
 import org.springframework.web.client.postForObject
 import org.springframework.web.util.UriComponentsBuilder
 import java.util.UUID.*
@@ -32,6 +32,7 @@ class TokenService(
         val oauthUser = when (type) {
             GOOGLE -> getGoogleUser(code)
             FACEBOOK -> getFacebookUser(code)
+            LINKEDIN -> getLinkedinUser(code)
         }
         val user = userService.saveOrUpdate(oauthUser)
         return generateForUser(user.id.toString(), oauthUser.username, oauthUser.email)
@@ -97,6 +98,29 @@ class TokenService(
         return OauthUser(userData.id, userData.email, userData.email?.split("@")?.first() ?: userData.id, FACEBOOK)
     }
 
+    private fun getLinkedinUser(code: String): OauthUser {
+        val tokens = restTemplate.getForObject<OauthAccessTokenResponse>(
+            getOauthUri(
+                code = code,
+                tokenUrl = oauthProperties.linkedin.tokenUrl,
+                redirectUri = oauthProperties.linkedin.redirectUri,
+                clientId = oauthProperties.linkedin.clientId,
+                clientSecret = oauthProperties.linkedin.clientSecret,
+            )
+        ).require()
+        val userData = exchangeTokenForResources<LinkedInProfile>(oauthProperties.linkedin.dataUrl, tokens.accessToken)
+        val emailData = exchangeTokenForResources<LinkedInEmailResponse>(oauthProperties.linkedin.dataUrl2, tokens.accessToken)
+        val email = emailData.elements[0].handle.emailAddress
+        return OauthUser(
+            externalId = userData.id,
+            email = email,
+            username = email.split("@").first(),
+            type = LINKEDIN,
+            firstName = userData.localizedFirstName,
+            lastName = userData.localizedLastName,
+        )
+    }
+
     private inline fun <reified T : Any> exchangeTokenForResources(resourceUrl: String, accessToken: String): T {
         val headers = HttpHeaders()
         headers.setBearerAuth(accessToken)
@@ -147,3 +171,15 @@ data class GoogleProfile(
     val picture: String,
     val locale: String
 )
+
+data class LinkedInProfile(
+    val localizedLastName: String,
+    val localizedFirstName: String,
+    val id: String
+)
+
+data class LinkedInEmailResponse(val elements: List<LinkedInEmailElement>)
+
+data class LinkedInEmailElement(@JsonProperty("handle~") val handle: LinkedInEmailHandle)
+
+data class LinkedInEmailHandle(val emailAddress: String)
