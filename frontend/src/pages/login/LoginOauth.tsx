@@ -1,15 +1,16 @@
 import { type FunctionComponent, useEffect, useState } from 'react';
 import { loadAuthUrls } from '../../core/AuthStore';
-import { CircularProgress, IconButton } from '@mui/material';
+import { CircularProgress, IconButton, Link } from '@mui/material';
 import google from './asset/Google logo.svg';
 import orcid from './asset/ORCID logo.svg';
 import facebook from './asset/Facebook logo.svg';
 import linked from './asset/LinkedIn logo.svg';
 import styled from '@emotion/styled';
 import { FullWidthButton } from '../common.styled';
+import { type AuthorizationLinksResponse } from '../../apis/first-approval-api';
 
 export const LoginOauth: FunctionComponent = () => {
-  const [authUrls, setAuthUrls] = useState<{ google?: string }>();
+  const [authUrls, setAuthUrls] = useState<AuthorizationLinksResponse>();
 
   useEffect(() => {
     void loadAuthUrls().then((authUrls) => {
@@ -36,9 +37,11 @@ export const LoginOauth: FunctionComponent = () => {
           <IconButtonWrap size={'medium'}>
             <img src={facebook} />
           </IconButtonWrap>
-          <IconButtonWrap size={'medium'}>
-            <img src={linked} />
-          </IconButtonWrap>
+          <Link href={authUrls.linkedin}>
+            <IconButtonWrap size={'medium'}>
+              <img src={linked} />
+            </IconButtonWrap>
+          </Link>
         </div>
       )}
     </>

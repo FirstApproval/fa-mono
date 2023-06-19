@@ -16,6 +16,11 @@ export enum Page {
   EMAIL_VERIFICATION
 }
 
+const pathToOauthType: Record<string, OauthType> = {
+  '/google-callback': OauthType.GOOGLE,
+  '/linkedin-callback': OauthType.LINKEDIN
+};
+
 export const useRouter = (
   setAuthError: (value: boolean) => void
 ): { page: Page; setPage: (value: Page) => void } => {
@@ -23,21 +28,12 @@ export const useRouter = (
   const { path, queryParams } = usePath();
 
   useEffect(() => {
-    let authType;
-    let authCode;
-    if (path === '/google-callback') {
-      authType = OauthType.GOOGLE;
-      authCode = queryParams.get('code') ?? undefined;
-    } else {
-      const token = authStore.token;
-      if (token !== undefined) {
-        setPage(Page.HOME_PAGE);
-      } else {
-        setPage(Page.SIGN_IN);
-      }
-    }
+    const authType = pathToOauthType[path] ?? undefined;
+    const authCode = queryParams.get('code') ?? undefined;
 
-    if (authType !== undefined && authCode !== undefined) {
+    if (authType === undefined || authCode === undefined) {
+      setPage(authStore.token !== undefined ? Page.HOME_PAGE : Page.SIGN_IN);
+    } else {
       authStore
         .exchangeToken(authCode, authType)
         .then(() => {

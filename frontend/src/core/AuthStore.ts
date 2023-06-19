@@ -1,4 +1,7 @@
-import { type OauthType } from 'src/apis/first-approval-api';
+import {
+  type AuthorizationLinksResponse,
+  type OauthType
+} from 'src/apis/first-approval-api';
 
 import { authService } from './service';
 import { makeObservable, observable } from 'mobx';
@@ -28,7 +31,7 @@ export class AuthStore {
   }
 }
 
-export const loadAuthUrls = async (): Promise<{ google?: string }> => {
+export const loadAuthUrls = async (): Promise<AuthorizationLinksResponse> => {
   const urls = await authService.authorizationLinks();
   return urls.data;
 };
