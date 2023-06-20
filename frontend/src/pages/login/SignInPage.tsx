@@ -19,85 +19,105 @@ import {
   Parent,
   Header
 } from '../common.styled';
+import { routerStore } from '../../core/router';
+import { type SignInStore } from './SignInStore';
+import { observer } from 'mobx-react-lite';
 
 interface SignInPageProps {
-  authError: boolean;
-  setAuthError: (value: boolean) => void;
+  store: SignInStore;
   onSignUpClick: () => void;
 }
 
-export const SignInPage: FunctionComponent<SignInPageProps> = (
-  props: SignInPageProps
-) => {
-  const { authError, setAuthError } = props;
+export const SignInPage: FunctionComponent<SignInPageProps> = observer(
+  (props: SignInPageProps) => {
+    const { initialPageError: authError, setInitialPageError } = routerStore;
 
-  return (
-    <Parent>
-      <FlexHeader>
-        <Logo>First Approval</Logo>
-        <FlexHeaderRight>
-          <Button
-            variant="outlined"
-            size={'large'}
-            onClick={props.onSignUpClick}>
-            Sign up
-          </Button>
-        </FlexHeaderRight>
-      </FlexHeader>
-      <FlexBodyCenter>
-        <FlexBody>
-          <Header>Sign in</Header>
-          <LoginOauth />
-          <EmailLabel>or use your email to sign in:</EmailLabel>
-          <div>
-            <FullWidthTextField
-              type={'email'}
-              label="Email"
+    return (
+      <Parent>
+        <FlexHeader>
+          <Logo>First Approval</Logo>
+          <FlexHeaderRight>
+            <Button
               variant="outlined"
-              size={'medium'}
-            />
-          </div>
-          <div>
-            <FullWidthTextField label="Password" variant="outlined" />
-          </div>
-          <ForgotPasswordLabel>
-            <Link href="#" color="inherit">
-              I forgot my password
-            </Link>
-          </ForgotPasswordLabel>
-          <FullWidthButton variant="contained" size={'large'}>
-            Sign in
-          </FullWidthButton>
-          <DividerWrap />
-          <CreateAccount>
-            No account? <Link href="#">Create one</Link>
-          </CreateAccount>
-          <FooterWrap>
-            By clicking “Sign in” above, you acknowledge that you have read and
-            understood, and agree to Terms & Conditions and Privacy Policy.
-          </FooterWrap>
-        </FlexBody>
-      </FlexBodyCenter>
-      {authError && (
-        <Snackbar
-          open={authError}
-          autoHideDuration={6000}
-          onClose={() => {
-            setAuthError(false);
-          }}>
-          <Alert
+              size={'large'}
+              onClick={props.onSignUpClick}>
+              Sign up
+            </Button>
+          </FlexHeaderRight>
+        </FlexHeader>
+        <FlexBodyCenter>
+          <FlexBody>
+            <Header>Sign in</Header>
+            <LoginOauth />
+            <EmailLabel>or use your email to sign in:</EmailLabel>
+            <div>
+              <FullWidthTextField
+                value={props.store.email}
+                onChange={(e) => {
+                  props.store.setEmail(e.currentTarget.value);
+                }}
+                type={'email'}
+                label="Email"
+                variant="outlined"
+                size={'medium'}
+              />
+            </div>
+            <div>
+              <FullWidthTextField
+                type={'password'}
+                value={props.store.password}
+                onChange={(e) => {
+                  props.store.setPassword(e.currentTarget.value);
+                }}
+                label="Password"
+                variant="outlined"
+              />
+            </div>
+            <ForgotPasswordLabel>
+              <Link href="#" color="inherit">
+                I forgot my password
+              </Link>
+            </ForgotPasswordLabel>
+            <FullWidthButton
+              onClick={() => {
+                void props.store.submitAuthorizationRequest();
+              }}
+              variant="contained"
+              size={'large'}>
+              Sign in
+            </FullWidthButton>
+            <DividerWrap />
+            <CreateAccount>
+              No account? <Link href="#">Create one</Link>
+            </CreateAccount>
+            <FooterWrap>
+              By clicking “Sign in” above, you acknowledge that you have read
+              and understood, and agree to Terms & Conditions and Privacy
+              Policy.
+            </FooterWrap>
+          </FlexBody>
+        </FlexBodyCenter>
+        {authError !== undefined && (
+          <Snackbar
+            open={authError !== undefined}
+            autoHideDuration={6000}
             onClose={() => {
-              setAuthError(false);
-            }}
-            severity="error"
-            sx={{ width: '100%' }}>
-            Authorization failed
-          </Alert>
-        </Snackbar>
-      )}
-    </Parent>
-  );
-};
+              setInitialPageError(undefined);
+            }}>
+            <Alert
+              onClose={() => {
+                setInitialPageError(undefined);
+              }}
+              severity="error"
+              sx={{ width: '100%' }}>
+              {authError}
+            </Alert>
+          </Snackbar>
+        )}
+      </Parent>
+    );
+  }
+);
 
 const FullWidthTextField = styled(TextField)`
   width: 100%;

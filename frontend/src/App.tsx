@@ -11,13 +11,15 @@ import { LoadingPage } from './pages/LoadingPage';
 import { HomePage } from './pages/HomePage';
 import { observer } from 'mobx-react-lite';
 import { SignUpStore } from './pages/signup/SignUpStore';
-import { Page, useRouter } from './core/router';
+import { Page } from './core/RouterStore';
 import { EmailVerificationPage } from './pages/signup/EmailVerificationPage';
+import { routerStore } from './core/router';
+import { SignInStore } from './pages/login/SignInStore';
 
 const App: FunctionComponent = observer(() => {
-  const [authError, setAuthError] = useState(false);
-  const { page, setPage } = useRouter(setAuthError);
+  const { page, setPage } = routerStore;
 
+  const [signInStore] = useState(() => new SignInStore());
   const [signUpStore] = useState(() => new SignUpStore());
 
   return (
@@ -27,8 +29,7 @@ const App: FunctionComponent = observer(() => {
       {page === Page.HOME_PAGE && <HomePage />}
       {page === Page.SIGN_IN && (
         <SignInPage
-          authError={authError}
-          setAuthError={setAuthError}
+          store={signInStore}
           onSignUpClick={() => {
             setPage(Page.SIGN_UP);
           }}
