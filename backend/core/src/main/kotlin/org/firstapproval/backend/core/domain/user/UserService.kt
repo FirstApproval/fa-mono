@@ -59,7 +59,7 @@ class UserService(
         val userSupplier = when (oauthUser.type) {
             GOOGLE -> Supplier<User?> {
                 if (oauthUser.email != null) {
-                    userRepository.findByEmail(oauthUser.email)
+                    userRepository.findByEmailOrGoogleId(oauthUser.email, oauthUser.externalId)
                 } else {
                     throw MissingEmailException("Missing email from google")
                 }
@@ -67,7 +67,7 @@ class UserService(
 
             FACEBOOK -> Supplier<User?> {
                 if (oauthUser.email != null) {
-                    userRepository.findByEmail(oauthUser.email)
+                    userRepository.findByEmailOrFacebookId(oauthUser.email, oauthUser.externalId)
                 } else {
                     throw MissingEmailException("Missing email from facebook")
                 }
@@ -75,7 +75,7 @@ class UserService(
 
             LINKEDIN -> Supplier<User?> {
                 if (oauthUser.email != null) {
-                    userRepository.findByEmail(oauthUser.email)
+                    userRepository.findByEmailOrLinkedinId(oauthUser.email, oauthUser.externalId)
                 } else {
                     throw MissingEmailException("Missing email from linkedin")
                 }
