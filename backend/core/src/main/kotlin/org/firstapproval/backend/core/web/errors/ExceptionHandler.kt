@@ -3,6 +3,7 @@ package org.firstapproval.backend.core.web.errors
 import jakarta.persistence.EntityNotFoundException
 import jakarta.validation.ConstraintViolationException
 import mu.KotlinLogging.logger
+import org.firstapproval.backend.core.exception.MissingEmailException
 import org.firstapproval.backend.core.exception.RecordConflictException
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.http.HttpHeaders
@@ -53,6 +54,12 @@ class ExceptionHandler : ResponseEntityExceptionHandler() {
     fun handle(e: LimitExceededException): ResponseEntity<Any> {
         log.warn(e) { e.message }
         return response(TOO_MANY_REQUESTS, description = e.message)
+    }
+
+    @ExceptionHandler
+    fun handle(e: MissingEmailException): ResponseEntity<Any> {
+        log.warn(e) { e.message }
+        return response(NOT_ACCEPTABLE, description = e.message)
     }
 
     @ExceptionHandler(

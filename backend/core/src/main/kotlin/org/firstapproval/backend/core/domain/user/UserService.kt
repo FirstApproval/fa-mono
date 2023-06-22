@@ -7,13 +7,12 @@ import org.firstapproval.backend.core.config.Properties.FrontendProperties
 import org.firstapproval.backend.core.domain.auth.OauthUser
 import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmation
 import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmationRepository
-import org.firstapproval.backend.core.domain.user.OauthType.FACEBOOK
-import org.firstapproval.backend.core.domain.user.OauthType.GOOGLE
-import org.firstapproval.backend.core.domain.user.OauthType.LINKEDIN
+import org.firstapproval.backend.core.domain.user.OauthType.*
 import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimit
 import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimitRepository
 import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmation
 import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmationRepository
+import org.firstapproval.backend.core.exception.MissingEmailException
 import org.firstapproval.backend.core.exception.RecordConflictException
 import org.firstapproval.backend.core.utils.generateCode
 import org.springframework.mail.SimpleMailMessage
@@ -60,25 +59,25 @@ class UserService(
         val userSupplier = when (oauthUser.type) {
             GOOGLE -> Supplier<User?> {
                 if (oauthUser.email != null) {
-                    userRepository.findByGoogleIdOrEmail(oauthUser.externalId, oauthUser.email)
+                    userRepository.findByEmailOrGoogleId(oauthUser.email, oauthUser.externalId)
                 } else {
-                    userRepository.findByGoogleId(oauthUser.externalId)
+                    throw MissingEmailException("Missing email from google")
                 }
             }
 
             FACEBOOK -> Supplier<User?> {
                 if (oauthUser.email != null) {
-                    userRepository.findByFacebookIdOrEmail(oauthUser.externalId, oauthUser.email)
+                    userRepository.findByEmailOrFacebookId(oauthUser.email, oauthUser.externalId)
                 } else {
-                    userRepository.findByFacebookId(oauthUser.externalId)
+                    throw MissingEmailException("Missing email from facebook")
                 }
             }
 
             LINKEDIN -> Supplier<User?> {
                 if (oauthUser.email != null) {
-                    userRepository.findByLinkedinIdOrEmail(oauthUser.externalId, oauthUser.email)
+                    userRepository.findByEmailOrLinkedinId(oauthUser.email, oauthUser.externalId)
                 } else {
-                    userRepository.findByLinkedinId(oauthUser.externalId)
+                    throw MissingEmailException("Missing email from linkedin")
                 }
             }
         }
@@ -92,12 +91,18 @@ class UserService(
     }
 
     @Transactional
-    fun startUserRegistration(email: String, password: String, firstName: String?, lastName: String?): UUID {
+    fun startUserRegistration(email: String, password: String, firstName: String?, lastName: String?): UUID? {
         val prevTry = emailRegistrationConfirmationRepository.findByEmail(email)
         return if (prevTry != null) {
             alreadyStartedRegistration(prevTry, password, firstName, lastName)
         } else {
-            newAttemptForRegistration(email, password, firstName, lastName)
+            val user = userRepository.findByEmailAndPasswordIsNull(email)
+            if (user != null) {
+                sendYouAlreadyHaveAccount(user)
+                null
+            } else {
+                newAttemptForRegistration(email, password, firstName, lastName)
+            }
         }
     }
 
@@ -261,12 +266,6 @@ class UserService(
     private fun saveOrUpdateUser(findUserFunc: Supplier<User?>, oauthUser: OauthUser): User {
         val user = findUserFunc.get()
         if (user != null) {
-            user.email = oauthUser.email
-            user.firstName = oauthUser.firstName
-            user.lastName = oauthUser.lastName
-            user.middleName = oauthUser.middleName
-            user.fullName = oauthUser.fullName
-
             when (oauthUser.type) {
                 GOOGLE -> user.googleId = oauthUser.externalId
                 FACEBOOK -> user.facebookId = oauthUser.externalId
@@ -311,9 +310,33 @@ class UserService(
         helper.setFrom(emailProperties.from)
         helper.setTo(email)
         helper.setText(html, true)
-        helper.setSubject(createSubject())
+        helper.setSubject("[FirstApproval] Confirming an email address")
         emailSender.send(message)
     }
+
+    private fun sendYouAlreadyHaveAccount(user: User) {
+        if (emailProperties.noopMode) {
+            log.info { "You already registered via oauth" }
+            return
+        }
+        val providers = mutableListOf<String>()
+        if (user.googleId != null) {
+            providers.add("Google")
+        }
+        if (user.facebookId != null) {
+            providers.add("Facebook")
+        }
+        if (user.linkedinId != null) {
+            providers.add("Linked in")
+        }
+        val message = SimpleMailMessage()
+        message.from = emailProperties.from
+        message.setTo(user.email)
+        message.subject = "[FirstApproval] You already have account"
+        message.text = "You already signed up via ${providers.joinToString()}"
+        emailSender.send(message)
+    }
+
 
     private fun sendEmailForPasswordReset(email: String, resetId: String) {
         // TODO SEND EMAIL TO USER WITH RESET LINK
@@ -325,12 +348,10 @@ class UserService(
         val message = SimpleMailMessage()
         message.from = emailProperties.from
         message.setTo(email)
-        message.subject = createSubject()
+        message.subject = "[FirstApproval] Password recovery link"
         message.text = link
         emailSender.send(message)
     }
-
-    private fun createSubject() = "[FirstApproval] Confirming an email address"
 }
 
 enum class OauthType {
