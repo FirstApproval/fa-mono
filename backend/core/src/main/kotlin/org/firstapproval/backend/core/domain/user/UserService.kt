@@ -266,7 +266,6 @@ class UserService(
     private fun saveOrUpdateUser(findUserFunc: Supplier<User?>, oauthUser: OauthUser): User {
         val user = findUserFunc.get()
         if (user != null) {
-            user.email = oauthUser.email
             user.firstName = oauthUser.firstName
             user.lastName = oauthUser.lastName
             user.middleName = oauthUser.middleName
