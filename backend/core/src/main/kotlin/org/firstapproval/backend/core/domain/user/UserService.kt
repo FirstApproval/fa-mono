@@ -266,11 +266,6 @@ class UserService(
     private fun saveOrUpdateUser(findUserFunc: Supplier<User?>, oauthUser: OauthUser): User {
         val user = findUserFunc.get()
         if (user != null) {
-            user.firstName = oauthUser.firstName
-            user.lastName = oauthUser.lastName
-            user.middleName = oauthUser.middleName
-            user.fullName = oauthUser.fullName
-
             when (oauthUser.type) {
                 GOOGLE -> user.googleId = oauthUser.externalId
                 FACEBOOK -> user.facebookId = oauthUser.externalId
