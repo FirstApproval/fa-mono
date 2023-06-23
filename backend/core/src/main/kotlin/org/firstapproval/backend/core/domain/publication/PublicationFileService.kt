@@ -62,11 +62,11 @@ class PublicationFileService(
                 val fileForDeletion = nestedFiles.filter { !it.isDir }
                 publicationFileRepository.deleteAll(nestedFiles)
                 if (fileForDeletion.isNotEmpty()) {
-                    fileStorageService.deleteByIds(FILES, fileForDeletion.map { it.id.toString() })
+                    fileStorageService.deleteByIds(FILES, fileForDeletion.map { it.id })
                 }
             } else {
                 publicationFileRepository.delete(file)
-                fileStorageService.delete(FILES, file.id.toString())
+                fileStorageService.delete(FILES, file.id)
             }
         }
     }
@@ -136,12 +136,6 @@ class PublicationFileService(
     private fun checkCollapse(newLocation: String, currentLocation: String) {
         if (newLocation.startsWith(currentLocation)) {
             throw IllegalArgumentException()
-        }
-    }
-
-    private fun checkAccessToPublication(user: User, publication: Publication) {
-        if (user.id != publication.author.id) {
-            throw AccessDeniedException("Access denied")
         }
     }
 
