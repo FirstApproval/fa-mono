@@ -20,6 +20,7 @@ class User(
     var googleId: String? = null,
     var facebookId: String? = null,
     var linkedinId: String? = null,
+    var orcidId: String? = null,
     var email: String? = null,
     var password: String? = null,
     var creationTime: ZonedDateTime = now(),

@@ -33,6 +33,7 @@ class TokenService(
             GOOGLE -> getGoogleUser(code)
             FACEBOOK -> getFacebookUser(code)
             LINKEDIN -> getLinkedinUser(code)
+            ORCID -> getOrcidUser(code)
         }
         val user = userService.saveOrUpdate(oauthUser)
         return generateForUser(user.id.toString(), oauthUser.username, oauthUser.email)
@@ -121,6 +122,28 @@ class TokenService(
         )
     }
 
+    private fun getOrcidUser(code: String): OauthUser {
+        val tokens = restTemplate.postForObject<OrcidTokenResponse>(
+            getOauthUri(
+                code = code,
+                tokenUrl = oauthProperties.orcid.tokenUrl,
+                redirectUri = oauthProperties.orcid.redirectUri,
+                clientId = oauthProperties.orcid.clientId,
+                clientSecret = oauthProperties.orcid.clientSecret,
+            )
+        ).require()
+        val userData = exchangeTokenForResources<OrcidProfile>("${oauthProperties.orcid.dataUrl}/${tokens.orcidId}/person", tokens.accessToken)
+        val email = userData.emails.email.first { it.primary && it.verified }.email
+        return OauthUser(
+            externalId = tokens.orcidId,
+            email = email,
+            username = email.split("@").first(),
+            type = ORCID,
+            firstName = userData.names.givenName.value,
+            lastName = userData.names.familyName.value,
+        )
+    }
+
     private inline fun <reified T : Any> exchangeTokenForResources(resourceUrl: String, accessToken: String): T {
         val headers = HttpHeaders()
         headers.setBearerAuth(accessToken)
@@ -146,6 +169,12 @@ class TokenService(
 data class TokensResponse(@JsonProperty("id_token") val idToken: String, @JsonProperty("access_token") val accessToken: String)
 
 data class OauthAccessTokenResponse(@JsonProperty("access_token") val accessToken: String)
+data class OrcidTokenResponse(
+    @JsonProperty("access_token") val accessToken: String, @JsonProperty("token_type") val tokenType: String,
+    @JsonProperty("refresh_token") val refreshToken: String, @JsonProperty("expires_in") val expiresIn: String,
+    @JsonProperty("scope") val scope: String, @JsonProperty("name") val name: String,
+    @JsonProperty("orcid") val orcidId: String
+)
 
 data class OauthUser(
     val externalId: String,
@@ -180,6 +209,21 @@ data class LinkedInProfile(
 
 data class LinkedInEmailResponse(val elements: List<LinkedInEmailElement>)
 
-data class LinkedInEmailElement(@JsonProperty("handle~") val handle: LinkedInEmailHandle)
+data class LinkedInEmailElement(@JsonProperty("handle~") val handle: LinkedInEmailHolder)
 
-data class LinkedInEmailHandle(val emailAddress: String)
+data class LinkedInEmailHolder(val emailAddress: String)
+
+data class OrcidProfile(
+    @JsonProperty("name") val names: OrcidNamesHolder,
+    @JsonProperty("emails") val emails: OrcidEmailsHolder,
+)
+
+data class OrcidNamesHolder(
+    @JsonProperty("given-names") val givenName: ValueHolder,
+    @JsonProperty("family-name") val familyName: ValueHolder
+)
+
+data class ValueHolder(val value: String)
+
+data class OrcidEmailsHolder(val email: List<OrcidEmailHolder>)
+data class OrcidEmailHolder(val email: String, val primary: Boolean, val verified: Boolean)

@@ -80,6 +80,14 @@ class UserService(
                     throw MissingEmailException("Missing email from linkedin")
                 }
             }
+
+            ORCID -> Supplier<User?> {
+                if (oauthUser.email != null) {
+                    userRepository.findByEmailOrOrcidId(oauthUser.email, oauthUser.externalId)
+                } else {
+                    throw MissingEmailException("Missing email from orcid")
+                }
+            }
         }
 
         return saveOrUpdateUser(userSupplier, oauthUser)
@@ -270,6 +278,7 @@ class UserService(
                 GOOGLE -> user.googleId = oauthUser.externalId
                 FACEBOOK -> user.facebookId = oauthUser.externalId
                 LINKEDIN -> user.linkedinId = oauthUser.externalId
+                ORCID -> user.orcidId = oauthUser.externalId
             }
 
             return user
@@ -284,6 +293,7 @@ class UserService(
                 googleId = if (oauthUser.type == GOOGLE) oauthUser.externalId else null,
                 facebookId = if (oauthUser.type == FACEBOOK) oauthUser.externalId else null,
                 linkedinId = if (oauthUser.type == LINKEDIN) oauthUser.externalId else null,
+                orcidId = if (oauthUser.type == ORCID) oauthUser.externalId else null,
                 email = oauthUser.email,
                 firstName = oauthUser.firstName,
                 lastName = oauthUser.lastName,
@@ -357,6 +367,7 @@ class UserService(
 enum class OauthType {
     GOOGLE,
     FACEBOOK,
-    LINKEDIN
+    LINKEDIN,
+    ORCID
 }
 

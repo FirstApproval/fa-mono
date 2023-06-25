@@ -23,7 +23,8 @@ export enum Page {
 
 const pathToOauthType: Record<string, OauthType> = {
   '/google-callback': OauthType.GOOGLE,
-  '/linkedin-callback': OauthType.LINKEDIN
+  '/linkedin-callback': OauthType.LINKEDIN,
+  '/orcid-callback': OauthType.ORCID
 };
 
 const history = createBrowserHistory();

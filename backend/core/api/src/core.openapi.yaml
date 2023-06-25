@@ -360,6 +360,9 @@ components:
         linkedin:
             type: string
             maxLength: 2048
+        orcid:
+            type: string
+            maxLength: 2048
 
     Publication:
       type: object
@@ -376,6 +379,7 @@ components:
         - GOOGLE
         - FACEBOOK
         - LINKEDIN
+        - ORCID
 
   securitySchemes:
     PublicAuth:

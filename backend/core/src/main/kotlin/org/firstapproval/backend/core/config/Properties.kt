@@ -29,6 +29,7 @@ class Properties {
         var google = OauthProviderProperties()
         var facebook = OauthProviderProperties()
         var linkedin = OauthProviderProperties()
+        var orcid = OauthProviderProperties()
 
         class OauthProviderProperties {
             lateinit var clientId: String

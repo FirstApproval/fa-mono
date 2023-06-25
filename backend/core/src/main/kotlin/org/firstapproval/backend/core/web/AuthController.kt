@@ -35,6 +35,7 @@ class AuthController(
         return ok(AuthorizationLinksResponse()
             .google(oauthProperties.google.authUrl)
             .linkedin(oauthProperties.linkedin.authUrl)
+            .orcid(oauthProperties.orcid.authUrl)
         )
     }
 }
