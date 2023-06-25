@@ -4,14 +4,11 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 
 interface UserRepository : JpaRepository<User, UUID> {
-
-    fun findByGoogleId(googleId: String): User?
-    fun findByGoogleIdOrEmail(googleId: String, email: String?): User?
-    fun findByFacebookId(faceBookId: String): User?
-    fun findByFacebookIdOrEmail(faceBookId: String, email: String?): User?
     fun findByUsername(email: String?): User?
     fun findByEmail(email: String): User?
+    fun findByEmailOrLinkedinId(email: String, linkedinId: String): User
+    fun findByEmailOrGoogleId(email: String, googleId: String): User
+    fun findByEmailOrFacebookId(email: String, facebookId: String): User
     fun existsByEmail(email: String): Boolean
-    fun findByLinkedinId(linkedinId: String): User?
-    fun findByLinkedinIdOrEmail(linkedinId: String, email: String?): User?
+    fun findByEmailAndPasswordIsNull(email: String): User?
 }
