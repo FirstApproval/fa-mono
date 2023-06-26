@@ -42,10 +42,11 @@ function start (suffix = '') {
 function generateApi (specFile = 'core.openapi.yaml') {
   execSync(
     'openapi-generator-cli generate' +
-        ' -g typescript-axios ' +
-        ` -i ${specFile} ` +
-        ' -o src/apis/first-approval-api ' +
-        ' --additional-properties=stringEnums=true,enumPropertyNaming=original,removeEnumValuePrefix=false,serviceSuffix=ApiService',
+      ' -g typescript-axios ' +
+      ` -i ${specFile} ` +
+      ' -o src/apis/first-approval-api ' +
+      ' --server-variables=host=localhost:3000 ' +
+      ' --additional-properties=stringEnums=true,enumPropertyNaming=original,removeEnumValuePrefix=false,serviceSuffix=ApiService',
     { stdio: 'inherit' }
   )
 }
