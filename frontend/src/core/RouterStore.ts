@@ -13,7 +13,9 @@ export enum Page {
 
   SIGN_UP_NAME,
   SIGN_UP_PASSWORD,
-  EMAIL_VERIFICATION
+  EMAIL_VERIFICATION,
+
+  RESTORE_PASSWORD_EMAIL
 }
 
 const pathToOauthType: Record<string, OauthType> = {

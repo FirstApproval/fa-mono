@@ -9,11 +9,11 @@ import { makeObservable, observable } from 'mobx';
 const ACCESS_TOKEN_KEY = 'access-token';
 
 export class AuthStore {
-  token: string | undefined;
+  private _token: string | undefined;
 
   constructor() {
-    makeObservable(this, {
-      token: observable
+    makeObservable<AuthStore, '_token'>(this, {
+      _token: observable
     });
 
     const token = localStorage.getItem(ACCESS_TOKEN_KEY);
@@ -28,6 +28,14 @@ export class AuthStore {
       type
     });
     this.token = response.data.token;
+  }
+
+  get token(): string | undefined {
+    return this._token;
+  }
+
+  set token(value: string | undefined | null) {
+    this._token = value ?? undefined;
   }
 }
 

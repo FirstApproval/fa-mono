@@ -1,16 +1,8 @@
 import { type FunctionComponent, useState } from 'react';
-import {
-  Button,
-  Divider,
-  InputAdornment,
-  Link,
-  TextField
-} from '@mui/material';
+import { Button, InputAdornment, TextField } from '@mui/material';
 import styled from '@emotion/styled';
 import { ArrowForward, MailOutlined } from '@mui/icons-material';
-import { type SignUpStore } from './SignUpStore';
 import { observer } from 'mobx-react-lite';
-import { LoginOauth } from '../login/LoginOauth';
 import {
   FlexBody,
   FlexBodyCenter,
@@ -21,16 +13,17 @@ import {
   Parent,
   Header
 } from '../common.styled';
+import { type RestorePasswordStore } from './RestorePasswordStore';
 import { validateEmail } from 'src/util/emailUtil';
 
-interface SignUpPageProps {
-  store: SignUpStore;
+interface RestorePasswordEmailProps {
+  store: RestorePasswordStore;
   onSignInClick: () => void;
   onContinueClick: () => void;
 }
 
-export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
-  (props: SignUpPageProps) => {
+export const RestorePasswordEmail: FunctionComponent<RestorePasswordEmailProps> =
+  observer((props: RestorePasswordEmailProps) => {
     const [isValidEmail, setIsValidEmail] = useState(true);
 
     const validate = (): boolean => {
@@ -55,10 +48,8 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
         </FlexHeader>
         <FlexBodyCenter>
           <FlexBody>
-            <Header>Sign up for free</Header>
-            <EmailLabel>
-              Join the future of scientific discovery today
-            </EmailLabel>
+            <Header>Forgot my password</Header>
+            <EmailLabel>Please enter your email</EmailLabel>
             <div style={{ marginBottom: '12px' }}>
               <FullWidthTextField
                 error={!isValidEmail}
@@ -91,23 +82,11 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
               }}>
               Continue with email
             </FullWidthButton>
-            <DividerWrap>or</DividerWrap>
-            <LoginOauth />
-            <DividerWrap2 />
-            <CreateAccount>
-              Already have an account? <Link href="#">Sign in</Link>
-            </CreateAccount>
-            <FooterWrap>
-              By clicking “Continue with Email/Google/ORCID/Facebook/LinkedIn”
-              above, you acknowledge that you have read and understood, and
-              agree to Terms & Conditions and Privacy Policy.
-            </FooterWrap>
           </FlexBody>
         </FlexBodyCenter>
       </Parent>
     );
-  }
-);
+  });
 
 const FullWidthTextField = styled(TextField)`
   width: 100%;
@@ -119,30 +98,4 @@ const EmailLabel = styled('div')`
   font-size: 20px;
   margin-top: 28px;
   margin-bottom: 32px;
-`;
-
-const DividerWrap = styled(Divider)`
-  margin-top: 32px;
-  margin-bottom: 40px;
-  width: 100%;
-`;
-
-const DividerWrap2 = styled(Divider)`
-  margin-top: 42px;
-  margin-bottom: 40px;
-  width: 100%;
-`;
-
-const CreateAccount = styled('div')`
-  margin-top: 48px;
-  font-weight: 400;
-  font-size: 20px;
-`;
-
-const FooterWrap = styled('div')`
-  text-align: center;
-  margin-top: 36px;
-  font-weight: 400;
-  font-size: 12px;
-  color: #68676e;
 `;
