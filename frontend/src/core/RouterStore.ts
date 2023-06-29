@@ -2,6 +2,7 @@ import { authStore } from './auth';
 import { OauthType } from '../apis/first-approval-api';
 import { action, autorun, makeObservable, observable } from 'mobx';
 import { createBrowserHistory } from 'history';
+import { authService } from './service';
 
 export enum Page {
   LOADING,
@@ -61,9 +62,14 @@ export class RouterStore {
       if (token !== undefined) {
         this.setPage(Page.HOME_PAGE);
       } else if (authType !== undefined && authCode !== undefined) {
-        authStore
-          .exchangeToken(authCode, authType)
-          .then(() => {
+        authService
+          .authorizeOauth({
+            code: authCode,
+            type: authType
+          })
+          .then((response) => {
+            const token = response.data.token;
+            authStore.token = token;
             window.history.replaceState({}, document.title, '/');
             this.setPage(Page.HOME_PAGE);
           })

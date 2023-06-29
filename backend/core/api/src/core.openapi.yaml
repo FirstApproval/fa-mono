@@ -178,6 +178,24 @@ paths:
       operationId: setPassword
       tags: [ user ]
 
+  /api/file/upload:
+    post:
+      summary: Upload file
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+        required: true
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: uploadFile
+      tags: [ file ]
+
 components:
   schemas:
     SubmitRegistrationRequest:
