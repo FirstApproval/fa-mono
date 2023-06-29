@@ -29,7 +29,7 @@ export const HomePage: FunctionComponent = () => {
     result.forEach((e) => {
       if (e.isFile) {
         (e as FileSystemFileEntry).file((file) => {
-          fileService.uploadFile(file);
+          void fileService.uploadFile(e.name, file);
         });
       }
     });

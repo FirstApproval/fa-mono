@@ -21,8 +21,8 @@ fun createTempFolder(): File {
 @RestController
 class FileController(
 ) : FileApi {
-    override fun uploadFile(body: Resource): ResponseEntity<Void> {
-        saveFileToTempFolder(body.inputStream, tempFolder, "test")
+    override fun uploadFile(name: String, body: Resource): ResponseEntity<Void> {
+        saveFileToTempFolder(body.inputStream, tempFolder, name)
         return ResponseEntity(HttpStatus.OK)
     }
 

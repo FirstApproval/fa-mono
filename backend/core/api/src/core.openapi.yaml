@@ -181,6 +181,13 @@ paths:
   /api/file/upload:
     post:
       summary: Upload file
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          required: true
+          description: File name
       requestBody:
         content:
           application/octet-stream:
