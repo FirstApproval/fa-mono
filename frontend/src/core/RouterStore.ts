@@ -1,6 +1,6 @@
 import { authStore } from './auth';
 import { OauthType } from '../apis/first-approval-api';
-import { action, autorun, makeObservable, observable } from 'mobx';
+import { action, autorun, computed, makeObservable, observable } from 'mobx';
 import { createBrowserHistory } from 'history';
 import { authService } from './service';
 
@@ -11,6 +11,8 @@ export enum Page {
   SIGN_UP,
 
   HOME_PAGE,
+
+  PUBLICATION,
 
   SIGN_UP_NAME,
   SIGN_UP_PASSWORD,
@@ -36,6 +38,7 @@ export class RouterStore {
     makeObservable(this, {
       page: observable,
       path: observable,
+      lastPathSegment: computed,
       queryParams: observable,
       initialPageError: observable,
       setInitialPageError: action,
@@ -50,6 +53,15 @@ export class RouterStore {
     };
 
     history.listen(listener);
+    window.history.pushState = new Proxy(window.history.pushState, {
+      apply: (target, thisArg, argArray: string[]) => {
+        const path = argArray[2];
+        this.setPath(path);
+        this.setQueryParams(new URLSearchParams(path));
+        // @ts-expect-error wrong types
+        target.apply(thisArg, argArray);
+      }
+    });
 
     autorun(() => {
       const path = this.path;
@@ -60,6 +72,10 @@ export class RouterStore {
       const authCode = queryParams.get('code') ?? undefined;
 
       if (token !== undefined) {
+        if (path.startsWith('/publication')) {
+          this.setPage(Page.PUBLICATION);
+          return;
+        }
         this.setPage(Page.HOME_PAGE);
       } else if (authType !== undefined && authCode !== undefined) {
         authService
@@ -98,4 +114,8 @@ export class RouterStore {
   setInitialPageError = (value: string | undefined): void => {
     this.initialPageError = value;
   };
+
+  get lastPathSegment(): string {
+    return this.path.substring(this.path.lastIndexOf('/') + 1);
+  }
 }

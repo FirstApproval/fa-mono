@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
+import java.util.UUID
 
 val tempFolder = createTempFolder()
 
@@ -21,7 +22,7 @@ fun createTempFolder(): File {
 @RestController
 class FileController(
 ) : FileApi {
-    override fun uploadFile(name: String, body: Resource): ResponseEntity<Void> {
+    override fun uploadFile(publicationId: UUID, name: String, fullPath: String, body: Resource): ResponseEntity<Void> {
         saveFileToTempFolder(body.inputStream, tempFolder, name)
         return ResponseEntity(HttpStatus.OK)
     }

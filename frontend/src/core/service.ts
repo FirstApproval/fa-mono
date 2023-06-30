@@ -2,6 +2,7 @@ import {
   AuthApi,
   type Configuration,
   FileApi,
+  PublicationApi,
   RegistrationApi,
   UserApi
 } from '../apis/first-approval-api';
@@ -24,3 +25,5 @@ export const userService = new UserApi();
 export const authService = new AuthApi();
 
 export const fileService = new FileApi(configuration);
+
+export const publicationService = new PublicationApi(configuration);
