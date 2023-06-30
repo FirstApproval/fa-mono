@@ -1,4 +1,4 @@
-import { type FunctionComponent } from 'react';
+import { type FunctionComponent, useState } from 'react';
 import { Button, TextField } from '@mui/material';
 import styled from '@emotion/styled';
 import { ArrowForward } from '@mui/icons-material';
@@ -23,6 +23,17 @@ interface EnterNamePageProps {
 
 export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
   (props: EnterNamePageProps) => {
+    const [isValidFirstName, setIsValidFirstName] = useState(true);
+    const [isValidLastName, setIsValidLastName] = useState(true);
+
+    const validate = (): boolean => {
+      const isFN = props.store.firstName.length > 0;
+      const isLN = props.store.lastName.length > 0;
+      setIsValidFirstName(isFN);
+      setIsValidLastName(isLN);
+      return isFN && isLN;
+    };
+
     return (
       <Parent>
         <FlexHeader>
@@ -42,6 +53,8 @@ export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
             <EmailLabel>To start, what&apos;s your name?</EmailLabel>
             <div>
               <FullWidthTextField
+                error={!isValidFirstName}
+                helperText={!isValidFirstName ? 'Enter valid name' : undefined}
                 value={props.store.firstName}
                 onChange={(e) => {
                   props.store.firstName = e.currentTarget.value;
@@ -52,6 +65,8 @@ export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
             </div>
             <div>
               <FullWidthTextField
+                error={!isValidLastName}
+                helperText={!isValidLastName ? 'Enter valid name' : undefined}
                 value={props.store.lastName}
                 onChange={(e) => {
                   props.store.lastName = e.currentTarget.value;
@@ -64,7 +79,12 @@ export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
               variant="contained"
               size={'large'}
               endIcon={<ArrowForward />}
-              onClick={props.onContinueClick}>
+              onClick={() => {
+                const isValid = validate();
+                if (isValid) {
+                  props.onContinueClick();
+                }
+              }}>
               Continue
             </FullWidthButton>
           </FlexBody>

@@ -26,6 +26,7 @@ import { observer } from 'mobx-react-lite';
 interface SignInPageProps {
   store: SignInStore;
   onSignUpClick: () => void;
+  onRestorePasswordClick: () => void;
 }
 
 export const SignInPage: FunctionComponent<SignInPageProps> = observer(
@@ -52,7 +53,9 @@ export const SignInPage: FunctionComponent<SignInPageProps> = observer(
             <EmailLabel>or use your email to sign in:</EmailLabel>
             <div>
               <FullWidthTextField
-                value={props.store.email}
+                autoFocus
+                // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+                value={props.store.email || null}
                 onChange={(e) => {
                   props.store.setEmail(e.currentTarget.value);
                 }}
@@ -65,7 +68,8 @@ export const SignInPage: FunctionComponent<SignInPageProps> = observer(
             <div>
               <FullWidthTextField
                 type={'password'}
-                value={props.store.password}
+                // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+                value={props.store.password || null}
                 onChange={(e) => {
                   props.store.setPassword(e.currentTarget.value);
                 }}
@@ -74,7 +78,7 @@ export const SignInPage: FunctionComponent<SignInPageProps> = observer(
               />
             </div>
             <ForgotPasswordLabel>
-              <Link href="#" color="inherit">
+              <Link color="inherit" onClick={props.onRestorePasswordClick}>
                 I forgot my password
               </Link>
             </ForgotPasswordLabel>
@@ -88,7 +92,7 @@ export const SignInPage: FunctionComponent<SignInPageProps> = observer(
             </FullWidthButton>
             <DividerWrap />
             <CreateAccount>
-              No account? <Link href="#">Create one</Link>
+              No account? <Link onClick={props.onSignUpClick}>Create one</Link>
             </CreateAccount>
             <FooterWrap>
               By clicking “Sign in” above, you acknowledge that you have read

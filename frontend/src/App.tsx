@@ -15,12 +15,15 @@ import { Page } from './core/RouterStore';
 import { EmailVerificationPage } from './pages/signup/EmailVerificationPage';
 import { routerStore } from './core/router';
 import { SignInStore } from './pages/login/SignInStore';
+import { RestorePasswordEmail } from './pages/restore-password/RestorePasswordEmail';
+import { RestorePasswordStore } from './pages/restore-password/RestorePasswordStore';
 
 const App: FunctionComponent = observer(() => {
   const { page, setPage } = routerStore;
 
   const [signInStore] = useState(() => new SignInStore());
   const [signUpStore] = useState(() => new SignUpStore());
+  const [restorePasswordStore] = useState(() => new RestorePasswordStore());
 
   return (
     <ThemeProvider theme={theme}>
@@ -32,6 +35,9 @@ const App: FunctionComponent = observer(() => {
           store={signInStore}
           onSignUpClick={() => {
             setPage(Page.SIGN_UP);
+          }}
+          onRestorePasswordClick={() => {
+            setPage(Page.RESTORE_PASSWORD_EMAIL);
           }}
         />
       )}
@@ -79,6 +85,21 @@ const App: FunctionComponent = observer(() => {
           store={signUpStore}
           onSignInClick={() => {
             setPage(Page.SIGN_IN);
+          }}
+        />
+      )}
+      {page === Page.RESTORE_PASSWORD_EMAIL && (
+        <RestorePasswordEmail
+          store={restorePasswordStore}
+          onSignInClick={() => {
+            setPage(Page.SIGN_IN);
+          }}
+          onContinueClick={() => {
+            if (!restorePasswordStore.isSubmitting) {
+              void restorePasswordStore
+                .submitRegistrationRequest()
+                .then(() => {});
+            }
           }}
         />
       )}
