@@ -15,5 +15,6 @@ class PublicationFile(
     var publicationId: UUID,
     var name: String,
     var fullPath: String,
-    var dirPath: String
+    var dirPath: String,
+    val isDir: Boolean
 )

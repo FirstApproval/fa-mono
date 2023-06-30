@@ -26,7 +26,7 @@ export const PublicationPage: FunctionComponent = () => {
       <FlexBodyCenter>
         <FlexBody>
           {publicationId}
-          <FileUploader />
+          <FileUploader publicationId={publicationId} />
         </FlexBody>
       </FlexBodyCenter>
     </Parent>

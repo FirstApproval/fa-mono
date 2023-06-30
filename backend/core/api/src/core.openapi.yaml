@@ -205,24 +205,24 @@ paths:
           required: true
           description: Publication id
         - in: query
-          name: name
-          schema:
-            type: string
-          required: true
-          description: File name
-        - in: query
           name: fullPath
           schema:
             type: string
           required: true
           description: Full file path
+        - in: query
+          name: isDir
+          schema:
+            type: boolean
+          required: true
+          description: Is this file a directory
       requestBody:
         content:
           application/octet-stream:
             schema:
               type: string
               format: binary
-        required: true
+        required: false
       responses:
         200:
           description: Success

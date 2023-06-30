@@ -7,7 +7,13 @@ import { FileBrowser } from '../fire-browser/FileBrowser';
 import { FileSystem } from './../fire-browser/FileSystem';
 import { fileService } from '../core/service';
 
-export const FileUploader: FunctionComponent = () => {
+interface FileUploaderProps {
+  publicationId: string;
+}
+
+export const FileUploader: FunctionComponent<FileUploaderProps> = (
+  props: FileUploaderProps
+) => {
   const [fs] = useState(() => new FileSystem());
 
   const onDrop = async (e: {
@@ -21,8 +27,15 @@ export const FileUploader: FunctionComponent = () => {
     result.forEach((e) => {
       if (e.isFile) {
         (e as FileSystemFileEntry).file((file) => {
-          void fileService.uploadFile('', e.fullPath, e.name, file);
+          void fileService.uploadFile(
+            props.publicationId,
+            e.fullPath,
+            false,
+            file
+          );
         });
+      } else {
+        void fileService.uploadFile(props.publicationId, e.fullPath, true);
       }
     });
     fs.addFiles(result);

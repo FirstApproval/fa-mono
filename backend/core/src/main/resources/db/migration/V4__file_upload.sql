@@ -6,8 +6,9 @@ CREATE TABLE publications
 CREATE TABLE publication_files
 (
     id             UUID PRIMARY KEY,
-    publication_id UUID NOT NULL REFERENCES publications UNIQUE,
+    publication_id UUID NOT NULL REFERENCES publications,
     name           TEXT NOT NULL,
-    full_path      TEXT NOT NULL UNIQUE,
-    dir_path       TEXT NOT NULL
+    full_path      TEXT NOT NULL,
+    dir_path       TEXT NOT NULL,
+    is_dir         BOOLEAN NOT NULL
 );
