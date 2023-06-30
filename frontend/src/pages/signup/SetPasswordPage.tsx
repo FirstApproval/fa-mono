@@ -1,3 +1,5 @@
+import React, { useState } from 'react';
+
 import { type FunctionComponent } from 'react';
 import {
   Alert,
@@ -30,6 +32,19 @@ interface SetPasswordPageProps {
 
 export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
   observer((props: SetPasswordPageProps) => {
+    const [passwordError, setPasswordError] = useState('');
+
+    const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const password = event.target.value;
+      props.store.password = password;
+  
+      if (password.length < 8) {
+        setPasswordError('Please use 8+ characters for secure password');
+      } else {
+        setPasswordError('');
+      }
+    };
+   
     const isError = props.store.isError;
 
     return (
@@ -52,9 +67,7 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
             <div>
               <FullWidthTextField
                 value={props.store.password}
-                onChange={(e) => {
-                  props.store.password = e.currentTarget.value;
-                }}
+                onChange={handlePasswordChange}
                 type={'password'}
                 label="Password 8+ characters"
                 variant="outlined"
@@ -65,6 +78,8 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
                     </InputAdornment>
                   )
                 }}
+                error={Boolean(passwordError)}
+                helperText={passwordError}
               />
             </div>
             {props.store.isSubmitting && <CircularProgress />}
