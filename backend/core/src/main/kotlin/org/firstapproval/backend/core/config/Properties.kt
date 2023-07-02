@@ -48,6 +48,8 @@ class Properties {
     @ConfigurationProperties("frontend")
     class FrontendProperties {
         lateinit var url: URL
+        lateinit var registrationConfirmationUrl: URL
+        lateinit var emailChangeConfirmationUrl: URL
     }
 
     @Component

@@ -106,6 +106,44 @@ paths:
       operationId: confirmRegistration
       tags: [ registration ]
 
+  /api/email/change:
+    post:
+      summary: Change email
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeEmailRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangeEmailResponse'
+      security:
+        - TokenAuth: [ ]
+      operationId: changeEmail
+      tags: [ user ]
+
+  /api/email/confirm-change:
+    post:
+      summary: Confirm change email
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeEmailConfirmationRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: confirmChangeEmail
+      tags: [ user ]
+
   /api/user/request-password-reset:
     post:
       summary: Request password reset
@@ -363,6 +401,35 @@ components:
         orcid:
             type: string
             maxLength: 2048
+
+    ChangeEmailRequest:
+      type: object
+      properties:
+        email:
+          type: string
+      required:
+        - email
+
+    ChangeEmailResponse:
+      type: object
+      properties:
+        confirmationToken:
+          type: string
+          format: uuid
+      required:
+        - confirmationToken
+
+    ChangeEmailConfirmationRequest:
+      type: object
+      properties:
+        confirmationToken:
+          type: string
+          format: uuid
+        code:
+          type: string
+      required:
+        - confirmationToken
+        - code
 
     Publication:
       type: object
