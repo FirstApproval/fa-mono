@@ -49,6 +49,7 @@ export const FileBrowser = observer(
       ChonkyActions.EnableListView,
       ChonkyActions.EnableGridView,
       ChonkyActions.ToggleShowFoldersFirst,
+      ChonkyActions.CreateFolder,
       ChonkyActions.SortFilesByName,
       ChonkyActions.UploadFiles,
       ChonkyActions.DeleteFiles
