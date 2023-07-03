@@ -17,6 +17,7 @@ import { routerStore } from './core/router';
 import { SignInStore } from './pages/login/SignInStore';
 import { RestorePasswordEmail } from './pages/restore-password/RestorePasswordEmail';
 import { RestorePasswordStore } from './pages/restore-password/RestorePasswordStore';
+import { PublicationPage } from './pages/publication/PublicationPage';
 
 const App: FunctionComponent = observer(() => {
   const { page, setPage } = routerStore;
@@ -30,6 +31,7 @@ const App: FunctionComponent = observer(() => {
       <CssBaseline />
       {page === Page.LOADING && <LoadingPage />}
       {page === Page.HOME_PAGE && <HomePage />}
+      {page === Page.PUBLICATION && <PublicationPage />}
       {page === Page.SIGN_IN && (
         <SignInPage
           store={signInStore}
