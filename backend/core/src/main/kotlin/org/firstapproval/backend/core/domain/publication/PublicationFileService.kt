@@ -45,7 +45,6 @@ class PublicationFileService(
         return publicationFileRepository.save(PublicationFile(
             id = randomUUID(),
             publicationId = publicationId,
-            name = fullPath.substring(fullPath.lastIndexOf('/') + 1),
             fullPath = fullPath,
             dirPath = fullPath.substring(0, fullPath.lastIndexOf('/') + 1),
             isDir = isDir

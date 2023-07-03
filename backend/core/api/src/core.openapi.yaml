@@ -215,7 +215,7 @@ paths:
           schema:
             type: boolean
           required: true
-          description: Is this file a directory
+          description: Is this file or directory
       requestBody:
         content:
           application/octet-stream:

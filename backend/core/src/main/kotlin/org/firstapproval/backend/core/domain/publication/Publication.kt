@@ -11,5 +11,6 @@ import java.util.*
 @Table(name = "publications")
 class Publication(
     @Id
-    var id: UUID
+    var id: UUID,
+    var creationTime: ZonedDateTime = now()
 )

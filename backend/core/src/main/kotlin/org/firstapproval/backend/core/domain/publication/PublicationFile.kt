@@ -13,8 +13,10 @@ class PublicationFile(
     @Id
     var id: UUID,
     var publicationId: UUID,
-    var name: String,
     var fullPath: String,
     var dirPath: String,
-    val isDir: Boolean
-)
+    val isDir: Boolean,
+    var creationTime: ZonedDateTime = now()
+) {
+    val name get() = fullPath.substring(fullPath.lastIndexOf('/') + 1)
+}
