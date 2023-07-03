@@ -2,6 +2,7 @@ package org.firstapproval.backend.core.domain.publication
 
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
+import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
@@ -12,7 +13,8 @@ import java.util.*
 class PublicationFile(
     @Id
     var id: UUID,
-    var publicationId: UUID,
+    @ManyToOne
+    var publication: Publication,
     var fullPath: String,
     var dirPath: String,
     val isDir: Boolean,

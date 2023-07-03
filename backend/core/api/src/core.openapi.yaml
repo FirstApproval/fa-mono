@@ -231,7 +231,7 @@ paths:
       operationId: createPublication
       tags: [ publication ]
 
-  /api/file/upload:
+  /api/files/upload:
     post:
       summary: Upload file
       parameters:
@@ -269,8 +269,160 @@ paths:
       operationId: uploadFile
       tags: [ file ]
 
+  /api/files:
+    parameters:
+      - in: query
+        name: publicationId
+        schema:
+          type: string
+          format: uuid
+        required: true
+        description: Publication id
+    get:
+      summary: Get files by publication id
+      parameters:
+        - in: query
+          name: dirPath
+          schema:
+            type: string
+          required: true
+          description: Directory path
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PublicationFile'
+      security:
+        - TokenAuth: [ ]
+      operationId: getPublicationFiles
+      tags: [ file ]
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFolderRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: createFolder
+      tags: [ file ]
+
+  /api/files/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+        description: Id of file or directory
+    delete:
+      summary: Delete file by id
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: deleteFile
+      tags: [ file ]
+    patch:
+      summary: Rename file
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RenameFileRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: renameFile
+      tags: [ file ]
+
+  /api/files/move/{id}:
+    post:
+      summary: Move file by id
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Id of file or directory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MoveFileRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: moveFile
+      tags: [ file ]
+
 components:
   schemas:
+    PublicationFile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        publicationId:
+          type: string
+          format: uuid
+        fullPath:
+          type: string
+        dirPath:
+          type: string
+        isDir:
+          type: boolean
+        creationTime:
+          type: string
+          format: date-time
+
+    RenameFileRequest:
+      type: object
+      properties:
+         newName:
+          type: string
+      required:
+        - newName
+
+    MoveFileRequest:
+      type: object
+      properties:
+        newLocation:
+          type: string
+          minLength: 0
+      required:
+        - newLocation
+
+    CreateFolderRequest:
+      type: object
+      properties:
+        parentPath:
+          type: string
+        name:
+          type: string
+      required:
+        - parentPath
+        - name
+
     SubmitRegistrationRequest:
       type: object
       properties:

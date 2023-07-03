@@ -1,53 +1,131 @@
 package org.firstapproval.backend.core.domain.publication
 
-import mu.KotlinLogging.logger
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
-import org.firstapproval.backend.core.config.Properties.EmailProperties
-import org.firstapproval.backend.core.config.Properties.FrontendProperties
-import org.firstapproval.backend.core.domain.auth.OauthUser
-import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmation
-import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmationRepository
-import org.firstapproval.backend.core.domain.user.OauthType.*
-import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimit
-import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimitRepository
-import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmation
-import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmationRepository
-import org.firstapproval.backend.core.exception.MissingEmailException
-import org.firstapproval.backend.core.exception.RecordConflictException
-import org.firstapproval.backend.core.utils.generateCode
-import org.springframework.mail.SimpleMailMessage
-import org.springframework.mail.javamail.JavaMailSender
-import org.springframework.mail.javamail.MimeMessageHelper
-import org.springframework.scheduling.annotation.Scheduled
+import org.firstapproval.backend.core.domain.file.FILES
+import org.firstapproval.backend.core.domain.file.FileStorageService
+import org.firstapproval.backend.core.domain.user.User
 import org.springframework.security.access.AccessDeniedException
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Isolation.REPEATABLE_READ
 import org.springframework.transaction.annotation.Transactional
-import org.thymeleaf.context.Context
-import org.thymeleaf.spring6.SpringTemplateEngine
-import java.nio.charset.StandardCharsets
-import java.time.ZonedDateTime.now
 import java.util.*
 import java.util.UUID.*
-import java.util.function.*
-import javax.naming.LimitExceededException
 
 @Service
 class PublicationFileService(
     private val publicationFileRepository: PublicationFileRepository,
+    private val fileStorageService: FileStorageService,
+    private val publicationRepository: PublicationRepository
 ) {
 
-    val log = logger {}
+    fun getPublicationFiles(user: User, publicationId: UUID, dirPath: String): List<PublicationFile> {
+        val publication = publicationRepository.getReferenceById(publicationId)
+        checkAccessToPublication(user, publication)
+        return publicationFileRepository.findAllByPublicationIdAndDirPath(publicationId, dirPath)
+    }
 
-    @Transactional()
-    fun uploadFile(publicationId: UUID, fullPath: String, isDir: Boolean): PublicationFile {
-        return publicationFileRepository.save(PublicationFile(
-            id = randomUUID(),
-            publicationId = publicationId,
-            fullPath = fullPath,
-            dirPath = fullPath.substring(0, fullPath.lastIndexOf('/') + 1),
-            isDir = isDir
-        ))
+    @Transactional
+    fun uploadFile(user: User, publicationId: UUID, fullPath: String, isDir: Boolean, data: ByteArray?): PublicationFile {
+        val fileId = randomUUID()
+        val publication = publicationRepository.getReferenceById(publicationId)
+        checkAccessToPublication(user, publication)
+        checkDuplicateNames(fullPath, publicationId)
+        val file = publicationFileRepository.save(
+            PublicationFile(
+                id = fileId,
+                publication = publication,
+                fullPath = fullPath,
+                dirPath = fullPath.substring(0, fullPath.lastIndexOf('/') + 1),
+                isDir = isDir
+            )
+        )
+        if (!isDir) {
+            fileStorageService.save(FILES, fileId.toString(), data!!)
+        }
+        return file
+    }
+
+    @Transactional
+    fun deleteFile(user: User, fileId: UUID) {
+        val file = publicationFileRepository.getReferenceById(fileId)
+        checkAccessToPublication(user, file.publication)
+        if (file.isDir) {
+            val nestedFiles = publicationFileRepository.getNestedFiles(file.publication.id, file.fullPath)
+            val fileForDeletion = nestedFiles.filter { !it.isDir }
+            publicationFileRepository.deleteAll(nestedFiles)
+            fileStorageService.deleteByIds(FILES, fileForDeletion.map { it.id.toString() })
+        } else {
+            publicationFileRepository.delete(file)
+            fileStorageService.delete(FILES, file.id.toString())
+        }
+    }
+
+    @Transactional
+    fun renameFile(user: User, fileId: UUID, newName: String) {
+        val file = publicationFileRepository.getReferenceById(fileId)
+        val newFullPath = file.dirPath + newName
+        checkAccessToPublication(user, file.publication)
+        checkDuplicateNames(newFullPath, file.publication.id)
+        file.fullPath = newFullPath
+    }
+
+    @Transactional
+    fun moveFile(user: User, fileId: UUID, newLocation: String) {
+        val file = publicationFileRepository.getReferenceById(fileId)
+        val prevDirPath = file.dirPath
+        checkAccessToPublication(user, file.publication)
+        checkDirectoryIsExists(newLocation, file.publication.id)
+        if (file.isDir) {
+            checkCollapse(newLocation, file.fullPath)
+            val nestedFiles = publicationFileRepository.getNestedFiles(file.publication.id, file.fullPath)
+            nestedFiles.forEach {
+                val newFullPath = it.fullPath.replaceFirst(prevDirPath, "$newLocation/")
+                checkDuplicateNames(newFullPath, file.publication.id)
+                it.fullPath = newFullPath
+                it.dirPath = it.dirPath.replaceFirst(prevDirPath, "$newLocation/")
+            }
+        } else {
+            val newFullPath = file.fullPath.replaceFirst(file.dirPath, "$newLocation/")
+            checkDuplicateNames(newFullPath, file.publication.id)
+            file.fullPath = newFullPath
+            file.dirPath = file.dirPath.replaceFirst(file.dirPath, "$newLocation/")
+        }
+    }
+
+    @Transactional
+    fun createFolder(user: User, publicationId: UUID, parentDirPath: String, name: String) {
+        val parentDir = publicationFileRepository.findByPublicationIdAndFullPathAndIsDirTrue(publicationId, parentDirPath)
+        checkAccessToPublication(user, parentDir.publication)
+        publicationFileRepository.save(
+            PublicationFile(
+                id = randomUUID(),
+                publication = parentDir.publication,
+                fullPath = "$parentDirPath/$name",
+                dirPath = "$parentDirPath/",
+                isDir = true
+            )
+        )
+    }
+
+    private fun checkDirectoryIsExists(fullPath: String, publicationId: UUID) {
+        if (fullPath != "" && !publicationFileRepository.existsByPublicationIdAndFullPath(publicationId, fullPath)) {
+            throw IllegalArgumentException()
+        }
+    }
+
+    private fun checkCollapse(newLocation: String, currentLocation: String) {
+        if (newLocation.startsWith(currentLocation)) {
+            throw IllegalArgumentException()
+        }
+    }
+
+    private fun checkAccessToPublication(user: User, publication: Publication) {
+        if (user.id != publication.user.id) {
+            throw AccessDeniedException("Access denied")
+        }
+    }
+
+    private fun checkDuplicateNames(fullPath: String, publicationId: UUID) {
+        if (publicationFileRepository.existsByPublicationIdAndFullPath(publicationId, fullPath)) {
+            throw IllegalArgumentException()
+        }
     }
 }
