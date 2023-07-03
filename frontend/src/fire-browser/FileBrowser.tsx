@@ -1,13 +1,17 @@
 import {
   ChonkyActions,
   type FileActionHandler,
-  FullFileBrowser,
-  setChonkyDefaults
-} from 'chonky';
-import { type ReactElement, useState } from 'react';
+  FileBrowser as ChonkyFileBrowser,
+  setChonkyDefaults,
+  FileNavbar,
+  FileList,
+  FileContextMenu
+} from '@first-approval/chonky';
+import React, { type ReactElement, useState } from 'react';
 import { ChonkyIconFA } from 'chonky-icon-fontawesome';
 import { type FileSystem } from './FileSystem';
 import { observer } from 'mobx-react-lite';
+import { FileToolbar } from './FileToolbar';
 
 setChonkyDefaults({
   iconComponent: ChonkyIconFA,
@@ -42,8 +46,11 @@ export const FileBrowser = observer(
     };
 
     const myFileActions = [
+      ChonkyActions.EnableListView,
+      ChonkyActions.EnableGridView,
+      ChonkyActions.ToggleShowFoldersFirst,
+      ChonkyActions.SortFilesByName,
       ChonkyActions.UploadFiles,
-      ChonkyActions.DownloadFiles,
       ChonkyActions.DeleteFiles
     ];
 
@@ -55,12 +62,17 @@ export const FileBrowser = observer(
 
     return (
       <div style={{ height: '500px', paddingBottom: '40px' }}>
-        <FullFileBrowser
+        <ChonkyFileBrowser
           files={files}
           folderChain={folderChain}
           onFileAction={handleAction}
           fileActions={myFileActions}
-        />
+          disableDefaultFileActions={true}>
+          <FileNavbar />
+          <FileToolbar />
+          <FileList />
+          <FileContextMenu />
+        </ChonkyFileBrowser>
       </div>
     );
   }

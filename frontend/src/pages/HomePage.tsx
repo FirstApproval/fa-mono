@@ -9,6 +9,7 @@ import {
   Parent
 } from './common.styled';
 import { publicationService } from '../core/service';
+import { authStore } from '../core/auth';
 
 export const HomePage: FunctionComponent = () => {
   const createPublication = async (): Promise<void> => {
@@ -22,7 +23,12 @@ export const HomePage: FunctionComponent = () => {
       <FlexHeader>
         <Logo>First Approval</Logo>
         <FlexHeaderRight>
-          <Button variant="outlined" size={'large'}>
+          <Button
+            variant="outlined"
+            size={'large'}
+            onClick={() => {
+              authStore.token = undefined;
+            }}>
             Sign out
           </Button>
         </FlexHeaderRight>

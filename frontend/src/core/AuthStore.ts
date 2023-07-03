@@ -26,6 +26,8 @@ export class AuthStore {
     if (this._token !== undefined) {
       void setBearerAuthToObject(this._token);
       localStorage.setItem(ACCESS_TOKEN_KEY, this._token);
+    } else {
+      localStorage.removeItem(ACCESS_TOKEN_KEY);
     }
   }
 }
