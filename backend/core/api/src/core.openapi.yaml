@@ -178,6 +178,59 @@ paths:
       operationId: setPassword
       tags: [ user ]
 
+  /api/publication:
+    post:
+      summary: Create publication draft
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Publication'
+      security:
+        - TokenAuth: [ ]
+      operationId: createPublication
+      tags: [ publication ]
+
+  /api/file/upload:
+    post:
+      summary: Upload file
+      parameters:
+        - in: query
+          name: publicationId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
+        - in: query
+          name: fullPath
+          schema:
+            type: string
+          required: true
+          description: Full file path
+        - in: query
+          name: isDir
+          schema:
+            type: boolean
+          required: true
+          description: Is this file or directory
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+        required: false
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: uploadFile
+      tags: [ file ]
+
 components:
   schemas:
     SubmitRegistrationRequest:
@@ -307,6 +360,15 @@ components:
         linkedin:
             type: string
             maxLength: 2048
+
+    Publication:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      required:
+        - id
 
     OauthType:
       type: string
