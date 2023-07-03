@@ -1,5 +1,3 @@
-import { type OauthType } from 'src/apis/first-approval-api';
-
 import { makeObservable, observable } from 'mobx';
 import { setBearerAuthToObject } from '../apis/first-approval-api/common';
 
@@ -18,8 +16,6 @@ export class AuthStore {
       this.token = token;
     }
   }
-
-  async exchangeToken(code: string, type: OauthType): Promise<void> {}
 
   get token(): string | undefined {
     return this._token;

@@ -13,9 +13,11 @@ setChonkyDefaults({
   iconComponent: ChonkyIconFA,
   defaultFileViewActionId: ChonkyActions.EnableListView.id
 });
+
 export const FileBrowser = observer(
   (props: { fs: FileSystem }): ReactElement => {
     const [currPath, setCurrPath] = useState('/');
+
     const folderChain = [
       {
         id: '/',
@@ -28,6 +30,7 @@ export const FileBrowser = observer(
         isDir: true
       }))
     ];
+
     const handleAction: FileActionHandler = (data) => {
       if (data.id === ChonkyActions.OpenFiles.id) {
         const fullPath = data.payload.targetFile?.id ?? '';
