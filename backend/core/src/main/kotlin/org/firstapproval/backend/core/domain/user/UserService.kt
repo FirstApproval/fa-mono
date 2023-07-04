@@ -5,35 +5,32 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import org.firstapproval.backend.core.config.Properties.EmailProperties
 import org.firstapproval.backend.core.config.Properties.FrontendProperties
 import org.firstapproval.backend.core.domain.auth.OauthUser
+import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmation
 import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmationRepository
 import org.firstapproval.backend.core.domain.user.OauthType.*
+import org.firstapproval.backend.core.domain.user.email.EmailChangeConfirmationRepository
 import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimit
 import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimitRepository
 import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmation
 import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmationRepository
 import org.firstapproval.backend.core.exception.MissingEmailException
 import org.firstapproval.backend.core.exception.RecordConflictException
+import org.firstapproval.backend.core.utils.EMAIL_CONFIRMATION_CODE_LENGTH
 import org.firstapproval.backend.core.utils.generateCode
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
-import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation.REPEATABLE_READ
 import org.springframework.transaction.annotation.Transactional
-import org.thymeleaf.context.Context
-import org.thymeleaf.spring6.SpringTemplateEngine
-import java.nio.charset.StandardCharsets
 import java.time.ZonedDateTime.now
 import java.util.*
 import java.util.UUID.*
 import java.util.function.*
 import javax.naming.LimitExceededException
-
-const val EMAIL_CONFIRMATION_CODE_LENGTH = 6
 
 const val SEND_EMAIL_LIMIT = 1
 
@@ -44,13 +41,14 @@ class UserService(
     private val userRepository: UserRepository,
     private val emailRegistrationConfirmationRepository: EmailRegistrationConfirmationRepository,
     private val passwordResetConfirmationRepository: PasswordResetConfirmationRepository,
+    private val emailChangeConfirmationRepository: EmailChangeConfirmationRepository,
     private val passwordEncoder: PasswordEncoder,
     private val authorizationLimitRepository: AuthorizationLimitRepository,
-    private val emailSender: JavaMailSender,
-    private val templateEngine: SpringTemplateEngine,
     private val emailProperties: EmailProperties,
-    private val frontendProperties: FrontendProperties
-) {
+    private val frontendProperties: FrontendProperties,
+    private val notificationService: NotificationService,
+    private val emailSender: JavaMailSender
+    ) {
 
     val log = logger {}
 
@@ -69,7 +67,7 @@ class UserService(
                 if (oauthUser.email != null) {
                     userRepository.findByEmailOrFacebookId(oauthUser.email, oauthUser.externalId)
                 } else {
-                    throw MissingEmailException("Missing email from facebook")
+                    userRepository.findByFacebookId(oauthUser.externalId)
                 }
             }
 
@@ -78,6 +76,14 @@ class UserService(
                     userRepository.findByEmailOrLinkedinId(oauthUser.email, oauthUser.externalId)
                 } else {
                     throw MissingEmailException("Missing email from linkedin")
+                }
+            }
+
+            ORCID -> Supplier<User?> {
+                if (oauthUser.email != null) {
+                    userRepository.findByEmailOrOrcidId(oauthUser.email, oauthUser.externalId)
+                } else {
+                    userRepository.findByOrcidId(oauthUser.externalId)
                 }
             }
         }
@@ -125,8 +131,8 @@ class UserService(
         prevTry.password = passwordEncoder.encode(password)
         // TODO CREATE LINK
         val code = generateCode(EMAIL_CONFIRMATION_CODE_LENGTH)
-        val link = "${frontendProperties.url}/${code}"
-        sendRegistrationMessageEmail(code, link, prevTry.email)
+        val link = "${frontendProperties.registrationConfirmationUrl}/${code}"
+        notificationService.sendConfirmationEmail(code, link, prevTry.email, "email-template")
         return prevTry.id
     }
 
@@ -147,8 +153,8 @@ class UserService(
             )
         )
         // TODO CREATE LINK
-        val link = "${frontendProperties.url}/${code}"
-        sendRegistrationMessageEmail(code, link, email)
+        val link = "${frontendProperties.registrationConfirmationUrl}/${code}"
+        notificationService.sendConfirmationEmail(code, link, email, "email-template")
         return registrationToken
     }
 
@@ -246,6 +252,7 @@ class UserService(
     fun clearUncompleted() {
         emailRegistrationConfirmationRepository.deleteByCreationTimeBefore(now().minusDays(7))
         passwordResetConfirmationRepository.deleteByCreationTimeBefore(now().minusHours(2))
+        emailChangeConfirmationRepository.deleteByCreationTimeBefore(now().minusHours(2))
     }
 
     @Scheduled(cron = "\${clear-rate-limits.cron}")
@@ -270,6 +277,7 @@ class UserService(
                 GOOGLE -> user.googleId = oauthUser.externalId
                 FACEBOOK -> user.facebookId = oauthUser.externalId
                 LINKEDIN -> user.linkedinId = oauthUser.externalId
+                ORCID -> user.orcidId = oauthUser.externalId
             }
 
             return user
@@ -284,6 +292,7 @@ class UserService(
                 googleId = if (oauthUser.type == GOOGLE) oauthUser.externalId else null,
                 facebookId = if (oauthUser.type == FACEBOOK) oauthUser.externalId else null,
                 linkedinId = if (oauthUser.type == LINKEDIN) oauthUser.externalId else null,
+                orcidId = if (oauthUser.type == ORCID) oauthUser.externalId else null,
                 email = oauthUser.email,
                 firstName = oauthUser.firstName,
                 lastName = oauthUser.lastName,
@@ -291,27 +300,6 @@ class UserService(
                 fullName = oauthUser.fullName
             )
         )
-    }
-
-    private fun sendRegistrationMessageEmail(code: String, link: String, email: String) {
-        if (emailProperties.noopMode) {
-            log.info { code }
-            return
-        }
-        val message = emailSender.createMimeMessage()
-        val helper = MimeMessageHelper(message, StandardCharsets.UTF_8.name())
-        val context = Context()
-        val model: MutableMap<String, Any> = HashMap()
-        model["code"] = code
-        model["link"] = link
-        model["email"] = email
-        context.setVariables(model)
-        val html = templateEngine.process("email-template", context)
-        helper.setFrom(emailProperties.from)
-        helper.setTo(email)
-        helper.setText(html, true)
-        helper.setSubject("[FirstApproval] Confirming an email address")
-        emailSender.send(message)
     }
 
     private fun sendYouAlreadyHaveAccount(user: User) {
@@ -340,7 +328,7 @@ class UserService(
 
     private fun sendEmailForPasswordReset(email: String, resetId: String) {
         // TODO SEND EMAIL TO USER WITH RESET LINK
-        val link = "${frontendProperties.url}/$resetId"
+        val link = "${frontendProperties.registrationConfirmationUrl}/${resetId}"
         if (emailProperties.noopMode) {
             log.info { link }
             return
@@ -357,6 +345,7 @@ class UserService(
 enum class OauthType {
     GOOGLE,
     FACEBOOK,
-    LINKEDIN
+    LINKEDIN,
+    ORCID
 }
 

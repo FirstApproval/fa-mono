@@ -6,6 +6,7 @@ import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.JwtService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.user.UserService
+import org.firstapproval.backend.core.domain.user.email.EmailChangeService
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class UserController(
     private val userService: UserService,
+    private val emailChangeService: EmailChangeService,
     private val jwtService: JwtService,
     private val authHolderService: AuthHolderService
 ) : UserApi {
@@ -35,6 +37,16 @@ class UserController(
 
     override fun setPassword(setPasswordRequest: SetPasswordRequest): ResponseEntity<Void> {
         userService.setPassword(authHolderService.user, setPasswordRequest.newPassword)
+        return ok().build()
+    }
+
+    override fun changeEmail(changeEmailRequest: ChangeEmailRequest): ResponseEntity<ChangeEmailResponse> {
+        val confirmationToken = emailChangeService.createChangeEmailRequest(changeEmailRequest.email, authHolderService.user)
+        return ok(ChangeEmailResponse(confirmationToken))
+    }
+
+    override fun confirmChangeEmail(changeEmailConfirmationRequest: ChangeEmailConfirmationRequest): ResponseEntity<Void> {
+        emailChangeService.confirmChangeEmailRequest(changeEmailConfirmationRequest.confirmationToken, changeEmailConfirmationRequest.code)
         return ok().build()
     }
 }

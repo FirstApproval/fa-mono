@@ -106,6 +106,44 @@ paths:
       operationId: confirmRegistration
       tags: [ registration ]
 
+  /api/user/change-email:
+    post:
+      summary: Change email
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeEmailRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangeEmailResponse'
+      security:
+        - TokenAuth: [ ]
+      operationId: changeEmail
+      tags: [ user ]
+
+  /api/user/change-email-confirmation:
+    post:
+      summary: Confirm change email
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeEmailConfirmationRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+      security:
+        - PublicAuth: [ ]
+      operationId: confirmChangeEmail
+      tags: [ user ]
+
   /api/user/request-password-reset:
     post:
       summary: Request password reset
@@ -357,9 +395,44 @@ components:
         google:
           type: string
           maxLength: 2048
+        facebook:
+          type: string
+          maxLength: 2048
         linkedin:
             type: string
             maxLength: 2048
+        orcid:
+            type: string
+            maxLength: 2048
+
+    ChangeEmailRequest:
+      type: object
+      properties:
+        email:
+          type: string
+      required:
+        - email
+
+    ChangeEmailResponse:
+      type: object
+      properties:
+        confirmationToken:
+          type: string
+          format: uuid
+      required:
+        - confirmationToken
+
+    ChangeEmailConfirmationRequest:
+      type: object
+      properties:
+        confirmationToken:
+          type: string
+          format: uuid
+        code:
+          type: string
+      required:
+        - confirmationToken
+        - code
 
     Publication:
       type: object
@@ -376,6 +449,7 @@ components:
         - GOOGLE
         - FACEBOOK
         - LINKEDIN
+        - ORCID
 
   securitySchemes:
     PublicAuth:

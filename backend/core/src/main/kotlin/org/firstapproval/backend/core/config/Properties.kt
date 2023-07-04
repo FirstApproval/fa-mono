@@ -29,6 +29,7 @@ class Properties {
         var google = OauthProviderProperties()
         var facebook = OauthProviderProperties()
         var linkedin = OauthProviderProperties()
+        var orcid = OauthProviderProperties()
 
         class OauthProviderProperties {
             lateinit var clientId: String
@@ -47,6 +48,9 @@ class Properties {
     @ConfigurationProperties("frontend")
     class FrontendProperties {
         lateinit var url: URL
+        lateinit var registrationConfirmationUrl: URL
+        lateinit var emailChangeConfirmationUrl: URL
+        lateinit var passwordChangeConfirmationUrl: URL
     }
 
     @Component
