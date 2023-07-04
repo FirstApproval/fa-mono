@@ -41,7 +41,7 @@ class UserController(
     }
 
     override fun changeEmail(changeEmailRequest: ChangeEmailRequest): ResponseEntity<ChangeEmailResponse> {
-        val confirmationToken = emailChangeService.createChangeEmailRequest(changeEmailRequest.email)
+        val confirmationToken = emailChangeService.createChangeEmailRequest(changeEmailRequest.email, authHolderService.user)
         return ok(ChangeEmailResponse(confirmationToken))
     }
 

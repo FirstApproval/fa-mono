@@ -22,6 +22,7 @@ export enum Page {
 }
 
 const pathToOauthType: Record<string, OauthType> = {
+  '/facebook-callback': OauthType.FACEBOOK,
   '/google-callback': OauthType.GOOGLE,
   '/linkedin-callback': OauthType.LINKEDIN,
   '/orcid-callback': OauthType.ORCID

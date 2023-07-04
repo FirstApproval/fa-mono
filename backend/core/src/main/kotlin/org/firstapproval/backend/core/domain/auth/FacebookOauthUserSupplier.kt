@@ -10,7 +10,7 @@ class FacebookOauthUserSupplier : OauthUserSupplier() {
     override var oauthType = FACEBOOK
 
     override fun getOauthUser(code: String): OauthUser {
-        val oauthTokenResponse = exchangeForTokens<TokensResponse>(code, oauthProperties.facebook)
+        val oauthTokenResponse = exchangeForTokens<AccessTokenResponse>(code, oauthProperties.facebook)
         val userData = restTemplate.postForObject<FacebookOauthUserData>(
             UriComponentsBuilder.fromHttpUrl(oauthProperties.facebook.dataUrl)
                 .queryParam("fields", "email")

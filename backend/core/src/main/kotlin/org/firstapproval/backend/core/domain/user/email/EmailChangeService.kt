@@ -2,9 +2,8 @@ package org.firstapproval.backend.core.domain.user.email
 
 import jakarta.transaction.Transactional
 import org.firstapproval.backend.core.config.Properties.FrontendProperties
-import org.firstapproval.backend.core.config.security.AuthHolderService
-import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.notification.NotificationService
+import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
 import org.firstapproval.backend.core.exception.RecordConflictException
 import org.firstapproval.backend.core.utils.EMAIL_CONFIRMATION_CODE_LENGTH
@@ -21,11 +20,10 @@ class EmailChangeService(
     private val userRepository: UserRepository,
     private val emailChangeConfirmationRepository: EmailChangeConfirmationRepository,
     private val notificationService: NotificationService,
-    private val authHolderService: AuthHolderService,
 ) {
 
     @Transactional
-    fun createChangeEmailRequest(email: String): UUID {
+    fun createChangeEmailRequest(email: String, user: User): UUID {
         if (userRepository.existsByEmail(email)) {
             throw RecordConflictException("user with this email already exists")
         }
@@ -33,13 +31,13 @@ class EmailChangeService(
         val code = generateCode(EMAIL_CONFIRMATION_CODE_LENGTH)
         val id = randomUUID()
 
-        emailChangeConfirmationRepository.deleteByUserId(authHolderService.user.id)
+        emailChangeConfirmationRepository.deleteByUserId(user.id)
         emailChangeConfirmationRepository.save(
             EmailChangeConfirmation(
                 id = id,
                 email = email,
                 code = code,
-                user = authHolderService.user
+                user = user
             )
         )
         val link = "${frontendProperties.emailChangeConfirmationUrl}/${id}/${code}"

@@ -36,9 +36,11 @@ export const LoginOauth: FunctionComponent = () => {
               <img src={orcid} />
             </IconButtonWrap>
           </Link>
-          <IconButtonWrap size={'medium'}>
-            <img src={facebook} />
-          </IconButtonWrap>
+          <Link href={authUrls.facebook}>
+            <IconButtonWrap size={'medium'}>
+              <img src={facebook} />
+            </IconButtonWrap>
+          </Link>
           <Link href={authUrls.linkedin}>
             <IconButtonWrap size={'medium'}>
               <img src={linked} />
