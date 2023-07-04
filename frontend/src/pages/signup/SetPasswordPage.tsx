@@ -32,16 +32,24 @@ interface SetPasswordPageProps {
 
 export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
   observer((props: SetPasswordPageProps) => {
-    const [passwordError, setPasswordError] = useState('');
+    const [passwordHint, setPasswordHint] = useState('');
+    const [passwordHintColor, setPasswordHintColor] = useState('');
+
 
     const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const password = event.target.value;
       props.store.password = password;
+
   
       if (password.length < 8) {
-        setPasswordError('Please use 8+ characters for secure password');
+        setPasswordHint('Please use 8+ characters for secure password');
+        setPasswordHintColor('#D32F2F')
+      } else if (password.length === 8) {
+        setPasswordHint('so-so password')
+        setPasswordHintColor('#FF9800')
       } else {
-        setPasswordError('');
+        setPasswordHint('great password')
+        setPasswordHintColor('#3B4EFF')
       }
     };
    
@@ -78,8 +86,9 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
                     </InputAdornment>
                   )
                 }}
-                error={Boolean(passwordError)}
-                helperText={passwordError}
+                helperText={passwordHint}
+                FormHelperTextProps={{ style: {color: passwordHintColor} }}
+                
               />
             </div>
             {props.store.isSubmitting && <CircularProgress />}
@@ -87,6 +96,7 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
               <FullWidthButton
                 variant="contained"
                 size={'large'}
+                
                 endIcon={<ArrowForward />}
                 onClick={props.onContinueClick}>
                 Continue
