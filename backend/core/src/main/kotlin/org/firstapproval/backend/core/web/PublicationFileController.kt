@@ -1,10 +1,7 @@
 package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.FileApi
-import org.firstapproval.api.server.model.CreateFolderRequest
-import org.firstapproval.api.server.model.MoveFileRequest
-import org.firstapproval.api.server.model.PublicationFile
-import org.firstapproval.api.server.model.RenameFileRequest
+import org.firstapproval.api.server.model.*
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.PublicationFileService
@@ -39,23 +36,23 @@ class PublicationFileController(
         return ResponseEntity(OK)
     }
 
-    override fun deleteFile(id: UUID): ResponseEntity<Void> {
-        publicationFileService.deleteFile(authHolderService.user, id)
+    override fun deleteFiles(deleteByIdsRequest: DeleteByIdsRequest): ResponseEntity<Void> {
+        publicationFileService.deleteFiles(authHolderService.user, deleteByIdsRequest.ids.toList())
         return ResponseEntity(OK)
     }
 
     override fun moveFile(id: UUID, moveFileRequest: MoveFileRequest): ResponseEntity<Void> {
-        publicationFileService.moveFile(authHolderService.user, id, moveFileRequest.newLocation)
+        publicationFileService.moveFile(authHolderService.user, id, moveFileRequest.newDirPath)
         return ResponseEntity(OK)
     }
 
-    override fun renameFile(id: UUID, renameFileRequest: RenameFileRequest): ResponseEntity<Void> {
-        publicationFileService.renameFile(authHolderService.user, id, renameFileRequest.newName)
+    override fun editFile(id: UUID, editFileRequest: EditFileRequest): ResponseEntity<Void> {
+        publicationFileService.editFile(authHolderService.user, id, editFileRequest.name, editFileRequest.description)
         return ResponseEntity(OK)
     }
 
     override fun createFolder(publicationId: UUID, createFolderRequest: CreateFolderRequest): ResponseEntity<Void> {
-        publicationFileService.createFolder(authHolderService.user, publicationId, createFolderRequest.parentPath, createFolderRequest.name)
+        publicationFileService.createFolder(authHolderService.user, publicationId, createFolderRequest.dirPath, createFolderRequest.name, createFolderRequest.description)
         return ResponseEntity(OK)
     }
 }

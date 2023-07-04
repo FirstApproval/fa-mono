@@ -31,8 +31,8 @@ class FileStorageService(private val amazonS3: AmazonS3) {
 
     fun createBucketIfNotExist(bucketName: String) {
         if (!amazonS3.doesBucketExistV2(bucketName)) {
-            log.info { "bucket $bucketName created" }
             amazonS3.createBucket(bucketName)
+            log.info { "bucket $bucketName created" }
         }
     }
 }

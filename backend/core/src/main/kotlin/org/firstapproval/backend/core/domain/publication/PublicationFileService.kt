@@ -45,62 +45,81 @@ class PublicationFileService(
     }
 
     @Transactional
-    fun deleteFile(user: User, fileId: UUID) {
-        val file = publicationFileRepository.getReferenceById(fileId)
-        checkAccessToPublication(user, file.publication)
-        if (file.isDir) {
-            val nestedFiles = publicationFileRepository.getNestedFiles(file.publication.id, file.fullPath)
-            val fileForDeletion = nestedFiles.filter { !it.isDir }
-            publicationFileRepository.deleteAll(nestedFiles)
-            fileStorageService.deleteByIds(FILES, fileForDeletion.map { it.id.toString() })
-        } else {
-            publicationFileRepository.delete(file)
-            fileStorageService.delete(FILES, file.id.toString())
+    fun deleteFiles(user: User, fileIds: List<UUID>) {
+        val files = publicationFileRepository.findByIdIn(fileIds)
+        val publication = files.first().publication
+        if (!files.all { it.publication.id == publication.id }) {
+            throw IllegalArgumentException()
+        }
+        val dirPath = files.first().dirPath
+        if (!files.all { it.dirPath == dirPath }) {
+            throw IllegalArgumentException()
+        }
+        checkAccessToPublication(user, publication)
+        files.forEach { file ->
+            if (file.isDir) {
+                val nestedFiles = publicationFileRepository.getNestedFiles(file.publication.id, file.fullPath)
+                val fileForDeletion = nestedFiles.filter { !it.isDir }
+                publicationFileRepository.deleteAll(nestedFiles)
+                if (fileForDeletion.isNotEmpty()) {
+                    fileStorageService.deleteByIds(FILES, fileForDeletion.map { it.id.toString() })
+                }
+            } else {
+                publicationFileRepository.delete(file)
+                fileStorageService.delete(FILES, file.id.toString())
+            }
         }
     }
 
     @Transactional
-    fun renameFile(user: User, fileId: UUID, newName: String) {
+    fun editFile(user: User, fileId: UUID, name: String, description: String?) {
         val file = publicationFileRepository.getReferenceById(fileId)
-        val newFullPath = file.dirPath + newName
+        val newFullPath = file.dirPath + name
         checkAccessToPublication(user, file.publication)
-        checkDuplicateNames(newFullPath, file.publication.id)
+        if (name != file.name) {
+            checkDuplicateNames(newFullPath, file.publication.id)
+        }
         file.fullPath = newFullPath
+        file.description = description
     }
 
     @Transactional
-    fun moveFile(user: User, fileId: UUID, newLocation: String) {
+    fun moveFile(user: User, fileId: UUID, newDirPath: String) {
         val file = publicationFileRepository.getReferenceById(fileId)
         val prevDirPath = file.dirPath
         checkAccessToPublication(user, file.publication)
-        checkDirectoryIsExists(newLocation, file.publication.id)
+        checkDirectoryIsExists(newDirPath.dropLast(1), file.publication.id)
         if (file.isDir) {
-            checkCollapse(newLocation, file.fullPath)
+            checkCollapse(newDirPath, file.fullPath)
             val nestedFiles = publicationFileRepository.getNestedFiles(file.publication.id, file.fullPath)
             nestedFiles.forEach {
-                val newFullPath = it.fullPath.replaceFirst(prevDirPath, "$newLocation/")
+                val newFullPath = it.fullPath.replaceFirst(prevDirPath, newDirPath)
                 checkDuplicateNames(newFullPath, file.publication.id)
                 it.fullPath = newFullPath
-                it.dirPath = it.dirPath.replaceFirst(prevDirPath, "$newLocation/")
+                it.dirPath = it.dirPath.replaceFirst(prevDirPath, newDirPath)
             }
         } else {
-            val newFullPath = file.fullPath.replaceFirst(file.dirPath, "$newLocation/")
+            val newFullPath = file.fullPath.replaceFirst(prevDirPath, newDirPath)
             checkDuplicateNames(newFullPath, file.publication.id)
             file.fullPath = newFullPath
-            file.dirPath = file.dirPath.replaceFirst(file.dirPath, "$newLocation/")
+            file.dirPath = file.dirPath.replaceFirst(file.dirPath, newDirPath)
         }
     }
 
     @Transactional
-    fun createFolder(user: User, publicationId: UUID, parentDirPath: String, name: String) {
-        val parentDir = publicationFileRepository.findByPublicationIdAndFullPathAndIsDirTrue(publicationId, parentDirPath)
-        checkAccessToPublication(user, parentDir.publication)
+    fun createFolder(user: User, publicationId: UUID, parentDirPath: String, name: String, description: String?) {
+        val publication = publicationRepository.getReferenceById(publicationId)
+        checkDirectoryIsExists(parentDirPath.dropLast(1), publicationId)
+        checkAccessToPublication(user, publication)
+        val fullPath = "$parentDirPath$name"
+        checkDuplicateNames(fullPath, publicationId)
         publicationFileRepository.save(
             PublicationFile(
                 id = randomUUID(),
-                publication = parentDir.publication,
-                fullPath = "$parentDirPath/$name",
-                dirPath = "$parentDirPath/",
+                publication = publication,
+                fullPath = "$parentDirPath$name",
+                dirPath = parentDirPath,
+                description = description,
                 isDir = true
             )
         )
@@ -119,7 +138,7 @@ class PublicationFileService(
     }
 
     private fun checkAccessToPublication(user: User, publication: Publication) {
-        if (user.id != publication.user.id) {
+        if (user.id != publication.author.id) {
             throw AccessDeniedException("Access denied")
         }
     }

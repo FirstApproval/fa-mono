@@ -324,29 +324,36 @@ paths:
           format: uuid
         required: true
         description: Id of file or directory
-    delete:
-      summary: Delete file by id
-      responses:
-        200:
-          description: Success
-      security:
-        - TokenAuth: [ ]
-      operationId: deleteFile
-      tags: [ file ]
-    patch:
-      summary: Rename file
+    put:
+      summary: Patch file
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RenameFileRequest'
+              $ref: '#/components/schemas/EditFileRequest'
         required: true
       responses:
         200:
           description: Success
       security:
         - TokenAuth: [ ]
-      operationId: renameFile
+      operationId: editFile
+      tags: [ file ]
+
+  /api/files/deleteByIds:
+    delete:
+      summary: Delete file by id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteByIdsRequest'
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: deleteFiles
       tags: [ file ]
 
   /api/files/move/{id}:
@@ -387,6 +394,8 @@ components:
           format: uuid
         fullPath:
           type: string
+        description:
+          type: string
         dirPath:
           type: string
         isDir:
@@ -395,32 +404,47 @@ components:
           type: string
           format: date-time
 
-    RenameFileRequest:
+    EditFileRequest:
       type: object
       properties:
-         newName:
+        name:
+          type: string
+        description:
           type: string
       required:
-        - newName
+        - name
+
+    DeleteByIdsRequest:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+        - ids
 
     MoveFileRequest:
       type: object
       properties:
-        newLocation:
+        newDirPath:
           type: string
           minLength: 0
       required:
-        - newLocation
+        - newDirPath
 
     CreateFolderRequest:
       type: object
       properties:
-        parentPath:
+        dirPath:
           type: string
         name:
           type: string
+        description:
+          type: string
       required:
-        - parentPath
+        - dirPath
         - name
 
     SubmitRegistrationRequest:
@@ -551,8 +575,8 @@ components:
           type: string
           maxLength: 2048
         linkedin:
-            type: string
-            maxLength: 2048
+          type: string
+          maxLength: 2048
         orcid:
             type: string
             maxLength: 2048

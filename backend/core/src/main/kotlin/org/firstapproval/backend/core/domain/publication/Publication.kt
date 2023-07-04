@@ -15,6 +15,6 @@ class Publication(
     @Id
     var id: UUID,
     @ManyToOne
-    val user: User,
+    val author: User,
     var creationTime: ZonedDateTime = now()
 )

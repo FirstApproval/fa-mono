@@ -11,6 +11,6 @@ class PublicationService(
 ) {
     @Transactional
     fun createDraft(user: User): Publication {
-        return publicationRepository.save(Publication(id = randomUUID(), user = user))
+        return publicationRepository.save(Publication(id = randomUUID(), author = user))
     }
 }

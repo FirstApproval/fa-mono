@@ -16,6 +16,7 @@ class PublicationFile(
     @ManyToOne
     var publication: Publication,
     var fullPath: String,
+    var description: String? = null,
     var dirPath: String,
     val isDir: Boolean,
     var creationTime: ZonedDateTime = now()

@@ -14,9 +14,9 @@ interface PublicationFileRepository : JpaRepository<PublicationFile, UUID> {
     @Query(value = SEARCH_NESTED_FILES_QUERY, nativeQuery = true)
     fun getNestedFiles(publicationId: UUID, path: String): List<PublicationFile>
 
-    fun findByPublicationIdAndFullPathAndIsDirTrue(publicationId: UUID, fullPath: String): PublicationFile
-
     fun existsByPublicationIdAndFullPath(publicationId: UUID, fullPath: String): Boolean
 
     fun findAllByPublicationIdAndDirPath(publicationId: UUID, dirPath: String): List<PublicationFile>
+
+    fun findByIdIn(ids: List<UUID>): List<PublicationFile>
 }
