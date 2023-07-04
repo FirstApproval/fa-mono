@@ -10,6 +10,6 @@ import org.springframework.context.annotation.Configuration
 class OauthConfig {
     @Bean
     fun oauthUserSuppliers(context: ApplicationContext): Map<OauthType, OauthUserSupplier> {
-        return context.getBeansOfType(OauthUserSupplier::class.java).values.associateBy { it.getOauthType() }
+        return context.getBeansOfType(OauthUserSupplier::class.java).values.associateBy { it.oauthType }
     }
 }

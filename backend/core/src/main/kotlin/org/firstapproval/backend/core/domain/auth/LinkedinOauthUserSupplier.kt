@@ -1,14 +1,13 @@
 package org.firstapproval.backend.core.domain.auth
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.firstapproval.backend.core.domain.user.OauthType
 import org.firstapproval.backend.core.domain.user.OauthType.LINKEDIN
 import org.springframework.http.HttpMethod.GET
 import org.springframework.stereotype.Component
 
 @Component
 class LinkedinOauthUserSupplier : OauthUserSupplier() {
-    override fun getOauthType(): OauthType = LINKEDIN
+    override var oauthType = LINKEDIN
 
     override fun getOauthUser(code: String): OauthUser {
         val tokens = exchangeForTokens<AccessTokenResponse>(code, oauthProperties.linkedin, GET)

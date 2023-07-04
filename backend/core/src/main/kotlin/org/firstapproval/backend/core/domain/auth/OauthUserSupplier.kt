@@ -27,7 +27,8 @@ abstract class OauthUserSupplier {
 
     @Autowired
     lateinit var jwtService: JwtService
-    abstract fun getOauthType(): OauthType
+
+    abstract var oauthType: OauthType
 
     abstract fun getOauthUser(code: String): OauthUser
 

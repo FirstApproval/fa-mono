@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class GoogleOauthUserSupplier : OauthUserSupplier() {
-    override fun getOauthType(): OauthType = GOOGLE
+    override var oauthType = GOOGLE
 
     override fun getOauthUser(code: String): OauthUser {
         val tokens = exchangeForTokens<TokensResponse>(code, oauthProperties.google)

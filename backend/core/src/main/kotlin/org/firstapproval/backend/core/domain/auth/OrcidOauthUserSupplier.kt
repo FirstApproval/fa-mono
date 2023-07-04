@@ -1,13 +1,12 @@
 package org.firstapproval.backend.core.domain.auth
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.firstapproval.backend.core.domain.user.OauthType
 import org.firstapproval.backend.core.domain.user.OauthType.ORCID
 import org.springframework.stereotype.Component
 
 @Component
 class OrcidOauthUserSupplier : OauthUserSupplier() {
-    override fun getOauthType(): OauthType = ORCID
+    override var oauthType = ORCID
 
     override fun getOauthUser(code: String): OauthUser {
         val tokens = exchangeForTokens<OrcidTokenResponse>(code, oauthProperties.orcid)
