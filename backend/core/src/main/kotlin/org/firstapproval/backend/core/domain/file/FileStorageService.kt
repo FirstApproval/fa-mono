@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.model.DeleteObjectsRequest
 import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion
 import com.amazonaws.services.s3.model.ObjectMetadata
 import mu.KotlinLogging.logger
+import java.io.InputStream
 
 const val FILES = "files"
 
@@ -12,11 +13,11 @@ class FileStorageService(private val amazonS3: AmazonS3) {
 
     private val log = logger {}
 
-    fun save(bucketName: String, id: String, data: ByteArray) {
+    fun save(bucketName: String, id: String, data: InputStream) {
         val metadata = ObjectMetadata().apply {
-            this.contentLength = data.size.toLong()
+            this.contentLength = data.available().toLong()
         }
-        amazonS3.putObject(bucketName, id, data.inputStream(), metadata)
+        amazonS3.putObject(bucketName, id, data, metadata)
     }
 
     fun delete(bucketName: String, id: String) = amazonS3.deleteObject(bucketName, id)

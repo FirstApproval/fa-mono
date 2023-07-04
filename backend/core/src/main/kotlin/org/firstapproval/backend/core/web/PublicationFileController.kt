@@ -34,8 +34,8 @@ class PublicationFileController(
         })
     }
 
-    override fun uploadFile(publicationId: UUID, fullPath: String, isDir: Boolean, body: Resource?): ResponseEntity<Void> {
-        publicationFileService.uploadFile(authHolderService.user, publicationId, fullPath, isDir, body?.contentAsByteArray)
+    override fun uploadFile(publicationId: UUID, fullPath: String, isDir: Boolean, body: Resource): ResponseEntity<Void> {
+        publicationFileService.uploadFile(authHolderService.user, publicationId, fullPath, isDir, body.inputStream)
         return ResponseEntity(OK)
     }
 

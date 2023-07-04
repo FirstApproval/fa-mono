@@ -6,6 +6,7 @@ import org.firstapproval.backend.core.domain.user.User
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.io.InputStream
 import java.util.*
 import java.util.UUID.*
 
@@ -23,7 +24,7 @@ class PublicationFileService(
     }
 
     @Transactional
-    fun uploadFile(user: User, publicationId: UUID, fullPath: String, isDir: Boolean, data: ByteArray?): PublicationFile {
+    fun uploadFile(user: User, publicationId: UUID, fullPath: String, isDir: Boolean, data: InputStream?): PublicationFile {
         val fileId = randomUUID()
         val publication = publicationRepository.getReferenceById(publicationId)
         checkAccessToPublication(user, publication)
