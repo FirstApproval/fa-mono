@@ -14,9 +14,7 @@ class FileStorageService(private val amazonS3: AmazonS3) {
     private val log = logger {}
 
     fun save(bucketName: String, id: String, data: InputStream) {
-        val metadata = ObjectMetadata().apply {
-            this.contentLength = data.available().toLong()
-        }
+        val metadata = ObjectMetadata()
         amazonS3.putObject(bucketName, id, data, metadata)
     }
 
