@@ -34,7 +34,7 @@ class PublicationFileService(
                 id = fileId,
                 publication = publication,
                 fullPath = fullPath,
-                dirPath = fullPath.substring(0, fullPath.lastIndexOf('/') + 1),
+                dirPath = extractDirPath(fullPath),
                 isDir = isDir
             )
         )
@@ -124,6 +124,8 @@ class PublicationFileService(
             )
         )
     }
+
+    private fun extractDirPath(fullPath: String) = fullPath.substring(0, fullPath.lastIndexOf('/') + 1)
 
     private fun checkDirectoryIsExists(fullPath: String, publicationId: UUID) {
         if (fullPath != "" && !publicationFileRepository.existsByPublicationIdAndFullPath(publicationId, fullPath)) {
