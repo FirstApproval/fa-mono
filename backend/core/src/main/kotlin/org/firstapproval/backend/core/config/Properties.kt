@@ -50,6 +50,7 @@ class Properties {
         lateinit var url: URL
         lateinit var registrationConfirmationUrl: URL
         lateinit var emailChangeConfirmationUrl: URL
+        lateinit var passwordChangeConfirmationUrl: URL
     }
 
     @Component

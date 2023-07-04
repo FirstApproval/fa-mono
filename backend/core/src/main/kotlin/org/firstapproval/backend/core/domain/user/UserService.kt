@@ -131,7 +131,7 @@ class UserService(
         prevTry.password = passwordEncoder.encode(password)
         // TODO CREATE LINK
         val code = generateCode(EMAIL_CONFIRMATION_CODE_LENGTH)
-        val link = "${frontendProperties.registrationConfirmationUrl}${code}"
+        val link = "${frontendProperties.registrationConfirmationUrl}/${code}"
         notificationService.sendConfirmationEmail(code, link, prevTry.email, "email-template")
         return prevTry.id
     }
@@ -153,7 +153,7 @@ class UserService(
             )
         )
         // TODO CREATE LINK
-        val link = "${frontendProperties.url}/${code}"
+        val link = "${frontendProperties.registrationConfirmationUrl}/${code}"
         notificationService.sendConfirmationEmail(code, link, email, "email-template")
         return registrationToken
     }
@@ -328,7 +328,7 @@ class UserService(
 
     private fun sendEmailForPasswordReset(email: String, resetId: String) {
         // TODO SEND EMAIL TO USER WITH RESET LINK
-        val link = "${frontendProperties.url}/$resetId"
+        val link = "${frontendProperties.registrationConfirmationUrl}/${resetId}"
         if (emailProperties.noopMode) {
             log.info { link }
             return

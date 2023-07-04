@@ -27,7 +27,7 @@ class EmailChangeService(
     @Transactional
     fun createChangeEmailRequest(email: String): UUID {
         if (userRepository.existsByEmail(email)) {
-            throw RecordConflictException("user already exists")
+            throw RecordConflictException("user with this email already exists")
         }
 
         val code = generateCode(EMAIL_CONFIRMATION_CODE_LENGTH)
@@ -42,7 +42,7 @@ class EmailChangeService(
                 user = authHolderService.user
             )
         )
-        val link = "${frontendProperties.emailChangeConfirmationUrl}${id}/${code}"
+        val link = "${frontendProperties.emailChangeConfirmationUrl}/${id}/${code}"
 
         notificationService.sendConfirmationEmail(code, link, email, "email-template")
 
@@ -56,7 +56,7 @@ class EmailChangeService(
             throw AccessDeniedException("access denied")
         }
         if (userRepository.existsByEmail(emailChangeConfirmation.email)) {
-            throw RecordConflictException("user already exists")
+            throw RecordConflictException("user with this email already exists")
         }
 
         emailChangeConfirmation.user.email = emailChangeConfirmation.email

@@ -106,7 +106,7 @@ paths:
       operationId: confirmRegistration
       tags: [ registration ]
 
-  /api/email/change:
+  /api/user/change-email:
     post:
       summary: Change email
       requestBody:
@@ -127,7 +127,7 @@ paths:
       operationId: changeEmail
       tags: [ user ]
 
-  /api/email/confirm-change:
+  /api/user/change-email-confirmation:
     post:
       summary: Confirm change email
       requestBody:
@@ -140,7 +140,7 @@ paths:
         200:
           description: Success
       security:
-        - TokenAuth: [ ]
+        - PublicAuth: [ ]
       operationId: confirmChangeEmail
       tags: [ user ]
 
