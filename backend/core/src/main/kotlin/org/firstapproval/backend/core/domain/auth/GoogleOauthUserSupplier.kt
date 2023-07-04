@@ -1,10 +1,13 @@
 package org.firstapproval.backend.core.domain.auth
 
 import org.firstapproval.backend.core.domain.user.OauthType
+import org.firstapproval.backend.core.domain.user.OauthType.GOOGLE
 import org.springframework.stereotype.Component
 
 @Component
 class GoogleOauthUserSupplier : OauthUserSupplier() {
+    override fun getOauthType(): OauthType = GOOGLE
+
     override fun getOauthUser(code: String): OauthUser {
         val tokens = exchangeForTokens<TokensResponse>(code, oauthProperties.google)
         val claims = jwtService.parseGoogle(tokens.idToken!!)
@@ -14,7 +17,7 @@ class GoogleOauthUserSupplier : OauthUserSupplier() {
             externalId = claims["sub"] as String,
             email = email,
             username = email.split("@").first(),
-            type = OauthType.GOOGLE,
+            type = GOOGLE,
             firstName = profileResource.given_name,
             lastName = profileResource.family_name,
             fullName = profileResource.name,

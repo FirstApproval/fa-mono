@@ -395,6 +395,9 @@ components:
         google:
           type: string
           maxLength: 2048
+        facebook:
+          type: string
+          maxLength: 2048
         linkedin:
             type: string
             maxLength: 2048

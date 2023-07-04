@@ -2,11 +2,14 @@ package org.firstapproval.backend.core.domain.auth
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.firstapproval.backend.core.domain.user.OauthType
+import org.firstapproval.backend.core.domain.user.OauthType.LINKEDIN
 import org.springframework.http.HttpMethod.GET
 import org.springframework.stereotype.Component
 
 @Component
 class LinkedinOauthUserSupplier : OauthUserSupplier() {
+    override fun getOauthType(): OauthType = LINKEDIN
+
     override fun getOauthUser(code: String): OauthUser {
         val tokens = exchangeForTokens<AccessTokenResponse>(code, oauthProperties.linkedin, GET)
         val userData = exchangeTokenForResources<LinkedInProfile>(oauthProperties.linkedin.dataUrl, tokens.accessToken)
@@ -16,7 +19,7 @@ class LinkedinOauthUserSupplier : OauthUserSupplier() {
             externalId = userData.id,
             email = email,
             username = email.split("@").first(),
-            type = OauthType.LINKEDIN,
+            type = LINKEDIN,
             firstName = userData.localizedFirstName,
             lastName = userData.localizedLastName,
         )

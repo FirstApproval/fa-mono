@@ -21,10 +21,13 @@ abstract class OauthUserSupplier {
     @Autowired
     @Qualifier(DEFAULT_REST_TEMPLATE)
     lateinit var restTemplate: RestTemplate
+
     @Autowired
     lateinit var oauthProperties: OauthProperties
+
     @Autowired
     lateinit var jwtService: JwtService
+    abstract fun getOauthType(): OauthType
 
     abstract fun getOauthUser(code: String): OauthUser
 
@@ -37,9 +40,12 @@ abstract class OauthUserSupplier {
     protected inline fun <reified T : Any> exchangeForTokens(
         code: String,
         oauthProviderProperties: OauthProviderProperties,
-        method: HttpMethod = POST): T =
-    restTemplate.exchange(getOauthUri(code, oauthProviderProperties), method, null, T::
-    class.java).body.require()
+        method: HttpMethod = POST
+    ): T =
+        restTemplate.exchange(
+            getOauthUri(code, oauthProviderProperties), method, null, T::
+            class.java
+        ).body.require()
 
     protected fun getOauthUri(
         code: String,
