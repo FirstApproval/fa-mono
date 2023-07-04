@@ -95,8 +95,7 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
             {!props.store.isSubmitting && (
               <FullWidthButton
                 variant="contained"
-                size={'large'}
-                
+                size={'large'} 
                 endIcon={<ArrowForward />}
                 onClick={props.onContinueClick}>
                 Continue
