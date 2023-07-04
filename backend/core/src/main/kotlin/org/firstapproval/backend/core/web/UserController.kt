@@ -37,4 +37,21 @@ class UserController(
         userService.setPassword(authHolderService.user, setPasswordRequest.newPassword)
         return ok().build()
     }
+
+    override fun getMe(): ResponseEntity<GetMeResponse> {
+        val user = authHolderService.user
+        val getMeResponse = GetMeResponse()
+        getMeResponse.firstName = user.firstName
+        getMeResponse.lastName = user.lastName
+        getMeResponse.middleName = user.middleName
+        getMeResponse.username = user.username
+        getMeResponse.email = user.email
+        getMeResponse.canSetEmail = user.email.isNullOrEmpty()
+        getMeResponse.canSetPassword = user.password.isNullOrEmpty()
+        getMeResponse.canChangePassword = !user.password.isNullOrEmpty()
+        getMeResponse.signedViaGoogle = !user.googleId.isNullOrEmpty()
+        getMeResponse.signedViaFacebook = !user.facebookId.isNullOrEmpty()
+        getMeResponse.signedViaLinkedin = !user.linkedinId.isNullOrEmpty()
+        return ok(getMeResponse)
+    }
 }
