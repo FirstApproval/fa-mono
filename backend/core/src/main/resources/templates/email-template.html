@@ -269,8 +269,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="if-you-didnt mt-40">
+                    <div th:if="${#strings.contains(link, 'registration-confirmation')}" class="if-you-didnt mt-40">
                         If you didn't create an account in FA, please ignore this message.
+                    </div>
+                    <div th:if="${#strings.contains(link, 'email-change-confirmation')}" class="if-you-didnt mt-40">
+                        If you didn't change e-mail in FA, please ignore this message.
                     </div>
                 </div>
             </div>
