@@ -6,7 +6,6 @@ import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.JwtService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.api.server.model.OauthType
-import org.firstapproval.api.server.model.OauthType.*
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.email.EmailChangeService
 import org.springframework.http.ResponseEntity
@@ -62,17 +61,7 @@ class UserController(
         getMeResponse.email = user.email
         getMeResponse.canSetPassword = user.password.isNullOrEmpty()
         getMeResponse.canChangePassword = !user.password.isNullOrEmpty()
-        getMeResponse.signedVia = user.externalIds.keys.map { convertToOauthType(it.name) }
+        getMeResponse.signedVia = user.externalIds.keys.map { OauthType.valueOf(it.name) }
         return ok(getMeResponse)
-    }
-
-    private fun convertToOauthType(type: String): OauthType {
-        return when (type) {
-            "GOOGLE" -> GOOGLE
-            "FACEBOOK" -> FACEBOOK
-            "LINKEDIN" -> LINKEDIN
-            "ORCID" -> ORCID
-            else -> throw IllegalArgumentException("Unknown OAuth type: $type")
-        }
     }
 }
