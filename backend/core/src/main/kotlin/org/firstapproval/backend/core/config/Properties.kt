@@ -13,7 +13,7 @@ class Properties {
         lateinit var accessKey: String
         lateinit var secretKey: String
         lateinit var url: URL
-        lateinit var bucketName: String
+        lateinit var buckets: Set<String>
     }
 
     @Component
