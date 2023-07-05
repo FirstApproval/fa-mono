@@ -647,18 +647,14 @@ components:
           type: string
         email:
           type: string
-        canSetEmail:
-          type: boolean
         canSetPassword:
           type: boolean
         canChangePassword:
           type: boolean
-        signedViaGoogle:
-          type: boolean
-        signedViaLinkedin:
-          type: boolean
-        signedViaFacebook:
-          type: boolean
+        signedVia:
+          type: array
+          items:
+            $ref: '#/components/schemas/OauthType'
 
     OauthType:
       type: string
