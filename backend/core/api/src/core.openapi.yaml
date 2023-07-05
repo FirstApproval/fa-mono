@@ -216,6 +216,21 @@ paths:
       operationId: setPassword
       tags: [ user ]
 
+  /api/user/get-me:
+    get:
+      summary: Get user information
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMeResponse'
+      security:
+        - TokenAuth: [ ]
+      operationId: getMe
+      tags: [ user ]
+
   /api/publication:
     post:
       summary: Create publication draft
@@ -618,6 +633,28 @@ components:
           format: uuid
       required:
         - id
+
+    GetMeResponse:
+      type: object
+      properties:
+        firstName:
+          type: string
+        middleName:
+          type: string
+        lastName:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        canSetPassword:
+          type: boolean
+        canChangePassword:
+          type: boolean
+        signedVia:
+          type: array
+          items:
+            $ref: '#/components/schemas/OauthType'
 
     OauthType:
       type: string
