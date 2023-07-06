@@ -1,4 +1,4 @@
-import { action, makeObservable, observable } from 'mobx';
+import { action, autorun, makeObservable, observable } from 'mobx';
 import { fileService } from '../core/service';
 
 interface File {
@@ -10,12 +10,21 @@ interface File {
 export class FileSystem {
   currentPath: string = '/';
   files: File[] = [];
+  localFiles: File[] = [];
+  isLoading = false;
 
   constructor(readonly publicationId: string) {
     makeObservable(this, {
       files: observable,
+      localFiles: observable,
+      isLoading: observable,
       currentPath: observable,
       setCurrentPath: action
+    });
+
+    autorun(async () => {
+      const files = await this.listDirectory(this.currentPath, this.localFiles);
+      this.files = [...files];
     });
   }
 
@@ -38,29 +47,37 @@ export class FileSystem {
         void fileService.uploadFile(this.publicationId, e.fullPath, true);
       }
     });
-    this.files = [...this.files, ...files];
+    this.localFiles = [...this.localFiles, ...files];
   };
 
-  listDirectory = async (dirPath: string): Promise<File[]> => {
-    const response = await fileService.getPublicationFiles(
-      this.publicationId,
-      dirPath
-    );
-    const files: File[] = response.data.map((pf) => {
-      return {
-        ...pf,
-        fullPath: pf.fullPath ?? '',
-        name: fpToName(pf.fullPath ?? ''),
-        isDirectory: pf.isDir ?? false
-      };
-    });
-    return [...files, ...this.files].filter((file) => {
-      const filePath = file.fullPath;
-      return (
-        filePath.startsWith(dirPath) &&
-        !filePath.slice(dirPath.length).includes('/')
+  private readonly listDirectory = async (
+    dirPath: string,
+    localFiles: File[]
+  ): Promise<File[]> => {
+    this.isLoading = true;
+    try {
+      const response = await fileService.getPublicationFiles(
+        this.publicationId,
+        dirPath
       );
-    });
+      const files: File[] = response.data.map((pf) => {
+        return {
+          ...pf,
+          fullPath: pf.fullPath ?? '',
+          name: fpToName(pf.fullPath ?? ''),
+          isDirectory: pf.isDir ?? false
+        };
+      });
+      return [...localFiles, ...files].filter((file) => {
+        const filePath = file.fullPath;
+        return (
+          filePath.startsWith(dirPath) &&
+          !filePath.slice(dirPath.length).includes('/')
+        );
+      });
+    } finally {
+      this.isLoading = false;
+    }
   };
 }
 

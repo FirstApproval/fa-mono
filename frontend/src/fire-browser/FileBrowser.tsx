@@ -9,10 +9,12 @@ import {
   type FileArray
 } from '@first-approval/chonky';
 import React, { type ReactElement, useEffect, useState } from 'react';
-import { ChonkyIconFA } from 'chonky-icon-fontawesome';
+import { ChonkyIconFA } from '@first-approval/chonky-icon-fontawesome';
 import { type FileSystem } from './FileSystem';
 import { observer } from 'mobx-react-lite';
 import { FileToolbar } from './FileToolbar';
+import styled from '@emotion/styled';
+import { CircularProgress } from '@mui/material';
 
 setChonkyDefaults({
   iconComponent: ChonkyIconFA,
@@ -58,19 +60,17 @@ export const FileBrowser = observer(
     const [files, setFiles] = useState<FileArray>([]);
 
     useEffect(() => {
-      void props.fs.listDirectory(currPath).then((files) => {
-        setFiles(
-          files.map((f) => ({
-            id: f.fullPath,
-            name: f.name,
-            isDir: f.isDirectory
-          }))
-        );
-      });
-    }, [props.fs, currPath]);
+      setFiles(
+        props.fs.files.map((f) => ({
+          id: f.fullPath,
+          name: f.name,
+          isDir: f.isDirectory
+        }))
+      );
+    }, [props.fs.files]);
 
     return (
-      <div style={{ height: '500px', paddingBottom: '40px' }}>
+      <Wrap>
         <ChonkyFileBrowser
           files={files}
           folderChain={folderChain}
@@ -79,13 +79,24 @@ export const FileBrowser = observer(
           disableDefaultFileActions={true}>
           <FileNavbar />
           <FileToolbar />
-          <FileList />
-          <FileContextMenu />
+          {!props.fs.isLoading && (
+            <>
+              <FileList />
+              <FileContextMenu />
+            </>
+          )}
+          {props.fs.isLoading && <CircularProgress />}
         </ChonkyFileBrowser>
-      </div>
+      </Wrap>
     );
   }
 );
+
+const Wrap = styled.div`
+  border-radius: 4px;
+  border: 1px solid var(--divider, #d2d2d6);
+  height: 450px;
+`;
 
 function calculatePathChain(currentPath: string): string[] {
   const pathSegments = currentPath.split('/').filter(Boolean);

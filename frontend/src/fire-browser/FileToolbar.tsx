@@ -7,7 +7,12 @@ import {
   useLocalizedFileActionStrings,
   useParamSelector
 } from '@first-approval/chonky';
-import { Button, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import {
+  Button,
+  Divider,
+  ToggleButton,
+  ToggleButtonGroup
+} from '@mui/material';
 import {
   Add,
   FolderOpen,
@@ -19,24 +24,27 @@ import styled from '@emotion/styled';
 // eslint-disable-next-line react/display-name
 export const FileToolbar: React.FC = React.memo(() => {
   return (
-    <ToolbarWrap>
-      <ToolbarButton
-        item={ChonkyActions.CreateFolder.id}
-        icon={<FolderOpen />}
-      />
-      <ToolbarLeft>
-        <ToolbarButton item={ChonkyActions.UploadFiles.id} icon={<Add />} />
-        <ToolbarToggleButton
-          items={[
-            {
-              name: ChonkyActions.EnableListView.id,
-              icon: <FormatListBulleted />
-            },
-            { name: ChonkyActions.EnableGridView.id, icon: <GridView /> }
-          ]}
+    <>
+      <ToolbarWrap>
+        <ToolbarButton
+          item={ChonkyActions.CreateFolder.id}
+          icon={<FolderOpen />}
         />
-      </ToolbarLeft>
-    </ToolbarWrap>
+        <ToolbarLeft>
+          <ToolbarButton item={ChonkyActions.UploadFiles.id} icon={<Add />} />
+          <ToolbarToggleButton
+            items={[
+              {
+                name: ChonkyActions.EnableListView.id,
+                icon: <FormatListBulleted />
+              },
+              { name: ChonkyActions.EnableGridView.id, icon: <GridView /> }
+            ]}
+          />
+        </ToolbarLeft>
+      </ToolbarWrap>
+      <Divider />
+    </>
   );
 });
 
