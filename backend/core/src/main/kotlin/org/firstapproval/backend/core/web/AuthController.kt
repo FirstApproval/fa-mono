@@ -34,7 +34,9 @@ class AuthController(
     override fun authorizationLinks(): ResponseEntity<AuthorizationLinksResponse> {
         return ok(AuthorizationLinksResponse()
             .google(oauthProperties.google.authUrl)
+            .facebook(oauthProperties.facebook.authUrl)
             .linkedin(oauthProperties.linkedin.authUrl)
+            .orcid(oauthProperties.orcid.authUrl)
         )
     }
 }

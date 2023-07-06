@@ -5,7 +5,9 @@ import org.firstapproval.api.server.model.*
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.JwtService
 import org.firstapproval.backend.core.config.security.user
+import org.firstapproval.api.server.model.OauthType
 import org.firstapproval.backend.core.domain.user.UserService
+import org.firstapproval.backend.core.domain.user.email.EmailChangeService
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class UserController(
     private val userService: UserService,
+    private val emailChangeService: EmailChangeService,
     private val jwtService: JwtService,
     private val authHolderService: AuthHolderService
 ) : UserApi {
@@ -36,5 +39,29 @@ class UserController(
     override fun setPassword(setPasswordRequest: SetPasswordRequest): ResponseEntity<Void> {
         userService.setPassword(authHolderService.user, setPasswordRequest.newPassword)
         return ok().build()
+    }
+
+    override fun changeEmail(changeEmailRequest: ChangeEmailRequest): ResponseEntity<ChangeEmailResponse> {
+        val confirmationToken = emailChangeService.createChangeEmailRequest(changeEmailRequest.email, authHolderService.user)
+        return ok(ChangeEmailResponse(confirmationToken))
+    }
+
+    override fun confirmChangeEmail(changeEmailConfirmationRequest: ChangeEmailConfirmationRequest): ResponseEntity<Void> {
+        emailChangeService.confirmChangeEmailRequest(changeEmailConfirmationRequest.confirmationToken, changeEmailConfirmationRequest.code)
+        return ok().build()
+    }
+
+    override fun getMe(): ResponseEntity<GetMeResponse> {
+        val user = authHolderService.user
+        val getMeResponse = GetMeResponse()
+        getMeResponse.firstName = user.firstName
+        getMeResponse.lastName = user.lastName
+        getMeResponse.middleName = user.middleName
+        getMeResponse.username = user.username
+        getMeResponse.email = user.email
+        getMeResponse.canSetPassword = user.password.isNullOrEmpty()
+        getMeResponse.canChangePassword = !user.password.isNullOrEmpty()
+        getMeResponse.signedVia = user.externalIds.keys.map { OauthType.valueOf(it.name) }
+        return ok(getMeResponse)
     }
 }

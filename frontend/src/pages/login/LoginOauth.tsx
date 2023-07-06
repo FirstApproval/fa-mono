@@ -31,12 +31,16 @@ export const LoginOauth: FunctionComponent = () => {
             Sign in with Google
           </FullWidthButton>
           <Divider />
-          <IconButtonWrap size={'medium'}>
-            <img src={orcid} />
-          </IconButtonWrap>
-          <IconButtonWrap size={'medium'}>
-            <img src={facebook} />
-          </IconButtonWrap>
+          <Link href={authUrls.orcid}>
+            <IconButtonWrap size={'medium'}>
+              <img src={orcid} />
+            </IconButtonWrap>
+          </Link>
+          <Link href={authUrls.facebook}>
+            <IconButtonWrap size={'medium'}>
+              <img src={facebook} />
+            </IconButtonWrap>
+          </Link>
           <Link href={authUrls.linkedin}>
             <IconButtonWrap size={'medium'}>
               <img src={linked} />
