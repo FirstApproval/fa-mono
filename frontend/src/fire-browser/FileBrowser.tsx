@@ -27,7 +27,7 @@ export const FileBrowser = observer(
     const folderChain = [
       {
         id: '/',
-        name: '/',
+        name: 'Files',
         isDir: true
       },
       ...calculatePathChain(currPath).map((f) => ({
