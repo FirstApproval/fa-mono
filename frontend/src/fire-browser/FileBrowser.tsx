@@ -5,9 +5,10 @@ import {
   setChonkyDefaults,
   FileNavbar,
   FileList,
-  FileContextMenu
+  FileContextMenu,
+  type FileArray
 } from '@first-approval/chonky';
-import React, { type ReactElement, useState } from 'react';
+import React, { type ReactElement, useEffect, useState } from 'react';
 import { ChonkyIconFA } from 'chonky-icon-fontawesome';
 import { type FileSystem } from './FileSystem';
 import { observer } from 'mobx-react-lite';
@@ -20,8 +21,7 @@ setChonkyDefaults({
 
 export const FileBrowser = observer(
   (props: { fs: FileSystem }): ReactElement => {
-    const [currPath, setCurrPath] = useState('/');
-
+    const { currentPath: currPath, setCurrentPath: setCurrPath } = props.fs;
     const folderChain = [
       {
         id: '/',
@@ -55,11 +55,19 @@ export const FileBrowser = observer(
       ChonkyActions.DeleteFiles
     ];
 
-    const files = props.fs.listDirectory(currPath).map((f) => ({
-      id: f.fullPath,
-      name: f.name,
-      isDir: f.isDirectory
-    }));
+    const [files, setFiles] = useState<FileArray>([]);
+
+    useEffect(() => {
+      void props.fs.listDirectory(currPath).then((files) => {
+        setFiles(
+          files.map((f) => ({
+            id: f.fullPath,
+            name: f.name,
+            isDir: f.isDirectory
+          }))
+        );
+      });
+    }, [props.fs, currPath]);
 
     return (
       <div style={{ height: '500px', paddingBottom: '40px' }}>
