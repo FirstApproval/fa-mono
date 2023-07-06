@@ -14,8 +14,6 @@
     "mobx-react-lite": "^3.4.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-line-progress-bar-steps": "^0.0.5",
-    "react-stepper-horizontal": "^1.0.11",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
