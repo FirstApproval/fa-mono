@@ -34,6 +34,7 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
   observer((props: SetPasswordPageProps) => {
     const [passwordHint, setPasswordHint] = useState('');
     const [passwordHintColor, setPasswordHintColor] = useState('');
+    const [lineColors, setLineColors] = useState(['', '', '']);
 
 
     const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,13 +44,16 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
   
       if (password.length < 8) {
         setPasswordHint('Please use 8+ characters for secure password');
-        setPasswordHintColor('#D32F2F')
+        setPasswordHintColor('#D32F2F');
+        setLineColors(['#D32F2F', 'gray', 'gray'])
       } else if (password.length === 8) {
         setPasswordHint('so-so password')
         setPasswordHintColor('#FF9800')
+        setLineColors(['#FF9800', '#FF9800', 'gray'])
       } else {
         setPasswordHint('great password')
         setPasswordHintColor('#3B4EFF')
+        setLineColors(['#3B4EFF', '#3B4EFF', '#3B4EFF'])
       }
     };
    
@@ -86,10 +90,20 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
                     </InputAdornment>
                   )
                 }}
-                helperText={passwordHint}
-                FormHelperTextProps={{ style: {color: passwordHintColor} }}
+
+                //seems like this should be another div, not helpertext
+                
+             //   helperText={passwordHint}
+             //   FormHelperTextProps={{ style: {color: passwordHintColor} }}
                 
               />
+              
+              <span  style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                <hr style={{ width: '30%', borderTop: `1px solid ${lineColors[0]}` }} />
+                <hr style={{ width: '30%', borderTop: `1px solid ${lineColors[1]}` }} /> 
+                <hr style={{ width: '30%', borderTop: `1px solid ${lineColors[2]}` }} />
+              </span>
+            <div style={{color: passwordHintColor}}>{passwordHint}</div>  
             </div>
             {props.store.isSubmitting && <CircularProgress />}
             {!props.store.isSubmitting && (
