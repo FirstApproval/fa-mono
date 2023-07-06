@@ -34,8 +34,6 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
   observer((props: SetPasswordPageProps) => {
     const [passwordHint, setPasswordHint] = useState('');
     const [passwordHintColor, setPasswordHintColor] = useState('');
-    const [lineColors, setLineColors] = useState(['', '', '']);
-
 
     const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const password = event.target.value;
