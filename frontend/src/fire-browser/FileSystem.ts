@@ -49,7 +49,7 @@ export class FileSystem {
     ];
   };
 
-  private async uploadQueue(result: FileSystemEntry[]): Promise<void> {
+  private uploadQueue(result: FileSystemEntry[]): void {
     result.forEach((e) => {
       const fullPath = this.fullPath(e.fullPath);
       if (e.isFile) {
