@@ -106,15 +106,7 @@ paths:
       operationId: confirmRegistration
       tags: [ registration ]
 
-  /api/user/{id}:
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-        description: Id of the user to be updated or deleted
+  /api/user:
     put:
       summary: Update user information
       requestBody:
@@ -710,6 +702,10 @@ components:
           type: string
         username:
           type: string
+      required:
+        - firstName
+        - lastName
+        - username
 
   securitySchemes:
     PublicAuth:

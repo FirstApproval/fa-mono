@@ -66,13 +66,13 @@ class UserController(
         return ok(getMeResponse)
     }
 
-    override fun deleteUser(id: UUID): ResponseEntity<Void> {
-        userService.delete(id)
+    override fun deleteUser(): ResponseEntity<Void> {
+        userService.delete(authHolderService.user.id)
         return ok().build()
     }
 
-    override fun updateUser(id: UUID, request: UserUpdateRequest): ResponseEntity<Void> {
-        userService.update(id, request.firstName, request.middleName, request.lastName, request.username)
+    override fun updateUser(request: UserUpdateRequest): ResponseEntity<Void> {
+        userService.update(authHolderService.user.id, request.firstName, request.middleName, request.lastName, request.username)
         return ok().build()
     }
 }

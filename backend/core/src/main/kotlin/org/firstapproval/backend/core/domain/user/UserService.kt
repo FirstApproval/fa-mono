@@ -21,6 +21,7 @@ import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation
@@ -260,6 +261,8 @@ class UserService(
 
     @Transactional
     fun update(id: UUID, firstName: String, middleName: String?, lastName: String, username: String) {
+        val userFromDb = userRepository.findByUsername(username)
+        if (userFromDb != null && userFromDb.id != id) throw RecordConflictException("username already taken")
         val user = userRepository.findById(id).orElseThrow()
         user.firstName = firstName
         user.middleName = middleName
