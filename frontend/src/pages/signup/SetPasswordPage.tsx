@@ -46,11 +46,11 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
         setPasswordHintColor('#D32F2F');
         setLineColors(['#D32F2F', '#D9D9D9', '#D9D9D9'])
       } else if (password.length === 8) {
-        setPasswordHint('so-so password')
+        setPasswordHint('So-so password')
         setPasswordHintColor('#FF9800')
         setLineColors(['#FF9800', '#FF9800', '#D9D9D9'])
       } else {
-        setPasswordHint('great password')
+        setPasswordHint('Great password')
         setPasswordHintColor('#3B4EFF')
         setLineColors(['#3B4EFF', '#3B4EFF', '#3B4EFF'])
       }
@@ -93,13 +93,13 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
               />
 
             {props.store.password &&  
-              (<span  style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                <hr style={{ width: '30%', border: `2px solid ${lineColors[0]}` }}/>
-                <hr style={{ width: '30%', border: `2px solid ${lineColors[1]}` }} /> 
-                <hr style={{ width: '30%', border: `2px solid ${lineColors[2]}` }} />
+              (<span  style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'stretch', marginBottom: '8px' }}>
+                <hr style={{ width: '30%', marginLeft: '0', borderTop: `2px solid ${lineColors[0]}` }}/>
+                <hr style={{ width: '30%', borderTop: `2px solid ${lineColors[1]}` }} /> 
+                <hr style={{ width: '30%', marginRight: '0', borderTop: `2px solid ${lineColors[2]}` }} />
               </span>)
   }
-            <div style={{color: passwordHintColor}}>{passwordHint}</div>  
+            <div style={{color: passwordHintColor, fontSize: '20px', marginBottom: '8px'}}>{passwordHint}</div>  
             </div>
             {props.store.isSubmitting && <CircularProgress />}
             {!props.store.isSubmitting && (
