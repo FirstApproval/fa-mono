@@ -68,6 +68,11 @@ export const FileBrowser = observer(
       } else if (data.id === ChonkyActions.DeleteFiles.id) {
         setDeleteDialogOpen(true);
         setFilesToDelete(data.state.selectedFiles.map((f) => f.id));
+      } else if (data.id === ChonkyActions.MoveFiles.id) {
+        props.fs.moveFiles(
+          data.state.selectedFiles.map((f) => f.id),
+          ((data.payload as any).destination.fullPath as string) + '/'
+        );
       }
     };
 

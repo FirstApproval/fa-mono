@@ -97,6 +97,12 @@ export class FileSystem {
     this.localFiles = this.localFiles.filter(filter);
   };
 
+  moveFiles = (ids: string[], destination: string): void => {
+    for (const id of ids) {
+      void fileService.moveFile(id, { newDirPath: destination });
+    }
+  };
+
   private readonly cleanUploading = (fullPath: string): void => {
     if (
       fullPath.substring(0, fullPath.lastIndexOf('/') + 1) === this.currentPath
