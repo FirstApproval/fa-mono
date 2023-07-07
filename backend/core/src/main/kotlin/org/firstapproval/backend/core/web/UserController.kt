@@ -11,6 +11,7 @@ import org.firstapproval.backend.core.domain.user.email.EmailChangeService
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
 class UserController(
@@ -63,5 +64,15 @@ class UserController(
         getMeResponse.canChangePassword = !user.password.isNullOrEmpty()
         getMeResponse.signedVia = user.externalIds.keys.map { OauthType.valueOf(it.name) }
         return ok(getMeResponse)
+    }
+
+    override fun deleteUser(): ResponseEntity<Void> {
+        userService.delete(authHolderService.user.id)
+        return ok().build()
+    }
+
+    override fun updateUser(request: UserUpdateRequest): ResponseEntity<Void> {
+        userService.update(authHolderService.user.id, request.firstName, request.middleName, request.lastName, request.username)
+        return ok().build()
     }
 }

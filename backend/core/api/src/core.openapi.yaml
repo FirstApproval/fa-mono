@@ -106,6 +106,33 @@ paths:
       operationId: confirmRegistration
       tags: [ registration ]
 
+  /api/user:
+    put:
+      summary: Update user information
+      requestBody:
+        description: Updated user data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdateRequest"
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: updateUser
+      tags: [ user ]
+    delete:
+      summary: Delete user
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: deleteUser
+      tags: [ user ]
+
   /api/user/change-email:
     post:
       summary: Change email
@@ -663,6 +690,22 @@ components:
         - FACEBOOK
         - LINKEDIN
         - ORCID
+
+    UserUpdateRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+        middleName:
+          type: string
+        lastName:
+          type: string
+        username:
+          type: string
+      required:
+        - firstName
+        - lastName
+        - username
 
   securitySchemes:
     PublicAuth:
