@@ -14,7 +14,12 @@ import { type FileSystem } from './FileSystem';
 import { observer } from 'mobx-react-lite';
 import { FileToolbar } from './FileToolbar';
 import styled from '@emotion/styled';
-import { CircularProgress } from '@mui/material';
+import { CircularProgress, TextField } from '@mui/material';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 
 setChonkyDefaults({
   iconComponent: ChonkyIconFA,
@@ -23,6 +28,14 @@ setChonkyDefaults({
 
 export const FileBrowser = observer(
   (props: { fs: FileSystem }): ReactElement => {
+    const [newFolderDialogOpen, setNewFolderDialogOpen] = useState(false);
+    const [newFolderName, setNewFolderName] = useState('');
+
+    const handleCloseNewFolderDialog = (): void => {
+      setNewFolderDialogOpen(false);
+      setNewFolderName('');
+    };
+
     const { currentPath: currPath, setCurrentPath: setCurrPath } = props.fs;
     const folderChain = [
       {
@@ -42,6 +55,8 @@ export const FileBrowser = observer(
         const fullPath = data.payload.targetFile?.id ?? '';
         const newPath = fullPath.endsWith('/') ? fullPath : `${fullPath}/`;
         setCurrPath(newPath);
+      } else if (data.id === ChonkyActions.CreateFolder.id) {
+        setNewFolderDialogOpen(true);
       } else if (data.id === ChonkyActions.DeleteFiles.id) {
         // Delete the files
       }
@@ -71,24 +86,56 @@ export const FileBrowser = observer(
     }, [props.fs.files]);
 
     return (
-      <Wrap>
-        <ChonkyFileBrowser
-          files={files}
-          folderChain={folderChain}
-          onFileAction={handleAction}
-          fileActions={myFileActions}
-          disableDefaultFileActions={true}>
-          <FileNavbar />
-          <FileToolbar />
-          {!props.fs.isLoading && (
-            <>
-              <FileList />
-              <FileContextMenu />
-            </>
-          )}
-          {props.fs.isLoading && <CircularProgress />}
-        </ChonkyFileBrowser>
-      </Wrap>
+      <>
+        <Wrap>
+          <ChonkyFileBrowser
+            files={files}
+            folderChain={folderChain}
+            onFileAction={handleAction}
+            fileActions={myFileActions}
+            disableDefaultFileActions={true}>
+            <FileNavbar />
+            <FileToolbar />
+            {!props.fs.isLoading && (
+              <>
+                <FileList />
+                <FileContextMenu />
+              </>
+            )}
+            {props.fs.isLoading && <CircularProgress />}
+          </ChonkyFileBrowser>
+        </Wrap>
+        <Dialog
+          open={newFolderDialogOpen}
+          onClose={handleCloseNewFolderDialog}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description">
+          <DialogTitle id="alert-dialog-title">New folder</DialogTitle>
+          <DialogContent>
+            <ContentWrap>
+              <FullWidthTextField
+                autoFocus
+                value={newFolderName}
+                onChange={(e) => {
+                  setNewFolderName(e.currentTarget.value);
+                }}
+                label="Folder name"
+                variant="outlined"
+              />
+            </ContentWrap>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseNewFolderDialog}>Cancel</Button>
+            <Button
+              onClick={() => {
+                handleCloseNewFolderDialog();
+                props.fs.createFolder(newFolderName);
+              }}>
+              Create
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </>
     );
   }
 );
@@ -97,6 +144,14 @@ const Wrap = styled.div`
   border-radius: 4px;
   border: 1px solid var(--divider, #d2d2d6);
   height: 450px;
+`;
+
+const FullWidthTextField = styled(TextField)`
+  min-width: 336px;
+`;
+
+const ContentWrap = styled.div`
+  padding-top: 8px;
 `;
 
 function calculatePathChain(currentPath: string): string[] {

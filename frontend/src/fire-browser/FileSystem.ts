@@ -64,6 +64,41 @@ export class FileSystem {
     ];
   };
 
+  createFolder = (name: string): void => {
+    const fullPath = `${this.currentPath}${name}`;
+    const cleanUpLoading = (): void => {
+      if (
+        fullPath.substring(0, fullPath.lastIndexOf('/') + 1) ===
+        this.currentPath
+      ) {
+        this.localFiles = this.localFiles.map((f) => {
+          if (f.fullPath === fullPath) {
+            return { ...f, isUploading: false };
+          } else {
+            return f;
+          }
+        });
+      }
+    };
+
+    void fileService
+      .createFolder(this.publicationId, {
+        name,
+        dirPath: this.currentPath
+      })
+      .then(cleanUpLoading);
+
+    this.localFiles = [
+      ...this.localFiles,
+      {
+        name,
+        fullPath,
+        isDirectory: true,
+        isUploading: true
+      }
+    ];
+  };
+
   private async uploadQueue(result: FileSystemEntry[]): Promise<void> {
     const concurrencyLimit = 4;
     let runningCount = 0;
