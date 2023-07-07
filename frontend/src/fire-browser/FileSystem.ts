@@ -11,6 +11,7 @@ interface PublicationFile {
 export class FileSystem {
   currentPath: string = '/';
   files: PublicationFile[] = [];
+  backEndFiles: PublicationFile[] = [];
   localFiles: PublicationFile[] = [];
   isLoading = false;
 
@@ -18,14 +19,28 @@ export class FileSystem {
     makeObservable(this, {
       currentPath: observable,
       files: observable,
+      backEndFiles: observable,
       localFiles: observable,
       isLoading: observable,
       setCurrentPath: action
     });
 
     autorun(async () => {
-      const files = await this.listDirectory(this.currentPath, this.localFiles);
-      this.files = [...files];
+      const files = await this.listDirectory(this.currentPath);
+      this.backEndFiles = [...files];
+    });
+
+    autorun(() => {
+      this.files = filterUniqueBy(
+        [...this.backEndFiles, ...this.localFiles],
+        'fullPath'
+      ).filter((file) => {
+        const filePath = file.fullPath;
+        return (
+          filePath.startsWith(this.currentPath) &&
+          !filePath.slice(this.currentPath.length).includes('/')
+        );
+      });
     });
   }
 
@@ -122,8 +137,7 @@ export class FileSystem {
   }
 
   private readonly listDirectory = async (
-    dirPath: string,
-    localFiles: PublicationFile[]
+    dirPath: string
   ): Promise<PublicationFile[]> => {
     this.isLoading = true;
     try {
@@ -140,15 +154,7 @@ export class FileSystem {
           isUploading: false
         };
       });
-      return filterUniqueBy([...files, ...localFiles], 'fullPath').filter(
-        (file) => {
-          const filePath = file.fullPath;
-          return (
-            filePath.startsWith(dirPath) &&
-            !filePath.slice(dirPath.length).includes('/')
-          );
-        }
-      );
+      return files;
     } finally {
       this.isLoading = false;
     }
