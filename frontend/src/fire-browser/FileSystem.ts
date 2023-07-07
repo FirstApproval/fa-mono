@@ -55,7 +55,7 @@ export class FileSystem {
     const uploadQueue: Array<() => Promise<void>> = [];
 
     const executeNextUpload = async (): Promise<void> => {
-      if (uploadQueue.length > 0 && runningCount < concurrencyLimit) {
+      while (uploadQueue.length > 0 && runningCount < concurrencyLimit) {
         const nextUpload = uploadQueue.shift();
         runningCount++;
         try {
