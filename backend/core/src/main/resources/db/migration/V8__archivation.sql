@@ -1,0 +1,5 @@
+ALTER TABLE publications
+    ADD COLUMN status TEXT NOT NULL DEFAULT 'PENDING';
+
+ALTER TABLE publications
+    ALTER COLUMN status DROP DEFAULT;

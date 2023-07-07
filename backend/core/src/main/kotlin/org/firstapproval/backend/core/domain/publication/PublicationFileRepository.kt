@@ -1,5 +1,7 @@
 package org.firstapproval.backend.core.domain.publication
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import java.util.*
@@ -19,4 +21,7 @@ interface PublicationFileRepository : JpaRepository<PublicationFile, UUID> {
     fun findAllByPublicationIdAndDirPath(publicationId: UUID, dirPath: String): List<PublicationFile>
 
     fun findByIdIn(ids: List<UUID>): List<PublicationFile>
+
+    fun findByPublicationIdOrderByCreationTimeAsc(publicationId: UUID, pageable: Pageable): Page<PublicationFile>
+
 }

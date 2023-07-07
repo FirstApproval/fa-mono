@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.DeleteObjectsRequest
 import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion
 import com.amazonaws.services.s3.model.ObjectMetadata
+import com.amazonaws.services.s3.model.S3ObjectInputStream
 import mu.KotlinLogging.logger
 import java.io.InputStream
 
@@ -26,8 +27,7 @@ class FileStorageService(private val amazonS3: AmazonS3) {
         amazonS3.deleteObjects(request)
     }
 
-    fun get(bucketName: String, id: String): ByteArray = amazonS3.getObject(bucketName, id).objectContent
-            .readBytes()
+    fun get(bucketName: String, id: String): S3ObjectInputStream = amazonS3.getObject(bucketName, id).objectContent
 
     fun createBucketIfNotExist(bucketName: String) {
         if (!amazonS3.doesBucketExistV2(bucketName)) {
