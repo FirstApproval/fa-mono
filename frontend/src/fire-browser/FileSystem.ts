@@ -92,8 +92,7 @@ export class FileSystem {
 
   deleteFile = (ids: string[]): void => {
     void fileService.deleteFiles({ ids });
-    const filter = (f: PublicationFile): boolean | undefined | '' =>
-      f.id && !ids.includes(f.id);
+    const filter = (f: PublicationFile): boolean => !ids.includes(f.id);
     this.backEndFiles = this.backEndFiles.filter(filter);
     this.localFiles = this.localFiles.filter(filter);
   };
