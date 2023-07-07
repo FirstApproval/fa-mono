@@ -66,27 +66,15 @@ export class FileSystem {
 
   createFolder = (name: string): void => {
     const fullPath = `${this.currentPath}${name}`;
-    const cleanUpLoading = (): void => {
-      if (
-        fullPath.substring(0, fullPath.lastIndexOf('/') + 1) ===
-        this.currentPath
-      ) {
-        this.localFiles = this.localFiles.map((f) => {
-          if (f.fullPath === fullPath) {
-            return { ...f, isUploading: false };
-          } else {
-            return f;
-          }
-        });
-      }
-    };
 
     void fileService
       .createFolder(this.publicationId, {
         name,
         dirPath: this.currentPath
       })
-      .then(cleanUpLoading);
+      .then(() => {
+        this.cleanUploading(fullPath);
+      });
 
     this.localFiles = [
       ...this.localFiles,
@@ -97,6 +85,20 @@ export class FileSystem {
         isUploading: true
       }
     ];
+  };
+
+  private readonly cleanUploading = (fullPath: string): void => {
+    if (
+      fullPath.substring(0, fullPath.lastIndexOf('/') + 1) === this.currentPath
+    ) {
+      this.localFiles = this.localFiles.map((f) => {
+        if (f.fullPath === fullPath) {
+          return { ...f, isUploading: false };
+        } else {
+          return f;
+        }
+      });
+    }
   };
 
   private async uploadQueue(result: FileSystemEntry[]): Promise<void> {
@@ -122,28 +124,15 @@ export class FileSystem {
     result.forEach((e) => {
       const fullPath = this.fullPath(e.fullPath);
 
-      const cleanUpLoading = (): void => {
-        if (
-          fullPath.substring(0, fullPath.lastIndexOf('/') + 1) ===
-          this.currentPath
-        ) {
-          this.localFiles = this.localFiles.map((f) => {
-            if (f.fullPath === fullPath) {
-              return { ...f, isUploading: false };
-            } else {
-              return f;
-            }
-          });
-        }
-      };
-
       if (e.isFile) {
         const uploadFile = async (): Promise<void> => {
           await new Promise<void>((resolve) => {
             (e as FileSystemFileEntry).file((file) => {
               void fileService
                 .uploadFile(this.publicationId, fullPath, false, file)
-                .then(cleanUpLoading)
+                .then(() => {
+                  this.cleanUploading(fullPath);
+                })
                 .finally(() => {
                   resolve();
                 });
@@ -156,7 +145,9 @@ export class FileSystem {
         const uploadFolder = async (): Promise<void> => {
           await fileService
             .uploadFile(this.publicationId, fullPath, true)
-            .then(cleanUpLoading);
+            .then(() => {
+              this.cleanUploading(fullPath);
+            });
         };
 
         uploadQueue.push(uploadFolder);
