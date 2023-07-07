@@ -72,12 +72,28 @@ export class FileSystem {
     result.forEach((e) => {
       const fullPath = this.fullPath(e.fullPath);
 
+      const cleanUpLoading = (): void => {
+        if (
+          fullPath.substring(0, fullPath.lastIndexOf('/') + 1) ===
+          this.currentPath
+        ) {
+          this.localFiles = this.localFiles.map((f) => {
+            if (f.fullPath === fullPath) {
+              return { ...f, isUploading: false };
+            } else {
+              return f;
+            }
+          });
+        }
+      };
+
       if (e.isFile) {
         const uploadFile = async (): Promise<void> => {
           await new Promise<void>((resolve) => {
             (e as FileSystemFileEntry).file((file) => {
               void fileService
                 .uploadFile(this.publicationId, fullPath, false, file)
+                .then(cleanUpLoading)
                 .finally(() => {
                   resolve();
                 });
@@ -88,7 +104,9 @@ export class FileSystem {
         uploadQueue.push(uploadFile);
       } else {
         const uploadFolder = async (): Promise<void> => {
-          await fileService.uploadFile(this.publicationId, fullPath, true);
+          await fileService
+            .uploadFile(this.publicationId, fullPath, true)
+            .then(cleanUpLoading);
         };
 
         uploadQueue.push(uploadFolder);
@@ -122,17 +140,31 @@ export class FileSystem {
           isUploading: false
         };
       });
-      return [...localFiles, ...files].filter((file) => {
-        const filePath = file.fullPath;
-        return (
-          filePath.startsWith(dirPath) &&
-          !filePath.slice(dirPath.length).includes('/')
-        );
-      });
+      return filterUniqueBy([...files, ...localFiles], 'fullPath').filter(
+        (file) => {
+          const filePath = file.fullPath;
+          return (
+            filePath.startsWith(dirPath) &&
+            !filePath.slice(dirPath.length).includes('/')
+          );
+        }
+      );
     } finally {
       this.isLoading = false;
     }
   };
+}
+
+function filterUniqueBy(array: any[], property: any): any[] {
+  const seen = new Set();
+  return array.filter((item) => {
+    const value = item[property];
+    if (!seen.has(value)) {
+      seen.add(value);
+      return true;
+    }
+    return false;
+  });
 }
 
 const fpToName = (fullPath: string): string => {

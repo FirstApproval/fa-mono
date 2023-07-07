@@ -64,7 +64,8 @@ export const FileBrowser = observer(
         props.fs.files.map((f) => ({
           id: f.fullPath,
           name: f.name,
-          isDir: f.isDirectory
+          isDir: f.isDirectory,
+          isLoading: f.isUploading
         }))
       );
     }, [props.fs.files]);
