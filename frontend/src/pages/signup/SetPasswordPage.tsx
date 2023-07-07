@@ -94,9 +94,9 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
 
             {props.store.password &&  
               (<span  style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'stretch', marginBottom: '8px' }}>
-                <hr style={{ width: '30%', marginLeft: '0', borderTop: `2px solid ${lineColors[0]}` }}/>
-                <hr style={{ width: '30%', borderTop: `2px solid ${lineColors[1]}` }} /> 
-                <hr style={{ width: '30%', marginRight: '0', borderTop: `2px solid ${lineColors[2]}` }} />
+                <hr style={{ width: '32%', marginLeft: '0', borderTop: `2px solid ${lineColors[0]}` }}/>
+                <hr style={{ width: '32%', borderTop: `2px solid ${lineColors[1]}` }} /> 
+                <hr style={{ width: '32%', marginRight: '0', borderTop: `2px solid ${lineColors[2]}` }} />
               </span>)
   }
             <div style={{color: passwordHintColor, fontSize: '20px', marginBottom: '8px'}}>{passwordHint}</div>  
