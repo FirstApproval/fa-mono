@@ -14,7 +14,7 @@ import { type FileSystem } from './FileSystem';
 import { observer } from 'mobx-react-lite';
 import { FileToolbar } from './FileToolbar';
 import styled from '@emotion/styled';
-import { CircularProgress, DialogContentText, TextField } from '@mui/material';
+import { CircularProgress, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -52,6 +52,7 @@ export const FileBrowser = observer(
       },
       ...calculatePathChain(currPath).map((f) => ({
         id: f,
+        fullPath: f,
         name: f.substring(f.lastIndexOf('/') + 1),
         isDir: true
       }))
@@ -59,7 +60,7 @@ export const FileBrowser = observer(
 
     const handleAction: FileActionHandler = (data) => {
       if (data.id === ChonkyActions.OpenFiles.id) {
-        const fullPath = data.payload.targetFile?.fullPath ?? '';
+        const fullPath: string = data.payload.targetFile?.fullPath ?? '';
         const newPath = fullPath.endsWith('/') ? fullPath : `${fullPath}/`;
         setCurrPath(newPath);
       } else if (data.id === ChonkyActions.CreateFolder.id) {
