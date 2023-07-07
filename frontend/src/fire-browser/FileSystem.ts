@@ -2,7 +2,7 @@ import { action, autorun, makeObservable, observable } from 'mobx';
 import { fileService } from '../core/service';
 
 interface PublicationFile {
-  id?: string;
+  id: string;
   fullPath: string;
   name: string;
   isDirectory: boolean;
@@ -56,6 +56,7 @@ export class FileSystem {
       ...files.map((f) => {
         const fullPath = this.fullPath(f.fullPath);
         return {
+          id: fullPath,
           name: f.name,
           fullPath,
           isDirectory: f.isDirectory,
@@ -80,6 +81,7 @@ export class FileSystem {
     this.localFiles = [
       ...this.localFiles,
       {
+        id: fullPath,
         name,
         fullPath,
         isDirectory: true,
@@ -182,7 +184,7 @@ export class FileSystem {
       );
       return response.data.map((pf) => {
         return {
-          ...pf,
+          id: pf.id ?? '',
           fullPath: pf.fullPath ?? '',
           name: fpToName(pf.fullPath ?? ''),
           isDirectory: pf.isDir ?? false,
