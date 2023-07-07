@@ -90,7 +90,10 @@ export class FileSystem {
 
   deleteFile = (ids: string[]): void => {
     void fileService.deleteFiles({ ids });
-    this.files = this.files.filter((f) => f.id && !ids.includes(f.id));
+    const filter = (f: PublicationFile): boolean | undefined | '' =>
+      f.id && !ids.includes(f.id);
+    this.backEndFiles = this.backEndFiles.filter(filter);
+    this.localFiles = this.localFiles.filter(filter);
   };
 
   private readonly cleanUploading = (fullPath: string): void => {
@@ -177,7 +180,7 @@ export class FileSystem {
         this.publicationId,
         dirPath
       );
-      const files: PublicationFile[] = response.data.map((pf) => {
+      return response.data.map((pf) => {
         return {
           ...pf,
           fullPath: pf.fullPath ?? '',
@@ -186,7 +189,6 @@ export class FileSystem {
           isUploading: false
         };
       });
-      return files;
     } finally {
       this.isLoading = false;
     }
