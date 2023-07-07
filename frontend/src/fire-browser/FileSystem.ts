@@ -16,10 +16,10 @@ export class FileSystem {
 
   constructor(readonly publicationId: string) {
     makeObservable(this, {
+      currentPath: observable,
       files: observable,
       localFiles: observable,
       isLoading: observable,
-      currentPath: observable,
       setCurrentPath: action
     });
 
@@ -34,13 +34,11 @@ export class FileSystem {
   };
 
   addFiles = (files: FileSystemEntry[]): void => {
-    const currentPath = this.currentPath;
     void this.uploadQueue(files);
     this.localFiles = [
       ...this.localFiles,
       ...files.map((f) => {
-        const fullPath =
-          currentPath.substring(0, currentPath.length - 1) + f.fullPath;
+        const fullPath = this.fullPath(f.fullPath);
         return {
           name: f.name,
           fullPath,
@@ -52,63 +50,30 @@ export class FileSystem {
   };
 
   private async uploadQueue(result: FileSystemEntry[]): Promise<void> {
-    const currentPath = this.currentPath;
-    const queue: Array<() => Promise<any>> = [];
-    const maxParallelRequests = 4;
-
     result.forEach((e) => {
-      queue.push(async () => {
-        const fullPath =
-          currentPath.substring(0, currentPath.length - 1) + e.fullPath;
-        if (e.isFile) {
-          return await new Promise<File>((resolve) => {
-            (e as FileSystemFileEntry).file((file) => {
-              resolve(file);
-            });
-          }).then(async (file) => {
-            return await fileService.uploadFile(
-              this.publicationId,
-              fullPath,
-              false,
-              file
-            );
+      const fullPath = this.fullPath(e.fullPath);
+      if (e.isFile) {
+        void new Promise<File>((resolve) => {
+          (e as FileSystemFileEntry).file((file) => {
+            resolve(file);
           });
-        } else {
-          return await fileService.uploadFile(
+        }).then(async (file) => {
+          void fileService.uploadFile(
             this.publicationId,
             fullPath,
-            true
+            false,
+            file
           );
-        }
-      });
+        });
+      } else {
+        void fileService.uploadFile(this.publicationId, fullPath, true);
+      }
     });
+  }
 
-    // Функция для выполнения промисов с ограничением
-    const executePromisesWithLimit = async (
-      queue: Array<() => Promise<any>>,
-      limit: number
-    ): Promise<void> => {
-      let executing = 0;
-
-      const processQueue = async (): Promise<void> => {
-        while (executing < limit && queue.length > 0) {
-          const promiseFn = queue.shift();
-          if (promiseFn) {
-            const promise = promiseFn();
-            executing++;
-            void promise.then(() => {
-              executing--;
-              void processQueue();
-            });
-          }
-        }
-      };
-
-      await processQueue();
-    };
-
-    // Выполнение промисов с ограничением в 4
-    await executePromisesWithLimit(queue, maxParallelRequests);
+  private fullPath(fullPath: string): string {
+    const currentPath = this.currentPath;
+    return currentPath.substring(0, currentPath.length - 1) + fullPath;
   }
 
   private readonly listDirectory = async (
