@@ -258,6 +258,21 @@ class UserService(
         }
     }
 
+    @Transactional
+    fun update(id: UUID, firstName: String, middleName: String?, lastName: String, username: String) {
+        val user = userRepository.findById(id).orElseThrow()
+        user.firstName = firstName
+        user.middleName = middleName
+        user.lastName = lastName
+        user.username = username
+        userRepository.save(user)
+    }
+
+    @Transactional
+    fun delete(id: UUID) {
+        userRepository.deleteById(id)
+    }
+
     private fun sendYouAlreadyHaveAccount(user: User) {
         if (emailProperties.noopMode) {
             log.info { "You already registered via oauth" }
