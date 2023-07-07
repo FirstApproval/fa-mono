@@ -49,26 +49,53 @@ export class FileSystem {
     ];
   };
 
-  private uploadQueue(result: FileSystemEntry[]): void {
+  private async uploadQueue(result: FileSystemEntry[]): Promise<void> {
+    const concurrencyLimit = 4;
+    let runningCount = 0;
+    const uploadQueue: Array<() => Promise<void>> = [];
+
+    const executeNextUpload = async (): Promise<void> => {
+      if (uploadQueue.length > 0 && runningCount < concurrencyLimit) {
+        const nextUpload = uploadQueue.shift();
+        runningCount++;
+        try {
+          if (nextUpload) {
+            await nextUpload();
+          }
+        } finally {
+          runningCount--;
+          void executeNextUpload();
+        }
+      }
+    };
+
     result.forEach((e) => {
       const fullPath = this.fullPath(e.fullPath);
+
       if (e.isFile) {
-        void new Promise<File>((resolve) => {
-          (e as FileSystemFileEntry).file((file) => {
-            resolve(file);
+        const uploadFile = async (): Promise<void> => {
+          await new Promise<void>((resolve) => {
+            (e as FileSystemFileEntry).file((file) => {
+              void fileService
+                .uploadFile(this.publicationId, fullPath, false, file)
+                .finally(() => {
+                  resolve();
+                });
+            });
           });
-        }).then(async (file) => {
-          void fileService.uploadFile(
-            this.publicationId,
-            fullPath,
-            false,
-            file
-          );
-        });
+        };
+
+        uploadQueue.push(uploadFile);
       } else {
-        void fileService.uploadFile(this.publicationId, fullPath, true);
+        const uploadFolder = async (): Promise<void> => {
+          await fileService.uploadFile(this.publicationId, fullPath, true);
+        };
+
+        uploadQueue.push(uploadFolder);
       }
     });
+
+    await executeNextUpload();
   }
 
   private fullPath(fullPath: string): string {
