@@ -2,6 +2,7 @@ import { action, autorun, makeObservable, observable } from 'mobx';
 import { fileService } from '../core/service';
 
 interface PublicationFile {
+  id?: string;
   fullPath: string;
   name: string;
   isDirectory: boolean;
@@ -85,6 +86,11 @@ export class FileSystem {
         isUploading: true
       }
     ];
+  };
+
+  deleteFile = (ids: string[]): void => {
+    void fileService.deleteFiles({ ids });
+    this.files = this.files.filter((f) => f.id && !ids.includes(f.id));
   };
 
   private readonly cleanUploading = (fullPath: string): void => {

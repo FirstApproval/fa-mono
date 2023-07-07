@@ -14,7 +14,7 @@ import { type FileSystem } from './FileSystem';
 import { observer } from 'mobx-react-lite';
 import { FileToolbar } from './FileToolbar';
 import styled from '@emotion/styled';
-import { CircularProgress, TextField } from '@mui/material';
+import { CircularProgress, DialogContentText, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -29,11 +29,18 @@ setChonkyDefaults({
 export const FileBrowser = observer(
   (props: { fs: FileSystem }): ReactElement => {
     const [newFolderDialogOpen, setNewFolderDialogOpen] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [filesToDelete, setFilesToDelete] = useState<string[]>([]);
     const [newFolderName, setNewFolderName] = useState('');
 
     const handleCloseNewFolderDialog = (): void => {
       setNewFolderDialogOpen(false);
       setNewFolderName('');
+    };
+
+    const handleCloseDeleteDialog = (): void => {
+      setDeleteDialogOpen(false);
+      setFilesToDelete([]);
     };
 
     const { currentPath: currPath, setCurrentPath: setCurrPath } = props.fs;
@@ -52,13 +59,14 @@ export const FileBrowser = observer(
 
     const handleAction: FileActionHandler = (data) => {
       if (data.id === ChonkyActions.OpenFiles.id) {
-        const fullPath = data.payload.targetFile?.id ?? '';
+        const fullPath = data.payload.targetFile?.fullPath ?? '';
         const newPath = fullPath.endsWith('/') ? fullPath : `${fullPath}/`;
         setCurrPath(newPath);
       } else if (data.id === ChonkyActions.CreateFolder.id) {
         setNewFolderDialogOpen(true);
       } else if (data.id === ChonkyActions.DeleteFiles.id) {
-        // Delete the files
+        setDeleteDialogOpen(true);
+        setFilesToDelete(data.state.selectedFiles.map((f) => f.id));
       }
     };
 
@@ -77,7 +85,8 @@ export const FileBrowser = observer(
     useEffect(() => {
       setFiles(
         props.fs.files.map((f) => ({
-          id: f.fullPath,
+          id: f.id ?? f.fullPath,
+          fullPath: f.fullPath,
           name: f.name,
           isDir: f.isDirectory,
           isLoading: f.isUploading
@@ -135,6 +144,31 @@ export const FileBrowser = observer(
             </Button>
           </DialogActions>
         </Dialog>
+        <Dialog
+          open={deleteDialogOpen}
+          onClose={handleCloseDeleteDialog}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description">
+          <DialogTitle id="alert-dialog-title">Delete?</DialogTitle>
+          <DialogContent>
+            <MaxWidthWrap>
+              All selected items will be deleted from Files and you won’t be
+              able to undo this action.
+            </MaxWidthWrap>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDeleteDialog}>Cancel</Button>
+            <Button
+              onClick={() => {
+                handleCloseDeleteDialog();
+                props.fs.deleteFile(filesToDelete);
+              }}
+              variant="contained"
+              color="error">
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
       </>
     );
   }
@@ -148,6 +182,10 @@ const Wrap = styled.div`
 
 const FullWidthTextField = styled(TextField)`
   min-width: 336px;
+`;
+
+const MaxWidthWrap = styled.div`
+  max-width: 336px;
 `;
 
 const ContentWrap = styled.div`
