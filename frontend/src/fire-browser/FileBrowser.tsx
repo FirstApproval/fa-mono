@@ -61,7 +61,7 @@ export const FileBrowser = observer(
     const handleAction: FileActionHandler = (data) => {
       if (data.id === ChonkyActions.OpenFiles.id) {
         const fullPath: string = data.payload.targetFile?.fullPath ?? '';
-        const newPath = fullPath.endsWith('/') ? fullPath : `${fullPath}/`;
+        const newPath = `${fullPath}/`;
         setCurrPath(newPath);
       } else if (data.id === ChonkyActions.CreateFolder.id) {
         setNewFolderDialogOpen(true);
