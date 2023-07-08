@@ -1,4 +1,11 @@
-import { action, autorun, makeObservable, observable } from 'mobx';
+import {
+  action,
+  autorun,
+  computed,
+  makeObservable,
+  observable,
+  reaction
+} from 'mobx';
 import { fileService } from '../core/service';
 import { type PublicationFile } from '../apis/first-approval-api';
 
@@ -12,38 +19,37 @@ interface FileEntry {
 
 export class FileSystem {
   currentPath: string = '/';
-  files: FileEntry[] = [];
-  backEndFiles: FileEntry[] = [];
-  localFiles: FileEntry[] = [];
+  private backEndFiles: FileEntry[] = [];
+  private localFiles: FileEntry[] = [];
+  private allLocalFiles: FileEntry[] = [];
   isLoading = false;
 
   constructor(readonly publicationId: string) {
-    makeObservable(this, {
-      currentPath: observable,
-      files: observable,
-      backEndFiles: observable,
-      localFiles: observable,
-      isLoading: observable,
-      setCurrentPath: action
-    });
+    makeObservable<FileSystem, 'backEndFiles' | 'localFiles' | 'allLocalFiles'>(
+      this,
+      {
+        currentPath: observable,
+        files: computed,
+        backEndFiles: observable,
+        localFiles: observable,
+        allLocalFiles: observable,
+        isLoading: observable,
+        setCurrentPath: action
+      }
+    );
 
     autorun(async () => {
       const files = await this.listDirectory(this.currentPath);
       this.backEndFiles = [...files];
     });
 
-    autorun(() => {
-      this.files = filterUniqueBy(
-        [...this.backEndFiles, ...this.localFiles],
-        'fullPath'
-      ).filter((file) => {
-        const filePath = file.fullPath;
-        return (
-          filePath.startsWith(this.currentPath) &&
-          !filePath.slice(this.currentPath.length).includes('/')
-        );
-      });
+    reaction(() => this.currentPath, this.updateLocalFiles, {
+      fireImmediately: true
     });
+  }
+
+  get files(): FileEntry[] {
+    return [...this.backEndFiles, ...this.localFiles];
   }
 
   setCurrentPath = (path: string): void => {
@@ -52,8 +58,8 @@ export class FileSystem {
 
   addFiles = (files: FileSystemEntry[]): void => {
     void this.uploadQueue(files);
-    this.localFiles = [
-      ...this.localFiles,
+    this.allLocalFiles = [
+      ...this.allLocalFiles,
       ...files.map((f) => {
         const fullPath = this.fullPath(f.fullPath);
         return {
@@ -65,6 +71,7 @@ export class FileSystem {
         };
       })
     ];
+    this.updateLocalFiles();
   };
 
   createFolder = (name: string): void => {
@@ -79,8 +86,8 @@ export class FileSystem {
         this.cleanUploading(response.data);
       });
 
-    this.localFiles = [
-      ...this.localFiles,
+    this.allLocalFiles = [
+      ...this.allLocalFiles,
       {
         id: fullPath,
         name,
@@ -89,13 +96,14 @@ export class FileSystem {
         isUploading: true
       }
     ];
+    this.updateLocalFiles();
   };
 
   deleteFile = (ids: string[]): void => {
     void fileService.deleteFiles({ ids });
     const filter = (f: FileEntry): boolean => !ids.includes(f.id);
     this.backEndFiles = this.backEndFiles.filter(filter);
-    this.localFiles = this.localFiles.filter(filter);
+    this.allLocalFiles = this.allLocalFiles.filter(filter);
   };
 
   moveFiles = (ids: string[], destination: string): void => {
@@ -104,25 +112,45 @@ export class FileSystem {
     }
     const filter = (f: FileEntry): boolean => !ids.includes(f.id);
     this.backEndFiles = this.backEndFiles.filter(filter);
-    this.localFiles = this.localFiles.filter(filter);
+    this.allLocalFiles = this.allLocalFiles.filter(filter);
+  };
+
+  private readonly updateLocalFiles = (): void => {
+    this.localFiles = this.allLocalFiles.filter((file) => {
+      const filePath = file.fullPath;
+      return (
+        filePath.startsWith(this.currentPath) &&
+        !filePath.slice(this.currentPath.length).includes('/')
+      );
+    });
   };
 
   private readonly cleanUploading = (file: PublicationFile): void => {
     if (!file.fullPath || !file.id) return;
-    if (
-      file.fullPath.substring(0, file.fullPath.lastIndexOf('/') + 1) ===
-      this.currentPath
-    ) {
-      const id = file.id;
-      this.localFiles = this.localFiles.map((f) => {
+    const id = file.id;
+    if (this.inCurrentDirectory(file)) {
+      this.allLocalFiles = this.allLocalFiles.map((f) => {
         if (f.fullPath === file.fullPath) {
           return { ...f, id, isUploading: false };
         } else {
           return f;
         }
       });
+      this.updateLocalFiles();
+    } else {
+      this.allLocalFiles = this.allLocalFiles.filter(
+        (f) => f.fullPath !== file.fullPath
+      );
     }
   };
+
+  private inCurrentDirectory(file: PublicationFile): boolean {
+    if (!file.fullPath) return false;
+    return (
+      file.fullPath.substring(0, file.fullPath.lastIndexOf('/') + 1) ===
+      this.currentPath
+    );
+  }
 
   private async uploadQueue(result: FileSystemEntry[]): Promise<void> {
     const concurrencyLimit = 4;
@@ -207,18 +235,6 @@ export class FileSystem {
       this.isLoading = false;
     }
   };
-}
-
-function filterUniqueBy(array: any[], property: any): any[] {
-  const seen = new Set();
-  return array.filter((item) => {
-    const value = item[property];
-    if (!seen.has(value)) {
-      seen.add(value);
-      return true;
-    }
-    return false;
-  });
 }
 
 const fpToName = (fullPath: string): string => {
