@@ -70,7 +70,7 @@ export const FileBrowser = observer(
         setFilesToDelete(data.state.selectedFiles.map((f) => f.id));
       } else if (data.id === ChonkyActions.MoveFiles.id) {
         props.fs.moveFiles(
-          data.state.selectedFiles.map((f) => f.id),
+          data.payload.files.map((f) => f.id),
           ((data.payload as any).destination.fullPath as string) + '/'
         );
       }

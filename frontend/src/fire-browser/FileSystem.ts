@@ -104,6 +104,7 @@ export class FileSystem {
     const filter = (f: FileEntry): boolean => !ids.includes(f.id);
     this.backEndFiles = this.backEndFiles.filter(filter);
     this.allLocalFiles = this.allLocalFiles.filter(filter);
+    this.updateLocalFiles();
   };
 
   moveFiles = (ids: string[], destination: string): void => {
@@ -113,6 +114,7 @@ export class FileSystem {
     const filter = (f: FileEntry): boolean => !ids.includes(f.id);
     this.backEndFiles = this.backEndFiles.filter(filter);
     this.allLocalFiles = this.allLocalFiles.filter(filter);
+    this.updateLocalFiles();
   };
 
   private readonly updateLocalFiles = (): void => {
