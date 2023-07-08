@@ -279,6 +279,10 @@ paths:
       responses:
         200:
           description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicationFile'
       security:
         - TokenAuth: [ ]
       operationId: uploadFile
@@ -325,6 +329,10 @@ paths:
       responses:
         200:
           description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicationFile'
       security:
         - TokenAuth: [ ]
       operationId: createFolder

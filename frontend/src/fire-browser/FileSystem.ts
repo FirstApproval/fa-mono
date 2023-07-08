@@ -1,7 +1,8 @@
 import { action, autorun, makeObservable, observable } from 'mobx';
 import { fileService } from '../core/service';
+import { type PublicationFile } from '../apis/first-approval-api';
 
-interface PublicationFile {
+interface FileEntry {
   id: string;
   fullPath: string;
   name: string;
@@ -11,9 +12,9 @@ interface PublicationFile {
 
 export class FileSystem {
   currentPath: string = '/';
-  files: PublicationFile[] = [];
-  backEndFiles: PublicationFile[] = [];
-  localFiles: PublicationFile[] = [];
+  files: FileEntry[] = [];
+  backEndFiles: FileEntry[] = [];
+  localFiles: FileEntry[] = [];
   isLoading = false;
 
   constructor(readonly publicationId: string) {
@@ -74,8 +75,8 @@ export class FileSystem {
         name,
         dirPath: this.currentPath
       })
-      .then(() => {
-        this.cleanUploading(fullPath);
+      .then((response) => {
+        this.cleanUploading(response.data);
       });
 
     this.localFiles = [
@@ -92,7 +93,7 @@ export class FileSystem {
 
   deleteFile = (ids: string[]): void => {
     void fileService.deleteFiles({ ids });
-    const filter = (f: PublicationFile): boolean => !ids.includes(f.id);
+    const filter = (f: FileEntry): boolean => !ids.includes(f.id);
     this.backEndFiles = this.backEndFiles.filter(filter);
     this.localFiles = this.localFiles.filter(filter);
   };
@@ -101,15 +102,21 @@ export class FileSystem {
     for (const id of ids) {
       void fileService.moveFile(id, { newDirPath: destination });
     }
+    const filter = (f: FileEntry): boolean => !ids.includes(f.id);
+    this.backEndFiles = this.backEndFiles.filter(filter);
+    this.localFiles = this.localFiles.filter(filter);
   };
 
-  private readonly cleanUploading = (fullPath: string): void => {
+  private readonly cleanUploading = (file: PublicationFile): void => {
+    if (!file.fullPath || !file.id) return;
     if (
-      fullPath.substring(0, fullPath.lastIndexOf('/') + 1) === this.currentPath
+      file.fullPath.substring(0, file.fullPath.lastIndexOf('/') + 1) ===
+      this.currentPath
     ) {
+      const id = file.id;
       this.localFiles = this.localFiles.map((f) => {
-        if (f.fullPath === fullPath) {
-          return { ...f, isUploading: false };
+        if (f.fullPath === file.fullPath) {
+          return { ...f, id, isUploading: false };
         } else {
           return f;
         }
@@ -146,8 +153,8 @@ export class FileSystem {
             (e as FileSystemFileEntry).file((file) => {
               void fileService
                 .uploadFile(this.publicationId, fullPath, false, file)
-                .then(() => {
-                  this.cleanUploading(fullPath);
+                .then((response) => {
+                  this.cleanUploading(response.data);
                 })
                 .finally(() => {
                   resolve();
@@ -161,8 +168,8 @@ export class FileSystem {
         const uploadFolder = async (): Promise<void> => {
           await fileService
             .uploadFile(this.publicationId, fullPath, true)
-            .then(() => {
-              this.cleanUploading(fullPath);
+            .then((response) => {
+              this.cleanUploading(response.data);
             });
         };
 
@@ -180,7 +187,7 @@ export class FileSystem {
 
   private readonly listDirectory = async (
     dirPath: string
-  ): Promise<PublicationFile[]> => {
+  ): Promise<FileEntry[]> => {
     this.isLoading = true;
     try {
       const response = await fileService.getPublicationFiles(

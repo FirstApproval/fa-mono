@@ -31,9 +31,14 @@ class PublicationFileController(
         })
     }
 
-    override fun uploadFile(publicationId: UUID, fullPath: String, isDir: Boolean, body: Resource?): ResponseEntity<Void> {
-        publicationFileService.uploadFile(authHolderService.user, publicationId, fullPath, isDir, body?.inputStream)
-        return ResponseEntity(OK)
+    override fun uploadFile(publicationId: UUID, fullPath: String, isDir: Boolean, body: Resource?): ResponseEntity<PublicationFile> {
+        val file = publicationFileService.uploadFile(authHolderService.user, publicationId, fullPath, isDir, body?.inputStream)
+        return ResponseEntity(PublicationFile().id(file.id)
+            .publicationId(file.publication.id)
+            .creationTime(file.creationTime.toOffsetDateTime())
+            .dirPath(file.dirPath)
+            .fullPath(file.fullPath)
+            .isDir(file.isDir), OK)
     }
 
     override fun deleteFiles(deleteByIdsRequest: DeleteByIdsRequest): ResponseEntity<Void> {
@@ -51,8 +56,13 @@ class PublicationFileController(
         return ResponseEntity(OK)
     }
 
-    override fun createFolder(publicationId: UUID, createFolderRequest: CreateFolderRequest): ResponseEntity<Void> {
-        publicationFileService.createFolder(authHolderService.user, publicationId, createFolderRequest.dirPath, createFolderRequest.name, createFolderRequest.description)
-        return ResponseEntity(OK)
+    override fun createFolder(publicationId: UUID, createFolderRequest: CreateFolderRequest): ResponseEntity<PublicationFile> {
+        val file = publicationFileService.createFolder(authHolderService.user, publicationId, createFolderRequest.dirPath, createFolderRequest.name, createFolderRequest.description)
+        return ResponseEntity(PublicationFile().id(file.id)
+            .publicationId(file.publication.id)
+            .creationTime(file.creationTime.toOffsetDateTime())
+            .dirPath(file.dirPath)
+            .fullPath(file.fullPath)
+            .isDir(file.isDir), OK)
     }
 }
