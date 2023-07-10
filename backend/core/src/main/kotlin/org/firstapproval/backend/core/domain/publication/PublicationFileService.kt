@@ -107,22 +107,22 @@ class PublicationFileService(
     }
 
     @Transactional
-    fun createFolder(user: User, publicationId: UUID, parentDirPath: String, name: String, description: String?) {
+    fun createFolder(user: User, publicationId: UUID, parentDirPath: String, name: String, description: String?): PublicationFile {
         val publication = publicationRepository.getReferenceById(publicationId)
         checkDirectoryIsExists(parentDirPath.dropLast(1), publicationId)
         checkAccessToPublication(user, publication)
         val fullPath = "$parentDirPath$name"
         checkDuplicateNames(fullPath, publicationId)
-        publicationFileRepository.save(
-            PublicationFile(
-                id = randomUUID(),
-                publication = publication,
-                fullPath = "$parentDirPath$name",
-                dirPath = parentDirPath,
-                description = description,
-                isDir = true
-            )
+        val file = PublicationFile(
+            id = randomUUID(),
+            publication = publication,
+            fullPath = "$parentDirPath$name",
+            dirPath = parentDirPath,
+            description = description,
+            isDir = true
         )
+        publicationFileRepository.save(file)
+        return file
     }
 
     private fun extractDirPath(fullPath: String) = fullPath.substring(0, fullPath.lastIndexOf('/') + 1)

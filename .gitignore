@@ -5,6 +5,7 @@
 /backend/volumes/
 /frontend/node_modules/
 /frontend/build/
+/frontend/dist/
 /frontend/src/apis/
 volumes/
 
