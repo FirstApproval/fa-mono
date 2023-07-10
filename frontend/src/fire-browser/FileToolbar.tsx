@@ -2,23 +2,12 @@ import React, { type ReactElement } from 'react';
 import {
   ChonkyActions,
   selectFileActionData,
-  useFileActionProps,
   useFileActionTrigger,
   useLocalizedFileActionStrings,
   useParamSelector
 } from '@first-approval/chonky';
-import {
-  Button,
-  Divider,
-  ToggleButton,
-  ToggleButtonGroup
-} from '@mui/material';
-import {
-  Add,
-  FolderOpen,
-  FormatListBulleted,
-  GridView
-} from '@mui/icons-material';
+import { Button, Divider } from '@mui/material';
+import { FileUploadOutlined, FolderOpen } from '@mui/icons-material';
 import styled from '@emotion/styled';
 
 // eslint-disable-next-line react/display-name
@@ -27,21 +16,17 @@ export const FileToolbar: React.FC = React.memo(() => {
     <>
       <ToolbarWrap>
         <ToolbarButton
-          item={ChonkyActions.CreateFolder.id}
-          icon={<FolderOpen />}
+          item={ChonkyActions.UploadFiles.id}
+          icon={<FileUploadOutlined />}
         />
-        <ToolbarLeft>
-          <ToolbarButton item={ChonkyActions.UploadFiles.id} icon={<Add />} />
-          <ToolbarToggleButton
-            items={[
-              {
-                name: ChonkyActions.EnableListView.id,
-                icon: <FormatListBulleted />
-              },
-              { name: ChonkyActions.EnableGridView.id, icon: <GridView /> }
-            ]}
+        <ButtonWrap>
+          <ToolbarButton
+            item={ChonkyActions.CreateFolder.id}
+            icon={<FolderOpen />}
           />
-        </ToolbarLeft>
+        </ButtonWrap>
+
+        <ToolbarLeft></ToolbarLeft>
       </ToolbarWrap>
       <Divider />
     </>
@@ -72,48 +57,6 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = (
   );
 };
 
-interface ToolbarToggleButtonProps {
-  items: Array<{ name: string; icon: ReactElement }>;
-}
-
-const ToolbarToggleButton: React.FC<ToolbarToggleButtonProps> = (
-  props: ToolbarToggleButtonProps
-) => {
-  const children: JSX.Element[] = [];
-  let value;
-  const actions: Record<string, () => any> = {};
-  for (const item of props.items) {
-    const itemName = item.name;
-    const triggerAction = useFileActionTrigger(itemName);
-    const { active } = useFileActionProps(itemName);
-
-    if (active) {
-      value = itemName;
-    }
-
-    children.push(
-      <ToggleButton value={itemName} key={itemName}>
-        {item.icon}
-      </ToggleButton>
-    );
-    actions[itemName] = triggerAction;
-  }
-
-  const control = {
-    value,
-    onChange: (e: any) => {
-      actions[e.currentTarget.value]();
-    },
-    exclusive: true
-  };
-
-  return (
-    <ToggleButtonGroupWrap size="small" {...control}>
-      {children}
-    </ToggleButtonGroupWrap>
-  );
-};
-
 const ToolbarWrap = styled.div`
   display: flex;
   margin-bottom: 16px;
@@ -124,6 +67,6 @@ const ToolbarLeft = styled.div`
   margin-left: auto;
 `;
 
-const ToggleButtonGroupWrap = styled(ToggleButtonGroup)`
+const ButtonWrap = styled.div`
   margin-left: 24px;
 `;
