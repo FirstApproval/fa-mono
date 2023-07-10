@@ -91,7 +91,7 @@ export const FileBrowser = observer(
     useEffect(() => {
       setFiles(
         props.fs.files.map((f) => ({
-          id: f.id ?? f.fullPath,
+          id: f.id,
           fullPath: f.fullPath,
           name: f.name,
           isDir: f.isDirectory,

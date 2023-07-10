@@ -59,7 +59,6 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = (
   const { item } = props;
   const action = useParamSelector(selectFileActionData, item);
   const triggerAction = useFileActionTrigger(item);
-  // const { icon, active, disabled } = useFileActionProps(item);
   const { buttonName } = useLocalizedFileActionStrings(action);
   const key = `toolbar-item-${item}`;
   return (
@@ -85,7 +84,6 @@ const ToolbarToggleButton: React.FC<ToolbarToggleButtonProps> = (
   const actions: Record<string, () => any> = {};
   for (const item of props.items) {
     const itemName = item.name;
-    // const action = useParamSelector(selectFileActionData, itemName);
     const triggerAction = useFileActionTrigger(itemName);
     const { active } = useFileActionProps(itemName);
 
