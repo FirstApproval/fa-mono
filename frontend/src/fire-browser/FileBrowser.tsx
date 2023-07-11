@@ -75,16 +75,18 @@ export const FileBrowser = observer(
       } else if (data.id === ChonkyActions.CreateFolder.id) {
         setNewFolderDialogOpen(true);
       } else if (data.id === ChonkyActions.DeleteFiles.id) {
-        setDeleteDialogOpen(true);
         setFilesToDelete(data.state.selectedFiles.map((f) => f.id));
+        setDeleteDialogOpen(true);
       } else if (data.id === ChonkyActions.MoveFiles.id) {
         props.fs.moveFiles(
           data.payload.files.map((f) => f.id),
           ((data.payload as any).destination.fullPath as string) + '/'
         );
       } else if (data.id === ChonkyActions.AddNote.id) {
+        const file: FileData = (data.payload as any).file;
+        setFileToNote(file);
+        setNote(file.note ?? '');
         setNoteDialogOpen(true);
-        setFileToNote((data.payload as any).file);
       }
     };
 
@@ -108,7 +110,8 @@ export const FileBrowser = observer(
           fullPath: f.fullPath,
           name: f.name,
           isDir: f.isDirectory,
-          isLoading: f.isUploading
+          isLoading: f.isUploading,
+          note: f.note
         }))
       );
     }, [props.fs.files]);
@@ -218,7 +221,8 @@ export const FileBrowser = observer(
             <Button
               onClick={() => {
                 handleCloseNoteDialog();
-                props.fs.createFolder(newFolderName);
+                if (!fileToNote) return;
+                props.fs.updateFile(fileToNote.id, fileToNote.name, note);
               }}>
               Add note
             </Button>

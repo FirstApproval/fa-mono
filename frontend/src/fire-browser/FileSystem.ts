@@ -15,6 +15,7 @@ interface FileEntry {
   name: string;
   isDirectory: boolean;
   isUploading: boolean;
+  note?: string;
 }
 
 export class FileSystem {
@@ -96,6 +97,20 @@ export class FileSystem {
         isUploading: true
       }
     ];
+    this.updateLocalFiles();
+  };
+
+  updateFile = (id: string, name: string, note: string): void => {
+    void fileService.editFile(id, { name, description: note });
+    const filter = (f: FileEntry): FileEntry => {
+      if (f.id === id) {
+        return { ...f, name, note };
+      } else {
+        return f;
+      }
+    };
+    this.backEndFiles = this.backEndFiles.map(filter);
+    this.allLocalFiles = this.allLocalFiles.map(filter);
     this.updateLocalFiles();
   };
 
@@ -230,7 +245,8 @@ export class FileSystem {
           fullPath: pf.fullPath ?? '',
           name: fpToName(pf.fullPath ?? ''),
           isDirectory: pf.isDir ?? false,
-          isUploading: false
+          isUploading: false,
+          note: pf.description
         };
       });
     } finally {
