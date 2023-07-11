@@ -14,7 +14,7 @@ import { type FileSystem } from './FileSystem';
 import { observer } from 'mobx-react-lite';
 import { FileToolbar } from './FileToolbar';
 import styled from '@emotion/styled';
-import { CircularProgress, TextField } from '@mui/material';
+import { CircularProgress, TextareaAutosize, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -30,12 +30,20 @@ export const FileBrowser = observer(
   (props: { fs: FileSystem }): ReactElement => {
     const [newFolderDialogOpen, setNewFolderDialogOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [noteDialogOpen, setNoteDialogOpen] = useState(false);
     const [filesToDelete, setFilesToDelete] = useState<string[]>([]);
+    const [fileToNote, setFileToNote] = useState<string>();
     const [newFolderName, setNewFolderName] = useState('');
+    const [note, setNote] = useState('');
 
     const handleCloseNewFolderDialog = (): void => {
       setNewFolderDialogOpen(false);
       setNewFolderName('');
+    };
+
+    const handleCloseNoteDialog = (): void => {
+      setNoteDialogOpen(false);
+      setNote('');
     };
 
     const handleCloseDeleteDialog = (): void => {
@@ -73,6 +81,9 @@ export const FileBrowser = observer(
           data.payload.files.map((f) => f.id),
           ((data.payload as any).destination.fullPath as string) + '/'
         );
+      } else if (data.id === ChonkyActions.AddNote.id) {
+        setNoteDialogOpen(true);
+        setFileToNote(data.payload.file);
       }
     };
 
@@ -83,7 +94,8 @@ export const FileBrowser = observer(
       ChonkyActions.CreateFolder,
       ChonkyActions.SortFilesByName,
       ChonkyActions.UploadFiles,
-      ChonkyActions.DeleteFiles
+      ChonkyActions.DeleteFiles,
+      ChonkyActions.AddNote
     ];
 
     const [files, setFiles] = useState<FileArray>([]);
@@ -175,6 +187,42 @@ export const FileBrowser = observer(
             </Button>
           </DialogActions>
         </Dialog>
+        <Dialog
+          open={noteDialogOpen}
+          onClose={handleCloseNoteDialog}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description">
+          <DialogTitle id="alert-dialog-title">{fileToNote?.name}</DialogTitle>
+          <DialogContent>
+            <ContentWrap>
+              <FullWidthTextarea
+                multiline={true}
+                minRows={4}
+                maxRows={4}
+                autoFocus
+                value={note}
+                placeholder={
+                  'Describe the file to help others understand its purpose and relevance...'
+                }
+                onChange={(e) => {
+                  setNote(e.currentTarget.value);
+                }}
+                label="Note"
+                variant="outlined"
+              />
+            </ContentWrap>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseNoteDialog}>Cancel</Button>
+            <Button
+              onClick={() => {
+                handleCloseNoteDialog();
+                props.fs.createFolder(newFolderName);
+              }}>
+              Add note
+            </Button>
+          </DialogActions>
+        </Dialog>
       </>
     );
   }
@@ -188,6 +236,10 @@ const Wrap = styled.div`
 
 const FullWidthTextField = styled(TextField)`
   min-width: 336px;
+`;
+
+const FullWidthTextarea = styled(TextField)`
+  min-width: 536px;
 `;
 
 const MaxWidthWrap = styled.div`
