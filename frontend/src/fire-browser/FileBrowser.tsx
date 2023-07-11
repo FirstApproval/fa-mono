@@ -87,6 +87,28 @@ export const FileBrowser = observer(
         setFileToNote(file);
         setNote(file.note ?? '');
         setNoteDialogOpen(true);
+      } else if (data.id === ChonkyActions.UploadFiles.id) {
+        const fileInput = document.getElementById('file-input');
+
+        if (!fileInput) return;
+
+        const handleFileSelect = async (event: any): Promise<void> => {
+          const files = event.target.files;
+          const filesArray = [];
+
+          for (let i = 0; i < files.length; i++) {
+            filesArray.push(files[i]);
+          }
+
+          props.fs.addFilesInput(filesArray);
+
+          fileInput.removeEventListener('change', handleFileSelect);
+          event.target.value = null;
+        };
+
+        fileInput.addEventListener('change', handleFileSelect, false);
+
+        fileInput.click();
       }
     };
 

@@ -10,6 +10,7 @@ import {
 } from './../common.styled';
 import { FileUploader } from '../../fire-browser/FileUploader';
 import { routerStore } from '../../core/router';
+import { authStore } from '../../core/auth';
 
 export const PublicationPage: FunctionComponent = () => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -18,7 +19,12 @@ export const PublicationPage: FunctionComponent = () => {
       <FlexHeader>
         <Logo>First Approval</Logo>
         <FlexHeaderRight>
-          <Button variant="outlined" size={'large'}>
+          <Button
+            variant="outlined"
+            size={'large'}
+            onClick={() => {
+              authStore.token = undefined;
+            }}>
             Sign out
           </Button>
         </FlexHeaderRight>

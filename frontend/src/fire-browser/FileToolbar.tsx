@@ -15,6 +15,12 @@ export const FileToolbar: React.FC = React.memo(() => {
   return (
     <>
       <ToolbarWrap>
+        <input
+          type="file"
+          id="file-input"
+          multiple
+          style={{ display: 'none' }}
+        />
         <ToolbarButton
           item={ChonkyActions.UploadFiles.id}
           icon={<FileUploadOutlined />}

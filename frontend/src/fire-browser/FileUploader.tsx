@@ -26,7 +26,7 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = (
     e.preventDefault();
     e.stopPropagation();
     const result = await getAllFileEntries(e.dataTransfer.items);
-    fs.addFiles(result);
+    fs.addFilesDnd(result);
   };
 
   const onDragOver = (e: {
