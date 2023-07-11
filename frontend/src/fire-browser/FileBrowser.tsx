@@ -69,7 +69,10 @@ export const FileBrowser = observer(
 
     const handleAction: FileActionHandler = (data) => {
       if (data.id === ChonkyActions.OpenFiles.id) {
-        const fullPath: string = data.payload.targetFile?.fullPath ?? '';
+        const targetFile = data.payload.targetFile;
+        if (!targetFile) return;
+        if (!targetFile.isDir) return;
+        const fullPath: string = targetFile.fullPath ?? '';
         const newPath = `${fullPath}/`;
         setCurrPath(newPath);
       } else if (data.id === ChonkyActions.CreateFolder.id) {

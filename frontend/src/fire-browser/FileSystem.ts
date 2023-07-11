@@ -1,11 +1,4 @@
-import {
-  action,
-  autorun,
-  computed,
-  makeObservable,
-  observable,
-  reaction
-} from 'mobx';
+import { action, computed, makeObservable, observable, reaction } from 'mobx';
 import { fileService } from '../core/service';
 import { type PublicationFile } from '../apis/first-approval-api';
 
