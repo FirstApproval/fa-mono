@@ -28,6 +28,7 @@
     "lint-fix": "eslint src/**/*.{ts,tsx} --quiet --fix",
     "start-local": "DANGEROUSLY_DISABLE_HOST_CHECK=true node build-scripts.js start ../backend/core/api/src/core.openapi.yaml",
     "build-local": "node build-scripts.js build ../backend/core/api/src/core.openapi.yaml",
+    "build-sh": "node build-scripts.js build core.openapi.yaml",
     "api-local": "node build-scripts.js api ../backend/core/api/src/core.openapi.yaml"
   },
   "eslintConfig": {
