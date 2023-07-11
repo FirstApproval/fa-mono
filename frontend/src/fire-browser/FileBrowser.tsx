@@ -6,7 +6,8 @@ import {
   FileNavbar,
   FileList,
   FileContextMenu,
-  type FileArray
+  type FileArray,
+  type FileData
 } from '@first-approval/chonky';
 import React, { type ReactElement, useEffect, useState } from 'react';
 import { ChonkyIconFA } from '@first-approval/chonky-icon-fontawesome';
@@ -14,7 +15,7 @@ import { type FileSystem } from './FileSystem';
 import { observer } from 'mobx-react-lite';
 import { FileToolbar } from './FileToolbar';
 import styled from '@emotion/styled';
-import { CircularProgress, TextareaAutosize, TextField } from '@mui/material';
+import { CircularProgress, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -32,7 +33,7 @@ export const FileBrowser = observer(
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [noteDialogOpen, setNoteDialogOpen] = useState(false);
     const [filesToDelete, setFilesToDelete] = useState<string[]>([]);
-    const [fileToNote, setFileToNote] = useState<string>();
+    const [fileToNote, setFileToNote] = useState<FileData>();
     const [newFolderName, setNewFolderName] = useState('');
     const [note, setNote] = useState('');
 
@@ -83,7 +84,7 @@ export const FileBrowser = observer(
         );
       } else if (data.id === ChonkyActions.AddNote.id) {
         setNoteDialogOpen(true);
-        setFileToNote(data.payload.file);
+        setFileToNote((data.payload as any).file);
       }
     };
 
