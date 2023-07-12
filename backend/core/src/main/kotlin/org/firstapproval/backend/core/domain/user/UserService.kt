@@ -1,6 +1,5 @@
 package org.firstapproval.backend.core.domain.user
 
-import io.jsonwebtoken.lang.Strings.capitalize
 import mu.KotlinLogging.logger
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import org.firstapproval.backend.core.config.Properties.EmailProperties
@@ -17,18 +16,16 @@ import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirma
 import org.firstapproval.backend.core.exception.RecordConflictException
 import org.firstapproval.backend.core.utils.EMAIL_CONFIRMATION_CODE_LENGTH
 import org.firstapproval.backend.core.utils.generateCode
-import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.access.AccessDeniedException
-import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime.now
-import java.util.UUID
-import java.util.UUID.randomUUID
+import java.util.*
+import java.util.UUID.*
 import javax.naming.LimitExceededException
 
 const val SEND_EMAIL_LIMIT = 1
@@ -93,7 +90,7 @@ class UserService(
         } else {
             val user = userRepository.findByEmailAndPasswordIsNull(email)
             if (user != null) {
-                sendYouAlreadyHaveAccount(user)
+                notificationService.sendYouAlreadyHaveAccount(user)
                 null
             } else {
                 newAttemptForRegistration(email, password, firstName, lastName)
@@ -179,11 +176,11 @@ class UserService(
             }
             previousTry.attemptCount += 1
             previousTry.lastTryTime = now()
-            sendEmailForPasswordReset(email, previousTry.id.toString())
+            notificationService.sendEmailForPasswordReset(email, previousTry.id.toString())
         } else {
             val passwordResetRequestId = randomUUID()
             passwordResetConfirmationRepository.save(PasswordResetConfirmation(id = passwordResetRequestId, user = user))
-            sendEmailForPasswordReset(email, passwordResetRequestId.toString())
+            notificationService.sendEmailForPasswordReset(email, passwordResetRequestId.toString())
         }
     }
 
@@ -260,7 +257,7 @@ class UserService(
     }
 
     @Transactional
-    fun update(id: UUID, firstName: String, middleName: String?, lastName: String, username: String) {
+    fun update(id: UUID, firstName: String, middleName: String?, lastName: String, username: String, selfInfo: String?) {
         val userFromDb = userRepository.findByUsername(username)
         if (userFromDb != null && userFromDb.id != id) throw RecordConflictException("username already taken")
         val user = userRepository.findById(id).orElseThrow()
@@ -268,43 +265,13 @@ class UserService(
         user.middleName = middleName
         user.lastName = lastName
         user.username = username
+        user.selfInfo = selfInfo
         userRepository.save(user)
     }
 
     @Transactional
     fun delete(id: UUID) {
         userRepository.deleteById(id)
-    }
-
-    private fun sendYouAlreadyHaveAccount(user: User) {
-        if (emailProperties.noopMode) {
-            log.info { "You already registered via oauth" }
-            return
-        }
-        val providers = user.externalIds.keys.map { capitalize(it.name.lowercase()) }
-
-        val message = SimpleMailMessage()
-        message.from = emailProperties.from
-        message.setTo(user.email)
-        message.subject = "[FirstApproval] You already have account"
-        message.text = "You already signed up via ${providers.joinToString()}"
-        emailSender.send(message)
-    }
-
-
-    private fun sendEmailForPasswordReset(email: String, resetId: String) {
-        // TODO SEND EMAIL TO USER WITH RESET LINK
-        val link = "${frontendProperties.registrationConfirmationUrl}/${resetId}"
-        if (emailProperties.noopMode) {
-            log.info { link }
-            return
-        }
-        val message = SimpleMailMessage()
-        message.from = emailProperties.from
-        message.setTo(email)
-        message.subject = "[FirstApproval] Password recovery link"
-        message.text = link
-        emailSender.send(message)
     }
 }
 

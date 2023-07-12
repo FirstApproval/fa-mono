@@ -348,6 +348,10 @@ paths:
       responses:
         200:
           description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicationFile'
       security:
         - TokenAuth: [ ]
       operationId: uploadFile
@@ -394,6 +398,10 @@ paths:
       responses:
         200:
           description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicationFile'
       security:
         - TokenAuth: [ ]
       operationId: createFolder
@@ -720,6 +728,8 @@ components:
           type: boolean
         canChangePassword:
           type: boolean
+        selfInfo:
+          type: string
         signedVia:
           type: array
           items:
@@ -743,6 +753,8 @@ components:
         lastName:
           type: string
         username:
+          type: string
+        selfInfo:
           type: string
       required:
         - firstName

@@ -1,11 +1,10 @@
-import React, { type FunctionComponent, useState } from 'react';
+import React, { type FunctionComponent, useMemo } from 'react';
 import { getAllFileEntries } from 'src/util/fileUtil';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import styled from '@emotion/styled';
 import { FileBrowser } from '../fire-browser/FileBrowser';
 import { FileSystem } from './../fire-browser/FileSystem';
-import { fileService } from '../core/service';
 
 interface FileUploaderProps {
   publicationId: string;
@@ -14,7 +13,10 @@ interface FileUploaderProps {
 export const FileUploader: FunctionComponent<FileUploaderProps> = (
   props: FileUploaderProps
 ) => {
-  const [fs] = useState(() => new FileSystem());
+  const fs = useMemo(
+    () => new FileSystem(props.publicationId),
+    [props.publicationId]
+  );
 
   const onDrop = async (e: {
     preventDefault: () => void;
@@ -24,20 +26,6 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = (
     e.preventDefault();
     e.stopPropagation();
     const result = await getAllFileEntries(e.dataTransfer.items);
-    result.forEach((e) => {
-      if (e.isFile) {
-        (e as FileSystemFileEntry).file((file) => {
-          void fileService.uploadFile(
-            props.publicationId,
-            e.fullPath,
-            false,
-            file
-          );
-        });
-      } else {
-        void fileService.uploadFile(props.publicationId, e.fullPath, true);
-      }
-    });
     fs.addFiles(result);
   };
 
@@ -65,8 +53,9 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = (
 };
 
 const DropZone = styled('div')`
-  border: 1px #040036 dashed;
   border-radius: 4px;
+  border: 2px dashed var(--divider, #d2d2d6);
+  background: var(--grey-50, #f8f7fa);
   margin-bottom: 40px;
   display: flex;
   align-items: center;
