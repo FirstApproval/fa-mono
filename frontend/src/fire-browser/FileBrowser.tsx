@@ -6,7 +6,8 @@ import {
   FileNavbar,
   FileList,
   FileContextMenu,
-  type FileArray
+  type FileArray,
+  type FileData
 } from '@first-approval/chonky';
 import React, { type ReactElement, useEffect, useState } from 'react';
 import { ChonkyIconFA } from '@first-approval/chonky-icon-fontawesome';
@@ -26,16 +27,28 @@ setChonkyDefaults({
   defaultFileViewActionId: ChonkyActions.EnableListView.id
 });
 
+interface FilePayload {
+  file?: FileData;
+}
+
 export const FileBrowser = observer(
   (props: { fs: FileSystem }): ReactElement => {
     const [newFolderDialogOpen, setNewFolderDialogOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [noteDialogOpen, setNoteDialogOpen] = useState(false);
     const [filesToDelete, setFilesToDelete] = useState<string[]>([]);
+    const [fileToNote, setFileToNote] = useState<FileData>();
     const [newFolderName, setNewFolderName] = useState('');
+    const [note, setNote] = useState('');
 
     const handleCloseNewFolderDialog = (): void => {
       setNewFolderDialogOpen(false);
       setNewFolderName('');
+    };
+
+    const handleCloseNoteDialog = (): void => {
+      setNoteDialogOpen(false);
+      setNote('');
     };
 
     const handleCloseDeleteDialog = (): void => {
@@ -47,6 +60,7 @@ export const FileBrowser = observer(
     const folderChain = [
       {
         id: '/',
+        fullPath: '',
         name: 'Files',
         isDir: true
       },
@@ -60,19 +74,58 @@ export const FileBrowser = observer(
 
     const handleAction: FileActionHandler = (data) => {
       if (data.id === ChonkyActions.OpenFiles.id) {
-        const fullPath: string = data.payload.targetFile?.fullPath ?? '';
+        const targetFile = data.payload.targetFile;
+        if (!targetFile) return;
+        if (!targetFile.isDir) return;
+        const fullPath: string = targetFile.fullPath ?? '';
         const newPath = `${fullPath}/`;
         setCurrPath(newPath);
       } else if (data.id === ChonkyActions.CreateFolder.id) {
         setNewFolderDialogOpen(true);
       } else if (data.id === ChonkyActions.DeleteFiles.id) {
-        setDeleteDialogOpen(true);
         setFilesToDelete(data.state.selectedFiles.map((f) => f.id));
+        setDeleteDialogOpen(true);
       } else if (data.id === ChonkyActions.MoveFiles.id) {
+        const fullPath: string = data.payload.destination.fullPath;
         props.fs.moveFiles(
           data.payload.files.map((f) => f.id),
-          ((data.payload as any).destination.fullPath as string) + '/'
+          fullPath + '/'
         );
+      } else if (data.id === ChonkyActions.AddNote.id) {
+        const payload = data.payload as FilePayload | undefined;
+        let file: FileData | null = null;
+        if (payload?.file) {
+          file = payload.file;
+        } else if (data.state.selectedFiles[0]) {
+          file = data.state.selectedFiles[0];
+        }
+        if (file) {
+          setFileToNote(file);
+          setNote(file.note ?? '');
+          setNoteDialogOpen(true);
+        }
+      } else if (data.id === ChonkyActions.UploadFiles.id) {
+        const fileInput = document.getElementById('file-input');
+
+        if (!fileInput) return;
+
+        const handleFileSelect = async (event: any): Promise<void> => {
+          const files = event.target.files;
+          const filesArray = [];
+
+          for (let i = 0; i < files.length; i++) {
+            filesArray.push(files[i]);
+          }
+
+          props.fs.addFilesInput(filesArray);
+
+          fileInput.removeEventListener('change', handleFileSelect);
+          event.target.value = null;
+        };
+
+        fileInput.addEventListener('change', handleFileSelect, false);
+
+        fileInput.click();
       }
     };
 
@@ -83,7 +136,9 @@ export const FileBrowser = observer(
       ChonkyActions.CreateFolder,
       ChonkyActions.SortFilesByName,
       ChonkyActions.UploadFiles,
-      ChonkyActions.DeleteFiles
+      ChonkyActions.DeleteFiles,
+      ChonkyActions.DownloadFiles,
+      ChonkyActions.AddNote
     ];
 
     const [files, setFiles] = useState<FileArray>([]);
@@ -95,7 +150,8 @@ export const FileBrowser = observer(
           fullPath: f.fullPath,
           name: f.name,
           isDir: f.isDirectory,
-          isLoading: f.isUploading
+          isLoading: f.isUploading,
+          note: f.note
         }))
       );
     }, [props.fs.files]);
@@ -175,6 +231,43 @@ export const FileBrowser = observer(
             </Button>
           </DialogActions>
         </Dialog>
+        <Dialog
+          open={noteDialogOpen}
+          onClose={handleCloseNoteDialog}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description">
+          <DialogTitle id="alert-dialog-title">{fileToNote?.name}</DialogTitle>
+          <DialogContent>
+            <ContentWrap>
+              <FullWidthTextarea
+                multiline={true}
+                minRows={4}
+                maxRows={4}
+                autoFocus
+                value={note}
+                placeholder={
+                  'Describe the file to help others understand its purpose and relevance...'
+                }
+                onChange={(e) => {
+                  setNote(e.currentTarget.value);
+                }}
+                label="Note"
+                variant="outlined"
+              />
+            </ContentWrap>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseNoteDialog}>Cancel</Button>
+            <Button
+              onClick={() => {
+                handleCloseNoteDialog();
+                if (!fileToNote) return;
+                props.fs.updateFile(fileToNote.id, fileToNote.name, note);
+              }}>
+              Add note
+            </Button>
+          </DialogActions>
+        </Dialog>
       </>
     );
   }
@@ -188,6 +281,10 @@ const Wrap = styled.div`
 
 const FullWidthTextField = styled(TextField)`
   min-width: 336px;
+`;
+
+const FullWidthTextarea = styled(TextField)`
+  min-width: 536px;
 `;
 
 const MaxWidthWrap = styled.div`

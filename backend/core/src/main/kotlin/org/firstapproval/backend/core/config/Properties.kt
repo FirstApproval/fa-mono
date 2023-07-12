@@ -17,6 +17,14 @@ class Properties {
     }
 
     @Component
+    @ConfigurationProperties("ipfs")
+    class IpfsProperties {
+        lateinit var contentsUrl: String
+        lateinit var jobsUrl: String
+        lateinit var accessKey: String
+    }
+
+    @Component
     @ConfigurationProperties("jwt")
     class JwtProperties {
         lateinit var signature: String

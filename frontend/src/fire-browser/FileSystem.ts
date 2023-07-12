@@ -1,11 +1,4 @@
-import {
-  action,
-  autorun,
-  computed,
-  makeObservable,
-  observable,
-  reaction
-} from 'mobx';
+import { action, computed, makeObservable, observable, reaction } from 'mobx';
 import { fileService } from '../core/service';
 import { type PublicationFile } from '../apis/first-approval-api';
 
@@ -15,6 +8,7 @@ interface FileEntry {
   name: string;
   isDirectory: boolean;
   isUploading: boolean;
+  note?: string;
 }
 
 export class FileSystem {
@@ -38,10 +32,16 @@ export class FileSystem {
       }
     );
 
-    autorun(async () => {
-      const files = await this.listDirectory(this.currentPath);
-      this.backEndFiles = [...files];
-    });
+    reaction(
+      () => this.currentPath,
+      async () => {
+        const files = await this.listDirectory(this.currentPath);
+        this.backEndFiles = [...files];
+      },
+      {
+        fireImmediately: true
+      }
+    );
 
     reaction(() => this.currentPath, this.updateLocalFiles, {
       fireImmediately: true
@@ -56,8 +56,77 @@ export class FileSystem {
     this.currentPath = path;
   };
 
-  addFiles = (files: FileSystemEntry[]): void => {
-    void this.uploadQueue(files);
+  addFilesInput = (files: File[]): void => {
+    const uploadQueue: Array<() => Promise<void>> = [];
+
+    files.forEach((e) => {
+      const fullPath = this.fullPath('/' + e.name);
+
+      const uploadFile = async (): Promise<void> => {
+        await fileService
+          .uploadFile(this.publicationId, fullPath, false, e)
+          .then((response) => {
+            this.cleanUploading(response.data);
+          });
+      };
+
+      uploadQueue.push(uploadFile);
+    });
+
+    void this.uploadQueue(uploadQueue);
+    this.allLocalFiles = [
+      ...this.allLocalFiles,
+      ...files.map((f) => {
+        const fullPath = this.fullPath('/' + f.name);
+        return {
+          id: fullPath,
+          name: f.name,
+          fullPath,
+          isDirectory: false,
+          isUploading: true
+        };
+      })
+    ];
+    this.updateLocalFiles();
+  };
+
+  addFilesDnd = (files: FileSystemEntry[]): void => {
+    const uploadQueue: Array<() => Promise<void>> = [];
+
+    files.forEach((e) => {
+      const fullPath = this.fullPath(e.fullPath);
+
+      if (e.isFile) {
+        const uploadFile = async (): Promise<void> => {
+          await new Promise<void>((resolve) => {
+            (e as FileSystemFileEntry).file((file) => {
+              void fileService
+                .uploadFile(this.publicationId, fullPath, false, file)
+                .then((response) => {
+                  this.cleanUploading(response.data);
+                })
+                .finally(() => {
+                  resolve();
+                });
+            });
+          });
+        };
+
+        uploadQueue.push(uploadFile);
+      } else {
+        const uploadFolder = async (): Promise<void> => {
+          await fileService
+            .uploadFile(this.publicationId, fullPath, true)
+            .then((response) => {
+              this.cleanUploading(response.data);
+            });
+        };
+
+        uploadQueue.push(uploadFolder);
+      }
+    });
+
+    void this.uploadQueue(uploadQueue);
     this.allLocalFiles = [
       ...this.allLocalFiles,
       ...files.map((f) => {
@@ -96,6 +165,20 @@ export class FileSystem {
         isUploading: true
       }
     ];
+    this.updateLocalFiles();
+  };
+
+  updateFile = (id: string, name: string, note: string): void => {
+    void fileService.editFile(id, { name, description: note });
+    const filter = (f: FileEntry): FileEntry => {
+      if (f.id === id) {
+        return { ...f, name, note };
+      } else {
+        return f;
+      }
+    };
+    this.backEndFiles = this.backEndFiles.map(filter);
+    this.allLocalFiles = this.allLocalFiles.map(filter);
     this.updateLocalFiles();
   };
 
@@ -154,10 +237,11 @@ export class FileSystem {
     );
   }
 
-  private async uploadQueue(result: FileSystemEntry[]): Promise<void> {
+  private async uploadQueue(
+    uploadQueue: Array<() => Promise<void>>
+  ): Promise<void> {
     const concurrencyLimit = 4;
     let runningCount = 0;
-    const uploadQueue: Array<() => Promise<void>> = [];
 
     const executeNextUpload = async (): Promise<void> => {
       while (uploadQueue.length > 0 && runningCount < concurrencyLimit) {
@@ -173,39 +257,6 @@ export class FileSystem {
         }
       }
     };
-
-    result.forEach((e) => {
-      const fullPath = this.fullPath(e.fullPath);
-
-      if (e.isFile) {
-        const uploadFile = async (): Promise<void> => {
-          await new Promise<void>((resolve) => {
-            (e as FileSystemFileEntry).file((file) => {
-              void fileService
-                .uploadFile(this.publicationId, fullPath, false, file)
-                .then((response) => {
-                  this.cleanUploading(response.data);
-                })
-                .finally(() => {
-                  resolve();
-                });
-            });
-          });
-        };
-
-        uploadQueue.push(uploadFile);
-      } else {
-        const uploadFolder = async (): Promise<void> => {
-          await fileService
-            .uploadFile(this.publicationId, fullPath, true)
-            .then((response) => {
-              this.cleanUploading(response.data);
-            });
-        };
-
-        uploadQueue.push(uploadFolder);
-      }
-    });
 
     await executeNextUpload();
   }
@@ -230,7 +281,8 @@ export class FileSystem {
           fullPath: pf.fullPath ?? '',
           name: fpToName(pf.fullPath ?? ''),
           isDirectory: pf.isDir ?? false,
-          isUploading: false
+          isUploading: false,
+          note: pf.description
         };
       });
     } finally {

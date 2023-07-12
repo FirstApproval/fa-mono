@@ -46,11 +46,13 @@ class Publication(
         inverseJoinColumns = [JoinColumn(name = "user_id")]
     )
     var unconfirmedAuthors: List<UnconfirmedUser> = mutableListOf(),
-    var creationTime: ZonedDateTime = now()
+    var creationTime: ZonedDateTime = now(),
+    var publicationTime: ZonedDateTime? = null,
+    var contentId: Long? = null,
 )
 
 enum class PublicationStatus {
     PENDING,
-    PUBLICATION_IN_PROGRESS,
+    READY_FOR_PUBLICATION,
     PUBLISHED
 }

@@ -25,6 +25,7 @@ class PublicationFileController(
                 .id(it.id)
                 .publicationId(it.publication.id)
                 .creationTime(it.creationTime.toOffsetDateTime())
+                .description(it.description)
                 .dirPath(it.dirPath)
                 .fullPath(it.fullPath)
                 .isDir(it.isDir)
@@ -43,17 +44,17 @@ class PublicationFileController(
 
     override fun deleteFiles(deleteByIdsRequest: DeleteByIdsRequest): ResponseEntity<Void> {
         publicationFileService.deleteFiles(authHolderService.user, deleteByIdsRequest.ids.toList())
-        return ResponseEntity(OK)
+        return ok().build()
     }
 
     override fun moveFile(id: UUID, moveFileRequest: MoveFileRequest): ResponseEntity<Void> {
         publicationFileService.moveFile(authHolderService.user, id, moveFileRequest.newDirPath)
-        return ResponseEntity(OK)
+        return ok().build()
     }
 
     override fun editFile(id: UUID, editFileRequest: EditFileRequest): ResponseEntity<Void> {
         publicationFileService.editFile(authHolderService.user, id, editFileRequest.name, editFileRequest.description)
-        return ResponseEntity(OK)
+        return ok().build()
     }
 
     override fun createFolder(publicationId: UUID, createFolderRequest: CreateFolderRequest): ResponseEntity<PublicationFile> {
