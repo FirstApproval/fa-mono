@@ -140,7 +140,7 @@ class PublicationFileService(
     }
 
     private fun checkAccessToPublication(user: User, publication: Publication) {
-        if (user.id != publication.author.id) {
+        if (user.id != publication.creator.id) {
             throw AccessDeniedException("Access denied")
         }
     }
