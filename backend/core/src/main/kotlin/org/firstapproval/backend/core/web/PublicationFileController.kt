@@ -25,6 +25,7 @@ class PublicationFileController(
                 .id(it.id)
                 .publicationId(it.publication.id)
                 .creationTime(it.creationTime.toOffsetDateTime())
+                .description(it.description)
                 .dirPath(it.dirPath)
                 .fullPath(it.fullPath)
                 .isDir(it.isDir)
