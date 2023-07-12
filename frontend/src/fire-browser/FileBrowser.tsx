@@ -123,6 +123,7 @@ export const FileBrowser = observer(
       ChonkyActions.SortFilesByName,
       ChonkyActions.UploadFiles,
       ChonkyActions.DeleteFiles,
+      ChonkyActions.DownloadFiles,
       ChonkyActions.AddNote
     ];
 
