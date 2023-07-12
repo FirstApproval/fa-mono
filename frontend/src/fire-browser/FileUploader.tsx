@@ -42,10 +42,7 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = (
     <>
       <>
         {props.isDropZoneVisible && (
-          <DropZone
-            style={{ height: 120 }}
-            onDrop={onDrop}
-            onDragOver={onDragOver}>
+          <DropZone onDrop={onDrop} onDragOver={onDragOver}>
             Drag files here for upload
           </DropZone>
         )}
