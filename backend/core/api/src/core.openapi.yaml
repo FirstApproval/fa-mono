@@ -273,6 +273,90 @@ paths:
       operationId: createPublication
       tags: [ publication ]
 
+  /api/publication/{id}/submit:
+    put:
+      summary: Submit publication
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: submitPublication
+      tags: [ publication ]
+
+  /api/publication/{id}/request-download:
+    put:
+      summary: Request publication archive download
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: requestDownload
+      tags: [ publication ]
+
+  /api/publication/{id}/download-link:
+    get:
+      summary: Get publication content download link
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
+      responses:
+        200:
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+      security:
+        - TokenAuth: [ ]
+      operationId: getDownloadLink
+      tags: [ publication ]
+
+  /api/publication/{id}:
+    get:
+      summary: Get publication info
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Publication'
+      security:
+        - TokenAuth: [ ]
+      operationId: getPublication
+      tags: [ publication ]
+
   /api/files/upload:
     post:
       summary: Upload file
@@ -628,8 +712,8 @@ components:
           type: string
           maxLength: 2048
         orcid:
-            type: string
-            maxLength: 2048
+          type: string
+          maxLength: 2048
 
     ChangeEmailRequest:
       type: object
@@ -666,8 +750,20 @@ components:
         id:
           type: string
           format: uuid
+        status:
+          $ref: '#/components/schemas/PublicationStatus'
+        contentStatus:
+          $ref: '#/components/schemas/PublicationContentStatus'
+        creationTime:
+          type: string
+          format: date-time
+        publicationTime:
+          type: string
+          format: date-time
       required:
         - id
+        - status
+        - creationTime
 
     GetMeResponse:
       type: object
@@ -700,6 +796,22 @@ components:
         - FACEBOOK
         - LINKEDIN
         - ORCID
+
+    PublicationStatus:
+      type: string
+      enum:
+        - PENDING
+        - READY_FOR_PUBLICATION
+        - PUBLISHED
+
+    PublicationContentStatus:
+      type: string
+      enum:
+        - PENDING
+        - INSTANT
+        - ENCRYPTED
+        - ARCHIVE
+        - ABSENT
 
     UserUpdateRequest:
       type: object

@@ -17,11 +17,13 @@ class Publication(
     val author: User,
     @Enumerated(STRING)
     var status: PublicationStatus = PENDING,
-    var creationTime: ZonedDateTime = now()
+    var creationTime: ZonedDateTime = now(),
+    var publicationTime: ZonedDateTime? = null,
+    var contentId: Long? = null,
 )
 
 enum class PublicationStatus {
     PENDING,
-    PUBLICATION_IN_PROGRESS,
+    READY_FOR_PUBLICATION,
     PUBLISHED
 }

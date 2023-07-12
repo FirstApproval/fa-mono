@@ -6,10 +6,13 @@ import com.amazonaws.client.builder.AwsClientBuilder
 import com.amazonaws.regions.Regions.DEFAULT_REGION
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.AmazonS3ClientBuilder.standard
+import org.firstapproval.backend.core.config.Properties.IpfsProperties
 import org.firstapproval.backend.core.config.Properties.S3Properties
 import org.firstapproval.backend.core.domain.file.FileStorageService
+import org.firstapproval.backend.core.domain.ipfs.IpfsClient
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.web.client.RestTemplate
 
 @Configuration
 class FileStorageConfig {
@@ -27,4 +30,7 @@ class FileStorageConfig {
         .withEndpointConfiguration(AwsClientBuilder.EndpointConfiguration(s3Properties.url.toString(), DEFAULT_REGION.name))
         .withPathStyleAccessEnabled(true)
         .build()
+
+    @Bean
+    fun ipfsClient(ipfsProperties: IpfsProperties, restTemplate: RestTemplate): IpfsClient = IpfsClient(ipfsProperties, restTemplate)
 }
