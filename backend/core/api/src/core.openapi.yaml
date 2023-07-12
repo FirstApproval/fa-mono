@@ -272,15 +272,18 @@ paths:
         - TokenAuth: [ ]
       operationId: createPublication
       tags: [ publication ]
+
+  /api/publication/{id}:
     get:
       summary: Get publication
       parameters:
-        - in: query
+        - in: path
           name: id
           schema:
             type: string
             format: uuid
           required: true
+          description: Publication id
       responses:
         200:
           description: Success
@@ -295,12 +298,13 @@ paths:
     put:
       summary: Edit publication
       parameters:
-        - in: query
+        - in: path
           name: id
           schema:
             type: string
             format: uuid
           required: true
+          description: Publication id
       requestBody:
         content:
           application/json:
