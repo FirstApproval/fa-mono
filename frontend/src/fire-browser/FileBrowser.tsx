@@ -27,6 +27,10 @@ setChonkyDefaults({
   defaultFileViewActionId: ChonkyActions.EnableListView.id
 });
 
+interface FilePayload {
+  file?: FileData;
+}
+
 export const FileBrowser = observer(
   (props: { fs: FileSystem }): ReactElement => {
     const [newFolderDialogOpen, setNewFolderDialogOpen] = useState(false);
@@ -56,6 +60,7 @@ export const FileBrowser = observer(
     const folderChain = [
       {
         id: '/',
+        fullPath: '',
         name: 'Files',
         isDir: true
       },
@@ -81,15 +86,24 @@ export const FileBrowser = observer(
         setFilesToDelete(data.state.selectedFiles.map((f) => f.id));
         setDeleteDialogOpen(true);
       } else if (data.id === ChonkyActions.MoveFiles.id) {
+        const fullPath: string = data.payload.destination.fullPath;
         props.fs.moveFiles(
           data.payload.files.map((f) => f.id),
-          ((data.payload as any).destination.fullPath as string) + '/'
+          fullPath + '/'
         );
       } else if (data.id === ChonkyActions.AddNote.id) {
-        const file: FileData = (data.payload as any).file;
-        setFileToNote(file);
-        setNote(file.note ?? '');
-        setNoteDialogOpen(true);
+        const payload = data.payload as FilePayload | undefined;
+        let file: FileData | null = null;
+        if (payload?.file) {
+          file = payload.file;
+        } else if (data.state.selectedFiles[0]) {
+          file = data.state.selectedFiles[0];
+        }
+        if (file) {
+          setFileToNote(file);
+          setNote(file.note ?? '');
+          setNoteDialogOpen(true);
+        }
       } else if (data.id === ChonkyActions.UploadFiles.id) {
         const fileInput = document.getElementById('file-input');
 

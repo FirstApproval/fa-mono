@@ -2,16 +2,26 @@ import React, { type ReactElement } from 'react';
 import {
   ChonkyActions,
   selectFileActionData,
+  selectSelectionSize,
   useFileActionTrigger,
   useLocalizedFileActionStrings,
   useParamSelector
 } from '@first-approval/chonky';
-import { Button, Divider } from '@mui/material';
-import { FileUploadOutlined, FolderOpen } from '@mui/icons-material';
+import { Button, Divider, IconButton } from '@mui/material';
+import {
+  DeleteOutlined,
+  DownloadOutlined,
+  EditNote,
+  FileUploadOutlined,
+  FolderOpen
+} from '@mui/icons-material';
 import styled from '@emotion/styled';
+import { useSelector } from 'react-redux';
 
 // eslint-disable-next-line react/display-name
 export const FileToolbar: React.FC = React.memo(() => {
+  const selectionSize = useSelector(selectSelectionSize);
+
   return (
     <>
       <ToolbarWrap>
@@ -21,17 +31,37 @@ export const FileToolbar: React.FC = React.memo(() => {
           multiple
           style={{ display: 'none' }}
         />
-        <ToolbarButton
+        <MainAction
           item={ChonkyActions.UploadFiles.id}
           icon={<FileUploadOutlined />}
         />
         <ButtonWrap>
-          <ToolbarButton
+          <MainAction
             item={ChonkyActions.CreateFolder.id}
             icon={<FolderOpen />}
           />
         </ButtonWrap>
-
+        {selectionSize !== 0 && (
+          <>
+            <DividerWrap variant={'middle'} orientation={'vertical'} />
+            <SelectedCountWrap>{selectionSize} selected:</SelectedCountWrap>
+          </>
+        )}
+        {selectionSize === 1 && (
+          <FileAction item={ChonkyActions.AddNote.id} icon={<EditNote />} />
+        )}
+        {selectionSize !== 0 && (
+          <>
+            <FileAction
+              item={ChonkyActions.DownloadFiles.id}
+              icon={<DownloadOutlined />}
+            />
+            <FileAction
+              item={ChonkyActions.DeleteFiles.id}
+              icon={<DeleteOutlined />}
+            />
+          </>
+        )}
         <ToolbarLeft></ToolbarLeft>
       </ToolbarWrap>
       <Divider />
@@ -44,7 +74,7 @@ interface ToolbarButtonProps {
   icon: ReactElement;
 }
 
-const ToolbarButton: React.FC<ToolbarButtonProps> = (
+const MainAction: React.FC<ToolbarButtonProps> = (
   props: ToolbarButtonProps
 ) => {
   const { item } = props;
@@ -63,9 +93,21 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = (
   );
 };
 
+const FileAction: React.FC<ToolbarButtonProps> = (
+  props: ToolbarButtonProps
+) => {
+  const { item } = props;
+
+  const triggerAction = useFileActionTrigger(item);
+  return <IconButton onClick={triggerAction}>{props.icon}</IconButton>;
+};
+
 const ToolbarWrap = styled.div`
   display: flex;
   margin-bottom: 16px;
+  align-items: center;
+  height: 40px;
+  min-height: 40px;
 `;
 
 const ToolbarLeft = styled.div`
@@ -75,4 +117,17 @@ const ToolbarLeft = styled.div`
 
 const ButtonWrap = styled.div`
   margin-left: 24px;
+`;
+
+const SelectedCountWrap = styled.div`
+  margin-left: 12px;
+  margin-right: 8px;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+`;
+
+const DividerWrap = styled(Divider)`
+  margin-left: 16px;
 `;

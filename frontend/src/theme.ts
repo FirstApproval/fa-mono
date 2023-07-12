@@ -23,6 +23,13 @@ export const theme = createTheme({
           borderColor: '#040036'
         }
       }
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          color: '#040036'
+        }
+      }
     }
   }
 });
