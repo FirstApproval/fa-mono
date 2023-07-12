@@ -60,6 +60,7 @@ class UserController(
         getMeResponse.email = user.email
         getMeResponse.canSetPassword = user.password.isNullOrEmpty()
         getMeResponse.canChangePassword = !user.password.isNullOrEmpty()
+        getMeResponse.selfInfo = user.selfInfo
         getMeResponse.signedVia = user.externalIds.keys.map { OauthType.valueOf(it.name) }
         return ok(getMeResponse)
     }
