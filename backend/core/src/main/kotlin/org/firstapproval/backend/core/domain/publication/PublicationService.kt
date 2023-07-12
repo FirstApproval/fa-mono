@@ -75,6 +75,6 @@ fun Publication.toApiObject() = org.firstapproval.api.server.model.Publication()
     it.methodTitle = methodTitle
     it.methodDescription = methodDescription
     it.predictedGoals = predictedGoals
-    it.authors = confirmedAuthors.map { user -> Author(user.fullName, user.email, null) } +
+    it.authors = confirmedAuthors.map { user -> Author(user.fullName, user.email, user.selfInfo) } +
         unconfirmedAuthors.map { user -> Author(user.fullName, user.email, user.shortBio) }
 }
