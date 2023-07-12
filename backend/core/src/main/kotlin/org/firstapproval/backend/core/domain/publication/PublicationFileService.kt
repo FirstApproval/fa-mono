@@ -3,12 +3,11 @@ package org.firstapproval.backend.core.domain.publication
 import org.firstapproval.backend.core.domain.file.FILES
 import org.firstapproval.backend.core.domain.file.FileStorageService
 import org.firstapproval.backend.core.domain.user.User
-import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.InputStream
-import java.util.*
-import java.util.UUID.*
+import java.util.UUID
+import java.util.UUID.randomUUID
 
 @Service
 class PublicationFileService(
@@ -136,13 +135,6 @@ class PublicationFileService(
     private fun checkCollapse(newLocation: String, currentLocation: String) {
         if (newLocation.startsWith(currentLocation)) {
             throw IllegalArgumentException()
-        }
-    }
-    //TODO ???
-
-    private fun checkAccessToPublication(user: User, publication: Publication) {
-        if (publication.confirmedAuthors.filter { it.id == user.id }.size != 1) {
-            throw AccessDeniedException("Access denied")
         }
     }
 

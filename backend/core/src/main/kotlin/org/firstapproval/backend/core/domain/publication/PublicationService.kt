@@ -2,20 +2,24 @@ package org.firstapproval.backend.core.domain.publication
 
 import org.firstapproval.api.server.model.Author
 import org.firstapproval.api.server.model.PublicationEditRequest
-import org.firstapproval.backend.core.domain.user.UnconfirmedUser
-import org.firstapproval.backend.core.domain.user.UnconfirmedUserRepository
-import org.firstapproval.backend.core.domain.ipfs.*
+import org.firstapproval.backend.core.domain.ipfs.DownloadLink
+import org.firstapproval.backend.core.domain.ipfs.DownloadLinkRepository
+import org.firstapproval.backend.core.domain.ipfs.IpfsClient
+import org.firstapproval.backend.core.domain.ipfs.Job
+import org.firstapproval.backend.core.domain.ipfs.JobKind
+import org.firstapproval.backend.core.domain.ipfs.JobRepository
+import org.firstapproval.backend.core.domain.ipfs.JobStatus
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
+import org.firstapproval.backend.core.domain.user.UnconfirmedUser
+import org.firstapproval.backend.core.domain.user.UnconfirmedUserRepository
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
-import java.util.*
-import java.util.UUID.randomUUID
 import java.util.UUID
-import java.util.UUID.*
+import java.util.UUID.randomUUID
 
 @Service
 class PublicationService(
@@ -117,6 +121,7 @@ class PublicationService(
 }
 
 fun Publication.toApiObject() = org.firstapproval.api.server.model.Publication().also {
+    it.id = id
     it.title = title
     it.description = description
     it.grantOrganizations = grantOrganizations
@@ -130,4 +135,6 @@ fun Publication.toApiObject() = org.firstapproval.api.server.model.Publication()
     it.predictedGoals = predictedGoals
     it.authors = confirmedAuthors.map { user -> Author(user.fullName, user.email, user.selfInfo) } +
         unconfirmedAuthors.map { user -> Author(user.fullName, user.email, user.shortBio) }
+    it.status = org.firstapproval.api.server.model.PublicationStatus.valueOf(status.name)
+    it.creationTime = creationTime.toOffsetDateTime()
 }

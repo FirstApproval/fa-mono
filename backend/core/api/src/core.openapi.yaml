@@ -293,9 +293,9 @@ paths:
                 $ref: '#/components/schemas/Publication'
       security:
         - TokenAuth: [ ]
-      operationId: getPublocation
+      operationId: getPublication
       tags: [ publication ]
-    put:
+    patch:
       summary: Edit publication
       parameters:
         - in: path
@@ -378,29 +378,6 @@ paths:
       security:
         - TokenAuth: [ ]
       operationId: getDownloadLink
-      tags: [ publication ]
-
-  /api/publication/{id}:
-    get:
-      summary: Get publication info
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-            format: uuid
-          required: true
-          description: Publication id
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Publication'
-      security:
-        - TokenAuth: [ ]
-      operationId: getPublication
       tags: [ publication ]
 
   /api/files/upload:
@@ -959,6 +936,19 @@ components:
     Publication:
       type: object
       properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/PublicationStatus'
+        contentStatus:
+          $ref: '#/components/schemas/PublicationContentStatus'
+        creationTime:
+          type: string
+          format: date-time
+        publicationTime:
+          type: string
+          format: date-time
         title:
           type: string
         description:
@@ -991,6 +981,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Author'
+      required:
+        - id
+        - status
+        - creationTime
 
     Author:
       type: object
