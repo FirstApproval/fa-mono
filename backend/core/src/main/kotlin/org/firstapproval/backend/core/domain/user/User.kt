@@ -26,5 +26,6 @@ class User(
     var externalIds: MutableMap<OauthType, String> = mutableMapOf(),
     var email: String? = null,
     var password: String? = null,
+    var selfInfo: String? = null,
     var creationTime: ZonedDateTime = now(),
 )

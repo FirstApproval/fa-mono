@@ -257,7 +257,7 @@ class UserService(
     }
 
     @Transactional
-    fun update(id: UUID, firstName: String, middleName: String?, lastName: String, username: String) {
+    fun update(id: UUID, firstName: String, middleName: String?, lastName: String, username: String, selfInfo: String?) {
         val userFromDb = userRepository.findByUsername(username)
         if (userFromDb != null && userFromDb.id != id) throw RecordConflictException("username already taken")
         val user = userRepository.findById(id).orElseThrow()
@@ -265,6 +265,7 @@ class UserService(
         user.middleName = middleName
         user.lastName = lastName
         user.username = username
+        user.selfInfo = selfInfo
         userRepository.save(user)
     }
 

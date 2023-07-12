@@ -686,6 +686,8 @@ components:
           type: boolean
         canChangePassword:
           type: boolean
+        selfInfo:
+          type: string
         signedVia:
           type: array
           items:
@@ -709,6 +711,8 @@ components:
         lastName:
           type: string
         username:
+          type: string
+        selfInfo:
           type: string
       required:
         - firstName
