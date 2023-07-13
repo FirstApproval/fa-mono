@@ -15,6 +15,7 @@ import org.firstapproval.backend.core.domain.user.UnconfirmedUser
 import org.firstapproval.backend.core.domain.user.UnconfirmedUserRepository
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
+import org.firstapproval.backend.core.exception.RecordConflictException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
@@ -55,6 +56,7 @@ class PublicationService(
             }
             if (unconfirmedAuthors.edited) {
                 val unconfirmedCoauthorsList = unconfirmedAuthors.values.map {
+                    if (userRepository.findByEmail(it.email) != null) throw RecordConflictException("user with this email already exists")
                     unconfirmedUserRepository.saveAndFlush(
                         UnconfirmedUser(
                             id = randomUUID(),

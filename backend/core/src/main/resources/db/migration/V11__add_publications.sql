@@ -1,27 +1,30 @@
 CREATE TABLE unconfirmed_users
 (
     id        UUID PRIMARY KEY,
-    email     TEXT UNIQUE,
+    email     TEXT NOT NULL,
     full_name TEXT NOT NULL,
     short_bio TEXT
 );
 
 CREATE TABLE publication_unconfirmed_authors
 (
-    publication_id UUID NOT NULL REFERENCES publications (id),
-    user_id        UUID NOT NULL REFERENCES unconfirmed_users (id),
+    publication_id UUID NOT NULL REFERENCES publications (id) ON DELETE CASCADE,
+    user_id        UUID NOT NULL REFERENCES unconfirmed_users (id) ON DELETE CASCADE,
     PRIMARY KEY (publication_id, user_id)
 );
 
 CREATE TABLE publication_confirmed_authors
 (
-    publication_id UUID NOT NULL REFERENCES publications (id),
-    user_id        UUID NOT NULL REFERENCES users (id),
+    publication_id UUID NOT NULL REFERENCES publications (id) ON DELETE CASCADE,
+    user_id        UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
     PRIMARY KEY (publication_id, user_id)
 );
 
 ALTER TABLE publications
 RENAME COLUMN author_id TO creator_id;
+
+INSERT INTO publication_confirmed_authors (publication_id, user_id)
+SELECT id, creator_id FROM publications WHERE id IS NOT NULL;
 
 ALTER TABLE publications
 ADD COLUMN title TEXT,
