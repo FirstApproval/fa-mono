@@ -4,7 +4,7 @@ import { waitFor } from '@testing-library/react';
 import { runInAction } from 'mobx';
 
 test('should upload files and directories', async () => {
-  const uploadHandles: Array<() => void> = [];
+  const uploadHandles: Record<string, () => void> = {};
 
   const listDirectory = jest.fn(async () => {
     return await new Promise<any>((resolve) => {
@@ -23,7 +23,7 @@ test('should upload files and directories', async () => {
         const handle = (): void => {
           resolve({ data: { fullPath, id: `/uuid${fullPath}` } });
         };
-        uploadHandles.push(handle);
+        uploadHandles[fullPath] = handle;
       });
     }
   );
@@ -162,9 +162,10 @@ test('should upload files and directories', async () => {
     }
   ]);
 
-  uploadHandles.forEach((h) => {
-    h();
-  });
+  uploadHandles['/file 1']();
+  uploadHandles['/file 2']();
+  uploadHandles['/dir 1']();
+  uploadHandles['/dir 1/file 3']();
 
   await waitFor(() => {
     expect(uploadFile).toBeCalledTimes(6);
@@ -177,6 +178,9 @@ test('should upload files and directories', async () => {
     {}
   );
   expect(uploadFile).toHaveBeenCalledWith(publicationId, '/dir 1/dir 2', true);
+
+  uploadHandles['/dir 1/file 4']();
+  uploadHandles['/dir 1/dir 2']();
 
   await waitFor(() => {
     expect(fs.files).toEqual([
@@ -208,31 +212,7 @@ test('should upload files and directories', async () => {
     fs.currentPath = '/';
   });
 
-  await waitFor(() => {
-    expect(fs.files).toEqual([
-      {
-        id: '/uuid/file 1',
-        fullPath: '/file 1',
-        isDirectory: false,
-        isUploading: false,
-        name: 'file 1'
-      },
-      {
-        id: '/uuid/file 2',
-        fullPath: '/file 2',
-        isDirectory: false,
-        isUploading: false,
-        name: 'file 2'
-      },
-      {
-        id: '/uuid/dir 1',
-        fullPath: '/dir 1',
-        isDirectory: true,
-        isUploading: false,
-        name: 'dir 1'
-      }
-    ]);
-  });
+  expect(fs.files).toEqual([]);
 
   expect(listDirectory).toBeCalledTimes(3);
 });
