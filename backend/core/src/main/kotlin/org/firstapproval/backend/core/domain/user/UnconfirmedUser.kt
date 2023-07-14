@@ -11,6 +11,8 @@ class UnconfirmedUser(
     @Id
     var id: UUID,
     var email: String? = null,
-    var fullName: String? = null,
+    var firstName: String? = null,
+    var middleName: String? = null,
+    var lastName: String? = null,
     var shortBio: String? = null
 )

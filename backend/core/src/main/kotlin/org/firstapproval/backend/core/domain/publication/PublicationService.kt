@@ -61,7 +61,9 @@ class PublicationService(
                         UnconfirmedUser(
                             id = randomUUID(),
                             email = it.email,
-                            fullName = it.fullName,
+                            firstName = it.firstName,
+                            middleName = it.middleName,
+                            lastName = it.lastName,
                             shortBio = it.shortBio
                         )
                     )
@@ -135,8 +137,8 @@ fun Publication.toApiObject() = org.firstapproval.api.server.model.Publication()
     it.methodTitle = methodTitle
     it.methodDescription = methodDescription
     it.predictedGoals = predictedGoals
-    it.authors = confirmedAuthors.map { user -> Author(user.fullName, user.email, user.selfInfo) } +
-        unconfirmedAuthors.map { user -> Author(user.fullName, user.email, user.shortBio) }
+    it.authors = confirmedAuthors.map { user -> Author(user.firstName, user.middleName, user.lastName, user.email, user.selfInfo) } +
+        unconfirmedAuthors.map { user -> Author(user.firstName, user.middleName, user.lastName, user.email, user.shortBio) }
     it.status = org.firstapproval.api.server.model.PublicationStatus.valueOf(status.name)
     it.creationTime = creationTime.toOffsetDateTime()
 }

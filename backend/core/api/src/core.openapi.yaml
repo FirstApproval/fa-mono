@@ -925,13 +925,18 @@ components:
             properties:
               email:
                 type: string
-              fullName:
+              firstName:
+                type: string
+              middleName:
+                type: string
+              lastName:
                 type: string
               shortBio:
                 type: string
             required:
               - email
-              - fullName
+              - firstName
+              - lastName
 
     Publication:
       type: object
@@ -989,14 +994,20 @@ components:
     Author:
       type: object
       properties:
-        fullName:
+        firstName:
+          type: string
+        middleName:
+          type: string
+        lastName:
           type: string
         email:
           type: string
         shortBio:
           type: string
       required:
-        - fullName
+        - firstName
+        - middleName
+        - lastName
         - email
         - shortBio
 
