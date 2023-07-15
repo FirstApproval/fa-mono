@@ -260,7 +260,30 @@ paths:
 
   /api/publication:
     post:
-      summary: Create publication draft
+      summary: Create publication
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatePublicationResponse'
+      security:
+        - TokenAuth: [ ]
+      operationId: createPublication
+      tags: [ publication ]
+
+  /api/publication/{id}:
+    get:
+      summary: Get publication
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
       responses:
         200:
           description: Success
@@ -270,7 +293,30 @@ paths:
                 $ref: '#/components/schemas/Publication'
       security:
         - TokenAuth: [ ]
-      operationId: createPublication
+      operationId: getPublication
+      tags: [ publication ]
+    patch:
+      summary: Edit publication
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicationEditRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: editPublication
       tags: [ publication ]
 
   /api/publication/{id}/submit:
@@ -332,29 +378,6 @@ paths:
       security:
         - TokenAuth: [ ]
       operationId: getDownloadLink
-      tags: [ publication ]
-
-  /api/publication/{id}:
-    get:
-      summary: Get publication info
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-            format: uuid
-          required: true
-          description: Publication id
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Publication'
-      security:
-        - TokenAuth: [ ]
-      operationId: getPublication
       tags: [ publication ]
 
   /api/files/upload:
@@ -744,7 +767,7 @@ components:
         - confirmationToken
         - code
 
-    Publication:
+    CreatePublicationResponse:
       type: object
       properties:
         id:
@@ -830,6 +853,163 @@ components:
         - firstName
         - lastName
         - username
+
+    PublicationEditRequest:
+      type: object
+      properties:
+        confirmedAuthors:
+          $ref: '#/components/schemas/ConfirmedAuthors'
+        unconfirmedAuthors:
+          $ref: '#/components/schemas/UnconfirmedAuthors'
+        title:
+          $ref: '#/components/schemas/PublicationStringValue'
+        description:
+          $ref: '#/components/schemas/PublicationStringValue'
+        grantOrganizations:
+          $ref: '#/components/schemas/PublicationStringArrayValue'
+        relatedArticles:
+          $ref: '#/components/schemas/PublicationStringArrayValue'
+        tags:
+          $ref: '#/components/schemas/PublicationStringArrayValue'
+        objectOfStudyTitle:
+          $ref: '#/components/schemas/PublicationStringValue'
+        objectOfStudyDescription:
+          $ref: '#/components/schemas/PublicationStringValue'
+        software:
+          $ref: '#/components/schemas/PublicationStringValue'
+        methodTitle:
+          $ref: '#/components/schemas/PublicationStringValue'
+        methodDescription:
+          $ref: '#/components/schemas/PublicationStringValue'
+        predictedGoals:
+          $ref: '#/components/schemas/PublicationStringValue'
+
+    PublicationStringValue:
+      type: object
+      properties:
+        edited:
+          type: boolean
+        value:
+          type: string
+
+    PublicationStringArrayValue:
+      type: object
+      properties:
+        edited:
+          type: boolean
+        values:
+          type: array
+          items:
+            type: string
+
+    ConfirmedAuthors:
+      type: object
+      properties:
+        edited:
+          type: boolean
+        values:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    UnconfirmedAuthors:
+      type: object
+      properties:
+        edited:
+          type: boolean
+        values:
+          type: array
+          items:
+            type: object
+            properties:
+              email:
+                type: string
+              firstName:
+                type: string
+              middleName:
+                type: string
+              lastName:
+                type: string
+              shortBio:
+                type: string
+            required:
+              - email
+              - firstName
+              - lastName
+
+    Publication:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/PublicationStatus'
+        contentStatus:
+          $ref: '#/components/schemas/PublicationContentStatus'
+        creationTime:
+          type: string
+          format: date-time
+        publicationTime:
+          type: string
+          format: date-time
+        title:
+          type: string
+        description:
+          type: string
+        grantOrganizations:
+          type: array
+          items:
+            type: string
+        relatedArticles:
+          type: array
+          items:
+            type: string
+        tags:
+          type: array
+          items:
+            type: string
+        objectOfStudyTitle:
+          type: string
+        objectOfStudyDescription:
+          type: string
+        software:
+          type: string
+        methodTitle:
+          type: string
+        methodDescription:
+          type: string
+        predictedGoals:
+          type: string
+        authors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Author'
+      required:
+        - id
+        - status
+        - creationTime
+
+    Author:
+      type: object
+      properties:
+        firstName:
+          type: string
+        middleName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        shortBio:
+          type: string
+      required:
+        - firstName
+        - middleName
+        - lastName
+        - email
+        - shortBio
 
   securitySchemes:
     PublicAuth:
