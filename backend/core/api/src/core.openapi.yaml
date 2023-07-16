@@ -451,6 +451,30 @@ paths:
       operationId: downloadPublicationFile
       tags: [ file ]
 
+  /api/author/{searchText}:
+    get:
+      summary: Get users by search text
+      parameters:
+        - in: path
+          name: searchText
+          schema:
+            type: string
+          required: true
+          description: Search text for users
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Author'
+      security:
+        - TokenAuth: [ ]
+      operationId: getAuthors
+      tags: [ author ]
+
   /api/files:
     parameters:
       - in: query
