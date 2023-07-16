@@ -8,8 +8,8 @@ import org.firstapproval.backend.core.domain.ipfs.IpfsClient
 import org.firstapproval.backend.core.domain.publication.Publication
 import org.firstapproval.backend.core.domain.publication.PublicationFileRepository
 import org.firstapproval.backend.core.domain.publication.PublicationRepository
-import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
+import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
 import org.springframework.data.domain.PageRequest
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -19,7 +19,7 @@ import java.io.File.createTempFile
 import java.io.FileOutputStream
 import java.nio.file.Files
 import java.time.ZonedDateTime.now
-import java.util.*
+import java.util.UUID
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import kotlin.io.path.Path
@@ -78,7 +78,7 @@ class ArchiveService(
                 filesIds.addAll(files.map { it.id })
                 files.forEach {
                     if (!it.isDir) {
-                        val inputStream = fileStorageService.get(FILES, it.id.toString())
+                        val inputStream = fileStorageService.get(FILES, it.id.toString()).objectContent
                         val zipEntry = ZipEntry(it.fullPath)
                         zipOutputStream.putNextEntry(zipEntry)
                         val buffer = ByteArray(1024)
