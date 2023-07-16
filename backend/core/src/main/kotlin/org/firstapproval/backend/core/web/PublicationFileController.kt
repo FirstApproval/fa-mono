@@ -51,8 +51,13 @@ class PublicationFileController(
 
     override fun downloadPublicationFile(fileId: UUID): ResponseEntity<Resource> {
         val file = publicationFileService.getPublicationFileWithContent(authHolderService.user, fileId)
+        val contentType: MediaType = try {
+            MediaType.parseMediaType(guessContentTypeFromName(file.name))
+        } catch (ex: Exception) {
+            MediaType.APPLICATION_OCTET_STREAM
+        }
         return ok()
-            .contentType(MediaType.parseMediaType(guessContentTypeFromName(file.name)))
+            .contentType(contentType)
             .header("Content-disposition", "attachment; filename=\"${file.name}\"")
             .contentLength(file.s3Object.objectMetadata.contentLength)
             .body(InputStreamResource(file.s3Object.objectContent))
