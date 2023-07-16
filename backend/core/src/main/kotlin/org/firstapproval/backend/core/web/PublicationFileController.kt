@@ -11,7 +11,6 @@ import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.PublicationFileService
 import org.springframework.core.io.InputStreamResource
 import org.springframework.core.io.Resource
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus.OK
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -52,9 +51,7 @@ class PublicationFileController(
 
     override fun downloadPublicationFile(fileId: UUID): ResponseEntity<Resource> {
         val file = publicationFileService.getPublicationFileWithContent(authHolderService.user, fileId)
-        val headers = HttpHeaders()
         return ok()
-            .headers(headers)
             .contentType(MediaType.parseMediaType(guessContentTypeFromName(file.name)))
             .header("Content-disposition", "attachment; filename=\"${file.name}\"")
             .contentLength(file.s3Object.objectMetadata.contentLength)
