@@ -1,5 +1,6 @@
 package org.firstapproval.backend.core.domain.publication
 
+import com.amazonaws.services.s3.model.S3Object
 import org.firstapproval.backend.core.domain.file.FILES
 import org.firstapproval.backend.core.domain.file.FileStorageService
 import org.firstapproval.backend.core.domain.user.User
@@ -41,6 +42,16 @@ class PublicationFileService(
             fileStorageService.save(FILES, fileId.toString(), data!!)
         }
         return file
+    }
+
+    @Transactional(readOnly = true)
+    fun getPublicationFileWithContent(user: User, fileId: UUID): FileResponse {
+        val file = publicationFileRepository.getReferenceById(fileId)
+        checkAccessToPublication(user, file.publication)
+        return FileResponse(
+            name = file.name,
+            s3Object = fileStorageService.get(FILES, fileId.toString())
+        )
     }
 
     @Transactional
@@ -144,3 +155,8 @@ class PublicationFileService(
         }
     }
 }
+
+data class FileResponse(
+    val name: String,
+    val s3Object: S3Object
+)
