@@ -171,6 +171,28 @@ paths:
       operationId: confirmChangeEmail
       tags: [ user ]
 
+  /api/user/check-email-uniqueness/{email}:
+    get:
+      summary: Check email uniqueness
+      parameters:
+        - in: path
+          name: email
+          schema:
+            type: string
+          required: true
+          description: Return true if such e-mail already exists
+      responses:
+        200:
+          description: Success
+          content:
+            'application/json':
+              schema:
+                type: boolean
+      security:
+        - PublicAuth: [ ]
+      operationId: checkEmailUniqueness
+      tags: [ user ]
+
   /api/user/request-password-reset:
     post:
       summary: Request password reset
