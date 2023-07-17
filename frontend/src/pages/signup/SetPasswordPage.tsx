@@ -22,7 +22,6 @@ import {
   Header
 } from '../common.styled';
 import { routerStore } from '../../core/router';
-import { validateEmail } from '../../util/emailUtil';
 
 interface SetPasswordPageProps {
   store: SignUpStore;

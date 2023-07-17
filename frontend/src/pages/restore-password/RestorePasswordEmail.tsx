@@ -34,6 +34,8 @@ export const RestorePasswordEmail: FunctionComponent<RestorePasswordEmailProps> 
       return isVE;
     };
 
+    const emailNonEmpty = props.store.email.length > 0;
+
     return (
       <Parent>
         <FlexHeader>
@@ -53,6 +55,7 @@ export const RestorePasswordEmail: FunctionComponent<RestorePasswordEmailProps> 
             <EmailLabel>Please enter your email</EmailLabel>
             <div style={{ marginBottom: '12px' }}>
               <FullWidthTextField
+                autoFocus
                 error={!isValidEmail}
                 helperText={!isValidEmail ? 'Invalid address' : undefined}
                 value={props.store.email}
@@ -72,6 +75,7 @@ export const RestorePasswordEmail: FunctionComponent<RestorePasswordEmailProps> 
               />
             </div>
             <FullWidthButton
+              disabled={!emailNonEmpty}
               variant="contained"
               size={'large'}
               endIcon={<ArrowForward />}

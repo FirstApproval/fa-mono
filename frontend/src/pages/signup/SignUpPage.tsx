@@ -1,5 +1,6 @@
 import { type FunctionComponent, useState } from 'react';
 import {
+  Alert,
   Button,
   Divider,
   InputAdornment,
@@ -33,6 +34,7 @@ interface SignUpPageProps {
 export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
   (props: SignUpPageProps) => {
     const [isValidEmail, setIsValidEmail] = useState(true);
+    const [isUsedEmail, setUsedEmail] = useState(false);
 
     const validate = (): boolean => {
       const isVE =
@@ -64,6 +66,7 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
             </EmailLabel>
             <div style={{ marginBottom: '12px' }}>
               <FullWidthTextField
+                autoFocus
                 error={!isValidEmail}
                 helperText={!isValidEmail ? 'Invalid address' : undefined}
                 value={props.store.email}
@@ -82,8 +85,13 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
                 }}
               />
             </div>
+            {isUsedEmail && (
+              <AlertWrap severity="error">
+                Email address already registered by another user
+              </AlertWrap>
+            )}
             <FullWidthButton
-              autoFocus
+              loading={props.store.isSubmitting}
               disabled={!emailNonEmpty}
               variant="contained"
               size={'large'}
@@ -91,7 +99,15 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
               onClick={() => {
                 const isValid = validate();
                 if (isValid) {
-                  props.onContinueClick();
+                  void props.store
+                    .validateEmail(props.store.email)
+                    .then((exist) => {
+                      if (exist) {
+                        setUsedEmail(true);
+                      } else {
+                        props.onContinueClick();
+                      }
+                    });
                 }
               }}>
               Continue with email
@@ -135,6 +151,11 @@ const DividerWrap = styled(Divider)`
 const DividerWrap2 = styled(Divider)`
   margin-top: 42px;
   margin-bottom: 40px;
+  width: 100%;
+`;
+
+const AlertWrap = styled(Alert)`
+  margin-bottom: 16px;
   width: 100%;
 `;
 

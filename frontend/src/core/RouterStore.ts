@@ -64,6 +64,15 @@ export class RouterStore {
         target.apply(thisArg, argArray);
       }
     });
+    window.history.replaceState = new Proxy(window.history.pushState, {
+      apply: (target, thisArg, argArray: string[]) => {
+        const path = argArray[2];
+        this.setPath(path);
+        this.setQueryParams(new URLSearchParams(path));
+        // @ts-expect-error wrong types
+        target.apply(thisArg, argArray);
+      }
+    });
 
     autorun(() => {
       const path = this.path;

@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { Button } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 
 export const Parent = styled('div')`
   width: 100%;
@@ -32,7 +32,7 @@ export const Logo = styled('div')`
   cursor: pointer;
 `;
 
-export const FullWidthButton = styled(Button)`
+export const FullWidthButton = styled(LoadingButton)`
   width: 100%;
 `;
 
