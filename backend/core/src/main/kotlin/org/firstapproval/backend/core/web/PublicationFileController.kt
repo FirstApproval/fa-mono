@@ -1,16 +1,23 @@
 package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.FileApi
-import org.firstapproval.api.server.model.*
+import org.firstapproval.api.server.model.CreateFolderRequest
+import org.firstapproval.api.server.model.DeleteByIdsRequest
+import org.firstapproval.api.server.model.EditFileRequest
+import org.firstapproval.api.server.model.MoveFileRequest
+import org.firstapproval.api.server.model.PublicationFile
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.PublicationFileService
+import org.springframework.core.io.InputStreamResource
 import org.springframework.core.io.Resource
 import org.springframework.http.HttpStatus.OK
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
-import java.util.*
+import java.net.URLConnection.guessContentTypeFromName
+import java.util.UUID
 
 @RestController
 class PublicationFileController(
@@ -40,6 +47,20 @@ class PublicationFileController(
             .dirPath(file.dirPath)
             .fullPath(file.fullPath)
             .isDir(file.isDir), OK)
+    }
+
+    override fun downloadPublicationFile(fileId: UUID): ResponseEntity<Resource> {
+        val file = publicationFileService.getPublicationFileWithContent(authHolderService.user, fileId)
+        val contentType: MediaType = try {
+            MediaType.parseMediaType(guessContentTypeFromName(file.name))
+        } catch (ex: Exception) {
+            MediaType.APPLICATION_OCTET_STREAM
+        }
+        return ok()
+            .contentType(contentType)
+            .header("Content-disposition", "attachment; filename=\"${file.name}\"")
+            .contentLength(file.s3Object.objectMetadata.contentLength)
+            .body(InputStreamResource(file.s3Object.objectContent))
     }
 
     override fun deleteFiles(deleteByIdsRequest: DeleteByIdsRequest): ResponseEntity<Void> {

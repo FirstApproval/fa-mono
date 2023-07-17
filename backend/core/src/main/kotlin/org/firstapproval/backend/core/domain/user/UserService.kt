@@ -6,6 +6,9 @@ import org.firstapproval.backend.core.config.Properties.EmailProperties
 import org.firstapproval.backend.core.config.Properties.FrontendProperties
 import org.firstapproval.backend.core.domain.auth.OauthUser
 import org.firstapproval.backend.core.domain.notification.NotificationService
+import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
+import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthorRepository
+import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthorRepository
 import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmation
 import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmationRepository
 import org.firstapproval.backend.core.domain.user.email.EmailChangeConfirmationRepository
@@ -43,7 +46,10 @@ class UserService(
     private val emailProperties: EmailProperties,
     private val frontendProperties: FrontendProperties,
     private val notificationService: NotificationService,
-    private val emailSender: JavaMailSender
+    private val emailSender: JavaMailSender,
+    private val unconfirmedUserRepository: UnconfirmedUserRepository,
+    private val unconfirmedAuthorRepository: UnconfirmedAuthorRepository,
+    private val confirmedAuthorRepository: ConfirmedAuthorRepository
 ) {
 
     val log = logger {}
@@ -63,7 +69,7 @@ class UserService(
 
         val userByUsername = userRepository.findByUsername(oauthUser.username)
         val id = randomUUID()
-        return userRepository.save(
+        val savedUser = userRepository.save(
             User(
                 id = id,
                 username = if (userByUsername != null) id.toString() else oauthUser.username,
@@ -75,6 +81,8 @@ class UserService(
                 fullName = oauthUser.fullName
             )
         )
+        migratePublicationOfUnconfirmedUser(savedUser)
+        return savedUser
     }
 
     @Transactional
@@ -154,7 +162,7 @@ class UserService(
         val username = emailRegistrationConfirmation.email.split("@").first()
         val userByUsername = userRepository.findByUsername(username)
         val userId = randomUUID()
-        return userRepository.save(
+        val user = userRepository.save(
             User(
                 id = userId,
                 email = emailRegistrationConfirmation.email,
@@ -164,6 +172,8 @@ class UserService(
                 username = if (userByUsername != null) userId.toString() else username
             )
         )
+        migratePublicationOfUnconfirmedUser(user)
+        return user
     }
 
     @Transactional
@@ -272,6 +282,18 @@ class UserService(
     @Transactional
     fun delete(id: UUID) {
         userRepository.deleteById(id)
+    }
+
+    @Transactional
+    fun migratePublicationOfUnconfirmedUser(user: User) {
+        val unconfirmedUser = unconfirmedUserRepository.findByEmail(user.email)
+        if (unconfirmedUser != null) {
+            val unconfirmedAuthorAndPublications = unconfirmedAuthorRepository.findByUserId(unconfirmedUser.id)
+            unconfirmedAuthorAndPublications.forEach {
+                confirmedAuthorRepository.save(ConfirmedAuthor(it.publicationId, user.id))
+            }
+            unconfirmedUserRepository.delete(unconfirmedUser)
+        }
     }
 }
 

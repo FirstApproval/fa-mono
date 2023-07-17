@@ -15,7 +15,7 @@ import java.util.UUID.randomUUID
 
 
 @Service
-class EmailChangeService(
+class UserEmailService(
     private val frontendProperties: FrontendProperties,
     private val userRepository: UserRepository,
     private val emailChangeConfirmationRepository: EmailChangeConfirmationRepository,
@@ -60,5 +60,9 @@ class EmailChangeService(
         emailChangeConfirmation.user.email = emailChangeConfirmation.email
 
         emailChangeConfirmationRepository.delete(emailChangeConfirmation)
+    }
+
+    fun checkEmailUniqueness(email: String): Boolean {
+        return userRepository.existsByEmail(email)
     }
 }
