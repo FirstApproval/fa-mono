@@ -105,6 +105,15 @@ export class RouterStore {
     this.page = value;
   };
 
+  goHome = (): void => {
+    const token = authStore.token;
+    if (token !== undefined) {
+      this.setPage(Page.HOME_PAGE);
+    } else {
+      this.setPage(Page.SIGN_IN);
+    }
+  };
+
   setPath = (value: string): void => {
     this.path = value;
   };

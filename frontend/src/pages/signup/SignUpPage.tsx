@@ -22,6 +22,7 @@ import {
   Header
 } from '../common.styled';
 import { validateEmail } from 'src/util/emailUtil';
+import { routerStore } from '../../core/router';
 
 interface SignUpPageProps {
   store: SignUpStore;
@@ -40,10 +41,12 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
       return isVE;
     };
 
+    const emailNonEmpty = props.store.email.length > 0;
+
     return (
       <Parent>
         <FlexHeader>
-          <Logo>First Approval</Logo>
+          <Logo onClick={routerStore.goHome}>First Approval</Logo>
           <FlexHeaderRight>
             <Button
               variant="outlined"
@@ -80,6 +83,8 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
               />
             </div>
             <FullWidthButton
+              autoFocus
+              disabled={!emailNonEmpty}
               variant="contained"
               size={'large'}
               endIcon={<ArrowForward />}

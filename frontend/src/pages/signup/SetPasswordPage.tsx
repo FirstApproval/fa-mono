@@ -1,4 +1,4 @@
-import { type FunctionComponent } from 'react';
+import { type FunctionComponent, useState } from 'react';
 import {
   Alert,
   Button,
@@ -21,6 +21,8 @@ import {
   Parent,
   Header
 } from '../common.styled';
+import { routerStore } from '../../core/router';
+import { validateEmail } from '../../util/emailUtil';
 
 interface SetPasswordPageProps {
   store: SignUpStore;
@@ -30,12 +32,22 @@ interface SetPasswordPageProps {
 
 export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
   observer((props: SetPasswordPageProps) => {
+    const [isValidPassword, setIsValidPassword] = useState(true);
+
+    const validate = (): boolean => {
+      const isVP = props.store.password.length >= 8;
+      setIsValidPassword(isVP);
+      return isVP;
+    };
+
     const isError = props.store.isError;
+
+    const passwordNonEmpty = props.store.password.length > 0;
 
     return (
       <Parent>
         <FlexHeader>
-          <Logo>First Approval</Logo>
+          <Logo onClick={routerStore.goHome}>First Approval</Logo>
           <FlexHeaderRight>
             <Button
               variant="outlined"
@@ -51,6 +63,11 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
             <EmailLabel>Now, set your password:</EmailLabel>
             <div>
               <FullWidthTextField
+                autoFocus
+                error={!isValidPassword}
+                helperText={
+                  !isValidPassword ? 'Enter 8+ characters' : undefined
+                }
                 value={props.store.password}
                 onChange={(e) => {
                   props.store.password = e.currentTarget.value;
@@ -70,10 +87,16 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
             {props.store.isSubmitting && <CircularProgress />}
             {!props.store.isSubmitting && (
               <FullWidthButton
+                disabled={!passwordNonEmpty}
                 variant="contained"
                 size={'large'}
                 endIcon={<ArrowForward />}
-                onClick={props.onContinueClick}>
+                onClick={() => {
+                  const isValid = validate();
+                  if (isValid) {
+                    props.onContinueClick();
+                  }
+                }}>
                 Continue
               </FullWidthButton>
             )}

@@ -30,7 +30,7 @@ export const PublicationPage: FunctionComponent = () => {
             setIsDropZoneVisible(false);
           }}>
           <FlexHeader>
-            <Logo>First Approval</Logo>
+            <Logo onClick={routerStore.goHome}>First Approval</Logo>
             <FlexHeaderRight>
               <Button
                 variant="outlined"

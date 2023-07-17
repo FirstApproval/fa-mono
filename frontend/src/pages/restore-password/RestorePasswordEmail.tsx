@@ -15,6 +15,7 @@ import {
 } from '../common.styled';
 import { type RestorePasswordStore } from './RestorePasswordStore';
 import { validateEmail } from 'src/util/emailUtil';
+import { routerStore } from '../../core/router';
 
 interface RestorePasswordEmailProps {
   store: RestorePasswordStore;
@@ -36,7 +37,7 @@ export const RestorePasswordEmail: FunctionComponent<RestorePasswordEmailProps> 
     return (
       <Parent>
         <FlexHeader>
-          <Logo>First Approval</Logo>
+          <Logo onClick={routerStore.goHome}>First Approval</Logo>
           <FlexHeaderRight>
             <Button
               variant="outlined"
