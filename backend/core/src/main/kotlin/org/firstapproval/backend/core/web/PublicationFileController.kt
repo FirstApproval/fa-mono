@@ -50,7 +50,7 @@ class PublicationFileController(
     }
 
     override fun downloadPublicationFile(fileId: UUID): ResponseEntity<Resource> {
-        val file = publicationFileService.getPublicationFileWithContent(authHolderService.user, fileId)
+        val file = publicationFileService.getPublicationFileWithContent(fileId)
         val contentType: MediaType = try {
             MediaType.parseMediaType(guessContentTypeFromName(file.name))
         } catch (ex: Exception) {
