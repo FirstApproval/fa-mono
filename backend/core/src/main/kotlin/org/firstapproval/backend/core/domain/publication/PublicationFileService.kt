@@ -45,9 +45,8 @@ class PublicationFileService(
     }
 
     @Transactional(readOnly = true)
-    fun getPublicationFileWithContent(user: User, fileId: UUID): FileResponse {
+    fun getPublicationFileWithContent(fileId: UUID): FileResponse {
         val file = publicationFileRepository.getReferenceById(fileId)
-        checkAccessToPublication(user, file.publication)
         return FileResponse(
             name = file.name,
             s3Object = fileStorageService.get(FILES, fileId.toString())
