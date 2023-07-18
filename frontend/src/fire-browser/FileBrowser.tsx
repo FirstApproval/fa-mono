@@ -1,13 +1,13 @@
 import {
   ChonkyActions,
   type FileActionHandler,
-  FileBrowser as ChonkyFileBrowser,
-  setChonkyDefaults,
-  FileNavbar,
-  FileList,
-  FileContextMenu,
   type FileArray,
-  type FileData
+  FileBrowser as ChonkyFileBrowser,
+  FileContextMenu,
+  type FileData,
+  FileList,
+  FileNavbar,
+  setChonkyDefaults
 } from '@first-approval/chonky';
 import React, { type ReactElement, useEffect, useState } from 'react';
 import { ChonkyIconFA } from '@first-approval/chonky-icon-fontawesome';
@@ -21,6 +21,11 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import { fileService } from '../core/service';
+import {
+  calculatePathChain,
+  extractFilenameFromContentDisposition
+} from './utils';
 
 setChonkyDefaults({
   iconComponent: ChonkyIconFA,
@@ -126,6 +131,30 @@ export const FileBrowser = observer(
         fileInput.addEventListener('change', handleFileSelect, false);
 
         fileInput.click();
+      } else if (data.id === ChonkyActions.DownloadFiles.id) {
+        const files = data.state.selectedFiles.filter((f) => !f.isDir);
+        for (const file of files) {
+          void fileService
+            .downloadPublicationFile(file.id, { responseType: 'blob' })
+            .then((result) => {
+              const filename = extractFilenameFromContentDisposition(
+                String(result.headers['content-disposition'])
+              );
+              const dataType = String(result.headers['content-type']) || '';
+              const binaryData = [];
+              binaryData.push(result.data);
+              const downloadLink = document.createElement('a');
+              downloadLink.href = window.URL.createObjectURL(
+                new Blob(binaryData, { type: dataType })
+              );
+              if (filename) {
+                downloadLink.setAttribute('download', filename);
+              }
+              document.body.appendChild(downloadLink);
+              downloadLink.click();
+              document.body.removeChild(downloadLink);
+            });
+        }
       }
     };
 
@@ -294,16 +323,3 @@ const MaxWidthWrap = styled.div`
 const ContentWrap = styled.div`
   padding-top: 8px;
 `;
-
-function calculatePathChain(currentPath: string): string[] {
-  const pathSegments = currentPath.split('/').filter(Boolean);
-  let pathChain = '';
-  const pathChainList = [];
-
-  for (const segment of pathSegments) {
-    pathChain += `/${segment}`;
-    pathChainList.push(pathChain);
-  }
-
-  return [...pathChainList];
-}

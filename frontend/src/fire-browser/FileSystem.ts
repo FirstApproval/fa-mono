@@ -1,6 +1,7 @@
 import { action, computed, makeObservable, observable, reaction } from 'mobx';
 import { fileService } from '../core/service';
 import { type PublicationFile } from '../apis/first-approval-api';
+import { fullPathToName } from './utils';
 
 interface FileEntry {
   id: string;
@@ -289,7 +290,7 @@ export class FileSystem {
         return {
           id: pf.id ?? '',
           fullPath: pf.fullPath ?? '',
-          name: fpToName(pf.fullPath ?? ''),
+          name: fullPathToName(pf.fullPath ?? ''),
           isDirectory: pf.isDir ?? false,
           isUploading: false,
           note: pf.description
@@ -300,7 +301,3 @@ export class FileSystem {
     }
   };
 }
-
-const fpToName = (fullPath: string): string => {
-  return fullPath.substring(fullPath.lastIndexOf('/') + 1);
-};
