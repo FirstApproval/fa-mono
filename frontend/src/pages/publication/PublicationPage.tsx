@@ -16,19 +16,12 @@ import { DndProvider } from 'react-dnd';
 
 export const PublicationPage: FunctionComponent = () => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
-  const [isDropZoneVisible, setIsDropZoneVisible] = useState(false);
   return (
     <>
       {/*
       // @ts-expect-error error types */}
       <DndProvider backend={HTML5Backend}>
-        <Parent
-          onDragEnter={() => {
-            setIsDropZoneVisible(true);
-          }}
-          onDrop={() => {
-            setIsDropZoneVisible(false);
-          }}>
+        <Parent>
           <FlexHeader>
             <Logo onClick={routerStore.goHome}>First Approval</Logo>
             <FlexHeaderRight>
@@ -44,11 +37,7 @@ export const PublicationPage: FunctionComponent = () => {
           </FlexHeader>
           <FlexBodyCenter>
             <FileUploaderBody>
-              <FileUploader
-                setIsDropZoneVisible={setIsDropZoneVisible}
-                isDropZoneVisible={isDropZoneVisible}
-                publicationId={publicationId}
-              />
+              <FileUploader publicationId={publicationId} />
             </FileUploaderBody>
           </FlexBodyCenter>
         </Parent>

@@ -3,6 +3,7 @@ import { LoadingButton } from '@mui/lab';
 
 export const Parent = styled('div')`
   width: 100%;
+  padding-bottom: 40px;
 `;
 
 export const FlexHeader = styled('div')`
