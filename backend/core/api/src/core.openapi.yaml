@@ -190,7 +190,7 @@ paths:
                 type: boolean
       security:
         - PublicAuth: [ ]
-      operationId: checkEmailUniqueness
+      operationId: existsByEmail
       tags: [ user ]
 
   /api/user/request-password-reset:

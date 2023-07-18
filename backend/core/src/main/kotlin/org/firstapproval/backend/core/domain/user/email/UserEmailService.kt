@@ -62,7 +62,7 @@ class UserEmailService(
         emailChangeConfirmationRepository.delete(emailChangeConfirmation)
     }
 
-    fun checkEmailUniqueness(email: String): Boolean {
+    fun existsByEmail(email: String): Boolean {
         return userRepository.existsByEmail(email)
     }
 }
