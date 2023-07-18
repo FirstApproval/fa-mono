@@ -140,7 +140,7 @@ export const FileBrowser = observer(
               const filename = extractFilenameFromContentDisposition(
                 String(result.headers['content-disposition'])
               );
-              const dataType = String(result.headers['content-type']) || '';
+              const dataType = String(result.headers['content-type']);
               const binaryData = [];
               binaryData.push(result.data);
               const downloadLink = document.createElement('a');
