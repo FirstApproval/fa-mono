@@ -1,6 +1,7 @@
 import { action, computed, makeObservable, observable, reaction } from 'mobx';
 import { fileService } from '../core/service';
 import { type PublicationFile } from '../apis/first-approval-api';
+import { fullPathToName } from './utils';
 
 interface FileEntry {
   id: string;
@@ -241,24 +242,34 @@ export class FileSystem {
     uploadQueue: Array<() => Promise<void>>
   ): Promise<void> {
     const concurrencyLimit = 4;
-    let runningCount = 0;
+    const queueLength = uploadQueue.length;
+    const results: Array<Promise<void>> = [];
+    let currentIndex = 0;
 
-    const executeNextUpload = async (): Promise<void> => {
-      while (uploadQueue.length > 0 && runningCount < concurrencyLimit) {
-        const nextUpload = uploadQueue.shift();
-        runningCount++;
-        try {
-          if (nextUpload) {
-            await nextUpload();
-          }
-        } finally {
-          runningCount--;
-          void executeNextUpload();
-        }
+    // Helper function to execute a single promise from the queue
+    const executePromise = async (index: number): Promise<void> => {
+      // Execute the promise at the given index
+      await uploadQueue[index]();
+    };
+
+    // Function to handle the next promise in the queue
+    const handleNextPromise = async (): Promise<void> => {
+      if (currentIndex < queueLength) {
+        const promiseIndex = currentIndex;
+        currentIndex++;
+        const promise = executePromise(promiseIndex);
+        results.push(promise);
+        promise.finally(handleNextPromise);
       }
     };
 
-    await executeNextUpload();
+    // Start the initial batch of promises
+    for (let i = 0; i < concurrencyLimit && i < queueLength; i++) {
+      void handleNextPromise();
+    }
+
+    // Wait for all promises to complete
+    await Promise.all(results);
   }
 
   private fullPath(fullPath: string): string {
@@ -279,7 +290,7 @@ export class FileSystem {
         return {
           id: pf.id ?? '',
           fullPath: pf.fullPath ?? '',
-          name: fpToName(pf.fullPath ?? ''),
+          name: fullPathToName(pf.fullPath ?? ''),
           isDirectory: pf.isDir ?? false,
           isUploading: false,
           note: pf.description
@@ -290,7 +301,3 @@ export class FileSystem {
     }
   };
 }
-
-const fpToName = (fullPath: string): string => {
-  return fullPath.substring(fullPath.lastIndexOf('/') + 1);
-};

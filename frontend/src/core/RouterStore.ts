@@ -64,6 +64,15 @@ export class RouterStore {
         target.apply(thisArg, argArray);
       }
     });
+    window.history.replaceState = new Proxy(window.history.pushState, {
+      apply: (target, thisArg, argArray: string[]) => {
+        const path = argArray[2];
+        this.setPath(path);
+        this.setQueryParams(new URLSearchParams(path));
+        // @ts-expect-error wrong types
+        target.apply(thisArg, argArray);
+      }
+    });
 
     autorun(() => {
       const path = this.path;
@@ -103,6 +112,15 @@ export class RouterStore {
 
   setPage = (value: Page): void => {
     this.page = value;
+  };
+
+  goHome = (): void => {
+    const token = authStore.token;
+    if (token !== undefined) {
+      this.setPage(Page.HOME_PAGE);
+    } else {
+      this.setPage(Page.SIGN_IN);
+    }
   };
 
   setPath = (value: string): void => {

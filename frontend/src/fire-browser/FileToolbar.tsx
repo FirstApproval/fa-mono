@@ -2,6 +2,7 @@ import React, { type ReactElement } from 'react';
 import {
   ChonkyActions,
   selectFileActionData,
+  selectSelectedFiles,
   selectSelectionSize,
   useFileActionTrigger,
   useLocalizedFileActionStrings,
@@ -21,6 +22,8 @@ import { useSelector } from 'react-redux';
 // eslint-disable-next-line react/display-name
 export const FileToolbar: React.FC = React.memo(() => {
   const selectionSize = useSelector(selectSelectionSize);
+  const selectedFiles = useSelector(selectSelectedFiles);
+  const hasFolderSelection = !!selectedFiles.find((f) => f.isDir);
 
   return (
     <>
@@ -52,10 +55,13 @@ export const FileToolbar: React.FC = React.memo(() => {
         )}
         {selectionSize !== 0 && (
           <>
-            <FileAction
-              item={ChonkyActions.DownloadFiles.id}
-              icon={<DownloadOutlined />}
-            />
+            {!hasFolderSelection && (
+              <FileAction
+                item={ChonkyActions.DownloadFiles.id}
+                icon={<DownloadOutlined />}
+              />
+            )}
+
             <FileAction
               item={ChonkyActions.DeleteFiles.id}
               icon={<DeleteOutlined />}

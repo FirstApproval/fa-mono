@@ -24,6 +24,8 @@ class Publication(
     val creator: User,
     @Enumerated(STRING)
     var status: PublicationStatus = PENDING,
+    @Enumerated(STRING)
+    var accessType: AccessType? = null,
     @Field(type = Text)
     var title: String? = null,
     @Field(type = Text)
@@ -71,4 +73,10 @@ enum class PublicationStatus {
     PENDING,
     READY_FOR_PUBLICATION,
     PUBLISHED
+}
+
+enum class AccessType {
+    OPEN,
+    ON_REQUEST,
+    MONETIZE_OR_CO_AUTHORSHIP
 }

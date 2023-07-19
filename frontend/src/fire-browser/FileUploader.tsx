@@ -1,56 +1,74 @@
-import React, { type FunctionComponent, useMemo } from 'react';
+import React, {
+  type FunctionComponent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import { getAllFileEntries } from 'src/util/fileUtil';
 import styled from '@emotion/styled';
 import { FileBrowser } from '../fire-browser/FileBrowser';
 import { FileSystem } from './../fire-browser/FileSystem';
+import { observer } from 'mobx-react-lite';
 
 interface FileUploaderProps {
-  isDropZoneVisible: boolean;
-  setIsDropZoneVisible: (value: boolean) => void;
   publicationId: string;
 }
 
-export const FileUploader: FunctionComponent<FileUploaderProps> = (
-  props: FileUploaderProps
-) => {
-  const fs = useMemo(
-    () => new FileSystem(props.publicationId),
-    [props.publicationId]
-  );
+export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
+  (props: FileUploaderProps) => {
+    const [isDropZoneVisible, setIsDropZoneVisible] = useState(false);
+    const isChonkyDragRef = useRef(false);
 
-  const onDrop = async (e: {
-    preventDefault: () => void;
-    stopPropagation: () => void;
-    dataTransfer: { items: DataTransferItemList };
-  }): Promise<void> => {
-    e.preventDefault();
-    e.stopPropagation();
-    const result = await getAllFileEntries(e.dataTransfer.items);
-    fs.addFilesDnd(result);
-    props.setIsDropZoneVisible(false);
-  };
+    useEffect(() => {
+      let lastTarget: EventTarget | null = null;
 
-  const onDragOver = (e: {
-    preventDefault: () => void;
-    stopPropagation: () => void;
-  }): void => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
+      window.addEventListener('dragenter', function (e) {
+        if (!isChonkyDragRef.current) {
+          lastTarget = e.target;
+          setIsDropZoneVisible(true);
+        }
+      });
 
-  return (
-    <>
+      window.addEventListener('dragleave', function (e) {
+        if (
+          !isChonkyDragRef.current &&
+          (e.target === lastTarget || e.target === document)
+        ) {
+          setIsDropZoneVisible(false);
+        }
+      });
+    }, []);
+
+    const fs = useMemo(
+      () => new FileSystem(props.publicationId),
+      [props.publicationId]
+    );
+
+    const onDrop = async (e: {
+      preventDefault: () => void;
+      stopPropagation: () => void;
+      dataTransfer: { items: DataTransferItemList };
+    }): Promise<void> => {
+      e.preventDefault();
+      e.stopPropagation();
+      const result = await getAllFileEntries(e.dataTransfer.items);
+      fs.addFilesDnd(result);
+      setIsDropZoneVisible(false);
+    };
+
+    return (
       <>
-        {props.isDropZoneVisible && (
-          <DropZone onDrop={onDrop} onDragOver={onDragOver}>
-            Drag files here for upload
-          </DropZone>
-        )}
-        <FileBrowser fs={fs} />
+        <>
+          {isDropZoneVisible && (
+            <DropZone onDrop={onDrop}>Drag files here for upload</DropZone>
+          )}
+          <FileBrowser fs={fs} isChonkyDragRef={isChonkyDragRef} />
+        </>
       </>
-    </>
-  );
-};
+    );
+  }
+);
 
 const DropZone = styled('div')`
   border-radius: 4px;

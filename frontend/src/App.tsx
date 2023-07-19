@@ -18,6 +18,8 @@ import { SignInStore } from './pages/login/SignInStore';
 import { RestorePasswordEmail } from './pages/restore-password/RestorePasswordEmail';
 import { RestorePasswordStore } from './pages/restore-password/RestorePasswordStore';
 import { PublicationPage } from './pages/publication/PublicationPage';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { DndProvider } from 'react-dnd';
 
 const App: FunctionComponent = observer(() => {
   const { page, setPage } = routerStore;
@@ -27,85 +29,91 @@ const App: FunctionComponent = observer(() => {
   const [restorePasswordStore] = useState(() => new RestorePasswordStore());
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      {page === Page.LOADING && <LoadingPage />}
-      {page === Page.HOME_PAGE && <HomePage />}
-      {page === Page.PUBLICATION && <PublicationPage />}
-      {page === Page.SIGN_IN && (
-        <SignInPage
-          store={signInStore}
-          onSignUpClick={() => {
-            setPage(Page.SIGN_UP);
-          }}
-          onRestorePasswordClick={() => {
-            setPage(Page.RESTORE_PASSWORD_EMAIL);
-          }}
-        />
-      )}
-      {page === Page.SIGN_UP && (
-        <SignUpPage
-          store={signUpStore}
-          onSignInClick={() => {
-            setPage(Page.SIGN_IN);
-          }}
-          onContinueClick={() => {
-            setPage(Page.SIGN_UP_NAME);
-          }}
-        />
-      )}
-      {page === Page.SIGN_UP_NAME && (
-        <EnterNamePage
-          store={signUpStore}
-          onSignInClick={() => {
-            setPage(Page.SIGN_IN);
-          }}
-          onContinueClick={() => {
-            setPage(Page.SIGN_UP_PASSWORD);
-          }}
-        />
-      )}
-      {page === Page.SIGN_UP_PASSWORD && (
-        <SetPasswordPage
-          store={signUpStore}
-          onSignInClick={() => {
-            setPage(Page.SIGN_IN);
-          }}
-          onContinueClick={() => {
-            if (!signUpStore.isSubmitting) {
-              void signUpStore.submitRegistrationRequest().then(() => {
-                if (!signUpStore.isError) {
-                  setPage(Page.EMAIL_VERIFICATION);
+    <>
+      {/*
+      // @ts-expect-error error types */}
+      <DndProvider backend={HTML5Backend}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          {page === Page.LOADING && <LoadingPage />}
+          {page === Page.HOME_PAGE && <HomePage />}
+          {page === Page.PUBLICATION && <PublicationPage />}
+          {page === Page.SIGN_IN && (
+            <SignInPage
+              store={signInStore}
+              onSignUpClick={() => {
+                setPage(Page.SIGN_UP);
+              }}
+              onRestorePasswordClick={() => {
+                setPage(Page.RESTORE_PASSWORD_EMAIL);
+              }}
+            />
+          )}
+          {page === Page.SIGN_UP && (
+            <SignUpPage
+              store={signUpStore}
+              onSignInClick={() => {
+                setPage(Page.SIGN_IN);
+              }}
+              onContinueClick={() => {
+                setPage(Page.SIGN_UP_NAME);
+              }}
+            />
+          )}
+          {page === Page.SIGN_UP_NAME && (
+            <EnterNamePage
+              store={signUpStore}
+              onSignInClick={() => {
+                setPage(Page.SIGN_IN);
+              }}
+              onContinueClick={() => {
+                setPage(Page.SIGN_UP_PASSWORD);
+              }}
+            />
+          )}
+          {page === Page.SIGN_UP_PASSWORD && (
+            <SetPasswordPage
+              store={signUpStore}
+              onSignInClick={() => {
+                setPage(Page.SIGN_IN);
+              }}
+              onContinueClick={() => {
+                if (!signUpStore.isSubmitting) {
+                  void signUpStore.submitRegistrationRequest().then(() => {
+                    if (!signUpStore.isError) {
+                      setPage(Page.EMAIL_VERIFICATION);
+                    }
+                  });
                 }
-              });
-            }
-          }}
-        />
-      )}
-      {page === Page.EMAIL_VERIFICATION && (
-        <EmailVerificationPage
-          store={signUpStore}
-          onSignInClick={() => {
-            setPage(Page.SIGN_IN);
-          }}
-        />
-      )}
-      {page === Page.RESTORE_PASSWORD_EMAIL && (
-        <RestorePasswordEmail
-          store={restorePasswordStore}
-          onSignInClick={() => {
-            setPage(Page.SIGN_IN);
-          }}
-          onContinueClick={() => {
-            if (!restorePasswordStore.isSubmitting) {
-              void restorePasswordStore
-                .submitRegistrationRequest()
-                .then(() => {});
-            }
-          }}
-        />
-      )}
-    </ThemeProvider>
+              }}
+            />
+          )}
+          {page === Page.EMAIL_VERIFICATION && (
+            <EmailVerificationPage
+              store={signUpStore}
+              onSignInClick={() => {
+                setPage(Page.SIGN_IN);
+              }}
+            />
+          )}
+          {page === Page.RESTORE_PASSWORD_EMAIL && (
+            <RestorePasswordEmail
+              store={restorePasswordStore}
+              onSignInClick={() => {
+                setPage(Page.SIGN_IN);
+              }}
+              onContinueClick={() => {
+                if (!restorePasswordStore.isSubmitting) {
+                  void restorePasswordStore
+                    .submitRegistrationRequest()
+                    .then(() => {});
+                }
+              }}
+            />
+          )}
+        </ThemeProvider>
+      </DndProvider>
+    </>
   );
 });
 

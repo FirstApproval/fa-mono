@@ -70,8 +70,8 @@ class UserController(
         return ok().build()
     }
 
-    override fun checkEmailUniqueness(email: String): ResponseEntity<Boolean> {
-        val isExists = userEmailService.checkEmailUniqueness(email)
+    override fun existsByEmail(email: String): ResponseEntity<Boolean> {
+        val isExists = userEmailService.existsByEmail(email)
         return ok().body(isExists)
     }
 

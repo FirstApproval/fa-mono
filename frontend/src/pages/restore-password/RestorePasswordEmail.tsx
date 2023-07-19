@@ -15,6 +15,7 @@ import {
 } from '../common.styled';
 import { type RestorePasswordStore } from './RestorePasswordStore';
 import { validateEmail } from 'src/util/emailUtil';
+import { routerStore } from '../../core/router';
 
 interface RestorePasswordEmailProps {
   store: RestorePasswordStore;
@@ -33,10 +34,12 @@ export const RestorePasswordEmail: FunctionComponent<RestorePasswordEmailProps> 
       return isVE;
     };
 
+    const emailNonEmpty = props.store.email.length > 0;
+
     return (
       <Parent>
         <FlexHeader>
-          <Logo>First Approval</Logo>
+          <Logo onClick={routerStore.goHome}>First Approval</Logo>
           <FlexHeaderRight>
             <Button
               variant="outlined"
@@ -52,6 +55,7 @@ export const RestorePasswordEmail: FunctionComponent<RestorePasswordEmailProps> 
             <EmailLabel>Please enter your email</EmailLabel>
             <div style={{ marginBottom: '12px' }}>
               <FullWidthTextField
+                autoFocus
                 error={!isValidEmail}
                 helperText={!isValidEmail ? 'Invalid address' : undefined}
                 value={props.store.email}
@@ -71,6 +75,7 @@ export const RestorePasswordEmail: FunctionComponent<RestorePasswordEmailProps> 
               />
             </div>
             <FullWidthButton
+              disabled={!emailNonEmpty}
               variant="contained"
               size={'large'}
               endIcon={<ArrowForward />}

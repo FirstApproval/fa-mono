@@ -1,5 +1,6 @@
 import { type FunctionComponent, useState } from 'react';
 import {
+  Alert,
   Button,
   Divider,
   InputAdornment,
@@ -22,6 +23,7 @@ import {
   Header
 } from '../common.styled';
 import { validateEmail } from 'src/util/emailUtil';
+import { routerStore } from '../../core/router';
 
 interface SignUpPageProps {
   store: SignUpStore;
@@ -32,6 +34,7 @@ interface SignUpPageProps {
 export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
   (props: SignUpPageProps) => {
     const [isValidEmail, setIsValidEmail] = useState(true);
+    const [isUsedEmail, setUsedEmail] = useState(false);
 
     const validate = (): boolean => {
       const isVE =
@@ -40,10 +43,12 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
       return isVE;
     };
 
+    const emailNonEmpty = props.store.email.length > 0;
+
     return (
       <Parent>
         <FlexHeader>
-          <Logo>First Approval</Logo>
+          <Logo onClick={routerStore.goHome}>First Approval</Logo>
           <FlexHeaderRight>
             <Button
               variant="outlined"
@@ -61,6 +66,7 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
             </EmailLabel>
             <div style={{ marginBottom: '12px' }}>
               <FullWidthTextField
+                autoFocus
                 error={!isValidEmail}
                 helperText={!isValidEmail ? 'Invalid address' : undefined}
                 value={props.store.email}
@@ -79,14 +85,29 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
                 }}
               />
             </div>
+            {isUsedEmail && (
+              <AlertWrap severity="error">
+                Email address already registered by another user
+              </AlertWrap>
+            )}
             <FullWidthButton
+              loading={props.store.isSubmitting}
+              disabled={!emailNonEmpty}
               variant="contained"
               size={'large'}
               endIcon={<ArrowForward />}
               onClick={() => {
                 const isValid = validate();
                 if (isValid) {
-                  props.onContinueClick();
+                  void props.store
+                    .validateEmail(props.store.email)
+                    .then((exist) => {
+                      if (exist) {
+                        setUsedEmail(true);
+                      } else {
+                        props.onContinueClick();
+                      }
+                    });
                 }
               }}>
               Continue with email
@@ -130,6 +151,11 @@ const DividerWrap = styled(Divider)`
 const DividerWrap2 = styled(Divider)`
   margin-top: 42px;
   margin-bottom: 40px;
+  width: 100%;
+`;
+
+const AlertWrap = styled(Alert)`
+  margin-bottom: 16px;
   width: 100%;
 `;
 

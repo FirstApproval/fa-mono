@@ -80,10 +80,11 @@ class PublicationService(
     }
 
     @Transactional
-    fun submitPublication(user: User, id: UUID) {
+    fun submitPublication(user: User, id: UUID, accessType: AccessType) {
         val publication = publicationRepository.getReferenceById(id)
         checkAccessToPublication(user, publication)
         publication.status = READY_FOR_PUBLICATION
+        publication.accessType = accessType
     }
 
     fun search(text: String, limit: Int, pageNum: Int) = elasticRepository.searchByFields(text, PageRequest.of(pageNum, limit, Sort.by(DESC, "publicationTime")))
@@ -147,5 +148,6 @@ fun Publication.toApiObject() = org.firstapproval.api.server.model.Publication()
     it.authors = confirmedAuthors.map { user -> Author(user.firstName, user.middleName, user.lastName, user.email, user.selfInfo) } +
         unconfirmedAuthors.map { user -> Author(user.firstName, user.middleName, user.lastName, user.email, user.shortBio) }
     it.status = org.firstapproval.api.server.model.PublicationStatus.valueOf(status.name)
+    it.accessType = org.firstapproval.api.server.model.AccessType.valueOf(it.accessType.name)
     it.creationTime = creationTime.toOffsetDateTime()
 }

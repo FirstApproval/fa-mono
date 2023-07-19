@@ -4,7 +4,7 @@ import {
   type RegistrationResponse,
   type SubmitRegistrationRequest
 } from '../../apis/first-approval-api';
-import { registrationService } from '../../core/service';
+import { registrationService, userService } from '../../core/service';
 import { authStore } from '../../core/auth';
 import { type AxiosError } from 'axios';
 
@@ -84,6 +84,18 @@ export class SignUpStore {
       } else {
         this.isError = true;
       }
+    } finally {
+      this.isSubmitting = false;
+    }
+  }
+
+  async validateEmail(email: string): Promise<boolean> {
+    this.isError = false;
+    this.isSubmitting = true;
+
+    try {
+      const response = await userService.checkEmailUniqueness(email);
+      return response.data;
     } finally {
       this.isSubmitting = false;
     }
