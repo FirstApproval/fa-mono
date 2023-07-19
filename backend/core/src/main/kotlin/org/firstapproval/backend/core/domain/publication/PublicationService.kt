@@ -75,10 +75,11 @@ class PublicationService(
     }
 
     @Transactional
-    fun submitPublication(user: User, id: UUID) {
+    fun submitPublication(user: User, id: UUID, accessLevel: AccessLevel) {
         val publication = publicationRepository.getReferenceById(id)
         checkAccessToPublication(user, publication)
         publication.status = READY_FOR_PUBLICATION
+        publication.accessLevel = accessLevel
     }
 
     @Transactional
@@ -140,5 +141,6 @@ fun Publication.toApiObject() = org.firstapproval.api.server.model.Publication()
     it.authors = confirmedAuthors.map { user -> Author(user.firstName, user.middleName, user.lastName, user.email, user.selfInfo) } +
         unconfirmedAuthors.map { user -> Author(user.firstName, user.middleName, user.lastName, user.email, user.shortBio) }
     it.status = org.firstapproval.api.server.model.PublicationStatus.valueOf(status.name)
+    it.accessLevel = org.firstapproval.api.server.model.AccessLevel.valueOf(it.accessLevel.name)
     it.creationTime = creationTime.toOffsetDateTime()
 }
