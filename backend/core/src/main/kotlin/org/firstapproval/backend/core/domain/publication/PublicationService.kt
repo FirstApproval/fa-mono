@@ -15,7 +15,11 @@ import org.firstapproval.backend.core.domain.user.UnconfirmedUser
 import org.firstapproval.backend.core.domain.user.UnconfirmedUserRepository
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
+import org.firstapproval.backend.core.elastic.PublicationElasticRepository
 import org.firstapproval.backend.core.exception.RecordConflictException
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
+import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
@@ -29,7 +33,8 @@ class PublicationService(
     private val userRepository: UserRepository,
     private val downloadLinkRepository: DownloadLinkRepository,
     private val jobRepository: JobRepository,
-    private val ipfsClient: IpfsClient
+    private val ipfsClient: IpfsClient,
+    private val elasticRepository: PublicationElasticRepository
 ) {
     @Transactional
     fun create(user: User): Publication {
@@ -80,6 +85,8 @@ class PublicationService(
         checkAccessToPublication(user, publication)
         publication.status = READY_FOR_PUBLICATION
     }
+
+    fun search(text: String, limit: Int, pageNum: Int) = elasticRepository.searchByFields(text, PageRequest.of(pageNum, limit, Sort.by(DESC, "publicationTime")))
 
     @Transactional
     fun requestDownload(id: UUID) {

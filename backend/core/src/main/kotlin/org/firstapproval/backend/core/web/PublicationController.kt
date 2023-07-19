@@ -6,6 +6,7 @@ import org.firstapproval.api.server.model.Publication
 import org.firstapproval.api.server.model.PublicationContentStatus
 import org.firstapproval.api.server.model.PublicationEditRequest
 import org.firstapproval.api.server.model.PublicationStatus
+import org.firstapproval.api.server.model.SearchPublicationsResponse
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.ipfs.IpfsClient
@@ -30,6 +31,16 @@ class PublicationController(
     override fun submitPublication(id: UUID): ResponseEntity<Void> {
         publicationService.submitPublication(authHolderService.user, id)
         return ok().build()
+    }
+
+    override fun searchPublications(textEntry: String, limit: Int, page: Int): ResponseEntity<SearchPublicationsResponse> {
+        val pageResult = publicationService.search(textEntry, limit, page)
+        return ok().body(
+            SearchPublicationsResponse()
+                .pageNum(pageResult.number)
+                .isLast(pageResult.isLast)
+                .items(pageResult.map { it.toApiObject() }.toList())
+        )
     }
 
     override fun getPublication(id: UUID): ResponseEntity<Publication> {

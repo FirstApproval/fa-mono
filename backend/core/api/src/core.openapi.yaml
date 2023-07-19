@@ -341,6 +341,37 @@ paths:
       operationId: editPublication
       tags: [ publication ]
 
+  /api/publication/search:
+    get:
+      summary: Search publications
+      parameters:
+        - in: query
+          name: textEntry
+          schema:
+            type: string
+          required: true
+          description: Entry
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            maximum: 100
+        - in: query
+          name: pageNum
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchPublicationsResponse'
+      security:
+        - TokenAuth: [ ]
+      operationId: searchPublications
+      tags: [ publication ]
+
   /api/publication/{id}/submit:
     put:
       summary: Submit publication
@@ -1012,6 +1043,18 @@ components:
               - email
               - firstName
               - lastName
+
+    SearchPublicationsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Publication"
+        pageNum:
+          type: integer
+        isLast:
+          type: boolean
 
     Publication:
       type: object

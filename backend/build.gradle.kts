@@ -49,6 +49,7 @@ subprojects {
             dependency("org.springframework.boot:spring-boot-starter-webflux:3.1.0-SNAPSHOT")
             dependency("com.amazonaws:aws-java-sdk-s3:1.12.449")
             dependency("net.logstash.logback:logstash-logback-encoder:7.3")
+            dependency("org.springframework.data:spring-data-elasticsearch:5.1.2")
         }
     }
 
