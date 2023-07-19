@@ -83,6 +83,4 @@ const DropZone = styled('div')`
   font-size: 20px;
   font-style: normal;
   font-weight: 400;
-  line-height: 160%;
-  letter-spacing: 0.15px;
 `;
