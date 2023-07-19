@@ -89,12 +89,12 @@ export class SignUpStore {
     }
   }
 
-  async validateEmail(email: string): Promise<boolean> {
+  async existsByEmail(email: string): Promise<boolean> {
     this.isError = false;
     this.isSubmitting = true;
 
     try {
-      const response = await userService.checkEmailUniqueness(email);
+      const response = await userService.existsByEmail(email);
       return response.data;
     } finally {
       this.isSubmitting = false;
