@@ -57,8 +57,6 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
       setIsDropZoneVisible(false);
     };
 
-    // const initialDropZone = fs.currentPath === '/' && fs.files.length === 0;
-
     return (
       <>
         <>
@@ -87,13 +85,4 @@ const DropZone = styled('div')`
   font-weight: 400;
   line-height: 160%;
   letter-spacing: 0.15px;
-`;
-
-export const DropZoneHighlight = styled('div')`
-  width: 100%;
-  height: 100vh;
-  position: absolute;
-  top: 0;
-  left: 0;
-  visibility: hidden;
 `;
