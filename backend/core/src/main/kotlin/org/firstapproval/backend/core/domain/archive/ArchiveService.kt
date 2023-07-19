@@ -100,6 +100,7 @@ class ArchiveService(
             }
         } catch (ex: Exception) {
             log.error(ex) { "archive error" }
+            throw ex
         } finally {
             zipOutputStream.close()
             fileOutputStream.close()
@@ -108,16 +109,16 @@ class ArchiveService(
         if (filesIds.isNotEmpty()) {
             uploadToIpfs(publication, tempArchive)
         }
+        publication.status = PUBLISHED
+        publication.publicationTime = now()
+        publicationRepository.save(publication)
+        elasticRepository.save(publication)
         return filesIds
     }
 
     private fun uploadToIpfs(publication: Publication, tempArchive: File) {
 //        val ipfsFileInfo = ipfsClient.upload(tempArchive)
 //        publication.contentId = ipfsFileInfo.id
-        publication.status = PUBLISHED
-        publication.publicationTime = now()
-        publicationRepository.save(publication)
-        elasticRepository.save(publication)
     }
 
     private fun getOrCreateTmpFolder(): File {

@@ -8,6 +8,7 @@ import org.firstapproval.backend.core.domain.user.UnconfirmedUser
 import org.firstapproval.backend.core.domain.user.User
 import org.springframework.data.elasticsearch.annotations.Document
 import org.springframework.data.elasticsearch.annotations.Field
+import org.springframework.data.elasticsearch.annotations.FieldType
 import org.springframework.data.elasticsearch.annotations.FieldType.Keyword
 import org.springframework.data.elasticsearch.annotations.FieldType.Text
 import java.time.ZonedDateTime
@@ -64,7 +65,7 @@ class Publication(
     )
     var unconfirmedAuthors: List<UnconfirmedUser> = mutableListOf(),
     var creationTime: ZonedDateTime = now(),
-    @Field(type = Date)
+    @Field(type = FieldType.Date_Nanos)
     var publicationTime: ZonedDateTime? = null,
     var contentId: Long? = null,
 )

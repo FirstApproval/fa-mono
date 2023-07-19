@@ -983,7 +983,7 @@ components:
         title:
           $ref: '#/components/schemas/PublicationStringValue'
         description:
-          $ref: '#/components/schemas/PublicationStringValue'
+          $ref: '#/components/schemas/PublicationLongStringValue'
         grantOrganizations:
           $ref: '#/components/schemas/PublicationStringArrayValue'
         relatedArticles:
@@ -993,13 +993,13 @@ components:
         objectOfStudyTitle:
           $ref: '#/components/schemas/PublicationStringValue'
         objectOfStudyDescription:
-          $ref: '#/components/schemas/PublicationStringValue'
+          $ref: '#/components/schemas/PublicationLongStringValue'
         software:
           $ref: '#/components/schemas/PublicationStringValue'
         methodTitle:
           $ref: '#/components/schemas/PublicationStringValue'
         methodDescription:
-          $ref: '#/components/schemas/PublicationStringValue'
+          $ref: '#/components/schemas/PublicationLongStringValue'
         predictedGoals:
           $ref: '#/components/schemas/PublicationStringValue'
 
@@ -1010,6 +1010,15 @@ components:
           type: boolean
         value:
           type: string
+
+    PublicationLongStringValue:
+      type: object
+      properties:
+        edited:
+          type: boolean
+        value:
+          type: string
+          maxLength: 6000
 
     PublicationStringArrayValue:
       type: object

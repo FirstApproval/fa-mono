@@ -87,7 +87,8 @@ class PublicationService(
         publication.accessType = accessType
     }
 
-    fun search(text: String, limit: Int, pageNum: Int) = elasticRepository.searchByFields(text, PageRequest.of(pageNum, limit, Sort.by(DESC, "publicationTime")))
+    fun search(text: String, limit: Int, pageNum: Int) =
+        elasticRepository.searchByFields(text, PageRequest.of(pageNum, limit, Sort.by(DESC, "publicationTime", "_score")))
 
     @Transactional
     fun requestDownload(id: UUID) {
@@ -143,11 +144,12 @@ fun Publication.toApiObject() = org.firstapproval.api.server.model.Publication()
     it.objectOfStudyDescription = objectOfStudyDescription
     it.software = software
     it.methodTitle = methodTitle
+    it.publicationTime = publicationTime?.toOffsetDateTime()
     it.methodDescription = methodDescription
     it.predictedGoals = predictedGoals
     it.authors = confirmedAuthors.map { user -> Author(user.firstName, user.middleName, user.lastName, user.email, user.selfInfo) } +
         unconfirmedAuthors.map { user -> Author(user.firstName, user.middleName, user.lastName, user.email, user.shortBio) }
     it.status = org.firstapproval.api.server.model.PublicationStatus.valueOf(status.name)
-    it.accessType = org.firstapproval.api.server.model.AccessType.valueOf(it.accessType.name)
+    it.accessType = org.firstapproval.api.server.model.AccessType.valueOf(accessType!!.name)
     it.creationTime = creationTime.toOffsetDateTime()
 }

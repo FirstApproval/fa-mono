@@ -1,12 +1,12 @@
-import { makeObservable, observable } from 'mobx';
+import {makeObservable, observable} from 'mobx';
 import {
-  type RegistrationRequest,
-  type RegistrationResponse,
-  type SubmitRegistrationRequest
+    type RegistrationRequest,
+    type RegistrationResponse,
+    type SubmitRegistrationRequest
 } from '../../apis/first-approval-api';
-import { registrationService, userService } from '../../core/service';
-import { authStore } from '../../core/auth';
-import { type AxiosError } from 'axios';
+import {registrationService, userService} from '../../core/service';
+import {authStore} from '../../core/auth';
+import {type AxiosError} from 'axios';
 
 export class SignUpStore {
   email: string = '';
@@ -94,7 +94,7 @@ export class SignUpStore {
     this.isSubmitting = true;
 
     try {
-      const response = await userService.checkEmailUniqueness(email);
+      const response = await userService.existsByEmail(email);
       return response.data;
     } finally {
       this.isSubmitting = false;
