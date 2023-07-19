@@ -9,7 +9,12 @@ import {
   FileNavbar,
   setChonkyDefaults
 } from '@first-approval/chonky';
-import React, { type ReactElement, useEffect, useState } from 'react';
+import React, {
+  type MutableRefObject,
+  type ReactElement,
+  useEffect,
+  useState
+} from 'react';
 import { ChonkyIconFA } from '@first-approval/chonky-icon-fontawesome';
 import { type FileSystem } from './FileSystem';
 import { observer } from 'mobx-react-lite';
@@ -34,8 +39,7 @@ interface FilePayload {
 
 interface FileBrowserProps {
   fs: FileSystem;
-  isChonkyDrag: boolean;
-  setIsChonkyDrag: (value: boolean) => void;
+  isChonkyDragRef: MutableRefObject<boolean>;
 }
 
 export const FileBrowser = observer((props: FileBrowserProps): ReactElement => {
@@ -144,9 +148,9 @@ export const FileBrowser = observer((props: FileBrowserProps): ReactElement => {
         document.body.removeChild(downloadLink);
       }
     } else if (data.id === ChonkyActions.StartDragNDrop.id) {
-      props.setIsChonkyDrag(true);
+      props.isChonkyDragRef.current = true;
     } else if (data.id === ChonkyActions.EndDragNDrop.id) {
-      props.setIsChonkyDrag(false);
+      props.isChonkyDragRef.current = false;
     }
   };
 

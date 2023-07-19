@@ -2,6 +2,7 @@ import React, {
   type FunctionComponent,
   useEffect,
   useMemo,
+  useRef,
   useState
 } from 'react';
 import { getAllFileEntries } from 'src/util/fileUtil';
@@ -16,25 +17,28 @@ interface FileUploaderProps {
 
 export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
   (props: FileUploaderProps) => {
-    // const [isDropZoneVisible, setIsDropZoneVisible] = useState(false);
-    const [isChonkyDrag, setIsChonkyDrag] = useState(false);
-    //
-    // useEffect(() => {
-    //   let lastTarget: EventTarget | null = null;
-    //
-    //   window.addEventListener('dragenter', function (e) {
-    //     lastTarget = e.target;
-    //     if (!isChonkyDrag) {
-    //       setIsDropZoneVisible(true);
-    //     }
-    //   });
-    //
-    //   window.addEventListener('dragleave', function (e) {
-    //     if (e.target === lastTarget || e.target === document) {
-    //       setIsDropZoneVisible(false);
-    //     }
-    //   });
-    // }, []);
+    const [isDropZoneVisible, setIsDropZoneVisible] = useState(false);
+    const isChonkyDragRef = useRef(false);
+
+    useEffect(() => {
+      let lastTarget: EventTarget | null = null;
+
+      window.addEventListener('dragenter', function (e) {
+        if (!isChonkyDragRef.current) {
+          lastTarget = e.target;
+          setIsDropZoneVisible(true);
+        }
+      });
+
+      window.addEventListener('dragleave', function (e) {
+        if (
+          !isChonkyDragRef.current &&
+          (e.target === lastTarget || e.target === document)
+        ) {
+          setIsDropZoneVisible(false);
+        }
+      });
+    }, []);
 
     const fs = useMemo(
       () => new FileSystem(props.publicationId),
@@ -50,6 +54,7 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
       e.stopPropagation();
       const result = await getAllFileEntries(e.dataTransfer.items);
       fs.addFilesDnd(result);
+      setIsDropZoneVisible(false);
     };
 
     // const initialDropZone = fs.currentPath === '/' && fs.files.length === 0;
@@ -57,12 +62,10 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
     return (
       <>
         <>
-          <DropZone onDrop={onDrop}>Drag files here for upload</DropZone>
-          <FileBrowser
-            fs={fs}
-            isChonkyDrag={isChonkyDrag}
-            setIsChonkyDrag={setIsChonkyDrag}
-          />
+          {isDropZoneVisible && (
+            <DropZone onDrop={onDrop}>Drag files here for upload</DropZone>
+          )}
+          <FileBrowser fs={fs} isChonkyDragRef={isChonkyDragRef} />
         </>
       </>
     );
