@@ -1,6 +1,7 @@
 package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.PublicationApi
+import org.firstapproval.api.server.model.AccessType
 import org.firstapproval.api.server.model.CreatePublicationResponse
 import org.firstapproval.api.server.model.Publication
 import org.firstapproval.api.server.model.PublicationContentStatus
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
+import org.firstapproval.backend.core.domain.publication.AccessType as AccessTypeEntity
 
 @RestController
 class PublicationController(
@@ -27,8 +29,8 @@ class PublicationController(
         return ok().body(CreatePublicationResponse(pub.id, PublicationStatus.valueOf(pub.status.name), pub.creationTime.toOffsetDateTime()))
     }
 
-    override fun submitPublication(id: UUID): ResponseEntity<Void> {
-        publicationService.submitPublication(authHolderService.user, id)
+    override fun submitPublication(id: UUID, accessType: AccessType): ResponseEntity<Void> {
+        publicationService.submitPublication(authHolderService.user, id, AccessTypeEntity.valueOf(accessType.name))
         return ok().build()
     }
 

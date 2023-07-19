@@ -352,6 +352,12 @@ paths:
             format: uuid
           required: true
           description: Publication id
+        - in: query
+          name: accessType
+          schema:
+            $ref: '#/components/schemas/AccessType'
+          required: true
+          description: Access level for publication
       responses:
         200:
           description: Success
@@ -911,6 +917,13 @@ components:
         - ARCHIVE
         - ABSENT
 
+    AccessType:
+      type: string
+      enum:
+        - OPEN
+        - ON_REQUEST
+        - MONETIZE_OR_CO_AUTHORSHIP
+
     UserUpdateRequest:
       type: object
       properties:
@@ -1021,6 +1034,8 @@ components:
           format: uuid
         status:
           $ref: '#/components/schemas/PublicationStatus'
+        accessType:
+          $ref: '#/components/schemas/AccessType'
         contentStatus:
           $ref: '#/components/schemas/PublicationContentStatus'
         creationTime:
