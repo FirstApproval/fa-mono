@@ -12,6 +12,7 @@ import {
   Parent,
   Header
 } from '../common.styled';
+import { routerStore } from '../../core/router';
 
 interface EmailVerificationPageProps {
   store: SignUpStore;
@@ -25,7 +26,7 @@ export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps
     return (
       <Parent>
         <FlexHeader>
-          <Logo>First Approval</Logo>
+          <Logo onClick={routerStore.goHome}>First Approval</Logo>
           <FlexHeaderRight>
             <Button
               variant="outlined"

@@ -1,8 +1,9 @@
 import styled from '@emotion/styled';
-import { Button } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 
 export const Parent = styled('div')`
   width: 100%;
+  padding-bottom: 40px;
 `;
 
 export const FlexHeader = styled('div')`
@@ -29,9 +30,10 @@ export const FlexBody = styled('div')`
 export const Logo = styled('div')`
   font-weight: 860;
   font-size: 20px;
+  cursor: pointer;
 `;
 
-export const FullWidthButton = styled(Button)`
+export const FullWidthButton = styled(LoadingButton)`
   width: 100%;
 `;
 

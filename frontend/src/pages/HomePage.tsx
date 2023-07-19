@@ -10,6 +10,7 @@ import {
 } from './common.styled';
 import { publicationService } from '../core/service';
 import { authStore } from '../core/auth';
+import { routerStore } from '../core/router';
 
 export const HomePage: FunctionComponent = () => {
   const createPublication = async (): Promise<void> => {
@@ -21,7 +22,7 @@ export const HomePage: FunctionComponent = () => {
   return (
     <Parent>
       <FlexHeader>
-        <Logo>First Approval</Logo>
+        <Logo onClick={routerStore.goHome}>First Approval</Logo>
         <FlexHeaderRight>
           <Button
             variant="outlined"

@@ -4,7 +4,7 @@ import { setBearerAuthToObject } from '../apis/first-approval-api/common';
 const ACCESS_TOKEN_KEY = 'access-token';
 
 export class AuthStore {
-  private _token: string | undefined;
+  private _token: string | undefined = undefined;
 
   constructor() {
     makeObservable<AuthStore, '_token'>(this, {

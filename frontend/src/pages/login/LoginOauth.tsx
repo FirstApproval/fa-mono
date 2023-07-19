@@ -57,7 +57,7 @@ const IconButtonWrap = styled(IconButton)`
   padding: 3px;
 `;
 
-const Divider = styled(IconButton)`
+const Divider = styled.div`
   padding-left: 12px;
 `;
 

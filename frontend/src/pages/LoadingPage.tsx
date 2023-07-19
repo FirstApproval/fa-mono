@@ -8,12 +8,13 @@ import {
   Logo,
   Parent
 } from './common.styled';
+import { routerStore } from '../core/router';
 
 export const LoadingPage: FunctionComponent = () => {
   return (
     <Parent>
       <FlexHeader>
-        <Logo>First Approval</Logo>
+        <Logo onClick={routerStore.goHome}>First Approval</Logo>
         <FlexHeaderRight></FlexHeaderRight>
       </FlexHeader>
       <FlexBodyCenter>
