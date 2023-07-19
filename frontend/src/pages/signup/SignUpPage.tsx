@@ -100,7 +100,7 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
                 const isValid = validate();
                 if (isValid) {
                   void props.store
-                    .validateEmail(props.store.email)
+                    .existsByEmail(props.store.email)
                     .then((exist) => {
                       if (exist) {
                         setUsedEmail(true);
