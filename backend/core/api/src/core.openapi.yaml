@@ -963,15 +963,15 @@ components:
         objectOfStudyTitle:
           $ref: '#/components/schemas/PublicationStringValue'
         objectOfStudyDescription:
-          $ref: '#/components/schemas/PublicationStringValue'
+          $ref: '#/components/schemas/PublicationStringArrayValue'
         software:
-          $ref: '#/components/schemas/PublicationStringValue'
+          $ref: '#/components/schemas/PublicationStringArrayValue'
         methodTitle:
           $ref: '#/components/schemas/PublicationStringValue'
         methodDescription:
-          $ref: '#/components/schemas/PublicationStringValue'
+          $ref: '#/components/schemas/PublicationStringArrayValue'
         predictedGoals:
-          $ref: '#/components/schemas/PublicationStringValue'
+          $ref: '#/components/schemas/PublicationStringArrayValue'
 
     PublicationStringValue:
       type: object
@@ -980,6 +980,7 @@ components:
           type: boolean
         value:
           type: string
+          maxLength: 32768
 
     PublicationStringArrayValue:
       type: object
@@ -989,7 +990,16 @@ components:
         values:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/Paragraph'
+
+    Paragraph:
+      type: object
+      properties:
+        text:
+          type: string
+          maxLength: 32768
+      required:
+        - text
 
     ConfirmedAuthors:
       type: object
@@ -1047,32 +1057,30 @@ components:
           format: date-time
         title:
           type: string
+          maxLength: 32768
         description:
           type: string
+          maxLength: 32768
         grantOrganizations:
-          type: array
-          items:
-            type: string
+          $ref: '#/components/schemas/StringArray'
         relatedArticles:
-          type: array
-          items:
-            type: string
+          $ref: '#/components/schemas/StringArray'
         tags:
-          type: array
-          items:
-            type: string
+          $ref: '#/components/schemas/StringArray'
         objectOfStudyTitle:
           type: string
+          maxLength: 32768
         objectOfStudyDescription:
-          type: string
+          $ref: '#/components/schemas/StringArray'
         software:
-          type: string
+          $ref: '#/components/schemas/StringArray'
         methodTitle:
           type: string
+          maxLength: 32768
         methodDescription:
-          type: string
+          $ref: '#/components/schemas/StringArray'
         predictedGoals:
-          type: string
+          $ref: '#/components/schemas/StringArray'
         authors:
           type: array
           items:
@@ -1101,6 +1109,11 @@ components:
         - lastName
         - email
         - shortBio
+
+    StringArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/Paragraph'
 
   securitySchemes:
     PublicAuth:
