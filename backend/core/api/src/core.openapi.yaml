@@ -295,6 +295,43 @@ paths:
       operationId: createPublication
       tags: [ publication ]
 
+  /api/publications:
+    get:
+      summary: Get publications
+      parameters:
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/PublicationStatus'
+          required: true
+          description: Status of publication
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: true
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          required: true
+          description: Page size
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Publication'
+      security:
+        - TokenAuth: [ ]
+      operationId: getPublications
+      tags: [ publication ]
+
+
   /api/publication/{id}:
     get:
       summary: Get publication
@@ -362,7 +399,7 @@ paths:
         200:
           description: Success
       security:
-        - TokenAuth: [ ]
+        - PublicAuth: [ ]
       operationId: submitPublication
       tags: [ publication ]
 

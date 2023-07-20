@@ -15,6 +15,7 @@ import org.firstapproval.backend.core.domain.publication.toApiObject
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
+import java.math.BigDecimal
 import java.util.UUID
 import org.firstapproval.backend.core.domain.publication.AccessType as AccessTypeEntity
 
@@ -24,6 +25,14 @@ class PublicationController(
     private val ipfsClient: IpfsClient,
     private val authHolderService: AuthHolderService
 ) : PublicationApi {
+
+    override fun getPublications(
+        status: PublicationStatus, page: Int, pageSize: Int
+    ): ResponseEntity<List<Publication>> {
+        val publications = publicationService.getPublications(status, page, pageSize).map { it.toApiObject() }
+        return ok().body(publications)
+    }
+
     override fun createPublication(): ResponseEntity<CreatePublicationResponse> {
         val pub = publicationService.create(authHolderService.user)
         return ok().body(CreatePublicationResponse(pub.id, PublicationStatus.valueOf(pub.status.name), pub.creationTime.toOffsetDateTime()))

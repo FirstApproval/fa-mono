@@ -17,6 +17,9 @@ import org.firstapproval.backend.core.domain.user.UnconfirmedUserRepository
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
 import org.firstapproval.backend.core.exception.RecordConflictException
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
+import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
@@ -126,6 +129,18 @@ class PublicationService(
     @Transactional
     fun get(id: UUID): Publication {
         return publicationRepository.findById(id).orElseThrow()
+    }
+
+    @Transactional
+    fun getPublications(
+        status: org.firstapproval.api.server.model.PublicationStatus,
+        page: Int,
+        pageSize: Int
+    ): List<Publication> {
+        return publicationRepository.findAllByStatus(
+            PublicationStatus.valueOf(status.name),
+            PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime"))
+        ).content
     }
 }
 
