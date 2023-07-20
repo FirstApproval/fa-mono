@@ -2,6 +2,7 @@ package org.firstapproval.backend.core.domain.publication
 
 import jakarta.persistence.*
 import jakarta.persistence.EnumType.STRING
+import org.firstapproval.backend.core.domain.publication.AccessType.CLOSED
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
 import org.firstapproval.backend.core.domain.user.UnconfirmedUser
 import org.firstapproval.backend.core.domain.user.User
@@ -19,7 +20,7 @@ class Publication(
     @Enumerated(STRING)
     var status: PublicationStatus = PENDING,
     @Enumerated(STRING)
-    var accessType: AccessType? = null,
+    var accessType: AccessType? = CLOSED,
     var title: String? = null,
     var description: String? = null,
     @Column(columnDefinition = "text")
