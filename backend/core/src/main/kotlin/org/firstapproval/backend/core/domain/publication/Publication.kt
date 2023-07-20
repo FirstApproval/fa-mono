@@ -30,11 +30,15 @@ class Publication(
     @Column(columnDefinition = "text")
     var tags: List<String>? = null,
     var objectOfStudyTitle: String? = null,
-    var objectOfStudyDescription: String? = null,
-    var software: String? = null,
+    @Column(columnDefinition = "text")
+    var objectOfStudyDescription: List<String>? = null,
+    @Column(columnDefinition = "text")
+    var software: List<String>? = null,
     var methodTitle: String? = null,
-    var methodDescription: String? = null,
-    var predictedGoals: String? = null,
+    @Column(columnDefinition = "text")
+    var methodDescription: List<String>? = null,
+    @Column(columnDefinition = "text")
+    var predictedGoals: List<String>? = null,
     @ManyToMany
     @JoinTable(
         name = "publication_confirmed_authors",
