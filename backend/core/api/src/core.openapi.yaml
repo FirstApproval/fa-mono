@@ -920,6 +920,7 @@ components:
     AccessType:
       type: string
       enum:
+        - CLOSED
         - OPEN
         - ON_REQUEST
         - MONETIZE_OR_CO_AUTHORSHIP
