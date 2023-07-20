@@ -1,6 +1,7 @@
 package org.firstapproval.backend.core.domain.publication
 
 import org.firstapproval.api.server.model.Author
+import org.firstapproval.api.server.model.Paragraph
 import org.firstapproval.api.server.model.PublicationEditRequest
 import org.firstapproval.backend.core.domain.ipfs.DownloadLink
 import org.firstapproval.backend.core.domain.ipfs.DownloadLinkRepository
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
 import java.util.UUID
 import java.util.UUID.randomUUID
+import org.firstapproval.api.server.model.Publication as PublicationApiObject
 
 @Service
 class PublicationService(
@@ -40,21 +42,23 @@ class PublicationService(
     fun edit(id: UUID, request: PublicationEditRequest) {
         val publication = get(id)
         with(request) {
-            if (title.edited) publication.title = title.value
-            if (description.edited) publication.description = description.value
-            if (grantOrganizations.edited) publication.grantOrganizations = grantOrganizations.values
-            if (relatedArticles.edited) publication.relatedArticles = relatedArticles.values
-            if (tags.edited) publication.tags = tags.values
-            if (objectOfStudyTitle.edited) publication.objectOfStudyTitle = objectOfStudyTitle.value
-            if (objectOfStudyDescription.edited) publication.objectOfStudyDescription = objectOfStudyDescription.value
-            if (software.edited) publication.software = software.value
-            if (methodTitle.edited) publication.methodTitle = methodTitle.value
-            if (methodDescription.edited) publication.methodDescription = methodDescription.value
-            if (predictedGoals.edited) publication.predictedGoals = predictedGoals.value
-            if (confirmedAuthors.edited) {
+            if (title?.edited == true) publication.title = title.value
+            if (description?.edited == true) publication.description = description.value
+            if (grantOrganizations?.edited == true) publication.grantOrganizations = grantOrganizations.values.map { it.text }
+            if (relatedArticles?.edited == true) publication.relatedArticles = relatedArticles.values.map { it.text }
+            if (tags?.edited == true) publication.tags = tags.values.map { it.text }
+            if (objectOfStudyTitle?.edited == true) publication.objectOfStudyTitle = objectOfStudyTitle.value
+            if (objectOfStudyDescription?.edited == true) {
+                publication.objectOfStudyDescription = objectOfStudyDescription.values.map { it.text }
+            }
+            if (software?.edited == true) publication.software = software.values.map { it.text }
+            if (methodTitle?.edited == true) publication.methodTitle = methodTitle.value
+            if (methodDescription?.edited == true) publication.methodDescription = methodDescription.values.map { it.text }
+            if (predictedGoals?.edited == true) publication.predictedGoals = predictedGoals.values.map { it.text }
+            if (confirmedAuthors?.edited == true) {
                 publication.confirmedAuthors = confirmedAuthors.values.map { userRepository.findById(it).get() }
             }
-            if (unconfirmedAuthors.edited) {
+            if (unconfirmedAuthors?.edited == true) {
                 val unconfirmedCoauthorsList = unconfirmedAuthors.values.map {
                     if (userRepository.findByEmail(it.email) != null) throw RecordConflictException("user with this email already exists")
                     unconfirmedUserRepository.saveAndFlush(
@@ -125,22 +129,22 @@ class PublicationService(
     }
 }
 
-fun Publication.toApiObject() = org.firstapproval.api.server.model.Publication().also {
+fun Publication.toApiObject() = PublicationApiObject().also {
     it.id = id
     it.title = title
     it.description = description
-    it.grantOrganizations = grantOrganizations
-    it.relatedArticles = relatedArticles
-    it.tags = tags
+    it.grantOrganizations = grantOrganizations?.map { Paragraph(it) }
+    it.relatedArticles = relatedArticles?.map { Paragraph(it) }
+    it.tags = tags?.map { Paragraph(it) }
     it.objectOfStudyTitle = objectOfStudyTitle
-    it.objectOfStudyDescription = objectOfStudyDescription
-    it.software = software
+    it.objectOfStudyDescription = objectOfStudyDescription?.map { Paragraph(it) }
+    it.software = software?.map { Paragraph(it) }
     it.methodTitle = methodTitle
-    it.methodDescription = methodDescription
-    it.predictedGoals = predictedGoals
+    it.methodDescription = methodDescription?.map { Paragraph(it) }
+    it.predictedGoals = predictedGoals?.map { Paragraph(it) }
     it.authors = confirmedAuthors.map { user -> Author(user.firstName, user.middleName, user.lastName, user.email, user.selfInfo) } +
         unconfirmedAuthors.map { user -> Author(user.firstName, user.middleName, user.lastName, user.email, user.shortBio) }
     it.status = org.firstapproval.api.server.model.PublicationStatus.valueOf(status.name)
-    it.accessType = org.firstapproval.api.server.model.AccessType.valueOf(accessType!!.name)
+    it.accessType = org.firstapproval.api.server.model.AccessType.valueOf(accessType.name)
     it.creationTime = creationTime.toOffsetDateTime()
 }
