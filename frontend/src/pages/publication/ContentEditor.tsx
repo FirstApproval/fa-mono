@@ -1,8 +1,9 @@
 import styled from '@emotion/styled';
 import { type ReactElement } from 'react';
-import { TextField } from '@mui/material';
+import { IconButton, TextField } from '@mui/material';
 import { type PublicationEditorStore } from './PublicationEditorStore';
 import { observer } from 'mobx-react-lite';
+import { AddCircleOutlined } from '@mui/icons-material';
 
 interface EditorProps {
   editorStore: PublicationEditorStore;
@@ -11,18 +12,21 @@ interface EditorProps {
 interface ContentEditorProps {
   text: string;
   placeholder: string;
-  value: string;
-  onChange: (value: string) => void;
+  value: string[];
+  onChange: (idx: number, value: string) => void;
+  onAddClick: () => void;
 }
 
 export const PredictedGoalsEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
-      <ContentEditor
-        value={props.editorStore.predictedGoals}
-        onChange={(value) => {
-          props.editorStore.predictedGoals = value;
-          void props.editorStore.updatePredictedGoals(value);
+      <ParagraphContentEditor
+        value={props.editorStore.predictedGoals.map((e) => e.text)}
+        onChange={(idx, value) => {
+          props.editorStore.updatePredictedGoalsParagraph(idx, value);
+        }}
+        onAddClick={() => {
+          props.editorStore.addPredictedGoal();
         }}
         text={'Predicted goals'}
         placeholder={'Mention your expected outcomes or hypotheses...'}
@@ -33,10 +37,13 @@ export const PredictedGoalsEditor = observer(
 
 export const MethodEditor = observer((props: EditorProps): ReactElement => {
   return (
-    <ContentEditor
-      value={props.editorStore.predictedGoals}
-      onChange={(value) => {
-        props.editorStore.predictedGoals = value;
+    <ParagraphContentEditor
+      value={props.editorStore.method.map((e) => e.text)}
+      onChange={(idx, value) => {
+        props.editorStore.updateMethodParagraph(idx, value);
+      }}
+      onAddClick={() => {
+        props.editorStore.addMethod();
       }}
       text={'Method'}
       placeholder={
@@ -49,10 +56,13 @@ export const MethodEditor = observer((props: EditorProps): ReactElement => {
 export const ObjectOfStudyEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
-      <ContentEditor
-        value={props.editorStore.predictedGoals}
-        onChange={(value) => {
-          props.editorStore.predictedGoals = value;
+      <ParagraphContentEditor
+        value={props.editorStore.predictedGoals.map((e) => e.text)}
+        onChange={(idx, value) => {
+          props.editorStore.updatePredictedGoalsParagraph(idx, value);
+        }}
+        onAddClick={() => {
+          props.editorStore.addPredictedGoal();
         }}
         text={'Object of study'}
         placeholder={
@@ -65,10 +75,13 @@ export const ObjectOfStudyEditor = observer(
 
 export const SoftwareEditor = observer((props: EditorProps): ReactElement => {
   return (
-    <ContentEditor
-      value={props.editorStore.predictedGoals}
-      onChange={(value) => {
-        props.editorStore.predictedGoals = value;
+    <ParagraphContentEditor
+      value={props.editorStore.predictedGoals.map((e) => e.text)}
+      onChange={(idx, value) => {
+        props.editorStore.updatePredictedGoalsParagraph(idx, value);
+      }}
+      onAddClick={() => {
+        props.editorStore.addPredictedGoal();
       }}
       text={'Software'}
       placeholder={
@@ -80,10 +93,13 @@ export const SoftwareEditor = observer((props: EditorProps): ReactElement => {
 
 export const FilesEditor = observer((props: EditorProps): ReactElement => {
   return (
-    <ContentEditor
-      value={props.editorStore.predictedGoals}
-      onChange={(value) => {
-        props.editorStore.predictedGoals = value;
+    <ParagraphContentEditor
+      value={props.editorStore.predictedGoals.map((e) => e.text)}
+      onChange={(idx, value) => {
+        props.editorStore.updatePredictedGoalsParagraph(idx, value);
+      }}
+      onAddClick={() => {
+        props.editorStore.addPredictedGoal();
       }}
       text={'Files'}
       placeholder={''}
@@ -93,10 +109,13 @@ export const FilesEditor = observer((props: EditorProps): ReactElement => {
 
 export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
   return (
-    <ContentEditor
-      value={props.editorStore.predictedGoals}
-      onChange={(value) => {
-        props.editorStore.predictedGoals = value;
+    <ParagraphContentEditor
+      value={props.editorStore.predictedGoals.map((e) => e.text)}
+      onChange={(idx, value) => {
+        props.editorStore.updatePredictedGoalsParagraph(idx, value);
+      }}
+      onAddClick={() => {
+        props.editorStore.addPredictedGoal();
       }}
       text={'Authors'}
       placeholder={''}
@@ -107,10 +126,13 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
 export const GrantingOrganisationsEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
-      <ContentEditor
-        value={props.editorStore.predictedGoals}
-        onChange={(value) => {
-          props.editorStore.predictedGoals = value;
+      <ParagraphContentEditor
+        value={props.editorStore.predictedGoals.map((e) => e.text)}
+        onChange={(idx, value) => {
+          props.editorStore.updatePredictedGoalsParagraph(idx, value);
+        }}
+        onAddClick={() => {
+          props.editorStore.addPredictedGoal();
         }}
         text={'Granting organisations'}
         placeholder={
@@ -124,10 +146,13 @@ export const GrantingOrganisationsEditor = observer(
 export const RelatedArticlesEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
-      <ContentEditor
-        value={props.editorStore.predictedGoals}
-        onChange={(value) => {
-          props.editorStore.predictedGoals = value;
+      <ParagraphContentEditor
+        value={props.editorStore.predictedGoals.map((e) => e.text)}
+        onChange={(idx, value) => {
+          props.editorStore.updatePredictedGoalsParagraph(idx, value);
+        }}
+        onAddClick={() => {
+          props.editorStore.addPredictedGoal();
         }}
         text={'Related articles'}
         placeholder={
@@ -140,10 +165,13 @@ export const RelatedArticlesEditor = observer(
 
 export const TagsEditor = observer((props: EditorProps): ReactElement => {
   return (
-    <ContentEditor
-      value={props.editorStore.predictedGoals}
-      onChange={(value) => {
-        props.editorStore.predictedGoals = value;
+    <ParagraphContentEditor
+      value={props.editorStore.predictedGoals.map((e) => e.text)}
+      onChange={(idx, value) => {
+        props.editorStore.updatePredictedGoalsParagraph(idx, value);
+      }}
+      onAddClick={() => {
+        props.editorStore.addPredictedGoal();
       }}
       text={'Tags'}
       placeholder={''}
@@ -151,31 +179,85 @@ export const TagsEditor = observer((props: EditorProps): ReactElement => {
   );
 });
 
-export const ContentEditor = (props: ContentEditorProps): ReactElement => {
+export const ParagraphContentEditor = (
+  props: ContentEditorProps
+): ReactElement => {
   return (
     <ContentEditorWrap>
       <LabelWrap>{props.text}</LabelWrap>
+      {props.value.map((v, idx) => {
+        return (
+          <Paragraph
+            key={`paragraph-${idx}`}
+            idx={idx}
+            value={v}
+            onAddClick={props.onAddClick}
+            onChange={props.onChange}
+            placeholder={props.placeholder}
+          />
+        );
+      })}
+      {props.value.length === 0 && (
+        <Paragraph
+          idx={0}
+          value={''}
+          onAddClick={props.onAddClick}
+          onChange={props.onChange}
+          placeholder={props.placeholder}
+        />
+      )}
+    </ContentEditorWrap>
+  );
+};
+
+interface ParagraphProps {
+  idx: number;
+  value: string;
+  onChange: (idx: number, value: string) => void;
+  onAddClick: () => void;
+  placeholder: string;
+}
+
+const Paragraph = (props: ParagraphProps) => {
+  const { idx, value, onChange, onAddClick, placeholder } = props;
+
+  return (
+    <ParagraphWrap>
+      <IconButtonWrap onClick={onAddClick}>
+        <AddCircleOutlined />
+      </IconButtonWrap>
       <TextFieldWrap
-        value={props.value}
+        value={value}
         onChange={(e) => {
-          props.onChange(e.currentTarget.value);
+          onChange(idx, e.currentTarget.value);
         }}
         multiline
         autoComplete={'off'}
         variant={'standard'}
-        placeholder={props.placeholder}
+        placeholder={placeholder}
         InputProps={{
           disableUnderline: true,
           autoComplete: 'off'
         }}
       />
-    </ContentEditorWrap>
+    </ParagraphWrap>
   );
 };
 
 const ContentEditorWrap = styled.div`
   padding-left: 16px;
   margin-bottom: 40px;
+`;
+
+const ParagraphWrap = styled.div`
+  display: flex;
+  align-items: start;
+  margin-left: -64px;
+  margin-bottom: 32px;
+`;
+
+const IconButtonWrap = styled(IconButton)`
+  margin-right: 24px;
 `;
 
 const LabelWrap = styled.div`

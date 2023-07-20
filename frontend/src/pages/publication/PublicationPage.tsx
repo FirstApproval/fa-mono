@@ -3,7 +3,7 @@ import React, {
   type ReactElement,
   useState
 } from 'react';
-import { Button, CircularProgress, LinearProgress } from '@mui/material';
+import { Button, LinearProgress } from '@mui/material';
 import {
   FlexBodyCenter,
   FlexHeader,
@@ -67,7 +67,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
         </FlexHeader>
         <FlexBodyCenter>
           <PublicationBodyWrap>
-            {isLoading && <CircularProgress />}
+            {isLoading && <LinearProgress />}
             {!isLoading && (
               <PublicationBody
                 publicationId={publicationId}
