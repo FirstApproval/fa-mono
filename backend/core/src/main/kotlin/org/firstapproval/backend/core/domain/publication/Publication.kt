@@ -20,7 +20,7 @@ class Publication(
     @Enumerated(STRING)
     var status: PublicationStatus = PENDING,
     @Enumerated(STRING)
-    var accessType: AccessType? = CLOSED,
+    var accessType: AccessType = CLOSED,
     var title: String? = null,
     var description: String? = null,
     @Column(columnDefinition = "text")
