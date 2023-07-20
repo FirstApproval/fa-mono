@@ -43,9 +43,9 @@ class Publication(
     var objectOfStudyTitle: String? = null,
     @Field(type = Text)
     var objectOfStudyDescription: String? = null,
-    @Field(type = Keyword)
+    @Field(type = Text)
     var software: String? = null,
-    @Field(type = Keyword)
+    @Field(type = Text)
     var methodTitle: String? = null,
     @Field(type = Text)
     var methodDescription: String? = null,

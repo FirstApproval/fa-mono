@@ -88,7 +88,7 @@ class PublicationService(
     }
 
     fun search(text: String, limit: Int, pageNum: Int) =
-        elasticRepository.searchByFields(text, PageRequest.of(pageNum, limit, Sort.by(DESC, "publicationTime", "_score")))
+        elasticRepository.searchByFields(text, PageRequest.of(pageNum, limit, Sort.by(DESC, "_score", "publicationTime")))
 
     @Transactional
     fun requestDownload(id: UUID) {

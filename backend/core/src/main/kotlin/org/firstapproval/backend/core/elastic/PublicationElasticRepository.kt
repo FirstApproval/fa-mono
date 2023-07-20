@@ -11,13 +11,13 @@ import java.util.UUID
 @Repository
 interface PublicationElasticRepository : ElasticsearchRepository<Publication, UUID> {
     @Query("{\"bool\": {\"should\": [" +
-        "{\"match\": {\"title\": \"?0\"}}," +
-        "{\"match\": {\"description\": \"?0\"}}," +
-        "{\"match\": {\"tags\": \"?0\"}}," +
-        "{\"match\": {\"objectOfStudyTitle\": \"?0\"}}," +
-        "{\"match\": {\"objectOfStudyDescription\": \"?0\"}}," +
-        "{\"match\": {\"software\": \"?0\"}}," +
-        "{\"match\": {\"methodDescription\": \"?0\"}}" +
+        "{\"match\": {\"title\": {\"query\": \"?0\", \"boost\": 3}}}," +
+        "{\"match\": {\"description\": {\"query\": \"?0\", \"boost\": 2}}}," +
+        "{\"match\": {\"tags\": {\"query\": \"?0\", \"boost\": 1}}}," +
+        "{\"match\": {\"objectOfStudyTitle\": {\"query\": \"?0\"}}}," +
+        "{\"match\": {\"objectOfStudyDescription\": {\"query\": \"?0\"}}}," +
+        "{\"match\": {\"software\": {\"query\": \"?0\"}}}," +
+        "{\"match\": {\"methodDescription\": {\"query\": \"?0\", \"boost\": 0.5}}}" +
         "]}}")
     fun searchByFields(keyword: String, pageable: Pageable): Page<Publication>
 }
