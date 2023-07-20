@@ -10,6 +10,7 @@ import java.io.InputStream
 import java.util.UUID
 
 const val FILES = "files"
+const val SAMPLE_FILES = "sample-files"
 
 class FileStorageService(private val amazonS3: AmazonS3) {
 
