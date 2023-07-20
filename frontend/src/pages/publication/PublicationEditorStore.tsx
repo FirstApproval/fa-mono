@@ -46,7 +46,10 @@ export class PublicationEditorStore {
       .getPublication(this.publicationId)
       .then((response) => {
         const publication = response.data;
-        this.predictedGoals = publication.predictedGoals || '';
+        if (publication.predictedGoals) {
+          this.predictedGoals = publication.predictedGoals;
+          this.predictedGoalsEnabled = true;
+        }
       })
       .finally(() => {
         this.isLoading = false;
