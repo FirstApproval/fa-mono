@@ -1,5 +1,9 @@
-import React, { type FunctionComponent, useState } from 'react';
-import { Button } from '@mui/material';
+import React, {
+  type FunctionComponent,
+  type ReactElement,
+  useState
+} from 'react';
+import { Button, CircularProgress, LinearProgress } from '@mui/material';
 import {
   FlexBodyCenter,
   FlexHeader,
@@ -39,19 +43,11 @@ import {
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
 
-  const [editorStore] = useState(() => new PublicationEditorStore());
+  const [editorStore] = useState(
+    () => new PublicationEditorStore(publicationId)
+  );
 
-  const {
-    predictedGoalsEnabled,
-    methodEnabled,
-    objectOfStudyEnabled,
-    softwareEnabled,
-    filesEnabled,
-    authorsEnabled,
-    grantingOrganizationsEnabled,
-    relatedArticlesEnabled,
-    tagsEnabled
-  } = editorStore;
+  const { isLoading } = editorStore;
 
   return (
     <>
@@ -70,97 +66,128 @@ export const PublicationPage: FunctionComponent = observer(() => {
           </FlexHeaderRight>
         </FlexHeader>
         <FlexBodyCenter>
-          <PublicationBody>
-            {!predictedGoalsEnabled && (
-              <PredictedGoalsPlaceholder
-                onClick={() => {
-                  editorStore.predictedGoalsEnabled = true;
-                }}
+          <PublicationBodyWrap>
+            {isLoading && <CircularProgress />}
+            {!isLoading && (
+              <PublicationBody
+                publicationId={publicationId}
+                editorStore={editorStore}
               />
             )}
-            {predictedGoalsEnabled && <PredictedGoalsEditor />}
-
-            {!methodEnabled && (
-              <MethodPlaceholder
-                onClick={() => {
-                  editorStore.methodEnabled = true;
-                }}
-              />
-            )}
-            {methodEnabled && <MethodEditor />}
-
-            {!objectOfStudyEnabled && (
-              <ObjectOfStudyPlaceholder
-                onClick={() => {
-                  editorStore.objectOfStudyEnabled = true;
-                }}
-              />
-            )}
-            {objectOfStudyEnabled && <ObjectOfStudyEditor />}
-
-            {!softwareEnabled && (
-              <SoftwarePlaceholder
-                onClick={() => {
-                  editorStore.softwareEnabled = true;
-                }}
-              />
-            )}
-            {softwareEnabled && <SoftwareEditor />}
-
-            {!filesEnabled && (
-              <FilesPlaceholder
-                onClick={() => {
-                  editorStore.filesEnabled = true;
-                }}
-              />
-            )}
-            {filesEnabled && <FilesEditor />}
-
-            {!authorsEnabled && (
-              <AuthorsPlaceholder
-                onClick={() => {
-                  editorStore.authorsEnabled = true;
-                }}
-              />
-            )}
-            {authorsEnabled && <AuthorsEditor />}
-
-            {!grantingOrganizationsEnabled && (
-              <GrantingOrganisationsPlaceholder
-                onClick={() => {
-                  editorStore.grantingOrganizationsEnabled = true;
-                }}
-              />
-            )}
-            {grantingOrganizationsEnabled && <GrantingOrganisationsEditor />}
-
-            {!relatedArticlesEnabled && (
-              <RelatedArticlesPlaceholder
-                onClick={() => {
-                  editorStore.relatedArticlesEnabled = true;
-                }}
-              />
-            )}
-            {relatedArticlesEnabled && <RelatedArticlesEditor />}
-
-            {!tagsEnabled && (
-              <TagsPlaceholder
-                onClick={() => {
-                  editorStore.tagsEnabled = true;
-                }}
-              />
-            )}
-            {tagsEnabled && <TagsEditor />}
-
-            <FileUploader publicationId={publicationId} />
-          </PublicationBody>
+          </PublicationBodyWrap>
         </FlexBodyCenter>
       </Parent>
     </>
   );
 });
 
-export const PublicationBody = styled('div')`
+const PublicationBody = (props: {
+  publicationId: string;
+  editorStore: PublicationEditorStore;
+}): ReactElement => {
+  const { publicationId, editorStore } = props;
+
+  const {
+    predictedGoalsEnabled,
+    methodEnabled,
+    objectOfStudyEnabled,
+    softwareEnabled,
+    filesEnabled,
+    authorsEnabled,
+    grantingOrganizationsEnabled,
+    relatedArticlesEnabled,
+    tagsEnabled
+  } = editorStore;
+
+  return (
+    <>
+      {' '}
+      {!predictedGoalsEnabled && (
+        <PredictedGoalsPlaceholder
+          onClick={() => {
+            editorStore.predictedGoalsEnabled = true;
+          }}
+        />
+      )}
+      {predictedGoalsEnabled && (
+        <PredictedGoalsEditor editorStore={editorStore} />
+      )}
+      {!methodEnabled && (
+        <MethodPlaceholder
+          onClick={() => {
+            editorStore.methodEnabled = true;
+          }}
+        />
+      )}
+      {methodEnabled && <MethodEditor editorStore={editorStore} />}
+      {!objectOfStudyEnabled && (
+        <ObjectOfStudyPlaceholder
+          onClick={() => {
+            editorStore.objectOfStudyEnabled = true;
+          }}
+        />
+      )}
+      {objectOfStudyEnabled && (
+        <ObjectOfStudyEditor editorStore={editorStore} />
+      )}
+      {!softwareEnabled && (
+        <SoftwarePlaceholder
+          onClick={() => {
+            editorStore.softwareEnabled = true;
+          }}
+        />
+      )}
+      {softwareEnabled && <SoftwareEditor editorStore={editorStore} />}
+      {!filesEnabled && (
+        <FilesPlaceholder
+          onClick={() => {
+            editorStore.filesEnabled = true;
+          }}
+        />
+      )}
+      {filesEnabled && <FilesEditor editorStore={editorStore} />}
+      {!authorsEnabled && (
+        <AuthorsPlaceholder
+          onClick={() => {
+            editorStore.authorsEnabled = true;
+          }}
+        />
+      )}
+      {authorsEnabled && <AuthorsEditor editorStore={editorStore} />}
+      {!grantingOrganizationsEnabled && (
+        <GrantingOrganisationsPlaceholder
+          onClick={() => {
+            editorStore.grantingOrganizationsEnabled = true;
+          }}
+        />
+      )}
+      {grantingOrganizationsEnabled && (
+        <GrantingOrganisationsEditor editorStore={editorStore} />
+      )}
+      {!relatedArticlesEnabled && (
+        <RelatedArticlesPlaceholder
+          onClick={() => {
+            editorStore.relatedArticlesEnabled = true;
+          }}
+        />
+      )}
+      {relatedArticlesEnabled && (
+        <RelatedArticlesEditor editorStore={editorStore} />
+      )}
+      {!tagsEnabled && (
+        <TagsPlaceholder
+          onClick={() => {
+            editorStore.tagsEnabled = true;
+          }}
+        />
+      )}
+      {tagsEnabled && <TagsEditor editorStore={editorStore} />}
+      <FileUploader publicationId={publicationId} />
+    </>
+  );
+};
+
+export const PublicationBodyWrap = styled('div')`
   width: 728px;
   padding-left: 40px;
   padding-right: 40px;
