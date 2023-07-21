@@ -29,7 +29,7 @@ class PublicationController(
     override fun getPublications(
         status: PublicationStatus, page: Int, pageSize: Int
     ): ResponseEntity<PublicationsResponse> {
-        val publications = publicationService.getPublications(status, page, pageSize, authHolderService.user)
+        val publications = publicationService.getPublications(authHolderService.user, status, page, pageSize)
         return ok().body(publications)
     }
 

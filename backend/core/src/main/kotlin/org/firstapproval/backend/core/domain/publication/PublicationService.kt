@@ -134,10 +134,10 @@ class PublicationService(
 
     @Transactional
     fun getPublications(
+        user: User,
         status: org.firstapproval.api.server.model.PublicationStatus,
         page: Int,
         pageSize: Int,
-        user: User
     ): PublicationsResponse {
         val publicationsPage = publicationRepository.findAllByStatusAndCreatorId(
             PublicationStatus.valueOf(status.name),
