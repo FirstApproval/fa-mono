@@ -3,6 +3,7 @@ package org.firstapproval.backend.core.domain.publication
 import org.firstapproval.api.server.model.Author
 import org.firstapproval.api.server.model.Paragraph
 import org.firstapproval.api.server.model.PublicationEditRequest
+import org.firstapproval.api.server.model.PublicationsResponse
 import org.firstapproval.backend.core.domain.ipfs.DownloadLink
 import org.firstapproval.backend.core.domain.ipfs.DownloadLinkRepository
 import org.firstapproval.backend.core.domain.ipfs.IpfsClient
@@ -17,6 +18,9 @@ import org.firstapproval.backend.core.domain.user.UnconfirmedUserRepository
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
 import org.firstapproval.backend.core.exception.RecordConflictException
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
+import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
@@ -126,6 +130,24 @@ class PublicationService(
     @Transactional
     fun get(id: UUID): Publication {
         return publicationRepository.findById(id).orElseThrow()
+    }
+
+    @Transactional
+    fun getPublications(
+        user: User,
+        status: org.firstapproval.api.server.model.PublicationStatus,
+        page: Int,
+        pageSize: Int,
+    ): PublicationsResponse {
+        val publicationsPage = publicationRepository.findAllByStatusAndCreatorId(
+            PublicationStatus.valueOf(status.name),
+            user.id,
+            PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime"))
+        )
+
+        return PublicationsResponse()
+            .publications(publicationsPage.map { it.toApiObject() }.toList())
+            .isLastPage(publicationsPage.isLast)
     }
 }
 
