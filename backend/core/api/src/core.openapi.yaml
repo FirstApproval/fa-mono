@@ -295,6 +295,41 @@ paths:
       operationId: createPublication
       tags: [ publication ]
 
+  /api/publications:
+    get:
+      summary: Get publications
+      parameters:
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/PublicationStatus'
+          required: true
+          description: Status of publication
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: true
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          required: true
+          description: Page size
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/PublicationsResponse'
+      security:
+        - TokenAuth: [ ]
+      operationId: getPublications
+      tags: [ publication ]
+
+
   /api/publication/{id}:
     get:
       summary: Get publication
@@ -951,6 +986,7 @@ components:
     AccessType:
       type: string
       enum:
+        - CLOSED
         - OPEN
         - ON_REQUEST
         - MONETIZE_OR_CO_AUTHORSHIP
@@ -993,15 +1029,15 @@ components:
         objectOfStudyTitle:
           $ref: '#/components/schemas/PublicationStringValue'
         objectOfStudyDescription:
-          $ref: '#/components/schemas/PublicationLongStringValue'
+          $ref: '#/components/schemas/PublicationStringArrayValue'
         software:
-          $ref: '#/components/schemas/PublicationStringValue'
+          $ref: '#/components/schemas/PublicationStringArrayValue'
         methodTitle:
           $ref: '#/components/schemas/PublicationStringValue'
         methodDescription:
-          $ref: '#/components/schemas/PublicationLongStringValue'
+          $ref: '#/components/schemas/PublicationStringArrayValue'
         predictedGoals:
-          $ref: '#/components/schemas/PublicationStringValue'
+          $ref: '#/components/schemas/PublicationStringArrayValue'
 
     PublicationStringValue:
       type: object
@@ -1010,6 +1046,7 @@ components:
           type: boolean
         value:
           type: string
+          maxLength: 32768
 
     PublicationLongStringValue:
       type: object
@@ -1028,7 +1065,16 @@ components:
         values:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/Paragraph'
+
+    Paragraph:
+      type: object
+      properties:
+        text:
+          type: string
+          maxLength: 32768
+      required:
+        - text
 
     ConfirmedAuthors:
       type: object
@@ -1098,32 +1144,30 @@ components:
           format: date-time
         title:
           type: string
+          maxLength: 32768
         description:
           type: string
+          maxLength: 32768
         grantOrganizations:
-          type: array
-          items:
-            type: string
+          $ref: '#/components/schemas/StringArray'
         relatedArticles:
-          type: array
-          items:
-            type: string
+          $ref: '#/components/schemas/StringArray'
         tags:
-          type: array
-          items:
-            type: string
+          $ref: '#/components/schemas/StringArray'
         objectOfStudyTitle:
           type: string
+          maxLength: 32768
         objectOfStudyDescription:
-          type: string
+          $ref: '#/components/schemas/StringArray'
         software:
-          type: string
+          $ref: '#/components/schemas/StringArray'
         methodTitle:
           type: string
+          maxLength: 32768
         methodDescription:
-          type: string
+          $ref: '#/components/schemas/StringArray'
         predictedGoals:
-          type: string
+          $ref: '#/components/schemas/StringArray'
         authors:
           type: array
           items:
@@ -1132,6 +1176,16 @@ components:
         - id
         - status
         - creationTime
+
+    PublicationsResponse:
+      type: object
+      properties:
+        isLastPage:
+          type: boolean
+        publications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Publication'
 
     Author:
       type: object
@@ -1152,6 +1206,11 @@ components:
         - lastName
         - email
         - shortBio
+
+    StringArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/Paragraph'
 
   securitySchemes:
     PublicAuth:

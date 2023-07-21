@@ -89,7 +89,7 @@ export class SignUpStore {
     }
   }
 
-  async validateEmail(email: string): Promise<boolean> {
+  async existsByEmail(email: string): Promise<boolean> {
     this.isError = false;
     this.isSubmitting = true;
 
