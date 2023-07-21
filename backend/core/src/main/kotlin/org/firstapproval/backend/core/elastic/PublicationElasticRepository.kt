@@ -1,6 +1,5 @@
 package org.firstapproval.backend.core.elastic
 
-import org.firstapproval.backend.core.domain.publication.Publication
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.elasticsearch.annotations.Query
@@ -9,7 +8,7 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 @Repository
-interface PublicationElasticRepository : ElasticsearchRepository<Publication, UUID> {
+interface PublicationElasticRepository : ElasticsearchRepository<PublicationElastic, UUID> {
     @Query("{\"bool\": {\"should\": [" +
         "{\"match\": {\"title\": {\"query\": \"?0\", \"boost\": 3}}}," +
         "{\"match\": {\"description\": {\"query\": \"?0\", \"boost\": 2}}}," +
@@ -19,5 +18,5 @@ interface PublicationElasticRepository : ElasticsearchRepository<Publication, UU
         "{\"match\": {\"software\": {\"query\": \"?0\"}}}," +
         "{\"match\": {\"methodDescription\": {\"query\": \"?0\", \"boost\": 0.5}}}" +
         "]}}")
-    fun searchByFields(keyword: String, pageable: Pageable): Page<Publication>
+    fun searchByFields(keyword: String, pageable: Pageable): Page<PublicationElastic>
 }

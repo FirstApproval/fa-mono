@@ -15,11 +15,12 @@ import org.firstapproval.backend.core.domain.user.UnconfirmedUser
 import org.firstapproval.backend.core.domain.user.UnconfirmedUserRepository
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
+import org.firstapproval.backend.core.elastic.PublicationElastic
 import org.firstapproval.backend.core.elastic.PublicationElasticRepository
 import org.firstapproval.backend.core.exception.RecordConflictException
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
-import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
@@ -87,8 +88,11 @@ class PublicationService(
         publication.accessType = accessType
     }
 
-    fun search(text: String, limit: Int, pageNum: Int) =
-        elasticRepository.searchByFields(text, PageRequest.of(pageNum, limit, Sort.by(DESC, "_score", "publicationTime")))
+    fun search(text: String, limit: Int, pageNum: Int): Page<PublicationElastic> {
+        val sort = Sort.by("_score").descending()
+            .and(Sort.by("publicationTime").descending())
+        return elasticRepository.searchByFields(text, PageRequest.of(pageNum, limit, sort))
+    }
 
     @Transactional
     fun requestDownload(id: UUID) {
@@ -153,3 +157,43 @@ fun Publication.toApiObject() = org.firstapproval.api.server.model.Publication()
     it.accessType = org.firstapproval.api.server.model.AccessType.valueOf(accessType!!.name)
     it.creationTime = creationTime.toOffsetDateTime()
 }
+
+fun PublicationElastic.toApiObject() = org.firstapproval.api.server.model.Publication().also {
+    it.id = id
+    it.title = title
+    it.description = description
+    it.grantOrganizations = grantOrganizations
+    it.relatedArticles = relatedArticles
+    it.tags = tags
+    it.objectOfStudyTitle = objectOfStudyTitle
+    it.objectOfStudyDescription = objectOfStudyDescription
+    it.software = software
+    it.methodTitle = methodTitle
+    it.publicationTime = publicationTime?.toOffsetDateTime()
+    it.methodDescription = methodDescription
+    it.predictedGoals = predictedGoals
+    it.status = org.firstapproval.api.server.model.PublicationStatus.valueOf(status.name)
+    it.accessType = org.firstapproval.api.server.model.AccessType.valueOf(accessType!!.name)
+    it.creationTime = creationTime.toOffsetDateTime()
+}
+
+fun Publication.toPublicationElastic() =
+    PublicationElastic(
+        id = id,
+        creatorId = creator.id,
+        status = status,
+        accessType = accessType,
+        title = title,
+        description = description,
+        grantOrganizations = grantOrganizations,
+        relatedArticles = relatedArticles,
+        tags = tags,
+        objectOfStudyTitle = objectOfStudyTitle,
+        objectOfStudyDescription = objectOfStudyDescription,
+        software = software,
+        methodTitle = methodTitle,
+        methodDescription = methodDescription,
+        predictedGoals = predictedGoals,
+        creationTime = creationTime,
+        publicationTime = publicationTime
+    )

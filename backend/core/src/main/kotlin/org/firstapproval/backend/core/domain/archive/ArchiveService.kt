@@ -10,6 +10,7 @@ import org.firstapproval.backend.core.domain.publication.PublicationFileReposito
 import org.firstapproval.backend.core.domain.publication.PublicationRepository
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
+import org.firstapproval.backend.core.domain.publication.toPublicationElastic
 import org.firstapproval.backend.core.elastic.PublicationElasticRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.scheduling.annotation.Scheduled
@@ -112,7 +113,7 @@ class ArchiveService(
         publication.status = PUBLISHED
         publication.publicationTime = now()
         publicationRepository.save(publication)
-        elasticRepository.save(publication)
+        elasticRepository.save(publication.toPublicationElastic())
         return filesIds
     }
 
