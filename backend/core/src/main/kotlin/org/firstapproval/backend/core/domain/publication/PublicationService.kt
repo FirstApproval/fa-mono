@@ -3,6 +3,7 @@ package org.firstapproval.backend.core.domain.publication
 import org.firstapproval.api.server.model.Author
 import org.firstapproval.api.server.model.Paragraph
 import org.firstapproval.api.server.model.PublicationEditRequest
+import org.firstapproval.api.server.model.PublicationsResponse
 import org.firstapproval.backend.core.domain.ipfs.DownloadLink
 import org.firstapproval.backend.core.domain.ipfs.DownloadLinkRepository
 import org.firstapproval.backend.core.domain.ipfs.IpfsClient
@@ -135,12 +136,18 @@ class PublicationService(
     fun getPublications(
         status: org.firstapproval.api.server.model.PublicationStatus,
         page: Int,
-        pageSize: Int
-    ): List<Publication> {
-        return publicationRepository.findAllByStatus(
+        pageSize: Int,
+        user: User
+    ): PublicationsResponse {
+        val publicationsPage = publicationRepository.findAllByStatusAndCreatorId(
             PublicationStatus.valueOf(status.name),
+            user.id,
             PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime"))
-        ).content
+        )
+
+        return PublicationsResponse()
+            .publications(publicationsPage.map { it.toApiObject() }.toList())
+            .isLastPage(publicationsPage.isLast)
     }
 }
 

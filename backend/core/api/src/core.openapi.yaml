@@ -323,9 +323,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Publication'
+                  $ref: '#/components/schemas/PublicationsResponse'
       security:
         - TokenAuth: [ ]
       operationId: getPublications
@@ -399,7 +397,7 @@ paths:
         200:
           description: Success
       security:
-        - PublicAuth: [ ]
+        - TokenAuth: [ ]
       operationId: submitPublication
       tags: [ publication ]
 
@@ -1126,6 +1124,16 @@ components:
         - id
         - status
         - creationTime
+
+    PublicationsResponse:
+      type: object
+      properties:
+        isLastPage:
+          type: boolean
+        publications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Publication'
 
     Author:
       type: object

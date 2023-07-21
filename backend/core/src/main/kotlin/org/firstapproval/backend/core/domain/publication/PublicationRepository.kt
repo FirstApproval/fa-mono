@@ -8,5 +8,5 @@ import java.util.*
 interface PublicationRepository : JpaRepository<Publication, UUID> {
     fun findAllByStatusOrderByCreationTimeDesc(publicationStatus: PublicationStatus): List<Publication>
 
-    fun findAllByStatus(publicationStatus: PublicationStatus, page: Pageable): Page<Publication>
+    fun findAllByStatusAndCreatorId(publicationStatus: PublicationStatus, creatorId: UUID, page: Pageable): Page<Publication>
 }

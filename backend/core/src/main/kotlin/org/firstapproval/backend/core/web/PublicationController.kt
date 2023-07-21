@@ -7,6 +7,7 @@ import org.firstapproval.api.server.model.Publication
 import org.firstapproval.api.server.model.PublicationContentStatus
 import org.firstapproval.api.server.model.PublicationEditRequest
 import org.firstapproval.api.server.model.PublicationStatus
+import org.firstapproval.api.server.model.PublicationsResponse
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.ipfs.IpfsClient
@@ -15,7 +16,6 @@ import org.firstapproval.backend.core.domain.publication.toApiObject
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
-import java.math.BigDecimal
 import java.util.UUID
 import org.firstapproval.backend.core.domain.publication.AccessType as AccessTypeEntity
 
@@ -28,8 +28,8 @@ class PublicationController(
 
     override fun getPublications(
         status: PublicationStatus, page: Int, pageSize: Int
-    ): ResponseEntity<List<Publication>> {
-        val publications = publicationService.getPublications(status, page, pageSize).map { it.toApiObject() }
+    ): ResponseEntity<PublicationsResponse> {
+        val publications = publicationService.getPublications(status, page, pageSize, authHolderService.user)
         return ok().body(publications)
     }
 
