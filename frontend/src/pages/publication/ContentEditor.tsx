@@ -26,7 +26,7 @@ export const PredictedGoalsEditor = observer(
           props.editorStore.updatePredictedGoalsParagraph(idx, value);
         }}
         onAddClick={() => {
-          props.editorStore.addPredictedGoal();
+          props.editorStore.addPredictedGoalsParagraph();
         }}
         text={'Predicted goals'}
         placeholder={'Mention your expected outcomes or hypotheses...'}
@@ -43,7 +43,7 @@ export const MethodEditor = observer((props: EditorProps): ReactElement => {
         props.editorStore.updateMethodParagraph(idx, value);
       }}
       onAddClick={() => {
-        props.editorStore.addMethod();
+        props.editorStore.addMethodParagraph();
       }}
       text={'Method'}
       placeholder={
@@ -62,7 +62,7 @@ export const ObjectOfStudyEditor = observer(
           props.editorStore.updatePredictedGoalsParagraph(idx, value);
         }}
         onAddClick={() => {
-          props.editorStore.addPredictedGoal();
+          props.editorStore.addPredictedGoalsParagraph();
         }}
         text={'Object of study'}
         placeholder={
@@ -76,12 +76,12 @@ export const ObjectOfStudyEditor = observer(
 export const SoftwareEditor = observer((props: EditorProps): ReactElement => {
   return (
     <ParagraphContentEditor
-      value={props.editorStore.predictedGoals.map((e) => e.text)}
+      value={props.editorStore.software.map((e) => e.text)}
       onChange={(idx, value) => {
-        props.editorStore.updatePredictedGoalsParagraph(idx, value);
+        props.editorStore.updateSoftwareParagraph(idx, value);
       }}
       onAddClick={() => {
-        props.editorStore.addPredictedGoal();
+        props.editorStore.addSoftwareParagraph();
       }}
       text={'Software'}
       placeholder={
@@ -99,7 +99,7 @@ export const FilesEditor = observer((props: EditorProps): ReactElement => {
         props.editorStore.updatePredictedGoalsParagraph(idx, value);
       }}
       onAddClick={() => {
-        props.editorStore.addPredictedGoal();
+        props.editorStore.addPredictedGoalsParagraph();
       }}
       text={'Files'}
       placeholder={''}
@@ -115,7 +115,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
         props.editorStore.updatePredictedGoalsParagraph(idx, value);
       }}
       onAddClick={() => {
-        props.editorStore.addPredictedGoal();
+        props.editorStore.addPredictedGoalsParagraph();
       }}
       text={'Authors'}
       placeholder={''}
@@ -127,12 +127,12 @@ export const GrantingOrganisationsEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <ParagraphContentEditor
-        value={props.editorStore.predictedGoals.map((e) => e.text)}
+        value={props.editorStore.grantingOrganizations.map((e) => e.text)}
         onChange={(idx, value) => {
-          props.editorStore.updatePredictedGoalsParagraph(idx, value);
+          props.editorStore.updateGrantingOrganization(idx, value);
         }}
         onAddClick={() => {
-          props.editorStore.addPredictedGoal();
+          props.editorStore.addGrantingOrganization();
         }}
         text={'Granting organisations'}
         placeholder={
@@ -152,7 +152,7 @@ export const RelatedArticlesEditor = observer(
           props.editorStore.updatePredictedGoalsParagraph(idx, value);
         }}
         onAddClick={() => {
-          props.editorStore.addPredictedGoal();
+          props.editorStore.addPredictedGoalsParagraph();
         }}
         text={'Related articles'}
         placeholder={
@@ -171,7 +171,7 @@ export const TagsEditor = observer((props: EditorProps): ReactElement => {
         props.editorStore.updatePredictedGoalsParagraph(idx, value);
       }}
       onAddClick={() => {
-        props.editorStore.addPredictedGoal();
+        props.editorStore.addPredictedGoalsParagraph();
       }}
       text={'Tags'}
       placeholder={''}
@@ -218,7 +218,7 @@ interface ParagraphProps {
   placeholder: string;
 }
 
-const Paragraph = (props: ParagraphProps) => {
+const Paragraph = (props: ParagraphProps): ReactElement => {
   const { idx, value, onChange, onAddClick, placeholder } = props;
 
   return (
@@ -245,6 +245,7 @@ const Paragraph = (props: ParagraphProps) => {
 };
 
 const ContentEditorWrap = styled.div`
+  margin-top: 40px;
   padding-left: 16px;
   margin-bottom: 40px;
 `;
@@ -257,6 +258,7 @@ const ParagraphWrap = styled.div`
 `;
 
 const IconButtonWrap = styled(IconButton)`
+  margin-top: -6px;
   margin-right: 24px;
 `;
 

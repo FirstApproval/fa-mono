@@ -24,9 +24,9 @@ export class PublicationEditorStore {
   predictedGoals: Paragraph[] = [];
   method: Paragraph[] = [];
   objectOfStudy = '';
-  software = '';
+  software: Paragraph[] = [];
   authors = '';
-  grantingOrganizations = '';
+  grantingOrganizations: Paragraph[] = [];
   relatedArticles = '';
   tags = '';
 
@@ -35,16 +35,28 @@ export class PublicationEditorStore {
     this.loadInitialState();
   }
 
-  addPredictedGoal(): void {
+  addPredictedGoalsParagraph(): void {
     const newValue = [...this.predictedGoals];
     newValue.push({ text: '' });
     this.predictedGoals = newValue;
   }
 
-  addMethod(): void {
+  addMethodParagraph(): void {
     const newValue = [...this.method];
     newValue.push({ text: '' });
     this.method = newValue;
+  }
+
+  addSoftwareParagraph(): void {
+    const newValue = [...this.software];
+    newValue.push({ text: '' });
+    this.software = newValue;
+  }
+
+  addGrantingOrganization(): void {
+    const newValue = [...this.grantingOrganizations];
+    newValue.push({ text: '' });
+    this.grantingOrganizations = newValue;
   }
 
   updatePredictedGoalsParagraph(idx: number, value: string): void {
@@ -79,19 +91,59 @@ export class PublicationEditorStore {
     });
   }, EDIT_THROTTLE_MS);
 
+  updateSoftwareParagraph(idx: number, value: string): void {
+    const newValue = [...this.software];
+    newValue[idx] = { text: value };
+    this.software = newValue;
+    void this.updateSoftware();
+  }
+
+  updateSoftware = _.throttle(async () => {
+    const software: Paragraph[] = this.software;
+    const request = getRequestStub();
+    return await publicationService.editPublication(this.publicationId, {
+      ...request,
+      software: { values: software, edited: true }
+    });
+  }, EDIT_THROTTLE_MS);
+
+  updateGrantingOrganization(idx: number, value: string): void {
+    const newValue = [...this.grantingOrganizations];
+    newValue[idx] = { text: value };
+    this.grantingOrganizations = newValue;
+    void this.updateGrantingOrganizations();
+  }
+
+  updateGrantingOrganizations = _.throttle(async () => {
+    const grantingOrganizations: Paragraph[] = this.grantingOrganizations;
+    const request = getRequestStub();
+    return await publicationService.editPublication(this.publicationId, {
+      ...request,
+      grantOrganizations: { values: grantingOrganizations, edited: true }
+    });
+  }, EDIT_THROTTLE_MS);
+
   private loadInitialState(): void {
     this.isLoading = true;
     void publicationService
       .getPublication(this.publicationId)
       .then((response) => {
         const publication = response.data;
-        if (publication.predictedGoals) {
+        if (publication.predictedGoals?.length) {
           this.predictedGoals = publication.predictedGoals;
           this.predictedGoalsEnabled = true;
         }
-        if (publication.methodDescription) {
+        if (publication.methodDescription?.length) {
           this.method = publication.methodDescription;
           this.methodEnabled = true;
+        }
+        if (publication.software?.length) {
+          this.software = publication.software;
+          this.softwareEnabled = true;
+        }
+        if (publication.grantOrganizations?.length) {
+          this.grantingOrganizations = publication.grantOrganizations;
+          this.grantingOrganizationsEnabled = true;
         }
       })
       .finally(() => {
