@@ -91,22 +91,6 @@ export const SoftwareEditor = observer((props: EditorProps): ReactElement => {
   );
 });
 
-export const FilesEditor = observer((props: EditorProps): ReactElement => {
-  return (
-    <ParagraphContentEditor
-      value={props.editorStore.predictedGoals.map((e) => e.text)}
-      onChange={(idx, value) => {
-        props.editorStore.updatePredictedGoalsParagraph(idx, value);
-      }}
-      onAddClick={() => {
-        props.editorStore.addPredictedGoalsParagraph();
-      }}
-      text={'Files'}
-      placeholder={''}
-    />
-  );
-});
-
 export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
   return (
     <ParagraphContentEditor

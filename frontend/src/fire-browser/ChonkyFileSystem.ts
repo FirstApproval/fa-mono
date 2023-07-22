@@ -12,26 +12,28 @@ interface FileEntry {
   note?: string;
 }
 
-export class FileSystem {
+export class ChonkyFileSystem {
   currentPath: string = '/';
   private backEndFiles: FileEntry[] = [];
   private localFiles: FileEntry[] = [];
   private allLocalFiles: FileEntry[] = [];
   isLoading = false;
+  initialized = false;
 
   constructor(readonly publicationId: string) {
-    makeObservable<FileSystem, 'backEndFiles' | 'localFiles' | 'allLocalFiles'>(
-      this,
-      {
-        currentPath: observable,
-        files: computed,
-        backEndFiles: observable,
-        localFiles: observable,
-        allLocalFiles: observable,
-        isLoading: observable,
-        setCurrentPath: action
-      }
-    );
+    makeObservable<
+      ChonkyFileSystem,
+      'backEndFiles' | 'localFiles' | 'allLocalFiles'
+    >(this, {
+      currentPath: observable,
+      files: computed,
+      backEndFiles: observable,
+      localFiles: observable,
+      allLocalFiles: observable,
+      isLoading: observable,
+      initialized: observable,
+      setCurrentPath: action
+    });
 
     reaction(
       () => this.currentPath,
@@ -298,6 +300,7 @@ export class FileSystem {
       });
     } finally {
       this.isLoading = false;
+      this.initialized = true;
     }
   };
 }

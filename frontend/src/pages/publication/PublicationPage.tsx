@@ -30,7 +30,6 @@ import { PublicationEditorStore } from './PublicationEditorStore';
 import { observer } from 'mobx-react-lite';
 import {
   AuthorsEditor,
-  FilesEditor,
   GrantingOrganisationsEditor,
   MethodEditor,
   ObjectOfStudyEditor,
@@ -39,12 +38,15 @@ import {
   SoftwareEditor,
   TagsEditor
 } from './ContentEditor';
+import { ChonkyFileSystem } from '../../fire-browser/ChonkyFileSystem';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
 
+  const [fs] = useState(() => new ChonkyFileSystem(publicationId));
+
   const [editorStore] = useState(
-    () => new PublicationEditorStore(publicationId)
+    () => new PublicationEditorStore(publicationId, fs)
   );
 
   const { isLoading } = editorStore;
@@ -72,6 +74,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
               <PublicationBody
                 publicationId={publicationId}
                 editorStore={editorStore}
+                fs={fs}
               />
             )}
           </PublicationBodyWrap>
@@ -85,8 +88,9 @@ const PublicationBody = observer(
   (props: {
     publicationId: string;
     editorStore: PublicationEditorStore;
+    fs: ChonkyFileSystem;
   }): ReactElement => {
-    const { publicationId, editorStore } = props;
+    const { fs, editorStore } = props;
 
     const {
       predictedGoalsEnabled,
@@ -146,7 +150,7 @@ const PublicationBody = observer(
             }}
           />
         )}
-        {filesEnabled && <FilesEditor editorStore={editorStore} />}
+        {filesEnabled && <FileUploader fs={fs} />}
         {!authorsEnabled && (
           <AuthorsPlaceholder
             onClick={() => {
@@ -183,7 +187,6 @@ const PublicationBody = observer(
           />
         )}
         {tagsEnabled && <TagsEditor editorStore={editorStore} />}
-        <FileUploader publicationId={publicationId} />
       </>
     );
   }

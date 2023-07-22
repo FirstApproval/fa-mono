@@ -1,22 +1,22 @@
 import React, {
   type FunctionComponent,
   useEffect,
-  useMemo,
   useRef,
   useState
 } from 'react';
 import { getAllFileEntries } from 'src/util/fileUtil';
 import styled from '@emotion/styled';
 import { FileBrowser } from '../fire-browser/FileBrowser';
-import { FileSystem } from './../fire-browser/FileSystem';
+import { type ChonkyFileSystem } from './ChonkyFileSystem';
 import { observer } from 'mobx-react-lite';
 
 interface FileUploaderProps {
-  publicationId: string;
+  fs: ChonkyFileSystem;
 }
 
 export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
   (props: FileUploaderProps) => {
+    const { fs } = props;
     const [isDropZoneVisible, setIsDropZoneVisible] = useState(false);
     const isChonkyDragRef = useRef(false);
 
@@ -40,11 +40,6 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
       });
     }, []);
 
-    const fs = useMemo(
-      () => new FileSystem(props.publicationId),
-      [props.publicationId]
-    );
-
     const onDrop = async (e: {
       preventDefault: () => void;
       stopPropagation: () => void;
@@ -58,17 +53,19 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
     };
 
     return (
-      <>
-        <>
-          {isDropZoneVisible && (
-            <DropZone onDrop={onDrop}>Drag files here for upload</DropZone>
-          )}
-          <FileBrowser fs={fs} isChonkyDragRef={isChonkyDragRef} />
-        </>
-      </>
+      <Wrap>
+        {isDropZoneVisible && (
+          <DropZone onDrop={onDrop}>Drag files here for upload</DropZone>
+        )}
+        <FileBrowser fs={fs} isChonkyDragRef={isChonkyDragRef} />
+      </Wrap>
     );
   }
 );
+
+const Wrap = styled('div')`
+  margin-bottom: 40px;
+`;
 
 const DropZone = styled('div')`
   border-radius: 4px;

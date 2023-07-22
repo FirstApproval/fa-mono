@@ -1,10 +1,11 @@
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, reaction } from 'mobx';
 import { publicationService } from '../../core/service';
 import _ from 'lodash';
 import {
   type Paragraph,
   type PublicationEditRequest
 } from '../../apis/first-approval-api';
+import { type ChonkyFileSystem } from '../../fire-browser/ChonkyFileSystem';
 
 const EDIT_THROTTLE_MS = 5000;
 
@@ -30,9 +31,17 @@ export class PublicationEditorStore {
   relatedArticles = '';
   tags = '';
 
-  constructor(readonly publicationId: string) {
+  constructor(readonly publicationId: string, readonly fs: ChonkyFileSystem) {
     makeAutoObservable(this);
-    this.loadInitialState();
+    reaction(
+      () => this.fs.initialized,
+      (initialized) => {
+        if (initialized) {
+          this.loadInitialState();
+        }
+      },
+      { fireImmediately: true }
+    );
   }
 
   addPredictedGoalsParagraph(): void {
@@ -144,6 +153,9 @@ export class PublicationEditorStore {
         if (publication.grantOrganizations?.length) {
           this.grantingOrganizations = publication.grantOrganizations;
           this.grantingOrganizationsEnabled = true;
+        }
+        if (this.fs.files.length > 0) {
+          this.filesEnabled = true;
         }
       })
       .finally(() => {
