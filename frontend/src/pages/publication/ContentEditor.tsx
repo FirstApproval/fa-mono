@@ -1,7 +1,10 @@
 import styled from '@emotion/styled';
-import { type ReactElement } from 'react';
+import { type ReactElement, useState } from 'react';
 import { IconButton, TextField } from '@mui/material';
-import { type PublicationEditorStore } from './PublicationEditorStore';
+import {
+  type ParagraphWithId,
+  type PublicationEditorStore
+} from './PublicationEditorStore';
 import { observer } from 'mobx-react-lite';
 import { AddCircleOutlined } from '@mui/icons-material';
 
@@ -12,21 +15,21 @@ interface EditorProps {
 interface ContentEditorProps {
   text: string;
   placeholder: string;
-  value: string[];
+  value: ParagraphWithId[];
   onChange: (idx: number, value: string) => void;
-  onAddClick: () => void;
+  onAddClick: (idx: number) => void;
 }
 
 export const PredictedGoalsEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <ParagraphContentEditor
-        value={props.editorStore.predictedGoals.map((e) => e.text)}
+        value={props.editorStore.predictedGoals}
         onChange={(idx, value) => {
           props.editorStore.updatePredictedGoalsParagraph(idx, value);
         }}
-        onAddClick={() => {
-          props.editorStore.addPredictedGoalsParagraph();
+        onAddClick={(idx) => {
+          props.editorStore.addPredictedGoalsParagraph(idx);
         }}
         text={'Predicted goals'}
         placeholder={'Mention your expected outcomes or hypotheses...'}
@@ -38,12 +41,12 @@ export const PredictedGoalsEditor = observer(
 export const MethodEditor = observer((props: EditorProps): ReactElement => {
   return (
     <ParagraphContentEditor
-      value={props.editorStore.method.map((e) => e.text)}
+      value={props.editorStore.method}
       onChange={(idx, value) => {
         props.editorStore.updateMethodParagraph(idx, value);
       }}
-      onAddClick={() => {
-        props.editorStore.addMethodParagraph();
+      onAddClick={(idx) => {
+        props.editorStore.addMethodParagraph(idx);
       }}
       text={'Method'}
       placeholder={
@@ -57,12 +60,12 @@ export const ObjectOfStudyEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <ParagraphContentEditor
-        value={props.editorStore.predictedGoals.map((e) => e.text)}
+        value={props.editorStore.predictedGoals}
         onChange={(idx, value) => {
           props.editorStore.updatePredictedGoalsParagraph(idx, value);
         }}
-        onAddClick={() => {
-          props.editorStore.addPredictedGoalsParagraph();
+        onAddClick={(idx) => {
+          props.editorStore.addPredictedGoalsParagraph(idx);
         }}
         text={'Object of study'}
         placeholder={
@@ -76,12 +79,12 @@ export const ObjectOfStudyEditor = observer(
 export const SoftwareEditor = observer((props: EditorProps): ReactElement => {
   return (
     <ParagraphContentEditor
-      value={props.editorStore.software.map((e) => e.text)}
+      value={props.editorStore.software}
       onChange={(idx, value) => {
         props.editorStore.updateSoftwareParagraph(idx, value);
       }}
-      onAddClick={() => {
-        props.editorStore.addSoftwareParagraph();
+      onAddClick={(idx) => {
+        props.editorStore.addSoftwareParagraph(idx);
       }}
       text={'Software'}
       placeholder={
@@ -93,17 +96,9 @@ export const SoftwareEditor = observer((props: EditorProps): ReactElement => {
 
 export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
   return (
-    <ParagraphContentEditor
-      value={props.editorStore.predictedGoals.map((e) => e.text)}
-      onChange={(idx, value) => {
-        props.editorStore.updatePredictedGoalsParagraph(idx, value);
-      }}
-      onAddClick={() => {
-        props.editorStore.addPredictedGoalsParagraph();
-      }}
-      text={'Authors'}
-      placeholder={''}
-    />
+    <ContentEditorWrap>
+      <LabelWrap>Authors</LabelWrap>
+    </ContentEditorWrap>
   );
 });
 
@@ -111,12 +106,12 @@ export const GrantingOrganisationsEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <ParagraphContentEditor
-        value={props.editorStore.grantingOrganizations.map((e) => e.text)}
+        value={props.editorStore.grantingOrganizations}
         onChange={(idx, value) => {
           props.editorStore.updateGrantingOrganization(idx, value);
         }}
-        onAddClick={() => {
-          props.editorStore.addGrantingOrganization();
+        onAddClick={(idx) => {
+          props.editorStore.addGrantingOrganization(idx);
         }}
         text={'Granting organisations'}
         placeholder={
@@ -131,12 +126,12 @@ export const RelatedArticlesEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <ParagraphContentEditor
-        value={props.editorStore.predictedGoals.map((e) => e.text)}
+        value={props.editorStore.predictedGoals}
         onChange={(idx, value) => {
           props.editorStore.updatePredictedGoalsParagraph(idx, value);
         }}
-        onAddClick={() => {
-          props.editorStore.addPredictedGoalsParagraph();
+        onAddClick={(idx) => {
+          props.editorStore.addPredictedGoalsParagraph(idx);
         }}
         text={'Related articles'}
         placeholder={
@@ -149,47 +144,36 @@ export const RelatedArticlesEditor = observer(
 
 export const TagsEditor = observer((props: EditorProps): ReactElement => {
   return (
-    <ParagraphContentEditor
-      value={props.editorStore.predictedGoals.map((e) => e.text)}
-      onChange={(idx, value) => {
-        props.editorStore.updatePredictedGoalsParagraph(idx, value);
-      }}
-      onAddClick={() => {
-        props.editorStore.addPredictedGoalsParagraph();
-      }}
-      text={'Tags'}
-      placeholder={''}
-    />
+    <ContentEditorWrap>
+      <LabelWrap>Tags</LabelWrap>
+    </ContentEditorWrap>
   );
 });
 
 export const ParagraphContentEditor = (
   props: ContentEditorProps
 ): ReactElement => {
+  const [paragraphToFocus, setParagraphToFocus] = useState<number>(0);
+
   return (
     <ContentEditorWrap>
       <LabelWrap>{props.text}</LabelWrap>
-      {props.value.map((v, idx) => {
+      {props.value.map((p, idx) => {
         return (
           <Paragraph
-            key={`paragraph-${idx}`}
+            autoFocus={paragraphToFocus === idx}
+            key={p.id}
             idx={idx}
-            value={v}
-            onAddClick={props.onAddClick}
+            value={p.text}
+            onAddParagraph={(idx) => {
+              setParagraphToFocus(idx + 1);
+              props.onAddClick(idx);
+            }}
             onChange={props.onChange}
             placeholder={props.placeholder}
           />
         );
       })}
-      {props.value.length === 0 && (
-        <Paragraph
-          idx={0}
-          value={''}
-          onAddClick={props.onAddClick}
-          onChange={props.onChange}
-          placeholder={props.placeholder}
-        />
-      )}
     </ContentEditorWrap>
   );
 };
@@ -198,19 +182,32 @@ interface ParagraphProps {
   idx: number;
   value: string;
   onChange: (idx: number, value: string) => void;
-  onAddClick: () => void;
+  onAddParagraph: (idx: number) => void;
   placeholder: string;
+  autoFocus: boolean;
 }
 
 const Paragraph = (props: ParagraphProps): ReactElement => {
-  const { idx, value, onChange, onAddClick, placeholder } = props;
+  const { idx, value, onChange, onAddParagraph, placeholder, autoFocus } =
+    props;
 
   return (
     <ParagraphWrap>
-      <IconButtonWrap onClick={onAddClick}>
-        <AddCircleOutlined />
-      </IconButtonWrap>
+      {value.length === 0 && (
+        <IconButtonWrap>
+          <AddCircleOutlined />
+        </IconButtonWrap>
+      )}
+      {value.length !== 0 && <MarginAlign />}
       <TextFieldWrap
+        autoFocus={autoFocus}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.keyCode === 13) {
+            event.preventDefault();
+            event.stopPropagation();
+            onAddParagraph(idx);
+          }
+        }}
         value={value}
         onChange={(e) => {
           onChange(idx, e.currentTarget.value);
@@ -242,8 +239,12 @@ const ParagraphWrap = styled.div`
 `;
 
 const IconButtonWrap = styled(IconButton)`
-  margin-top: -6px;
+  margin-top: -4px;
   margin-right: 24px;
+`;
+
+const MarginAlign = styled.div`
+  width: 72px;
 `;
 
 const LabelWrap = styled.div`

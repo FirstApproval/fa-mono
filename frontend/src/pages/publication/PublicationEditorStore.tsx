@@ -6,8 +6,11 @@ import {
   type PublicationEditRequest
 } from '../../apis/first-approval-api';
 import { type ChonkyFileSystem } from '../../fire-browser/ChonkyFileSystem';
+import { v4 as uuidv4 } from 'uuid';
 
 const EDIT_THROTTLE_MS = 5000;
+
+export type ParagraphWithId = Paragraph & { id: string };
 
 export class PublicationEditorStore {
   isLoading = false;
@@ -22,12 +25,12 @@ export class PublicationEditorStore {
   relatedArticlesEnabled = false;
   tagsEnabled = false;
 
-  predictedGoals: Paragraph[] = [];
-  method: Paragraph[] = [];
+  predictedGoals: ParagraphWithId[] = [];
+  method: ParagraphWithId[] = [];
   objectOfStudy = '';
-  software: Paragraph[] = [];
+  software: ParagraphWithId[] = [];
   authors = '';
-  grantingOrganizations: Paragraph[] = [];
+  grantingOrganizations: ParagraphWithId[] = [];
   relatedArticles = '';
   tags = '';
 
@@ -44,39 +47,41 @@ export class PublicationEditorStore {
     );
   }
 
-  addPredictedGoalsParagraph(): void {
+  addPredictedGoalsParagraph(idx: number): void {
     const newValue = [...this.predictedGoals];
-    newValue.push({ text: '' });
+    newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
     this.predictedGoals = newValue;
   }
 
-  addMethodParagraph(): void {
+  addMethodParagraph(idx: number): void {
     const newValue = [...this.method];
-    newValue.push({ text: '' });
+    newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
     this.method = newValue;
   }
 
-  addSoftwareParagraph(): void {
+  addSoftwareParagraph(idx: number): void {
     const newValue = [...this.software];
-    newValue.push({ text: '' });
+    newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
     this.software = newValue;
   }
 
-  addGrantingOrganization(): void {
+  addGrantingOrganization(idx: number): void {
     const newValue = [...this.grantingOrganizations];
-    newValue.push({ text: '' });
+    newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
     this.grantingOrganizations = newValue;
   }
 
   updatePredictedGoalsParagraph(idx: number, value: string): void {
     const newValue = [...this.predictedGoals];
-    newValue[idx] = { text: value };
+    newValue[idx] = { text: value, id: newValue[idx].id };
     this.predictedGoals = newValue;
     void this.updatePredictedGoals();
   }
 
   updatePredictedGoals = _.throttle(async () => {
-    const predictedGoals: Paragraph[] = this.predictedGoals;
+    const predictedGoals: Paragraph[] = this.predictedGoals.filter(
+      (p) => p.text.length > 0
+    );
     const request = getRequestStub();
     return await publicationService.editPublication(this.publicationId, {
       ...request,
@@ -86,13 +91,13 @@ export class PublicationEditorStore {
 
   updateMethodParagraph(idx: number, value: string): void {
     const newValue = [...this.method];
-    newValue[idx] = { text: value };
+    newValue[idx] = { text: value, id: newValue[idx].id };
     this.method = newValue;
     void this.updateMethod();
   }
 
   updateMethod = _.throttle(async () => {
-    const method: Paragraph[] = this.method;
+    const method: Paragraph[] = this.method.filter((p) => p.text.length > 0);
     const request = getRequestStub();
     return await publicationService.editPublication(this.publicationId, {
       ...request,
@@ -102,13 +107,15 @@ export class PublicationEditorStore {
 
   updateSoftwareParagraph(idx: number, value: string): void {
     const newValue = [...this.software];
-    newValue[idx] = { text: value };
+    newValue[idx] = { text: value, id: newValue[idx].id };
     this.software = newValue;
     void this.updateSoftware();
   }
 
   updateSoftware = _.throttle(async () => {
-    const software: Paragraph[] = this.software;
+    const software: Paragraph[] = this.software.filter(
+      (p) => p.text.length > 0
+    );
     const request = getRequestStub();
     return await publicationService.editPublication(this.publicationId, {
       ...request,
@@ -118,13 +125,14 @@ export class PublicationEditorStore {
 
   updateGrantingOrganization(idx: number, value: string): void {
     const newValue = [...this.grantingOrganizations];
-    newValue[idx] = { text: value };
+    newValue[idx] = { text: value, id: newValue[idx].id };
     this.grantingOrganizations = newValue;
     void this.updateGrantingOrganizations();
   }
 
   updateGrantingOrganizations = _.throttle(async () => {
-    const grantingOrganizations: Paragraph[] = this.grantingOrganizations;
+    const grantingOrganizations: Paragraph[] =
+      this.grantingOrganizations.filter((p) => p.text.length > 0);
     const request = getRequestStub();
     return await publicationService.editPublication(this.publicationId, {
       ...request,
@@ -139,19 +147,33 @@ export class PublicationEditorStore {
       .then((response) => {
         const publication = response.data;
         if (publication.predictedGoals?.length) {
-          this.predictedGoals = publication.predictedGoals;
+          this.predictedGoals = publication.predictedGoals.map((p) => ({
+            text: p.text,
+            id: uuidv4()
+          }));
           this.predictedGoalsEnabled = true;
         }
         if (publication.methodDescription?.length) {
-          this.method = publication.methodDescription;
+          this.method = publication.methodDescription.map((p) => ({
+            text: p.text,
+            id: uuidv4()
+          }));
           this.methodEnabled = true;
         }
         if (publication.software?.length) {
-          this.software = publication.software;
+          this.software = publication.software.map((p) => ({
+            text: p.text,
+            id: uuidv4()
+          }));
           this.softwareEnabled = true;
         }
         if (publication.grantOrganizations?.length) {
-          this.grantingOrganizations = publication.grantOrganizations;
+          this.grantingOrganizations = publication.grantOrganizations.map(
+            (p) => ({
+              text: p.text,
+              id: uuidv4()
+            })
+          );
           this.grantingOrganizationsEnabled = true;
         }
         if (this.fs.files.length > 0) {

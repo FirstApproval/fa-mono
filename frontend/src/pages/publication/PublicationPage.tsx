@@ -111,6 +111,7 @@ const PublicationBody = observer(
           <PredictedGoalsPlaceholder
             onClick={() => {
               editorStore.predictedGoalsEnabled = true;
+              editorStore.addPredictedGoalsParagraph(0);
             }}
           />
         )}
@@ -121,6 +122,7 @@ const PublicationBody = observer(
           <MethodPlaceholder
             onClick={() => {
               editorStore.methodEnabled = true;
+              editorStore.addMethodParagraph(0);
             }}
           />
         )}
@@ -139,6 +141,7 @@ const PublicationBody = observer(
           <SoftwarePlaceholder
             onClick={() => {
               editorStore.softwareEnabled = true;
+              editorStore.addSoftwareParagraph(0);
             }}
           />
         )}
@@ -163,6 +166,7 @@ const PublicationBody = observer(
           <GrantingOrganisationsPlaceholder
             onClick={() => {
               editorStore.grantingOrganizationsEnabled = true;
+              editorStore.addGrantingOrganization(0);
             }}
           />
         )}
