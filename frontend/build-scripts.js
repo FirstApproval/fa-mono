@@ -1,57 +1,57 @@
 const execSync = require('child_process').execSync
 
 const command = process.argv[2]
-const apiFile = process.argv[3]
+const url = process.argv[3]
 const noDeps = process.argv[4] === 'no-deps'
 
 const commands = {
-  api: () => scripts.api(apiFile),
-  build: () => {
-    !noDeps && run('npm install')
-    scripts.api(apiFile)
-    scripts.build()
-  },
-  start: () => {
-    scripts.api(apiFile)
-    scripts.start()
-  }
+    api: () => scripts.api(url),
+    build: () => {
+        !noDeps && run('npm install')
+        scripts.api(url)
+        scripts.build()
+    },
+    start: () => {
+        scripts.api(url)
+        scripts.start()
+    }
 }
 
 const scripts = {
-  api: (apiFile) => generateApi(apiFile),
-  build: () => build(),
-  start: () => start('--host 0.0.0.0 --port=3000')
+    api: (url) => generateApi(url),
+    build: () => build(),
+    start: () => start()
 }
 
 commands[command]
-  ? commands[command]()
-  : error(`Command '${command}' not found, run 'npm run ${command}'`)
+    ? commands[command]()
+    : error(`Command '${command}' not found, run 'npm run ${command}'`)
 
-function run (command) {
-  execSync(command, { stdio: 'inherit' })
+function run(command) {
+    execSync(command, {stdio: 'inherit'})
 }
 
-function build (name = '', suffix = '') {
-  run(`react-scripts build ${suffix}`)
+function build(name = '', suffix = '') {
+    run(`react-scripts build ${suffix}`)
 }
 
-function start (suffix = '') {
-  run('react-scripts start')
+function start() {
+    run('react-scripts start')
 }
 
-function generateApi (specFile = 'core.openapi.yaml') {
-  execSync(
-    'openapi-generator-cli generate' +
-      ' -g typescript-axios ' +
-      ` -i ${specFile} ` +
-      ' -o src/apis/first-approval-api ' +
-      ' --server-variables=host=localhost:3000 ' +
-      ' --additional-properties=stringEnums=true,enumPropertyNaming=original,removeEnumValuePrefix=false,serviceSuffix=ApiService',
-    { stdio: 'inherit' }
-  )
+function generateApi(url) {
+    execSync(
+        'openapi-generator-cli generate' +
+        ' -g typescript-axios ' +
+        ` -i ../backend/core/api/src/core.openapi.yaml ` +
+        ' -o src/apis/first-approval-api ' +
+        ` --server-variables=URL=${url} ` +
+        ' --additional-properties=stringEnums=true,enumPropertyNaming=original,removeEnumValuePrefix=false,serviceSuffix=ApiService',
+        {stdio: 'inherit'}
+    )
 }
 
-function error (message) {
-  console.error(message)
-  process.exit(1)
+function error(message) {
+    console.error(message)
+    process.exit(1)
 }

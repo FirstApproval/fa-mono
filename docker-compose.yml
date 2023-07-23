@@ -1,26 +1,5 @@
 version: '3.9'
 services:
-#  frontend:
-#    image: "ghcr.io/firstapproval/fa-mono-frontend"
-#    ports:
-#      - 3000:80
-#
-#  backend:
-#    image: "ghcr.io/firstapproval/fa-mono-backend"
-#    ports:
-#      - 8080:8080
-#    environment:
-#      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgres?currentSchema=first_approval
-#      - SPRING_DATASOURCE_USERNAME=postgres
-#      - SPRING_DATASOURCE_PASSWORD=postgres
-#      - S3_URL=http://minio:9000/
-#      - S3_ACCESS-KEY=minioadmin
-#      - S3_SECRET-KEY=minioadmin
-#      - SPRING_FLYWAY_CLEAN_ON_VALIDATION_ERROR=false
-#      - FRONTEND_URL=http://frontend:3000
-#      - FRONTEND_REGISTRATION_CONFIRMATION_URL=http://frontend:3000/registration-confirmation
-#      - FRONTEND_EMAIL_CHANGE_CONFIRMATION_URL=http://frontend:3000/email-change-confirmation
-#      - FRONTEND_PASSWORD_CHANGE_CONFIRMATION_URL=http://frontend:3000/password-change-confirmation
 
   postgres:
     image: "postgres:15.3"
