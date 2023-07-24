@@ -16,7 +16,7 @@ import React, {
   useState
 } from 'react';
 import { ChonkyIconFA } from '@first-approval/chonky-icon-fontawesome';
-import { type FileSystem } from './FileSystem';
+import { type ChonkyFileSystem } from './ChonkyFileSystem';
 import { observer } from 'mobx-react-lite';
 import { FileToolbar } from './FileToolbar';
 import styled from '@emotion/styled';
@@ -38,7 +38,7 @@ interface FilePayload {
 }
 
 interface FileBrowserProps {
-  fs: FileSystem;
+  fs: ChonkyFileSystem;
   isChonkyDragRef: MutableRefObject<boolean>;
 }
 

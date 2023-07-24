@@ -8,7 +8,7 @@ import { SignUpPage } from './pages/signup/SignUpPage';
 import { EnterNamePage } from './pages/signup/EnterNamePage';
 import { SetPasswordPage } from './pages/signup/SetPasswordPage';
 import { LoadingPage } from './pages/LoadingPage';
-import { HomePage } from './pages/HomePage';
+import { HomePage } from './pages/home/HomePage';
 import { observer } from 'mobx-react-lite';
 import { SignUpStore } from './pages/signup/SignUpStore';
 import { Page } from './core/RouterStore';

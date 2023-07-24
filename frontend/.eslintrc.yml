@@ -21,5 +21,6 @@ rules: {
   "@typescript-eslint/space-before-function-paren": "off",
   "@typescript-eslint/no-misused-promises": "off",
   "@typescript-eslint/strict-boolean-expressions": "off",
-  "n/no-callback-literal": "off"
+  "n/no-callback-literal": "off",
+  "@typescript-eslint/indent": "off"
 }
