@@ -182,23 +182,23 @@ fun Publication.toApiObject() = PublicationApiObject().also {
     it.creationTime = creationTime.toOffsetDateTime()
 }
 
-fun PublicationElastic.toApiObject() = org.firstapproval.api.server.model.Publication().also {
-    it.id = id
-    it.title = title
-    it.description = description
-    it.grantOrganizations = grantOrganizations
-    it.relatedArticles = relatedArticles
-    it.tags = tags
-    it.objectOfStudyTitle = objectOfStudyTitle
-    it.objectOfStudyDescription = objectOfStudyDescription
-    it.software = software
-    it.methodTitle = methodTitle
-    it.publicationTime = publicationTime?.toOffsetDateTime()
-    it.methodDescription = methodDescription
-    it.predictedGoals = predictedGoals
-    it.status = org.firstapproval.api.server.model.PublicationStatus.valueOf(status.name)
-    it.accessType = org.firstapproval.api.server.model.AccessType.valueOf(accessType!!.name)
-    it.creationTime = creationTime.toOffsetDateTime()
+fun PublicationElastic.toApiObject() = org.firstapproval.api.server.model.Publication().also { publicationApiModel ->
+    publicationApiModel.id = id
+    publicationApiModel.title = title
+    publicationApiModel.description = description
+    publicationApiModel.grantOrganizations = grantOrganizations?.map { Paragraph(it) }
+    publicationApiModel.relatedArticles = relatedArticles?.map { Paragraph(it) }
+    publicationApiModel.tags = tags?.map { Paragraph(it) }
+    publicationApiModel.objectOfStudyTitle = objectOfStudyTitle
+    publicationApiModel.objectOfStudyDescription = objectOfStudyDescription?.map { Paragraph(it) }
+    publicationApiModel.software = software?.map { Paragraph(it) }
+    publicationApiModel.methodTitle = methodTitle
+    publicationApiModel.publicationTime = publicationTime?.toOffsetDateTime()
+    publicationApiModel.methodDescription = methodDescription?.map { Paragraph(it) }
+    publicationApiModel.predictedGoals = predictedGoals?.map { Paragraph(it) }
+    publicationApiModel.status = org.firstapproval.api.server.model.PublicationStatus.valueOf(status.name)
+    publicationApiModel.accessType = org.firstapproval.api.server.model.AccessType.valueOf(accessType!!.name)
+    publicationApiModel.creationTime = creationTime.toOffsetDateTime()
 }
 
 fun Publication.toPublicationElastic() =
