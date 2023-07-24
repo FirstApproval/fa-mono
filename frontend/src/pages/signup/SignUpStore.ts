@@ -1,8 +1,8 @@
 import {makeObservable, observable} from 'mobx';
 import {
-    type RegistrationRequest,
-    type RegistrationResponse,
-    type SubmitRegistrationRequest
+  type RegistrationRequest,
+  type RegistrationResponse,
+  type SubmitRegistrationRequest
 } from '../../apis/first-approval-api';
 import {registrationService, userService} from '../../core/service';
 import {authStore} from '../../core/auth';
