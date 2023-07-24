@@ -95,8 +95,8 @@ class PublicationService(
     }
 
     fun search(text: String, limit: Int, pageNum: Int): Page<PublicationElastic> {
-        val sort = Sort.by("_score").descending()
-            .and(Sort.by("publicationTime").descending())
+        val sort = Sort.by("publicationTime").descending()
+            .and(Sort.by("_score").descending())
         return elasticRepository.searchByFields(text, PageRequest.of(pageNum, limit, sort))
     }
 
