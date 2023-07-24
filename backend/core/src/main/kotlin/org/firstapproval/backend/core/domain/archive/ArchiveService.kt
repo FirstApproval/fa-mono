@@ -118,8 +118,8 @@ class ArchiveService(
     }
 
     private fun uploadToIpfs(publication: Publication, tempArchive: File) {
-//        val ipfsFileInfo = ipfsClient.upload(tempArchive)
-//        publication.contentId = ipfsFileInfo.id
+        val ipfsFileInfo = ipfsClient.upload(tempArchive)
+        publication.contentId = ipfsFileInfo.id
     }
 
     private fun getOrCreateTmpFolder(): File {
