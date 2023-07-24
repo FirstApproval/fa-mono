@@ -60,12 +60,12 @@ export const ObjectOfStudyEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <ParagraphContentEditor
-        value={props.editorStore.predictedGoals}
+        value={props.editorStore.objectOfStudy}
         onChange={(idx, value) => {
-          props.editorStore.updatePredictedGoalsParagraph(idx, value);
+          props.editorStore.updateObjectOfStudyParagraph(idx, value);
         }}
         onAddClick={(idx) => {
-          props.editorStore.addPredictedGoalsParagraph(idx);
+          props.editorStore.addObjectOfStudyParagraph(idx);
         }}
         text={'Object of study'}
         placeholder={
@@ -126,12 +126,12 @@ export const RelatedArticlesEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <ParagraphContentEditor
-        value={props.editorStore.predictedGoals}
+        value={props.editorStore.relatedArticles}
         onChange={(idx, value) => {
-          props.editorStore.updatePredictedGoalsParagraph(idx, value);
+          props.editorStore.updateRelatedArticle(idx, value);
         }}
         onAddClick={(idx) => {
-          props.editorStore.addPredictedGoalsParagraph(idx);
+          props.editorStore.addRelatedArticle(idx);
         }}
         text={'Related articles'}
         placeholder={
@@ -227,7 +227,6 @@ const Paragraph = (props: ParagraphProps): ReactElement => {
 
 const ContentEditorWrap = styled.div`
   margin-top: 40px;
-  padding-left: 16px;
   margin-bottom: 40px;
 `;
 

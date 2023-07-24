@@ -137,6 +137,7 @@ const ContentPlaceholderWrap = styled.div`
   &:hover {
     border-radius: 4px;
     background: var(--action-hover, rgba(4, 0, 54, 0.05));
+    cursor: pointer;
   }
   &:focus {
     border-radius: 4px;

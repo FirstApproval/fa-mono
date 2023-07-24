@@ -106,7 +106,6 @@ const PublicationBody = observer(
 
     return (
       <>
-        {' '}
         {!predictedGoalsEnabled && (
           <PredictedGoalsPlaceholder
             onClick={() => {
@@ -131,6 +130,7 @@ const PublicationBody = observer(
           <ObjectOfStudyPlaceholder
             onClick={() => {
               editorStore.objectOfStudyEnabled = true;
+              editorStore.addObjectOfStudyParagraph(0);
             }}
           />
         )}
@@ -177,6 +177,7 @@ const PublicationBody = observer(
           <RelatedArticlesPlaceholder
             onClick={() => {
               editorStore.relatedArticlesEnabled = true;
+              editorStore.addRelatedArticle(0);
             }}
           />
         )}

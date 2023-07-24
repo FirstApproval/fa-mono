@@ -27,11 +27,11 @@ export class PublicationEditorStore {
 
   predictedGoals: ParagraphWithId[] = [];
   method: ParagraphWithId[] = [];
-  objectOfStudy = '';
+  objectOfStudy: ParagraphWithId[] = [];
   software: ParagraphWithId[] = [];
   authors = '';
   grantingOrganizations: ParagraphWithId[] = [];
-  relatedArticles = '';
+  relatedArticles: ParagraphWithId[] = [];
   tags = '';
 
   constructor(readonly publicationId: string, readonly fs: ChonkyFileSystem) {
@@ -59,6 +59,12 @@ export class PublicationEditorStore {
     this.method = newValue;
   }
 
+  addObjectOfStudyParagraph(idx: number): void {
+    const newValue = [...this.objectOfStudy];
+    newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
+    this.objectOfStudy = newValue;
+  }
+
   addSoftwareParagraph(idx: number): void {
     const newValue = [...this.software];
     newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
@@ -69,6 +75,12 @@ export class PublicationEditorStore {
     const newValue = [...this.grantingOrganizations];
     newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
     this.grantingOrganizations = newValue;
+  }
+
+  addRelatedArticle(idx: number): void {
+    const newValue = [...this.relatedArticles];
+    newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
+    this.relatedArticles = newValue;
   }
 
   updatePredictedGoalsParagraph(idx: number, value: string): void {
@@ -102,6 +114,24 @@ export class PublicationEditorStore {
     return await publicationService.editPublication(this.publicationId, {
       ...request,
       methodDescription: { values: method, edited: true }
+    });
+  }, EDIT_THROTTLE_MS);
+
+  updateObjectOfStudyParagraph(idx: number, value: string): void {
+    const newValue = [...this.objectOfStudy];
+    newValue[idx] = { text: value, id: newValue[idx].id };
+    this.objectOfStudy = newValue;
+    void this.updateObjectOfStudy();
+  }
+
+  updateObjectOfStudy = _.throttle(async () => {
+    const objectOfStudy: Paragraph[] = this.objectOfStudy.filter(
+      (p) => p.text.length > 0
+    );
+    const request = getRequestStub();
+    return await publicationService.editPublication(this.publicationId, {
+      ...request,
+      objectOfStudyDescription: { values: objectOfStudy, edited: true }
     });
   }, EDIT_THROTTLE_MS);
 
@@ -140,41 +170,59 @@ export class PublicationEditorStore {
     });
   }, EDIT_THROTTLE_MS);
 
+  updateRelatedArticle(idx: number, value: string): void {
+    const newValue = [...this.relatedArticles];
+    newValue[idx] = { text: value, id: newValue[idx].id };
+    this.relatedArticles = newValue;
+    void this.updateRelatedArticles();
+  }
+
+  updateRelatedArticles = _.throttle(async () => {
+    const relatedArticles: Paragraph[] = this.relatedArticles.filter(
+      (p) => p.text.length > 0
+    );
+    const request = getRequestStub();
+    return await publicationService.editPublication(this.publicationId, {
+      ...request,
+      relatedArticles: { values: relatedArticles, edited: true }
+    });
+  }, EDIT_THROTTLE_MS);
+
   private loadInitialState(): void {
     this.isLoading = true;
     void publicationService
       .getPublication(this.publicationId)
       .then((response) => {
         const publication = response.data;
+        const mapParagraph = (p: Paragraph): ParagraphWithId => ({
+          text: p.text,
+          id: uuidv4()
+        });
         if (publication.predictedGoals?.length) {
-          this.predictedGoals = publication.predictedGoals.map((p) => ({
-            text: p.text,
-            id: uuidv4()
-          }));
+          this.predictedGoals = publication.predictedGoals.map(mapParagraph);
           this.predictedGoalsEnabled = true;
         }
         if (publication.methodDescription?.length) {
-          this.method = publication.methodDescription.map((p) => ({
-            text: p.text,
-            id: uuidv4()
-          }));
+          this.method = publication.methodDescription.map(mapParagraph);
           this.methodEnabled = true;
         }
         if (publication.software?.length) {
-          this.software = publication.software.map((p) => ({
-            text: p.text,
-            id: uuidv4()
-          }));
+          this.software = publication.software.map(mapParagraph);
           this.softwareEnabled = true;
         }
         if (publication.grantOrganizations?.length) {
-          this.grantingOrganizations = publication.grantOrganizations.map(
-            (p) => ({
-              text: p.text,
-              id: uuidv4()
-            })
-          );
+          this.grantingOrganizations =
+            publication.grantOrganizations.map(mapParagraph);
           this.grantingOrganizationsEnabled = true;
+        }
+        if (publication.objectOfStudyDescription?.length) {
+          this.objectOfStudy =
+            publication.objectOfStudyDescription.map(mapParagraph);
+          this.objectOfStudyEnabled = true;
+        }
+        if (publication.relatedArticles?.length) {
+          this.relatedArticles = publication.relatedArticles.map(mapParagraph);
+          this.relatedArticlesEnabled = true;
         }
         if (this.fs.files.length > 0) {
           this.filesEnabled = true;
