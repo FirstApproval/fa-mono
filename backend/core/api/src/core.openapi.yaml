@@ -381,7 +381,7 @@ paths:
       summary: Search publications
       parameters:
         - in: query
-          name: textEntry
+          name: text
           schema:
             type: string
           required: true

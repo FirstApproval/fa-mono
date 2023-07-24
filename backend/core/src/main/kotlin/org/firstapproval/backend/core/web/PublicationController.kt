@@ -44,8 +44,8 @@ class PublicationController(
         return ok().build()
     }
 
-    override fun searchPublications(textEntry: String, limit: Int, page: Int): ResponseEntity<SearchPublicationsResponse> {
-        val pageResult = publicationService.search(textEntry, limit, page)
+    override fun searchPublications(text: String, limit: Int, page: Int): ResponseEntity<SearchPublicationsResponse> {
+        val pageResult = publicationService.search(text, limit, page)
         return ok().body(
             SearchPublicationsResponse()
                 .pageNum(pageResult.number)
