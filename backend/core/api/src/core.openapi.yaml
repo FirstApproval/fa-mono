@@ -1019,7 +1019,7 @@ components:
         title:
           $ref: '#/components/schemas/PublicationStringValue'
         description:
-          $ref: '#/components/schemas/PublicationLongStringValue'
+          $ref: '#/components/schemas/PublicationStringValue'
         grantOrganizations:
           $ref: '#/components/schemas/PublicationStringArrayValue'
         relatedArticles:
@@ -1047,15 +1047,6 @@ components:
         value:
           type: string
           maxLength: 32768
-
-    PublicationLongStringValue:
-      type: object
-      properties:
-        edited:
-          type: boolean
-        value:
-          type: string
-          maxLength: 6000
 
     PublicationStringArrayValue:
       type: object
