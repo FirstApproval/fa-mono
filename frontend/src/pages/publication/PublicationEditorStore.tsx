@@ -32,7 +32,7 @@ export class PublicationEditorStore {
   authors = '';
   grantingOrganizations: ParagraphWithId[] = [];
   relatedArticles: ParagraphWithId[] = [];
-  tags = '';
+  tags = new Set<string>();
 
   constructor(readonly publicationId: string, readonly fs: ChonkyFileSystem) {
     makeAutoObservable(this);
@@ -75,6 +75,14 @@ export class PublicationEditorStore {
     const newValue = [...this.grantingOrganizations];
     newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
     this.grantingOrganizations = newValue;
+  }
+
+  addTag(tag: string): void {
+    this.tags.add(tag);
+  }
+
+  deleteTag(tag: string): void {
+    this.tags.delete(tag);
   }
 
   addRelatedArticle(idx: number): void {
