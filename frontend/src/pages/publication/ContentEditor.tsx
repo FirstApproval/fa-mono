@@ -146,7 +146,9 @@ export const RelatedArticlesEditor = observer(
 
 export const TagsEditor = observer((props: EditorProps): ReactElement => {
   const [newTag, setNewTag] = useState('');
-  const [editable, setEditable] = useState(props.editorStore.tags.size === 0);
+  const [enableAddingNewTag, setEnableAddingNewTag] = useState(
+    props.editorStore.tags.size === 0
+  );
 
   return (
     <ContentEditorWrap>
@@ -160,11 +162,11 @@ export const TagsEditor = observer((props: EditorProps): ReactElement => {
               props.editorStore.deleteTag(tag);
             }}></ChipWrap>
         ))}
-        {!editable && (
+        {!enableAddingNewTag && (
           <a>
             <AddNewTagIconButtonWrap
               onClick={() => {
-                setEditable(true);
+                setEnableAddingNewTag(true);
               }}>
               <img src={add}></img>
               Add tag
@@ -172,7 +174,7 @@ export const TagsEditor = observer((props: EditorProps): ReactElement => {
           </a>
         )}
       </div>
-      {editable && (
+      {enableAddingNewTag && (
         <TagTextInputWrap>
           <FullWidthTextField
             size={'medium'}
@@ -185,7 +187,7 @@ export const TagsEditor = observer((props: EditorProps): ReactElement => {
                 event.stopPropagation();
                 props.editorStore.addTag(newTag);
                 setNewTag('');
-                setEditable(false);
+                setEnableAddingNewTag(false);
               }
             }}
             onChange={(e) => {
@@ -198,7 +200,7 @@ export const TagsEditor = observer((props: EditorProps): ReactElement => {
               if (newTag) {
                 props.editorStore.addTag(newTag);
                 setNewTag('');
-                setEditable(false);
+                setEnableAddingNewTag(false);
               }
             }}>
             <img src={keyboardEnter}></img>
