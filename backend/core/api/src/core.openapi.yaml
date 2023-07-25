@@ -329,6 +329,56 @@ paths:
       operationId: getPublications
       tags: [ publication ]
 
+  /api/dictionary/methods:
+    get:
+      summary: Get methods
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IdAndNameHolder'
+      security:
+        - PublicAuth: [ ]
+      operationId: getMethods
+      tags: [ dictionary ]
+
+  /api/dictionary/objects-of-study:
+    get:
+      summary: Get methods
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IdAndNameHolder'
+      security:
+        - TokenAuth: [ ]
+      operationId: getObjectsOfStudy
+      tags: [ dictionary ]
+
+  /api/dictionary/research-areas:
+    get:
+      summary: Get methods
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IdAndNameHolder'
+      security:
+        - TokenAuth: [ ]
+      operationId: getResearchAreas
+      tags: [ dictionary ]
 
   /api/publication/{id}:
     get:
@@ -1159,6 +1209,18 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/Paragraph'
+
+    IdAndNameHolder:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+      required:
+        - id
+        - name
 
   securitySchemes:
     PublicAuth:
