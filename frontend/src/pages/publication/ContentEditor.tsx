@@ -6,9 +6,8 @@ import {
   type PublicationEditorStore
 } from './PublicationEditorStore';
 import { observer } from 'mobx-react-lite';
-import { AddCircleOutlined } from '@mui/icons-material';
+import { Add, AddCircleOutlined } from '@mui/icons-material';
 import keyboardEnter from './asset/keyboard_enter.svg';
-import add from './asset/add_filled.svg';
 
 interface EditorProps {
   editorStore: PublicationEditorStore;
@@ -168,7 +167,7 @@ export const TagsEditor = observer((props: EditorProps): ReactElement => {
               onClick={() => {
                 setEnableAddingNewTag(true);
               }}>
-              <img src={add}></img>
+              <AddIconWrap></AddIconWrap>
               Add tag
             </AddNewTagIconButtonWrap>
           </a>
@@ -342,4 +341,9 @@ const AddNewTagIconButtonWrap = styled(IconButton)`
   font-weight: 500;
   line-height: 22px;
   margin-bottom: 12px;
+`;
+
+const AddIconWrap = styled(Add)`
+  height: 18px;
+  width: 18px;
 `;
