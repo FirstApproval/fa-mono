@@ -7,6 +7,7 @@ import org.firstapproval.api.server.model.Publication
 import org.firstapproval.api.server.model.PublicationContentStatus
 import org.firstapproval.api.server.model.PublicationEditRequest
 import org.firstapproval.api.server.model.PublicationStatus
+import org.firstapproval.api.server.model.PublicationsResponse
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.ipfs.IpfsClient
@@ -24,6 +25,14 @@ class PublicationController(
     private val ipfsClient: IpfsClient,
     private val authHolderService: AuthHolderService
 ) : PublicationApi {
+
+    override fun getPublications(
+        status: PublicationStatus, page: Int, pageSize: Int
+    ): ResponseEntity<PublicationsResponse> {
+        val publications = publicationService.getPublications(authHolderService.user, status, page, pageSize)
+        return ok().body(publications)
+    }
+
     override fun createPublication(): ResponseEntity<CreatePublicationResponse> {
         val pub = publicationService.create(authHolderService.user)
         return ok().body(CreatePublicationResponse(pub.id, PublicationStatus.valueOf(pub.status.name), pub.creationTime.toOffsetDateTime()))

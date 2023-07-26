@@ -13,7 +13,8 @@
     "@mui/material": "5.13.5",
     "axios": "1.4.0",
     "history": "5.3.0",
-    "http-proxy-middleware": "^2.0.6",
+    "http-proxy-middleware": "2.0.6",
+    "lodash": "4.17.21",
     "mobx": "6.9.0",
     "mobx-react-lite": "3.4.3",
     "react": "18.2.0",
@@ -21,18 +22,18 @@
     "react-dnd-html5-backend": "11",
     "react-dom": "18.2.0",
     "react-redux": "7.2.9",
+    "uuid": "9.0.0",
     "web-vitals": "2.1.4"
   },
   "scripts": {
-    "start": "node build-scripts.js start",
-    "build": "node build-scripts.js build",
     "test": "jest",
     "api": "node build-scripts.js api",
     "lint-fix": "eslint src/**/*.{ts,tsx} --quiet --fix",
-    "start-local": "DANGEROUSLY_DISABLE_HOST_CHECK=true node build-scripts.js start ../backend/core/api/src/core.openapi.yaml",
-    "build-local": "node build-scripts.js build ../backend/core/api/src/core.openapi.yaml",
-    "build-sh": "node build-scripts.js build core.openapi.yaml",
-    "api-local": "node build-scripts.js api ../backend/core/api/src/core.openapi.yaml"
+    "start-local": "DANGEROUSLY_DISABLE_HOST_CHECK=true node build-scripts.js start http://localhost:3000",
+    "api-local": "node build-scripts.js api http://localhost:3000",
+    "build-local": "node build-scripts.js build http://localhost:3000",
+    "api-dev": "node build-scripts.js api https://app.dev.firstapproval.io",
+    "build-dev": "node build-scripts.js build https://app.dev.firstapproval.io"
   },
   "eslintConfig": {
     "extends": [
@@ -57,8 +58,10 @@
     "@testing-library/jest-dom": "5.16.5",
     "@testing-library/react": "14.0.0",
     "@types/history": "5.0.0",
+    "@types/lodash": "4.14.195",
     "@types/react": "18.2.8",
     "@types/react-dom": "18.2.4",
+    "@types/uuid": "9.0.2",
     "@typescript-eslint/eslint-plugin": "5.59.8",
     "eslint": "8.41.0",
     "eslint-config-prettier": "8.8.0",

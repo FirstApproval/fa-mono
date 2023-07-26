@@ -2,6 +2,7 @@ package org.firstapproval.backend.core.domain.publication
 
 import jakarta.persistence.*
 import jakarta.persistence.EnumType.STRING
+import org.firstapproval.backend.core.domain.publication.AccessType.CLOSED
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
 import org.firstapproval.backend.core.domain.user.UnconfirmedUser
 import org.firstapproval.backend.core.domain.user.User
@@ -19,7 +20,7 @@ class Publication(
     @Enumerated(STRING)
     var status: PublicationStatus = PENDING,
     @Enumerated(STRING)
-    var accessType: AccessType? = null,
+    var accessType: AccessType = CLOSED,
     var title: String? = null,
     var description: String? = null,
     @Column(columnDefinition = "text")
@@ -29,11 +30,15 @@ class Publication(
     @Column(columnDefinition = "text")
     var tags: List<String>? = null,
     var objectOfStudyTitle: String? = null,
-    var objectOfStudyDescription: String? = null,
-    var software: String? = null,
+    @Column(columnDefinition = "text")
+    var objectOfStudyDescription: List<String>? = null,
+    @Column(columnDefinition = "text")
+    var software: List<String>? = null,
     var methodTitle: String? = null,
-    var methodDescription: String? = null,
-    var predictedGoals: String? = null,
+    @Column(columnDefinition = "text")
+    var methodDescription: List<String>? = null,
+    @Column(columnDefinition = "text")
+    var predictedGoals: List<String>? = null,
     @ManyToMany
     @JoinTable(
         name = "publication_confirmed_authors",
@@ -60,6 +65,7 @@ enum class PublicationStatus {
 }
 
 enum class AccessType {
+    CLOSED,
     OPEN,
     ON_REQUEST,
     MONETIZE_OR_CO_AUTHORSHIP
