@@ -8,10 +8,14 @@ import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class AuthorController(private val userRepository: UserRepository): AuthorApi {
+class AuthorController(private val userRepository: UserRepository) : AuthorApi {
     override fun getAuthors(searchText: String): ResponseEntity<List<Author>> {
-        val preparedText = searchText.trim().split("\\s+".toRegex()).joinToString(" & ")
-        val authors = userRepository.findByText("$preparedText:*").map {
+        val textArray = searchText.trim().split("\\s+".toRegex())
+        val email = textArray.find { it.contains("@") }?.let { "%$it%" }
+        val preparedText = textArray.filter { it.contains("@").not() }
+            .joinToString(" & ") { "$it:*" }
+            .let { it.ifEmpty { null } }
+        val authors = userRepository.findByTextAndEmail(preparedText, email).map {
             Author(it.firstName, it.middleName, it.lastName, it.email, it.selfInfo)
         }
         return ok().body(authors)

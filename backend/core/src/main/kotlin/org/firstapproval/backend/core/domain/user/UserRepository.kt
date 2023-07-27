@@ -17,6 +17,11 @@ interface UserRepository : JpaRepository<User, UUID> {
     fun existsByEmail(email: String): Boolean
     fun findByEmailAndPasswordIsNull(email: String): User?
 
-    @Query(value = "select * from users where tsv @@ to_tsquery('simple', :text)", nativeQuery = true)
-    fun findByText(text: String): List<User>
+    @Query(
+        value = "select * from users where " +
+            "(:text is null or tsv @@ to_tsquery('simple', :text)) and " +
+            "(:email is null or email like :email)",
+        nativeQuery = true
+    )
+    fun findByTextAndEmail(text: String?, email: String?): List<User>
 }
