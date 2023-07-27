@@ -685,6 +685,193 @@ paths:
       operationId: moveFile
       tags: [ file ]
 
+  /api/sample-files:
+    parameters:
+      - in: query
+        name: publicationId
+        schema:
+          type: string
+          format: uuid
+        required: true
+        description: Publication id
+    get:
+      summary: Get sample files by publication id
+      parameters:
+        - in: query
+          name: dirPath
+          schema:
+            type: string
+          required: true
+          description: Directory path
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PublicationFile'
+      security:
+        - TokenAuth: [ ]
+      operationId: getPublicationSampleFiles
+      tags: [ sampleFile ]
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFolderRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicationFile'
+      security:
+        - TokenAuth: [ ]
+      operationId: createFolderForSampleFile
+      tags: [ sampleFile ]
+
+  /api/sample-files/upload:
+    post:
+      summary: Upload sample file
+      parameters:
+        - in: query
+          name: publicationId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
+        - in: query
+          name: fullPath
+          schema:
+            type: string
+          required: true
+          description: Full file path
+        - in: query
+          name: isDir
+          schema:
+            type: boolean
+          required: true
+          description: Is this file or directory
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+        required: false
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicationFile'
+      security:
+        - TokenAuth: [ ]
+      operationId: uploadSampleFile
+      tags: [ sampleFile ]
+
+  /api/sample-files/download/{file_id}:
+    get:
+      summary: Download a sample file
+      description: Retrieves a sample file for download based on the provided file ID.
+      parameters:
+        - name: file_id
+          in: path
+          description: ID of the sample file to download
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: File not found
+        '500':
+          description: Server error
+      security:
+        - PublicAuth: [ ]
+      operationId: downloadPublicationSampleFile
+      tags: [ sampleFile ]
+
+  /api/sample-files/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+        description: Id of sample file or directory
+    put:
+      summary: Patch file
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditFileRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: editSampleFile
+      tags: [ sampleFile ]
+
+  /api/sample-files/deleteByIds:
+    delete:
+      summary: Delete sample file by id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteByIdsRequest'
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: deleteSampleFiles
+      tags: [ sampleFile ]
+
+  /api/sample-files/move/{id}:
+    post:
+      summary: Move sample file by id
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Id of sample file or directory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MoveFileRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: moveSampleFile
+      tags: [ sampleFile ]
+
 components:
   schemas:
     PublicationFile:
