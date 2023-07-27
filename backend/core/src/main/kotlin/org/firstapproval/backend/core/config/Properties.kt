@@ -75,4 +75,10 @@ class Properties {
         var smtpSslEnable by notNull<Boolean>()
         var noopMode by notNull<Boolean>()
     }
+
+    @Component
+    @ConfigurationProperties("elastic")
+    class ElasticProperties {
+        lateinit var url: URL
+    }
 }

@@ -17,7 +17,10 @@ import org.firstapproval.backend.core.domain.user.UnconfirmedUser
 import org.firstapproval.backend.core.domain.user.UnconfirmedUserRepository
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
+import org.firstapproval.backend.core.elastic.PublicationElastic
+import org.firstapproval.backend.core.elastic.PublicationElasticRepository
 import org.firstapproval.backend.core.exception.RecordConflictException
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.DESC
@@ -35,7 +38,8 @@ class PublicationService(
     private val userRepository: UserRepository,
     private val downloadLinkRepository: DownloadLinkRepository,
     private val jobRepository: JobRepository,
-    private val ipfsClient: IpfsClient
+    private val ipfsClient: IpfsClient,
+    private val elasticRepository: PublicationElasticRepository
 ) {
     @Transactional
     fun create(user: User): Publication {
@@ -88,6 +92,12 @@ class PublicationService(
         checkAccessToPublication(user, publication)
         publication.status = READY_FOR_PUBLICATION
         publication.accessType = accessType
+    }
+
+    fun search(text: String, limit: Int, pageNum: Int): Page<PublicationElastic> {
+        val sort = Sort.by("_score").descending()
+            .and(Sort.by("publicationTime").descending())
+        return elasticRepository.searchByFields(text, PageRequest.of(pageNum, limit, sort))
     }
 
     @Transactional
@@ -162,6 +172,7 @@ fun Publication.toApiObject() = PublicationApiObject().also {
     it.objectOfStudyDescription = objectOfStudyDescription?.map { Paragraph(it) }
     it.software = software?.map { Paragraph(it) }
     it.methodTitle = methodTitle
+    it.publicationTime = publicationTime?.toOffsetDateTime()
     it.methodDescription = methodDescription?.map { Paragraph(it) }
     it.predictedGoals = predictedGoals?.map { Paragraph(it) }
     it.authors = confirmedAuthors.map { user -> Author(user.firstName, user.middleName, user.lastName, user.email, user.selfInfo) } +
@@ -170,3 +181,43 @@ fun Publication.toApiObject() = PublicationApiObject().also {
     it.accessType = org.firstapproval.api.server.model.AccessType.valueOf(accessType.name)
     it.creationTime = creationTime.toOffsetDateTime()
 }
+
+fun PublicationElastic.toApiObject() = org.firstapproval.api.server.model.Publication().also { publicationApiModel ->
+    publicationApiModel.id = id
+    publicationApiModel.title = title
+    publicationApiModel.description = description
+    publicationApiModel.grantOrganizations = grantOrganizations?.map { Paragraph(it) }
+    publicationApiModel.relatedArticles = relatedArticles?.map { Paragraph(it) }
+    publicationApiModel.tags = tags?.map { Paragraph(it) }
+    publicationApiModel.objectOfStudyTitle = objectOfStudyTitle
+    publicationApiModel.objectOfStudyDescription = objectOfStudyDescription?.map { Paragraph(it) }
+    publicationApiModel.software = software?.map { Paragraph(it) }
+    publicationApiModel.methodTitle = methodTitle
+    publicationApiModel.publicationTime = publicationTime?.toOffsetDateTime()
+    publicationApiModel.methodDescription = methodDescription?.map { Paragraph(it) }
+    publicationApiModel.predictedGoals = predictedGoals?.map { Paragraph(it) }
+    publicationApiModel.status = org.firstapproval.api.server.model.PublicationStatus.valueOf(status.name)
+    publicationApiModel.accessType = org.firstapproval.api.server.model.AccessType.valueOf(accessType!!.name)
+    publicationApiModel.creationTime = creationTime.toOffsetDateTime()
+}
+
+fun Publication.toPublicationElastic() =
+    PublicationElastic(
+        id = id,
+        creatorId = creator.id,
+        status = status,
+        accessType = accessType,
+        title = title,
+        description = description,
+        grantOrganizations = grantOrganizations,
+        relatedArticles = relatedArticles,
+        tags = tags,
+        objectOfStudyTitle = objectOfStudyTitle,
+        objectOfStudyDescription = objectOfStudyDescription,
+        software = software,
+        methodTitle = methodTitle,
+        methodDescription = methodDescription,
+        predictedGoals = predictedGoals,
+        creationTime = creationTime,
+        publicationTime = publicationTime
+    )

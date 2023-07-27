@@ -10,6 +10,8 @@ import org.firstapproval.backend.core.domain.publication.PublicationFileReposito
 import org.firstapproval.backend.core.domain.publication.PublicationRepository
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
+import org.firstapproval.backend.core.domain.publication.toPublicationElastic
+import org.firstapproval.backend.core.elastic.PublicationElasticRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -34,7 +36,8 @@ class ArchiveService(
     private val publicationFileRepository: PublicationFileRepository,
     private val ipfsClient: IpfsClient,
     private val fileStorageService: FileStorageService,
-    private val transactionTemplate: TransactionTemplate
+    private val transactionTemplate: TransactionTemplate,
+    private val elasticRepository: PublicationElasticRepository
 ) {
 
     val log = logger {}
@@ -48,7 +51,9 @@ class ArchiveService(
                 log.debug { "Publication files for id=${publication.id} started" }
                 transactionTemplate.execute { _ ->
                     val publicationFilesIds = archiveProcess(publication)
-                    fileStorageService.deleteByIds(FILES, publicationFilesIds)
+                    if (publicationFilesIds.isNotEmpty()) {
+                        fileStorageService.deleteByIds(FILES, publicationFilesIds)
+                    }
                 }
             }.onSuccess {
                 log.debug { "Publication files for id=${publication.id} finished successfully" }
@@ -96,24 +101,25 @@ class ArchiveService(
             }
         } catch (ex: Exception) {
             log.error(ex) { "archive error" }
+            throw ex
         } finally {
             zipOutputStream.close()
             fileOutputStream.close()
-            if (filesIds.isNotEmpty()) {
-                uploadToIpfs(publication, tempArchive)
-            }
             tempArchive.delete()
         }
-
+        if (filesIds.isNotEmpty()) {
+            uploadToIpfs(publication, tempArchive)
+        }
+        publication.status = PUBLISHED
+        publication.publicationTime = now()
+        publicationRepository.save(publication)
+        elasticRepository.save(publication.toPublicationElastic())
         return filesIds
     }
 
     private fun uploadToIpfs(publication: Publication, tempArchive: File) {
         val ipfsFileInfo = ipfsClient.upload(tempArchive)
         publication.contentId = ipfsFileInfo.id
-        publication.status = PUBLISHED
-        publication.publicationTime = now()
-        publicationRepository.save(publication)
     }
 
     private fun getOrCreateTmpFolder(): File {

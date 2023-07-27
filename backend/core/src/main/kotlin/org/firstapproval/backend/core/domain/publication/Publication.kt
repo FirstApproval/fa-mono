@@ -2,6 +2,7 @@ package org.firstapproval.backend.core.domain.publication
 
 import jakarta.persistence.*
 import jakarta.persistence.EnumType.STRING
+import jakarta.persistence.FetchType.EAGER
 import org.firstapproval.backend.core.domain.publication.AccessType.CLOSED
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
 import org.firstapproval.backend.core.domain.user.UnconfirmedUser
@@ -15,7 +16,7 @@ import java.util.*
 class Publication(
     @Id
     var id: UUID,
-    @ManyToOne
+    @ManyToOne(fetch = EAGER)
     val creator: User,
     @Enumerated(STRING)
     var status: PublicationStatus = PENDING,
@@ -39,14 +40,14 @@ class Publication(
     var methodDescription: List<String>? = null,
     @Column(columnDefinition = "text")
     var predictedGoals: List<String>? = null,
-    @ManyToMany
+    @ManyToMany(fetch = EAGER)
     @JoinTable(
         name = "publication_confirmed_authors",
         joinColumns = [JoinColumn(name = "publication_id")],
         inverseJoinColumns = [JoinColumn(name = "user_id")]
     )
     var confirmedAuthors: List<User> = mutableListOf(),
-    @ManyToMany
+    @ManyToMany(fetch = EAGER)
     @JoinTable(
         name = "publication_unconfirmed_authors",
         joinColumns = [JoinColumn(name = "publication_id")],
