@@ -1,23 +1,22 @@
 import styled from '@emotion/styled';
-import React, { type ReactElement, useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   Autocomplete,
   Avatar,
   Button,
   Divider,
   IconButton,
-  TextField
+  TextField,
+  Chip
 } from '@mui/material';
 import { type ReactElement, useState } from 'react';
-import { Chip, IconButton, TextField } from '@mui/material';
 import {
   type ParagraphWithId,
   type PublicationEditorStore
 } from './PublicationEditorStore';
 import { observer } from 'mobx-react-lite';
-import { Add, AddCircleOutlined, PersonAdd } from '@mui/icons-material';
+import { PersonAdd, Add, AddCircleOutlined } from '@mui/icons-material';
 import { type Author } from '../../apis/first-approval-api';
-import { Add, AddCircleOutlined } from '@mui/icons-material';
 import keyboardEnter from './asset/keyboard_enter.svg';
 
 interface EditorProps {
