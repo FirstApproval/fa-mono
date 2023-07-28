@@ -32,7 +32,7 @@ export class PublicationEditorStore {
   authors = '';
   grantingOrganizations: ParagraphWithId[] = [];
   relatedArticles: ParagraphWithId[] = [];
-  tags = '';
+  tags = new Set<string>();
 
   constructor(readonly publicationId: string, readonly fs: ChonkyFileSystem) {
     makeAutoObservable(this);
@@ -76,6 +76,25 @@ export class PublicationEditorStore {
     newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
     this.grantingOrganizations = newValue;
   }
+
+  addTag(tag: string): void {
+    this.tags.add(tag);
+    void this.updateTags();
+  }
+
+  deleteTag(tag: string): void {
+    this.tags.delete(tag);
+    void this.updateTags();
+  }
+
+  updateTags = _.throttle(async () => {
+    return await publicationService.editPublication(this.publicationId, {
+      tags: {
+        values: Array.from(this.tags).map((t) => ({ text: t })),
+        edited: true
+      }
+    });
+  }, EDIT_THROTTLE_MS);
 
   addRelatedArticle(idx: number): void {
     const newValue = [...this.relatedArticles];
@@ -223,6 +242,10 @@ export class PublicationEditorStore {
         if (publication.relatedArticles?.length) {
           this.relatedArticles = publication.relatedArticles.map(mapParagraph);
           this.relatedArticlesEnabled = true;
+        }
+        if (publication.tags?.length) {
+          this.tags = new Set(publication.tags.map((p) => p.text));
+          this.tagsEnabled = true;
         }
         if (this.fs.files.length > 0) {
           this.filesEnabled = true;
