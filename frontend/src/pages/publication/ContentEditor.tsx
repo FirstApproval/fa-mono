@@ -1,4 +1,13 @@
 import styled from '@emotion/styled';
+import React, { type ReactElement, useEffect, useState } from 'react';
+import {
+  Autocomplete,
+  Avatar,
+  Button,
+  Divider,
+  IconButton,
+  TextField
+} from '@mui/material';
 import { type ReactElement, useState } from 'react';
 import { Chip, IconButton, TextField } from '@mui/material';
 import {
@@ -6,6 +15,8 @@ import {
   type PublicationEditorStore
 } from './PublicationEditorStore';
 import { observer } from 'mobx-react-lite';
+import { Add, AddCircleOutlined, PersonAdd } from '@mui/icons-material';
+import { type Author } from '../../apis/first-approval-api';
 import { Add, AddCircleOutlined } from '@mui/icons-material';
 import keyboardEnter from './asset/keyboard_enter.svg';
 
@@ -96,12 +107,131 @@ export const SoftwareEditor = observer((props: EditorProps): ReactElement => {
 });
 
 export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
+  const [searchVisible, setSearchVisible] = useState(false);
+  const [authorOptions, setAuthorOptions] = useState<Author[]>([]);
+
+  const [query, setQuery] = useState('');
+
+  useEffect(() => {
+    props.editorStore
+      .searchAuthors(query)
+      .then((result) => {
+        setAuthorOptions(result);
+      })
+      .catch(() => {
+        setAuthorOptions([]);
+      });
+  }, [query]);
+
   return (
     <ContentEditorWrap>
       <LabelWrap>Authors</LabelWrap>
+      {!searchVisible && (
+        <Button
+          variant={'outlined'}
+          startIcon={<Add />}
+          onClick={() => {
+            setSearchVisible(true);
+          }}>
+          Add author
+        </Button>
+      )}
+      {searchVisible && (
+        <SearchBar>
+          <FlexGrowWrap>
+            <Autocomplete
+              // value={value}
+              // onChange={(event: any, newValue: string | null) => {
+              //   setValue(newValue);
+              // }}
+              inputValue={query}
+              onInputChange={(event, newInputValue) => {
+                setQuery(newInputValue);
+              }}
+              renderOption={(props, option, state) => {
+                return (
+                  <AuthorElement>
+                    <Avatar>
+                      {getInitials(option.firstName, option.lastName)}
+                    </Avatar>
+                    <AuthorWrap>
+                      <AuthorName>
+                        {option.firstName} {option.lastName}
+                      </AuthorName>
+                      <AuthorEmail>{option.email}</AuthorEmail>
+                    </AuthorWrap>
+                  </AuthorElement>
+                );
+              }}
+              getOptionLabel={(option) =>
+                `${option.firstName} ${option.lastName} (${option.email})`
+              }
+              id="controllable-states-demo"
+              options={authorOptions}
+              sx={{ width: '100%' }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  placeholder={
+                    'Search and add other FA users by email or name...'
+                  }></TextField>
+              )}
+            />
+          </FlexGrowWrap>
+
+          <DividerWrap orientation={'vertical'} />
+          <Button variant={'text'} startIcon={<PersonAdd />}>
+            Add manually
+          </Button>
+        </SearchBar>
+      )}
     </ContentEditorWrap>
   );
 });
+
+const AuthorElement = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+`;
+
+const AuthorWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-left: 16px;
+`;
+
+const AuthorName = styled.div`
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+`;
+
+const AuthorEmail = styled.div`
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  color: var(--text-secondary, #68676e);
+`;
+
+const SearchBar = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const DividerWrap = styled(Divider)`
+  margin-left: 24px;
+  margin-right: 16px;
+  height: 40px;
+`;
+
+function getInitials(firstName: string, lastName: string): string {
+  const firstNameInitial = firstName ? firstName.charAt(0).toUpperCase() : '';
+  const lastNameInitial = lastName ? lastName.charAt(0).toUpperCase() : '';
+
+  return `${firstNameInitial}${lastNameInitial}`;
+}
 
 export const GrantingOrganisationsEditor = observer(
   (props: EditorProps): ReactElement => {
@@ -346,4 +476,8 @@ const AddNewTagIconButtonWrap = styled(IconButton)`
 const AddIconWrap = styled(Add)`
   height: 18px;
   width: 18px;
+`;
+
+const FlexGrowWrap = styled.div`
+  flex-grow: 1;
 `;

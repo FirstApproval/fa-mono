@@ -1,7 +1,8 @@
 import { makeAutoObservable, reaction } from 'mobx';
-import { publicationService } from '../../core/service';
+import { authorService, publicationService } from '../../core/service';
 import _ from 'lodash';
 import {
+  type Author,
   type Paragraph,
   type PublicationEditRequest
 } from '../../apis/first-approval-api';
@@ -206,6 +207,11 @@ export class PublicationEditorStore {
       relatedArticles: { values: relatedArticles, edited: true }
     });
   }, EDIT_THROTTLE_MS);
+
+  async searchAuthors(query: string): Promise<Author[]> {
+    const response = await authorService.getAuthors(query);
+    return response.data;
+  }
 
   private loadInitialState(): void {
     this.isLoading = true;
