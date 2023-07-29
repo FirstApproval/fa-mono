@@ -29,16 +29,17 @@ import {
 import { PublicationEditorStore } from './PublicationEditorStore';
 import { observer } from 'mobx-react-lite';
 import {
-  AuthorsEditor,
   GrantingOrganisationsEditor,
   MethodEditor,
   ObjectOfStudyEditor,
   PredictedGoalsEditor,
   RelatedArticlesEditor,
-  SoftwareEditor,
-  TagsEditor
+  SoftwareEditor
 } from './ContentEditor';
 import { ChonkyFileSystem } from '../../fire-browser/ChonkyFileSystem';
+import { TagsEditor } from './TagsEditor';
+import { AuthorsEditor } from './AuthorsEditor';
+import { TitleEditor } from './TitleEditor';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -106,6 +107,7 @@ const PublicationBody = observer(
 
     return (
       <>
+        <TitleEditor editorStore={editorStore} />
         {!predictedGoalsEnabled && (
           <PredictedGoalsPlaceholder
             onClick={() => {

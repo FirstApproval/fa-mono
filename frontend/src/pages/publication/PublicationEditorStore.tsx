@@ -16,6 +16,8 @@ export type ParagraphWithId = Paragraph & { id: string };
 export class PublicationEditorStore {
   isLoading = false;
 
+  title = '';
+
   predictedGoalsEnabled = false;
   methodEnabled = false;
   objectOfStudyEnabled = false;
@@ -30,7 +32,7 @@ export class PublicationEditorStore {
   method: ParagraphWithId[] = [];
   objectOfStudy: ParagraphWithId[] = [];
   software: ParagraphWithId[] = [];
-  authors = '';
+  authors: Author[] = [];
   grantingOrganizations: ParagraphWithId[] = [];
   relatedArticles: ParagraphWithId[] = [];
   tags = new Set<string>();
@@ -97,6 +99,21 @@ export class PublicationEditorStore {
     });
   }, EDIT_THROTTLE_MS);
 
+  updateTitle(title: string): void {
+    this.title = title;
+    void this.updateTitleRequest();
+  }
+
+  updateTitleRequest = _.throttle(async () => {
+    const title = this.title;
+    return await publicationService.editPublication(this.publicationId, {
+      title: {
+        value: title,
+        edited: true
+      }
+    });
+  }, EDIT_THROTTLE_MS);
+
   addRelatedArticle(idx: number): void {
     const newValue = [...this.relatedArticles];
     newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
@@ -114,9 +131,8 @@ export class PublicationEditorStore {
     const predictedGoals: Paragraph[] = this.predictedGoals.filter(
       (p) => p.text.length > 0
     );
-    const request = getRequestStub();
+
     return await publicationService.editPublication(this.publicationId, {
-      ...request,
       predictedGoals: { values: predictedGoals, edited: true }
     });
   }, EDIT_THROTTLE_MS);
@@ -130,9 +146,8 @@ export class PublicationEditorStore {
 
   updateMethod = _.throttle(async () => {
     const method: Paragraph[] = this.method.filter((p) => p.text.length > 0);
-    const request = getRequestStub();
+
     return await publicationService.editPublication(this.publicationId, {
-      ...request,
       methodDescription: { values: method, edited: true }
     });
   }, EDIT_THROTTLE_MS);
@@ -148,9 +163,8 @@ export class PublicationEditorStore {
     const objectOfStudy: Paragraph[] = this.objectOfStudy.filter(
       (p) => p.text.length > 0
     );
-    const request = getRequestStub();
+
     return await publicationService.editPublication(this.publicationId, {
-      ...request,
       objectOfStudyDescription: { values: objectOfStudy, edited: true }
     });
   }, EDIT_THROTTLE_MS);
@@ -166,9 +180,8 @@ export class PublicationEditorStore {
     const software: Paragraph[] = this.software.filter(
       (p) => p.text.length > 0
     );
-    const request = getRequestStub();
+
     return await publicationService.editPublication(this.publicationId, {
-      ...request,
       software: { values: software, edited: true }
     });
   }, EDIT_THROTTLE_MS);
@@ -183,9 +196,8 @@ export class PublicationEditorStore {
   updateGrantingOrganizations = _.throttle(async () => {
     const grantingOrganizations: Paragraph[] =
       this.grantingOrganizations.filter((p) => p.text.length > 0);
-    const request = getRequestStub();
+
     return await publicationService.editPublication(this.publicationId, {
-      ...request,
       grantOrganizations: { values: grantingOrganizations, edited: true }
     });
   }, EDIT_THROTTLE_MS);
@@ -201,9 +213,8 @@ export class PublicationEditorStore {
     const relatedArticles: Paragraph[] = this.relatedArticles.filter(
       (p) => p.text.length > 0
     );
-    const request = getRequestStub();
+
     return await publicationService.editPublication(this.publicationId, {
-      ...request,
       relatedArticles: { values: relatedArticles, edited: true }
     });
   }, EDIT_THROTTLE_MS);
@@ -223,6 +234,9 @@ export class PublicationEditorStore {
           text: p.text,
           id: uuidv4()
         });
+        if (publication.title) {
+          this.title = publication.title;
+        }
         if (publication.predictedGoals?.length) {
           this.predictedGoals = publication.predictedGoals.map(mapParagraph);
           this.predictedGoalsEnabled = true;
@@ -253,6 +267,10 @@ export class PublicationEditorStore {
           this.tags = new Set(publication.tags.map((p) => p.text));
           this.tagsEnabled = true;
         }
+        if (publication.authors?.length) {
+          this.authors = publication.authors;
+          this.authorsEnabled = this.authors.length > 1;
+        }
         if (this.fs.files.length > 0) {
           this.filesEnabled = true;
         }
@@ -262,60 +280,3 @@ export class PublicationEditorStore {
       });
   }
 }
-
-const getRequestStub = (): PublicationEditRequest => {
-  return {
-    confirmedAuthors: {
-      edited: false,
-      values: undefined
-    },
-    description: {
-      edited: false,
-      value: ''
-    },
-    grantOrganizations: {
-      edited: false,
-      values: undefined
-    },
-    methodDescription: {
-      edited: false,
-      values: []
-    },
-    methodTitle: {
-      edited: false,
-      value: ''
-    },
-    objectOfStudyDescription: {
-      edited: false,
-      values: []
-    },
-    objectOfStudyTitle: {
-      edited: false,
-      value: ''
-    },
-    predictedGoals: {
-      edited: false,
-      values: []
-    },
-    relatedArticles: {
-      edited: false,
-      values: undefined
-    },
-    software: {
-      edited: false,
-      values: []
-    },
-    tags: {
-      edited: false,
-      values: undefined
-    },
-    title: {
-      edited: false,
-      value: ''
-    },
-    unconfirmedAuthors: {
-      edited: false,
-      values: undefined
-    }
-  };
-};
