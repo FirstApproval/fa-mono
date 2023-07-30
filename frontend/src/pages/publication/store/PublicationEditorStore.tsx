@@ -25,6 +25,7 @@ export class PublicationEditorStore {
   relatedArticlesEnabled = false;
   tagsEnabled = false;
 
+  description: ParagraphWithId[] = [];
   predictedGoals: ParagraphWithId[] = [];
   method: ParagraphWithId[] = [];
   objectOfStudy: ParagraphWithId[] = [];
@@ -36,6 +37,7 @@ export class PublicationEditorStore {
 
   constructor(readonly publicationId: string, readonly fs: ChonkyFileSystem) {
     makeAutoObservable(this);
+    this.addDescriptionParagraph(0);
     reaction(
       () => this.fs.initialized,
       (initialized) => {
@@ -45,6 +47,12 @@ export class PublicationEditorStore {
       },
       { fireImmediately: true }
     );
+  }
+
+  addDescriptionParagraph(idx: number): void {
+    const newValue = [...this.description];
+    newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
+    this.description = newValue;
   }
 
   addPredictedGoalsParagraph(idx: number): void {
@@ -131,6 +139,23 @@ export class PublicationEditorStore {
     newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
     this.relatedArticles = newValue;
   }
+
+  updateDescriptionParagraph(idx: number, value: string): void {
+    const newValue = [...this.description];
+    newValue[idx] = { text: value, id: newValue[idx].id };
+    this.description = newValue;
+    void this.updateDescription();
+  }
+
+  updateDescription = _.throttle(async () => {
+    const description: Paragraph[] = this.description.filter(
+      (p) => p.text.length > 0
+    );
+
+    return await publicationService.editPublication(this.publicationId, {
+      description: { values: description, edited: true }
+    });
+  }, EDIT_THROTTLE_MS);
 
   updatePredictedGoalsParagraph(idx: number, value: string): void {
     const newValue = [...this.predictedGoals];
@@ -250,6 +275,9 @@ export class PublicationEditorStore {
         }
         if (publication.researchArea) {
           this.researchArea = publication.researchArea;
+        }
+        if (publication.description) {
+          this.description = publication.description.map(mapParagraph);
         }
         if (publication.predictedGoals?.length) {
           this.predictedGoals = publication.predictedGoals.map(mapParagraph);

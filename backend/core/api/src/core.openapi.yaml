@@ -1208,7 +1208,7 @@ components:
         researchArea:
           $ref: '#/components/schemas/PublicationStringValue'
         description:
-          $ref: '#/components/schemas/PublicationStringValue'
+          $ref: '#/components/schemas/PublicationStringArrayValue'
         grantOrganizations:
           $ref: '#/components/schemas/PublicationStringArrayValue'
         relatedArticles:
@@ -1326,8 +1326,7 @@ components:
           type: string
           maxLength: 32768
         description:
-          type: string
-          maxLength: 32768
+          $ref: '#/components/schemas/StringArray'
         researchArea:
           type: string
           maxLength: 40

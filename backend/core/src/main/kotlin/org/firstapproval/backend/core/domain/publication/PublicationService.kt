@@ -51,7 +51,7 @@ class PublicationService(
         val publication = get(id)
         with(request) {
             if (title?.edited == true) publication.title = title.value
-            if (description?.edited == true) publication.description = description.value
+            if (description?.edited == true) publication.description = description.values.map { it.text }
             if (researchArea?.edited == true) publication.researchArea = researchArea.value
             if (grantOrganizations?.edited == true) publication.grantOrganizations = grantOrganizations.values.map { it.text }
             if (relatedArticles?.edited == true) publication.relatedArticles = relatedArticles.values.map { it.text }
@@ -165,7 +165,7 @@ class PublicationService(
 fun Publication.toApiObject() = PublicationApiObject().also {
     it.id = id
     it.title = title
-    it.description = description
+    it.description = description?.map { Paragraph(it) }
     it.researchArea = researchArea
     it.grantOrganizations = grantOrganizations?.map { Paragraph(it) }
     it.relatedArticles = relatedArticles?.map { Paragraph(it) }
@@ -187,7 +187,7 @@ fun Publication.toApiObject() = PublicationApiObject().also {
 fun PublicationElastic.toApiObject() = org.firstapproval.api.server.model.Publication().also { publicationApiModel ->
     publicationApiModel.id = id
     publicationApiModel.title = title
-    publicationApiModel.description = description
+    publicationApiModel.description = description?.map { Paragraph(it) }
     publicationApiModel.grantOrganizations = grantOrganizations?.map { Paragraph(it) }
     publicationApiModel.relatedArticles = relatedArticles?.map { Paragraph(it) }
     publicationApiModel.tags = tags?.map { Paragraph(it) }

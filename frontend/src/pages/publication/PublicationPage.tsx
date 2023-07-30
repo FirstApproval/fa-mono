@@ -3,7 +3,7 @@ import React, {
   type ReactElement,
   useState
 } from 'react';
-import { Button, LinearProgress, TextField } from '@mui/material';
+import { Button, LinearProgress } from '@mui/material';
 import {
   FlexBodyCenter,
   FlexHeader,
@@ -29,6 +29,7 @@ import {
 import { PublicationEditorStore } from './store/PublicationEditorStore';
 import { observer } from 'mobx-react-lite';
 import {
+  DescriptionEditor,
   GrantingOrganisationsEditor,
   MethodEditor,
   ObjectOfStudyEditor,
@@ -120,6 +121,7 @@ const PublicationBody = observer(
       <>
         <TitleEditor editorStore={editorStore} />
         <ResearchAreaEditor editorStore={editorStore} />
+        <DescriptionEditor editorStore={editorStore} />
         {!predictedGoalsEnabled && (
           <PredictedGoalsPlaceholder
             onClick={() => {

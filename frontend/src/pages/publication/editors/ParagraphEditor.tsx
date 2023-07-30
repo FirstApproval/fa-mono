@@ -13,12 +13,29 @@ export interface EditorProps {
 }
 
 interface ContentEditorProps {
-  text: string;
+  text?: string;
   placeholder: string;
   value: ParagraphWithId[];
   onChange: (idx: number, value: string) => void;
   onAddClick: (idx: number) => void;
 }
+
+export const DescriptionEditor = observer(
+  (props: EditorProps): ReactElement => {
+    return (
+      <ParagraphContentEditor
+        value={props.editorStore.description}
+        onChange={(idx, value) => {
+          props.editorStore.updateDescriptionParagraph(idx, value);
+        }}
+        onAddClick={(idx) => {
+          props.editorStore.addDescriptionParagraph(idx);
+        }}
+        placeholder={'Describe the aim of your experiment or research...'}
+      />
+    );
+  }
+);
 
 export const PredictedGoalsEditor = observer(
   (props: EditorProps): ReactElement => {
@@ -141,7 +158,7 @@ export const ParagraphContentEditor = (
 
   return (
     <ContentEditorWrap>
-      <LabelWrap>{props.text}</LabelWrap>
+      {props.text && <LabelWrap>{props.text}</LabelWrap>}
       {props.value.map((p, idx) => {
         return (
           <ParagraphElement

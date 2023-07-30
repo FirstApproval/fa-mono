@@ -24,7 +24,8 @@ class Publication(
     var accessType: AccessType = CLOSED,
     var title: String? = null,
     var researchArea: String? = null,
-    var description: String? = null,
+    @Column(columnDefinition = "text")
+    var description: List<String>? = null,
     @Column(columnDefinition = "text")
     var grantOrganizations: List<String>? = null,
     @Column(columnDefinition = "text")
