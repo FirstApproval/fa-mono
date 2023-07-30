@@ -1372,6 +1372,8 @@ components:
     Author:
       type: object
       properties:
+        id:
+          type: string
         firstName:
           type: string
         middleName:

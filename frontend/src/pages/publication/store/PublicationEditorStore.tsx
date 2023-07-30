@@ -1,5 +1,5 @@
 import { makeAutoObservable, reaction } from 'mobx';
-import { authorService, publicationService } from '../../../core/service';
+import { publicationService } from '../../../core/service';
 import _ from 'lodash';
 import { type Author, type Paragraph } from '../../../apis/first-approval-api';
 import { type ChonkyFileSystem } from '../../../fire-browser/ChonkyFileSystem';
@@ -30,7 +30,8 @@ export class PublicationEditorStore {
   method: ParagraphWithId[] = [];
   objectOfStudy: ParagraphWithId[] = [];
   software: ParagraphWithId[] = [];
-  authors: Author[] = [];
+  confirmedAuthors: Author[] = [];
+  unconfirmedAuthors: Author[] = [];
   grantingOrganizations: ParagraphWithId[] = [];
   relatedArticles: ParagraphWithId[] = [];
   tags = new Set<string>();
@@ -94,6 +95,24 @@ export class PublicationEditorStore {
     this.tags.delete(tag);
     void this.updateTags();
   }
+
+  addConfirmedAuthor(author: Author): void {
+    const newValue = [...this.confirmedAuthors];
+    newValue.push(author);
+    this.confirmedAuthors = newValue;
+    void this.updateConfirmedAuthors();
+  }
+
+  updateConfirmedAuthors = _.throttle(async () => {
+    return await publicationService.editPublication(this.publicationId, {
+      confirmedAuthors: {
+        values: Array.from(this.confirmedAuthors)
+          .map((t) => t.id ?? '')
+          .filter((id) => id.length > 0),
+        edited: true
+      }
+    });
+  }, EDIT_THROTTLE_MS);
 
   updateTags = _.throttle(async () => {
     return await publicationService.editPublication(this.publicationId, {
@@ -256,11 +275,6 @@ export class PublicationEditorStore {
     });
   }, EDIT_THROTTLE_MS);
 
-  async searchAuthors(query: string): Promise<Author[]> {
-    const response = await authorService.getAuthors(query);
-    return response.data;
-  }
-
   private loadInitialState(): void {
     void publicationService
       .getPublication(this.publicationId)
@@ -310,8 +324,8 @@ export class PublicationEditorStore {
           this.tagsEnabled = true;
         }
         if (publication.authors?.length) {
-          this.authors = publication.authors;
-          this.authorsEnabled = this.authors.length > 1;
+          this.confirmedAuthors = publication.authors;
+          this.authorsEnabled = this.confirmedAuthors.length > 1;
         }
         if (this.fs.files.length > 0) {
           this.filesEnabled = true;

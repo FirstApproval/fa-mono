@@ -29,10 +29,15 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
   const [addAuthorStore] = useState(() => new AddAuthorStore());
 
   useEffect(() => {
-    props.editorStore
-      .searchAuthors(query)
+    addAuthorStore
+      .searchAuthors(query.trim())
       .then((result) => {
-        setAuthorOptions(result);
+        setAuthorOptions(
+          result.filter(
+            (a1) =>
+              !!props.editorStore.confirmedAuthors.find((a2) => a1.id === a2.id)
+          )
+        );
       })
       .catch(() => {
         setAuthorOptions([]);
@@ -47,7 +52,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
     <>
       <ContentEditorWrap>
         <LabelWrap>Authors</LabelWrap>
-        {props.editorStore.authors.map((author) => {
+        {props.editorStore.confirmedAuthors.map((author) => {
           return <AuthorElement key={author.email} author={author} />;
         })}
         {!searchVisible && (
@@ -65,16 +70,18 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
             <FlexGrowWrap>
               <Autocomplete
                 // value={value}
-                // onChange={(event: any, newValue: string | null) => {
-                //   setValue(newValue);
-                // }}
+                onChange={(event: any, newValue: Author | null) => {
+                  if (newValue) {
+                    props.editorStore.addConfirmedAuthor(newValue);
+                  }
+                }}
                 inputValue={query}
                 onInputChange={(event, newInputValue) => {
                   setQuery(newInputValue);
                 }}
                 renderOption={(props, option, state) => {
                   return (
-                    <AuthorSelectOption>
+                    <AuthorSelectOption {...props}>
                       <Avatar>
                         {getInitials(option.firstName, option.lastName)}
                       </Avatar>
@@ -98,7 +105,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                     {...params}
                     variant="outlined"
                     placeholder={
-                      'Search and add other FA users by email or name...'
+                      'Start typing to search other FA users by email or name...'
                     }></TextField>
                 )}
               />
@@ -182,7 +189,7 @@ const OneLineWrap = styled.div`
   display: flex;
 `;
 
-const AuthorSelectOption = styled.div`
+const AuthorSelectOption = styled.li`
   display: flex;
   align-items: center;
   padding: 8px 16px;

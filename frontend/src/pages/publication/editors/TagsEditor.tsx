@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import React, { type ReactElement, useState } from 'react';
 import keyboardEnter from '../asset/keyboard_enter.svg';
 import styled from '@emotion/styled';
-import { Chip, IconButton, TextField } from '@mui/material';
+import { Button, Chip, TextField } from '@mui/material';
 import { Add } from '@mui/icons-material';
 import { ContentEditorWrap, IconButtonWrap, LabelWrap } from './styled';
 import { type EditorProps } from './ParagraphEditor';
@@ -27,13 +27,13 @@ export const TagsEditor = observer((props: EditorProps): ReactElement => {
         ))}
         {!enableAddingNewTag && (
           <a>
-            <AddNewTagIconButtonWrap
+            <AddNewTagButtonWrap
               onClick={() => {
                 setEnableAddingNewTag(true);
-              }}>
-              <AddIconWrap></AddIconWrap>
+              }}
+              startIcon={<AddIconWrap />}>
               Add tag
-            </AddNewTagIconButtonWrap>
+            </AddNewTagButtonWrap>
           </a>
         )}
       </div>
@@ -88,15 +88,15 @@ const TagTextInputWrap = styled.div`
 
 const FullWidthTextField = styled(TextField)`
   width: 100%;
-  margin-bottom: 32px;
 `;
 
-const AddNewTagIconButtonWrap = styled(IconButton)`
+const AddNewTagButtonWrap = styled(Button)`
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
   line-height: 22px;
   margin-bottom: 12px;
+  color: var(--inherit-text-primary-main, #040036);
 `;
 
 const AddIconWrap = styled(Add)`
