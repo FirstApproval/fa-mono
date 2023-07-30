@@ -1,8 +1,8 @@
 import { makeAutoObservable, reaction } from 'mobx';
-import { authorService, publicationService } from '../../core/service';
+import { authorService, publicationService } from '../../../core/service';
 import _ from 'lodash';
-import { type Author, type Paragraph } from '../../apis/first-approval-api';
-import { type ChonkyFileSystem } from '../../fire-browser/ChonkyFileSystem';
+import { type Author, type Paragraph } from '../../../apis/first-approval-api';
+import { type ChonkyFileSystem } from '../../../fire-browser/ChonkyFileSystem';
 import { v4 as uuidv4 } from 'uuid';
 
 const EDIT_THROTTLE_MS = 5000;

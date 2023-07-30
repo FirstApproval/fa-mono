@@ -2,7 +2,7 @@ import React, { type ReactElement } from 'react';
 import { AddCircleOutlined } from '@mui/icons-material';
 import styled from '@emotion/styled';
 import { TextField } from '@mui/material';
-import { IconButtonWrap } from './styled';
+import { IconButtonWrap } from '../../styled';
 
 interface ParagraphProps {
   idx: number;
@@ -13,7 +13,7 @@ interface ParagraphProps {
   autoFocus: boolean;
 }
 
-export const Paragraph = (props: ParagraphProps): ReactElement => {
+export const ParagraphElement = (props: ParagraphProps): ReactElement => {
   const { idx, value, onChange, onAddParagraph, placeholder, autoFocus } =
     props;
 

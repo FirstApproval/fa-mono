@@ -1,11 +1,11 @@
 import { observer } from 'mobx-react-lite';
 import React, { type ReactElement, useState } from 'react';
-import keyboardEnter from './asset/keyboard_enter.svg';
+import keyboardEnter from '../asset/keyboard_enter.svg';
 import styled from '@emotion/styled';
 import { Chip, IconButton, TextField } from '@mui/material';
 import { Add } from '@mui/icons-material';
-import { ContentEditorWrap, IconButtonWrap, LabelWrap } from './styled';
-import { type EditorProps } from './ContentEditor';
+import { ContentEditorWrap, IconButtonWrap, LabelWrap } from '../styled';
+import { type EditorProps } from './ParagraphEditor';
 
 export const TagsEditor = observer((props: EditorProps): ReactElement => {
   const [newTag, setNewTag] = useState('');

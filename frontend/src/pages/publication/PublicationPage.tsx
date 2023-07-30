@@ -26,7 +26,7 @@ import {
   SoftwarePlaceholder,
   TagsPlaceholder
 } from './ContentPlaceholder';
-import { PublicationEditorStore } from './PublicationEditorStore';
+import { PublicationEditorStore } from './store/PublicationEditorStore';
 import { observer } from 'mobx-react-lite';
 import {
   type EditorProps,
@@ -36,11 +36,11 @@ import {
   PredictedGoalsEditor,
   RelatedArticlesEditor,
   SoftwareEditor
-} from './ContentEditor';
+} from './editors/ParagraphEditor';
 import { ChonkyFileSystem } from '../../fire-browser/ChonkyFileSystem';
-import { TagsEditor } from './TagsEditor';
-import { AuthorsEditor } from './AuthorsEditor';
-import { TitleEditor } from './TitleEditor';
+import { TagsEditor } from './editors/TagsEditor';
+import { AuthorsEditor } from './editors/AuthorsEditor';
+import { TitleEditor } from './editors/TitleEditor';
 import { ArrowForward } from '@mui/icons-material';
 
 export const PublicationPage: FunctionComponent = observer(() => {

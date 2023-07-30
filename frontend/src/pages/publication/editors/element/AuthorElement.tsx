@@ -1,7 +1,7 @@
 import { Avatar } from '@mui/material';
 import React, { type ReactElement } from 'react';
 import styled from '@emotion/styled';
-import { type Author } from '../../apis/first-approval-api';
+import { type Author } from '../../../../apis/first-approval-api';
 
 interface AuthorElementProps {
   author: Author;

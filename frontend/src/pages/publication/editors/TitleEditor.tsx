@@ -1,4 +1,4 @@
-import { type EditorProps } from './ContentEditor';
+import { type EditorProps } from './ParagraphEditor';
 import React from 'react';
 import styled from '@emotion/styled';
 import { TextField } from '@mui/material';

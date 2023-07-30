@@ -1,8 +1,8 @@
 import { observer } from 'mobx-react-lite';
 import React, { type ReactElement, useEffect, useState } from 'react';
-import { type Author } from '../../apis/first-approval-api';
-import { AddAuthorStore } from './AddAuthorStore';
-import { AuthorElement, getInitials } from './AuthorElement';
+import { type Author } from '../../../apis/first-approval-api';
+import { AddAuthorStore } from '../store/AddAuthorStore';
+import { AuthorElement, getInitials } from './element/AuthorElement';
 import {
   Autocomplete,
   Avatar,
@@ -16,8 +16,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import styled from '@emotion/styled';
-import { ContentEditorWrap, LabelWrap } from './styled';
-import { type EditorProps } from './ContentEditor';
+import { ContentEditorWrap, LabelWrap } from '../styled';
+import { type EditorProps } from './ParagraphEditor';
 
 export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
   const [addAuthorVisible, setAddAuthorVisible] = useState(false);

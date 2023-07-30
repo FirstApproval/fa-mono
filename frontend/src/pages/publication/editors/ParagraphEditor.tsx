@@ -3,10 +3,10 @@ import { type ReactElement, useState } from 'react';
 import {
   type ParagraphWithId,
   type PublicationEditorStore
-} from './PublicationEditorStore';
+} from '../store/PublicationEditorStore';
 import { observer } from 'mobx-react-lite';
-import { Paragraph } from './ParagraphEditor';
-import { ContentEditorWrap, LabelWrap } from './styled';
+import { ParagraphElement } from './element/ParagraphElement';
+import { ContentEditorWrap, LabelWrap } from '../styled';
 
 export interface EditorProps {
   editorStore: PublicationEditorStore;
@@ -144,7 +144,7 @@ export const ParagraphContentEditor = (
       <LabelWrap>{props.text}</LabelWrap>
       {props.value.map((p, idx) => {
         return (
-          <Paragraph
+          <ParagraphElement
             autoFocus={paragraphToFocus === idx}
             key={p.id}
             idx={idx}
