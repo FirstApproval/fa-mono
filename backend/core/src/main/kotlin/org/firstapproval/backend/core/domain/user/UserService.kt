@@ -25,6 +25,7 @@ import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation
+import org.springframework.transaction.annotation.Isolation.REPEATABLE_READ
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime.now
 import java.util.*
@@ -43,7 +44,6 @@ class UserService(
     private val emailChangeConfirmationRepository: EmailChangeConfirmationRepository,
     private val passwordEncoder: PasswordEncoder,
     private val authorizationLimitRepository: AuthorizationLimitRepository,
-    private val emailProperties: EmailProperties,
     private val frontendProperties: FrontendProperties,
     private val notificationService: NotificationService,
     private val emailSender: JavaMailSender,
@@ -54,7 +54,11 @@ class UserService(
 
     val log = logger {}
 
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    @Transactional(readOnly = true)
+    fun getPublicUserProfile(id: UUID): User = userRepository.getReferenceById(id)
+
+
+    @Transactional(isolation = REPEATABLE_READ)
     fun saveOrUpdate(oauthUser: OauthUser): User {
         val user = userRepository.findByEmailOrExternalIdAndType(
             email = oauthUser.email,

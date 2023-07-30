@@ -27,10 +27,14 @@ class PublicationController(
     private val authHolderService: AuthHolderService
 ) : PublicationApi {
 
-    override fun getPublications(
+    override fun getAllPublications(page: Int, pageSize: Int): ResponseEntity<PublicationsResponse> {
+        return ok().body(publicationService.getAllPublications(page, pageSize))
+    }
+
+    override fun getMyPublications(
         status: PublicationStatus, page: Int, pageSize: Int
     ): ResponseEntity<PublicationsResponse> {
-        val publications = publicationService.getPublications(authHolderService.user, status, page, pageSize)
+        val publications = publicationService.getUserPublications(authHolderService.user, status, page, pageSize)
         return ok().body(publications)
     }
 

@@ -142,8 +142,16 @@ class PublicationService(
         return publicationRepository.findById(id).orElseThrow()
     }
 
+    @Transactional(readOnly = true)
+    fun getAllPublications(page: Int, pageSize: Int): PublicationsResponse {
+        val publicationsPage = publicationRepository.findAll(PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime")))
+        return PublicationsResponse()
+            .publications(publicationsPage.map { it.toApiObject() }.toList())
+            .isLastPage(publicationsPage.isLast)
+    }
+
     @Transactional
-    fun getPublications(
+    fun getUserPublications(
         user: User,
         status: org.firstapproval.api.server.model.PublicationStatus,
         page: Int,
@@ -176,7 +184,7 @@ fun Publication.toApiObject() = PublicationApiObject().also {
     it.methodDescription = methodDescription?.map { Paragraph(it) }
     it.predictedGoals = predictedGoals?.map { Paragraph(it) }
     it.authors = confirmedAuthors.map { user -> Author(user.firstName, user.middleName, user.lastName, user.email, user.selfInfo) } +
-        unconfirmedAuthors.map { user -> Author(user.firstName, user.middleName, user.lastName, user.email, user.shortBio) }
+            unconfirmedAuthors.map { user -> Author(user.firstName, user.middleName, user.lastName, user.email, user.shortBio) }
     it.status = org.firstapproval.api.server.model.PublicationStatus.valueOf(status.name)
     it.accessType = org.firstapproval.api.server.model.AccessType.valueOf(accessType.name)
     it.creationTime = creationTime.toOffsetDateTime()

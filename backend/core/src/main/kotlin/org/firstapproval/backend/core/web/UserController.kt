@@ -10,6 +10,7 @@ import org.firstapproval.backend.core.domain.user.email.UserEmailService
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
+import java.util.*
 
 @RestController
 class UserController(
@@ -18,6 +19,18 @@ class UserController(
     private val jwtService: JwtService,
     private val authHolderService: AuthHolderService
 ) : UserApi {
+
+    override fun getUserInfo(id: UUID): ResponseEntity<GetUserInfoResponse> {
+        val user = userService.getPublicUserProfile(id)
+        return ok().body(GetUserInfoResponse()
+            .id(user.id)
+            .firstName(user.firstName)
+            .lastName(user.lastName)
+            .middleName(user.middleName)
+            .email(user.email)
+            .username(user.username)
+            .selfInfo(user.selfInfo))
+    }
 
     override fun requestPasswordReset(requestPasswordResetRequest: RequestPasswordResetRequest): ResponseEntity<Void> {
         userService.requestPasswordReset(requestPasswordResetRequest.email)
