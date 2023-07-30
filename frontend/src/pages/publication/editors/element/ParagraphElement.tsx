@@ -1,8 +1,7 @@
 import React, { type ReactElement } from 'react';
 import { AddCircleOutlined } from '@mui/icons-material';
 import styled from '@emotion/styled';
-import { TextField } from '@mui/material';
-import { IconButtonWrap } from '../styled';
+import { IconButton, TextField } from '@mui/material';
 
 interface ParagraphProps {
   idx: number;
@@ -64,4 +63,9 @@ const MarginAlign = styled.div`
 
 const TextFieldWrap = styled(TextField)`
   width: 100%;
+`;
+
+const IconButtonWrap = styled(IconButton)`
+  margin-top: -4px;
+  margin-right: 24px;
 `;

@@ -56,7 +56,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
     <>
       <ContentEditorWrap>
         <LabelWrap>Authors</LabelWrap>
-        {props.editorStore.confirmedAuthors.map((author) => {
+        {props.editorStore.authors.map((author) => {
           return <AuthorElement key={author.email} author={author} />;
         })}
         {!searchVisible && (
@@ -176,7 +176,13 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseAddAuthor}>Cancel</Button>
-          <Button onClick={() => {}}>Create</Button>
+          <Button
+            onClick={() => {
+              props.editorStore.addUnconfirmedAuthor(addAuthorStore);
+              handleCloseAddAuthor();
+            }}>
+            Create
+          </Button>
         </DialogActions>
       </Dialog>
     </>

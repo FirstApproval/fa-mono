@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { type Author, type Paragraph } from '../../../apis/first-approval-api';
 import { type ChonkyFileSystem } from '../../../fire-browser/ChonkyFileSystem';
 import { v4 as uuidv4 } from 'uuid';
+import { type AddAuthorStore } from './AddAuthorStore';
 
 const EDIT_THROTTLE_MS = 5000;
 
@@ -48,6 +49,10 @@ export class PublicationEditorStore {
       },
       { fireImmediately: true }
     );
+  }
+
+  get authors(): Author[] {
+    return [...this.confirmedAuthors, ...this.unconfirmedAuthors];
   }
 
   addDescriptionParagraph(idx: number): void {
@@ -106,9 +111,31 @@ export class PublicationEditorStore {
   updateConfirmedAuthors = _.throttle(async () => {
     return await publicationService.editPublication(this.publicationId, {
       confirmedAuthors: {
-        values: Array.from(this.confirmedAuthors)
+        values: this.confirmedAuthors
           .map((t) => t.id ?? '')
           .filter((id) => id.length > 0),
+        edited: true
+      }
+    });
+  }, EDIT_THROTTLE_MS);
+
+  addUnconfirmedAuthor(store: AddAuthorStore): void {
+    const newValue = [...this.unconfirmedAuthors];
+    newValue.push({
+      email: store.email,
+      firstName: store.fistName,
+      middleName: '',
+      lastName: store.lastName,
+      shortBio: store.shortBio
+    });
+    this.unconfirmedAuthors = newValue;
+    void this.updateUnconfirmedAuthors();
+  }
+
+  updateUnconfirmedAuthors = _.throttle(async () => {
+    return await publicationService.editPublication(this.publicationId, {
+      unconfirmedAuthors: {
+        values: this.unconfirmedAuthors,
         edited: true
       }
     });
@@ -326,7 +353,8 @@ export class PublicationEditorStore {
             this.tagsEnabled = true;
           }
           if (publication.authors?.length) {
-            this.confirmedAuthors = publication.authors;
+            this.confirmedAuthors = publication.authors.filter((a) => a.id);
+            this.unconfirmedAuthors = publication.authors.filter((a) => !a.id);
             this.authorsEnabled = this.confirmedAuthors.length > 1;
           }
           if (this.fs.files.length > 0) {
