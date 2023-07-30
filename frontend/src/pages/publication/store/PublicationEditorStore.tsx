@@ -1,4 +1,4 @@
-import { makeAutoObservable, reaction } from 'mobx';
+import { action, makeAutoObservable, reaction } from 'mobx';
 import { publicationService } from '../../../core/service';
 import _ from 'lodash';
 import { type Author, type Paragraph } from '../../../apis/first-approval-api';
@@ -278,61 +278,66 @@ export class PublicationEditorStore {
   private loadInitialState(): void {
     void publicationService
       .getPublication(this.publicationId)
-      .then((response) => {
-        const publication = response.data;
-        const mapParagraph = (p: Paragraph): ParagraphWithId => ({
-          text: p.text,
-          id: uuidv4()
-        });
-        if (publication.title) {
-          this.title = publication.title;
-        }
-        if (publication.researchArea) {
-          this.researchArea = publication.researchArea;
-        }
-        if (publication.description) {
-          this.description = publication.description.map(mapParagraph);
-        }
-        if (publication.predictedGoals?.length) {
-          this.predictedGoals = publication.predictedGoals.map(mapParagraph);
-          this.predictedGoalsEnabled = true;
-        }
-        if (publication.methodDescription?.length) {
-          this.method = publication.methodDescription.map(mapParagraph);
-          this.methodEnabled = true;
-        }
-        if (publication.software?.length) {
-          this.software = publication.software.map(mapParagraph);
-          this.softwareEnabled = true;
-        }
-        if (publication.grantOrganizations?.length) {
-          this.grantingOrganizations =
-            publication.grantOrganizations.map(mapParagraph);
-          this.grantingOrganizationsEnabled = true;
-        }
-        if (publication.objectOfStudyDescription?.length) {
-          this.objectOfStudy =
-            publication.objectOfStudyDescription.map(mapParagraph);
-          this.objectOfStudyEnabled = true;
-        }
-        if (publication.relatedArticles?.length) {
-          this.relatedArticles = publication.relatedArticles.map(mapParagraph);
-          this.relatedArticlesEnabled = true;
-        }
-        if (publication.tags?.length) {
-          this.tags = new Set(publication.tags.map((p) => p.text));
-          this.tagsEnabled = true;
-        }
-        if (publication.authors?.length) {
-          this.confirmedAuthors = publication.authors;
-          this.authorsEnabled = this.confirmedAuthors.length > 1;
-        }
-        if (this.fs.files.length > 0) {
-          this.filesEnabled = true;
-        }
-      })
-      .finally(() => {
-        this.isLoading = false;
-      });
+      .then(
+        action((response) => {
+          const publication = response.data;
+          const mapParagraph = (p: Paragraph): ParagraphWithId => ({
+            text: p.text,
+            id: uuidv4()
+          });
+          if (publication.title) {
+            this.title = publication.title;
+          }
+          if (publication.researchArea) {
+            this.researchArea = publication.researchArea;
+          }
+          if (publication.description) {
+            this.description = publication.description.map(mapParagraph);
+          }
+          if (publication.predictedGoals?.length) {
+            this.predictedGoals = publication.predictedGoals.map(mapParagraph);
+            this.predictedGoalsEnabled = true;
+          }
+          if (publication.methodDescription?.length) {
+            this.method = publication.methodDescription.map(mapParagraph);
+            this.methodEnabled = true;
+          }
+          if (publication.software?.length) {
+            this.software = publication.software.map(mapParagraph);
+            this.softwareEnabled = true;
+          }
+          if (publication.grantOrganizations?.length) {
+            this.grantingOrganizations =
+              publication.grantOrganizations.map(mapParagraph);
+            this.grantingOrganizationsEnabled = true;
+          }
+          if (publication.objectOfStudyDescription?.length) {
+            this.objectOfStudy =
+              publication.objectOfStudyDescription.map(mapParagraph);
+            this.objectOfStudyEnabled = true;
+          }
+          if (publication.relatedArticles?.length) {
+            this.relatedArticles =
+              publication.relatedArticles.map(mapParagraph);
+            this.relatedArticlesEnabled = true;
+          }
+          if (publication.tags?.length) {
+            this.tags = new Set(publication.tags.map((p) => p.text));
+            this.tagsEnabled = true;
+          }
+          if (publication.authors?.length) {
+            this.confirmedAuthors = publication.authors;
+            this.authorsEnabled = this.confirmedAuthors.length > 1;
+          }
+          if (this.fs.files.length > 0) {
+            this.filesEnabled = true;
+          }
+        })
+      )
+      .finally(
+        action(() => {
+          this.isLoading = false;
+        })
+      );
   }
 }

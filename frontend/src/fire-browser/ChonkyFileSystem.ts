@@ -1,4 +1,11 @@
-import { action, computed, makeObservable, observable, reaction } from 'mobx';
+import {
+  action,
+  computed,
+  makeObservable,
+  observable,
+  reaction,
+  runInAction
+} from 'mobx';
 import { fileService } from '../core/service';
 import { type PublicationFile } from '../apis/first-approval-api';
 import { fullPathToName } from './utils';
@@ -299,8 +306,10 @@ export class ChonkyFileSystem {
         };
       });
     } finally {
-      this.isLoading = false;
-      this.initialized = true;
+      runInAction(() => {
+        this.isLoading = false;
+        this.initialized = true;
+      });
     }
   };
 }

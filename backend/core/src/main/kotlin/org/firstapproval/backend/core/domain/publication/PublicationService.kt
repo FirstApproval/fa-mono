@@ -177,7 +177,7 @@ fun Publication.toApiObject() = PublicationApiObject().also {
     it.publicationTime = publicationTime?.toOffsetDateTime()
     it.methodDescription = methodDescription?.map { Paragraph(it) }
     it.predictedGoals = predictedGoals?.map { Paragraph(it) }
-    it.authors = confirmedAuthors.map { user -> Author(user.firstName, user.middleName, user.lastName, user.email, user.selfInfo) } +
+    it.authors = confirmedAuthors.map { user -> Author(user.firstName, user.middleName, user.lastName, user.email, user.selfInfo).id(user.id.toString()) } +
         unconfirmedAuthors.map { user -> Author(user.firstName, user.middleName, user.lastName, user.email, user.shortBio) }
     it.status = org.firstapproval.api.server.model.PublicationStatus.valueOf(status.name)
     it.accessType = org.firstapproval.api.server.model.AccessType.valueOf(accessType.name)

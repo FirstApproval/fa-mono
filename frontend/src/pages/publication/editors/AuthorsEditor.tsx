@@ -29,13 +29,17 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
   const [addAuthorStore] = useState(() => new AddAuthorStore());
 
   useEffect(() => {
+    if (!query.trim()) {
+      setAuthorOptions([]);
+      return;
+    }
     addAuthorStore
       .searchAuthors(query.trim())
       .then((result) => {
         setAuthorOptions(
           result.filter(
             (a1) =>
-              !!props.editorStore.confirmedAuthors.find((a2) => a1.id === a2.id)
+              !props.editorStore.confirmedAuthors.find((a2) => a1.id === a2.id)
           )
         );
       })
@@ -69,7 +73,6 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
           <SearchBar>
             <FlexGrowWrap>
               <Autocomplete
-                // value={value}
                 onChange={(event: any, newValue: Author | null) => {
                   if (newValue) {
                     props.editorStore.addConfirmedAuthor(newValue);
@@ -133,27 +136,27 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
           <AddAuthorWrap>
             <FullWidthTextField
               autoFocus
-              // value={newFolderName}
-              // onChange={(e) => {
-              //   setNewFolderName(e.currentTarget.value);
-              // }}
+              value={addAuthorStore.email}
+              onChange={(e) => {
+                addAuthorStore.email = e.currentTarget.value;
+              }}
               label="Email"
               variant="outlined"
             />
             <OneLineWrap>
               <MarginTextField
-                // value={newFolderName}
-                // onChange={(e) => {
-                //   setNewFolderName(e.currentTarget.value);
-                // }}
+                value={addAuthorStore.fistName}
+                onChange={(e) => {
+                  addAuthorStore.fistName = e.currentTarget.value;
+                }}
                 label="First name"
                 variant="outlined"
               />
               <FullWidthTextField
-                // value={newFolderName}
-                // onChange={(e) => {
-                //   setNewFolderName(e.currentTarget.value);
-                // }}
+                value={addAuthorStore.lastName}
+                onChange={(e) => {
+                  addAuthorStore.lastName = e.currentTarget.value;
+                }}
                 label="Last name"
                 variant="outlined"
               />
@@ -162,10 +165,10 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
               multiline
               minRows={4}
               maxRows={4}
-              // value={newFolderName}
-              // onChange={(e) => {
-              //   setNewFolderName(e.currentTarget.value);
-              // }}
+              value={addAuthorStore.shortBio}
+              onChange={(e) => {
+                addAuthorStore.shortBio = e.currentTarget.value;
+              }}
               label="Short bio"
               variant="outlined"
             />

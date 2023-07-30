@@ -43,6 +43,7 @@ import { AuthorsEditor } from './editors/AuthorsEditor';
 import { TitleEditor } from './editors/TitleEditor';
 import { ResearchAreaEditor } from './editors/ResearchAreaEditor';
 import { ResearchAreaPage } from './ResearchAreaPage';
+import { action } from 'mobx';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -124,10 +125,10 @@ const PublicationBody = observer(
         <DescriptionEditor editorStore={editorStore} />
         {!predictedGoalsEnabled && (
           <PredictedGoalsPlaceholder
-            onClick={() => {
+            onClick={action(() => {
               editorStore.predictedGoalsEnabled = true;
               editorStore.addPredictedGoalsParagraph(0);
-            }}
+            })}
           />
         )}
         {predictedGoalsEnabled && (
@@ -135,19 +136,19 @@ const PublicationBody = observer(
         )}
         {!methodEnabled && (
           <MethodPlaceholder
-            onClick={() => {
+            onClick={action(() => {
               editorStore.methodEnabled = true;
               editorStore.addMethodParagraph(0);
-            }}
+            })}
           />
         )}
         {methodEnabled && <MethodEditor editorStore={editorStore} />}
         {!objectOfStudyEnabled && (
           <ObjectOfStudyPlaceholder
-            onClick={() => {
+            onClick={action(() => {
               editorStore.objectOfStudyEnabled = true;
               editorStore.addObjectOfStudyParagraph(0);
-            }}
+            })}
           />
         )}
         {objectOfStudyEnabled && (
@@ -155,35 +156,35 @@ const PublicationBody = observer(
         )}
         {!softwareEnabled && (
           <SoftwarePlaceholder
-            onClick={() => {
+            onClick={action(() => {
               editorStore.softwareEnabled = true;
               editorStore.addSoftwareParagraph(0);
-            }}
+            })}
           />
         )}
         {softwareEnabled && <SoftwareEditor editorStore={editorStore} />}
         {!filesEnabled && (
           <FilesPlaceholder
-            onClick={() => {
+            onClick={action(() => {
               editorStore.filesEnabled = true;
-            }}
+            })}
           />
         )}
         {filesEnabled && <FileUploader fs={fs} />}
         {!authorsEnabled && (
           <AuthorsPlaceholder
-            onClick={() => {
+            onClick={action(() => {
               editorStore.authorsEnabled = true;
-            }}
+            })}
           />
         )}
         {authorsEnabled && <AuthorsEditor editorStore={editorStore} />}
         {!grantingOrganizationsEnabled && (
           <GrantingOrganisationsPlaceholder
-            onClick={() => {
+            onClick={action(() => {
               editorStore.grantingOrganizationsEnabled = true;
               editorStore.addGrantingOrganization(0);
-            }}
+            })}
           />
         )}
         {grantingOrganizationsEnabled && (
@@ -191,10 +192,10 @@ const PublicationBody = observer(
         )}
         {!relatedArticlesEnabled && (
           <RelatedArticlesPlaceholder
-            onClick={() => {
+            onClick={action(() => {
               editorStore.relatedArticlesEnabled = true;
               editorStore.addRelatedArticle(0);
-            }}
+            })}
           />
         )}
         {relatedArticlesEnabled && (
@@ -202,9 +203,9 @@ const PublicationBody = observer(
         )}
         {!tagsEnabled && (
           <TagsPlaceholder
-            onClick={() => {
+            onClick={action(() => {
               editorStore.tagsEnabled = true;
-            }}
+            })}
           />
         )}
         {tagsEnabled && <TagsEditor editorStore={editorStore} />}
