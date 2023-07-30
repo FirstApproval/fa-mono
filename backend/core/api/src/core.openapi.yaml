@@ -1205,6 +1205,8 @@ components:
           $ref: '#/components/schemas/UnconfirmedAuthors'
         title:
           $ref: '#/components/schemas/PublicationStringValue'
+        researchArea:
+          $ref: '#/components/schemas/PublicationStringValue'
         description:
           $ref: '#/components/schemas/PublicationStringValue'
         grantOrganizations:
@@ -1326,6 +1328,9 @@ components:
         description:
           type: string
           maxLength: 32768
+        researchArea:
+          type: string
+          maxLength: 40
         grantOrganizations:
           $ref: '#/components/schemas/StringArray'
         relatedArticles:

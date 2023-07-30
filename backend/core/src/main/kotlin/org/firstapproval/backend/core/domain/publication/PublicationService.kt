@@ -52,6 +52,7 @@ class PublicationService(
         with(request) {
             if (title?.edited == true) publication.title = title.value
             if (description?.edited == true) publication.description = description.value
+            if (researchArea?.edited == true) publication.researchArea = researchArea.value
             if (grantOrganizations?.edited == true) publication.grantOrganizations = grantOrganizations.values.map { it.text }
             if (relatedArticles?.edited == true) publication.relatedArticles = relatedArticles.values.map { it.text }
             if (tags?.edited == true) publication.tags = tags.values.map { it.text }
@@ -165,6 +166,7 @@ fun Publication.toApiObject() = PublicationApiObject().also {
     it.id = id
     it.title = title
     it.description = description
+    it.researchArea = researchArea
     it.grantOrganizations = grantOrganizations?.map { Paragraph(it) }
     it.relatedArticles = relatedArticles?.map { Paragraph(it) }
     it.tags = tags?.map { Paragraph(it) }

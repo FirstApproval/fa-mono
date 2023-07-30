@@ -3,7 +3,7 @@ import React, {
   type ReactElement,
   useState
 } from 'react';
-import { Button, LinearProgress } from '@mui/material';
+import { Button, LinearProgress, TextField } from '@mui/material';
 import {
   FlexBodyCenter,
   FlexHeader,
@@ -29,6 +29,7 @@ import {
 import { PublicationEditorStore } from './PublicationEditorStore';
 import { observer } from 'mobx-react-lite';
 import {
+  type EditorProps,
   GrantingOrganisationsEditor,
   MethodEditor,
   ObjectOfStudyEditor,
@@ -40,6 +41,7 @@ import { ChonkyFileSystem } from '../../fire-browser/ChonkyFileSystem';
 import { TagsEditor } from './TagsEditor';
 import { AuthorsEditor } from './AuthorsEditor';
 import { TitleEditor } from './TitleEditor';
+import { ArrowForward } from '@mui/icons-material';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -50,7 +52,9 @@ export const PublicationPage: FunctionComponent = observer(() => {
     () => new PublicationEditorStore(publicationId, fs)
   );
 
-  const { isLoading } = editorStore;
+  const { isLoading, researchArea } = editorStore;
+
+  const emptyResearchArea = researchArea.length === 0;
 
   return (
     <>
@@ -72,11 +76,18 @@ export const PublicationPage: FunctionComponent = observer(() => {
           <PublicationBodyWrap>
             {isLoading && <LinearProgress />}
             {!isLoading && (
-              <PublicationBody
-                publicationId={publicationId}
-                editorStore={editorStore}
-                fs={fs}
-              />
+              <>
+                {!emptyResearchArea && (
+                  <PublicationBody
+                    publicationId={publicationId}
+                    editorStore={editorStore}
+                    fs={fs}
+                  />
+                )}
+                {emptyResearchArea && (
+                  <ResearchAreaEditor editorStore={editorStore} />
+                )}
+              </>
             )}
           </PublicationBodyWrap>
         </FlexBodyCenter>
@@ -84,6 +95,72 @@ export const PublicationPage: FunctionComponent = observer(() => {
     </>
   );
 });
+
+const ResearchAreaEditor = (props: EditorProps): ReactElement => {
+  const [researchArea, setResearchArea] = useState('');
+  const [isValidResearchArea, setIsValidResearchArea] = useState(true);
+
+  const validate = (): boolean => {
+    const isVE = researchArea.length > 0;
+    setIsValidResearchArea(isVE);
+    return isVE;
+  };
+
+  const researchAreaNonEmpty = researchArea.length > 0;
+
+  return (
+    <>
+      <ResearchAreaTitle>
+        Before the start:
+        <br />
+        What&apos;s the research area of the new publication?
+      </ResearchAreaTitle>
+      <FullWidthTextField
+        autoFocus
+        value={researchArea}
+        onChange={(e) => {
+          setResearchArea(e.currentTarget.value);
+        }}
+        error={!isValidResearchArea}
+        helperText={
+          !isValidResearchArea ? 'Please enter research area' : undefined
+        }
+        label="Research area"
+        variant="outlined"
+        placeholder={
+          'Enter the primary field or discipline of your research/experiment...'
+        }
+      />
+      <Button
+        disabled={!researchAreaNonEmpty}
+        variant="contained"
+        size={'large'}
+        endIcon={<ArrowForward />}
+        onClick={() => {
+          const isValid = validate();
+          if (isValid) {
+            props.editorStore.updateResearchArea(researchArea);
+          }
+        }}>
+        Continue
+      </Button>
+      <div>You can change it later</div>
+    </>
+  );
+};
+
+const ResearchAreaTitle = styled.div`
+  font-size: 48px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 116.7%;
+  margin-bottom: 40px;
+`;
+
+const FullWidthTextField = styled(TextField)`
+  width: 100%;
+  margin-bottom: 40px;
+`;
 
 const PublicationBody = observer(
   (props: {

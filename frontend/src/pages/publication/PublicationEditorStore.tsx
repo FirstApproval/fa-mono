@@ -1,11 +1,7 @@
 import { makeAutoObservable, reaction } from 'mobx';
 import { authorService, publicationService } from '../../core/service';
 import _ from 'lodash';
-import {
-  type Author,
-  type Paragraph,
-  type PublicationEditRequest
-} from '../../apis/first-approval-api';
+import { type Author, type Paragraph } from '../../apis/first-approval-api';
 import { type ChonkyFileSystem } from '../../fire-browser/ChonkyFileSystem';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -14,9 +10,10 @@ const EDIT_THROTTLE_MS = 5000;
 export type ParagraphWithId = Paragraph & { id: string };
 
 export class PublicationEditorStore {
-  isLoading = false;
+  isLoading = true;
 
   title = '';
+  researchArea = '';
 
   predictedGoalsEnabled = false;
   methodEnabled = false;
@@ -109,6 +106,21 @@ export class PublicationEditorStore {
     return await publicationService.editPublication(this.publicationId, {
       title: {
         value: title,
+        edited: true
+      }
+    });
+  }, EDIT_THROTTLE_MS);
+
+  updateResearchArea(researchArea: string): void {
+    this.researchArea = researchArea;
+    void this.updateResearchAreaRequest();
+  }
+
+  updateResearchAreaRequest = _.throttle(async () => {
+    const researchArea = this.researchArea;
+    return await publicationService.editPublication(this.publicationId, {
+      researchArea: {
+        value: researchArea,
         edited: true
       }
     });
@@ -225,7 +237,6 @@ export class PublicationEditorStore {
   }
 
   private loadInitialState(): void {
-    this.isLoading = true;
     void publicationService
       .getPublication(this.publicationId)
       .then((response) => {
@@ -236,6 +247,9 @@ export class PublicationEditorStore {
         });
         if (publication.title) {
           this.title = publication.title;
+        }
+        if (publication.researchArea) {
+          this.researchArea = publication.researchArea;
         }
         if (publication.predictedGoals?.length) {
           this.predictedGoals = publication.predictedGoals.map(mapParagraph);
