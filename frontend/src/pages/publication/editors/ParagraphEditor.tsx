@@ -6,7 +6,7 @@ import {
 } from '../store/PublicationEditorStore';
 import { observer } from 'mobx-react-lite';
 import { ParagraphElement } from './element/ParagraphElement';
-import { ContentEditorWrap, LabelWrap } from '../styled';
+import { ContentEditorWrap, LabelWrap } from './styled';
 
 export interface EditorProps {
   editorStore: PublicationEditorStore;

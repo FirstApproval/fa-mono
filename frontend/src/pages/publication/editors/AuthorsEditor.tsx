@@ -16,7 +16,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import styled from '@emotion/styled';
-import { ContentEditorWrap, LabelWrap } from '../styled';
+import { ContentEditorWrap, LabelWrap } from './styled';
 import { type EditorProps } from './ParagraphEditor';
 
 export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
@@ -39,7 +39,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
       });
   }, [query]);
 
-  const handleCloseAddAuthor = () => {
+  const handleCloseAddAuthor = (): void => {
     setAddAuthorVisible(false);
   };
 
