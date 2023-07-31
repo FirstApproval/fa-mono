@@ -280,6 +280,28 @@ paths:
       operationId: getMe
       tags: [ user ]
 
+  /api/user/get-user-info/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+    get:
+      summary: Get other user information
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUserInfoResponse'
+      security:
+        - PublicAuth: [ ]
+      operationId: getUserInfo
+      tags: [ user ]
+
   /api/publication:
     post:
       summary: Create publication
@@ -295,9 +317,9 @@ paths:
       operationId: createPublication
       tags: [ publication ]
 
-  /api/publications:
+  /api/user/publications:
     get:
-      summary: Get publications
+      summary: Get user publications
       parameters:
         - in: query
           name: status
@@ -326,9 +348,36 @@ paths:
                   $ref: '#/components/schemas/PublicationsResponse'
       security:
         - TokenAuth: [ ]
-      operationId: getPublications
+      operationId: getMyPublications
       tags: [ publication ]
 
+  /api/publications:
+    get:
+      summary: Get all publications
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: true
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          required: true
+          description: Page size
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicationsResponse'
+      security:
+        - PublicAuth: [ ]
+      operationId: getAllPublications
+      tags: [ publication ]
 
   /api/publication/{id}:
     get:
@@ -403,7 +452,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SearchPublicationsResponse'
       security:
-        - TokenAuth: [ ]
+        - PublicAuth: [ ]
       operationId: searchPublications
       tags: [ publication ]
 
@@ -713,7 +762,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/PublicationFile'
       security:
-        - TokenAuth: [ ]
+        - PublicAuth: [ ]
       operationId: getPublicationSampleFiles
       tags: [ sampleFile ]
     post:
@@ -1145,6 +1194,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/OauthType'
+
+    GetUserInfoResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+        middleName:
+          type: string
+        lastName:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        selfInfo:
+          type: string
 
     OauthType:
       type: string
