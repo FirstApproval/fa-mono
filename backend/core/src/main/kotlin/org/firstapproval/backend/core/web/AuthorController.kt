@@ -16,7 +16,7 @@ class AuthorController(private val userRepository: UserRepository) : AuthorApi {
             .joinToString(" & ") { "$it:*" }
             .let { it.ifEmpty { null } }
         val authors = userRepository.findByTextAndEmail(preparedText, email).map {
-            Author(it.firstName, it.middleName, it.lastName, it.email, it.selfInfo)
+            Author(it.firstName, it.middleName, it.lastName, it.email, it.selfInfo).id(it.id.toString())
         }
         return ok().body(authors)
     }

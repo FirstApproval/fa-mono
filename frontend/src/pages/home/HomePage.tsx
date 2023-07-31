@@ -48,7 +48,7 @@ export const HomePage: FunctionComponent = observer(() => {
               {store.publications.map((p) => {
                 return (
                   <div key={p.id} style={{ marginBottom: '16px' }}>
-                    <Link href={`/publication/${p.id}`}>{p.id}</Link>
+                    <Link href={`/publication/${p.id}`}>{p.title ?? p.id}</Link>
                   </div>
                 );
               })}

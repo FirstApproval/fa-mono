@@ -1205,8 +1205,10 @@ components:
           $ref: '#/components/schemas/UnconfirmedAuthors'
         title:
           $ref: '#/components/schemas/PublicationStringValue'
-        description:
+        researchArea:
           $ref: '#/components/schemas/PublicationStringValue'
+        description:
+          $ref: '#/components/schemas/PublicationStringArrayValue'
         grantOrganizations:
           $ref: '#/components/schemas/PublicationStringArrayValue'
         relatedArticles:
@@ -1324,8 +1326,10 @@ components:
           type: string
           maxLength: 32768
         description:
+          $ref: '#/components/schemas/StringArray'
+        researchArea:
           type: string
-          maxLength: 32768
+          maxLength: 40
         grantOrganizations:
           $ref: '#/components/schemas/StringArray'
         relatedArticles:
@@ -1368,6 +1372,8 @@ components:
     Author:
       type: object
       properties:
+        id:
+          type: string
         firstName:
           type: string
         middleName:

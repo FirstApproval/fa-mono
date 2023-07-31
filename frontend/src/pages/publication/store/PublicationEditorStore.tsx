@@ -1,19 +1,20 @@
-import { makeAutoObservable, reaction } from 'mobx';
-import { publicationService } from '../../core/service';
+import { action, makeAutoObservable, reaction } from 'mobx';
+import { publicationService } from '../../../core/service';
 import _ from 'lodash';
-import {
-  type Paragraph,
-  type PublicationEditRequest
-} from '../../apis/first-approval-api';
-import { type ChonkyFileSystem } from '../../fire-browser/ChonkyFileSystem';
+import { type Author, type Paragraph } from '../../../apis/first-approval-api';
+import { type ChonkyFileSystem } from '../../../fire-browser/ChonkyFileSystem';
 import { v4 as uuidv4 } from 'uuid';
+import { type AddAuthorStore } from './AddAuthorStore';
 
 const EDIT_THROTTLE_MS = 5000;
 
 export type ParagraphWithId = Paragraph & { id: string };
 
 export class PublicationEditorStore {
-  isLoading = false;
+  isLoading = true;
+
+  title = '';
+  researchArea = '';
 
   predictedGoalsEnabled = false;
   methodEnabled = false;
@@ -25,17 +26,20 @@ export class PublicationEditorStore {
   relatedArticlesEnabled = false;
   tagsEnabled = false;
 
+  description: ParagraphWithId[] = [];
   predictedGoals: ParagraphWithId[] = [];
   method: ParagraphWithId[] = [];
   objectOfStudy: ParagraphWithId[] = [];
   software: ParagraphWithId[] = [];
-  authors = '';
+  confirmedAuthors: Author[] = [];
+  unconfirmedAuthors: Author[] = [];
   grantingOrganizations: ParagraphWithId[] = [];
   relatedArticles: ParagraphWithId[] = [];
   tags = new Set<string>();
 
   constructor(readonly publicationId: string, readonly fs: ChonkyFileSystem) {
     makeAutoObservable(this);
+    this.addDescriptionParagraph(0);
     reaction(
       () => this.fs.initialized,
       (initialized) => {
@@ -45,6 +49,16 @@ export class PublicationEditorStore {
       },
       { fireImmediately: true }
     );
+  }
+
+  get authors(): Author[] {
+    return [...this.confirmedAuthors, ...this.unconfirmedAuthors];
+  }
+
+  addDescriptionParagraph(idx: number): void {
+    const newValue = [...this.description];
+    newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
+    this.description = newValue;
   }
 
   addPredictedGoalsParagraph(idx: number): void {
@@ -87,10 +101,80 @@ export class PublicationEditorStore {
     void this.updateTags();
   }
 
+  addConfirmedAuthor(author: Author): void {
+    const newValue = [...this.confirmedAuthors];
+    newValue.push(author);
+    this.confirmedAuthors = newValue;
+    void this.updateConfirmedAuthors();
+  }
+
+  updateConfirmedAuthors = _.throttle(async () => {
+    return await publicationService.editPublication(this.publicationId, {
+      confirmedAuthors: {
+        values: this.confirmedAuthors
+          .map((t) => t.id ?? '')
+          .filter((id) => id.length > 0),
+        edited: true
+      }
+    });
+  }, EDIT_THROTTLE_MS);
+
+  addUnconfirmedAuthor(store: AddAuthorStore): void {
+    const newValue = [...this.unconfirmedAuthors];
+    newValue.push({
+      email: store.email,
+      firstName: store.fistName,
+      middleName: '',
+      lastName: store.lastName,
+      shortBio: store.shortBio
+    });
+    this.unconfirmedAuthors = newValue;
+    void this.updateUnconfirmedAuthors();
+  }
+
+  updateUnconfirmedAuthors = _.throttle(async () => {
+    return await publicationService.editPublication(this.publicationId, {
+      unconfirmedAuthors: {
+        values: this.unconfirmedAuthors,
+        edited: true
+      }
+    });
+  }, EDIT_THROTTLE_MS);
+
   updateTags = _.throttle(async () => {
     return await publicationService.editPublication(this.publicationId, {
       tags: {
         values: Array.from(this.tags).map((t) => ({ text: t })),
+        edited: true
+      }
+    });
+  }, EDIT_THROTTLE_MS);
+
+  updateTitle(title: string): void {
+    this.title = title;
+    void this.updateTitleRequest();
+  }
+
+  updateTitleRequest = _.throttle(async () => {
+    const title = this.title;
+    return await publicationService.editPublication(this.publicationId, {
+      title: {
+        value: title,
+        edited: true
+      }
+    });
+  }, EDIT_THROTTLE_MS);
+
+  updateResearchArea(researchArea: string): void {
+    this.researchArea = researchArea;
+    void this.updateResearchAreaRequest();
+  }
+
+  updateResearchAreaRequest = _.throttle(async () => {
+    const researchArea = this.researchArea;
+    return await publicationService.editPublication(this.publicationId, {
+      researchArea: {
+        value: researchArea,
         edited: true
       }
     });
@@ -101,6 +185,23 @@ export class PublicationEditorStore {
     newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
     this.relatedArticles = newValue;
   }
+
+  updateDescriptionParagraph(idx: number, value: string): void {
+    const newValue = [...this.description];
+    newValue[idx] = { text: value, id: newValue[idx].id };
+    this.description = newValue;
+    void this.updateDescription();
+  }
+
+  updateDescription = _.throttle(async () => {
+    const description: Paragraph[] = this.description.filter(
+      (p) => p.text.length > 0
+    );
+
+    return await publicationService.editPublication(this.publicationId, {
+      description: { values: description, edited: true }
+    });
+  }, EDIT_THROTTLE_MS);
 
   updatePredictedGoalsParagraph(idx: number, value: string): void {
     const newValue = [...this.predictedGoals];
@@ -113,9 +214,8 @@ export class PublicationEditorStore {
     const predictedGoals: Paragraph[] = this.predictedGoals.filter(
       (p) => p.text.length > 0
     );
-    const request = getRequestStub();
+
     return await publicationService.editPublication(this.publicationId, {
-      ...request,
       predictedGoals: { values: predictedGoals, edited: true }
     });
   }, EDIT_THROTTLE_MS);
@@ -129,9 +229,8 @@ export class PublicationEditorStore {
 
   updateMethod = _.throttle(async () => {
     const method: Paragraph[] = this.method.filter((p) => p.text.length > 0);
-    const request = getRequestStub();
+
     return await publicationService.editPublication(this.publicationId, {
-      ...request,
       methodDescription: { values: method, edited: true }
     });
   }, EDIT_THROTTLE_MS);
@@ -147,9 +246,8 @@ export class PublicationEditorStore {
     const objectOfStudy: Paragraph[] = this.objectOfStudy.filter(
       (p) => p.text.length > 0
     );
-    const request = getRequestStub();
+
     return await publicationService.editPublication(this.publicationId, {
-      ...request,
       objectOfStudyDescription: { values: objectOfStudy, edited: true }
     });
   }, EDIT_THROTTLE_MS);
@@ -165,9 +263,8 @@ export class PublicationEditorStore {
     const software: Paragraph[] = this.software.filter(
       (p) => p.text.length > 0
     );
-    const request = getRequestStub();
+
     return await publicationService.editPublication(this.publicationId, {
-      ...request,
       software: { values: software, edited: true }
     });
   }, EDIT_THROTTLE_MS);
@@ -182,9 +279,8 @@ export class PublicationEditorStore {
   updateGrantingOrganizations = _.throttle(async () => {
     const grantingOrganizations: Paragraph[] =
       this.grantingOrganizations.filter((p) => p.text.length > 0);
-    const request = getRequestStub();
+
     return await publicationService.editPublication(this.publicationId, {
-      ...request,
       grantOrganizations: { values: grantingOrganizations, edited: true }
     });
   }, EDIT_THROTTLE_MS);
@@ -200,116 +296,76 @@ export class PublicationEditorStore {
     const relatedArticles: Paragraph[] = this.relatedArticles.filter(
       (p) => p.text.length > 0
     );
-    const request = getRequestStub();
+
     return await publicationService.editPublication(this.publicationId, {
-      ...request,
       relatedArticles: { values: relatedArticles, edited: true }
     });
   }, EDIT_THROTTLE_MS);
 
   private loadInitialState(): void {
-    this.isLoading = true;
     void publicationService
       .getPublication(this.publicationId)
-      .then((response) => {
-        const publication = response.data;
-        const mapParagraph = (p: Paragraph): ParagraphWithId => ({
-          text: p.text,
-          id: uuidv4()
-        });
-        if (publication.predictedGoals?.length) {
-          this.predictedGoals = publication.predictedGoals.map(mapParagraph);
-          this.predictedGoalsEnabled = true;
-        }
-        if (publication.methodDescription?.length) {
-          this.method = publication.methodDescription.map(mapParagraph);
-          this.methodEnabled = true;
-        }
-        if (publication.software?.length) {
-          this.software = publication.software.map(mapParagraph);
-          this.softwareEnabled = true;
-        }
-        if (publication.grantOrganizations?.length) {
-          this.grantingOrganizations =
-            publication.grantOrganizations.map(mapParagraph);
-          this.grantingOrganizationsEnabled = true;
-        }
-        if (publication.objectOfStudyDescription?.length) {
-          this.objectOfStudy =
-            publication.objectOfStudyDescription.map(mapParagraph);
-          this.objectOfStudyEnabled = true;
-        }
-        if (publication.relatedArticles?.length) {
-          this.relatedArticles = publication.relatedArticles.map(mapParagraph);
-          this.relatedArticlesEnabled = true;
-        }
-        if (publication.tags?.length) {
-          this.tags = new Set(publication.tags.map((p) => p.text));
-          this.tagsEnabled = true;
-        }
-        if (this.fs.files.length > 0) {
-          this.filesEnabled = true;
-        }
-      })
-      .finally(() => {
-        this.isLoading = false;
-      });
+      .then(
+        action((response) => {
+          const publication = response.data;
+          const mapParagraph = (p: Paragraph): ParagraphWithId => ({
+            text: p.text,
+            id: uuidv4()
+          });
+          if (publication.title) {
+            this.title = publication.title;
+          }
+          if (publication.researchArea) {
+            this.researchArea = publication.researchArea;
+          }
+          if (publication.description) {
+            this.description = publication.description.map(mapParagraph);
+          }
+          if (publication.predictedGoals?.length) {
+            this.predictedGoals = publication.predictedGoals.map(mapParagraph);
+            this.predictedGoalsEnabled = true;
+          }
+          if (publication.methodDescription?.length) {
+            this.method = publication.methodDescription.map(mapParagraph);
+            this.methodEnabled = true;
+          }
+          if (publication.software?.length) {
+            this.software = publication.software.map(mapParagraph);
+            this.softwareEnabled = true;
+          }
+          if (publication.grantOrganizations?.length) {
+            this.grantingOrganizations =
+              publication.grantOrganizations.map(mapParagraph);
+            this.grantingOrganizationsEnabled = true;
+          }
+          if (publication.objectOfStudyDescription?.length) {
+            this.objectOfStudy =
+              publication.objectOfStudyDescription.map(mapParagraph);
+            this.objectOfStudyEnabled = true;
+          }
+          if (publication.relatedArticles?.length) {
+            this.relatedArticles =
+              publication.relatedArticles.map(mapParagraph);
+            this.relatedArticlesEnabled = true;
+          }
+          if (publication.tags?.length) {
+            this.tags = new Set(publication.tags.map((p) => p.text));
+            this.tagsEnabled = true;
+          }
+          if (publication.authors?.length) {
+            this.confirmedAuthors = publication.authors.filter((a) => a.id);
+            this.unconfirmedAuthors = publication.authors.filter((a) => !a.id);
+            this.authorsEnabled = this.confirmedAuthors.length > 1;
+          }
+          if (this.fs.files.length > 0) {
+            this.filesEnabled = true;
+          }
+        })
+      )
+      .finally(
+        action(() => {
+          this.isLoading = false;
+        })
+      );
   }
 }
-
-const getRequestStub = (): PublicationEditRequest => {
-  return {
-    confirmedAuthors: {
-      edited: false,
-      values: undefined
-    },
-    description: {
-      edited: false,
-      value: ''
-    },
-    grantOrganizations: {
-      edited: false,
-      values: undefined
-    },
-    methodDescription: {
-      edited: false,
-      values: []
-    },
-    methodTitle: {
-      edited: false,
-      value: ''
-    },
-    objectOfStudyDescription: {
-      edited: false,
-      values: []
-    },
-    objectOfStudyTitle: {
-      edited: false,
-      value: ''
-    },
-    predictedGoals: {
-      edited: false,
-      values: []
-    },
-    relatedArticles: {
-      edited: false,
-      values: undefined
-    },
-    software: {
-      edited: false,
-      values: []
-    },
-    tags: {
-      edited: false,
-      values: undefined
-    },
-    title: {
-      edited: false,
-      value: ''
-    },
-    unconfirmedAuthors: {
-      edited: false,
-      values: undefined
-    }
-  };
-};

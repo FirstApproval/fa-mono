@@ -1,5 +1,6 @@
 import {
   AuthApi,
+  AuthorApi,
   type Configuration,
   FileApi,
   PublicationApi,
@@ -21,6 +22,8 @@ const configuration: Configuration = {
 export const registrationService = new RegistrationApi();
 
 export const userService = new UserApi();
+
+export const authorService = new AuthorApi();
 
 export const authService = new AuthApi();
 

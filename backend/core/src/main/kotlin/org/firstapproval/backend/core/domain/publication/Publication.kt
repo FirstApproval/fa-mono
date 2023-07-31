@@ -23,7 +23,9 @@ class Publication(
     @Enumerated(STRING)
     var accessType: AccessType = CLOSED,
     var title: String? = null,
-    var description: String? = null,
+    var researchArea: String? = null,
+    @Column(columnDefinition = "text")
+    var description: List<String>? = null,
     @Column(columnDefinition = "text")
     var grantOrganizations: List<String>? = null,
     @Column(columnDefinition = "text")

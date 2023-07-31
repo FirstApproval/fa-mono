@@ -24,8 +24,7 @@ class PublicationElastic(
     var accessType: AccessType? = null,
     @Field(type = Text)
     var title: String? = null,
-    @Field(type = Text)
-    var description: String? = null,
+    var description: List<String>? = null,
     @Field(type = Keyword)
     var grantOrganizations: List<String>? = null,
     var relatedArticles: List<String>? = null,
