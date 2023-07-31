@@ -2,8 +2,10 @@ import React, { type ReactElement } from 'react';
 import { AddCircleOutlined } from '@mui/icons-material';
 import styled from '@emotion/styled';
 import { IconButton, TextField } from '@mui/material';
+import { MarginRightTen } from '../ParagraphEditor';
 
 interface ParagraphProps {
+  paragraphPrefixType?: ParagraphPrefixType;
   idx: number;
   value: string;
   onChange: (idx: number, value: string) => void;
@@ -16,6 +18,13 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
   const { idx, value, onChange, onAddParagraph, placeholder, autoFocus } =
     props;
 
+  const prefix =
+    props.paragraphPrefixType === ParagraphPrefixType.BULLET
+      ? '•'
+      : props.paragraphPrefixType === ParagraphPrefixType.NUMERATION
+      ? (idx + 1).toString() + '.'
+      : '';
+
   return (
     <ParagraphWrap>
       {value.length === 0 && (
@@ -24,6 +33,7 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
         </IconButtonWrap>
       )}
       {value.length !== 0 && <MarginAlign />}
+      <MarginRightTen>{prefix}</MarginRightTen>
       <TextFieldWrap
         autoFocus={autoFocus}
         onKeyDown={(event) => {
@@ -52,7 +62,8 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
 
 const ParagraphWrap = styled.div`
   display: flex;
-  align-items: start;
+  flex-direction: row;
+  align-items: center;
   margin-left: -64px;
   margin-bottom: 32px;
 `;
@@ -69,3 +80,8 @@ const IconButtonWrap = styled(IconButton)`
   margin-top: -4px;
   margin-right: 24px;
 `;
+
+export enum ParagraphPrefixType {
+  NUMERATION = 'NUMERATION',
+  BULLET = 'BULLET'
+}

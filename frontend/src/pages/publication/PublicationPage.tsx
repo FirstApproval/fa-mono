@@ -30,7 +30,7 @@ import { PublicationEditorStore } from './store/PublicationEditorStore';
 import { observer } from 'mobx-react-lite';
 import {
   DescriptionEditor,
-  GrantingOrganisationsEditor,
+  GrantingOrganizationsEditor,
   MethodEditor,
   ObjectOfStudyEditor,
   PredictedGoalsEditor,
@@ -188,7 +188,7 @@ const PublicationBody = observer(
           />
         )}
         {grantingOrganizationsEnabled && (
-          <GrantingOrganisationsEditor editorStore={editorStore} />
+          <GrantingOrganizationsEditor editorStore={editorStore} />
         )}
         {!relatedArticlesEnabled && (
           <RelatedArticlesPlaceholder
