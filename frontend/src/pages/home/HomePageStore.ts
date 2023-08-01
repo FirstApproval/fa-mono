@@ -16,7 +16,7 @@ export class HomePageStore {
   private async loadPublications(): Promise<void> {
     this.isLoading = true;
     try {
-      const response = await publicationService.getPublications(
+      const response = await publicationService.getMyPublications(
         PublicationStatus.PENDING,
         0,
         100
