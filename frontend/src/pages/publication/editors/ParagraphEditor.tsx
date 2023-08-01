@@ -10,7 +10,6 @@ import {
   ParagraphPrefixType
 } from './element/ParagraphElement';
 import { ContentEditorWrap, LabelWrap } from './styled';
-import styled from '@emotion/styled';
 
 export interface EditorProps {
   editorStore: PublicationEditorStore;
@@ -186,7 +185,3 @@ export const ParagraphContentEditor = (
     </ContentEditorWrap>
   );
 };
-
-export const MarginRightTen = styled.div`
-  margin-right: 8px;
-`;

@@ -2,7 +2,6 @@ import React, { type ReactElement } from 'react';
 import { AddCircleOutlined } from '@mui/icons-material';
 import styled from '@emotion/styled';
 import { IconButton, TextField } from '@mui/material';
-import { MarginRightTen } from '../ParagraphEditor';
 
 interface ParagraphProps {
   paragraphPrefixType?: ParagraphPrefixType;
@@ -33,7 +32,7 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
         </IconButtonWrap>
       )}
       {value.length !== 0 && <MarginAlign />}
-      <MarginRightTen>{prefix}</MarginRightTen>
+      <PrefixRowWrap>{prefix}</PrefixRowWrap>
       <TextFieldWrap
         autoFocus={autoFocus}
         onKeyDown={(event) => {
@@ -63,9 +62,8 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
 const ParagraphWrap = styled.div`
   display: flex;
   flex-direction: row;
-  align-items: center;
-  margin-left: -64px;
-  margin-bottom: 32px;
+  align-items: self-start;
+  margin-left: -96px;
 `;
 
 const MarginAlign = styled.div`
@@ -73,12 +71,20 @@ const MarginAlign = styled.div`
 `;
 
 const TextFieldWrap = styled(TextField)`
+  margin-left: 8px;
   width: 100%;
 `;
 
 const IconButtonWrap = styled(IconButton)`
   margin-top: -4px;
   margin-right: 24px;
+`;
+
+export const PrefixRowWrap = styled.p`
+  margin-top: 4px;
+  margin-bottom: 0;
+  width: 30px;
+  text-align: end;
 `;
 
 export enum ParagraphPrefixType {
