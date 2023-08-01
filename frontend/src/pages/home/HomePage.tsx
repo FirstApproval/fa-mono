@@ -13,13 +13,14 @@ import { authStore } from '../../core/auth';
 import { routerStore } from '../../core/router';
 import { HomePageStore } from './HomePageStore';
 import { observer } from 'mobx-react-lite';
+import { Page } from '../../core/RouterStore';
 
 export const HomePage: FunctionComponent = observer(() => {
   const [store] = useState(() => new HomePageStore());
   const createPublication = async (): Promise<void> => {
     const response = await publicationService.createPublication();
     const pub: string = response.data.id;
-    window.history.pushState(undefined, 'Publication', `/publication/${pub}`);
+    routerStore.navigatePage(Page.PUBLICATION, `/publication/${pub}`);
   };
 
   return (
@@ -29,7 +30,7 @@ export const HomePage: FunctionComponent = observer(() => {
         <FlexHeaderRight>
           <Button
             variant="outlined"
-            size={'large'}
+            size={'medium'}
             onClick={() => {
               authStore.token = undefined;
             }}>

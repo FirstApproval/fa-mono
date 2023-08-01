@@ -8,7 +8,8 @@ export const Parent = styled('div')`
 
 export const FlexHeader = styled('div')`
   display: flex;
-  padding: 40px 40px 8px 40px;
+  padding: 12px 32px;
+  margin-bottom: 40px;
   align-items: center;
 `;
 
