@@ -61,7 +61,7 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
 
 const ParagraphWrap = styled.div<{ paragraphPrefixType?: ParagraphPrefixType }>`
   display: flex;
-  margin-bottom: ${(props) => (props.paragraphPrefixType ? '0px' : '32px')};
+  margin-bottom: ${(props) => (props.paragraphPrefixType ? '0px' : '16px')};
 `;
 
 const TextFieldWrap = styled(TextField)`
