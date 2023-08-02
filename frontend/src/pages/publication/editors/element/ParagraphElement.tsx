@@ -69,7 +69,7 @@ const TextFieldWrap = styled(TextField)`
 `;
 
 export const PrefixRowWrap = styled.span`
-  margin: 4px 6px 0;
+  margin: 3.5px 6px 0;
   text-align: center;
 `;
 
