@@ -9,17 +9,19 @@ import {
   Parent
 } from '../common.styled';
 import { publicationService } from '../../core/service';
-import { authStore } from '../../core/auth';
 import { routerStore } from '../../core/router';
 import { HomePageStore } from './HomePageStore';
 import { observer } from 'mobx-react-lite';
+import { Page } from '../../core/RouterStore';
+import { UserMenu } from '../../components/UserMenu';
+import { Edit } from '@mui/icons-material';
 
 export const HomePage: FunctionComponent = observer(() => {
   const [store] = useState(() => new HomePageStore());
   const createPublication = async (): Promise<void> => {
     const response = await publicationService.createPublication();
     const pub: string = response.data.id;
-    window.history.pushState(undefined, 'Publication', `/publication/${pub}`);
+    routerStore.navigatePage(Page.PUBLICATION, `/publication/${pub}`);
   };
 
   return (
@@ -28,13 +30,13 @@ export const HomePage: FunctionComponent = observer(() => {
         <Logo onClick={routerStore.goHome}>First Approval</Logo>
         <FlexHeaderRight>
           <Button
-            variant="outlined"
-            size={'large'}
-            onClick={() => {
-              authStore.token = undefined;
-            }}>
-            Sign out
+            onClick={createPublication}
+            startIcon={<Edit />}
+            size={'medium'}
+            variant="outlined">
+            Create
           </Button>
+          <UserMenu />
         </FlexHeaderRight>
       </FlexHeader>
       <FlexBodyCenter>
@@ -42,9 +44,6 @@ export const HomePage: FunctionComponent = observer(() => {
           {store.isLoading && <LinearProgress />}
           {!store.isLoading && (
             <>
-              <Button onClick={createPublication} variant="contained">
-                Create publication
-              </Button>
               {store.publications.map((p) => {
                 return (
                   <div key={p.id} style={{ marginBottom: '16px' }}>
