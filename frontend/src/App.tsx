@@ -103,15 +103,18 @@ const App: FunctionComponent = observer(() => {
           )}
           {page === Page.RESTORE_PASSWORD && (
             <ResetPasswordPage
+              onSignInClick={() => {
+                navigatePage(Page.SIGN_IN);
+              }}
               onSignUpClick={() => {
-                setPage(Page.SIGN_UP);
+                navigatePage(Page.SIGN_UP);
               }}></ResetPasswordPage>
           )}
           {page === Page.RESTORE_PASSWORD_EMAIL && (
             <RestorePasswordEmailPage
               store={restorePasswordStore}
               onSignUpClick={() => {
-                setPage(Page.SIGN_UP);
+                navigatePage(Page.SIGN_UP);
               }}
               onSignInClick={() => {
                 navigatePage(Page.SIGN_IN);

@@ -22,9 +22,11 @@ import {
 } from '../../common.styled';
 import { routerStore } from '../../../core/router';
 import { userService } from '../../../core/service';
+import { LoadingButton } from '@mui/lab';
 
 interface SetPasswordPageProps {
   onSignUpClick: () => void;
+  onSignInClick: () => void;
 }
 
 export const ResetPasswordPage: FunctionComponent<SetPasswordPageProps> =
@@ -36,11 +38,13 @@ export const ResetPasswordPage: FunctionComponent<SetPasswordPageProps> =
     const [error, setError] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isValidPassword, setIsValidPassword] = useState(true);
+    const [changed, setChanged] = useState(false);
 
     const resetPassword = async (): Promise<void> => {
       setIsSubmitting(true);
       await userService.resetPassword({ passwordResetRequestId, password });
       setIsSubmitting(false);
+      setChanged(true);
     };
 
     const validate = (): boolean => {
@@ -65,49 +69,65 @@ export const ResetPasswordPage: FunctionComponent<SetPasswordPageProps> =
           </FlexHeaderRight>
         </FlexHeader>
         <FlexBodyCenter>
-          <FlexBody>
-            <Header>Password recovery</Header>
-            <EmailLabel>Now, set your password:</EmailLabel>
-            <div>
-              <FullWidthTextField
-                autoFocus
-                error={!isValidPassword}
-                helperText={
-                  !isValidPassword ? 'Enter 8+ characters' : undefined
-                }
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
-                type={'password'}
-                label="Password 8+ characters"
-                variant="outlined"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockOutlined />
-                    </InputAdornment>
-                  )
-                }}
-              />
-            </div>
-            {isSubmitting && <CircularProgress />}
-            {!isSubmitting && (
-              <FullWidthButton
-                disabled={!passwordNonEmpty}
-                variant="contained"
-                size={'large'}
-                endIcon={<ArrowForward />}
-                onClick={async () => {
-                  const isValid = validate();
-                  if (isValid) {
-                    await resetPassword();
+          {!changed && (
+            <FlexBody>
+              <Header>Password recovery</Header>
+              <Label>Now, set your password:</Label>
+              <div>
+                <FullWidthTextField
+                  autoFocus
+                  error={!isValidPassword}
+                  helperText={
+                    !isValidPassword ? 'Enter 8+ characters' : undefined
                   }
-                }}>
-                Continue
-              </FullWidthButton>
-            )}
-          </FlexBody>
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                  }}
+                  type={'password'}
+                  label="Password 8+ characters"
+                  variant="outlined"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <LockOutlined />
+                      </InputAdornment>
+                    )
+                  }}
+                />
+              </div>
+              {isSubmitting && <CircularProgress />}
+              {!isSubmitting && (
+                <FullWidthButton
+                  disabled={!passwordNonEmpty}
+                  variant="contained"
+                  size={'large'}
+                  endIcon={<ArrowForward />}
+                  onClick={async () => {
+                    const isValid = validate();
+                    if (isValid) {
+                      await resetPassword();
+                    }
+                  }}>
+                  Continue
+                </FullWidthButton>
+              )}
+            </FlexBody>
+          )}
+          {changed && (
+            <FlexBody>
+              <SuccessWrap>
+                <Header>Success</Header>
+                <Label>Your password has been changed</Label>
+                <LoadingButton
+                  variant="contained"
+                  size={'large'}
+                  onClick={props.onSignInClick}>
+                  Back to Sign In
+                </LoadingButton>
+              </SuccessWrap>
+            </FlexBody>
+          )}
         </FlexBodyCenter>
         {error && (
           <Snackbar
@@ -135,7 +155,14 @@ const FullWidthTextField = styled(TextField)`
   margin-bottom: 20px;
 `;
 
-const EmailLabel = styled('div')`
-  margin-top: 24px;
-  margin-bottom: 24px;
+const Label = styled('div')`
+  margin-top: 12px;
+  margin-bottom: 32px;
+`;
+
+const SuccessWrap = styled('div')`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 `;

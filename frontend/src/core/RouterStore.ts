@@ -25,8 +25,6 @@ export enum Page {
   RESTORE_PASSWORD_EMAIL
 }
 
-const restorePasswordPageUrl = '/password-change-confirmation';
-
 const pathToOauthType: Record<string, OauthType> = {
   '/facebook-callback': OauthType.FACEBOOK,
   '/google-callback': OauthType.GOOGLE,
@@ -71,6 +69,25 @@ export class RouterStore {
       const authType = pathToOauthType[path] ?? undefined;
       const authCode = queryParams.get('code') ?? undefined;
 
+      if (path.startsWith('/password-change-confirmation')) {
+        authStore.token = undefined;
+        this.navigatePage(Page.RESTORE_PASSWORD, path);
+        return;
+      }
+
+      if (path.startsWith('/publication')) {
+        this.navigatePage(Page.PUBLICATION, path);
+        return;
+      }
+      if (path.startsWith('/account')) {
+        this.navigatePage(Page.ACCOUNT, path);
+        return;
+      }
+      if (path.startsWith('/profile')) {
+        this.navigatePage(Page.PROFILE, path);
+        return;
+      }
+
       if (authType !== undefined && authCode !== undefined) {
         authService
           .authorizeOauth({
@@ -87,23 +104,8 @@ export class RouterStore {
             this.setInitialPageError('Authorization failed');
             this.navigatePage(Page.SIGN_IN);
           });
-      } else if (path.startsWith(restorePasswordPageUrl)) {
-        this.setPage(Page.RESTORE_PASSWORD);
       } else {
         this.setPage(Page.SIGN_IN);
-        return;
-      }
-
-      if (path.startsWith('/publication')) {
-        this.navigatePage(Page.PUBLICATION, path);
-        return;
-      }
-      if (path.startsWith('/account')) {
-        this.navigatePage(Page.ACCOUNT, path);
-        return;
-      }
-      if (path.startsWith('/profile')) {
-        this.navigatePage(Page.PROFILE, path);
         return;
       }
 
