@@ -14,6 +14,9 @@ export enum Page {
 
   PUBLICATION,
 
+  PROFILE,
+  ACCOUNT,
+
   SIGN_UP_NAME,
   SIGN_UP_PASSWORD,
   EMAIL_VERIFICATION,
@@ -86,6 +89,14 @@ export class RouterStore {
 
       if (path.startsWith('/publication')) {
         this.navigatePage(Page.PUBLICATION, path);
+        return;
+      }
+      if (path.startsWith('/account')) {
+        this.navigatePage(Page.ACCOUNT, path);
+        return;
+      }
+      if (path.startsWith('/profile')) {
+        this.navigatePage(Page.PROFILE, path);
         return;
       }
 

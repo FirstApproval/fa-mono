@@ -9,12 +9,12 @@ import {
   Parent
 } from '../common.styled';
 import { publicationService } from '../../core/service';
-import { authStore } from '../../core/auth';
 import { routerStore } from '../../core/router';
 import { HomePageStore } from './HomePageStore';
 import { observer } from 'mobx-react-lite';
 import { Page } from '../../core/RouterStore';
 import { UserMenu } from '../../components/UserMenu';
+import { Edit } from '@mui/icons-material';
 
 export const HomePage: FunctionComponent = observer(() => {
   const [store] = useState(() => new HomePageStore());
@@ -29,6 +29,13 @@ export const HomePage: FunctionComponent = observer(() => {
       <FlexHeader>
         <Logo onClick={routerStore.goHome}>First Approval</Logo>
         <FlexHeaderRight>
+          <Button
+            onClick={createPublication}
+            startIcon={<Edit />}
+            size={'medium'}
+            variant="outlined">
+            Create
+          </Button>
           <UserMenu />
         </FlexHeaderRight>
       </FlexHeader>
@@ -37,9 +44,6 @@ export const HomePage: FunctionComponent = observer(() => {
           {store.isLoading && <LinearProgress />}
           {!store.isLoading && (
             <>
-              <Button onClick={createPublication} variant="contained">
-                Create publication
-              </Button>
               {store.publications.map((p) => {
                 return (
                   <div key={p.id} style={{ marginBottom: '16px' }}>

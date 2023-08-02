@@ -15,6 +15,7 @@ export const FlexHeader = styled('div')`
 
 export const FlexHeaderRight = styled('div')`
   margin-left: auto;
+  display: flex;
 `;
 
 export const FlexBodyCenter = styled('div')`

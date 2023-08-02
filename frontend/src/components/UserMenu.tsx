@@ -1,18 +1,19 @@
 import * as React from 'react';
+import { type ReactElement } from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { type ReactElement } from 'react';
 import { getInitials } from '../util/userUtil';
-import { Avatar, CircularProgress } from '@mui/material';
+import { Avatar, CircularProgress, IconButton } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 import { userStore } from '../core/user';
 import { authStore } from '../core/auth';
-import styled from '@emotion/styled';
+import { routerStore } from '../core/router';
+import { Page } from '../core/RouterStore';
 
 export const UserMenu = observer((): ReactElement => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLDivElement>): void => {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = (): void => {
@@ -27,14 +28,16 @@ export const UserMenu = observer((): ReactElement => {
 
   return (
     <div>
-      <AvatarWrap
-        id="user-button"
+      <IconButton
+        onClick={handleClick}
+        size="small"
+        sx={{ ml: 2 }}
         aria-controls={open ? 'user-menu' : undefined}
         aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        onClick={handleClick}>
-        {getInitials(user.firstName, user.lastName)}
-      </AvatarWrap>
+        aria-expanded={open ? 'true' : undefined}>
+        <Avatar>{getInitials(user.firstName, user.lastName)}</Avatar>
+      </IconButton>
+
       <Menu
         id="user-menu"
         anchorEl={anchorEl}
@@ -45,12 +48,14 @@ export const UserMenu = observer((): ReactElement => {
         }}>
         <MenuItem
           onClick={() => {
+            routerStore.navigatePage(Page.PROFILE, '/profile');
             handleClose();
           }}>
           Profile
         </MenuItem>
         <MenuItem
           onClick={() => {
+            routerStore.navigatePage(Page.ACCOUNT, '/account');
             handleClose();
           }}>
           My account
@@ -66,9 +71,3 @@ export const UserMenu = observer((): ReactElement => {
     </div>
   );
 });
-
-const AvatarWrap = styled(Avatar)`
-  &:hover {
-    cursor: pointer;
-  }
-`;

@@ -20,6 +20,8 @@ import { RestorePasswordStore } from './pages/restore-password/RestorePasswordSt
 import { PublicationPage } from './pages/publication/PublicationPage';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
+import { ProfilePage } from './pages/user/ProfilePage';
+import { AccountPage } from './pages/user/AccountPage';
 
 const App: FunctionComponent = observer(() => {
   const { page, navigatePage } = routerStore;
@@ -38,6 +40,8 @@ const App: FunctionComponent = observer(() => {
           {page === Page.LOADING && <LoadingPage />}
           {page === Page.HOME_PAGE && <HomePage />}
           {page === Page.PUBLICATION && <PublicationPage />}
+          {page === Page.PROFILE && <ProfilePage />}
+          {page === Page.ACCOUNT && <AccountPage />}
           {page === Page.SIGN_IN && (
             <SignInPage
               store={signInStore}

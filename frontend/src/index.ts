@@ -7,3 +7,5 @@ import { createRoot } from 'react-dom/client';
 const container = document.getElementById('root')!;
 const root = createRoot(container);
 root.render(React.createElement(App));
+
+console.log('First Approval App started');
