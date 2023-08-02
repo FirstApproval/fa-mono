@@ -18,8 +18,11 @@ export enum Page {
   SIGN_UP_PASSWORD,
   EMAIL_VERIFICATION,
 
+  RESTORE_PASSWORD,
   RESTORE_PASSWORD_EMAIL
 }
+
+const restorePasswordPageUrl = '/password-change-confirmation';
 
 const pathToOauthType: Record<string, OauthType> = {
   '/facebook-callback': OauthType.FACEBOOK,
@@ -104,6 +107,8 @@ export class RouterStore {
             this.setInitialPageError('Authorization failed');
             this.setPage(Page.SIGN_IN);
           });
+      } else if (path.startsWith(restorePasswordPageUrl)) {
+        this.setPage(Page.RESTORE_PASSWORD);
       } else {
         this.setPage(Page.SIGN_IN);
       }

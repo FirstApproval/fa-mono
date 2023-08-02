@@ -15,11 +15,12 @@ import { Page } from './core/RouterStore';
 import { EmailVerificationPage } from './pages/signup/EmailVerificationPage';
 import { routerStore } from './core/router';
 import { SignInStore } from './pages/login/SignInStore';
-import { RestorePasswordEmail } from './pages/restore-password/RestorePasswordEmail';
-import { RestorePasswordStore } from './pages/restore-password/RestorePasswordStore';
+import { RestorePasswordEmailPage } from './pages/restore/send-email/RestorePasswordEmailPage';
+import { RestorePasswordStore } from './pages/restore/send-email/RestorePasswordStore';
 import { PublicationPage } from './pages/publication/PublicationPage';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
+import { ResetPasswordPage } from './pages/restore/set-password/RestorePasswordPage';
 
 const App: FunctionComponent = observer(() => {
   const { page, setPage } = routerStore;
@@ -96,18 +97,20 @@ const App: FunctionComponent = observer(() => {
               }}
             />
           )}
+          {page === Page.RESTORE_PASSWORD && (
+            <ResetPasswordPage
+              onSignUpClick={() => {
+                setPage(Page.SIGN_UP);
+              }}></ResetPasswordPage>
+          )}
           {page === Page.RESTORE_PASSWORD_EMAIL && (
-            <RestorePasswordEmail
+            <RestorePasswordEmailPage
               store={restorePasswordStore}
+              onSignUpClick={() => {
+                setPage(Page.SIGN_UP);
+              }}
               onSignInClick={() => {
                 setPage(Page.SIGN_IN);
-              }}
-              onContinueClick={() => {
-                if (!restorePasswordStore.isSubmitting) {
-                  void restorePasswordStore
-                    .submitRegistrationRequest()
-                    .then(() => {});
-                }
               }}
             />
           )}

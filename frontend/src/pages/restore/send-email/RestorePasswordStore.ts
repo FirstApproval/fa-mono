@@ -1,18 +1,20 @@
 import { makeObservable, observable } from 'mobx';
-import { type RequestPasswordResetRequest } from '../../apis/first-approval-api';
-import { userService } from '../../core/service';
+import { type RequestPasswordResetRequest } from '../../../apis/first-approval-api';
+import { userService } from '../../../core/service';
 
 export class RestorePasswordStore {
   email: string = '';
 
   isError = false;
-  isSubmitting = false;
+  isSubmitted = false;
+  isSentAgain = false;
 
   constructor() {
     makeObservable(this, {
       email: observable,
       isError: observable,
-      isSubmitting: observable
+      isSubmitted: observable,
+      isSentAgain: observable
     });
   }
 
@@ -23,15 +25,20 @@ export class RestorePasswordStore {
   }
 
   async submitRegistrationRequest(): Promise<void> {
+    if (this.isSentAgain) {
+      return;
+    }
     const request = this.getRequestPasswordResetRequestData();
     this.isError = false;
-    this.isSubmitting = true;
     try {
       await userService.requestPasswordReset(request);
     } catch (e) {
       this.isError = true;
     } finally {
-      this.isSubmitting = false;
+      if (this.isSubmitted) {
+        this.isSentAgain = true;
+      }
+      this.isSubmitted = true;
     }
   }
 }
