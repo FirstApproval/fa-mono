@@ -54,14 +54,14 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
 
 const ParagraphWrap = styled.div`
   display: flex;
-  flex-direction: row;
+  margin-bottom: 32px;
 `;
 
 const TextFieldWrap = styled(TextField)`
   width: 100%;
 `;
 
-export const PrefixRowWrap = styled.p`
+export const PrefixRowWrap = styled.span`
   margin: 4px 6px 0;
   text-align: center;
 `;
