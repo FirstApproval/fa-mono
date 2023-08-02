@@ -1,9 +1,9 @@
 import React, { type ReactElement } from 'react';
-import { AddCircleOutlined } from '@mui/icons-material';
 import styled from '@emotion/styled';
-import { IconButton, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 
 interface ParagraphProps {
+  paragraphPrefixType?: ParagraphPrefixType;
   idx: number;
   value: string;
   onChange: (idx: number, value: string) => void;
@@ -13,17 +13,26 @@ interface ParagraphProps {
 }
 
 export const ParagraphElement = (props: ParagraphProps): ReactElement => {
-  const { idx, value, onChange, onAddParagraph, placeholder, autoFocus } =
-    props;
+  const {
+    idx,
+    value,
+    onChange,
+    onAddParagraph,
+    placeholder,
+    autoFocus,
+    paragraphPrefixType
+  } = props;
+
+  const prefix =
+    paragraphPrefixType === ParagraphPrefixType.BULLET
+      ? '•'
+      : paragraphPrefixType === ParagraphPrefixType.NUMERATION
+      ? (idx + 1).toString() + '.'
+      : '';
 
   return (
-    <ParagraphWrap>
-      {value.length === 0 && (
-        <IconButtonWrap>
-          <AddCircleOutlined />
-        </IconButtonWrap>
-      )}
-      {value.length !== 0 && <MarginAlign />}
+    <ParagraphWrap paragraphPrefixType={paragraphPrefixType}>
+      {prefix && <PrefixRowWrap>{prefix}</PrefixRowWrap>}
       <TextFieldWrap
         autoFocus={autoFocus}
         onKeyDown={(event) => {
@@ -50,22 +59,21 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
   );
 };
 
-const ParagraphWrap = styled.div`
+const ParagraphWrap = styled.div<{ paragraphPrefixType?: ParagraphPrefixType }>`
   display: flex;
-  align-items: start;
-  margin-left: -64px;
-  margin-bottom: 32px;
-`;
-
-const MarginAlign = styled.div`
-  width: 72px;
+  margin-bottom: ${(props) => (props.paragraphPrefixType ? '0px' : '32px')};
 `;
 
 const TextFieldWrap = styled(TextField)`
   width: 100%;
 `;
 
-const IconButtonWrap = styled(IconButton)`
-  margin-top: -4px;
-  margin-right: 24px;
+export const PrefixRowWrap = styled.span`
+  margin: 4px 6px 0;
+  text-align: center;
 `;
+
+export enum ParagraphPrefixType {
+  NUMERATION = 'NUMERATION',
+  BULLET = 'BULLET'
+}
