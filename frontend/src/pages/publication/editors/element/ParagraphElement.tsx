@@ -54,7 +54,6 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
 
 const ParagraphWrap = styled.div`
   display: flex;
-  margin-bottom: 32px;
 `;
 
 const TextFieldWrap = styled(TextField)`
