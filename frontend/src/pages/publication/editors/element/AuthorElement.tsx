@@ -2,6 +2,7 @@ import { Avatar } from '@mui/material';
 import React, { type ReactElement } from 'react';
 import styled from '@emotion/styled';
 import { type Author } from '../../../../apis/first-approval-api';
+import { getInitials } from '../../../../util/userUtil';
 
 interface AuthorElementProps {
   author: Author;
@@ -46,10 +47,3 @@ const AuthorEmail = styled.div`
   font-weight: 400;
   color: var(--text-secondary, #68676e);
 `;
-
-export function getInitials(firstName: string, lastName: string): string {
-  const firstNameInitial = firstName ? firstName.charAt(0).toUpperCase() : '';
-  const lastNameInitial = lastName ? lastName.charAt(0).toUpperCase() : '';
-
-  return `${firstNameInitial}${lastNameInitial}`;
-}

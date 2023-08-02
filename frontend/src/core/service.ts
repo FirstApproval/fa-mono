@@ -19,13 +19,13 @@ const configuration: Configuration = {
   }
 };
 
-export const registrationService = new RegistrationApi();
+export const registrationService = new RegistrationApi(configuration);
 
-export const userService = new UserApi();
+export const userService = new UserApi(configuration);
 
-export const authorService = new AuthorApi();
+export const authorService = new AuthorApi(configuration);
 
-export const authService = new AuthApi();
+export const authService = new AuthApi(configuration);
 
 export const fileService = new FileApi(configuration);
 

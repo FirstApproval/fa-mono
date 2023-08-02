@@ -20,9 +20,11 @@ import { RestorePasswordStore } from './pages/restore-password/RestorePasswordSt
 import { PublicationPage } from './pages/publication/PublicationPage';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
+import { ProfilePage } from './pages/user/ProfilePage';
+import { AccountPage } from './pages/user/AccountPage';
 
 const App: FunctionComponent = observer(() => {
-  const { page, setPage } = routerStore;
+  const { page, navigatePage } = routerStore;
 
   const [signInStore] = useState(() => new SignInStore());
   const [signUpStore] = useState(() => new SignUpStore());
@@ -38,14 +40,16 @@ const App: FunctionComponent = observer(() => {
           {page === Page.LOADING && <LoadingPage />}
           {page === Page.HOME_PAGE && <HomePage />}
           {page === Page.PUBLICATION && <PublicationPage />}
+          {page === Page.PROFILE && <ProfilePage />}
+          {page === Page.ACCOUNT && <AccountPage />}
           {page === Page.SIGN_IN && (
             <SignInPage
               store={signInStore}
               onSignUpClick={() => {
-                setPage(Page.SIGN_UP);
+                navigatePage(Page.SIGN_UP);
               }}
               onRestorePasswordClick={() => {
-                setPage(Page.RESTORE_PASSWORD_EMAIL);
+                navigatePage(Page.RESTORE_PASSWORD_EMAIL);
               }}
             />
           )}
@@ -53,10 +57,10 @@ const App: FunctionComponent = observer(() => {
             <SignUpPage
               store={signUpStore}
               onSignInClick={() => {
-                setPage(Page.SIGN_IN);
+                navigatePage(Page.SIGN_IN);
               }}
               onContinueClick={() => {
-                setPage(Page.SIGN_UP_NAME);
+                navigatePage(Page.SIGN_UP_NAME);
               }}
             />
           )}
@@ -64,10 +68,10 @@ const App: FunctionComponent = observer(() => {
             <EnterNamePage
               store={signUpStore}
               onSignInClick={() => {
-                setPage(Page.SIGN_IN);
+                navigatePage(Page.SIGN_IN);
               }}
               onContinueClick={() => {
-                setPage(Page.SIGN_UP_PASSWORD);
+                navigatePage(Page.SIGN_UP_PASSWORD);
               }}
             />
           )}
@@ -75,13 +79,13 @@ const App: FunctionComponent = observer(() => {
             <SetPasswordPage
               store={signUpStore}
               onSignInClick={() => {
-                setPage(Page.SIGN_IN);
+                navigatePage(Page.SIGN_IN);
               }}
               onContinueClick={() => {
                 if (!signUpStore.isSubmitting) {
                   void signUpStore.submitRegistrationRequest().then(() => {
                     if (!signUpStore.isError) {
-                      setPage(Page.EMAIL_VERIFICATION);
+                      navigatePage(Page.EMAIL_VERIFICATION);
                     }
                   });
                 }
@@ -92,7 +96,7 @@ const App: FunctionComponent = observer(() => {
             <EmailVerificationPage
               store={signUpStore}
               onSignInClick={() => {
-                setPage(Page.SIGN_IN);
+                navigatePage(Page.SIGN_IN);
               }}
             />
           )}
@@ -100,7 +104,7 @@ const App: FunctionComponent = observer(() => {
             <RestorePasswordEmail
               store={restorePasswordStore}
               onSignInClick={() => {
-                setPage(Page.SIGN_IN);
+                navigatePage(Page.SIGN_IN);
               }}
               onContinueClick={() => {
                 if (!restorePasswordStore.isSubmitting) {

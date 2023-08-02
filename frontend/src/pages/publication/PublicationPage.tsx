@@ -64,9 +64,15 @@ export const PublicationPage: FunctionComponent = observer(() => {
         <FlexHeader>
           <Logo onClick={routerStore.goHome}>First Approval</Logo>
           <FlexHeaderRight>
+            <ButtonWrap variant="contained" size={'medium'} onClick={() => {}}>
+              Publish
+            </ButtonWrap>
+            <ButtonWrap variant="outlined" size={'medium'} onClick={() => {}}>
+              Preview
+            </ButtonWrap>
             <Button
               variant="outlined"
-              size={'large'}
+              size={'medium'}
               onClick={() => {
                 authStore.token = undefined;
               }}>
@@ -214,8 +220,12 @@ const PublicationBody = observer(
   }
 );
 
-export const PublicationBodyWrap = styled('div')`
+const PublicationBodyWrap = styled('div')`
   width: 728px;
   padding-left: 40px;
   padding-right: 40px;
+`;
+
+const ButtonWrap = styled(Button)`
+  margin-right: 24px;
 `;
