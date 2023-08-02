@@ -13,18 +13,25 @@ interface ParagraphProps {
 }
 
 export const ParagraphElement = (props: ParagraphProps): ReactElement => {
-  const { idx, value, onChange, onAddParagraph, placeholder, autoFocus } =
-    props;
+  const {
+    idx,
+    value,
+    onChange,
+    onAddParagraph,
+    placeholder,
+    autoFocus,
+    paragraphPrefixType
+  } = props;
 
   const prefix =
-    props.paragraphPrefixType === ParagraphPrefixType.BULLET
+    paragraphPrefixType === ParagraphPrefixType.BULLET
       ? '•'
-      : props.paragraphPrefixType === ParagraphPrefixType.NUMERATION
+      : paragraphPrefixType === ParagraphPrefixType.NUMERATION
       ? (idx + 1).toString() + '.'
       : '';
 
   return (
-    <ParagraphWrap>
+    <ParagraphWrap paragraphPrefixType={paragraphPrefixType}>
       {prefix && <PrefixRowWrap>{prefix}</PrefixRowWrap>}
       <TextFieldWrap
         autoFocus={autoFocus}
@@ -52,8 +59,9 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
   );
 };
 
-const ParagraphWrap = styled.div`
+const ParagraphWrap = styled.div<{ paragraphPrefixType?: ParagraphPrefixType }>`
   display: flex;
+  margin-bottom: ${(props) => (props.paragraphPrefixType ? '0px' : '32px')};
 `;
 
 const TextFieldWrap = styled(TextField)`
