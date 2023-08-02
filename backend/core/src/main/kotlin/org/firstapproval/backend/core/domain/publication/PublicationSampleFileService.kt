@@ -2,6 +2,7 @@ package org.firstapproval.backend.core.domain.publication
 
 import org.firstapproval.backend.core.domain.file.SAMPLE_FILES
 import org.firstapproval.backend.core.domain.file.FileStorageService
+import org.firstapproval.backend.core.domain.file.HashService
 import org.firstapproval.backend.core.domain.user.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -13,7 +14,8 @@ import java.util.UUID.randomUUID
 class PublicationSampleFileService(
     private val publicationSampleFileRepository: PublicationSampleFileRepository,
     private val fileStorageService: FileStorageService,
-    private val publicationRepository: PublicationRepository
+    private val publicationRepository: PublicationRepository,
+    private val hashService: HashService
 ) {
 
     fun getPublicationSampleFiles(publicationId: UUID, dirPath: String): List<PublicationSampleFile> {
@@ -26,18 +28,21 @@ class PublicationSampleFileService(
         val publication = publicationRepository.getReferenceById(publicationId)
         checkAccessToPublication(user, publication)
         checkDuplicateNames(fullPath, publicationId)
+        var hash: String? = null
+        if (!isDir) {
+            fileStorageService.save(SAMPLE_FILES, fileId.toString(), data!!)
+            hash = hashService.getHash(data)
+        }
         val file = publicationSampleFileRepository.save(
             PublicationSampleFile(
                 id = fileId,
                 publication = publication,
                 fullPath = fullPath,
                 dirPath = extractDirPath(fullPath),
-                isDir = isDir
+                isDir = isDir,
+                hash = hash
             )
         )
-        if (!isDir) {
-            fileStorageService.save(SAMPLE_FILES, fileId.toString(), data!!)
-        }
         return file
     }
 

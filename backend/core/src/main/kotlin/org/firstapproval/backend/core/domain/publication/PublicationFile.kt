@@ -19,6 +19,7 @@ class PublicationFile(
     var description: String? = null,
     var dirPath: String,
     val isDir: Boolean,
+    var hash: String? = null,
     var creationTime: ZonedDateTime = now()
 ) {
     val name get() = fullPath.substring(fullPath.lastIndexOf('/') + 1)
