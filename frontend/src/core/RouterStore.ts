@@ -48,7 +48,7 @@ export class RouterStore {
       lastPathSegment: computed,
       initialPageError: observable,
       setInitialPageError: action,
-      navigatePage: action
+      setPage: action
     });
 
     reaction(() => authStore.token, this.goHome);

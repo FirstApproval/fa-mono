@@ -14,6 +14,7 @@ import { routerStore } from '../../core/router';
 import { HomePageStore } from './HomePageStore';
 import { observer } from 'mobx-react-lite';
 import { Page } from '../../core/RouterStore';
+import { UserMenu } from '../../components/UserMenu';
 
 export const HomePage: FunctionComponent = observer(() => {
   const [store] = useState(() => new HomePageStore());
@@ -28,14 +29,7 @@ export const HomePage: FunctionComponent = observer(() => {
       <FlexHeader>
         <Logo onClick={routerStore.goHome}>First Approval</Logo>
         <FlexHeaderRight>
-          <Button
-            variant="outlined"
-            size={'medium'}
-            onClick={() => {
-              authStore.token = undefined;
-            }}>
-            Sign out
-          </Button>
+          <UserMenu />
         </FlexHeaderRight>
       </FlexHeader>
       <FlexBodyCenter>
