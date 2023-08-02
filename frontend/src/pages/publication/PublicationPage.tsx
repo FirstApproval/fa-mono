@@ -13,7 +13,6 @@ import {
 } from './../common.styled';
 import { FileUploader } from '../../fire-browser/FileUploader';
 import { routerStore } from '../../core/router';
-import { authStore } from '../../core/auth';
 import styled from '@emotion/styled';
 import {
   AuthorsPlaceholder,
@@ -44,6 +43,7 @@ import { TitleEditor } from './editors/TitleEditor';
 import { ResearchAreaEditor } from './editors/ResearchAreaEditor';
 import { ResearchAreaPage } from './ResearchAreaPage';
 import { action } from 'mobx';
+import { UserMenu } from '../../components/UserMenu';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -70,14 +70,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
             <ButtonWrap variant="outlined" size={'medium'} onClick={() => {}}>
               Preview
             </ButtonWrap>
-            <Button
-              variant="outlined"
-              size={'medium'}
-              onClick={() => {
-                authStore.token = undefined;
-              }}>
-              Sign out
-            </Button>
+            <UserMenu />
           </FlexHeaderRight>
         </FlexHeader>
         <FlexBodyCenter>
