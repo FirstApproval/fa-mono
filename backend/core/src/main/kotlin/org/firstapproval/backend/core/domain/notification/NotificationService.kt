@@ -59,4 +59,18 @@ class NotificationService(
         mailService.send(email, "[FirstApproval] Password recovery link", html, true)
     }
 
+    fun sendEmailPasswordChanged(email: String, name: String?) {
+        if (emailProperties.noopMode) {
+            log.info { "password changed email" }
+            return
+        }
+        val context = Context()
+        val model: MutableMap<String, Any> = HashMap()
+        model["greeting"] = "Hi $name,"
+        model["email"] = email
+        context.setVariables(model)
+        val html = templateEngine.process("password-changed", context)
+        mailService.send(email, "[FirstApproval] Password changed", html, true)
+    }
+
 }
