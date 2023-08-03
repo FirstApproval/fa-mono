@@ -79,7 +79,7 @@ class PublicationController(
     }
 
     override fun editPublication(id: UUID, publicationEditRequest: PublicationEditRequest): ResponseEntity<Void> {
-        publicationService.edit(id, publicationEditRequest)
+        publicationService.edit(authHolderService.user, id, publicationEditRequest)
         return ok().build()
     }
 }
