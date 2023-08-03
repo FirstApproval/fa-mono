@@ -8,13 +8,15 @@ export class RestorePasswordStore {
   isError = false;
   isSubmitted = false;
   isSentAgain = false;
+  isSubmitting = false;
 
   constructor() {
     makeObservable(this, {
       email: observable,
       isError: observable,
       isSubmitted: observable,
-      isSentAgain: observable
+      isSentAgain: observable,
+      isSubmitting: observable
     });
   }
 
@@ -28,6 +30,7 @@ export class RestorePasswordStore {
     if (this.isSentAgain) {
       return;
     }
+    this.isSubmitting = true;
     const request = this.getRequestPasswordResetRequestData();
     this.isError = false;
     try {
@@ -39,6 +42,7 @@ export class RestorePasswordStore {
         this.isSentAgain = true;
       }
       this.isSubmitted = true;
+      this.isSubmitting = false;
     }
   }
 }

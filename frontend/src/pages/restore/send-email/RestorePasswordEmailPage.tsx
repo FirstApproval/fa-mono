@@ -1,5 +1,11 @@
 import { type FunctionComponent, useState } from 'react';
-import { Button, InputAdornment, Link, TextField } from '@mui/material';
+import {
+  Button,
+  CircularProgress,
+  InputAdornment,
+  Link,
+  TextField
+} from '@mui/material';
 import styled from '@emotion/styled';
 import { ArrowForward, MailOutlined } from '@mui/icons-material';
 import { observer } from 'mobx-react-lite';
@@ -78,19 +84,22 @@ export const RestorePasswordEmailPage: FunctionComponent<RestorePasswordEmailPro
                   }}
                 />
               </div>
-              <FullWidthButton
-                disabled={!emailNonEmpty}
-                variant="contained"
-                size={'large'}
-                endIcon={<ArrowForward />}
-                onClick={async () => {
-                  const isValid = validate();
-                  if (isValid) {
-                    await props.store.submitRegistrationRequest();
-                  }
-                }}>
-                Continue
-              </FullWidthButton>
+              {props.store.isSubmitting && <CircularProgress />}
+              {!props.store.isSubmitting && (
+                <FullWidthButton
+                  disabled={!emailNonEmpty}
+                  variant="contained"
+                  size={'large'}
+                  endIcon={<ArrowForward />}
+                  onClick={async () => {
+                    const isValid = validate();
+                    if (isValid) {
+                      await props.store.submitRegistrationRequest();
+                    }
+                  }}>
+                  Continue
+                </FullWidthButton>
+              )}
               <LinkTextCenterWrap color="inherit" onClick={props.onSignInClick}>
                 Back to Sign In
               </LinkTextCenterWrap>
