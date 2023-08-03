@@ -50,7 +50,13 @@ class NotificationService(
             log.info { link }
             return
         }
-        mailService.send(email, "[FirstApproval] Password recovery link", link)
+        val context = Context()
+        val model: MutableMap<String, Any> = HashMap()
+        model["link"] = link
+        model["email"] = email
+        context.setVariables(model)
+        val html = templateEngine.process("password-restore-email-template", context)
+        mailService.send(email, "[FirstApproval] Password recovery link", html, true)
     }
 
 }

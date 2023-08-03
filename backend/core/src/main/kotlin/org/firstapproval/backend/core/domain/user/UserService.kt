@@ -32,7 +32,7 @@ import java.util.*
 import java.util.UUID.*
 import javax.naming.LimitExceededException
 
-const val SEND_EMAIL_LIMIT = 1
+const val SEND_EMAIL_LIMIT = 2
 
 const val AUTHORIZATION_RATE_LIMIT = 4
 

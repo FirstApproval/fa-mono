@@ -100,11 +100,9 @@ export const RestorePasswordEmailPage: FunctionComponent<RestorePasswordEmailPro
             <FlexBody>
               <Header>Reset your password</Header>
               <EmailLabel>
-                {/* eslint-disable-next-line react/no-unescaped-entities */}
-                If an account exists for {props.store.email} we'll send
-                {/* eslint-disable-next-line react/no-unescaped-entities */}
-                instructions for resetting your password. Didn't get them? Check
-                the email address or ask to resend the instructions.
+                If an account exists for {props.store.email} we&apos;ll send
+                instructions for resetting your password. Didn&apos;t get them?
+                Check the email address or ask to resend the instructions.
               </EmailLabel>
               <LoadingButton
                 variant="contained"
@@ -114,8 +112,7 @@ export const RestorePasswordEmailPage: FunctionComponent<RestorePasswordEmailPro
               </LoadingButton>
               {props.store.isSentAgain && (
                 <ContactUsWrap>
-                  {/* eslint-disable-next-line react/no-unescaped-entities */}
-                  If you still haven't received the email, please{' '}
+                  If you still haven&apos;t received the email, please{' '}
                   {<Link color="inherit">contact us.</Link>}
                 </ContactUsWrap>
               )}

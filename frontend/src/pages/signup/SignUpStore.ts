@@ -8,6 +8,8 @@ import { registrationService, userService } from '../../core/service';
 import { authStore } from '../../core/auth';
 import { type AxiosError } from 'axios';
 
+export const REGISTRATION_CONFIRMATION_TOKEN_STORAGE_KEY = 'registration_token';
+
 export class SignUpStore {
   email: string = '';
   firstName: string = '';
@@ -58,6 +60,10 @@ export class SignUpStore {
     try {
       const response = await registrationService.startRegistration(request);
       this.lastResponse = response.data;
+      localStorage.setItem(
+        REGISTRATION_CONFIRMATION_TOKEN_STORAGE_KEY,
+        response.data.registrationToken
+      );
     } catch (e) {
       this.isError = true;
     } finally {

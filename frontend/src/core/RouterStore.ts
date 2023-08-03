@@ -69,6 +69,12 @@ export class RouterStore {
       const authType = pathToOauthType[path] ?? undefined;
       const authCode = queryParams.get('code') ?? undefined;
 
+      if (path.startsWith('/registration-confirmation')) {
+        authStore.token = undefined;
+        this.navigatePage(Page.EMAIL_VERIFICATION, path);
+        return;
+      }
+
       if (path.startsWith('/password-change-confirmation')) {
         authStore.token = undefined;
         this.navigatePage(Page.RESTORE_PASSWORD, path);
@@ -104,6 +110,9 @@ export class RouterStore {
             this.setInitialPageError('Authorization failed');
             this.navigatePage(Page.SIGN_IN);
           });
+      } else if (authStore.token) {
+        this.setPage(Page.HOME_PAGE);
+        return;
       } else {
         this.setPage(Page.SIGN_IN);
         return;
