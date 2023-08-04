@@ -44,18 +44,28 @@ export class RouterStore {
   initialPageError: string | undefined;
 
   constructor() {
-    makeObservable<RouterStore, '_page' | '_path' | '_queryParams'>(this, {
-      _page: observable,
-      _path: observable,
-      _queryParams: observable,
-      page: computed,
-      lastPathSegment: computed,
-      initialPageError: observable,
-      setInitialPageError: action,
-      setPage: action
-    });
+    makeObservable<RouterStore, '_page' | '_path' | '_queryParams' | 'setPage'>(
+      this,
+      {
+        _page: observable,
+        _path: observable,
+        _queryParams: observable,
+        page: computed,
+        lastPathSegment: computed,
+        initialPageError: observable,
+        setInitialPageError: action,
+        setPage: action
+      }
+    );
 
-    reaction(() => authStore.token, this.goHome);
+    reaction(
+      () => authStore.token,
+      (token) => {
+        if (!token) {
+          this.navigatePage(Page.SIGN_IN);
+        }
+      }
+    );
 
     window.addEventListener('popstate', (e) => {
       const state = e.state;
@@ -123,7 +133,7 @@ export class RouterStore {
     return this._page;
   }
 
-  setPage = (value: Page, path: string = '/'): void => {
+  private readonly setPage = (value: Page, path: string = '/'): void => {
     this._page = value;
     this._path = path;
     this._queryParams = new URLSearchParams(path);
