@@ -21,6 +21,7 @@ export enum Page {
   SIGN_UP_PASSWORD,
   EMAIL_VERIFICATION,
 
+  RESTORE_PASSWORD,
   RESTORE_PASSWORD_EMAIL
 }
 
@@ -68,6 +69,31 @@ export class RouterStore {
       const authType = pathToOauthType[path] ?? undefined;
       const authCode = queryParams.get('code') ?? undefined;
 
+      if (path.startsWith('/registration-confirmation')) {
+        authStore.token = undefined;
+        this.navigatePage(Page.EMAIL_VERIFICATION, path);
+        return;
+      }
+
+      if (path.startsWith('/password-change-confirmation')) {
+        authStore.token = undefined;
+        this.navigatePage(Page.RESTORE_PASSWORD, path);
+        return;
+      }
+
+      if (path.startsWith('/publication')) {
+        this.navigatePage(Page.PUBLICATION, path);
+        return;
+      }
+      if (path.startsWith('/account')) {
+        this.navigatePage(Page.ACCOUNT, path);
+        return;
+      }
+      if (path.startsWith('/profile')) {
+        this.navigatePage(Page.PROFILE, path);
+        return;
+      }
+
       if (authType !== undefined && authCode !== undefined) {
         authService
           .authorizeOauth({
@@ -84,19 +110,11 @@ export class RouterStore {
             this.setInitialPageError('Authorization failed');
             this.navigatePage(Page.SIGN_IN);
           });
+      } else if (authStore.token) {
+        this.setPage(Page.HOME_PAGE);
         return;
-      }
-
-      if (path.startsWith('/publication')) {
-        this.navigatePage(Page.PUBLICATION, path);
-        return;
-      }
-      if (path.startsWith('/account')) {
-        this.navigatePage(Page.ACCOUNT, path);
-        return;
-      }
-      if (path.startsWith('/profile')) {
-        this.navigatePage(Page.PROFILE, path);
+      } else {
+        this.setPage(Page.SIGN_IN);
         return;
       }
 

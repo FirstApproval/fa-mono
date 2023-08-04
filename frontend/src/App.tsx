@@ -15,13 +15,14 @@ import { Page } from './core/RouterStore';
 import { EmailVerificationPage } from './pages/signup/EmailVerificationPage';
 import { routerStore } from './core/router';
 import { SignInStore } from './pages/login/SignInStore';
-import { RestorePasswordEmail } from './pages/restore-password/RestorePasswordEmail';
-import { RestorePasswordStore } from './pages/restore-password/RestorePasswordStore';
+import { RestorePasswordEmailPage } from './pages/restore/send-email/RestorePasswordEmailPage';
+import { RestorePasswordStore } from './pages/restore/send-email/RestorePasswordStore';
 import { PublicationPage } from './pages/publication/PublicationPage';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 import { ProfilePage } from './pages/user/ProfilePage';
 import { AccountPage } from './pages/user/AccountPage';
+import { ResetPasswordPage } from './pages/restore/set-password/RestorePasswordPage';
 
 const App: FunctionComponent = observer(() => {
   const { page, navigatePage } = routerStore;
@@ -100,18 +101,23 @@ const App: FunctionComponent = observer(() => {
               }}
             />
           )}
-          {page === Page.RESTORE_PASSWORD_EMAIL && (
-            <RestorePasswordEmail
-              store={restorePasswordStore}
+          {page === Page.RESTORE_PASSWORD && (
+            <ResetPasswordPage
               onSignInClick={() => {
                 navigatePage(Page.SIGN_IN);
               }}
-              onContinueClick={() => {
-                if (!restorePasswordStore.isSubmitting) {
-                  void restorePasswordStore
-                    .submitRegistrationRequest()
-                    .then(() => {});
-                }
+              onSignUpClick={() => {
+                navigatePage(Page.SIGN_UP);
+              }}></ResetPasswordPage>
+          )}
+          {page === Page.RESTORE_PASSWORD_EMAIL && (
+            <RestorePasswordEmailPage
+              store={restorePasswordStore}
+              onSignUpClick={() => {
+                navigatePage(Page.SIGN_UP);
+              }}
+              onSignInClick={() => {
+                navigatePage(Page.SIGN_IN);
               }}
             />
           )}
