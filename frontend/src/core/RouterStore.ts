@@ -71,26 +71,26 @@ export class RouterStore {
 
       if (path.startsWith('/registration-confirmation')) {
         authStore.token = undefined;
-        this.navigatePage(Page.EMAIL_VERIFICATION, path);
+        this.navigatePage(Page.EMAIL_VERIFICATION, path, true);
         return;
       }
 
       if (path.startsWith('/password-change-confirmation')) {
         authStore.token = undefined;
-        this.navigatePage(Page.RESTORE_PASSWORD, path);
+        this.navigatePage(Page.RESTORE_PASSWORD, path, true);
         return;
       }
 
       if (path.startsWith('/publication')) {
-        this.navigatePage(Page.PUBLICATION, path);
+        this.navigatePage(Page.PUBLICATION, path, true);
         return;
       }
       if (path.startsWith('/account')) {
-        this.navigatePage(Page.ACCOUNT, path);
+        this.navigatePage(Page.ACCOUNT, path, true);
         return;
       }
       if (path.startsWith('/profile')) {
-        this.navigatePage(Page.PROFILE, path);
+        this.navigatePage(Page.PROFILE, path, true);
         return;
       }
 
@@ -103,22 +103,17 @@ export class RouterStore {
           .then((response) => {
             const token = response.data.token;
             authStore.token = token;
-            window.history.replaceState({}, document.title, '/');
-            this.navigatePage(Page.HOME_PAGE);
+            this.navigatePage(Page.HOME_PAGE, '/', true);
           })
           .catch(() => {
             this.setInitialPageError('Authorization failed');
-            this.navigatePage(Page.SIGN_IN);
+            this.navigatePage(Page.SIGN_IN, '/', true);
           });
       } else if (authStore.token) {
-        this.setPage(Page.HOME_PAGE);
-        return;
+        this.navigatePage(Page.HOME_PAGE, '/', true);
       } else {
-        this.setPage(Page.SIGN_IN);
-        return;
+        this.navigatePage(Page.SIGN_IN, '/', true);
       }
-
-      this.goHome();
     };
 
     restoreFromUrl();
@@ -134,9 +129,17 @@ export class RouterStore {
     this._queryParams = new URLSearchParams(path);
   };
 
-  navigatePage = (value: Page, path: string = '/'): void => {
+  navigatePage = (
+    value: Page,
+    path: string = '/',
+    replace: boolean = false
+  ): void => {
     const stateObject = { page: value, path };
-    window.history.pushState(stateObject, document.title, path);
+    if (replace) {
+      window.history.replaceState(stateObject, document.title, path);
+    } else {
+      window.history.pushState(stateObject, document.title, path);
+    }
     this.setPage(value, path);
   };
 

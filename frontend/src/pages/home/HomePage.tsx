@@ -15,6 +15,7 @@ import { observer } from 'mobx-react-lite';
 import { Page } from '../../core/RouterStore';
 import { UserMenu } from '../../components/UserMenu';
 import { Edit } from '@mui/icons-material';
+import styled from '@emotion/styled';
 
 export const HomePage: FunctionComponent = observer(() => {
   const [store] = useState(() => new HomePageStore());
@@ -47,7 +48,15 @@ export const HomePage: FunctionComponent = observer(() => {
               {store.publications.map((p) => {
                 return (
                   <div key={p.id} style={{ marginBottom: '16px' }}>
-                    <Link href={`/publication/${p.id}`}>{p.title ?? p.id}</Link>
+                    <LinkWrap
+                      onClick={() => {
+                        routerStore.navigatePage(
+                          Page.PUBLICATION,
+                          `/publication/${p.id}`
+                        );
+                      }}>
+                      {p.title ?? p.id}
+                    </LinkWrap>
                   </div>
                 );
               })}
@@ -58,3 +67,7 @@ export const HomePage: FunctionComponent = observer(() => {
     </Parent>
   );
 });
+
+const LinkWrap = styled(Link)`
+  cursor: pointer;
+`;
