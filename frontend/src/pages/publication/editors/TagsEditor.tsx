@@ -10,26 +10,26 @@ import { type EditorProps } from './ParagraphEditor';
 export const TagsEditor = observer((props: EditorProps): ReactElement => {
   const [newTag, setNewTag] = useState('');
   const [enableAddingNewTag, setEnableAddingNewTag] = useState(
-    props.editorStore.tags.size === 0
+    props.publicationStore.tags.size === 0
   );
 
   return (
     <ContentEditorWrap>
       <LabelWrap>Tags</LabelWrap>
       <div>
-        {Array.from(props.editorStore.tags).map((tag, index) => (
+        {Array.from(props.publicationStore.tags).map((tag, index) => (
           <ChipWrap
             key={index}
             label={tag}
             onDelete={
-              props.isReadonly
+              props.publicationStore.isReadonly
                 ? undefined
                 : () => {
-                    props.editorStore.deleteTag(tag);
+                    props.publicationStore.deleteTag(tag);
                   }
             }></ChipWrap>
         ))}
-        {!props.isReadonly && !enableAddingNewTag && (
+        {!props.publicationStore.isReadonly && !enableAddingNewTag && (
           <a>
             <AddNewTagButtonWrap
               onClick={() => {
@@ -52,7 +52,7 @@ export const TagsEditor = observer((props: EditorProps): ReactElement => {
               if (event.key === 'Enter' || event.keyCode === 13) {
                 event.preventDefault();
                 event.stopPropagation();
-                props.editorStore.addTag(newTag);
+                props.publicationStore.addTag(newTag);
                 setNewTag('');
                 setEnableAddingNewTag(false);
               }
@@ -65,7 +65,7 @@ export const TagsEditor = observer((props: EditorProps): ReactElement => {
           <IconButtonWrap
             onClick={() => {
               if (newTag) {
-                props.editorStore.addTag(newTag);
+                props.publicationStore.addTag(newTag);
                 setNewTag('');
                 setEnableAddingNewTag(false);
               }

@@ -11,7 +11,7 @@ export const ResearchAreaEditor = (props: EditorProps): ReactElement => {
   const [addAuthorVisible, setAddAuthorVisible] = useState(false);
 
   const [researchArea, setResearchArea] = useState(
-    props.editorStore.researchArea
+    props.publicationStore.researchArea
   );
   const [isValidResearchArea, setIsValidResearchArea] = useState(true);
 
@@ -27,10 +27,10 @@ export const ResearchAreaEditor = (props: EditorProps): ReactElement => {
     setAddAuthorVisible(false);
   };
 
-  if (props.isReadonly) {
+  if (props.publicationStore.isReadonly) {
     return (
       <ReadonlyContentPlaceholderWrap>
-        {props.editorStore.researchArea}
+        {props.publicationStore.researchArea}
       </ReadonlyContentPlaceholderWrap>
     );
   }
@@ -42,7 +42,7 @@ export const ResearchAreaEditor = (props: EditorProps): ReactElement => {
         onClick={() => {
           setAddAuthorVisible(true);
         }}>
-        {props.editorStore.researchArea}
+        {props.publicationStore.researchArea}
       </ContentPlaceholderWrap>
       <Dialog
         open={addAuthorVisible}
@@ -77,7 +77,7 @@ export const ResearchAreaEditor = (props: EditorProps): ReactElement => {
             onClick={() => {
               const isValid = validate();
               if (isValid) {
-                props.editorStore.updateResearchArea(researchArea);
+                props.publicationStore.updateResearchArea(researchArea);
                 handleCloseEdit();
               }
             }}>

@@ -63,6 +63,12 @@ export class PublicationStore {
     );
   }
 
+  get isReadonly(): boolean {
+    return (
+      this.viewMode === ViewMode.PREVIEW || this.viewMode === ViewMode.VIEW
+    );
+  }
+
   get authors(): Author[] {
     return [...this.confirmedAuthors, ...this.unconfirmedAuthors];
   }

@@ -5,18 +5,18 @@ import { TextField } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 
 export const TitleEditor = observer((props: EditorProps) => {
-  const { editorStore } = props;
+  const { publicationStore } = props;
 
-  if (props.isReadonly) {
-    return <ContentWrap>{editorStore.title}</ContentWrap>;
+  if (props.publicationStore.isReadonly) {
+    return <ContentWrap>{publicationStore.title}</ContentWrap>;
   }
 
   return (
     <TextFieldWrap
-      autoFocus={editorStore.title.length === 0}
-      value={editorStore.title}
+      autoFocus={publicationStore.title.length === 0}
+      value={publicationStore.title}
       onChange={(e) => {
-        editorStore.updateTitle(e.currentTarget.value);
+        publicationStore.updateTitle(e.currentTarget.value);
       }}
       multiline
       autoComplete={'off'}

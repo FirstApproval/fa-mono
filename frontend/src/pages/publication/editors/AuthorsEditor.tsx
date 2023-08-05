@@ -40,7 +40,9 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
         setAuthorOptions(
           result.filter(
             (a1) =>
-              !props.editorStore.confirmedAuthors.find((a2) => a1.id === a2.id)
+              !props.publicationStore.confirmedAuthors.find(
+                (a2) => a1.id === a2.id
+              )
           )
         );
       })
@@ -57,10 +59,10 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
     <>
       <ContentEditorWrap>
         <LabelWrap>Authors</LabelWrap>
-        {props.editorStore.authors.map((author) => {
+        {props.publicationStore.authors.map((author) => {
           return <AuthorElement key={author.email} author={author} />;
         })}
-        {!props.isReadonly && !searchVisible && (
+        {!props.publicationStore.isReadonly && !searchVisible && (
           <Button
             variant={'outlined'}
             startIcon={<Add />}
@@ -76,7 +78,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
               <Autocomplete
                 onChange={(event: any, newValue: Author | null) => {
                   if (newValue) {
-                    props.editorStore.addConfirmedAuthor(newValue);
+                    props.publicationStore.addConfirmedAuthor(newValue);
                   }
                 }}
                 inputValue={query}
@@ -179,7 +181,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
           <Button onClick={handleCloseAddAuthor}>Cancel</Button>
           <Button
             onClick={() => {
-              props.editorStore.addUnconfirmedAuthor(addAuthorStore);
+              props.publicationStore.addUnconfirmedAuthor(addAuthorStore);
               handleCloseAddAuthor();
             }}>
             Create

@@ -12,8 +12,7 @@ import {
 import { ContentEditorWrap, LabelWrap } from './styled';
 
 export interface EditorProps {
-  isReadonly?: boolean;
-  editorStore: PublicationStore;
+  publicationStore: PublicationStore;
 }
 
 interface ContentEditorProps {
@@ -30,13 +29,13 @@ export const DescriptionEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <ParagraphContentEditor
-        isReadonly={props.isReadonly}
-        value={props.editorStore.description}
+        isReadonly={props.publicationStore.isReadonly}
+        value={props.publicationStore.description}
         onChange={(idx, value) => {
-          props.editorStore.updateDescriptionParagraph(idx, value);
+          props.publicationStore.updateDescriptionParagraph(idx, value);
         }}
         onAddClick={(idx) => {
-          props.editorStore.addDescriptionParagraph(idx);
+          props.publicationStore.addDescriptionParagraph(idx);
         }}
         placeholder={'Describe the aim of your experiment or research...'}
       />
@@ -48,13 +47,13 @@ export const PredictedGoalsEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <ParagraphContentEditor
-        isReadonly={props.isReadonly}
-        value={props.editorStore.predictedGoals}
+        isReadonly={props.publicationStore.isReadonly}
+        value={props.publicationStore.predictedGoals}
         onChange={(idx, value) => {
-          props.editorStore.updatePredictedGoalsParagraph(idx, value);
+          props.publicationStore.updatePredictedGoalsParagraph(idx, value);
         }}
         onAddClick={(idx) => {
-          props.editorStore.addPredictedGoalsParagraph(idx);
+          props.publicationStore.addPredictedGoalsParagraph(idx);
         }}
         text={'Predicted goals'}
         placeholder={'Mention your expected outcomes or hypotheses...'}
@@ -66,13 +65,13 @@ export const PredictedGoalsEditor = observer(
 export const MethodEditor = observer((props: EditorProps): ReactElement => {
   return (
     <ParagraphContentEditor
-      isReadonly={props.isReadonly}
-      value={props.editorStore.method}
+      isReadonly={props.publicationStore.isReadonly}
+      value={props.publicationStore.method}
       onChange={(idx, value) => {
-        props.editorStore.updateMethodParagraph(idx, value);
+        props.publicationStore.updateMethodParagraph(idx, value);
       }}
       onAddClick={(idx) => {
-        props.editorStore.addMethodParagraph(idx);
+        props.publicationStore.addMethodParagraph(idx);
       }}
       text={'Method'}
       placeholder={
@@ -86,13 +85,13 @@ export const ObjectOfStudyEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <ParagraphContentEditor
-        isReadonly={props.isReadonly}
-        value={props.editorStore.objectOfStudy}
+        isReadonly={props.publicationStore.isReadonly}
+        value={props.publicationStore.objectOfStudy}
         onChange={(idx, value) => {
-          props.editorStore.updateObjectOfStudyParagraph(idx, value);
+          props.publicationStore.updateObjectOfStudyParagraph(idx, value);
         }}
         onAddClick={(idx) => {
-          props.editorStore.addObjectOfStudyParagraph(idx);
+          props.publicationStore.addObjectOfStudyParagraph(idx);
         }}
         text={'Object of study'}
         placeholder={
@@ -106,13 +105,13 @@ export const ObjectOfStudyEditor = observer(
 export const SoftwareEditor = observer((props: EditorProps): ReactElement => {
   return (
     <ParagraphContentEditor
-      isReadonly={props.isReadonly}
-      value={props.editorStore.software}
+      isReadonly={props.publicationStore.isReadonly}
+      value={props.publicationStore.software}
       onChange={(idx, value) => {
-        props.editorStore.updateSoftwareParagraph(idx, value);
+        props.publicationStore.updateSoftwareParagraph(idx, value);
       }}
       onAddClick={(idx) => {
-        props.editorStore.addSoftwareParagraph(idx);
+        props.publicationStore.addSoftwareParagraph(idx);
       }}
       text={'Software'}
       placeholder={
@@ -126,13 +125,13 @@ export const GrantingOrganizationsEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <ParagraphContentEditor
-        isReadonly={props.isReadonly}
-        value={props.editorStore.grantingOrganizations}
+        isReadonly={props.publicationStore.isReadonly}
+        value={props.publicationStore.grantingOrganizations}
         onChange={(idx, value) => {
-          props.editorStore.updateGrantingOrganization(idx, value);
+          props.publicationStore.updateGrantingOrganization(idx, value);
         }}
         onAddClick={(idx) => {
-          props.editorStore.addGrantingOrganization(idx);
+          props.publicationStore.addGrantingOrganization(idx);
         }}
         paragraphPrefixType={ParagraphPrefixType.BULLET}
         text={'Granting organizations'}
@@ -148,13 +147,13 @@ export const RelatedArticlesEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <ParagraphContentEditor
-        isReadonly={props.isReadonly}
-        value={props.editorStore.relatedArticles}
+        isReadonly={props.publicationStore.isReadonly}
+        value={props.publicationStore.relatedArticles}
         onChange={(idx, value) => {
-          props.editorStore.updateRelatedArticle(idx, value);
+          props.publicationStore.updateRelatedArticle(idx, value);
         }}
         onAddClick={(idx) => {
-          props.editorStore.addRelatedArticle(idx);
+          props.publicationStore.addRelatedArticle(idx);
         }}
         paragraphPrefixType={ParagraphPrefixType.NUMERATION}
         text={'Related articles'}

@@ -54,9 +54,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
 
   const [editorStore] = useState(() => new PublicationStore(publicationId, fs));
 
-  const { isLoading, researchArea, viewMode } = editorStore;
-
-  const isView = viewMode === ViewMode.PREVIEW || viewMode === ViewMode.VIEW;
+  const { isLoading, researchArea } = editorStore;
 
   const emptyResearchArea = researchArea.length === 0;
 
@@ -110,14 +108,13 @@ export const PublicationPage: FunctionComponent = observer(() => {
               <>
                 {!emptyResearchArea && (
                   <PublicationBody
-                    isView={isView}
                     publicationId={publicationId}
-                    editorStore={editorStore}
+                    publicationStore={editorStore}
                     fs={fs}
                   />
                 )}
                 {emptyResearchArea && (
-                  <ResearchAreaPage editorStore={editorStore} />
+                  <ResearchAreaPage publicationStore={editorStore} />
                 )}
               </>
             )}
@@ -131,11 +128,10 @@ export const PublicationPage: FunctionComponent = observer(() => {
 const PublicationBody = observer(
   (props: {
     publicationId: string;
-    isView: boolean;
-    editorStore: PublicationStore;
+    publicationStore: PublicationStore;
     fs: ChonkyFileSystem;
   }): ReactElement => {
-    const { isView, fs, editorStore } = props;
+    const { fs, publicationStore } = props;
 
     const {
       predictedGoalsEnabled,
@@ -147,61 +143,59 @@ const PublicationBody = observer(
       grantingOrganizationsEnabled,
       relatedArticlesEnabled,
       tagsEnabled
-    } = editorStore;
+    } = publicationStore;
 
     return (
       <>
-        <TitleEditor editorStore={editorStore} isReadonly={isView} />
-        <ResearchAreaEditor editorStore={editorStore} isReadonly={isView} />
-        <DescriptionEditor editorStore={editorStore} isReadonly={isView} />
+        <TitleEditor publicationStore={publicationStore} />
+        <ResearchAreaEditor publicationStore={publicationStore} />
+        <DescriptionEditor publicationStore={publicationStore} />
         {!predictedGoalsEnabled && (
           <PredictedGoalsPlaceholder
             onClick={action(() => {
-              editorStore.predictedGoalsEnabled = true;
-              editorStore.addPredictedGoalsParagraph(0);
+              publicationStore.predictedGoalsEnabled = true;
+              publicationStore.addPredictedGoalsParagraph(0);
             })}
           />
         )}
         {predictedGoalsEnabled && (
-          <PredictedGoalsEditor editorStore={editorStore} isReadonly={isView} />
+          <PredictedGoalsEditor publicationStore={publicationStore} />
         )}
         {!methodEnabled && (
           <MethodPlaceholder
             onClick={action(() => {
-              editorStore.methodEnabled = true;
-              editorStore.addMethodParagraph(0);
+              publicationStore.methodEnabled = true;
+              publicationStore.addMethodParagraph(0);
             })}
           />
         )}
-        {methodEnabled && (
-          <MethodEditor editorStore={editorStore} isReadonly={isView} />
-        )}
+        {methodEnabled && <MethodEditor publicationStore={publicationStore} />}
         {!objectOfStudyEnabled && (
           <ObjectOfStudyPlaceholder
             onClick={action(() => {
-              editorStore.objectOfStudyEnabled = true;
-              editorStore.addObjectOfStudyParagraph(0);
+              publicationStore.objectOfStudyEnabled = true;
+              publicationStore.addObjectOfStudyParagraph(0);
             })}
           />
         )}
         {objectOfStudyEnabled && (
-          <ObjectOfStudyEditor editorStore={editorStore} isReadonly={isView} />
+          <ObjectOfStudyEditor publicationStore={publicationStore} />
         )}
         {!softwareEnabled && (
           <SoftwarePlaceholder
             onClick={action(() => {
-              editorStore.softwareEnabled = true;
-              editorStore.addSoftwareParagraph(0);
+              publicationStore.softwareEnabled = true;
+              publicationStore.addSoftwareParagraph(0);
             })}
           />
         )}
         {softwareEnabled && (
-          <SoftwareEditor editorStore={editorStore} isReadonly={isView} />
+          <SoftwareEditor publicationStore={publicationStore} />
         )}
         {!filesEnabled && (
           <FilesPlaceholder
             onClick={action(() => {
-              editorStore.filesEnabled = true;
+              publicationStore.filesEnabled = true;
             })}
           />
         )}
@@ -209,51 +203,43 @@ const PublicationBody = observer(
         {!authorsEnabled && (
           <AuthorsPlaceholder
             onClick={action(() => {
-              editorStore.authorsEnabled = true;
+              publicationStore.authorsEnabled = true;
             })}
           />
         )}
         {authorsEnabled && (
-          <AuthorsEditor editorStore={editorStore} isReadonly={isView} />
+          <AuthorsEditor publicationStore={publicationStore} />
         )}
         {!grantingOrganizationsEnabled && (
           <GrantingOrganisationsPlaceholder
             onClick={action(() => {
-              editorStore.grantingOrganizationsEnabled = true;
-              editorStore.addGrantingOrganization(0);
+              publicationStore.grantingOrganizationsEnabled = true;
+              publicationStore.addGrantingOrganization(0);
             })}
           />
         )}
         {grantingOrganizationsEnabled && (
-          <GrantingOrganizationsEditor
-            editorStore={editorStore}
-            isReadonly={isView}
-          />
+          <GrantingOrganizationsEditor publicationStore={publicationStore} />
         )}
         {!relatedArticlesEnabled && (
           <RelatedArticlesPlaceholder
             onClick={action(() => {
-              editorStore.relatedArticlesEnabled = true;
-              editorStore.addRelatedArticle(0);
+              publicationStore.relatedArticlesEnabled = true;
+              publicationStore.addRelatedArticle(0);
             })}
           />
         )}
         {relatedArticlesEnabled && (
-          <RelatedArticlesEditor
-            editorStore={editorStore}
-            isReadonly={isView}
-          />
+          <RelatedArticlesEditor publicationStore={publicationStore} />
         )}
         {!tagsEnabled && (
           <TagsPlaceholder
             onClick={action(() => {
-              editorStore.tagsEnabled = true;
+              publicationStore.tagsEnabled = true;
             })}
           />
         )}
-        {tagsEnabled && (
-          <TagsEditor editorStore={editorStore} isReadonly={isView} />
-        )}
+        {tagsEnabled && <TagsEditor publicationStore={publicationStore} />}
       </>
     );
   }
