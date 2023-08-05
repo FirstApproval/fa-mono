@@ -13,6 +13,7 @@ export enum Page {
   HOME_PAGE,
 
   PUBLICATION,
+  SHARING_OPTIONS,
 
   PROFILE,
   ACCOUNT,
@@ -21,7 +22,7 @@ export enum Page {
   SIGN_UP_PASSWORD,
   EMAIL_VERIFICATION,
 
-  RESTORE_PASSWORD,
+  RESET_PASSWORD,
   RESTORE_PASSWORD_EMAIL
 }
 
@@ -51,6 +52,7 @@ export class RouterStore {
         _path: observable,
         _queryParams: observable,
         page: computed,
+        path: computed,
         lastPathSegment: computed,
         initialPageError: observable,
         setInitialPageError: action,
@@ -87,7 +89,7 @@ export class RouterStore {
 
       if (path.startsWith('/password-change-confirmation')) {
         authStore.token = undefined;
-        this.navigatePage(Page.RESTORE_PASSWORD, path, true);
+        this.navigatePage(Page.RESET_PASSWORD, path, true);
         return;
       }
 
@@ -127,6 +129,10 @@ export class RouterStore {
     };
 
     restoreFromUrl();
+  }
+
+  get path(): string {
+    return this._path;
   }
 
   get page(): Page {

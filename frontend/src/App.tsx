@@ -23,6 +23,7 @@ import { DndProvider } from 'react-dnd';
 import { ProfilePage } from './pages/user/ProfilePage';
 import { AccountPage } from './pages/user/AccountPage';
 import { ResetPasswordPage } from './pages/restore/set-password/RestorePasswordPage';
+import { SharingOptionsPage } from './pages/publication/SharingOptionsPage';
 
 const App: FunctionComponent = observer(() => {
   const { page, navigatePage } = routerStore;
@@ -41,6 +42,7 @@ const App: FunctionComponent = observer(() => {
           {page === Page.LOADING && <LoadingPage />}
           {page === Page.HOME_PAGE && <HomePage />}
           {page === Page.PUBLICATION && <PublicationPage />}
+          {page === Page.SHARING_OPTIONS && <SharingOptionsPage />}
           {page === Page.PROFILE && <ProfilePage />}
           {page === Page.ACCOUNT && <AccountPage />}
           {page === Page.SIGN_IN && (
@@ -101,7 +103,7 @@ const App: FunctionComponent = observer(() => {
               }}
             />
           )}
-          {page === Page.RESTORE_PASSWORD && (
+          {page === Page.RESET_PASSWORD && (
             <ResetPasswordPage
               onSignInClick={() => {
                 navigatePage(Page.SIGN_IN);

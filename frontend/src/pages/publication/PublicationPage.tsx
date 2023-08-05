@@ -44,6 +44,7 @@ import { ResearchAreaEditor } from './editors/ResearchAreaEditor';
 import { ResearchAreaPage } from './ResearchAreaPage';
 import { action } from 'mobx';
 import { UserMenu } from '../../components/UserMenu';
+import { Page } from '../../core/RouterStore';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -64,7 +65,16 @@ export const PublicationPage: FunctionComponent = observer(() => {
         <FlexHeader>
           <Logo onClick={routerStore.goHome}>First Approval</Logo>
           <FlexHeaderRight>
-            <ButtonWrap variant="contained" size={'medium'} onClick={() => {}}>
+            <ButtonWrap
+              variant="contained"
+              size={'medium'}
+              onClick={() => {
+                routerStore.navigatePage(
+                  Page.SHARING_OPTIONS,
+                  routerStore.path,
+                  true
+                );
+              }}>
               Publish
             </ButtonWrap>
             <ButtonWrap variant="outlined" size={'medium'} onClick={() => {}}>
