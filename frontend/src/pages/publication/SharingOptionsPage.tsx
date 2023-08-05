@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react';
+import React, { type ReactElement, useState } from 'react';
 import styled from '@emotion/styled';
 import {
   Checkbox,
@@ -6,7 +6,8 @@ import {
   FormControlLabel,
   FormGroup,
   IconButton,
-  Switch
+  Switch,
+  Tooltip
 } from '@mui/material';
 import {
   Close,
@@ -17,6 +18,8 @@ import {
 import Button from '@mui/material/Button';
 
 export const SharingOptionsPage = (): ReactElement => {
+  const [checkboxState, setCheckboxState] = useState(false);
+
   return (
     <>
       <HeaderWrap>
@@ -44,71 +47,93 @@ export const SharingOptionsPage = (): ReactElement => {
               }
               isSelected
             />
-            <SharingOption
-              icon={<MessageOutlined fontSize={'large'} />}
-              label={'On request'}
-              description={
-                'Other users must send a request with their intention cover letter, which you can approve or decline.'
-              }
-              isDisabled={true}
-            />
-            <SharingOption
-              icon={<MonetizationOnOutlined fontSize={'large'} />}
-              label={
-                <>
-                  {'Monetize'}
-                  <br />
-                  {'or Co-Authorship'}
-                </>
-              }
-              description={
-                'Set a price for access or/and accept requests for co-authorship.'
-              }
-              noMargin={true}
-              isDisabled={true}
-            />
+            <Tooltip title="Like science, we value openness and are excited to share what we're working on. New features currently in our 'lab', are being tested and perfected, so stay tuned.">
+              <SharingOption
+                icon={<MessageOutlined fontSize={'large'} />}
+                label={'On request'}
+                description={
+                  'Other users must send a request with their intention cover letter, which you can approve or decline.'
+                }
+                isDisabled={true}
+              />
+            </Tooltip>
+            <Tooltip title="Like science, we value openness and are excited to share what we're working on. New features currently in our 'lab', are being tested and perfected, so stay tuned.">
+              <SharingOption
+                icon={<MonetizationOnOutlined fontSize={'large'} />}
+                label={
+                  <>
+                    {'Monetize'}
+                    <br />
+                    {'or Co-Authorship'}
+                  </>
+                }
+                description={
+                  'Set a price for access or/and accept requests for co-authorship.'
+                }
+                noMargin={true}
+                isDisabled={true}
+              />
+            </Tooltip>
           </SharingOptionsWrap>
           <PeerReviewSection />
           <FormGroup>
             <FormControlLabel
-              control={<Checkbox />}
+              control={
+                <Checkbox
+                  checked={checkboxState}
+                  onChange={(e) => {
+                    setCheckboxState(e.currentTarget.checked);
+                  }}
+                />
+              }
               label="I confirm that all authors agree to the content, distribution, and comply with the First Approval publishing policy."
             />
           </FormGroup>
-          <ButtonWrap variant="contained">Publish now for free</ButtonWrap>
+          <ButtonWrap variant="contained" disabled={!checkboxState}>
+            Publish now for free
+          </ButtonWrap>
         </BodyContentWrap>
       </BodyWrap>
     </>
   );
 };
 
-const SharingOption = (props: {
+interface SharingOptionsProps {
   icon: ReactElement;
   label: string | ReactElement;
   description: string;
   isSelected?: boolean;
   noMargin?: boolean;
   isDisabled?: boolean;
-}): ReactElement => {
-  const { label, description, isDisabled, isSelected, noMargin } = props;
-  return (
-    <SharingOptionWrap isSelected={isSelected} noMargin={noMargin}>
-      <SoonWrap>
-        <IconWrap>{props.icon}</IconWrap>
-        {isDisabled && (
-          <MarginLeftAuto>
-            <SoonChip />
-          </MarginLeftAuto>
-        )}
-      </SoonWrap>
+}
 
-      <SharingOptionLabel isDisabled={isDisabled}>{label}</SharingOptionLabel>
-      <SharingOptionDescription isDisabled={isDisabled}>
-        {description}
-      </SharingOptionDescription>
-    </SharingOptionWrap>
-  );
-};
+// eslint-disable-next-line react/display-name
+const SharingOption = React.forwardRef<HTMLDivElement, SharingOptionsProps>(
+  (props: SharingOptionsProps, ref): ReactElement => {
+    const { label, description, isDisabled, isSelected, noMargin } = props;
+    return (
+      <SharingOptionWrap
+        {...props}
+        ref={ref}
+        isSelected={isSelected}
+        noMargin={noMargin}>
+        <SoonWrap>
+          <IconWrap>{props.icon}</IconWrap>
+          {isDisabled && (
+            <MarginLeftAuto>
+              <SoonChip />
+            </MarginLeftAuto>
+          )}
+        </SoonWrap>
+
+        <SharingOptionLabel isDisabled={isDisabled}>{label}</SharingOptionLabel>
+        <SharingOptionDescription isDisabled={isDisabled}>
+          {description}
+        </SharingOptionDescription>
+      </SharingOptionWrap>
+    );
+  }
+);
 
 const PeerReviewSection = (): ReactElement => {
   return (
