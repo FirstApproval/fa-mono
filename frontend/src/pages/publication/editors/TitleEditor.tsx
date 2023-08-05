@@ -7,9 +7,13 @@ import { observer } from 'mobx-react-lite';
 export const TitleEditor = observer((props: EditorProps) => {
   const { editorStore } = props;
 
+  if (props.isReadonly) {
+    return <ContentWrap>{editorStore.title}</ContentWrap>;
+  }
+
   return (
     <TextFieldWrap
-      autoFocus
+      autoFocus={editorStore.title.length === 0}
       value={editorStore.title}
       onChange={(e) => {
         editorStore.updateTitle(e.currentTarget.value);
@@ -34,5 +38,13 @@ export const TitleEditor = observer((props: EditorProps) => {
 
 const TextFieldWrap = styled(TextField)`
   width: 100%;
+  margin-bottom: 48px;
+`;
+
+const ContentWrap = styled.div`
+  font-size: 48px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 116.7%;
   margin-bottom: 48px;
 `;

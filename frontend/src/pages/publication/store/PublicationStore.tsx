@@ -1,7 +1,11 @@
 import { action, makeAutoObservable, reaction } from 'mobx';
 import { publicationService } from '../../../core/service';
 import _ from 'lodash';
-import { type Author, type Paragraph } from '../../../apis/first-approval-api';
+import {
+  type Author,
+  type Paragraph,
+  PublicationStatus
+} from '../../../apis/first-approval-api';
 import { type ChonkyFileSystem } from '../../../fire-browser/ChonkyFileSystem';
 import { v4 as uuidv4 } from 'uuid';
 import { type AddAuthorStore } from './AddAuthorStore';
@@ -10,7 +14,15 @@ const EDIT_THROTTLE_MS = 5000;
 
 export type ParagraphWithId = Paragraph & { id: string };
 
-export class PublicationEditorStore {
+export enum ViewMode {
+  EDIT,
+  PREVIEW,
+  VIEW
+}
+
+export class PublicationStore {
+  viewMode: ViewMode = ViewMode.VIEW;
+
   isLoading = true;
 
   title = '';
@@ -359,6 +371,9 @@ export class PublicationEditorStore {
           }
           if (this.fs.files.length > 0) {
             this.filesEnabled = true;
+          }
+          if (publication.status !== PublicationStatus.PUBLISHED) {
+            this.viewMode = ViewMode.EDIT;
           }
         })
       )

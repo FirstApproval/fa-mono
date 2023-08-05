@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 import { TextField } from '@mui/material';
 
 interface ParagraphProps {
+  isReadonly?: boolean;
   paragraphPrefixType?: ParagraphPrefixType;
   idx: number;
   value: string;
@@ -33,28 +34,31 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
   return (
     <ParagraphWrap paragraphPrefixType={paragraphPrefixType}>
       {prefix && <PrefixRowWrap>{prefix}</PrefixRowWrap>}
-      <TextFieldWrap
-        autoFocus={autoFocus}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter' || event.keyCode === 13) {
-            event.preventDefault();
-            event.stopPropagation();
-            onAddParagraph(idx);
-          }
-        }}
-        value={value}
-        onChange={(e) => {
-          onChange(idx, e.currentTarget.value);
-        }}
-        multiline
-        autoComplete={'off'}
-        variant={'standard'}
-        placeholder={placeholder}
-        InputProps={{
-          disableUnderline: true,
-          autoComplete: 'off'
-        }}
-      />
+      {!props.isReadonly && (
+        <TextFieldWrap
+          autoFocus={autoFocus}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.keyCode === 13) {
+              event.preventDefault();
+              event.stopPropagation();
+              onAddParagraph(idx);
+            }
+          }}
+          value={value}
+          onChange={(e) => {
+            onChange(idx, e.currentTarget.value);
+          }}
+          multiline
+          autoComplete={'off'}
+          variant={'standard'}
+          placeholder={placeholder}
+          InputProps={{
+            disableUnderline: true,
+            autoComplete: 'off'
+          }}
+        />
+      )}
+      {props.isReadonly && <div>{value}</div>}
     </ParagraphWrap>
   );
 };

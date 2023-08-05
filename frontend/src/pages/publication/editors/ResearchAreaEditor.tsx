@@ -27,6 +27,14 @@ export const ResearchAreaEditor = (props: EditorProps): ReactElement => {
     setAddAuthorVisible(false);
   };
 
+  if (props.isReadonly) {
+    return (
+      <ReadonlyContentPlaceholderWrap>
+        {props.editorStore.researchArea}
+      </ReadonlyContentPlaceholderWrap>
+    );
+  }
+
   return (
     <>
       <ContentPlaceholderWrap
@@ -98,6 +106,19 @@ const ContentPlaceholderWrap = styled.div`
   &:hover {
     cursor: pointer;
   }
+`;
+
+const ReadonlyContentPlaceholderWrap = styled.div`
+  display: inline-flex;
+  padding: 8px 16px;
+  align-items: center;
+
+  border-radius: 4px;
+  background: var(--grey-50, #f8f7fa);
+
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
 `;
 
 const AddAuthorWrap = styled.div`

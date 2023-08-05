@@ -21,11 +21,15 @@ export const TagsEditor = observer((props: EditorProps): ReactElement => {
           <ChipWrap
             key={index}
             label={tag}
-            onDelete={() => {
-              props.editorStore.deleteTag(tag);
-            }}></ChipWrap>
+            onDelete={
+              props.isReadonly
+                ? undefined
+                : () => {
+                    props.editorStore.deleteTag(tag);
+                  }
+            }></ChipWrap>
         ))}
-        {!enableAddingNewTag && (
+        {!props.isReadonly && !enableAddingNewTag && (
           <a>
             <AddNewTagButtonWrap
               onClick={() => {

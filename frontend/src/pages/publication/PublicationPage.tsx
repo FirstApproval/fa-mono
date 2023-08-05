@@ -25,7 +25,7 @@ import {
   SoftwarePlaceholder,
   TagsPlaceholder
 } from './ContentPlaceholder';
-import { PublicationEditorStore } from './store/PublicationEditorStore';
+import { PublicationStore, ViewMode } from './store/PublicationStore';
 import { observer } from 'mobx-react-lite';
 import {
   DescriptionEditor,
@@ -45,17 +45,18 @@ import { ResearchAreaPage } from './ResearchAreaPage';
 import { action } from 'mobx';
 import { UserMenu } from '../../components/UserMenu';
 import { Page } from '../../core/RouterStore';
+import { Edit } from '@mui/icons-material';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
 
   const [fs] = useState(() => new ChonkyFileSystem(publicationId));
 
-  const [editorStore] = useState(
-    () => new PublicationEditorStore(publicationId, fs)
-  );
+  const [editorStore] = useState(() => new PublicationStore(publicationId, fs));
 
-  const { isLoading, researchArea } = editorStore;
+  const { isLoading, researchArea, viewMode } = editorStore;
+
+  const isView = viewMode === ViewMode.PREVIEW || viewMode === ViewMode.VIEW;
 
   const emptyResearchArea = researchArea.length === 0;
 
@@ -78,9 +79,27 @@ export const PublicationPage: FunctionComponent = observer(() => {
               }}>
               Publish
             </ButtonWrap>
-            <ButtonWrap variant="outlined" size={'medium'} onClick={() => {}}>
-              Preview
-            </ButtonWrap>
+            {editorStore.viewMode === ViewMode.EDIT && (
+              <ButtonWrap
+                variant="outlined"
+                size={'medium'}
+                onClick={() => {
+                  editorStore.viewMode = ViewMode.PREVIEW;
+                }}>
+                Preview
+              </ButtonWrap>
+            )}
+            {editorStore.viewMode === ViewMode.PREVIEW && (
+              <ButtonWrap
+                variant="outlined"
+                size={'medium'}
+                startIcon={<Edit />}
+                onClick={() => {
+                  editorStore.viewMode = ViewMode.EDIT;
+                }}>
+                Edit
+              </ButtonWrap>
+            )}
             <UserMenu />
           </FlexHeaderRight>
         </FlexHeader>
@@ -91,6 +110,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
               <>
                 {!emptyResearchArea && (
                   <PublicationBody
+                    isView={isView}
                     publicationId={publicationId}
                     editorStore={editorStore}
                     fs={fs}
@@ -111,10 +131,11 @@ export const PublicationPage: FunctionComponent = observer(() => {
 const PublicationBody = observer(
   (props: {
     publicationId: string;
-    editorStore: PublicationEditorStore;
+    isView: boolean;
+    editorStore: PublicationStore;
     fs: ChonkyFileSystem;
   }): ReactElement => {
-    const { fs, editorStore } = props;
+    const { isView, fs, editorStore } = props;
 
     const {
       predictedGoalsEnabled,
@@ -130,9 +151,9 @@ const PublicationBody = observer(
 
     return (
       <>
-        <TitleEditor editorStore={editorStore} />
-        <ResearchAreaEditor editorStore={editorStore} />
-        <DescriptionEditor editorStore={editorStore} />
+        <TitleEditor editorStore={editorStore} isReadonly={isView} />
+        <ResearchAreaEditor editorStore={editorStore} isReadonly={isView} />
+        <DescriptionEditor editorStore={editorStore} isReadonly={isView} />
         {!predictedGoalsEnabled && (
           <PredictedGoalsPlaceholder
             onClick={action(() => {
@@ -142,7 +163,7 @@ const PublicationBody = observer(
           />
         )}
         {predictedGoalsEnabled && (
-          <PredictedGoalsEditor editorStore={editorStore} />
+          <PredictedGoalsEditor editorStore={editorStore} isReadonly={isView} />
         )}
         {!methodEnabled && (
           <MethodPlaceholder
@@ -152,7 +173,9 @@ const PublicationBody = observer(
             })}
           />
         )}
-        {methodEnabled && <MethodEditor editorStore={editorStore} />}
+        {methodEnabled && (
+          <MethodEditor editorStore={editorStore} isReadonly={isView} />
+        )}
         {!objectOfStudyEnabled && (
           <ObjectOfStudyPlaceholder
             onClick={action(() => {
@@ -162,7 +185,7 @@ const PublicationBody = observer(
           />
         )}
         {objectOfStudyEnabled && (
-          <ObjectOfStudyEditor editorStore={editorStore} />
+          <ObjectOfStudyEditor editorStore={editorStore} isReadonly={isView} />
         )}
         {!softwareEnabled && (
           <SoftwarePlaceholder
@@ -172,7 +195,9 @@ const PublicationBody = observer(
             })}
           />
         )}
-        {softwareEnabled && <SoftwareEditor editorStore={editorStore} />}
+        {softwareEnabled && (
+          <SoftwareEditor editorStore={editorStore} isReadonly={isView} />
+        )}
         {!filesEnabled && (
           <FilesPlaceholder
             onClick={action(() => {
@@ -188,7 +213,9 @@ const PublicationBody = observer(
             })}
           />
         )}
-        {authorsEnabled && <AuthorsEditor editorStore={editorStore} />}
+        {authorsEnabled && (
+          <AuthorsEditor editorStore={editorStore} isReadonly={isView} />
+        )}
         {!grantingOrganizationsEnabled && (
           <GrantingOrganisationsPlaceholder
             onClick={action(() => {
@@ -198,7 +225,10 @@ const PublicationBody = observer(
           />
         )}
         {grantingOrganizationsEnabled && (
-          <GrantingOrganizationsEditor editorStore={editorStore} />
+          <GrantingOrganizationsEditor
+            editorStore={editorStore}
+            isReadonly={isView}
+          />
         )}
         {!relatedArticlesEnabled && (
           <RelatedArticlesPlaceholder
@@ -209,7 +239,10 @@ const PublicationBody = observer(
           />
         )}
         {relatedArticlesEnabled && (
-          <RelatedArticlesEditor editorStore={editorStore} />
+          <RelatedArticlesEditor
+            editorStore={editorStore}
+            isReadonly={isView}
+          />
         )}
         {!tagsEnabled && (
           <TagsPlaceholder
@@ -218,7 +251,9 @@ const PublicationBody = observer(
             })}
           />
         )}
-        {tagsEnabled && <TagsEditor editorStore={editorStore} />}
+        {tagsEnabled && (
+          <TagsEditor editorStore={editorStore} isReadonly={isView} />
+        )}
       </>
     );
   }

@@ -2,8 +2,8 @@ import React from 'react';
 import { type ReactElement, useState } from 'react';
 import {
   type ParagraphWithId,
-  type PublicationEditorStore
-} from '../store/PublicationEditorStore';
+  type PublicationStore
+} from '../store/PublicationStore';
 import { observer } from 'mobx-react-lite';
 import {
   ParagraphElement,
@@ -12,10 +12,12 @@ import {
 import { ContentEditorWrap, LabelWrap } from './styled';
 
 export interface EditorProps {
-  editorStore: PublicationEditorStore;
+  isReadonly?: boolean;
+  editorStore: PublicationStore;
 }
 
 interface ContentEditorProps {
+  isReadonly?: boolean;
   text?: string;
   paragraphPrefixType?: ParagraphPrefixType;
   placeholder: string;
@@ -28,6 +30,7 @@ export const DescriptionEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <ParagraphContentEditor
+        isReadonly={props.isReadonly}
         value={props.editorStore.description}
         onChange={(idx, value) => {
           props.editorStore.updateDescriptionParagraph(idx, value);
@@ -45,6 +48,7 @@ export const PredictedGoalsEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <ParagraphContentEditor
+        isReadonly={props.isReadonly}
         value={props.editorStore.predictedGoals}
         onChange={(idx, value) => {
           props.editorStore.updatePredictedGoalsParagraph(idx, value);
@@ -62,6 +66,7 @@ export const PredictedGoalsEditor = observer(
 export const MethodEditor = observer((props: EditorProps): ReactElement => {
   return (
     <ParagraphContentEditor
+      isReadonly={props.isReadonly}
       value={props.editorStore.method}
       onChange={(idx, value) => {
         props.editorStore.updateMethodParagraph(idx, value);
@@ -81,6 +86,7 @@ export const ObjectOfStudyEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <ParagraphContentEditor
+        isReadonly={props.isReadonly}
         value={props.editorStore.objectOfStudy}
         onChange={(idx, value) => {
           props.editorStore.updateObjectOfStudyParagraph(idx, value);
@@ -100,6 +106,7 @@ export const ObjectOfStudyEditor = observer(
 export const SoftwareEditor = observer((props: EditorProps): ReactElement => {
   return (
     <ParagraphContentEditor
+      isReadonly={props.isReadonly}
       value={props.editorStore.software}
       onChange={(idx, value) => {
         props.editorStore.updateSoftwareParagraph(idx, value);
@@ -119,6 +126,7 @@ export const GrantingOrganizationsEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <ParagraphContentEditor
+        isReadonly={props.isReadonly}
         value={props.editorStore.grantingOrganizations}
         onChange={(idx, value) => {
           props.editorStore.updateGrantingOrganization(idx, value);
@@ -140,6 +148,7 @@ export const RelatedArticlesEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <ParagraphContentEditor
+        isReadonly={props.isReadonly}
         value={props.editorStore.relatedArticles}
         onChange={(idx, value) => {
           props.editorStore.updateRelatedArticle(idx, value);
@@ -160,7 +169,7 @@ export const RelatedArticlesEditor = observer(
 export const ParagraphContentEditor = (
   props: ContentEditorProps
 ): ReactElement => {
-  const [paragraphToFocus, setParagraphToFocus] = useState<number>(0);
+  const [paragraphToFocus, setParagraphToFocus] = useState<number>();
 
   return (
     <ContentEditorWrap>
@@ -168,6 +177,7 @@ export const ParagraphContentEditor = (
       {props.value.map((p, idx) => {
         return (
           <ParagraphElement
+            isReadonly={props.isReadonly}
             autoFocus={paragraphToFocus === idx}
             key={p.id}
             idx={idx}

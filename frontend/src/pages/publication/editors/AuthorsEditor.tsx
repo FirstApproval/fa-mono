@@ -60,7 +60,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
         {props.editorStore.authors.map((author) => {
           return <AuthorElement key={author.email} author={author} />;
         })}
-        {!searchVisible && (
+        {!props.isReadonly && !searchVisible && (
           <Button
             variant={'outlined'}
             startIcon={<Add />}
