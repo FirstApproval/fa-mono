@@ -72,7 +72,8 @@ export const PublicationPage: FunctionComponent = observer(() => {
                 routerStore.navigatePage(
                   Page.SHARING_OPTIONS,
                   routerStore.path,
-                  true
+                  true,
+                  { publicationTitle: editorStore.title }
                 );
               }}>
               Publish

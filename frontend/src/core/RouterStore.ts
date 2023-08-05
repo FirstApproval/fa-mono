@@ -42,6 +42,7 @@ export class RouterStore {
     history.location.search
   );
 
+  payload: any = {};
   initialPageError: string | undefined;
 
   constructor() {
@@ -56,7 +57,8 @@ export class RouterStore {
         lastPathSegment: computed,
         initialPageError: observable,
         setInitialPageError: action,
-        setPage: action
+        setPage: action,
+        setPayload: action
       }
     );
 
@@ -145,10 +147,15 @@ export class RouterStore {
     this._queryParams = new URLSearchParams(path);
   };
 
+  setPayload = (value: any): void => {
+    this.payload = value;
+  };
+
   navigatePage = (
     value: Page,
     path: string = '/',
-    replace: boolean = false
+    replace: boolean = false,
+    payload: any = {}
   ): void => {
     const stateObject = { page: value, path };
     if (replace) {
@@ -157,6 +164,7 @@ export class RouterStore {
       window.history.pushState(stateObject, document.title, path);
     }
     this.setPage(value, path);
+    this.setPayload(payload);
   };
 
   goHome = (): void => {

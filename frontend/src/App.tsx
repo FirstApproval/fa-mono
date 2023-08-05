@@ -42,7 +42,11 @@ const App: FunctionComponent = observer(() => {
           {page === Page.LOADING && <LoadingPage />}
           {page === Page.HOME_PAGE && <HomePage />}
           {page === Page.PUBLICATION && <PublicationPage />}
-          {page === Page.SHARING_OPTIONS && <SharingOptionsPage />}
+          {page === Page.SHARING_OPTIONS && (
+            <SharingOptionsPage
+              publicationTitle={routerStore.payload.publicationTitle}
+            />
+          )}
           {page === Page.PROFILE && <ProfilePage />}
           {page === Page.ACCOUNT && <AccountPage />}
           {page === Page.SIGN_IN && (

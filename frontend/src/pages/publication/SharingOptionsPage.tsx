@@ -16,8 +16,15 @@ import {
   Public
 } from '@mui/icons-material';
 import Button from '@mui/material/Button';
+import { routerStore } from '../../core/router';
+import { Page } from '../../core/RouterStore';
+import { publicationService } from '../../core/service';
+import { AccessType } from '../../apis/first-approval-api';
 
-export const SharingOptionsPage = (): ReactElement => {
+export const SharingOptionsPage = (props: {
+  publicationTitle: string;
+}): ReactElement => {
+  const [publicationId] = useState(() => routerStore.lastPathSegment);
   const [checkboxState, setCheckboxState] = useState(false);
 
   return (
@@ -25,13 +32,18 @@ export const SharingOptionsPage = (): ReactElement => {
       <HeaderWrap>
         <HeaderContent>
           Publishing&nbsp;
-          <b>
-            DNA damage in mice bone marrow cells after acute treatment by
-            restraint and olfactory stressors
-          </b>
+          <b>{props.publicationTitle}</b>
           <MarginLeftAuto>
             <IconButton>
-              <Close />
+              <Close
+                onClick={() => {
+                  routerStore.navigatePage(
+                    Page.PUBLICATION,
+                    routerStore.path,
+                    true
+                  );
+                }}
+              />
             </IconButton>
           </MarginLeftAuto>
         </HeaderContent>
@@ -89,7 +101,15 @@ export const SharingOptionsPage = (): ReactElement => {
               label="I confirm that all authors agree to the content, distribution, and comply with the First Approval publishing policy."
             />
           </FormGroup>
-          <ButtonWrap variant="contained" disabled={!checkboxState}>
+          <ButtonWrap
+            variant="contained"
+            disabled={!checkboxState}
+            onClick={() => {
+              void publicationService.submitPublication(
+                publicationId,
+                AccessType.OPEN
+              );
+            }}>
             Publish now for free
           </ButtonWrap>
         </BodyContentWrap>
