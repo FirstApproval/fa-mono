@@ -1,29 +1,26 @@
 package org.firstapproval.backend.core.domain.file
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider
+import org.bouncycastle.crypto.digests.Blake2bDigest
+import org.bouncycastle.crypto.io.DigestInputStream
 import org.bouncycastle.util.encoders.Hex
 import org.springframework.stereotype.Service
 import java.io.InputStream
-import java.security.MessageDigest
-import java.security.Security
 
 @Service
 class HashService {
-    init {
-        Security.addProvider(BouncyCastleProvider())
-    }
 
     fun getHash(data: InputStream): String {
-        val algorithm = "BLAKE2B-256"
-        val messageDigest: MessageDigest = MessageDigest.getInstance(algorithm, "BC")
-        val hashBytes = data.use { input ->
-            val buffer = ByteArray(8192)
-            var bytesRead: Int
-            while (input.read(buffer).also { bytesRead = it } != -1) {
-                messageDigest.update(buffer, 0, bytesRead)
-            }
-            messageDigest.digest()
+        val digest = Blake2bDigest(256)
+        val digestInputStream = DigestInputStream(data, digest)
+        val buffer = ByteArray(8192)
+        var bytesRead: Int
+        while (digestInputStream.read(buffer).also { bytesRead = it } != -1) {
+            digest.update(buffer, 0, bytesRead)
         }
-        return String(Hex.encode(hashBytes))
+        val hash = ByteArray(digest.digestSize)
+        digest.doFinal(hash, 0)
+        val hexString = Hex.toHexString(hash)
+        digest.clearKey()
+        return hexString
     }
 }

@@ -1,11 +1,13 @@
 package org.firstapproval.backend.core.domain.publication
 
+import org.firstapproval.backend.core.domain.file.FILES
 import org.firstapproval.backend.core.domain.file.SAMPLE_FILES
 import org.firstapproval.backend.core.domain.file.FileStorageService
 import org.firstapproval.backend.core.domain.file.HashService
 import org.firstapproval.backend.core.domain.user.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.util.UUID
 import java.util.UUID.randomUUID
@@ -28,11 +30,11 @@ class PublicationSampleFileService(
         val publication = publicationRepository.getReferenceById(publicationId)
         checkAccessToPublication(user, publication)
         checkDuplicateNames(fullPath, publicationId)
-        var hash: String? = null
-        if (!isDir) {
-            fileStorageService.save(SAMPLE_FILES, fileId.toString(), data!!)
-            hash = hashService.getHash(data)
-        }
+        val hash = if (!isDir) {
+            val dataBytes = data?.readAllBytes() ?: throw IllegalArgumentException("Data input stream is null.")
+            fileStorageService.save(FILES, fileId.toString(), ByteArrayInputStream(dataBytes))
+            hashService.getHash(ByteArrayInputStream(dataBytes))
+        } else null
         val file = publicationSampleFileRepository.save(
             PublicationSampleFile(
                 id = fileId,
