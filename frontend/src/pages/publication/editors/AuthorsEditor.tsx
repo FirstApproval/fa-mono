@@ -1,16 +1,18 @@
 import { observer } from 'mobx-react-lite';
 import React, { type ReactElement, useEffect, useState } from 'react';
 import { type Author } from '../../../apis/first-approval-api';
-import { AddAuthorStore } from '../store/AddAuthorStore';
+import { AuthorEditorStore } from '../store/AuthorEditorStore';
 import { AuthorElement } from './element/AuthorElement';
+import { userService } from '../../../core/service';
 import {
   Autocomplete,
   Avatar,
   Button,
   Divider,
+  IconButton,
   TextField
 } from '@mui/material';
-import { Add, PersonAdd } from '@mui/icons-material';
+import { Add, DeleteOutlined, PersonAdd } from '@mui/icons-material';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -22,19 +24,35 @@ import { getInitials } from '../../../util/userUtil';
 
 export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
   const [addAuthorVisible, setAddAuthorVisible] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [searchVisible, setSearchVisible] = useState(false);
   const [authorOptions, setAuthorOptions] = useState<Author[]>([]);
 
   const [query, setQuery] = useState('');
 
-  const [addAuthorStore] = useState(() => new AddAuthorStore());
+  const [authorStore] = useState(() => new AuthorEditorStore());
+
+  const setEditAuthorVisible = (
+    author: Author,
+    isUnconfirmed: boolean,
+    index?: number
+  ): void => {
+    authorStore.email = author.email;
+    authorStore.fistName = author.firstName;
+    authorStore.lastName = author.lastName;
+    authorStore.shortBio = author.shortBio;
+    authorStore.isUnconfirmed = isUnconfirmed;
+    authorStore.isNew = false;
+    authorStore.index = index;
+    setAddAuthorVisible(true);
+  };
 
   useEffect(() => {
     if (!query.trim()) {
       setAuthorOptions([]);
       return;
     }
-    addAuthorStore
+    authorStore
       .searchAuthors(query.trim())
       .then((result) => {
         setAuthorOptions(
@@ -53,14 +71,38 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
 
   const handleCloseAddAuthor = (): void => {
     setAddAuthorVisible(false);
+    authorStore.clean();
+  };
+
+  const handleCloseDeleteDialog = (): void => {
+    setDeleteDialogOpen(false);
   };
 
   return (
     <>
       <ContentEditorWrap>
         <LabelWrap>Authors</LabelWrap>
-        {props.publicationStore.authors.map((author) => {
-          return <AuthorElement key={author.email} author={author} />;
+        {props.publicationStore.confirmedAuthors.map((author, index) => {
+          return (
+            <AuthorElement
+              key={author.email}
+              author={author}
+              isUnconfirmed={false}
+              index={index}
+              setEditAuthorVisible={setEditAuthorVisible}
+            />
+          );
+        })}
+        {props.publicationStore.unconfirmedAuthors.map((author, index) => {
+          return (
+            <AuthorElement
+              key={author.email}
+              author={author}
+              isUnconfirmed={true}
+              index={index}
+              setEditAuthorVisible={setEditAuthorVisible}
+            />
+          );
         })}
         {!props.publicationStore.isReadonly && !searchVisible && (
           <Button
@@ -122,6 +164,8 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
               variant={'text'}
               startIcon={<PersonAdd />}
               onClick={() => {
+                authorStore.isNew = true;
+                authorStore.isUnconfirmed = true;
                 setAddAuthorVisible(true);
               }}>
               Add manually
@@ -134,32 +178,37 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
         onClose={handleCloseAddAuthor}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">Add author</DialogTitle>
+        <DialogTitle id="alert-dialog-title">
+          {authorStore.isNew ? 'Add author' : 'Edit author'}
+        </DialogTitle>
         <DialogContent>
           <AddAuthorWrap>
             <FullWidthTextField
               autoFocus
-              value={addAuthorStore.email}
+              value={authorStore.email}
               onChange={(e) => {
-                addAuthorStore.email = e.currentTarget.value;
+                authorStore.email = e.currentTarget.value;
               }}
+              disabled={!authorStore.isUnconfirmed}
               label="Email"
               variant="outlined"
             />
             <OneLineWrap>
               <MarginTextField
-                value={addAuthorStore.fistName}
+                value={authorStore.fistName}
                 onChange={(e) => {
-                  addAuthorStore.fistName = e.currentTarget.value;
+                  authorStore.fistName = e.currentTarget.value;
                 }}
+                disabled={!authorStore.isUnconfirmed}
                 label="First name"
                 variant="outlined"
               />
               <FullWidthTextField
-                value={addAuthorStore.lastName}
+                value={authorStore.lastName}
                 onChange={(e) => {
-                  addAuthorStore.lastName = e.currentTarget.value;
+                  authorStore.lastName = e.currentTarget.value;
                 }}
+                disabled={!authorStore.isUnconfirmed}
                 label="Last name"
                 variant="outlined"
               />
@@ -168,9 +217,9 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
               multiline
               minRows={4}
               maxRows={4}
-              value={addAuthorStore.shortBio}
+              value={authorStore.shortBio}
               onChange={(e) => {
-                addAuthorStore.shortBio = e.currentTarget.value;
+                authorStore.shortBio = e.currentTarget.value;
               }}
               label="Short bio"
               variant="outlined"
@@ -178,15 +227,82 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
           </AddAuthorWrap>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseAddAuthor}>Cancel</Button>
-          <Button
-            onClick={() => {
-              props.publicationStore.addUnconfirmedAuthor(addAuthorStore);
-              handleCloseAddAuthor();
-            }}>
-            Create
-          </Button>
+          <SpaceBetweenWrap>
+            {(authorStore.isNew && <div />) || (
+              <IconButton
+                onClick={() => {
+                  setDeleteDialogOpen(true);
+                  // props.editorStore.deletedAuthor(addAuthorStore);
+                  // addAuthorStore.clean();
+                  // setAddAuthorVisible(false);
+                }}>
+                <DeleteOutlined htmlColor={'gray'} />
+              </IconButton>
+            )}
+            <div>
+              <Button onClick={handleCloseAddAuthor}>Cancel</Button>
+              <Button
+                onClick={async () => {
+                  if (authorStore.isNew) {
+                    await userService
+                      .existsByEmail(authorStore.email)
+                      .then((result) => {
+                        if (result.data) {
+                          authorStore.clean();
+                          throw Error(
+                            'User with this email already registered. Required to add this author as confirmed'
+                          );
+                        }
+                      });
+                  }
+                  if (authorStore.isUnconfirmed) {
+                    props.publicationStore.addOrEditUnconfirmedAuthor(
+                      authorStore
+                    );
+                  } else {
+                    props.publicationStore.editConfirmedAuthor(authorStore);
+                  }
+                  handleCloseAddAuthor();
+                }}>
+                Save
+              </Button>
+            </div>
+          </SpaceBetweenWrap>
         </DialogActions>
+      </Dialog>
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description">
+        <DeleteDialogTitle id="alert-dialog-title">Delete?</DeleteDialogTitle>
+        <DeleteDialogContent>
+          <DeleteDialogWidthWrap>
+            {
+              "Everything will be deleted and you won't be able to undo this action."
+            }
+          </DeleteDialogWidthWrap>
+        </DeleteDialogContent>
+        <DeleteDialogActions>
+          <div>
+            <Button
+              style={{ marginRight: '24px' }}
+              onClick={handleCloseDeleteDialog}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                props.publicationStore.deletedAuthor(authorStore);
+                authorStore.clean();
+                setDeleteDialogOpen(false);
+                setAddAuthorVisible(false);
+              }}
+              variant="contained"
+              color="error">
+              Delete
+            </Button>
+          </div>
+        </DeleteDialogActions>
       </Dialog>
     </>
   );
@@ -249,4 +365,29 @@ const FlexGrowWrap = styled.div`
 const FullWidthTextField = styled(TextField)`
   width: 100%;
   margin-bottom: 32px;
+`;
+
+const SpaceBetweenWrap = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+`;
+
+const DeleteDialogWidthWrap = styled.div`
+  max-width: 336px;
+`;
+
+const DeleteDialogActions = styled(DialogActions)`
+  padding-bottom: 32px !important;
+  padding-right: 32px !important;
+`;
+
+const DeleteDialogTitle = styled(DialogTitle)`
+  padding-top: 32px !important;
+  padding-left: 32px !important;
+`;
+
+const DeleteDialogContent = styled(DialogContent)`
+  padding-left: 32px !important;
+  padding-right: 32px !important;
 `;

@@ -2,10 +2,10 @@ package org.firstapproval.backend.core.domain.user
 
 import mu.KotlinLogging.logger
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
-import org.firstapproval.backend.core.config.Properties.EmailProperties
 import org.firstapproval.backend.core.config.Properties.FrontendProperties
 import org.firstapproval.backend.core.domain.auth.OauthUser
 import org.firstapproval.backend.core.domain.notification.NotificationService
+import org.firstapproval.backend.core.domain.publication.PublicationRepository
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthorRepository
 import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthorRepository
@@ -19,17 +19,17 @@ import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirma
 import org.firstapproval.backend.core.exception.RecordConflictException
 import org.firstapproval.backend.core.utils.EMAIL_CONFIRMATION_CODE_LENGTH
 import org.firstapproval.backend.core.utils.generateCode
+import org.firstapproval.backend.core.utils.require
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Isolation.REPEATABLE_READ
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime.now
-import java.util.*
-import java.util.UUID.*
+import java.util.UUID
+import java.util.UUID.randomUUID
 import javax.naming.LimitExceededException
 
 const val SEND_EMAIL_LIMIT = 2
@@ -49,7 +49,8 @@ class UserService(
     private val emailSender: JavaMailSender,
     private val unconfirmedUserRepository: UnconfirmedUserRepository,
     private val unconfirmedAuthorRepository: UnconfirmedAuthorRepository,
-    private val confirmedAuthorRepository: ConfirmedAuthorRepository
+    private val confirmedAuthorRepository: ConfirmedAuthorRepository,
+    private val publicationRepository: PublicationRepository
 ) {
 
     val log = logger {}
@@ -296,13 +297,23 @@ class UserService(
 
     @Transactional
     fun migratePublicationOfUnconfirmedUser(user: User) {
-        val unconfirmedUser = unconfirmedUserRepository.findByEmail(user.email)
-        if (unconfirmedUser != null) {
-            val unconfirmedAuthorAndPublications = unconfirmedAuthorRepository.findByUserId(unconfirmedUser.id)
+        val unconfirmedUsers = unconfirmedUserRepository.findByEmail(user.email).associateBy { it.id }
+        if (unconfirmedUsers.isNotEmpty()) {
+            val unconfirmedAuthorAndPublications = unconfirmedAuthorRepository.findByUserIdIn(unconfirmedUsers.keys)
+            val publications = publicationRepository.findAllById(
+                unconfirmedAuthorAndPublications.map { it.publicationId }
+            ).associateBy { it.id }
             unconfirmedAuthorAndPublications.forEach {
-                confirmedAuthorRepository.save(ConfirmedAuthor(it.publicationId, user.id))
+                confirmedAuthorRepository.save(
+                    ConfirmedAuthor(
+                        randomUUID(),
+                        user,
+                        publications[it.publicationId].require(),
+                        unconfirmedUsers[it.userId].require().shortBio
+                    )
+                )
             }
-            unconfirmedUserRepository.delete(unconfirmedUser)
+            unconfirmedUserRepository.deleteAll(unconfirmedUsers.values)
         }
     }
 }

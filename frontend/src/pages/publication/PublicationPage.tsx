@@ -10,7 +10,7 @@ import {
   FlexHeaderRight,
   Logo,
   Parent
-} from './../common.styled';
+} from '../common.styled';
 import { FileUploader } from '../../fire-browser/FileUploader';
 import { routerStore } from '../../core/router';
 import styled from '@emotion/styled';

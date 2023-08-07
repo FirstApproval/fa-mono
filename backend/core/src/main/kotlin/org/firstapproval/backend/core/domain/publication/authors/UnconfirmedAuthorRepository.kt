@@ -4,5 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
 interface UnconfirmedAuthorRepository : JpaRepository<UnconfirmedAuthor, UUID> {
-    fun findByUserId(userId: UUID): List<UnconfirmedAuthor>
+    fun findByUserIdIn(userIds: Collection<UUID>): List<UnconfirmedAuthor>
 }
