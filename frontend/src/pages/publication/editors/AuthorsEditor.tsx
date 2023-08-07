@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import React, { type ReactElement, useEffect, useState } from 'react';
 import { type Author } from '../../../apis/first-approval-api';
 import { AddAuthorStore } from '../store/AddAuthorStore';
-import { AuthorElement, getInitials } from './element/AuthorElement';
+import { AuthorElement } from './element/AuthorElement';
 import {
   Autocomplete,
   Avatar,
@@ -18,6 +18,7 @@ import DialogActions from '@mui/material/DialogActions';
 import styled from '@emotion/styled';
 import { ContentEditorWrap, LabelWrap } from './styled';
 import { type EditorProps } from './ParagraphEditor';
+import { getInitials } from '../../../util/userUtil';
 
 export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
   const [addAuthorVisible, setAddAuthorVisible] = useState(false);

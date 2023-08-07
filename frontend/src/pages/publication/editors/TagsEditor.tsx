@@ -50,7 +50,6 @@ export const TagsEditor = observer((props: EditorProps): ReactElement => {
                 event.stopPropagation();
                 props.editorStore.addTag(newTag);
                 setNewTag('');
-                setEnableAddingNewTag(false);
               }
             }}
             onChange={(e) => {

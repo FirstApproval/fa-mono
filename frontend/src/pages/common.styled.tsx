@@ -8,12 +8,14 @@ export const Parent = styled('div')`
 
 export const FlexHeader = styled('div')`
   display: flex;
-  padding: 40px 40px 8px 40px;
+  padding: 12px 32px;
+  margin-bottom: 40px;
   align-items: center;
 `;
 
 export const FlexHeaderRight = styled('div')`
   margin-left: auto;
+  display: flex;
 `;
 
 export const FlexBodyCenter = styled('div')`

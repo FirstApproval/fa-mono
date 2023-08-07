@@ -1,8 +1,11 @@
-import { type FunctionComponent } from 'react';
+import { type FunctionComponent, useEffect } from 'react';
 import { Alert, Button, Link, Snackbar, TextField } from '@mui/material';
 import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
-import { type SignUpStore } from './SignUpStore';
+import {
+  REGISTRATION_CONFIRMATION_TOKEN_STORAGE_KEY,
+  type SignUpStore
+} from './SignUpStore';
 import {
   FlexBody,
   FlexBodyCenter,
@@ -22,6 +25,23 @@ interface EmailVerificationPageProps {
 export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps> =
   observer((props: EmailVerificationPageProps) => {
     const isError = props.store.isError;
+
+    useEffect(() => {
+      const code = routerStore.lastPathSegment;
+      if (code) {
+        const registrationToken = localStorage.getItem(
+          REGISTRATION_CONFIRMATION_TOKEN_STORAGE_KEY
+        );
+        if (registrationToken == null) {
+          props.onSignInClick();
+          return;
+        }
+        props.store.code = code;
+        props.store.lastResponse = { registrationToken };
+        void props.store.submitSubmitRegistrationRequest();
+        localStorage.removeItem(REGISTRATION_CONFIRMATION_TOKEN_STORAGE_KEY);
+      }
+    }, []);
 
     return (
       <Parent>
@@ -63,7 +83,11 @@ export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps
               />
             </div>
             <ForgotPasswordLabel>
-              <Link href="#" color="inherit">
+              <Link
+                color="inherit"
+                onClick={async () => {
+                  await props.store.submitRegistrationRequest();
+                }}>
                 Send code again
               </Link>
             </ForgotPasswordLabel>

@@ -50,7 +50,27 @@ class NotificationService(
             log.info { link }
             return
         }
-        mailService.send(email, "[FirstApproval] Password recovery link", link)
+        val context = Context()
+        val model: MutableMap<String, Any> = HashMap()
+        model["link"] = link
+        model["email"] = email
+        context.setVariables(model)
+        val html = templateEngine.process("password-restore-email-template", context)
+        mailService.send(email, "[FirstApproval] Password recovery link", html, true)
+    }
+
+    fun sendEmailPasswordChanged(email: String, name: String?) {
+        if (emailProperties.noopMode) {
+            log.info { "password changed email" }
+            return
+        }
+        val context = Context()
+        val model: MutableMap<String, Any> = HashMap()
+        model["greeting"] = "Hi $name,"
+        model["email"] = email
+        context.setVariables(model)
+        val html = templateEngine.process("password-changed", context)
+        mailService.send(email, "[FirstApproval] Password changed", html, true)
     }
 
 }

@@ -32,7 +32,7 @@ import java.util.*
 import java.util.UUID.*
 import javax.naming.LimitExceededException
 
-const val SEND_EMAIL_LIMIT = 1
+const val SEND_EMAIL_LIMIT = 2
 
 const val AUTHORIZATION_RATE_LIMIT = 4
 
@@ -203,6 +203,9 @@ class UserService(
         val passwordResetRequest = passwordResetConfirmationRepository.getReferenceById(passwordResetRequestId)
         passwordResetRequest.user.password = passwordEncoder.encode(password)
         passwordResetConfirmationRepository.delete(passwordResetRequest)
+        if (passwordResetRequest.user.email != null) {
+            notificationService.sendEmailPasswordChanged(passwordResetRequest.user.email!!, passwordResetRequest.user.firstName)
+        }
         return passwordResetRequest.user
     }
 
@@ -242,6 +245,9 @@ class UserService(
             throw IllegalArgumentException("wrong password")
         } else {
             user.password = passwordEncoder.encode(newPassword)
+        }
+        if (user.email != null) {
+            notificationService.sendEmailPasswordChanged(user.email!!, user.firstName)
         }
         userRepository.save(user)
     }

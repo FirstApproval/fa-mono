@@ -6,7 +6,7 @@ import object_of_study from './asset/object_of_study.svg';
 import software from './asset/software.svg';
 import files from './asset/files.svg';
 import authors from './asset/authors.svg';
-import granting_organisations from './asset/granting_organisations.svg';
+import granting_organizations from './asset/granting_organizations.svg';
 import related_articles from './asset/related_articles.svg';
 import tags from './asset/tags.svg';
 
@@ -90,8 +90,8 @@ export const GrantingOrganisationsPlaceholder = (
   return (
     <ContentPlaceholder
       onClick={props.onClick}
-      text={'Granting organisations | optional'}
-      icon={<img src={granting_organisations} />}
+      text={'Granting organizations | optional'}
+      icon={<img src={granting_organizations} />}
     />
   );
 };

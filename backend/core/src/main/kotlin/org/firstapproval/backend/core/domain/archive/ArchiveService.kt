@@ -107,9 +107,10 @@ class ArchiveService(
             fileOutputStream.close()
             tempArchive.delete()
         }
-        if (filesIds.isNotEmpty()) {
-            uploadToIpfs(publication, tempArchive)
-        }
+        // TODO uncomment when we will be finally integrated with ipfs
+//        if (filesIds.isNotEmpty()) {
+//            uploadToIpfs(publication, tempArchive)
+//        }
         publication.status = PUBLISHED
         publication.publicationTime = now()
         publicationRepository.save(publication)

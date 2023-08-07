@@ -47,8 +47,9 @@ class PublicationService(
     }
 
     @Transactional
-    fun edit(id: UUID, request: PublicationEditRequest) {
+    fun edit(user: User, id: UUID, request: PublicationEditRequest) {
         val publication = get(id)
+        checkAccessToPublication(user, publication)
         with(request) {
             if (title?.edited == true) publication.title = title.value
             if (description?.edited == true) publication.description = description.values.map { it.text }

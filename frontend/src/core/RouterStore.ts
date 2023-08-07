@@ -1,6 +1,6 @@
 import { authStore } from './auth';
 import { OauthType } from '../apis/first-approval-api';
-import { action, autorun, computed, makeObservable, observable } from 'mobx';
+import { action, computed, makeObservable, observable, reaction } from 'mobx';
 import { createBrowserHistory } from 'history';
 import { authService } from './service';
 
@@ -14,10 +14,14 @@ export enum Page {
 
   PUBLICATION,
 
+  PROFILE,
+  ACCOUNT,
+
   SIGN_UP_NAME,
   SIGN_UP_PASSWORD,
   EMAIL_VERIFICATION,
 
+  RESTORE_PASSWORD,
   RESTORE_PASSWORD_EMAIL
 }
 
@@ -31,64 +35,66 @@ const pathToOauthType: Record<string, OauthType> = {
 const history = createBrowserHistory();
 
 export class RouterStore {
-  page: Page = Page.LOADING;
-  path: string = history.location.pathname;
-  queryParams: URLSearchParams = new URLSearchParams(history.location.search);
+  private _page: Page = Page.LOADING;
+  private _path: string = history.location.pathname;
+  private _queryParams: URLSearchParams = new URLSearchParams(
+    history.location.search
+  );
+
   initialPageError: string | undefined;
 
   constructor() {
-    makeObservable(this, {
-      page: observable,
-      path: observable,
+    makeObservable<RouterStore, '_page' | '_path' | '_queryParams'>(this, {
+      _page: observable,
+      _path: observable,
+      _queryParams: observable,
+      page: computed,
       lastPathSegment: computed,
-      queryParams: observable,
       initialPageError: observable,
       setInitialPageError: action,
-      setPage: action,
-      setPath: action,
-      setQueryParams: action
+      setPage: action
     });
 
-    const listener = (location: any): void => {
-      this.setPath(location.pathname);
-      this.setQueryParams(location.search);
-    };
+    reaction(() => authStore.token, this.goHome);
 
-    history.listen(listener);
-    window.history.pushState = new Proxy(window.history.pushState, {
-      apply: (target, thisArg, argArray: string[]) => {
-        const path = argArray[2];
-        this.setPath(path);
-        this.setQueryParams(new URLSearchParams(path));
-        // @ts-expect-error wrong types
-        target.apply(thisArg, argArray);
-      }
-    });
-    window.history.replaceState = new Proxy(window.history.pushState, {
-      apply: (target, thisArg, argArray: string[]) => {
-        const path = argArray[2];
-        this.setPath(path);
-        this.setQueryParams(new URLSearchParams(path));
-        // @ts-expect-error wrong types
-        target.apply(thisArg, argArray);
-      }
+    window.addEventListener('popstate', (e) => {
+      const state = e.state;
+      this.setPage(state.page, state.path);
     });
 
-    autorun(() => {
-      const path = this.path;
-      const queryParams = this.queryParams;
-      const token = authStore.token;
+    const restoreFromUrl = (): void => {
+      const path = this._path;
+      const queryParams = this._queryParams;
 
       const authType = pathToOauthType[path] ?? undefined;
       const authCode = queryParams.get('code') ?? undefined;
 
-      if (token !== undefined) {
-        if (path.startsWith('/publication')) {
-          this.setPage(Page.PUBLICATION);
-          return;
-        }
-        this.setPage(Page.HOME_PAGE);
-      } else if (authType !== undefined && authCode !== undefined) {
+      if (path.startsWith('/registration-confirmation')) {
+        authStore.token = undefined;
+        this.navigatePage(Page.EMAIL_VERIFICATION, path);
+        return;
+      }
+
+      if (path.startsWith('/password-change-confirmation')) {
+        authStore.token = undefined;
+        this.navigatePage(Page.RESTORE_PASSWORD, path);
+        return;
+      }
+
+      if (path.startsWith('/publication')) {
+        this.navigatePage(Page.PUBLICATION, path);
+        return;
+      }
+      if (path.startsWith('/account')) {
+        this.navigatePage(Page.ACCOUNT, path);
+        return;
+      }
+      if (path.startsWith('/profile')) {
+        this.navigatePage(Page.PROFILE, path);
+        return;
+      }
+
+      if (authType !== undefined && authCode !== undefined) {
         authService
           .authorizeOauth({
             code: authCode,
@@ -98,37 +104,49 @@ export class RouterStore {
             const token = response.data.token;
             authStore.token = token;
             window.history.replaceState({}, document.title, '/');
-            this.setPage(Page.HOME_PAGE);
+            this.navigatePage(Page.HOME_PAGE);
           })
           .catch(() => {
             this.setInitialPageError('Authorization failed');
-            this.setPage(Page.SIGN_IN);
+            this.navigatePage(Page.SIGN_IN);
           });
+      } else if (authStore.token) {
+        this.setPage(Page.HOME_PAGE);
+        return;
       } else {
         this.setPage(Page.SIGN_IN);
+        return;
       }
-    });
+
+      this.goHome();
+    };
+
+    restoreFromUrl();
   }
 
-  setPage = (value: Page): void => {
-    this.page = value;
+  get page(): Page {
+    return this._page;
+  }
+
+  setPage = (value: Page, path: string = '/'): void => {
+    this._page = value;
+    this._path = path;
+    this._queryParams = new URLSearchParams(path);
+  };
+
+  navigatePage = (value: Page, path: string = '/'): void => {
+    const stateObject = { page: value, path };
+    window.history.pushState(stateObject, document.title, path);
+    this.setPage(value, path);
   };
 
   goHome = (): void => {
     const token = authStore.token;
     if (token !== undefined) {
-      this.setPage(Page.HOME_PAGE);
+      this.navigatePage(Page.HOME_PAGE);
     } else {
-      this.setPage(Page.SIGN_IN);
+      this.navigatePage(Page.SIGN_IN);
     }
-  };
-
-  setPath = (value: string): void => {
-    this.path = value;
-  };
-
-  setQueryParams = (value: URLSearchParams): void => {
-    this.queryParams = value;
   };
 
   setInitialPageError = (value: string | undefined): void => {
@@ -136,6 +154,6 @@ export class RouterStore {
   };
 
   get lastPathSegment(): string {
-    return this.path.substring(this.path.lastIndexOf('/') + 1);
+    return this._path.substring(this._path.lastIndexOf('/') + 1);
   }
 }

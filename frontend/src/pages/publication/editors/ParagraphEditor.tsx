@@ -5,7 +5,10 @@ import {
   type PublicationEditorStore
 } from '../store/PublicationEditorStore';
 import { observer } from 'mobx-react-lite';
-import { ParagraphElement } from './element/ParagraphElement';
+import {
+  ParagraphElement,
+  ParagraphPrefixType
+} from './element/ParagraphElement';
 import { ContentEditorWrap, LabelWrap } from './styled';
 
 export interface EditorProps {
@@ -14,6 +17,7 @@ export interface EditorProps {
 
 interface ContentEditorProps {
   text?: string;
+  paragraphPrefixType?: ParagraphPrefixType;
   placeholder: string;
   value: ParagraphWithId[];
   onChange: (idx: number, value: string) => void;
@@ -111,7 +115,7 @@ export const SoftwareEditor = observer((props: EditorProps): ReactElement => {
   );
 });
 
-export const GrantingOrganisationsEditor = observer(
+export const GrantingOrganizationsEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <ParagraphContentEditor
@@ -122,7 +126,8 @@ export const GrantingOrganisationsEditor = observer(
         onAddClick={(idx) => {
           props.editorStore.addGrantingOrganization(idx);
         }}
-        text={'Granting organisations'}
+        paragraphPrefixType={ParagraphPrefixType.BULLET}
+        text={'Granting organizations'}
         placeholder={
           'Enter the names of the organizations that funded your research...'
         }
@@ -142,6 +147,7 @@ export const RelatedArticlesEditor = observer(
         onAddClick={(idx) => {
           props.editorStore.addRelatedArticle(idx);
         }}
+        paragraphPrefixType={ParagraphPrefixType.NUMERATION}
         text={'Related articles'}
         placeholder={
           'Provide citations or references of articles that are closely related to your research...'
@@ -172,6 +178,7 @@ export const ParagraphContentEditor = (
             }}
             onChange={props.onChange}
             placeholder={props.placeholder}
+            paragraphPrefixType={props.paragraphPrefixType}
           />
         );
       })}

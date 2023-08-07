@@ -13,7 +13,6 @@ import {
 } from './../common.styled';
 import { FileUploader } from '../../fire-browser/FileUploader';
 import { routerStore } from '../../core/router';
-import { authStore } from '../../core/auth';
 import styled from '@emotion/styled';
 import {
   AuthorsPlaceholder,
@@ -30,7 +29,7 @@ import { PublicationEditorStore } from './store/PublicationEditorStore';
 import { observer } from 'mobx-react-lite';
 import {
   DescriptionEditor,
-  GrantingOrganisationsEditor,
+  GrantingOrganizationsEditor,
   MethodEditor,
   ObjectOfStudyEditor,
   PredictedGoalsEditor,
@@ -44,6 +43,7 @@ import { TitleEditor } from './editors/TitleEditor';
 import { ResearchAreaEditor } from './editors/ResearchAreaEditor';
 import { ResearchAreaPage } from './ResearchAreaPage';
 import { action } from 'mobx';
+import { UserMenu } from '../../components/UserMenu';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -64,14 +64,13 @@ export const PublicationPage: FunctionComponent = observer(() => {
         <FlexHeader>
           <Logo onClick={routerStore.goHome}>First Approval</Logo>
           <FlexHeaderRight>
-            <Button
-              variant="outlined"
-              size={'large'}
-              onClick={() => {
-                authStore.token = undefined;
-              }}>
-              Sign out
-            </Button>
+            <ButtonWrap variant="contained" size={'medium'} onClick={() => {}}>
+              Publish
+            </ButtonWrap>
+            <ButtonWrap variant="outlined" size={'medium'} onClick={() => {}}>
+              Preview
+            </ButtonWrap>
+            <UserMenu />
           </FlexHeaderRight>
         </FlexHeader>
         <FlexBodyCenter>
@@ -188,7 +187,7 @@ const PublicationBody = observer(
           />
         )}
         {grantingOrganizationsEnabled && (
-          <GrantingOrganisationsEditor editorStore={editorStore} />
+          <GrantingOrganizationsEditor editorStore={editorStore} />
         )}
         {!relatedArticlesEnabled && (
           <RelatedArticlesPlaceholder
@@ -214,8 +213,12 @@ const PublicationBody = observer(
   }
 );
 
-export const PublicationBodyWrap = styled('div')`
+const PublicationBodyWrap = styled('div')`
   width: 728px;
   padding-left: 40px;
   padding-right: 40px;
+`;
+
+const ButtonWrap = styled(Button)`
+  margin-right: 24px;
 `;
