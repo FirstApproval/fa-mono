@@ -1,13 +1,10 @@
 package org.firstapproval.backend.core.domain.publication
 
-import org.firstapproval.backend.core.domain.file.FILES
 import org.firstapproval.backend.core.domain.file.SAMPLE_FILES
 import org.firstapproval.backend.core.domain.file.FileStorageService
-import org.firstapproval.backend.core.domain.file.HashService
 import org.firstapproval.backend.core.domain.user.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.util.UUID
 import java.util.UUID.randomUUID
@@ -16,8 +13,7 @@ import java.util.UUID.randomUUID
 class PublicationSampleFileService(
     private val publicationSampleFileRepository: PublicationSampleFileRepository,
     private val fileStorageService: FileStorageService,
-    private val publicationRepository: PublicationRepository,
-    private val hashService: HashService
+    private val publicationRepository: PublicationRepository
 ) {
 
     fun getPublicationSampleFiles(publicationId: UUID, dirPath: String): List<PublicationSampleFile> {
@@ -31,9 +27,8 @@ class PublicationSampleFileService(
         checkAccessToPublication(user, publication)
         checkDuplicateNames(fullPath, publicationId)
         val hash = if (!isDir) {
-            val dataBytes = data?.readAllBytes() ?: throw IllegalArgumentException("Data input stream is null.")
-            fileStorageService.save(FILES, fileId.toString(), ByteArrayInputStream(dataBytes))
-            hashService.getHash(ByteArrayInputStream(dataBytes))
+            fileStorageService.save(SAMPLE_FILES, fileId.toString(), data!!)
+            fileStorageService.getETag(SAMPLE_FILES, fileId.toString())
         } else null
         val file = publicationSampleFileRepository.save(
             PublicationSampleFile(
