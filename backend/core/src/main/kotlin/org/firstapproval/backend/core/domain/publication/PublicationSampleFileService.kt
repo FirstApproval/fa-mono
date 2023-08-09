@@ -26,18 +26,20 @@ class PublicationSampleFileService(
         val publication = publicationRepository.getReferenceById(publicationId)
         checkAccessToPublication(user, publication)
         checkDuplicateNames(fullPath, publicationId)
+        val hash = if (!isDir) {
+            fileStorageService.save(SAMPLE_FILES, fileId.toString(), data!!)
+            fileStorageService.getETag(SAMPLE_FILES, fileId.toString())
+        } else null
         val file = publicationSampleFileRepository.save(
             PublicationSampleFile(
                 id = fileId,
                 publication = publication,
                 fullPath = fullPath,
                 dirPath = extractDirPath(fullPath),
-                isDir = isDir
+                isDir = isDir,
+                hash = hash
             )
         )
-        if (!isDir) {
-            fileStorageService.save(SAMPLE_FILES, fileId.toString(), data!!)
-        }
         return file
     }
 

@@ -36,6 +36,7 @@ class PublicationSampleFileController(
                 .dirPath(it.dirPath)
                 .fullPath(it.fullPath)
                 .isDir(it.isDir)
+                .hash(it.hash)
         })
     }
 
@@ -46,7 +47,8 @@ class PublicationSampleFileController(
             .creationTime(file.creationTime.toOffsetDateTime())
             .dirPath(file.dirPath)
             .fullPath(file.fullPath)
-            .isDir(file.isDir), OK)
+            .isDir(file.isDir)
+            .hash(file.hash), OK)
     }
 
     override fun downloadPublicationSampleFile(fileId: UUID): ResponseEntity<Resource> {
