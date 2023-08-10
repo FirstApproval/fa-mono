@@ -33,6 +33,7 @@ class PublicationFileController(
                 .dirPath(it.dirPath)
                 .fullPath(it.fullPath)
                 .isDir(it.isDir)
+                .hash(it.hash)
         })
     }
 
@@ -63,7 +64,8 @@ class PublicationFileController(
                 .creationTime(file.creationTime.toOffsetDateTime())
                 .dirPath(file.dirPath)
                 .fullPath(file.fullPath)
-                .isDir(file.isDir), OK
+                .isDir(file.isDir)
+            .hash(file.hash), OK
         )
     }
 

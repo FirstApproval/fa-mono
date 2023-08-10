@@ -53,18 +53,20 @@ class PublicationFileService(
             actualFullPath = fullPath
             dropDuplicate(publicationId, actualFullPath)
         }
+        val hash = if (!isDir) {
+            fileStorageService.save(FILES, fileId.toString(), data!!)
+            fileStorageService.getETag(FILES, fileId.toString())
+        } else null
         val file = publicationFileRepository.save(
             PublicationFile(
                 id = fileId,
                 publication = publication,
                 fullPath = actualFullPath,
                 dirPath = extractDirPath(actualFullPath),
-                isDir = isDir
+                isDir = isDir,
+                hash = hash
             )
         )
-        if (!isDir) {
-            fileStorageService.save(FILES, fileId.toString(), data!!)
-        }
         return file
     }
 

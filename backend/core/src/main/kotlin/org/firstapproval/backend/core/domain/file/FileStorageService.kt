@@ -31,6 +31,8 @@ class FileStorageService(private val amazonS3: AmazonS3) {
 
     fun get(bucketName: String, id: String): S3Object = amazonS3.getObject(bucketName, id)
 
+    fun getETag(bucketName: String, id: String): String = amazonS3.getObject(bucketName, id).objectMetadata.eTag
+
     fun createBucketIfNotExist(bucketName: String) {
         if (!amazonS3.doesBucketExistV2(bucketName)) {
             amazonS3.createBucket(bucketName)
