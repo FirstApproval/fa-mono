@@ -6,9 +6,16 @@ import React, {
 } from 'react';
 import { getAllFileEntries } from 'src/util/fileUtil';
 import styled from '@emotion/styled';
-import { FileBrowser } from '../fire-browser/FileBrowser';
 import { type ChonkyFileSystem } from './ChonkyFileSystem';
 import { observer } from 'mobx-react-lite';
+import { UploadType } from '../apis/first-approval-api';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import { FormControlLabel, Radio, RadioGroup } from '@mui/material';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import { FileBrowser } from './FileBrowser';
 
 interface FileUploaderProps {
   fs: ChonkyFileSystem;
@@ -19,6 +26,9 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
     const { fs } = props;
     const [isDropZoneVisible, setIsDropZoneVisible] = useState(false);
     const isChonkyDragRef = useRef(false);
+    const [dialogRadioButtonValue, setDialogRadioButtonValue] = useState(
+      UploadType.REPLACE
+    );
 
     useEffect(() => {
       let lastTarget: EventTarget | null = null;
@@ -48,8 +58,24 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
       e.preventDefault();
       e.stopPropagation();
       const result = await getAllFileEntries(e.dataTransfer.items);
-      fs.addFilesDnd(result);
-      setIsDropZoneVisible(false);
+
+      void props.fs
+        .hasDuplicates(result.map((i) => i.name))
+        .then((hadDuplicates) => {
+          if (hadDuplicates) {
+            props.fs.renameOrReplaceDialogOpen = true;
+            props.fs.renameOrReplaceDialogCallback = (
+              uploadType: UploadType
+            ) => {
+              fs.addFilesDnd(result, uploadType);
+              setIsDropZoneVisible(false);
+              props.fs.renameOrReplaceDialogOpen = false;
+            };
+          } else {
+            fs.addFilesDnd(result, UploadType.REPLACE);
+            setIsDropZoneVisible(false);
+          }
+        });
     };
 
     return (
@@ -58,6 +84,61 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
           <DropZone onDrop={onDrop}>Drag files here for upload</DropZone>
         )}
         <FileBrowser fs={fs} isChonkyDragRef={isChonkyDragRef} />
+        <Dialog
+          open={props.fs.renameOrReplaceDialogOpen}
+          onClose={props.fs.closeReplaceOrRenameDialog}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description">
+          <DialogContentWrap>
+            <DialogTitle id="alert-dialog-title">Upload options</DialogTitle>
+            <DialogContent>
+              <ContentWrap>
+                <TextWrap>
+                  One or more items already exists in this location. Do you want
+                  to replace the existing items with a new version or keep both
+                  items?
+                </TextWrap>
+                <RadioGroup
+                  aria-labelledby="demo-radio-buttons-group-label"
+                  defaultValue={dialogRadioButtonValue}
+                  onChange={(e) => {
+                    setDialogRadioButtonValue(e.target.value as UploadType);
+                  }}
+                  name="radio-buttons-group">
+                  <FormControlLabel
+                    value={UploadType.REPLACE}
+                    control={<Radio />}
+                    label="Replace existing file"
+                  />
+                  <FormControlLabel
+                    value={UploadType.RENAME}
+                    control={<Radio />}
+                    label="Keep all items"
+                  />
+                </RadioGroup>
+              </ContentWrap>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => {
+                  props.fs.closeReplaceOrRenameDialog();
+                  setIsDropZoneVisible(false);
+                }}>
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  props.fs.renameOrReplaceDialogCallback(
+                    dialogRadioButtonValue
+                  );
+                  setIsDropZoneVisible(false);
+                }}>
+                Upload
+              </Button>
+            </DialogActions>
+          </DialogContentWrap>
+        </Dialog>
       </Wrap>
     );
   }
@@ -80,4 +161,17 @@ const DropZone = styled('div')`
   font-size: 20px;
   font-style: normal;
   font-weight: 400;
+`;
+
+const ContentWrap = styled.div`
+  padding-top: 8px;
+`;
+
+const TextWrap = styled.div`
+  margin-bottom: 16px;
+  font-size: 16px;
+`;
+
+const DialogContentWrap = styled.div`
+  padding: 16px 32px 32px 16px !important;
 `;

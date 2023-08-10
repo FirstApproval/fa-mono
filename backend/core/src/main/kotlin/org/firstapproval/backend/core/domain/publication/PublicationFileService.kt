@@ -1,11 +1,14 @@
 package org.firstapproval.backend.core.domain.publication
 
 import com.amazonaws.services.s3.model.S3Object
+import org.apache.commons.io.FilenameUtils
+import org.firstapproval.api.server.model.UploadType
 import org.firstapproval.backend.core.domain.file.FILES
 import org.firstapproval.backend.core.domain.file.FileStorageService
 import org.firstapproval.backend.core.domain.user.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.util.UUID
 import java.util.UUID.randomUUID
@@ -17,24 +20,45 @@ class PublicationFileService(
     private val publicationRepository: PublicationRepository
 ) {
 
+    @Transactional(readOnly = true)
     fun getPublicationFiles(user: User, publicationId: UUID, dirPath: String): List<PublicationFile> {
         val publication = publicationRepository.getReferenceById(publicationId)
         checkAccessToPublication(user, publication)
         return publicationFileRepository.findAllByPublicationIdAndDirPath(publicationId, dirPath)
     }
 
+    @Transactional(readOnly = true)
+    fun checkFileNameDuplicates(user: User, publicationId: UUID, fullPathList: List<String>): Map<String, Boolean> {
+        val publication = publicationRepository.getReferenceById(publicationId)
+        checkAccessToPublication(user, publication)
+        return fullPathList.associateWith { publicationFileRepository.existsByPublicationIdAndFullPath(publicationId, it) }
+    }
+
     @Transactional
-    fun uploadFile(user: User, publicationId: UUID, fullPath: String, isDir: Boolean, data: InputStream?): PublicationFile {
+    fun uploadFile(
+        user: User,
+        publicationId: UUID,
+        fullPath: String,
+        isDir: Boolean,
+        data: InputStream?,
+        onCollisionRename: Boolean
+    ): PublicationFile {
         val fileId = randomUUID()
         val publication = publicationRepository.getReferenceById(publicationId)
         checkAccessToPublication(user, publication)
-        checkDuplicateNames(fullPath, publicationId)
+        val actualFullPath: String
+        if (onCollisionRename) {
+            actualFullPath = getFileFullPath(publicationId, fullPath)
+        } else {
+            actualFullPath = fullPath
+            dropDuplicate(publicationId, actualFullPath)
+        }
         val file = publicationFileRepository.save(
             PublicationFile(
                 id = fileId,
                 publication = publication,
-                fullPath = fullPath,
-                dirPath = extractDirPath(fullPath),
+                fullPath = actualFullPath,
+                dirPath = extractDirPath(actualFullPath),
                 isDir = isDir
             )
         )
@@ -42,6 +66,24 @@ class PublicationFileService(
             fileStorageService.save(FILES, fileId.toString(), data!!)
         }
         return file
+    }
+
+    private fun getFileFullPath(publicationId: UUID, fullPath: String): String {
+        if (!publicationFileRepository.existsByPublicationIdAndFullPath(publicationId, fullPath)) {
+            return fullPath
+        }
+        val fileName = fullPath.substring(fullPath.lastIndexOf('/') + 1)
+        val extension = FilenameUtils.getExtension(fileName)
+        val fileNameWithoutExtension = fileName.replace(".$extension", "")
+        return getFileFullPath(publicationId, fullPath.replace(fileNameWithoutExtension, "${fileNameWithoutExtension}_copy"))
+    }
+
+    private fun dropDuplicate(publicationId: UUID, fullPath: String) {
+        val publicationFile = publicationFileRepository.findByPublicationIdAndFullPath(publicationId, fullPath)
+        if (publicationFile != null) {
+            fileStorageService.delete(FILES, publicationFile.id)
+            publicationFileRepository.delete(publicationFile)
+        }
     }
 
     @Transactional(readOnly = true)

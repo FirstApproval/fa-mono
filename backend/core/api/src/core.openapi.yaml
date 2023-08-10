@@ -523,6 +523,34 @@ paths:
       operationId: getDownloadLink
       tags: [ publication ]
 
+  /api/files/check-duplicates/{publicationId}:
+    post:
+      summary: Check file duplicates
+      parameters:
+        - in: path
+          name: publicationId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckFileDuplicatesRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckFileDuplicatesResponse'
+      security:
+        - TokenAuth: [ ]
+      operationId: checkFileDuplicates
+      tags: [ file ]
+
   /api/files/upload:
     post:
       summary: Upload file
@@ -546,6 +574,12 @@ paths:
             type: boolean
           required: true
           description: Is this file or directory
+        - in: query
+          name: type
+          schema:
+            $ref: '#/components/schemas/UploadType'
+          required: true
+          description: In case of file duplication replace or rename
       requestBody:
         content:
           application/octet-stream:
@@ -784,6 +818,35 @@ paths:
       operationId: createFolderForSampleFile
       tags: [ sampleFile ]
 
+
+  /api/sample-files/check-duplicates/{publicationId}:
+    post:
+      summary: Check file duplicates
+      parameters:
+        - in: path
+          name: publicationId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckFileDuplicatesRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckFileDuplicatesResponse'
+      security:
+        - TokenAuth: [ ]
+      operationId: checkSampleFileDuplicates
+      tags: [ sampleFile ]
+
   /api/sample-files/upload:
     post:
       summary: Upload sample file
@@ -807,6 +870,12 @@ paths:
             type: boolean
           required: true
           description: Is this file or directory
+        - in: query
+          name: type
+          schema:
+            $ref: '#/components/schemas/UploadType'
+          required: true
+          description: In case of file duplication replace or rename
       requestBody:
         content:
           application/octet-stream:
@@ -943,6 +1012,21 @@ components:
         creationTime:
           type: string
           format: date-time
+
+    CheckFileDuplicatesRequest:
+      type: object
+      properties:
+        fullPathList:
+          type: array
+          items:
+            type: string
+      required:
+        - fullPathList
+
+    CheckFileDuplicatesResponse:
+      type: object
+      additionalProperties:
+        type: boolean
 
     EditFileRequest:
       type: object
@@ -1213,6 +1297,12 @@ components:
           type: string
         selfInfo:
           type: string
+
+    UploadType:
+      type: string
+      enum:
+        - REPLACE
+        - RENAME
 
     OauthType:
       type: string

@@ -2,6 +2,7 @@ import { ChonkyFileSystem } from '../ChonkyFileSystem';
 import { fileService } from '../../core/service';
 import { waitFor } from '@testing-library/react';
 import { runInAction } from 'mobx';
+import { UploadType } from '../../apis/first-approval-api';
 
 test('should upload files and directories', async () => {
   const uploadHandles: Record<string, () => void> = {};
@@ -17,6 +18,7 @@ test('should upload files and directories', async () => {
       publicationId: string,
       fullPath: string,
       isDir: boolean,
+      uploadType: UploadType,
       body?: File
     ) => {
       return await new Promise<any>((resolve) => {
@@ -94,7 +96,7 @@ test('should upload files and directories', async () => {
   ];
   const publicationId = 'aaaa-bbbb-cccc-dddd-eeee';
   const fs = new ChonkyFileSystem(publicationId);
-  fs.addFilesDnd(files);
+  fs.addFilesDnd(files, UploadType.REPLACE);
 
   await waitFor(() => {
     expect(uploadFile).toBeCalledTimes(4);

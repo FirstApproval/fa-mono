@@ -19,6 +19,8 @@ interface PublicationFileRepository : JpaRepository<PublicationFile, UUID> {
 
     fun existsByPublicationIdAndFullPath(publicationId: UUID, fullPath: String): Boolean
 
+    fun findByPublicationIdAndFullPath(publicationId: UUID, fullPath: String): PublicationFile?
+
     fun findAllByPublicationIdAndDirPath(publicationId: UUID, dirPath: String): List<PublicationFile>
 
     fun findByIdIn(ids: List<UUID>): List<PublicationFile>

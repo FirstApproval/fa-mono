@@ -1,5 +1,7 @@
 package org.firstapproval.backend.core.domain.publication
 
+import org.apache.commons.io.FilenameUtils
+import org.firstapproval.backend.core.domain.file.FILES
 import org.firstapproval.backend.core.domain.file.SAMPLE_FILES
 import org.firstapproval.backend.core.domain.file.FileStorageService
 import org.firstapproval.backend.core.domain.user.User
@@ -21,17 +23,23 @@ class PublicationSampleFileService(
     }
 
     @Transactional
-    fun uploadFile(user: User, publicationId: UUID, fullPath: String, isDir: Boolean, data: InputStream?): PublicationSampleFile {
+    fun uploadFile(user: User, publicationId: UUID, fullPath: String, isDir: Boolean, data: InputStream?, onCollisionRename: Boolean): PublicationSampleFile {
         val fileId = randomUUID()
         val publication = publicationRepository.getReferenceById(publicationId)
         checkAccessToPublication(user, publication)
-        checkDuplicateNames(fullPath, publicationId)
+        val actualFullPath: String
+        if (onCollisionRename) {
+            actualFullPath = getFileFullPath(publicationId, fullPath)
+        } else {
+            actualFullPath = fullPath
+            dropDuplicate(publicationId, actualFullPath)
+        }
         val file = publicationSampleFileRepository.save(
             PublicationSampleFile(
                 id = fileId,
                 publication = publication,
-                fullPath = fullPath,
-                dirPath = extractDirPath(fullPath),
+                fullPath = actualFullPath,
+                dirPath = extractDirPath(actualFullPath),
                 isDir = isDir
             )
         )
@@ -39,6 +47,30 @@ class PublicationSampleFileService(
             fileStorageService.save(SAMPLE_FILES, fileId.toString(), data!!)
         }
         return file
+    }
+
+    private fun getFileFullPath(publicationId: UUID, fullPath: String): String {
+        if (!publicationSampleFileRepository.existsByPublicationIdAndFullPath(publicationId, fullPath)) {
+            return fullPath
+        }
+        val fileName = fullPath.substring(fullPath.lastIndexOf('/') + 1)
+        val extension = FilenameUtils.getExtension(fileName)
+        val fileNameWithoutExtension = fileName.replace(".$extension", "")
+        return getFileFullPath(publicationId, fullPath.replace(fileNameWithoutExtension, "${fileNameWithoutExtension}_copy"))
+    }
+
+    private fun dropDuplicate(publicationId: UUID, fullPath: String) {
+        val publicationFile = publicationSampleFileRepository.findByPublicationIdAndFullPath(publicationId, fullPath)
+        if (publicationFile != null) {
+            fileStorageService.delete(FILES, publicationFile.id)
+        }
+    }
+
+    @Transactional(readOnly = true)
+    fun checkFileNameDuplicates(user: User, publicationId: UUID, fullPathList: List<String>): Map<String, Boolean> {
+        val publication = publicationRepository.getReferenceById(publicationId)
+        checkAccessToPublication(user, publication)
+        return fullPathList.associateWith { publicationSampleFileRepository.existsByPublicationIdAndFullPath(publicationId, it) }
     }
 
     @Transactional(readOnly = true)

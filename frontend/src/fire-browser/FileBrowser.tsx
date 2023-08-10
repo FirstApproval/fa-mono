@@ -20,13 +20,21 @@ import { type ChonkyFileSystem } from './ChonkyFileSystem';
 import { observer } from 'mobx-react-lite';
 import { FileToolbar } from './FileToolbar';
 import styled from '@emotion/styled';
-import { CircularProgress, TextField } from '@mui/material';
+import {
+  CircularProgress,
+  FormControlLabel,
+  FormHelperText,
+  Radio,
+  RadioGroup,
+  TextField
+} from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { calculatePathChain } from './utils';
+import { UploadType } from '../apis/first-approval-api';
 
 setChonkyDefaults({
   iconComponent: ChonkyIconFA,
@@ -50,6 +58,10 @@ export const FileBrowser = observer((props: FileBrowserProps): ReactElement => {
   const [fileToNote, setFileToNote] = useState<FileData>();
   const [newFolderName, setNewFolderName] = useState('');
   const [note, setNote] = useState('');
+  const [dialogRadioButtonValue, setDialogRadioButtonValue] = useState(
+    UploadType.REPLACE
+  );
+  const [createNewFolderError, setCreateNewFolderError] = useState(false);
 
   const handleCloseNewFolderDialog = (): void => {
     setNewFolderDialogOpen(false);
@@ -121,16 +133,31 @@ export const FileBrowser = observer((props: FileBrowserProps): ReactElement => {
 
       const handleFileSelect = async (event: any): Promise<void> => {
         const files = event.target.files;
-        const filesArray = [];
+        const filesArray: File[] = [];
 
         for (let i = 0; i < files.length; i++) {
           filesArray.push(files[i]);
         }
 
-        props.fs.addFilesInput(filesArray);
-
-        fileInput.removeEventListener('change', handleFileSelect);
-        event.target.value = null;
+        void props.fs
+          .hasDuplicates(filesArray.map((f) => f.name))
+          .then((result) => {
+            if (result) {
+              props.fs.renameOrReplaceDialogOpen = true;
+              props.fs.renameOrReplaceDialogCallback = (
+                uploadType: UploadType
+              ) => {
+                props.fs.addFilesInput(filesArray, uploadType);
+                fileInput.removeEventListener('change', handleFileSelect);
+                event.target.value = null;
+                props.fs.renameOrReplaceDialogOpen = false;
+              };
+            } else {
+              props.fs.addFilesInput(filesArray, UploadType.REPLACE);
+              fileInput.removeEventListener('change', handleFileSelect);
+              event.target.value = null;
+            }
+          });
       };
 
       fileInput.addEventListener('change', handleFileSelect, false);
@@ -213,24 +240,85 @@ export const FileBrowser = observer((props: FileBrowserProps): ReactElement => {
             <FullWidthTextField
               autoFocus
               value={newFolderName}
+              error={createNewFolderError}
               onChange={(e) => {
+                setCreateNewFolderError(false);
                 setNewFolderName(e.currentTarget.value);
               }}
               label="Folder name"
               variant="outlined"
             />
+            {createNewFolderError && (
+              <FormHelperText error={true}>
+                Folder with this name already exists
+              </FormHelperText>
+            )}
           </ContentWrap>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseNewFolderDialog}>Cancel</Button>
           <Button
             onClick={() => {
-              handleCloseNewFolderDialog();
-              props.fs.createFolder(newFolderName);
+              void props.fs.hasDuplicates([newFolderName]).then((result) => {
+                if (result) {
+                  setCreateNewFolderError(true);
+                } else {
+                  handleCloseNewFolderDialog();
+                  props.fs.createFolder(newFolderName);
+                }
+              });
             }}>
             Create
           </Button>
         </DialogActions>
+      </Dialog>
+      <Dialog
+        open={props.fs.renameOrReplaceDialogOpen}
+        onClose={props.fs.closeReplaceOrRenameDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description">
+        <DialogContentWrap>
+          <DialogTitle id="alert-dialog-title">Upload options</DialogTitle>
+          <DialogContent>
+            <ContentWrap>
+              <TextWrap>
+                One or more items already exists in this location. Do you want
+                to replace the existing items with a new version or keep both
+                items?
+              </TextWrap>
+              <RadioGroup
+                aria-labelledby="demo-radio-buttons-group-label"
+                defaultValue={dialogRadioButtonValue}
+                onChange={(e) => {
+                  setDialogRadioButtonValue(e.target.value as UploadType);
+                }}
+                name="radio-buttons-group">
+                <FormControlLabel
+                  value={UploadType.REPLACE}
+                  control={<Radio />}
+                  label="Replace existing file"
+                />
+                <FormControlLabel
+                  value={UploadType.RENAME}
+                  control={<Radio />}
+                  label="Keep all items"
+                />
+              </RadioGroup>
+            </ContentWrap>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={props.fs.closeReplaceOrRenameDialog}>
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              onClick={() => {
+                props.fs.renameOrReplaceDialogCallback(dialogRadioButtonValue);
+              }}>
+              Upload
+            </Button>
+          </DialogActions>
+        </DialogContentWrap>
       </Dialog>
       <Dialog
         open={deleteDialogOpen}
@@ -318,4 +406,13 @@ const MaxWidthWrap = styled.div`
 
 const ContentWrap = styled.div`
   padding-top: 8px;
+`;
+
+const TextWrap = styled.div`
+  margin-bottom: 16px;
+  font-size: 16px;
+`;
+
+const DialogContentWrap = styled.div`
+  padding: 16px 32px 32px 16px !important;
 `;

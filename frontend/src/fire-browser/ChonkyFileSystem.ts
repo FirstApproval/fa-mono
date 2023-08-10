@@ -7,7 +7,10 @@ import {
   runInAction
 } from 'mobx';
 import { fileService } from '../core/service';
-import { type PublicationFile } from '../apis/first-approval-api';
+import {
+  type PublicationFile,
+  type UploadType
+} from '../apis/first-approval-api';
 import { fullPathToName } from './utils';
 
 interface FileEntry {
@@ -19,6 +22,8 @@ interface FileEntry {
   note?: string;
 }
 
+type UploadFilesAfterDialogFunction = (value: UploadType) => void;
+
 export class ChonkyFileSystem {
   currentPath: string = '/';
   private backEndFiles: FileEntry[] = [];
@@ -26,6 +31,11 @@ export class ChonkyFileSystem {
   private allLocalFiles: FileEntry[] = [];
   isLoading = false;
   initialized = false;
+
+  renameOrReplaceDialogOpen = false;
+  renameOrReplaceDialogCallback: UploadFilesAfterDialogFunction = (
+    uploadType: UploadType
+  ) => {};
 
   constructor(readonly publicationId: string) {
     makeObservable<
@@ -39,6 +49,8 @@ export class ChonkyFileSystem {
       allLocalFiles: observable,
       isLoading: observable,
       initialized: observable,
+      renameOrReplaceDialogOpen: observable,
+      renameOrReplaceDialogCallback: observable,
       setCurrentPath: action
     });
 
@@ -58,15 +70,26 @@ export class ChonkyFileSystem {
     });
   }
 
+  closeReplaceOrRenameDialog = (): void => {
+    this.renameOrReplaceDialogOpen = false;
+  };
+
   get files(): FileEntry[] {
-    return [...this.backEndFiles, ...this.localFiles];
+    const unuqiePath: Record<string, boolean> = {}; // Keeps track of seen property values
+    return [...this.backEndFiles, ...this.localFiles].filter((entry) => {
+      if (unuqiePath[entry.fullPath]) {
+        return false; // Duplicate, remove entry
+      }
+      unuqiePath[entry.fullPath] = true;
+      return true;
+    });
   }
 
   setCurrentPath = (path: string): void => {
     this.currentPath = path;
   };
 
-  addFilesInput = (files: File[]): void => {
+  addFilesInput = (files: File[], uploadType: UploadType): void => {
     const uploadQueue: Array<() => Promise<void>> = [];
 
     files.forEach((e) => {
@@ -74,9 +97,10 @@ export class ChonkyFileSystem {
 
       const uploadFile = async (): Promise<void> => {
         await fileService
-          .uploadFile(this.publicationId, fullPath, false, e)
+          .uploadFile(this.publicationId, fullPath, false, uploadType, e)
           .then((response) => {
             this.cleanUploading(response.data);
+            this.actualizeFiles(response.data);
           });
       };
 
@@ -100,7 +124,7 @@ export class ChonkyFileSystem {
     this.updateLocalFiles();
   };
 
-  addFilesDnd = (files: FileSystemEntry[]): void => {
+  addFilesDnd = (files: FileSystemEntry[], uploadType: UploadType): void => {
     const uploadQueue: Array<() => Promise<void>> = [];
 
     files.forEach((e) => {
@@ -111,9 +135,16 @@ export class ChonkyFileSystem {
           await new Promise<void>((resolve) => {
             (e as FileSystemFileEntry).file((file) => {
               void fileService
-                .uploadFile(this.publicationId, fullPath, false, file)
+                .uploadFile(
+                  this.publicationId,
+                  fullPath,
+                  false,
+                  uploadType,
+                  file
+                )
                 .then((response) => {
                   this.cleanUploading(response.data);
+                  this.actualizeFiles(response.data);
                 })
                 .finally(() => {
                   resolve();
@@ -126,7 +157,7 @@ export class ChonkyFileSystem {
       } else {
         const uploadFolder = async (): Promise<void> => {
           await fileService
-            .uploadFile(this.publicationId, fullPath, true)
+            .uploadFile(this.publicationId, fullPath, true, uploadType)
             .then((response) => {
               this.cleanUploading(response.data);
             });
@@ -151,6 +182,53 @@ export class ChonkyFileSystem {
       })
     ];
     this.updateLocalFiles();
+  };
+
+  actualizeFiles = (pf: PublicationFile): void => {
+    this.actualizeAllLocalFiles(pf);
+    this.actualizeLocalFiles(pf);
+  };
+
+  actualizeAllLocalFiles = (pf: PublicationFile): void => {
+    const unuqiePath: Record<string, boolean> = {}; // Keeps track of seen property values
+    this.allLocalFiles = [
+      {
+        id: pf.id ?? '',
+        fullPath: pf.fullPath ?? '',
+        name: fullPathToName(pf.fullPath ?? ''),
+        isDirectory: pf.isDir ?? false,
+        isUploading: false,
+        note: pf.description
+      },
+      ...this.allLocalFiles
+    ].filter((entry) => {
+      if (unuqiePath[entry.fullPath]) {
+        return false; // Duplicate, remove entry
+      }
+      unuqiePath[entry.fullPath] = true;
+      return true;
+    });
+  };
+
+  actualizeLocalFiles = (pf: PublicationFile): void => {
+    const unuqiePath: Record<string, boolean> = {}; // Keeps track of seen property values
+    this.localFiles = [
+      {
+        id: pf.id ?? '',
+        fullPath: pf.fullPath ?? '',
+        name: fullPathToName(pf.fullPath ?? ''),
+        isDirectory: pf.isDir ?? false,
+        isUploading: false,
+        note: pf.description
+      },
+      ...this.localFiles
+    ].filter((entry) => {
+      if (unuqiePath[entry.fullPath]) {
+        return false; // Duplicate, remove entry
+      }
+      unuqiePath[entry.fullPath] = true;
+      return true;
+    });
   };
 
   createFolder = (name: string): void => {
@@ -208,6 +286,18 @@ export class ChonkyFileSystem {
     this.backEndFiles = this.backEndFiles.filter(filter);
     this.allLocalFiles = this.allLocalFiles.filter(filter);
     this.updateLocalFiles();
+  };
+
+  hasDuplicates = async (fullPath: string[]): Promise<boolean> => {
+    const res = await fileService.checkFileDuplicates(this.publicationId, {
+      fullPathList: fullPath.map((i) => this.fullPath('/' + i))
+    });
+    for (const i in res.data) {
+      if (res.data[i]) {
+        return true;
+      }
+    }
+    return false;
   };
 
   private readonly updateLocalFiles = (): void => {
