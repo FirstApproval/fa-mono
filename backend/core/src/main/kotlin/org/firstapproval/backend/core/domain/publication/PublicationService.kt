@@ -11,6 +11,7 @@ import org.firstapproval.backend.core.domain.ipfs.Job
 import org.firstapproval.backend.core.domain.ipfs.JobKind
 import org.firstapproval.backend.core.domain.ipfs.JobRepository
 import org.firstapproval.backend.core.domain.ipfs.JobStatus
+import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
 import org.firstapproval.backend.core.domain.user.UnconfirmedUser
@@ -48,7 +49,7 @@ class PublicationService(
 
     @Transactional
     fun edit(user: User, id: UUID, request: PublicationEditRequest) {
-        val publication = get(id)
+        val publication = get(user, id)
         checkAccessToPublication(user, publication)
         with(request) {
             if (title?.edited == true) publication.title = title.value
@@ -140,8 +141,12 @@ class PublicationService(
     }
 
     @Transactional
-    fun get(id: UUID): Publication {
-        return publicationRepository.findById(id).orElseThrow()
+    fun get(user: User, id: UUID): Publication {
+        val publication = publicationRepository.getReferenceById(id)
+        if (publication.accessType != OPEN) {
+            checkAccessToPublication(user, publication)
+        }
+        return publication
     }
 
     @Transactional(readOnly = true)
