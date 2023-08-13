@@ -59,6 +59,7 @@ class Publication(
     var creationTime: ZonedDateTime = now(),
     var publicationTime: ZonedDateTime? = null,
     var contentId: Long? = null,
+    var isFeatured: Boolean = false,
 )
 
 enum class PublicationStatus {

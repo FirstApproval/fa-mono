@@ -618,6 +618,35 @@ paths:
       operationId: getAuthors
       tags: [ author ]
 
+  /api/author/top:
+    get:
+      summary: Get top authors
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: true
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          required: true
+          description: Page size
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopAuthorsResponse'
+      security:
+        - TokenAuth: [ ]
+      operationId: getTopAuthors
+      tags: [ author ]
+
+
   /api/files:
     parameters:
       - in: query
@@ -1438,6 +1467,16 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Publication'
+
+    TopAuthorsResponse:
+      type: object
+      properties:
+        isLastPage:
+          type: boolean
+        authors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Author'
 
     Author:
       type: object
