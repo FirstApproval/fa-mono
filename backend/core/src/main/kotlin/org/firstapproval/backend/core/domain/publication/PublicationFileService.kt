@@ -113,6 +113,7 @@ class PublicationFileService(
                 val nestedFiles = publicationFileRepository.getNestedFiles(file.publication.id, file.fullPath + "/")
                 val fileForDeletion = nestedFiles.filter { !it.isDir }
                 publicationFileRepository.deleteAll(nestedFiles)
+                publicationFileRepository.delete(file)
                 if (fileForDeletion.isNotEmpty()) {
                     fileStorageService.deleteByIds(FILES, fileForDeletion.map { it.id })
                 }
@@ -144,6 +145,7 @@ class PublicationFileService(
         if (file.isDir) {
             checkCollapse(newDirPath, file.fullPath)
             val nestedFiles = publicationFileRepository.getNestedFiles(file.publication.id, file.fullPath + "/")
+            nestedFiles.add(file)
             nestedFiles.forEach {
                 val newFullPath = it.fullPath.replaceFirst(prevDirPath, newDirPath)
                 checkDuplicateNames(newFullPath, file.publication.id)

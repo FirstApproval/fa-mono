@@ -12,7 +12,7 @@ private const val SEARCH_NESTED_SAMPLE_FILES_QUERY = """
 interface PublicationSampleFileRepository : JpaRepository<PublicationSampleFile, UUID> {
 
     @Query(value = SEARCH_NESTED_SAMPLE_FILES_QUERY, nativeQuery = true)
-    fun getNestedFiles(publicationId: UUID, path: String): List<PublicationSampleFile>
+    fun getNestedFiles(publicationId: UUID, path: String): MutableList<PublicationSampleFile>
 
     fun existsByPublicationIdAndFullPath(publicationId: UUID, fullPath: String): Boolean
 
