@@ -54,9 +54,10 @@ class PublicationSampleFileController(
         fullPath: String,
         isDir: Boolean,
         type: UploadType?,
+        contentLength: Long?,
         body: Resource?,
     ): ResponseEntity<PublicationFile> {
-        val file = publicationSampleFileService.uploadFile(authHolderService.user, publicationId, fullPath, isDir, body?.inputStream, type == UploadType.RENAME)
+        val file = publicationSampleFileService.uploadFile(authHolderService.user, publicationId, fullPath, isDir, body?.inputStream, type == UploadType.RENAME, contentLength)
         return ResponseEntity(
             PublicationFile().id(file.id)
                 .publicationId(file.publication.id)

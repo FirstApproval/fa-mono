@@ -6,7 +6,10 @@ import React, {
 } from 'react';
 import { getAllFileEntries } from 'src/util/fileUtil';
 import styled from '@emotion/styled';
-import { type ChonkyFileSystem } from './ChonkyFileSystem';
+import {
+  type ChonkyFileSystem,
+  DuplicateCheckResult
+} from './ChonkyFileSystem';
 import { observer } from 'mobx-react-lite';
 import { UploadType } from '../apis/first-approval-api';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -60,9 +63,17 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
       const result = await getAllFileEntries(e.dataTransfer.items);
 
       void props.fs
-        .hasDuplicates(result.map((i) => i.name))
-        .then((hadDuplicates) => {
-          if (hadDuplicates) {
+        .hasDuplicates(
+          result.map((i) => i.name),
+          result[0].isDirectory
+        )
+        .then((hasDuplicates) => {
+          if (hasDuplicates === DuplicateCheckResult.ROOT_NAME_ALREADY_EXISTS) {
+            props.fs.addDirectoryImpossibleDialogOpen = true;
+          } else if (
+            hasDuplicates ===
+            DuplicateCheckResult.ONE_OR_MORE_FILE_ALREADY_EXISTS
+          ) {
             props.fs.renameOrReplaceDialogOpen = true;
             props.fs.renameOrReplaceDialogCallback = (
               uploadType: UploadType
@@ -135,6 +146,33 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
                   setIsDropZoneVisible(false);
                 }}>
                 Upload
+              </Button>
+            </DialogActions>
+          </DialogContentWrap>
+        </Dialog>
+        <Dialog
+          open={props.fs.addDirectoryImpossibleDialogOpen}
+          onClose={props.fs.closeAddDirectoryImpossibleDialog}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description">
+          <DialogContentWrap>
+            <DialogTitle id="alert-dialog-title">Upload options</DialogTitle>
+            <DialogContent>
+              <ContentWrap>
+                <TextWrap>
+                  The name of the folder you are trying to add is already in
+                  use. Rename and try again.
+                </TextWrap>
+              </ContentWrap>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  props.fs.closeAddDirectoryImpossibleDialog();
+                  setIsDropZoneVisible(false);
+                }}>
+                Ok
               </Button>
             </DialogActions>
           </DialogContentWrap>

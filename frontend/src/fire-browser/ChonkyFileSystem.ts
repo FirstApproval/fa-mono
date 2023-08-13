@@ -33,6 +33,7 @@ export class ChonkyFileSystem {
   initialized = false;
 
   renameOrReplaceDialogOpen = false;
+  addDirectoryImpossibleDialogOpen = false;
   renameOrReplaceDialogCallback: UploadFilesAfterDialogFunction = (
     uploadType: UploadType
   ) => {};
@@ -51,6 +52,7 @@ export class ChonkyFileSystem {
       initialized: observable,
       renameOrReplaceDialogOpen: observable,
       renameOrReplaceDialogCallback: observable,
+      addDirectoryImpossibleDialogOpen: observable,
       setCurrentPath: action
     });
 
@@ -72,6 +74,10 @@ export class ChonkyFileSystem {
 
   closeReplaceOrRenameDialog = (): void => {
     this.renameOrReplaceDialogOpen = false;
+  };
+
+  closeAddDirectoryImpossibleDialog = (): void => {
+    this.addDirectoryImpossibleDialogOpen = false;
   };
 
   get files(): FileEntry[] {
@@ -97,7 +103,14 @@ export class ChonkyFileSystem {
 
       const uploadFile = async (): Promise<void> => {
         await fileService
-          .uploadFile(this.publicationId, fullPath, false, uploadType, e)
+          .uploadFile(
+            this.publicationId,
+            fullPath,
+            false,
+            uploadType,
+            e.size,
+            e
+          )
           .then((response) => {
             this.cleanUploading(response.data);
             this.actualizeFiles(response.data);
@@ -140,6 +153,7 @@ export class ChonkyFileSystem {
                   fullPath,
                   false,
                   uploadType,
+                  file.size,
                   file
                 )
                 .then((response) => {
@@ -186,7 +200,9 @@ export class ChonkyFileSystem {
 
   actualizeFiles = (pf: PublicationFile): void => {
     this.actualizeAllLocalFiles(pf);
-    this.actualizeLocalFiles(pf);
+    if (pf.dirPath === this.currentPath) {
+      this.actualizeLocalFiles(pf);
+    }
   };
 
   actualizeAllLocalFiles = (pf: PublicationFile): void => {
@@ -288,16 +304,23 @@ export class ChonkyFileSystem {
     this.updateLocalFiles();
   };
 
-  hasDuplicates = async (fullPath: string[]): Promise<boolean> => {
+  hasDuplicates = async (
+    fullPath: string[],
+    isFirstElemRootFolder: boolean
+  ): Promise<DuplicateCheckResult> => {
     const res = await fileService.checkFileDuplicates(this.publicationId, {
       fullPathList: fullPath.map((i) => this.fullPath('/' + i))
     });
+    const firstPropertyValue = res.data[this.fullPath('/' + fullPath[0])];
+    if (isFirstElemRootFolder && firstPropertyValue) {
+      return DuplicateCheckResult.ROOT_NAME_ALREADY_EXISTS;
+    }
     for (const i in res.data) {
-      if (res.data[i]) {
-        return true;
+      if (res.data[this.fullPath('/' + i)]) {
+        return DuplicateCheckResult.ONE_OR_MORE_FILE_ALREADY_EXISTS;
       }
     }
-    return false;
+    return DuplicateCheckResult.DUPLICATES_NOT_FOUND;
   };
 
   private readonly updateLocalFiles = (): void => {
@@ -402,4 +425,10 @@ export class ChonkyFileSystem {
       });
     }
   };
+}
+
+export enum DuplicateCheckResult {
+  ROOT_NAME_ALREADY_EXISTS,
+  ONE_OR_MORE_FILE_ALREADY_EXISTS,
+  DUPLICATES_NOT_FOUND
 }

@@ -16,7 +16,10 @@ import React, {
   useState
 } from 'react';
 import { ChonkyIconFA } from '@first-approval/chonky-icon-fontawesome';
-import { type ChonkyFileSystem } from './ChonkyFileSystem';
+import {
+  type ChonkyFileSystem,
+  DuplicateCheckResult
+} from './ChonkyFileSystem';
 import { observer } from 'mobx-react-lite';
 import { FileToolbar } from './FileToolbar';
 import styled from '@emotion/styled';
@@ -140,9 +143,16 @@ export const FileBrowser = observer((props: FileBrowserProps): ReactElement => {
         }
 
         void props.fs
-          .hasDuplicates(filesArray.map((f) => f.name))
+          .hasDuplicates(
+            filesArray.map((f) => f.name),
+            false
+          )
           .then((result) => {
-            if (result) {
+            if (result === DuplicateCheckResult.ROOT_NAME_ALREADY_EXISTS) {
+              props.fs.addDirectoryImpossibleDialogOpen = true;
+            } else if (
+              result === DuplicateCheckResult.ONE_OR_MORE_FILE_ALREADY_EXISTS
+            ) {
               props.fs.renameOrReplaceDialogOpen = true;
               props.fs.renameOrReplaceDialogCallback = (
                 uploadType: UploadType
@@ -259,14 +269,18 @@ export const FileBrowser = observer((props: FileBrowserProps): ReactElement => {
           <Button onClick={handleCloseNewFolderDialog}>Cancel</Button>
           <Button
             onClick={() => {
-              void props.fs.hasDuplicates([newFolderName]).then((result) => {
-                if (result) {
-                  setCreateNewFolderError(true);
-                } else {
-                  handleCloseNewFolderDialog();
-                  props.fs.createFolder(newFolderName);
-                }
-              });
+              void props.fs
+                .hasDuplicates([newFolderName], true)
+                .then((result) => {
+                  if (
+                    result === DuplicateCheckResult.ROOT_NAME_ALREADY_EXISTS
+                  ) {
+                    setCreateNewFolderError(true);
+                  } else {
+                    handleCloseNewFolderDialog();
+                    props.fs.createFolder(newFolderName);
+                  }
+                });
             }}>
             Create
           </Button>
@@ -316,6 +330,32 @@ export const FileBrowser = observer((props: FileBrowserProps): ReactElement => {
                 props.fs.renameOrReplaceDialogCallback(dialogRadioButtonValue);
               }}>
               Upload
+            </Button>
+          </DialogActions>
+        </DialogContentWrap>
+      </Dialog>
+      <Dialog
+        open={props.fs.addDirectoryImpossibleDialogOpen}
+        onClose={props.fs.closeAddDirectoryImpossibleDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description">
+        <DialogContentWrap>
+          <DialogTitle id="alert-dialog-title">Upload options</DialogTitle>
+          <DialogContent>
+            <ContentWrap>
+              <TextWrap>
+                The name of the folder you are trying to add is already in use.
+                use. Rename and try again.
+              </TextWrap>
+            </ContentWrap>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              variant="contained"
+              onClick={() => {
+                props.fs.closeAddDirectoryImpossibleDialog();
+              }}>
+              Ok
             </Button>
           </DialogActions>
         </DialogContentWrap>

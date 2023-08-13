@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.DeleteObjectsRequest
 import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion
 import com.amazonaws.services.s3.model.ObjectMetadata
+import com.amazonaws.services.s3.model.PutObjectResult
 import com.amazonaws.services.s3.model.S3Object
 import mu.KotlinLogging.logger
 import java.io.InputStream
@@ -16,9 +17,11 @@ class FileStorageService(private val amazonS3: AmazonS3) {
 
     private val log = logger {}
 
-    fun save(bucketName: String, id: String, data: InputStream) {
-        val metadata = ObjectMetadata()
-        amazonS3.putObject(bucketName, id, data, metadata)
+    fun save(bucketName: String, id: String, data: InputStream, contentLength: Long): PutObjectResult {
+        val metadata = ObjectMetadata().apply {
+            this.contentLength = contentLength
+        }
+        return amazonS3.putObject(bucketName, id, data, metadata)
     }
 
     fun delete(bucketName: String, id: UUID) = amazonS3.deleteObject(bucketName, id.toString())
@@ -30,8 +33,6 @@ class FileStorageService(private val amazonS3: AmazonS3) {
     }
 
     fun get(bucketName: String, id: String): S3Object = amazonS3.getObject(bucketName, id)
-
-    fun getETag(bucketName: String, id: String): String = amazonS3.getObject(bucketName, id).objectMetadata.eTag
 
     fun createBucketIfNotExist(bucketName: String) {
         if (!amazonS3.doesBucketExistV2(bucketName)) {

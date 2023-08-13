@@ -55,9 +55,19 @@ class PublicationFileController(
         fullPath: String,
         isDir: Boolean,
         type: UploadType,
-        body: Resource?
+        contentLength: Long?,
+        body: Resource?,
     ): ResponseEntity<PublicationFile> {
-        val file = publicationFileService.uploadFile(authHolderService.user, publicationId, fullPath, isDir, body?.inputStream, type == RENAME)
+        val file =
+            publicationFileService.uploadFile(
+                authHolderService.user,
+                publicationId,
+                fullPath,
+                isDir,
+                body?.inputStream,
+                type == RENAME,
+                contentLength
+            )
         return ResponseEntity(
             PublicationFile().id(file.id)
                 .publicationId(file.publication.id)
@@ -65,7 +75,7 @@ class PublicationFileController(
                 .dirPath(file.dirPath)
                 .fullPath(file.fullPath)
                 .isDir(file.isDir)
-            .hash(file.hash), OK
+                .hash(file.hash), OK
         )
     }
 

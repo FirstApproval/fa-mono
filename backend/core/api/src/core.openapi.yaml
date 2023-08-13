@@ -580,6 +580,12 @@ paths:
             $ref: '#/components/schemas/UploadType'
           required: true
           description: In case of file duplication replace or rename
+        - in: query
+          name: contentLength
+          schema:
+            type: integer
+            format: int64
+          required: false
       requestBody:
         content:
           application/octet-stream:
@@ -876,6 +882,12 @@ paths:
             $ref: '#/components/schemas/UploadType'
           required: true
           description: In case of file duplication replace or rename
+        - in: query
+          name: contentLength
+          schema:
+            type: integer
+            format: int64
+          required: false
       requestBody:
         content:
           application/octet-stream:
