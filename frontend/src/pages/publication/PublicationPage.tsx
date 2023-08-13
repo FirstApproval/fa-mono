@@ -52,9 +52,11 @@ export const PublicationPage: FunctionComponent = observer(() => {
 
   const [fs] = useState(() => new ChonkyFileSystem(publicationId));
 
-  const [editorStore] = useState(() => new PublicationStore(publicationId, fs));
+  const [publicationStore] = useState(
+    () => new PublicationStore(publicationId, fs)
+  );
 
-  const { isLoading, researchArea } = editorStore;
+  const { isLoading, researchArea } = publicationStore;
 
   const emptyResearchArea = researchArea.length === 0;
 
@@ -72,28 +74,28 @@ export const PublicationPage: FunctionComponent = observer(() => {
                   Page.SHARING_OPTIONS,
                   routerStore.path,
                   true,
-                  { publicationTitle: editorStore.title }
+                  { publicationTitle: publicationStore.title }
                 );
               }}>
               Publish
             </ButtonWrap>
-            {editorStore.viewMode === ViewMode.EDIT && (
+            {publicationStore.viewMode === ViewMode.EDIT && (
               <ButtonWrap
                 variant="outlined"
                 size={'medium'}
                 onClick={() => {
-                  editorStore.viewMode = ViewMode.PREVIEW;
+                  publicationStore.viewMode = ViewMode.PREVIEW;
                 }}>
                 Preview
               </ButtonWrap>
             )}
-            {editorStore.viewMode === ViewMode.PREVIEW && (
+            {publicationStore.viewMode === ViewMode.PREVIEW && (
               <ButtonWrap
                 variant="outlined"
                 size={'medium'}
                 startIcon={<Edit />}
                 onClick={() => {
-                  editorStore.viewMode = ViewMode.EDIT;
+                  publicationStore.viewMode = ViewMode.EDIT;
                 }}>
                 Edit
               </ButtonWrap>
@@ -109,12 +111,12 @@ export const PublicationPage: FunctionComponent = observer(() => {
                 {!emptyResearchArea && (
                   <PublicationBody
                     publicationId={publicationId}
-                    publicationStore={editorStore}
+                    publicationStore={publicationStore}
                     fs={fs}
                   />
                 )}
                 {emptyResearchArea && (
-                  <ResearchAreaPage publicationStore={editorStore} />
+                  <ResearchAreaPage publicationStore={publicationStore} />
                 )}
               </>
             )}
