@@ -53,7 +53,7 @@ export class SignUpStore {
     };
   }
 
-  async submitRegistrationRequest(): Promise<void> {
+  async sendCodeAgain(): Promise<void> {
     const request = this.getRegistrationRequestData();
     this.isError = false;
     this.isSubmitting = true;
@@ -71,7 +71,7 @@ export class SignUpStore {
     }
   }
 
-  async submitSubmitRegistrationRequest(): Promise<void> {
+  async submitRegistrationRequest(): Promise<void> {
     const request = this.getSubmitRegistrationRequestData();
     if (request === undefined) {
       return;
@@ -82,6 +82,11 @@ export class SignUpStore {
     try {
       const response = await registrationService.confirmRegistration(request);
       authStore.token = response.data.token;
+      this.email = '';
+      this.firstName = '';
+      this.lastName = '';
+      this.password = '';
+      this.code = '';
     } catch (e) {
       const error = e as AxiosError;
       const code = error.response?.status;

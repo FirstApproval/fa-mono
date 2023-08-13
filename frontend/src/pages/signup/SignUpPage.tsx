@@ -43,6 +43,22 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
       return isVE;
     };
 
+    const validateAndContinue = (event: any): void => {
+      if (event.key === 'Enter' || event.keyCode === 13 || event.button === 0) {
+        event.preventDefault();
+        const isValid = validate();
+        if (isValid) {
+          void props.store.existsByEmail(props.store.email).then((exist) => {
+            if (exist) {
+              setUsedEmail(true);
+            } else {
+              props.onContinueClick();
+            }
+          });
+        }
+      }
+    };
+
     const emailNonEmpty = props.store.email.length > 0;
 
     return (
@@ -74,6 +90,7 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
                 onChange={(e) => {
                   props.store.email = e.currentTarget.value;
                 }}
+                onKeyDown={validateAndContinue}
                 label="Email"
                 variant="outlined"
                 InputProps={{
@@ -96,20 +113,7 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
               variant="contained"
               size={'large'}
               endIcon={<ArrowForward />}
-              onClick={() => {
-                const isValid = validate();
-                if (isValid) {
-                  void props.store
-                    .existsByEmail(props.store.email)
-                    .then((exist) => {
-                      if (exist) {
-                        setUsedEmail(true);
-                      } else {
-                        props.onContinueClick();
-                      }
-                    });
-                }
-              }}>
+              onClick={validateAndContinue}>
               Continue with email
             </FullWidthButton>
             <DividerWrap>or</DividerWrap>
