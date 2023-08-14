@@ -13,6 +13,7 @@ export enum Page {
   HOME_PAGE,
 
   PUBLICATION,
+  SHARING_OPTIONS,
 
   PROFILE,
   ACCOUNT,
@@ -21,7 +22,7 @@ export enum Page {
   SIGN_UP_PASSWORD,
   EMAIL_VERIFICATION,
 
-  RESTORE_PASSWORD,
+  RESET_PASSWORD,
   RESTORE_PASSWORD_EMAIL
 }
 
@@ -41,21 +42,34 @@ export class RouterStore {
     history.location.search
   );
 
+  payload: any = {};
   initialPageError: string | undefined;
 
   constructor() {
-    makeObservable<RouterStore, '_page' | '_path' | '_queryParams'>(this, {
-      _page: observable,
-      _path: observable,
-      _queryParams: observable,
-      page: computed,
-      lastPathSegment: computed,
-      initialPageError: observable,
-      setInitialPageError: action,
-      setPage: action
-    });
+    makeObservable<RouterStore, '_page' | '_path' | '_queryParams' | 'setPage'>(
+      this,
+      {
+        _page: observable,
+        _path: observable,
+        _queryParams: observable,
+        page: computed,
+        path: computed,
+        lastPathSegment: computed,
+        initialPageError: observable,
+        setInitialPageError: action,
+        setPage: action,
+        setPayload: action
+      }
+    );
 
-    reaction(() => authStore.token, this.goHome);
+    reaction(
+      () => authStore.token,
+      (token) => {
+        if (!token) {
+          this.navigatePage(Page.SIGN_IN);
+        }
+      }
+    );
 
     window.addEventListener('popstate', (e) => {
       const state = e.state;
@@ -71,26 +85,26 @@ export class RouterStore {
 
       if (path.startsWith('/registration-confirmation')) {
         authStore.token = undefined;
-        this.navigatePage(Page.EMAIL_VERIFICATION, path);
+        this.navigatePage(Page.EMAIL_VERIFICATION, path, true);
         return;
       }
 
       if (path.startsWith('/password-change-confirmation')) {
         authStore.token = undefined;
-        this.navigatePage(Page.RESTORE_PASSWORD, path);
+        this.navigatePage(Page.RESET_PASSWORD, path, true);
         return;
       }
 
       if (path.startsWith('/publication')) {
-        this.navigatePage(Page.PUBLICATION, path);
+        this.navigatePage(Page.PUBLICATION, path, true);
         return;
       }
       if (path.startsWith('/account')) {
-        this.navigatePage(Page.ACCOUNT, path);
+        this.navigatePage(Page.ACCOUNT, path, true);
         return;
       }
       if (path.startsWith('/profile')) {
-        this.navigatePage(Page.PROFILE, path);
+        this.navigatePage(Page.PROFILE, path, true);
         return;
       }
 
@@ -103,41 +117,54 @@ export class RouterStore {
           .then((response) => {
             const token = response.data.token;
             authStore.token = token;
-            window.history.replaceState({}, document.title, '/');
-            this.navigatePage(Page.HOME_PAGE);
+            this.navigatePage(Page.HOME_PAGE, '/', true);
           })
           .catch(() => {
             this.setInitialPageError('Authorization failed');
-            this.navigatePage(Page.SIGN_IN);
+            this.navigatePage(Page.SIGN_IN, '/', true);
           });
       } else if (authStore.token) {
-        this.setPage(Page.HOME_PAGE);
-        return;
+        this.navigatePage(Page.HOME_PAGE, '/', true);
       } else {
-        this.setPage(Page.SIGN_IN);
-        return;
+        this.navigatePage(Page.SIGN_IN, '/', true);
       }
-
-      this.goHome();
     };
 
     restoreFromUrl();
+  }
+
+  get path(): string {
+    return this._path;
   }
 
   get page(): Page {
     return this._page;
   }
 
-  setPage = (value: Page, path: string = '/'): void => {
+  private readonly setPage = (value: Page, path: string = '/'): void => {
     this._page = value;
     this._path = path;
     this._queryParams = new URLSearchParams(path);
   };
 
-  navigatePage = (value: Page, path: string = '/'): void => {
+  setPayload = (value: any): void => {
+    this.payload = value;
+  };
+
+  navigatePage = (
+    value: Page,
+    path: string = '/',
+    replace: boolean = false,
+    payload: any = {}
+  ): void => {
     const stateObject = { page: value, path };
-    window.history.pushState(stateObject, document.title, path);
+    if (replace) {
+      window.history.replaceState(stateObject, document.title, path);
+    } else {
+      window.history.pushState(stateObject, document.title, path);
+    }
     this.setPage(value, path);
+    this.setPayload(payload);
   };
 
   goHome = (): void => {

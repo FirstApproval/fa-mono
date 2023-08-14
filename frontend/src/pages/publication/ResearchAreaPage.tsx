@@ -47,7 +47,7 @@ export const ResearchAreaPage = (props: EditorProps): ReactElement => {
         onClick={() => {
           const isValid = validate();
           if (isValid) {
-            props.editorStore.updateResearchArea(researchArea);
+            props.publicationStore.updateResearchArea(researchArea);
           }
         }}>
         Continue

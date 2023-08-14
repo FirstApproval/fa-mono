@@ -25,7 +25,7 @@ import {
   SoftwarePlaceholder,
   TagsPlaceholder
 } from './ContentPlaceholder';
-import { PublicationEditorStore } from './store/PublicationEditorStore';
+import { PublicationStore, ViewMode } from './store/PublicationStore';
 import { observer } from 'mobx-react-lite';
 import {
   DescriptionEditor,
@@ -44,17 +44,19 @@ import { ResearchAreaEditor } from './editors/ResearchAreaEditor';
 import { ResearchAreaPage } from './ResearchAreaPage';
 import { action } from 'mobx';
 import { UserMenu } from '../../components/UserMenu';
+import { Page } from '../../core/RouterStore';
+import { Edit } from '@mui/icons-material';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
 
   const [fs] = useState(() => new ChonkyFileSystem(publicationId));
 
-  const [editorStore] = useState(
-    () => new PublicationEditorStore(publicationId, fs)
+  const [publicationStore] = useState(
+    () => new PublicationStore(publicationId, fs)
   );
 
-  const { isLoading, researchArea } = editorStore;
+  const { isLoading, researchArea } = publicationStore;
 
   const emptyResearchArea = researchArea.length === 0;
 
@@ -64,12 +66,40 @@ export const PublicationPage: FunctionComponent = observer(() => {
         <FlexHeader>
           <Logo onClick={routerStore.goHome}>First Approval</Logo>
           <FlexHeaderRight>
-            <ButtonWrap variant="contained" size={'medium'} onClick={() => {}}>
+            <ButtonWrap
+              variant="contained"
+              size={'medium'}
+              onClick={() => {
+                routerStore.navigatePage(
+                  Page.SHARING_OPTIONS,
+                  routerStore.path,
+                  true,
+                  { publicationTitle: publicationStore.title }
+                );
+              }}>
               Publish
             </ButtonWrap>
-            <ButtonWrap variant="outlined" size={'medium'} onClick={() => {}}>
-              Preview
-            </ButtonWrap>
+            {publicationStore.viewMode === ViewMode.EDIT && (
+              <ButtonWrap
+                variant="outlined"
+                size={'medium'}
+                onClick={() => {
+                  publicationStore.viewMode = ViewMode.PREVIEW;
+                }}>
+                Preview
+              </ButtonWrap>
+            )}
+            {publicationStore.viewMode === ViewMode.PREVIEW && (
+              <ButtonWrap
+                variant="outlined"
+                size={'medium'}
+                startIcon={<Edit />}
+                onClick={() => {
+                  publicationStore.viewMode = ViewMode.EDIT;
+                }}>
+                Edit
+              </ButtonWrap>
+            )}
             <UserMenu />
           </FlexHeaderRight>
         </FlexHeader>
@@ -81,12 +111,12 @@ export const PublicationPage: FunctionComponent = observer(() => {
                 {!emptyResearchArea && (
                   <PublicationBody
                     publicationId={publicationId}
-                    editorStore={editorStore}
+                    publicationStore={publicationStore}
                     fs={fs}
                   />
                 )}
                 {emptyResearchArea && (
-                  <ResearchAreaPage editorStore={editorStore} />
+                  <ResearchAreaPage publicationStore={publicationStore} />
                 )}
               </>
             )}
@@ -100,10 +130,10 @@ export const PublicationPage: FunctionComponent = observer(() => {
 const PublicationBody = observer(
   (props: {
     publicationId: string;
-    editorStore: PublicationEditorStore;
+    publicationStore: PublicationStore;
     fs: ChonkyFileSystem;
   }): ReactElement => {
-    const { fs, editorStore } = props;
+    const { fs, publicationStore } = props;
 
     const {
       predictedGoalsEnabled,
@@ -115,57 +145,59 @@ const PublicationBody = observer(
       grantingOrganizationsEnabled,
       relatedArticlesEnabled,
       tagsEnabled
-    } = editorStore;
+    } = publicationStore;
 
     return (
       <>
-        <TitleEditor editorStore={editorStore} />
-        <ResearchAreaEditor editorStore={editorStore} />
-        <DescriptionEditor editorStore={editorStore} />
+        <TitleEditor publicationStore={publicationStore} />
+        <ResearchAreaEditor publicationStore={publicationStore} />
+        <DescriptionEditor publicationStore={publicationStore} />
         {!predictedGoalsEnabled && (
           <PredictedGoalsPlaceholder
             onClick={action(() => {
-              editorStore.predictedGoalsEnabled = true;
-              editorStore.addPredictedGoalsParagraph(0);
+              publicationStore.predictedGoalsEnabled = true;
+              publicationStore.addPredictedGoalsParagraph(0);
             })}
           />
         )}
         {predictedGoalsEnabled && (
-          <PredictedGoalsEditor editorStore={editorStore} />
+          <PredictedGoalsEditor publicationStore={publicationStore} />
         )}
         {!methodEnabled && (
           <MethodPlaceholder
             onClick={action(() => {
-              editorStore.methodEnabled = true;
-              editorStore.addMethodParagraph(0);
+              publicationStore.methodEnabled = true;
+              publicationStore.addMethodParagraph(0);
             })}
           />
         )}
-        {methodEnabled && <MethodEditor editorStore={editorStore} />}
+        {methodEnabled && <MethodEditor publicationStore={publicationStore} />}
         {!objectOfStudyEnabled && (
           <ObjectOfStudyPlaceholder
             onClick={action(() => {
-              editorStore.objectOfStudyEnabled = true;
-              editorStore.addObjectOfStudyParagraph(0);
+              publicationStore.objectOfStudyEnabled = true;
+              publicationStore.addObjectOfStudyParagraph(0);
             })}
           />
         )}
         {objectOfStudyEnabled && (
-          <ObjectOfStudyEditor editorStore={editorStore} />
+          <ObjectOfStudyEditor publicationStore={publicationStore} />
         )}
         {!softwareEnabled && (
           <SoftwarePlaceholder
             onClick={action(() => {
-              editorStore.softwareEnabled = true;
-              editorStore.addSoftwareParagraph(0);
+              publicationStore.softwareEnabled = true;
+              publicationStore.addSoftwareParagraph(0);
             })}
           />
         )}
-        {softwareEnabled && <SoftwareEditor editorStore={editorStore} />}
+        {softwareEnabled && (
+          <SoftwareEditor publicationStore={publicationStore} />
+        )}
         {!filesEnabled && (
           <FilesPlaceholder
             onClick={action(() => {
-              editorStore.filesEnabled = true;
+              publicationStore.filesEnabled = true;
             })}
           />
         )}
@@ -173,41 +205,43 @@ const PublicationBody = observer(
         {!authorsEnabled && (
           <AuthorsPlaceholder
             onClick={action(() => {
-              editorStore.authorsEnabled = true;
+              publicationStore.authorsEnabled = true;
             })}
           />
         )}
-        {authorsEnabled && <AuthorsEditor editorStore={editorStore} />}
+        {authorsEnabled && (
+          <AuthorsEditor publicationStore={publicationStore} />
+        )}
         {!grantingOrganizationsEnabled && (
           <GrantingOrganisationsPlaceholder
             onClick={action(() => {
-              editorStore.grantingOrganizationsEnabled = true;
-              editorStore.addGrantingOrganization(0);
+              publicationStore.grantingOrganizationsEnabled = true;
+              publicationStore.addGrantingOrganization(0);
             })}
           />
         )}
         {grantingOrganizationsEnabled && (
-          <GrantingOrganizationsEditor editorStore={editorStore} />
+          <GrantingOrganizationsEditor publicationStore={publicationStore} />
         )}
         {!relatedArticlesEnabled && (
           <RelatedArticlesPlaceholder
             onClick={action(() => {
-              editorStore.relatedArticlesEnabled = true;
-              editorStore.addRelatedArticle(0);
+              publicationStore.relatedArticlesEnabled = true;
+              publicationStore.addRelatedArticle(0);
             })}
           />
         )}
         {relatedArticlesEnabled && (
-          <RelatedArticlesEditor editorStore={editorStore} />
+          <RelatedArticlesEditor publicationStore={publicationStore} />
         )}
         {!tagsEnabled && (
           <TagsPlaceholder
             onClick={action(() => {
-              editorStore.tagsEnabled = true;
+              publicationStore.tagsEnabled = true;
             })}
           />
         )}
-        {tagsEnabled && <TagsEditor editorStore={editorStore} />}
+        {tagsEnabled && <TagsEditor publicationStore={publicationStore} />}
       </>
     );
   }

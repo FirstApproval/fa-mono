@@ -11,7 +11,7 @@ export const ResearchAreaEditor = (props: EditorProps): ReactElement => {
   const [addAuthorVisible, setAddAuthorVisible] = useState(false);
 
   const [researchArea, setResearchArea] = useState(
-    props.editorStore.researchArea
+    props.publicationStore.researchArea
   );
   const [isValidResearchArea, setIsValidResearchArea] = useState(true);
 
@@ -27,6 +27,14 @@ export const ResearchAreaEditor = (props: EditorProps): ReactElement => {
     setAddAuthorVisible(false);
   };
 
+  if (props.publicationStore.isReadonly) {
+    return (
+      <ReadonlyContentPlaceholderWrap>
+        {props.publicationStore.researchArea}
+      </ReadonlyContentPlaceholderWrap>
+    );
+  }
+
   return (
     <>
       <ContentPlaceholderWrap
@@ -34,7 +42,7 @@ export const ResearchAreaEditor = (props: EditorProps): ReactElement => {
         onClick={() => {
           setAddAuthorVisible(true);
         }}>
-        {props.editorStore.researchArea}
+        {props.publicationStore.researchArea}
       </ContentPlaceholderWrap>
       <Dialog
         open={addAuthorVisible}
@@ -69,7 +77,7 @@ export const ResearchAreaEditor = (props: EditorProps): ReactElement => {
             onClick={() => {
               const isValid = validate();
               if (isValid) {
-                props.editorStore.updateResearchArea(researchArea);
+                props.publicationStore.updateResearchArea(researchArea);
                 handleCloseEdit();
               }
             }}>
@@ -98,6 +106,19 @@ const ContentPlaceholderWrap = styled.div`
   &:hover {
     cursor: pointer;
   }
+`;
+
+const ReadonlyContentPlaceholderWrap = styled.div`
+  display: inline-flex;
+  padding: 8px 16px;
+  align-items: center;
+
+  border-radius: 4px;
+  background: var(--grey-50, #f8f7fa);
+
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
 `;
 
 const AddAuthorWrap = styled.div`
