@@ -16,7 +16,7 @@ class EmailRegistrationConfirmation(
     var firstName: String?,
     var lastName: String?,
     var password: String,
-    val code: String,
+    var code: String,
     var attemptCount: Int = 1,
     var lastTryTime: ZonedDateTime? = now(),
     var creationTime: ZonedDateTime = now()

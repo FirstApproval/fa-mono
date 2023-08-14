@@ -22,8 +22,6 @@ export class AuthStore {
   }
 
   set token(value: string | undefined | null) {
-    // eslint-disable-next-line no-debugger
-    debugger;
     this._token = value ?? undefined;
     if (this._token !== undefined) {
       void setBearerAuthToObject(this._token);

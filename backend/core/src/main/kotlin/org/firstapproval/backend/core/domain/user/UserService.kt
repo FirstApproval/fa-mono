@@ -122,13 +122,15 @@ class UserService(
         if (userRepository.existsByEmail(prevTry.email)) {
             throw RecordConflictException("user already exists")
         }
+
+        val code = generateCode(EMAIL_CONFIRMATION_CODE_LENGTH)
+        prevTry.code = code
         prevTry.lastTryTime = now()
         prevTry.attemptCount += 1
         prevTry.firstName = firstName
         prevTry.lastName = lastName
         prevTry.password = passwordEncoder.encode(password)
         // TODO CREATE LINK
-        val code = generateCode(EMAIL_CONFIRMATION_CODE_LENGTH)
         val link = "${frontendProperties.registrationConfirmationUrl}/${code}"
         notificationService.sendConfirmationEmail(code, link, prevTry.email, "email-template")
         return prevTry.id
