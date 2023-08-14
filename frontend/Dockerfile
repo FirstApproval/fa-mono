@@ -5,7 +5,6 @@ RUN apt-get update \
 COPY package.json .
 RUN npm install
 COPY . .
-RUN npm run build
 
 FROM nginx:1.24
 COPY --from=build /build /usr/share/nginx/html

@@ -1,15 +1,10 @@
-import {
-  type AuthorizationLinksResponse,
-  type OauthType
-} from 'src/apis/first-approval-api';
-
-import { authService } from './service';
 import { makeObservable, observable } from 'mobx';
+import { setBearerAuthToObject } from '../apis/first-approval-api/common';
 
 const ACCESS_TOKEN_KEY = 'access-token';
 
 export class AuthStore {
-  private _token: string | undefined;
+  private _token: string | undefined = undefined;
 
   constructor() {
     makeObservable<AuthStore, '_token'>(this, {
@@ -22,24 +17,17 @@ export class AuthStore {
     }
   }
 
-  async exchangeToken(code: string, type: OauthType): Promise<void> {
-    const response = await authService.authorizeOauth({
-      code,
-      type
-    });
-    this.token = response.data.token;
-  }
-
   get token(): string | undefined {
     return this._token;
   }
 
   set token(value: string | undefined | null) {
     this._token = value ?? undefined;
+    if (this._token !== undefined) {
+      void setBearerAuthToObject(this._token);
+      localStorage.setItem(ACCESS_TOKEN_KEY, this._token);
+    } else {
+      localStorage.removeItem(ACCESS_TOKEN_KEY);
+    }
   }
 }
-
-export const loadAuthUrls = async (): Promise<AuthorizationLinksResponse> => {
-  const urls = await authService.authorizationLinks();
-  return urls.data;
-};

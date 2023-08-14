@@ -78,9 +78,9 @@ export const SignInPage: FunctionComponent<SignInPageProps> = observer(
               />
             </div>
             <ForgotPasswordLabel>
-              <Link color="inherit" onClick={props.onRestorePasswordClick}>
+              <LinkWrap color="inherit" onClick={props.onRestorePasswordClick}>
                 I forgot my password
-              </Link>
+              </LinkWrap>
             </ForgotPasswordLabel>
             <FullWidthButton
               onClick={() => {
@@ -92,12 +92,20 @@ export const SignInPage: FunctionComponent<SignInPageProps> = observer(
             </FullWidthButton>
             <DividerWrap />
             <CreateAccount>
-              No account? <Link onClick={props.onSignUpClick}>Create one</Link>
+              No account?{' '}
+              <LinkWrap onClick={props.onSignUpClick}>Create one</LinkWrap>
             </CreateAccount>
             <FooterWrap>
               By clicking “Sign in” above, you acknowledge that you have read
-              and understood, and agree to Terms & Conditions and Privacy
-              Policy.
+              and understood, and agree to{' '}
+              <LinkWrap color="inherit" href={'/docs/terms_and_conditions.pdf'}>
+                Terms & Conditions
+              </LinkWrap>{' '}
+              and{' '}
+              <LinkWrap color="inherit" href={'/docs/privacy_policy.pdf'}>
+                Privacy Policy
+              </LinkWrap>
+              .
             </FooterWrap>
           </FlexBody>
         </FlexBodyCenter>
@@ -156,4 +164,8 @@ const FooterWrap = styled('div')`
   font-weight: 400;
   font-size: 12px;
   color: #68676e;
+`;
+
+const LinkWrap = styled(Link)`
+  cursor: pointer;
 `;

@@ -7,8 +7,6 @@ import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
 import java.util.*
 
-private const val SEQUENCE_NAME = "email_registration_confirmations_test_id_seq"
-
 @Entity
 @Table(name = "email_registration_confirmations")
 class EmailRegistrationConfirmation(
@@ -20,6 +18,6 @@ class EmailRegistrationConfirmation(
     var password: String,
     val code: String,
     var attemptCount: Int = 1,
-    var lastTryTime:  ZonedDateTime? = now(),
+    var lastTryTime: ZonedDateTime? = now(),
     var creationTime: ZonedDateTime = now()
 )

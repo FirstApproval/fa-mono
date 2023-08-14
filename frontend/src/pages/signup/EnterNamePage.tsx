@@ -14,6 +14,7 @@ import {
   Parent,
   Header
 } from '../common.styled';
+import { routerStore } from '../../core/router';
 
 interface EnterNamePageProps {
   store: SignUpStore;
@@ -34,10 +35,13 @@ export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
       return isFN && isLN;
     };
 
+    const nameNonEmpty =
+      props.store.firstName.length > 0 && props.store.lastName.length > 0;
+
     return (
       <Parent>
         <FlexHeader>
-          <Logo>First Approval</Logo>
+          <Logo onClick={routerStore.goHome}>First Approval</Logo>
           <FlexHeaderRight>
             <Button
               variant="outlined"
@@ -53,6 +57,7 @@ export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
             <EmailLabel>To start, what&apos;s your name?</EmailLabel>
             <div>
               <FullWidthTextField
+                autoFocus
                 error={!isValidFirstName}
                 helperText={!isValidFirstName ? 'Enter valid name' : undefined}
                 value={props.store.firstName}
@@ -76,6 +81,7 @@ export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
               />
             </div>
             <FullWidthButton
+              disabled={!nameNonEmpty}
               variant="contained"
               size={'large'}
               endIcon={<ArrowForward />}

@@ -1,8 +1,8 @@
 package org.firstapproval.backend.core.domain.user
 
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import jakarta.persistence.*
+import jakarta.persistence.EnumType.STRING
+import jakarta.persistence.FetchType.EAGER
 import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
 import java.util.*
@@ -17,10 +17,15 @@ class User(
     var middleName: String? = null,
     var lastName: String? = null,
     var fullName: String? = null,
-    var googleId: String? = null,
-    var facebookId: String? = null,
-    var linkedinId: String? = null,
+    @ElementCollection(fetch = EAGER)
+    @CollectionTable(name = "external_ids")
+    @MapKeyEnumerated(STRING)
+    @MapKeyClass(OauthType::class)
+    @MapKeyColumn(name = "type")
+    @Column(name = "external_id")
+    var externalIds: MutableMap<OauthType, String> = mutableMapOf(),
     var email: String? = null,
     var password: String? = null,
+    var selfInfo: String? = null,
     var creationTime: ZonedDateTime = now(),
 )

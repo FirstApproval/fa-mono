@@ -4,7 +4,7 @@ info:
   description: 'FA server API'
   version: 1.0.0
 servers:
-  - url: http://{host}
+  - url: '{URL}'
 
 paths:
   /api/authorize:
@@ -106,6 +106,93 @@ paths:
       operationId: confirmRegistration
       tags: [ registration ]
 
+  /api/user:
+    put:
+      summary: Update user information
+      requestBody:
+        description: Updated user data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdateRequest"
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: updateUser
+      tags: [ user ]
+    delete:
+      summary: Delete user
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: deleteUser
+      tags: [ user ]
+
+  /api/user/change-email:
+    post:
+      summary: Change email
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeEmailRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangeEmailResponse'
+      security:
+        - TokenAuth: [ ]
+      operationId: changeEmail
+      tags: [ user ]
+
+  /api/user/change-email-confirmation:
+    post:
+      summary: Confirm change email
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeEmailConfirmationRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+      security:
+        - PublicAuth: [ ]
+      operationId: confirmChangeEmail
+      tags: [ user ]
+
+  /api/user/check-email-uniqueness/{email}:
+    get:
+      summary: Check email uniqueness
+      parameters:
+        - in: path
+          name: email
+          schema:
+            type: string
+          required: true
+          description: Return true if such e-mail already exists
+      responses:
+        200:
+          description: Success
+          content:
+            'application/json':
+              schema:
+                type: boolean
+      security:
+        - PublicAuth: [ ]
+      operationId: existsByEmail
+      tags: [ user ]
+
   /api/user/request-password-reset:
     post:
       summary: Request password reset
@@ -178,8 +265,730 @@ paths:
       operationId: setPassword
       tags: [ user ]
 
+  /api/user/get-me:
+    get:
+      summary: Get user information
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMeResponse'
+      security:
+        - TokenAuth: [ ]
+      operationId: getMe
+      tags: [ user ]
+
+  /api/user/get-user-info/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+    get:
+      summary: Get other user information
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUserInfoResponse'
+      security:
+        - PublicAuth: [ ]
+      operationId: getUserInfo
+      tags: [ user ]
+
+  /api/publication:
+    post:
+      summary: Create publication
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatePublicationResponse'
+      security:
+        - TokenAuth: [ ]
+      operationId: createPublication
+      tags: [ publication ]
+
+  /api/user/publications:
+    get:
+      summary: Get user publications
+      parameters:
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/PublicationStatus'
+          required: true
+          description: Status of publication
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: true
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          required: true
+          description: Page size
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/PublicationsResponse'
+      security:
+        - TokenAuth: [ ]
+      operationId: getMyPublications
+      tags: [ publication ]
+
+  /api/publications:
+    get:
+      summary: Get all publications
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: true
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          required: true
+          description: Page size
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicationsResponse'
+      security:
+        - PublicAuth: [ ]
+      operationId: getAllPublications
+      tags: [ publication ]
+
+  /api/publication/{id}:
+    get:
+      summary: Get publication
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Publication'
+      security:
+        - TokenAuth: [ ]
+      operationId: getPublication
+      tags: [ publication ]
+    patch:
+      summary: Edit publication
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicationEditRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: editPublication
+      tags: [ publication ]
+
+  /api/publication/search:
+    get:
+      summary: Search publications
+      parameters:
+        - in: query
+          name: text
+          schema:
+            type: string
+          required: true
+          description: Entry
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            maximum: 100
+        - in: query
+          name: pageNum
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchPublicationsResponse'
+      security:
+        - PublicAuth: [ ]
+      operationId: searchPublications
+      tags: [ publication ]
+
+  /api/publication/{id}/submit:
+    put:
+      summary: Submit publication
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
+        - in: query
+          name: accessType
+          schema:
+            $ref: '#/components/schemas/AccessType'
+          required: true
+          description: Access level for publication
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: submitPublication
+      tags: [ publication ]
+
+  /api/publication/{id}/request-download:
+    put:
+      summary: Request publication archive download
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: requestDownload
+      tags: [ publication ]
+
+  /api/publication/{id}/download-link:
+    get:
+      summary: Get publication content download link
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
+      responses:
+        200:
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+      security:
+        - TokenAuth: [ ]
+      operationId: getDownloadLink
+      tags: [ publication ]
+
+  /api/files/upload:
+    post:
+      summary: Upload file
+      parameters:
+        - in: query
+          name: publicationId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
+        - in: query
+          name: fullPath
+          schema:
+            type: string
+          required: true
+          description: Full file path
+        - in: query
+          name: isDir
+          schema:
+            type: boolean
+          required: true
+          description: Is this file or directory
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+        required: false
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicationFile'
+      security:
+        - TokenAuth: [ ]
+      operationId: uploadFile
+      tags: [ file ]
+
+  /api/files/download/{file_id}:
+    get:
+      summary: Download a file
+      description: Retrieves a file for download based on the provided file ID.
+      parameters:
+        - name: file_id
+          in: path
+          description: ID of the file to download
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: File not found
+        '500':
+          description: Server error
+      security:
+        - PublicAuth: [ ]
+      operationId: downloadPublicationFile
+      tags: [ file ]
+
+  /api/author/{searchText}:
+    get:
+      summary: Get users by search text
+      parameters:
+        - in: path
+          name: searchText
+          schema:
+            type: string
+          required: true
+          description: Search text for users
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Author'
+      security:
+        - TokenAuth: [ ]
+      operationId: getAuthors
+      tags: [ author ]
+
+  /api/files:
+    parameters:
+      - in: query
+        name: publicationId
+        schema:
+          type: string
+          format: uuid
+        required: true
+        description: Publication id
+    get:
+      summary: Get files by publication id
+      parameters:
+        - in: query
+          name: dirPath
+          schema:
+            type: string
+          required: true
+          description: Directory path
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PublicationFile'
+      security:
+        - TokenAuth: [ ]
+      operationId: getPublicationFiles
+      tags: [ file ]
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFolderRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicationFile'
+      security:
+        - TokenAuth: [ ]
+      operationId: createFolder
+      tags: [ file ]
+
+  /api/files/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+        description: Id of file or directory
+    put:
+      summary: Patch file
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditFileRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: editFile
+      tags: [ file ]
+
+  /api/files/deleteByIds:
+    delete:
+      summary: Delete file by id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteByIdsRequest'
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: deleteFiles
+      tags: [ file ]
+
+  /api/files/move/{id}:
+    post:
+      summary: Move file by id
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Id of file or directory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MoveFileRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: moveFile
+      tags: [ file ]
+
+  /api/sample-files:
+    parameters:
+      - in: query
+        name: publicationId
+        schema:
+          type: string
+          format: uuid
+        required: true
+        description: Publication id
+    get:
+      summary: Get sample files by publication id
+      parameters:
+        - in: query
+          name: dirPath
+          schema:
+            type: string
+          required: true
+          description: Directory path
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PublicationFile'
+      security:
+        - PublicAuth: [ ]
+      operationId: getPublicationSampleFiles
+      tags: [ sampleFile ]
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFolderRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicationFile'
+      security:
+        - TokenAuth: [ ]
+      operationId: createFolderForSampleFile
+      tags: [ sampleFile ]
+
+  /api/sample-files/upload:
+    post:
+      summary: Upload sample file
+      parameters:
+        - in: query
+          name: publicationId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
+        - in: query
+          name: fullPath
+          schema:
+            type: string
+          required: true
+          description: Full file path
+        - in: query
+          name: isDir
+          schema:
+            type: boolean
+          required: true
+          description: Is this file or directory
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+        required: false
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicationFile'
+      security:
+        - TokenAuth: [ ]
+      operationId: uploadSampleFile
+      tags: [ sampleFile ]
+
+  /api/sample-files/download/{file_id}:
+    get:
+      summary: Download a sample file
+      description: Retrieves a sample file for download based on the provided file ID.
+      parameters:
+        - name: file_id
+          in: path
+          description: ID of the sample file to download
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: File not found
+        '500':
+          description: Server error
+      security:
+        - PublicAuth: [ ]
+      operationId: downloadPublicationSampleFile
+      tags: [ sampleFile ]
+
+  /api/sample-files/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+        description: Id of sample file or directory
+    put:
+      summary: Patch file
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditFileRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: editSampleFile
+      tags: [ sampleFile ]
+
+  /api/sample-files/deleteByIds:
+    delete:
+      summary: Delete sample file by id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteByIdsRequest'
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: deleteSampleFiles
+      tags: [ sampleFile ]
+
+  /api/sample-files/move/{id}:
+    post:
+      summary: Move sample file by id
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Id of sample file or directory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MoveFileRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: moveSampleFile
+      tags: [ sampleFile ]
+
 components:
   schemas:
+    PublicationFile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        publicationId:
+          type: string
+          format: uuid
+        fullPath:
+          type: string
+        description:
+          type: string
+        dirPath:
+          type: string
+        isDir:
+          type: boolean
+        hash:
+          type: string
+        creationTime:
+          type: string
+          format: date-time
+
+    EditFileRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+      required:
+        - name
+
+    DeleteByIdsRequest:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+        - ids
+
+    MoveFileRequest:
+      type: object
+      properties:
+        newDirPath:
+          type: string
+          minLength: 0
+      required:
+        - newDirPath
+
+    CreateFolderRequest:
+      type: object
+      properties:
+        dirPath:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+      required:
+        - dirPath
+        - name
+
     SubmitRegistrationRequest:
       type: object
       properties:
@@ -304,9 +1113,108 @@ components:
         google:
           type: string
           maxLength: 2048
+        facebook:
+          type: string
+          maxLength: 2048
         linkedin:
-            type: string
-            maxLength: 2048
+          type: string
+          maxLength: 2048
+        orcid:
+          type: string
+          maxLength: 2048
+
+    ChangeEmailRequest:
+      type: object
+      properties:
+        email:
+          type: string
+      required:
+        - email
+
+    ChangeEmailResponse:
+      type: object
+      properties:
+        confirmationToken:
+          type: string
+          format: uuid
+      required:
+        - confirmationToken
+
+    ChangeEmailConfirmationRequest:
+      type: object
+      properties:
+        confirmationToken:
+          type: string
+          format: uuid
+        code:
+          type: string
+      required:
+        - confirmationToken
+        - code
+
+    CreatePublicationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/PublicationStatus'
+        contentStatus:
+          $ref: '#/components/schemas/PublicationContentStatus'
+        creationTime:
+          type: string
+          format: date-time
+        publicationTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - status
+        - creationTime
+
+    GetMeResponse:
+      type: object
+      properties:
+        firstName:
+          type: string
+        middleName:
+          type: string
+        lastName:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        canSetPassword:
+          type: boolean
+        canChangePassword:
+          type: boolean
+        selfInfo:
+          type: string
+        signedVia:
+          type: array
+          items:
+            $ref: '#/components/schemas/OauthType'
+
+    GetUserInfoResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+        middleName:
+          type: string
+        lastName:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        selfInfo:
+          type: string
 
     OauthType:
       type: string
@@ -314,6 +1222,249 @@ components:
         - GOOGLE
         - FACEBOOK
         - LINKEDIN
+        - ORCID
+
+    PublicationStatus:
+      type: string
+      enum:
+        - PENDING
+        - READY_FOR_PUBLICATION
+        - PUBLISHED
+
+    PublicationContentStatus:
+      type: string
+      enum:
+        - PENDING
+        - INSTANT
+        - ENCRYPTED
+        - ARCHIVE
+        - ABSENT
+
+    AccessType:
+      type: string
+      enum:
+        - CLOSED
+        - OPEN
+        - ON_REQUEST
+        - MONETIZE_OR_CO_AUTHORSHIP
+
+    UserUpdateRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+        middleName:
+          type: string
+        lastName:
+          type: string
+        username:
+          type: string
+        selfInfo:
+          type: string
+      required:
+        - firstName
+        - lastName
+        - username
+
+    PublicationEditRequest:
+      type: object
+      properties:
+        confirmedAuthors:
+          $ref: '#/components/schemas/ConfirmedAuthors'
+        unconfirmedAuthors:
+          $ref: '#/components/schemas/UnconfirmedAuthors'
+        title:
+          $ref: '#/components/schemas/PublicationStringValue'
+        researchArea:
+          $ref: '#/components/schemas/PublicationStringValue'
+        description:
+          $ref: '#/components/schemas/PublicationStringArrayValue'
+        grantOrganizations:
+          $ref: '#/components/schemas/PublicationStringArrayValue'
+        relatedArticles:
+          $ref: '#/components/schemas/PublicationStringArrayValue'
+        tags:
+          $ref: '#/components/schemas/PublicationStringArrayValue'
+        objectOfStudyTitle:
+          $ref: '#/components/schemas/PublicationStringValue'
+        objectOfStudyDescription:
+          $ref: '#/components/schemas/PublicationStringArrayValue'
+        software:
+          $ref: '#/components/schemas/PublicationStringArrayValue'
+        methodTitle:
+          $ref: '#/components/schemas/PublicationStringValue'
+        methodDescription:
+          $ref: '#/components/schemas/PublicationStringArrayValue'
+        predictedGoals:
+          $ref: '#/components/schemas/PublicationStringArrayValue'
+
+    PublicationStringValue:
+      type: object
+      properties:
+        edited:
+          type: boolean
+        value:
+          type: string
+          maxLength: 32768
+
+    PublicationStringArrayValue:
+      type: object
+      properties:
+        edited:
+          type: boolean
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/Paragraph'
+
+    Paragraph:
+      type: object
+      properties:
+        text:
+          type: string
+          maxLength: 32768
+      required:
+        - text
+
+    ConfirmedAuthors:
+      type: object
+      properties:
+        edited:
+          type: boolean
+        values:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    UnconfirmedAuthors:
+      type: object
+      properties:
+        edited:
+          type: boolean
+        values:
+          type: array
+          items:
+            type: object
+            properties:
+              email:
+                type: string
+              firstName:
+                type: string
+              middleName:
+                type: string
+              lastName:
+                type: string
+              shortBio:
+                type: string
+            required:
+              - email
+              - firstName
+              - lastName
+
+    SearchPublicationsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Publication"
+        pageNum:
+          type: integer
+        isLast:
+          type: boolean
+
+    Publication:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/PublicationStatus'
+        accessType:
+          $ref: '#/components/schemas/AccessType'
+        contentStatus:
+          $ref: '#/components/schemas/PublicationContentStatus'
+        creationTime:
+          type: string
+          format: date-time
+        publicationTime:
+          type: string
+          format: date-time
+        title:
+          type: string
+          maxLength: 32768
+        description:
+          $ref: '#/components/schemas/StringArray'
+        researchArea:
+          type: string
+          maxLength: 40
+        grantOrganizations:
+          $ref: '#/components/schemas/StringArray'
+        relatedArticles:
+          $ref: '#/components/schemas/StringArray'
+        tags:
+          $ref: '#/components/schemas/StringArray'
+        objectOfStudyTitle:
+          type: string
+          maxLength: 32768
+        objectOfStudyDescription:
+          $ref: '#/components/schemas/StringArray'
+        software:
+          $ref: '#/components/schemas/StringArray'
+        methodTitle:
+          type: string
+          maxLength: 32768
+        methodDescription:
+          $ref: '#/components/schemas/StringArray'
+        predictedGoals:
+          $ref: '#/components/schemas/StringArray'
+        authors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Author'
+      required:
+        - id
+        - status
+        - creationTime
+
+    PublicationsResponse:
+      type: object
+      properties:
+        isLastPage:
+          type: boolean
+        publications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Publication'
+
+    Author:
+      type: object
+      properties:
+        id:
+          type: string
+        firstName:
+          type: string
+        middleName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        shortBio:
+          type: string
+      required:
+        - firstName
+        - middleName
+        - lastName
+        - email
+        - shortBio
+
+    StringArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/Paragraph'
 
   securitySchemes:
     PublicAuth:

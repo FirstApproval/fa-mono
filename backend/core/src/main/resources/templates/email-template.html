@@ -245,7 +245,9 @@
     <div class="d-block">
         <div class="email">
             <div class="first-approval-parent">
-                <div class="first-approval">First Approval</div>
+                <div class="first-approval">
+                    <img style='height: 24px; width: 160px' src='https://iili.io/HZyCRmx.jpg'>
+                </div>
                 <div class="frame-parent">
                     <div class="youre-almost-there-parent mt-40">
                         <div class="youre-almost-there">You’re almost there</div>
@@ -269,15 +271,18 @@
                             </div>
                         </div>
                     </div>
-                    <div class="if-you-didnt mt-40">
+                    <div th:if="${#strings.contains(link, 'registration-confirmation')}" class="if-you-didnt mt-40">
                         If you didn't create an account in FA, please ignore this message.
+                    </div>
+                    <div th:if="${#strings.contains(link, 'email-change-confirmation')}" class="if-you-didnt mt-40">
+                        If you didn't change e-mail in FA, please ignore this message.
                     </div>
                 </div>
             </div>
             <div class="frame-group mt-40">
                 <div class="div-wrapper">
                     <div class="this-email-was-sent-to-parent" style="display: flex; flex-direction: row; justify-content: space-between;">
-                        <div class="this-email-was">This email was sent to </div>
+                        <div class="this-email-was" style='margin-right: 8px'>This email was sent to </div>
                         <div class="link">
                             <div class="this-email-was" th:text="${email}"></div>
                         </div>
@@ -290,10 +295,10 @@
                 </div>
                 <div class="div-wrapper">
                     <div class="link-parent mt-32" style="display: flex; flex-direction: row; justify-content: space-between;">
-                        <div class="link2">
+                        <div class="link2" style='margin-right: 12px'>
                             <a class="this-email-was" href="#">Help</a>
                         </div>
-                        <div class="link4">
+                        <div class="link4" style='margin-left: 12px'>
                             <a class="this-email-was" href="#">Privacy Policy</a>
                         </div>
                     </div>

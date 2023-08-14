@@ -5,37 +5,34 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import org.firstapproval.backend.core.config.Properties.EmailProperties
 import org.firstapproval.backend.core.config.Properties.FrontendProperties
 import org.firstapproval.backend.core.domain.auth.OauthUser
+import org.firstapproval.backend.core.domain.notification.NotificationService
+import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
+import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthorRepository
+import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthorRepository
 import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmation
 import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmationRepository
-import org.firstapproval.backend.core.domain.user.OauthType.*
+import org.firstapproval.backend.core.domain.user.email.EmailChangeConfirmationRepository
 import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimit
 import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimitRepository
 import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmation
 import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmationRepository
-import org.firstapproval.backend.core.exception.MissingEmailException
 import org.firstapproval.backend.core.exception.RecordConflictException
+import org.firstapproval.backend.core.utils.EMAIL_CONFIRMATION_CODE_LENGTH
 import org.firstapproval.backend.core.utils.generateCode
-import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
-import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Isolation.REPEATABLE_READ
 import org.springframework.transaction.annotation.Transactional
-import org.thymeleaf.context.Context
-import org.thymeleaf.spring6.SpringTemplateEngine
-import java.nio.charset.StandardCharsets
 import java.time.ZonedDateTime.now
 import java.util.*
 import java.util.UUID.*
-import java.util.function.*
 import javax.naming.LimitExceededException
 
-const val EMAIL_CONFIRMATION_CODE_LENGTH = 6
-
-const val SEND_EMAIL_LIMIT = 1
+const val SEND_EMAIL_LIMIT = 2
 
 const val AUTHORIZATION_RATE_LIMIT = 4
 
@@ -44,45 +41,52 @@ class UserService(
     private val userRepository: UserRepository,
     private val emailRegistrationConfirmationRepository: EmailRegistrationConfirmationRepository,
     private val passwordResetConfirmationRepository: PasswordResetConfirmationRepository,
+    private val emailChangeConfirmationRepository: EmailChangeConfirmationRepository,
     private val passwordEncoder: PasswordEncoder,
     private val authorizationLimitRepository: AuthorizationLimitRepository,
+    private val frontendProperties: FrontendProperties,
+    private val notificationService: NotificationService,
     private val emailSender: JavaMailSender,
-    private val templateEngine: SpringTemplateEngine,
-    private val emailProperties: EmailProperties,
-    private val frontendProperties: FrontendProperties
+    private val unconfirmedUserRepository: UnconfirmedUserRepository,
+    private val unconfirmedAuthorRepository: UnconfirmedAuthorRepository,
+    private val confirmedAuthorRepository: ConfirmedAuthorRepository
 ) {
 
     val log = logger {}
 
+    @Transactional(readOnly = true)
+    fun getPublicUserProfile(id: UUID): User = userRepository.getReferenceById(id)
+
+
     @Transactional(isolation = REPEATABLE_READ)
     fun saveOrUpdate(oauthUser: OauthUser): User {
-        val userSupplier = when (oauthUser.type) {
-            GOOGLE -> Supplier<User?> {
-                if (oauthUser.email != null) {
-                    userRepository.findByEmailOrGoogleId(oauthUser.email, oauthUser.externalId)
-                } else {
-                    throw MissingEmailException("Missing email from google")
-                }
-            }
+        val user = userRepository.findByEmailOrExternalIdAndType(
+            email = oauthUser.email,
+            externalId = oauthUser.externalId,
+            type = oauthUser.type
+        )
 
-            FACEBOOK -> Supplier<User?> {
-                if (oauthUser.email != null) {
-                    userRepository.findByEmailOrFacebookId(oauthUser.email, oauthUser.externalId)
-                } else {
-                    throw MissingEmailException("Missing email from facebook")
-                }
-            }
-
-            LINKEDIN -> Supplier<User?> {
-                if (oauthUser.email != null) {
-                    userRepository.findByEmailOrLinkedinId(oauthUser.email, oauthUser.externalId)
-                } else {
-                    throw MissingEmailException("Missing email from linkedin")
-                }
-            }
+        if (user != null) {
+            user.externalIds[oauthUser.type] = oauthUser.externalId
+            return user
         }
 
-        return saveOrUpdateUser(userSupplier, oauthUser)
+        val userByUsername = userRepository.findByUsername(oauthUser.username)
+        val id = randomUUID()
+        val savedUser = userRepository.save(
+            User(
+                id = id,
+                username = if (userByUsername != null) id.toString() else oauthUser.username,
+                externalIds = mutableMapOf(oauthUser.type to oauthUser.externalId),
+                email = oauthUser.email,
+                firstName = oauthUser.firstName,
+                lastName = oauthUser.lastName,
+                middleName = oauthUser.middleName,
+                fullName = oauthUser.fullName
+            )
+        )
+        migratePublicationOfUnconfirmedUser(savedUser)
+        return savedUser
     }
 
     @Transactional
@@ -98,7 +102,7 @@ class UserService(
         } else {
             val user = userRepository.findByEmailAndPasswordIsNull(email)
             if (user != null) {
-                sendYouAlreadyHaveAccount(user)
+                notificationService.sendYouAlreadyHaveAccount(user)
                 null
             } else {
                 newAttemptForRegistration(email, password, firstName, lastName)
@@ -125,8 +129,8 @@ class UserService(
         prevTry.password = passwordEncoder.encode(password)
         // TODO CREATE LINK
         val code = generateCode(EMAIL_CONFIRMATION_CODE_LENGTH)
-        val link = "${frontendProperties.url}/${code}"
-        sendRegistrationMessageEmail(code, link, prevTry.email)
+        val link = "${frontendProperties.registrationConfirmationUrl}/${code}"
+        notificationService.sendConfirmationEmail(code, link, prevTry.email, "email-template")
         return prevTry.id
     }
 
@@ -147,8 +151,8 @@ class UserService(
             )
         )
         // TODO CREATE LINK
-        val link = "${frontendProperties.url}/${code}"
-        sendRegistrationMessageEmail(code, link, email)
+        val link = "${frontendProperties.registrationConfirmationUrl}/${code}"
+        notificationService.sendConfirmationEmail(code, link, email, "email-template")
         return registrationToken
     }
 
@@ -162,7 +166,7 @@ class UserService(
         val username = emailRegistrationConfirmation.email.split("@").first()
         val userByUsername = userRepository.findByUsername(username)
         val userId = randomUUID()
-        return userRepository.save(
+        val user = userRepository.save(
             User(
                 id = userId,
                 email = emailRegistrationConfirmation.email,
@@ -172,6 +176,8 @@ class UserService(
                 username = if (userByUsername != null) userId.toString() else username
             )
         )
+        migratePublicationOfUnconfirmedUser(user)
+        return user
     }
 
     @Transactional
@@ -184,11 +190,11 @@ class UserService(
             }
             previousTry.attemptCount += 1
             previousTry.lastTryTime = now()
-            sendEmailForPasswordReset(email, previousTry.id.toString())
+            notificationService.sendEmailForPasswordReset(email, previousTry.id.toString())
         } else {
             val passwordResetRequestId = randomUUID()
             passwordResetConfirmationRepository.save(PasswordResetConfirmation(id = passwordResetRequestId, user = user))
-            sendEmailForPasswordReset(email, passwordResetRequestId.toString())
+            notificationService.sendEmailForPasswordReset(email, passwordResetRequestId.toString())
         }
     }
 
@@ -197,6 +203,9 @@ class UserService(
         val passwordResetRequest = passwordResetConfirmationRepository.getReferenceById(passwordResetRequestId)
         passwordResetRequest.user.password = passwordEncoder.encode(password)
         passwordResetConfirmationRepository.delete(passwordResetRequest)
+        if (passwordResetRequest.user.email != null) {
+            notificationService.sendEmailPasswordChanged(passwordResetRequest.user.email!!, passwordResetRequest.user.firstName)
+        }
         return passwordResetRequest.user
     }
 
@@ -237,6 +246,9 @@ class UserService(
         } else {
             user.password = passwordEncoder.encode(newPassword)
         }
+        if (user.email != null) {
+            notificationService.sendEmailPasswordChanged(user.email!!, user.firstName)
+        }
         userRepository.save(user)
     }
 
@@ -246,6 +258,7 @@ class UserService(
     fun clearUncompleted() {
         emailRegistrationConfirmationRepository.deleteByCreationTimeBefore(now().minusDays(7))
         passwordResetConfirmationRepository.deleteByCreationTimeBefore(now().minusHours(2))
+        emailChangeConfirmationRepository.deleteByCreationTimeBefore(now().minusHours(2))
     }
 
     @Scheduled(cron = "\${clear-rate-limits.cron}")
@@ -263,100 +276,41 @@ class UserService(
         }
     }
 
-    private fun saveOrUpdateUser(findUserFunc: Supplier<User?>, oauthUser: OauthUser): User {
-        val user = findUserFunc.get()
-        if (user != null) {
-            when (oauthUser.type) {
-                GOOGLE -> user.googleId = oauthUser.externalId
-                FACEBOOK -> user.facebookId = oauthUser.externalId
-                LINKEDIN -> user.linkedinId = oauthUser.externalId
+    @Transactional
+    fun update(id: UUID, firstName: String, middleName: String?, lastName: String, username: String, selfInfo: String?) {
+        val userFromDb = userRepository.findByUsername(username)
+        if (userFromDb != null && userFromDb.id != id) throw RecordConflictException("username already taken")
+        val user = userRepository.findById(id).orElseThrow()
+        user.firstName = firstName
+        user.middleName = middleName
+        user.lastName = lastName
+        user.username = username
+        user.selfInfo = selfInfo
+        userRepository.save(user)
+    }
+
+    @Transactional
+    fun delete(id: UUID) {
+        userRepository.deleteById(id)
+    }
+
+    @Transactional
+    fun migratePublicationOfUnconfirmedUser(user: User) {
+        val unconfirmedUser = unconfirmedUserRepository.findByEmail(user.email)
+        if (unconfirmedUser != null) {
+            val unconfirmedAuthorAndPublications = unconfirmedAuthorRepository.findByUserId(unconfirmedUser.id)
+            unconfirmedAuthorAndPublications.forEach {
+                confirmedAuthorRepository.save(ConfirmedAuthor(it.publicationId, user.id))
             }
-
-            return user
+            unconfirmedUserRepository.delete(unconfirmedUser)
         }
-
-        val userByUsername = userRepository.findByUsername(oauthUser.username)
-        val id = randomUUID()
-        return userRepository.save(
-            User(
-                id = id,
-                username = if (userByUsername != null) id.toString() else oauthUser.username,
-                googleId = if (oauthUser.type == GOOGLE) oauthUser.externalId else null,
-                facebookId = if (oauthUser.type == FACEBOOK) oauthUser.externalId else null,
-                linkedinId = if (oauthUser.type == LINKEDIN) oauthUser.externalId else null,
-                email = oauthUser.email,
-                firstName = oauthUser.firstName,
-                lastName = oauthUser.lastName,
-                middleName = oauthUser.middleName,
-                fullName = oauthUser.fullName
-            )
-        )
-    }
-
-    private fun sendRegistrationMessageEmail(code: String, link: String, email: String) {
-        if (emailProperties.noopMode) {
-            log.info { code }
-            return
-        }
-        val message = emailSender.createMimeMessage()
-        val helper = MimeMessageHelper(message, StandardCharsets.UTF_8.name())
-        val context = Context()
-        val model: MutableMap<String, Any> = HashMap()
-        model["code"] = code
-        model["link"] = link
-        model["email"] = email
-        context.setVariables(model)
-        val html = templateEngine.process("email-template", context)
-        helper.setFrom(emailProperties.from)
-        helper.setTo(email)
-        helper.setText(html, true)
-        helper.setSubject("[FirstApproval] Confirming an email address")
-        emailSender.send(message)
-    }
-
-    private fun sendYouAlreadyHaveAccount(user: User) {
-        if (emailProperties.noopMode) {
-            log.info { "You already registered via oauth" }
-            return
-        }
-        val providers = mutableListOf<String>()
-        if (user.googleId != null) {
-            providers.add("Google")
-        }
-        if (user.facebookId != null) {
-            providers.add("Facebook")
-        }
-        if (user.linkedinId != null) {
-            providers.add("Linked in")
-        }
-        val message = SimpleMailMessage()
-        message.from = emailProperties.from
-        message.setTo(user.email)
-        message.subject = "[FirstApproval] You already have account"
-        message.text = "You already signed up via ${providers.joinToString()}"
-        emailSender.send(message)
-    }
-
-
-    private fun sendEmailForPasswordReset(email: String, resetId: String) {
-        // TODO SEND EMAIL TO USER WITH RESET LINK
-        val link = "${frontendProperties.url}/$resetId"
-        if (emailProperties.noopMode) {
-            log.info { link }
-            return
-        }
-        val message = SimpleMailMessage()
-        message.from = emailProperties.from
-        message.setTo(email)
-        message.subject = "[FirstApproval] Password recovery link"
-        message.text = link
-        emailSender.send(message)
     }
 }
 
 enum class OauthType {
     GOOGLE,
     FACEBOOK,
-    LINKEDIN
+    LINKEDIN,
+    ORCID
 }
 

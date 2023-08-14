@@ -1,5 +1,4 @@
 import { type FunctionComponent, useEffect, useState } from 'react';
-import { loadAuthUrls } from '../../core/AuthStore';
 import { CircularProgress, IconButton, Link } from '@mui/material';
 import google from './asset/Google logo.svg';
 import orcid from './asset/ORCID logo.svg';
@@ -8,6 +7,7 @@ import linked from './asset/LinkedIn logo.svg';
 import styled from '@emotion/styled';
 import { FullWidthButton } from '../common.styled';
 import { type AuthorizationLinksResponse } from '../../apis/first-approval-api';
+import { authService } from '../../core/service';
 
 export const LoginOauth: FunctionComponent = () => {
   const [authUrls, setAuthUrls] = useState<AuthorizationLinksResponse>();
@@ -31,12 +31,16 @@ export const LoginOauth: FunctionComponent = () => {
             Sign in with Google
           </FullWidthButton>
           <Divider />
-          <IconButtonWrap size={'medium'}>
-            <img src={orcid} />
-          </IconButtonWrap>
-          <IconButtonWrap size={'medium'}>
-            <img src={facebook} />
-          </IconButtonWrap>
+          <Link href={authUrls.orcid}>
+            <IconButtonWrap size={'medium'}>
+              <img src={orcid} />
+            </IconButtonWrap>
+          </Link>
+          <Link href={authUrls.facebook}>
+            <IconButtonWrap size={'medium'}>
+              <img src={facebook} />
+            </IconButtonWrap>
+          </Link>
           <Link href={authUrls.linkedin}>
             <IconButtonWrap size={'medium'}>
               <img src={linked} />
@@ -53,6 +57,11 @@ const IconButtonWrap = styled(IconButton)`
   padding: 3px;
 `;
 
-const Divider = styled(IconButton)`
+const Divider = styled.div`
   padding-left: 12px;
 `;
+
+export const loadAuthUrls = async (): Promise<AuthorizationLinksResponse> => {
+  const urls = await authService.authorizationLinks();
+  return urls.data;
+};
