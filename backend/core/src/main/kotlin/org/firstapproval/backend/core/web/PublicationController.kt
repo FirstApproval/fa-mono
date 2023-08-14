@@ -31,6 +31,10 @@ class PublicationController(
         return ok().body(publicationService.getAllPublications(page, pageSize))
     }
 
+    override fun getAllFeaturedPublications(page: Int, pageSize: Int): ResponseEntity<PublicationsResponse> {
+        return ok().body(publicationService.getAllFeaturedPublications(page, pageSize))
+    }
+
     override fun getMyPublications(
         status: PublicationStatus, page: Int, pageSize: Int
     ): ResponseEntity<PublicationsResponse> {

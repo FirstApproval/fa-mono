@@ -379,6 +379,34 @@ paths:
       operationId: getAllPublications
       tags: [ publication ]
 
+  /api/publications/featured:
+    get:
+      summary: Get all featured publications
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: true
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          required: true
+          description: Page size
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicationsResponse'
+      security:
+        - PublicAuth: [ ]
+      operationId: getAllFeaturedPublications
+      tags: [ publication ]
+
   /api/publication/{id}:
     get:
       summary: Get publication
