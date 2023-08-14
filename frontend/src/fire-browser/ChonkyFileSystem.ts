@@ -12,6 +12,7 @@ import {
   type UploadType
 } from '../apis/first-approval-api';
 import { fullPathToName } from './utils';
+import { type FileData } from '@first-approval/chonky/dist/types/file.types';
 
 interface FileEntry {
   id: string;
@@ -34,6 +35,7 @@ export class ChonkyFileSystem {
 
   renameOrReplaceDialogOpen = false;
   addDirectoryImpossibleDialogOpen = false;
+  moveFilesImpossibleDialogOpen = false;
   renameOrReplaceDialogCallback: UploadFilesAfterDialogFunction = (
     uploadType: UploadType
   ) => {};
@@ -53,6 +55,7 @@ export class ChonkyFileSystem {
       renameOrReplaceDialogOpen: observable,
       renameOrReplaceDialogCallback: observable,
       addDirectoryImpossibleDialogOpen: observable,
+      moveFilesImpossibleDialogOpen: observable,
       setCurrentPath: action
     });
 
@@ -78,6 +81,10 @@ export class ChonkyFileSystem {
 
   closeAddDirectoryImpossibleDialog = (): void => {
     this.addDirectoryImpossibleDialogOpen = false;
+  };
+
+  closeMoveFilesImpossibleDialog = (): void => {
+    this.moveFilesImpossibleDialogOpen = false;
   };
 
   get files(): FileEntry[] {
@@ -294,7 +301,14 @@ export class ChonkyFileSystem {
     this.updateLocalFiles();
   };
 
-  moveFiles = (ids: string[], destination: string): void => {
+  moveFiles = async (files: FileData[], destination: string): Promise<void> => {
+    const newFileFullPaths = files.map((f) => destination + f.name);
+    const checkResult = await this.hasDuplicates(newFileFullPaths);
+    if (checkResult !== DuplicateCheckResult.DUPLICATES_NOT_FOUND) {
+      this.moveFilesImpossibleDialogOpen = true;
+      return;
+    }
+    const ids = files.map((f) => f.id);
     for (const id of ids) {
       void fileService.moveFile(id, { newDirPath: destination });
     }
@@ -304,19 +318,33 @@ export class ChonkyFileSystem {
     this.updateLocalFiles();
   };
 
-  hasDuplicates = async (
-    fullPath: string[],
+  hasDuplicatesInCurrentFolder = async (
+    fullPaths: string[],
     isFirstElemRootFolder: boolean
   ): Promise<DuplicateCheckResult> => {
     const res = await fileService.checkFileDuplicates(this.publicationId, {
-      fullPathList: fullPath.map((i) => this.fullPath('/' + i))
+      fullPathList: fullPaths.map((i) => this.fullPath('/' + i))
     });
-    const firstPropertyValue = res.data[this.fullPath('/' + fullPath[0])];
+    const firstPropertyValue = res.data[this.fullPath('/' + fullPaths[0])];
     if (isFirstElemRootFolder && firstPropertyValue) {
       return DuplicateCheckResult.ROOT_NAME_ALREADY_EXISTS;
     }
     for (const i in res.data) {
       if (res.data[this.fullPath('/' + i)]) {
+        return DuplicateCheckResult.ONE_OR_MORE_FILE_ALREADY_EXISTS;
+      }
+    }
+    return DuplicateCheckResult.DUPLICATES_NOT_FOUND;
+  };
+
+  hasDuplicates = async (
+    fullPaths: string[]
+  ): Promise<DuplicateCheckResult> => {
+    const res = await fileService.checkFileDuplicates(this.publicationId, {
+      fullPathList: fullPaths
+    });
+    for (const i in res.data) {
+      if (res.data[i]) {
         return DuplicateCheckResult.ONE_OR_MORE_FILE_ALREADY_EXISTS;
       }
     }

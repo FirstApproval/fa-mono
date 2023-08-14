@@ -112,10 +112,7 @@ export const FileBrowser = observer((props: FileBrowserProps): ReactElement => {
       setDeleteDialogOpen(true);
     } else if (data.id === ChonkyActions.MoveFiles.id) {
       const fullPath: string = data.payload.destination.fullPath;
-      props.fs.moveFiles(
-        data.payload.files.map((f) => f.id),
-        fullPath + '/'
-      );
+      props.fs.moveFiles(data.payload.files, fullPath + '/');
     } else if (data.id === ChonkyActions.AddNote.id) {
       const payload = data.payload as FilePayload | undefined;
       let file: FileData | null = null;
@@ -143,7 +140,7 @@ export const FileBrowser = observer((props: FileBrowserProps): ReactElement => {
         }
 
         void props.fs
-          .hasDuplicates(
+          .hasDuplicatesInCurrentFolder(
             filesArray.map((f) => f.name),
             false
           )
@@ -270,7 +267,7 @@ export const FileBrowser = observer((props: FileBrowserProps): ReactElement => {
           <Button
             onClick={() => {
               void props.fs
-                .hasDuplicates([newFolderName], true)
+                .hasDuplicatesInCurrentFolder([newFolderName], true)
                 .then((result) => {
                   if (
                     result === DuplicateCheckResult.ROOT_NAME_ALREADY_EXISTS

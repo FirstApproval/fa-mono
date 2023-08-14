@@ -63,7 +63,7 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
       const result = await getAllFileEntries(e.dataTransfer.items);
 
       void props.fs
-        .hasDuplicates(
+        .hasDuplicatesInCurrentFolder(
           result.map((i) => i.name),
           result[0].isDirectory
         )
@@ -170,6 +170,33 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
                 variant="contained"
                 onClick={() => {
                   props.fs.closeAddDirectoryImpossibleDialog();
+                  setIsDropZoneVisible(false);
+                }}>
+                Ok
+              </Button>
+            </DialogActions>
+          </DialogContentWrap>
+        </Dialog>
+        <Dialog
+          open={props.fs.moveFilesImpossibleDialogOpen}
+          onClose={props.fs.closeMoveFilesImpossibleDialog}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description">
+          <DialogContentWrap>
+            <DialogTitle id="alert-dialog-title">Upload options</DialogTitle>
+            <DialogContent>
+              <ContentWrap>
+                <TextWrap>
+                  The name of the folder you are trying to move is already in
+                  use is destination folder. Rename and try again.
+                </TextWrap>
+              </ContentWrap>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  props.fs.closeMoveFilesImpossibleDialog();
                   setIsDropZoneVisible(false);
                 }}>
                 Ok
