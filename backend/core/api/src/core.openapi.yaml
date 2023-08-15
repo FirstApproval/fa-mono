@@ -379,6 +379,34 @@ paths:
       operationId: getAllPublications
       tags: [ publication ]
 
+  /api/publications/featured:
+    get:
+      summary: Get all featured publications
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: true
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          required: true
+          description: Page size
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicationsResponse'
+      security:
+        - PublicAuth: [ ]
+      operationId: getAllFeaturedPublications
+      tags: [ publication ]
+
   /api/publication/{id}:
     get:
       summary: Get publication
@@ -617,6 +645,35 @@ paths:
         - TokenAuth: [ ]
       operationId: getAuthors
       tags: [ author ]
+
+  /api/author/top:
+    get:
+      summary: Get top authors
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: true
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          required: true
+          description: Page size
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopAuthorsResponse'
+      security:
+        - TokenAuth: [ ]
+      operationId: getTopAuthors
+      tags: [ author ]
+
 
   /api/files:
     parameters:
@@ -1438,6 +1495,33 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Publication'
+
+    TopAuthorsResponse:
+      type: object
+      properties:
+        isLastPage:
+          type: boolean
+        authors:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecommendedAuthor'
+
+    RecommendedAuthor:
+      type: object
+      properties:
+        firstName:
+          type: string
+        middleName:
+          type: string
+        lastName:
+          type: string
+        shortBio:
+          type: string
+      required:
+        - firstName
+        - middleName
+        - lastName
+        - shortBio
 
     Author:
       type: object
