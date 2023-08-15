@@ -1504,7 +1504,24 @@ components:
         authors:
           type: array
           items:
-            $ref: '#/components/schemas/Author'
+            $ref: '#/components/schemas/RecommendedAuthor'
+
+    RecommendedAuthor:
+      type: object
+      properties:
+        firstName:
+          type: string
+        middleName:
+          type: string
+        lastName:
+          type: string
+        shortBio:
+          type: string
+      required:
+        - firstName
+        - middleName
+        - lastName
+        - shortBio
 
     Author:
       type: object

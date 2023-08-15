@@ -2,6 +2,7 @@ package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.AuthorApi
 import org.firstapproval.api.server.model.Author
+import org.firstapproval.api.server.model.RecommendedAuthor
 import org.firstapproval.api.server.model.TopAuthorsResponse
 import org.firstapproval.backend.core.domain.user.UserRepository
 import org.springframework.data.domain.PageRequest
@@ -30,7 +31,7 @@ class AuthorController(private val userRepository: UserRepository) : AuthorApi {
             TopAuthorsResponse()
                 .authors(
                     authorsPage.map {
-                        Author(it.firstName, it.middleName, it.lastName, it.email, it.selfInfo).id(it.id.toString())
+                        RecommendedAuthor(it.firstName, it.middleName, it.lastName, it.selfInfo)
                     }.toList()
                 )
                 .isLastPage(authorsPage.isLast)

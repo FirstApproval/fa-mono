@@ -154,9 +154,13 @@ class PublicationService(
 
     @Transactional(readOnly = true)
     fun getAllFeaturedPublications(page: Int, pageSize: Int): PublicationsResponse {
-        val publicationsPage = publicationRepository.findAll(PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime")))
+        val publicationsPage = publicationRepository.findAllByAccessTypeAndIsFeatured(
+            AccessType.OPEN,
+            true,
+            PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime"))
+        )
         return PublicationsResponse()
-            .publications(publicationsPage.filter { it.isFeatured }.map { it.toApiObject() }.toList())
+            .publications(publicationsPage.map { it.toApiObject() }.toList())
             .isLastPage(publicationsPage.isLast)
     }
 
