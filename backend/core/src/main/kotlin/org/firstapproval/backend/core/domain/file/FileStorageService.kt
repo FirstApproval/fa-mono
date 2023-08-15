@@ -7,13 +7,14 @@ import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.services.s3.model.PutObjectResult
 import com.amazonaws.services.s3.model.S3Object
 import mu.KotlinLogging.logger
+import org.springframework.security.crypto.encrypt.BytesEncryptor
 import java.io.InputStream
 import java.util.UUID
 
 const val FILES = "files"
 const val SAMPLE_FILES = "sample-files"
 
-class FileStorageService(private val amazonS3: AmazonS3) {
+class FileStorageService(private val amazonS3: AmazonS3, private val encryptor: BytesEncryptor) {
 
     private val log = logger {}
 
