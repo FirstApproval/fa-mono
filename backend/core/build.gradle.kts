@@ -38,4 +38,5 @@ dependencies {
     implementation("net.javacrumbs.shedlock:shedlock-spring:4.42.0")
     implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.42.0")
     implementation("org.springframework.data:spring-data-elasticsearch:5.1.2")
+    implementation("org.apache.commons:commons-io:1.3.2")
 }

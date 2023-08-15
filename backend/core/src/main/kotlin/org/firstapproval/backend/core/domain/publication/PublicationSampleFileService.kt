@@ -1,5 +1,7 @@
 package org.firstapproval.backend.core.domain.publication
 
+import org.apache.commons.io.FilenameUtils
+import org.firstapproval.backend.core.domain.file.FILES
 import org.firstapproval.backend.core.domain.file.SAMPLE_FILES
 import org.firstapproval.backend.core.domain.file.FileStorageService
 import org.firstapproval.backend.core.domain.user.User
@@ -21,26 +23,55 @@ class PublicationSampleFileService(
     }
 
     @Transactional
-    fun uploadFile(user: User, publicationId: UUID, fullPath: String, isDir: Boolean, data: InputStream?): PublicationSampleFile {
+    fun uploadFile(user: User, publicationId: UUID, fullPath: String, isDir: Boolean, data: InputStream?, onCollisionRename: Boolean, contentLength: Long?): PublicationSampleFile {
         val fileId = randomUUID()
         val publication = publicationRepository.getReferenceById(publicationId)
         checkAccessToPublication(user, publication)
-        checkDuplicateNames(fullPath, publicationId)
+        val actualFullPath: String
+        if (onCollisionRename) {
+            actualFullPath = getFileFullPath(publicationId, fullPath)
+        } else {
+            actualFullPath = fullPath
+            dropDuplicate(publicationId, actualFullPath)
+        }
         val hash = if (!isDir) {
-            fileStorageService.save(SAMPLE_FILES, fileId.toString(), data!!)
-            fileStorageService.getETag(SAMPLE_FILES, fileId.toString())
+            fileStorageService.save(SAMPLE_FILES, fileId.toString(), data!!, contentLength!!).eTag
         } else null
         val file = publicationSampleFileRepository.save(
             PublicationSampleFile(
                 id = fileId,
                 publication = publication,
-                fullPath = fullPath,
-                dirPath = extractDirPath(fullPath),
+                fullPath = actualFullPath,
+                dirPath = extractDirPath(actualFullPath),
                 isDir = isDir,
                 hash = hash
             )
         )
         return file
+    }
+
+    private fun getFileFullPath(publicationId: UUID, fullPath: String): String {
+        if (!publicationSampleFileRepository.existsByPublicationIdAndFullPath(publicationId, fullPath)) {
+            return fullPath
+        }
+        val fileName = fullPath.substring(fullPath.lastIndexOf('/') + 1)
+        val extension = FilenameUtils.getExtension(fileName)
+        val fileNameWithoutExtension = fileName.replace(".$extension", "")
+        return getFileFullPath(publicationId, fullPath.replace(fileNameWithoutExtension, "${fileNameWithoutExtension}_copy"))
+    }
+
+    private fun dropDuplicate(publicationId: UUID, fullPath: String) {
+        val publicationFile = publicationSampleFileRepository.findByPublicationIdAndFullPath(publicationId, fullPath)
+        if (publicationFile != null) {
+            fileStorageService.delete(FILES, publicationFile.id)
+        }
+    }
+
+    @Transactional(readOnly = true)
+    fun checkFileNameDuplicates(user: User, publicationId: UUID, fullPathList: List<String>): Map<String, Boolean> {
+        val publication = publicationRepository.getReferenceById(publicationId)
+        checkAccessToPublication(user, publication)
+        return fullPathList.associateWith { publicationSampleFileRepository.existsByPublicationIdAndFullPath(publicationId, it) }
     }
 
     @Transactional(readOnly = true)
@@ -69,6 +100,7 @@ class PublicationSampleFileService(
                 val nestedFiles = publicationSampleFileRepository.getNestedFiles(file.publication.id, file.fullPath)
                 val fileForDeletion = nestedFiles.filter { !it.isDir }
                 publicationSampleFileRepository.deleteAll(nestedFiles)
+                publicationSampleFileRepository.delete(file)
                 if (fileForDeletion.isNotEmpty()) {
                     fileStorageService.deleteByIds(SAMPLE_FILES, fileForDeletion.map { it.id })
                 }
@@ -82,12 +114,12 @@ class PublicationSampleFileService(
     @Transactional
     fun editFile(user: User, fileId: UUID, name: String, description: String?) {
         val file = publicationSampleFileRepository.getReferenceById(fileId)
-        val newFullPath = file.dirPath + name
+//        val newFullPath = file.dirPath + name
         checkAccessToPublication(user, file.publication)
-        if (name != file.name) {
-            checkDuplicateNames(newFullPath, file.publication.id)
-        }
-        file.fullPath = newFullPath
+//        if (name != file.name) {
+//            checkDuplicateNames(newFullPath, file.publication.id)
+//        }
+//        file.fullPath = newFullPath
         file.description = description
     }
 
@@ -100,6 +132,7 @@ class PublicationSampleFileService(
         if (file.isDir) {
             checkCollapse(newDirPath, file.fullPath)
             val nestedFiles = publicationSampleFileRepository.getNestedFiles(file.publication.id, file.fullPath)
+            nestedFiles.add(file)
             nestedFiles.forEach {
                 val newFullPath = it.fullPath.replaceFirst(prevDirPath, newDirPath)
                 checkDuplicateNames(newFullPath, file.publication.id)

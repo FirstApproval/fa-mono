@@ -7,8 +7,12 @@ import {
   runInAction
 } from 'mobx';
 import { fileService } from '../core/service';
-import { type PublicationFile } from '../apis/first-approval-api';
+import {
+  type PublicationFile,
+  type UploadType
+} from '../apis/first-approval-api';
 import { fullPathToName } from './utils';
+import { type FileData } from '@first-approval/chonky/dist/types/file.types';
 
 interface FileEntry {
   id: string;
@@ -19,6 +23,8 @@ interface FileEntry {
   note?: string;
 }
 
+type UploadFilesAfterDialogFunction = (value: UploadType) => void;
+
 export class ChonkyFileSystem {
   currentPath: string = '/';
   private backEndFiles: FileEntry[] = [];
@@ -26,6 +32,13 @@ export class ChonkyFileSystem {
   private allLocalFiles: FileEntry[] = [];
   isLoading = false;
   initialized = false;
+
+  renameOrReplaceDialogOpen = false;
+  addDirectoryImpossibleDialogOpen = false;
+  moveFilesImpossibleDialogOpen = false;
+  renameOrReplaceDialogCallback: UploadFilesAfterDialogFunction = (
+    uploadType: UploadType
+  ) => {};
 
   constructor(readonly publicationId: string) {
     makeObservable<
@@ -39,6 +52,10 @@ export class ChonkyFileSystem {
       allLocalFiles: observable,
       isLoading: observable,
       initialized: observable,
+      renameOrReplaceDialogOpen: observable,
+      renameOrReplaceDialogCallback: observable,
+      addDirectoryImpossibleDialogOpen: observable,
+      moveFilesImpossibleDialogOpen: observable,
       setCurrentPath: action
     });
 
@@ -58,15 +75,34 @@ export class ChonkyFileSystem {
     });
   }
 
+  closeReplaceOrRenameDialog = (): void => {
+    this.renameOrReplaceDialogOpen = false;
+  };
+
+  closeAddDirectoryImpossibleDialog = (): void => {
+    this.addDirectoryImpossibleDialogOpen = false;
+  };
+
+  closeMoveFilesImpossibleDialog = (): void => {
+    this.moveFilesImpossibleDialogOpen = false;
+  };
+
   get files(): FileEntry[] {
-    return [...this.backEndFiles, ...this.localFiles];
+    const unuqiePath: Record<string, boolean> = {}; // Keeps track of seen property values
+    return [...this.backEndFiles, ...this.localFiles].filter((entry) => {
+      if (unuqiePath[entry.fullPath]) {
+        return false; // Duplicate, remove entry
+      }
+      unuqiePath[entry.fullPath] = true;
+      return true;
+    });
   }
 
   setCurrentPath = (path: string): void => {
     this.currentPath = path;
   };
 
-  addFilesInput = (files: File[]): void => {
+  addFilesInput = (files: File[], uploadType: UploadType): void => {
     const uploadQueue: Array<() => Promise<void>> = [];
 
     files.forEach((e) => {
@@ -74,9 +110,17 @@ export class ChonkyFileSystem {
 
       const uploadFile = async (): Promise<void> => {
         await fileService
-          .uploadFile(this.publicationId, fullPath, false, e)
+          .uploadFile(
+            this.publicationId,
+            fullPath,
+            false,
+            uploadType,
+            e.size,
+            e
+          )
           .then((response) => {
             this.cleanUploading(response.data);
+            this.actualizeFiles(response.data);
           });
       };
 
@@ -100,7 +144,7 @@ export class ChonkyFileSystem {
     this.updateLocalFiles();
   };
 
-  addFilesDnd = (files: FileSystemEntry[]): void => {
+  addFilesDnd = (files: FileSystemEntry[], uploadType: UploadType): void => {
     const uploadQueue: Array<() => Promise<void>> = [];
 
     files.forEach((e) => {
@@ -111,9 +155,17 @@ export class ChonkyFileSystem {
           await new Promise<void>((resolve) => {
             (e as FileSystemFileEntry).file((file) => {
               void fileService
-                .uploadFile(this.publicationId, fullPath, false, file)
+                .uploadFile(
+                  this.publicationId,
+                  fullPath,
+                  false,
+                  uploadType,
+                  file.size,
+                  file
+                )
                 .then((response) => {
                   this.cleanUploading(response.data);
+                  this.actualizeFiles(response.data);
                 })
                 .finally(() => {
                   resolve();
@@ -126,7 +178,7 @@ export class ChonkyFileSystem {
       } else {
         const uploadFolder = async (): Promise<void> => {
           await fileService
-            .uploadFile(this.publicationId, fullPath, true)
+            .uploadFile(this.publicationId, fullPath, true, uploadType)
             .then((response) => {
               this.cleanUploading(response.data);
             });
@@ -151,6 +203,55 @@ export class ChonkyFileSystem {
       })
     ];
     this.updateLocalFiles();
+  };
+
+  actualizeFiles = (pf: PublicationFile): void => {
+    this.actualizeAllLocalFiles(pf);
+    if (pf.dirPath === this.currentPath) {
+      this.actualizeLocalFiles(pf);
+    }
+  };
+
+  actualizeAllLocalFiles = (pf: PublicationFile): void => {
+    const unuqiePath: Record<string, boolean> = {}; // Keeps track of seen property values
+    this.allLocalFiles = [
+      {
+        id: pf.id ?? '',
+        fullPath: pf.fullPath ?? '',
+        name: fullPathToName(pf.fullPath ?? ''),
+        isDirectory: pf.isDir ?? false,
+        isUploading: false,
+        note: pf.description
+      },
+      ...this.allLocalFiles
+    ].filter((entry) => {
+      if (unuqiePath[entry.fullPath]) {
+        return false; // Duplicate, remove entry
+      }
+      unuqiePath[entry.fullPath] = true;
+      return true;
+    });
+  };
+
+  actualizeLocalFiles = (pf: PublicationFile): void => {
+    const unuqiePath: Record<string, boolean> = {}; // Keeps track of seen property values
+    this.localFiles = [
+      {
+        id: pf.id ?? '',
+        fullPath: pf.fullPath ?? '',
+        name: fullPathToName(pf.fullPath ?? ''),
+        isDirectory: pf.isDir ?? false,
+        isUploading: false,
+        note: pf.description
+      },
+      ...this.localFiles
+    ].filter((entry) => {
+      if (unuqiePath[entry.fullPath]) {
+        return false; // Duplicate, remove entry
+      }
+      unuqiePath[entry.fullPath] = true;
+      return true;
+    });
   };
 
   createFolder = (name: string): void => {
@@ -200,7 +301,14 @@ export class ChonkyFileSystem {
     this.updateLocalFiles();
   };
 
-  moveFiles = (ids: string[], destination: string): void => {
+  moveFiles = async (files: FileData[], destination: string): Promise<void> => {
+    const newFileFullPaths = files.map((f) => destination + f.name);
+    const checkResult = await this.hasDuplicates(newFileFullPaths);
+    if (checkResult !== DuplicateCheckResult.DUPLICATES_NOT_FOUND) {
+      this.moveFilesImpossibleDialogOpen = true;
+      return;
+    }
+    const ids = files.map((f) => f.id);
     for (const id of ids) {
       void fileService.moveFile(id, { newDirPath: destination });
     }
@@ -208,6 +316,39 @@ export class ChonkyFileSystem {
     this.backEndFiles = this.backEndFiles.filter(filter);
     this.allLocalFiles = this.allLocalFiles.filter(filter);
     this.updateLocalFiles();
+  };
+
+  hasDuplicatesInCurrentFolder = async (
+    fullPaths: string[],
+    isFirstElemRootFolder: boolean
+  ): Promise<DuplicateCheckResult> => {
+    const res = await fileService.checkFileDuplicates(this.publicationId, {
+      fullPathList: fullPaths.map((i) => this.fullPath('/' + i))
+    });
+    const firstPropertyValue = res.data[this.fullPath('/' + fullPaths[0])];
+    if (isFirstElemRootFolder && firstPropertyValue) {
+      return DuplicateCheckResult.ROOT_NAME_ALREADY_EXISTS;
+    }
+    for (const i in res.data) {
+      if (res.data[this.fullPath('/' + i)]) {
+        return DuplicateCheckResult.ONE_OR_MORE_FILE_ALREADY_EXISTS;
+      }
+    }
+    return DuplicateCheckResult.DUPLICATES_NOT_FOUND;
+  };
+
+  hasDuplicates = async (
+    fullPaths: string[]
+  ): Promise<DuplicateCheckResult> => {
+    const res = await fileService.checkFileDuplicates(this.publicationId, {
+      fullPathList: fullPaths
+    });
+    for (const i in res.data) {
+      if (res.data[i]) {
+        return DuplicateCheckResult.ONE_OR_MORE_FILE_ALREADY_EXISTS;
+      }
+    }
+    return DuplicateCheckResult.DUPLICATES_NOT_FOUND;
   };
 
   private readonly updateLocalFiles = (): void => {
@@ -312,4 +453,10 @@ export class ChonkyFileSystem {
       });
     }
   };
+}
+
+export enum DuplicateCheckResult {
+  ROOT_NAME_ALREADY_EXISTS,
+  ONE_OR_MORE_FILE_ALREADY_EXISTS,
+  DUPLICATES_NOT_FOUND
 }

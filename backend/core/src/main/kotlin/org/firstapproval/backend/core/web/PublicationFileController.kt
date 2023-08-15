@@ -1,11 +1,8 @@
 package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.FileApi
-import org.firstapproval.api.server.model.CreateFolderRequest
-import org.firstapproval.api.server.model.DeleteByIdsRequest
-import org.firstapproval.api.server.model.EditFileRequest
-import org.firstapproval.api.server.model.MoveFileRequest
-import org.firstapproval.api.server.model.PublicationFile
+import org.firstapproval.api.server.model.*
+import org.firstapproval.api.server.model.UploadType.RENAME
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.PublicationFileService
@@ -40,15 +37,46 @@ class PublicationFileController(
         })
     }
 
-    override fun uploadFile(publicationId: UUID, fullPath: String, isDir: Boolean, body: Resource?): ResponseEntity<PublicationFile> {
-        val file = publicationFileService.uploadFile(authHolderService.user, publicationId, fullPath, isDir, body?.inputStream)
-        return ResponseEntity(PublicationFile().id(file.id)
-            .publicationId(file.publication.id)
-            .creationTime(file.creationTime.toOffsetDateTime())
-            .dirPath(file.dirPath)
-            .fullPath(file.fullPath)
-            .isDir(file.isDir)
-            .hash(file.hash), OK)
+    override fun checkFileDuplicates(
+        publicationId: UUID,
+        checkFileDuplicatesRequest: CheckFileDuplicatesRequest
+    ): ResponseEntity<MutableMap<String, Boolean>> {
+        return ok(
+            publicationFileService.checkFileNameDuplicates(
+                authHolderService.user,
+                publicationId,
+                checkFileDuplicatesRequest.fullPathList
+            ).toMutableMap()
+        )
+    }
+
+    override fun uploadFile(
+        publicationId: UUID,
+        fullPath: String,
+        isDir: Boolean,
+        type: UploadType,
+        contentLength: Long?,
+        body: Resource?,
+    ): ResponseEntity<PublicationFile> {
+        val file =
+            publicationFileService.uploadFile(
+                authHolderService.user,
+                publicationId,
+                fullPath,
+                isDir,
+                body?.inputStream,
+                type == RENAME,
+                contentLength
+            )
+        return ResponseEntity(
+            PublicationFile().id(file.id)
+                .publicationId(file.publication.id)
+                .creationTime(file.creationTime.toOffsetDateTime())
+                .dirPath(file.dirPath)
+                .fullPath(file.fullPath)
+                .isDir(file.isDir)
+                .hash(file.hash), OK
+        )
     }
 
     override fun downloadPublicationFile(fileId: UUID): ResponseEntity<Resource> {
@@ -81,12 +109,20 @@ class PublicationFileController(
     }
 
     override fun createFolder(publicationId: UUID, createFolderRequest: CreateFolderRequest): ResponseEntity<PublicationFile> {
-        val file = publicationFileService.createFolder(authHolderService.user, publicationId, createFolderRequest.dirPath, createFolderRequest.name, createFolderRequest.description)
-        return ResponseEntity(PublicationFile().id(file.id)
-            .publicationId(file.publication.id)
-            .creationTime(file.creationTime.toOffsetDateTime())
-            .dirPath(file.dirPath)
-            .fullPath(file.fullPath)
-            .isDir(file.isDir), OK)
+        val file = publicationFileService.createFolder(
+            authHolderService.user,
+            publicationId,
+            createFolderRequest.dirPath,
+            createFolderRequest.name,
+            createFolderRequest.description
+        )
+        return ResponseEntity(
+            PublicationFile().id(file.id)
+                .publicationId(file.publication.id)
+                .creationTime(file.creationTime.toOffsetDateTime())
+                .dirPath(file.dirPath)
+                .fullPath(file.fullPath)
+                .isDir(file.isDir), OK
+        )
     }
 }

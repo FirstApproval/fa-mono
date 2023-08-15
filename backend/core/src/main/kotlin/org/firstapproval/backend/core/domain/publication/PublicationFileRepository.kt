@@ -9,15 +9,17 @@ import java.util.*
 
 
 private const val SEARCH_NESTED_FILES_QUERY = """
-    SELECT * FROM publication_files WHERE publication_id = :publicationId AND full_path LIKE :path/%
+    SELECT * FROM publication_files WHERE publication_id = :publicationId AND full_path LIKE CONCAT(:path, '/%')
 """
 
 interface PublicationFileRepository : JpaRepository<PublicationFile, UUID> {
 
     @Query(value = SEARCH_NESTED_FILES_QUERY, nativeQuery = true)
-    fun getNestedFiles(publicationId: UUID, path: String): List<PublicationFile>
+    fun getNestedFiles(publicationId: UUID, path: String): MutableList<PublicationFile>
 
     fun existsByPublicationIdAndFullPath(publicationId: UUID, fullPath: String): Boolean
+
+    fun findByPublicationIdAndFullPath(publicationId: UUID, fullPath: String): PublicationFile?
 
     fun findAllByPublicationIdAndDirPath(publicationId: UUID, dirPath: String): List<PublicationFile>
 
