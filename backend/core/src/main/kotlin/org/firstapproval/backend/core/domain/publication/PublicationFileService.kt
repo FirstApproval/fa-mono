@@ -110,7 +110,7 @@ class PublicationFileService(
         checkAccessToPublication(user, publication)
         files.forEach { file ->
             if (file.isDir) {
-                val nestedFiles = publicationFileRepository.getNestedFiles(file.publication.id, file.fullPath + "/")
+                val nestedFiles = publicationFileRepository.getNestedFiles(file.publication.id, file.fullPath)
                 val fileForDeletion = nestedFiles.filter { !it.isDir }
                 publicationFileRepository.deleteAll(nestedFiles)
                 publicationFileRepository.delete(file)
@@ -127,12 +127,12 @@ class PublicationFileService(
     @Transactional
     fun editFile(user: User, fileId: UUID, name: String, description: String?) {
         val file = publicationFileRepository.getReferenceById(fileId)
-        val newFullPath = file.dirPath + name
+//        val newFullPath = file.dirPath + name
         checkAccessToPublication(user, file.publication)
-        if (name != file.name) {
-            checkDuplicateNames(newFullPath, file.publication.id)
-        }
-        file.fullPath = newFullPath
+//        if (name != file.name) {
+//            checkDuplicateNames(newFullPath, file.publication.id)
+//        }
+//        file.fullPath = newFullPath
         file.description = description
     }
 
@@ -144,7 +144,7 @@ class PublicationFileService(
         checkDirectoryIsExists(newDirPath.dropLast(1), file.publication.id)
         if (file.isDir) {
             checkCollapse(newDirPath, file.fullPath)
-            val nestedFiles = publicationFileRepository.getNestedFiles(file.publication.id, file.fullPath + "/")
+            val nestedFiles = publicationFileRepository.getNestedFiles(file.publication.id, file.fullPath)
             nestedFiles.add(file)
             nestedFiles.forEach {
                 val newFullPath = it.fullPath.replaceFirst(prevDirPath, newDirPath)

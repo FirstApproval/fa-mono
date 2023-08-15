@@ -9,7 +9,7 @@ import java.util.*
 
 
 private const val SEARCH_NESTED_FILES_QUERY = """
-    SELECT * FROM publication_files WHERE publication_id = :publicationId AND full_path LIKE :path%
+    SELECT * FROM publication_files WHERE publication_id = :publicationId AND full_path LIKE CONCAT(:path, '/%')
 """
 
 interface PublicationFileRepository : JpaRepository<PublicationFile, UUID> {
