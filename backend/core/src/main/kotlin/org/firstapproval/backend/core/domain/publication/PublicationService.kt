@@ -88,10 +88,16 @@ class PublicationService(
             if (methodDescription?.edited == true) publication.methodDescription = methodDescription.values.map { it.text }
             if (predictedGoals?.edited == true) publication.predictedGoals = predictedGoals.values.map { it.text }
             if (confirmedAuthors?.edited == true) {
-                publication.confirmedAuthors.clear()
+                val confirmedAuthorsUsersIds = confirmedAuthors.values.map { it.userId }
+                publication.confirmedAuthors.removeIf { !confirmedAuthorsUsersIds.contains(it.user.id) && publication.creator.id != it.user.id }
                 publication.confirmedAuthors.addAll(
-                    confirmedAuthors.values.map {
-                        ConfirmedAuthor(randomUUID(), confirmedAuthorsById[it.userId].require(), publication, it.shortBio)
+                    confirmedAuthors.values.map { confirmedUser ->
+                        publication.confirmedAuthors.find { it.user.id == confirmedUser.userId } ?: ConfirmedAuthor(
+                            randomUUID(),
+                            confirmedAuthorsById[confirmedUser.userId].require(),
+                            publication,
+                            confirmedUser.shortBio
+                        )
                     }
                 )
             }

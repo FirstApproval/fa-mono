@@ -232,9 +232,6 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
               <IconButton
                 onClick={() => {
                   setDeleteDialogOpen(true);
-                  // props.editorStore.deletedAuthor(addAuthorStore);
-                  // addAuthorStore.clean();
-                  // setAddAuthorVisible(false);
                 }}>
                 <DeleteOutlined htmlColor={'gray'} />
               </IconButton>
