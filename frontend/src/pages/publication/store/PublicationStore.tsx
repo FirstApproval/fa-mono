@@ -4,7 +4,8 @@ import _ from 'lodash';
 import {
   type Author,
   type Paragraph,
-  PublicationStatus
+  PublicationStatus,
+  type UserInfo
 } from '../../../apis/first-approval-api';
 import { type ChonkyFileSystem } from '../../../fire-browser/ChonkyFileSystem';
 import { v4 as uuidv4 } from 'uuid';
@@ -15,9 +16,9 @@ const EDIT_THROTTLE_MS = 5000;
 export type ParagraphWithId = Paragraph & { id: string };
 
 export enum ViewMode {
-  EDIT,
-  PREVIEW,
-  VIEW
+  EDIT = 'Edit',
+  PREVIEW = 'Preview',
+  VIEW = 'View'
 }
 
 export class PublicationStore {
@@ -28,6 +29,7 @@ export class PublicationStore {
   title = '';
   researchArea = '';
 
+  creator?: UserInfo;
   predictedGoalsEnabled = false;
   methodEnabled = false;
   objectOfStudyEnabled = false;
@@ -378,6 +380,9 @@ export class PublicationStore {
           });
           if (publication.title) {
             this.title = publication.title;
+          }
+          if (publication.creator) {
+            this.creator = publication.creator;
           }
           if (publication.researchArea) {
             this.researchArea = publication.researchArea;

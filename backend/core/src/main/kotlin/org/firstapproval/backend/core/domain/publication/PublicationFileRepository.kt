@@ -3,9 +3,8 @@ package org.firstapproval.backend.core.domain.publication
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
-import java.util.*
+import java.util.UUID
 
 
 private const val SEARCH_NESTED_FILES_QUERY = """

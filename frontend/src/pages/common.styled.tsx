@@ -11,6 +11,7 @@ export const FlexHeader = styled('div')`
   padding: 12px 32px;
   margin-bottom: 40px;
   align-items: center;
+  justify-content: center;
   position: sticky;
   top: 0;
 `;

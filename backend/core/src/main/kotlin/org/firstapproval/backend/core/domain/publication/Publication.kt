@@ -22,6 +22,7 @@ class Publication(
     @Id
     var id: UUID,
     @ManyToOne(fetch = EAGER)
+    @JoinColumn(updatable = false)
     val creator: User,
     @Enumerated(STRING)
     var status: PublicationStatus = PENDING,
