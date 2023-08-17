@@ -4,5 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
 interface UnconfirmedUserRepository : JpaRepository<UnconfirmedUser, UUID> {
-    fun findByEmail(email: String?): UnconfirmedUser?
+    fun findByEmail(email: String?): List<UnconfirmedUser>
 }

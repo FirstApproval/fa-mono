@@ -8,7 +8,7 @@ import {
 } from '../../../apis/first-approval-api';
 import { type ChonkyFileSystem } from '../../../fire-browser/ChonkyFileSystem';
 import { v4 as uuidv4 } from 'uuid';
-import { type AddAuthorStore } from './AddAuthorStore';
+import { type AuthorEditorStore } from './AuthorEditorStore';
 
 const EDIT_THROTTLE_MS = 5000;
 
@@ -119,6 +119,18 @@ export class PublicationStore {
     void this.updateTags();
   }
 
+  deletedAuthor(store: AuthorEditorStore): void {
+    if (typeof store.index !== 'undefined') {
+      if (store.isUnconfirmed) {
+        this.unconfirmedAuthors.splice(store.index, store.index + 1);
+        void this.updateUnconfirmedAuthors();
+      } else {
+        this.confirmedAuthors.splice(store.index, store.index + 1);
+        void this.updateConfirmedAuthors();
+      }
+    }
+  }
+
   addConfirmedAuthor(author: Author): void {
     const newValue = [...this.confirmedAuthors];
     newValue.push(author);
@@ -126,27 +138,61 @@ export class PublicationStore {
     void this.updateConfirmedAuthors();
   }
 
+  editConfirmedAuthor(store: AuthorEditorStore): void {
+    if (typeof store.index !== 'undefined') {
+      const confirmedAuthor = this.confirmedAuthors[store.index];
+      confirmedAuthor.email = store.email;
+      confirmedAuthor.firstName = store.fistName;
+      confirmedAuthor.lastName = store.lastName;
+      confirmedAuthor.shortBio = store.shortBio;
+    } else {
+      const newValue = [...this.confirmedAuthors];
+      newValue.push({
+        email: store.email,
+        firstName: store.fistName,
+        middleName: '',
+        lastName: store.lastName,
+        shortBio: store.shortBio
+      });
+      this.confirmedAuthors = newValue;
+    }
+    void this.updateConfirmedAuthors();
+  }
+
   updateConfirmedAuthors = _.throttle(async () => {
     return await publicationService.editPublication(this.publicationId, {
       confirmedAuthors: {
         values: this.confirmedAuthors
-          .map((t) => t.id ?? '')
-          .filter((id) => id.length > 0),
+          .filter((it) => it.id && it.id.length > 0)
+          .map((t) => {
+            return {
+              userId: t.id!,
+              shortBio: t.shortBio
+            };
+          }),
         edited: true
       }
     });
   }, EDIT_THROTTLE_MS);
 
-  addUnconfirmedAuthor(store: AddAuthorStore): void {
-    const newValue = [...this.unconfirmedAuthors];
-    newValue.push({
-      email: store.email,
-      firstName: store.fistName,
-      middleName: '',
-      lastName: store.lastName,
-      shortBio: store.shortBio
-    });
-    this.unconfirmedAuthors = newValue;
+  addOrEditUnconfirmedAuthor(store: AuthorEditorStore): void {
+    if (typeof store.index !== 'undefined') {
+      const unconfirmedAuthor = this.unconfirmedAuthors[store.index];
+      unconfirmedAuthor.email = store.email;
+      unconfirmedAuthor.firstName = store.fistName;
+      unconfirmedAuthor.lastName = store.lastName;
+      unconfirmedAuthor.shortBio = store.shortBio;
+    } else {
+      const newValue = [...this.unconfirmedAuthors];
+      newValue.push({
+        email: store.email,
+        firstName: store.fistName,
+        middleName: '',
+        lastName: store.lastName,
+        shortBio: store.shortBio
+      });
+      this.unconfirmedAuthors = newValue;
+    }
     void this.updateUnconfirmedAuthors();
   }
 
