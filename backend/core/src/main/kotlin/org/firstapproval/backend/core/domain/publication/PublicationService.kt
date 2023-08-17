@@ -88,18 +88,20 @@ class PublicationService(
             if (methodDescription?.edited == true) publication.methodDescription = methodDescription.values.map { it.text }
             if (predictedGoals?.edited == true) publication.predictedGoals = predictedGoals.values.map { it.text }
             if (confirmedAuthors?.edited == true) {
-                val confirmedAuthorsUsersIds = confirmedAuthors.values.map { it.userId }
-                publication.confirmedAuthors.removeIf { !confirmedAuthorsUsersIds.contains(it.user.id) && publication.creator.id != it.user.id }
-                publication.confirmedAuthors.addAll(
-                    confirmedAuthors.values.map { confirmedUser ->
-                        publication.confirmedAuthors.find { it.user.id == confirmedUser.userId } ?: ConfirmedAuthor(
+                if (confirmedAuthors.values.none { it.userId == publication.creator.id }) {
+                    throw RecordConflictException("Creator cannot be deleted from authors list")
+                }
+                val confirmedAuthors = confirmedAuthors.values.map { confirmedAuthor ->
+                        publication.confirmedAuthors.find { it.user.id == confirmedAuthor.userId }
+                            ?.also { it.shortBio = confirmedAuthor.shortBio } ?: ConfirmedAuthor(
                             randomUUID(),
-                            confirmedAuthorsById[confirmedUser.userId].require(),
+                            confirmedAuthorsById[confirmedAuthor.userId].require(),
                             publication,
-                            confirmedUser.shortBio
+                            confirmedAuthor.shortBio
                         )
                     }
-                )
+                publication.confirmedAuthors.clear()
+                publication.confirmedAuthors.addAll(confirmedAuthors)
             }
             if (unconfirmedAuthors?.edited == true) {
                 val unconfirmedCoauthorsList = unconfirmedUserRepository.saveAllAndFlush(unconfirmedAuthors.values
