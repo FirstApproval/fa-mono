@@ -1505,15 +1505,34 @@ components:
         values:
           type: array
           items:
-            type: object
-            properties:
-              userId:
-                type: string
-                format: uuid
-              shortBio:
-                type: string
-            required:
-              - userId
+            $ref: '#/components/schemas/ConfirmedAuthorBasicInfo'
+
+    ConfirmedAuthor:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user:
+          $ref: '#/components/schemas/Author'
+        shortBio:
+          type: string
+      required:
+        - user
+
+    ConfirmedAuthorBasicInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        shortBio:
+          type: string
+      required:
+        - userId
 
     UnconfirmedAuthors:
       type: object
@@ -1523,22 +1542,28 @@ components:
         values:
           type: array
           items:
-            type: object
-            properties:
-              email:
-                type: string
-              firstName:
-                type: string
-              middleName:
-                type: string
-              lastName:
-                type: string
-              shortBio:
-                type: string
-            required:
-              - email
-              - firstName
-              - lastName
+            $ref: '#/components/schemas/UnconfirmedAuthor'
+
+    UnconfirmedAuthor:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        firstName:
+          type: string
+        middleName:
+          type: string
+        lastName:
+          type: string
+        shortBio:
+          type: string
+      required:
+        - email
+        - firstName
+        - lastName
 
     SearchPublicationsResponse:
       type: object
@@ -1600,10 +1625,14 @@ components:
           $ref: '#/components/schemas/StringArray'
         predictedGoals:
           $ref: '#/components/schemas/StringArray'
-        authors:
+        confirmedAuthors:
           type: array
           items:
-            $ref: '#/components/schemas/Author'
+            $ref: '#/components/schemas/ConfirmedAuthor'
+        unconfirmedAuthors:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnconfirmedAuthor'
       required:
         - id
         - status
@@ -1651,6 +1680,7 @@ components:
       properties:
         id:
           type: string
+          format: uuid
         firstName:
           type: string
         middleName:
@@ -1659,14 +1689,14 @@ components:
           type: string
         email:
           type: string
-        shortBio:
+        selfInfo:
           type: string
       required:
         - firstName
         - middleName
         - lastName
         - email
-        - shortBio
+        - selfInfo
 
     StringArray:
       type: array

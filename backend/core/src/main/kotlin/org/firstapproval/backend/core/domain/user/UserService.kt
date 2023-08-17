@@ -7,7 +7,6 @@ import org.firstapproval.backend.core.domain.auth.OauthUser
 import org.firstapproval.backend.core.domain.file.FileStorageService
 import org.firstapproval.backend.core.domain.file.PROFILE_IMAGES
 import org.firstapproval.backend.core.domain.notification.NotificationService
-import org.firstapproval.backend.core.domain.publication.PublicationRepository
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthorRepository
 import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthorRepository
@@ -21,7 +20,6 @@ import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirma
 import org.firstapproval.backend.core.exception.RecordConflictException
 import org.firstapproval.backend.core.utils.EMAIL_CONFIRMATION_CODE_LENGTH
 import org.firstapproval.backend.core.utils.generateCode
-import org.firstapproval.backend.core.utils.require
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.access.AccessDeniedException
@@ -51,10 +49,8 @@ class UserService(
     private val frontendProperties: FrontendProperties,
     private val notificationService: NotificationService,
     private val emailSender: JavaMailSender,
-    private val unconfirmedUserRepository: UnconfirmedUserRepository,
     private val unconfirmedAuthorRepository: UnconfirmedAuthorRepository,
     private val confirmedAuthorRepository: ConfirmedAuthorRepository,
-    private val publicationRepository: PublicationRepository,
     private val fileStorageService: FileStorageService
 ) {
 
@@ -62,7 +58,6 @@ class UserService(
 
     @Transactional(readOnly = true)
     fun getPublicUserProfile(id: UUID): User = userRepository.getReferenceById(id)
-
 
     @Transactional(isolation = REPEATABLE_READ)
     fun saveOrUpdate(oauthUser: OauthUser): User {
@@ -319,24 +314,10 @@ class UserService(
 
     @Transactional
     fun migratePublicationOfUnconfirmedUser(user: User) {
-        val unconfirmedUsers = unconfirmedUserRepository.findByEmail(user.email).associateBy { it.id }
-        if (unconfirmedUsers.isNotEmpty()) {
-            val unconfirmedAuthorAndPublications = unconfirmedAuthorRepository.findByUserIdIn(unconfirmedUsers.keys)
-            val publications = publicationRepository.findAllById(
-                unconfirmedAuthorAndPublications.map { it.publicationId }
-            ).associateBy { it.id }
-            unconfirmedAuthorAndPublications.forEach {
-                confirmedAuthorRepository.save(
-                    ConfirmedAuthor(
-                        randomUUID(),
-                        user,
-                        publications[it.publicationId].require(),
-                        unconfirmedUsers[it.userId].require().shortBio
-                    )
-                )
-            }
-            unconfirmedUserRepository.deleteAll(unconfirmedUsers.values)
-        }
+        val unconfirmedUsers = unconfirmedAuthorRepository.findByEmail(user.email)
+        val confirmedAuthors = unconfirmedUsers.map { ConfirmedAuthor(randomUUID(), user, it.publication, it.shortBio) }
+        confirmedAuthorRepository.saveAll(confirmedAuthors)
+        unconfirmedAuthorRepository.deleteAll(unconfirmedUsers)
     }
 
     private fun saveOrUpdateImage(image: ByteArray, previousImageId: String? = null, contentLength: Long): String {

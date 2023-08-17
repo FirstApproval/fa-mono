@@ -2,41 +2,63 @@ import { Avatar, IconButton } from '@mui/material';
 import { Edit } from '@mui/icons-material';
 import React, { type ReactElement } from 'react';
 import styled from '@emotion/styled';
-import { type Author } from '../../../../apis/first-approval-api';
+import {
+  type ConfirmedAuthor,
+  type UnconfirmedAuthor
+} from '../../../../apis/first-approval-api';
 import { getInitials } from '../../../../util/userUtil';
 
 interface AuthorElementProps {
-  author: Author;
-  isUnconfirmed: boolean;
+  author: ConfirmedAuthor | UnconfirmedAuthor;
+  isConfirmed: boolean;
   index?: number;
-  setEditAuthorVisible: (
-    author: Author,
+  setEditAuthorVisible?: (
+    author: ConfirmedAuthor | UnconfirmedAuthor,
     isUnconfirmed: boolean,
     index?: number
   ) => void;
 }
 
 export const AuthorElement = (props: AuthorElementProps): ReactElement => {
-  const { author, isUnconfirmed, index, setEditAuthorVisible } = props;
+  const { author, isConfirmed, index, setEditAuthorVisible } = props;
+  const shortBio = author.shortBio;
+  let firstName;
+  let lastName;
+  let email;
+  if (isConfirmed) {
+    const confirmedAuthor = author as ConfirmedAuthor;
+    firstName = confirmedAuthor.user.firstName;
+    lastName = confirmedAuthor.user.lastName;
+    email = confirmedAuthor.user.email;
+  } else {
+    const unconfirmedAuthor = author as UnconfirmedAuthor;
+    firstName = unconfirmedAuthor.firstName;
+    lastName = unconfirmedAuthor.lastName;
+    email = unconfirmedAuthor.email;
+  }
 
   return (
     <AuthorRowWrap>
       <AuthorElementWrap>
-        <Avatar>{getInitials(author.firstName, author.lastName)}</Avatar>
+        <Avatar>{getInitials(firstName, lastName)}</Avatar>
         <AuthorWrap>
           <AuthorName>
-            {author.firstName} {author.lastName}
+            {firstName} {lastName}
           </AuthorName>
-          <AuthorShortBio>{author.shortBio}</AuthorShortBio>
+          <AuthorShortBio>
+            {setEditAuthorVisible ? shortBio : email}
+          </AuthorShortBio>
         </AuthorWrap>
       </AuthorElementWrap>
       <div>
-        <IconButton
-          onClick={() => {
-            setEditAuthorVisible(author, isUnconfirmed, index);
-          }}>
-          <Edit htmlColor={'gray'} />
-        </IconButton>
+        {setEditAuthorVisible && (
+          <IconButton
+            onClick={() => {
+              setEditAuthorVisible(author, isConfirmed, index);
+            }}>
+            <Edit htmlColor={'gray'} />
+          </IconButton>
+        )}
       </div>
     </AuthorRowWrap>
   );

@@ -2,9 +2,11 @@ import { action, makeAutoObservable, reaction } from 'mobx';
 import { publicationService } from '../../../core/service';
 import _ from 'lodash';
 import {
-  type Author,
-  type Paragraph,
   PublicationStatus,
+  type Author,
+  type ConfirmedAuthor,
+  type UnconfirmedAuthor,
+  type Paragraph,
   type UserInfo
 } from '../../../apis/first-approval-api';
 import { type ChonkyFileSystem } from '../../../fire-browser/ChonkyFileSystem';
@@ -45,8 +47,8 @@ export class PublicationStore {
   method: ParagraphWithId[] = [];
   objectOfStudy: ParagraphWithId[] = [];
   software: ParagraphWithId[] = [];
-  confirmedAuthors: Author[] = [];
-  unconfirmedAuthors: Author[] = [];
+  confirmedAuthors: ConfirmedAuthor[] = [];
+  unconfirmedAuthors: UnconfirmedAuthor[] = [];
   grantingOrganizations: ParagraphWithId[] = [];
   relatedArticles: ParagraphWithId[] = [];
   tags = new Set<string>();
@@ -69,10 +71,6 @@ export class PublicationStore {
     return (
       this.viewMode === ViewMode.PREVIEW || this.viewMode === ViewMode.VIEW
     );
-  }
-
-  get authors(): Author[] {
-    return [...this.confirmedAuthors, ...this.unconfirmedAuthors];
   }
 
   addDescriptionParagraph(idx: number): void {
@@ -121,21 +119,32 @@ export class PublicationStore {
     void this.updateTags();
   }
 
-  deletedAuthor(store: AuthorEditorStore): void {
+  deleteAuthor(store: AuthorEditorStore): void {
     if (typeof store.index !== 'undefined') {
-      if (store.isUnconfirmed) {
-        this.unconfirmedAuthors.splice(store.index, store.index + 1);
-        void this.updateUnconfirmedAuthors();
-      } else {
-        this.confirmedAuthors.splice(store.index, store.index + 1);
+      if (store.isConfirmed) {
+        const confirmedAuthor = this.confirmedAuthors[store.index];
+        if (confirmedAuthor.id !== store.id) {
+          throw Error('Tried to delete wrong unconfirmed author');
+        }
+        this.confirmedAuthors.splice(store.index, 1);
         void this.updateConfirmedAuthors();
+      } else {
+        const unconfirmedAuthor = this.unconfirmedAuthors[store.index];
+        if (unconfirmedAuthor.id !== store.id) {
+          throw Error('Tried to delete wrong unconfirmed author');
+        }
+        this.unconfirmedAuthors.splice(store.index, 1);
+        void this.updateUnconfirmedAuthors();
       }
     }
   }
 
   addConfirmedAuthor(author: Author): void {
     const newValue = [...this.confirmedAuthors];
-    newValue.push(author);
+    newValue.push({
+      user: author,
+      shortBio: ''
+    });
     this.confirmedAuthors = newValue;
     void this.updateConfirmedAuthors();
   }
@@ -143,20 +152,10 @@ export class PublicationStore {
   editConfirmedAuthor(store: AuthorEditorStore): void {
     if (typeof store.index !== 'undefined') {
       const confirmedAuthor = this.confirmedAuthors[store.index];
-      confirmedAuthor.email = store.email;
-      confirmedAuthor.firstName = store.fistName;
-      confirmedAuthor.lastName = store.lastName;
+      if (confirmedAuthor.id !== store.id) {
+        throw Error('Confirmed author found by index have different id');
+      }
       confirmedAuthor.shortBio = store.shortBio;
-    } else {
-      const newValue = [...this.confirmedAuthors];
-      newValue.push({
-        email: store.email,
-        firstName: store.fistName,
-        middleName: '',
-        lastName: store.lastName,
-        shortBio: store.shortBio
-      });
-      this.confirmedAuthors = newValue;
     }
     void this.updateConfirmedAuthors();
   }
@@ -165,10 +164,11 @@ export class PublicationStore {
     return await publicationService.editPublication(this.publicationId, {
       confirmedAuthors: {
         values: this.confirmedAuthors
-          .filter((it) => it.id && it.id.length > 0)
+          .filter((it) => it.user.id && it.user.id.length > 0)
           .map((t) => {
             return {
-              userId: t.id!,
+              id: t.id,
+              userId: t.user.id!,
               shortBio: t.shortBio
             };
           }),
@@ -178,17 +178,20 @@ export class PublicationStore {
   }, EDIT_THROTTLE_MS);
 
   addOrEditUnconfirmedAuthor(store: AuthorEditorStore): void {
-    if (typeof store.index !== 'undefined') {
+    if (typeof store.index !== 'undefined' && store.index !== null) {
       const unconfirmedAuthor = this.unconfirmedAuthors[store.index];
+      if (unconfirmedAuthor.id !== store.id) {
+        throw Error('Unconfirmed author found by index have different id');
+      }
       unconfirmedAuthor.email = store.email;
-      unconfirmedAuthor.firstName = store.fistName;
+      unconfirmedAuthor.firstName = store.firstName;
       unconfirmedAuthor.lastName = store.lastName;
       unconfirmedAuthor.shortBio = store.shortBio;
     } else {
       const newValue = [...this.unconfirmedAuthors];
       newValue.push({
         email: store.email,
-        firstName: store.fistName,
+        firstName: store.firstName,
         middleName: '',
         lastName: store.lastName,
         shortBio: store.shortBio
@@ -421,10 +424,11 @@ export class PublicationStore {
             this.tags = new Set(publication.tags.map((p) => p.text));
             this.tagsEnabled = true;
           }
-          if (publication.authors?.length) {
-            this.confirmedAuthors = publication.authors.filter((a) => a.id);
-            this.unconfirmedAuthors = publication.authors.filter((a) => !a.id);
-            this.authorsEnabled = this.confirmedAuthors.length > 1;
+          if (publication.confirmedAuthors?.length) {
+            this.confirmedAuthors = publication.confirmedAuthors || [];
+          }
+          if (publication.unconfirmedAuthors?.length) {
+            this.unconfirmedAuthors = publication.unconfirmedAuthors || [];
           }
           if (this.fs.files.length > 0) {
             this.filesEnabled = true;
@@ -432,6 +436,8 @@ export class PublicationStore {
           if (publication.status !== PublicationStatus.PUBLISHED) {
             this.viewMode = ViewMode.EDIT;
           }
+          this.authorsEnabled =
+            this.confirmedAuthors.length + this.unconfirmedAuthors.length > 1;
         })
       )
       .finally(

@@ -2,35 +2,49 @@ package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.UserApi
 import org.firstapproval.api.server.model.*
+import org.firstapproval.api.server.model.OauthType
+import org.firstapproval.api.server.model.PasswordChangeRequest
+import org.firstapproval.api.server.model.PasswordResetRequest
+import org.firstapproval.api.server.model.RequestPasswordResetRequest
+import org.firstapproval.api.server.model.SetPasswordRequest
+import org.firstapproval.api.server.model.UserUpdateRequest
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.JwtService
 import org.firstapproval.backend.core.config.security.user
+import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthorRepository
+import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthor
+import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthorRepository
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.email.UserEmailService
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RestController
-import java.util.*
+import java.util.UUID
+import java.util.UUID.randomUUID
 
 @RestController
 class UserController(
     private val userService: UserService,
     private val userEmailService: UserEmailService,
     private val jwtService: JwtService,
-    private val authHolderService: AuthHolderService
+    private val unconfirmedAuthorRepository: UnconfirmedAuthorRepository,
+    private val confirmedAuthorRepository: ConfirmedAuthorRepository,
+    private val authHolderService: AuthHolderService,
 ) : UserApi {
 
     override fun getUserInfo(id: UUID): ResponseEntity<UserInfo> {
         val user = userService.getPublicUserProfile(id)
-        return ok().body(UserInfo()
-            .id(user.id)
-            .firstName(user.firstName)
-            .lastName(user.lastName)
-            .middleName(user.middleName)
-            .email(user.email)
-            .username(user.username)
-            .selfInfo(user.selfInfo)
-            .profileImage(userService.getProfileImage(user.profileImage)))
+        return ok().body(
+            UserInfo()
+                .id(user.id)
+                .firstName(user.firstName)
+                .lastName(user.lastName)
+                .middleName(user.middleName)
+                .email(user.email)
+                .username(user.username)
+                .selfInfo(user.selfInfo)
+                .profileImage(userService.getProfileImage(user.profileImage)))
     }
 
     override fun requestPasswordReset(requestPasswordResetRequest: RequestPasswordResetRequest): ResponseEntity<Void> {
@@ -79,7 +93,22 @@ class UserController(
         return ok(getMeResponse)
     }
 
+    @Transactional
     override fun deleteUser(): ResponseEntity<Void> {
+        val confirmedAuthors = confirmedAuthorRepository.findAllByUserId(authHolderService.user.id)
+        val unconfirmedAuthors = confirmedAuthors.map {
+            UnconfirmedAuthor(
+                randomUUID(),
+                it.publication,
+                it.user.email,
+                it.user.firstName,
+                it.user.middleName,
+                it.user.lastName,
+                it.shortBio
+            )
+        }
+        unconfirmedAuthorRepository.saveAll(unconfirmedAuthors)
+        confirmedAuthorRepository.deleteAll(confirmedAuthors)
         userService.delete(authHolderService.user.id)
         return ok().build()
     }
