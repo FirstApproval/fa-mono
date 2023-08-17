@@ -1,4 +1,5 @@
-import { Avatar } from '@mui/material';
+import { Avatar, IconButton } from '@mui/material';
+import { Edit } from '@mui/icons-material';
 import React, { type ReactElement } from 'react';
 import styled from '@emotion/styled';
 import { type Author } from '../../../../apis/first-approval-api';
@@ -6,22 +7,46 @@ import { getInitials } from '../../../../util/userUtil';
 
 interface AuthorElementProps {
   author: Author;
+  isUnconfirmed: boolean;
+  index?: number;
+  setEditAuthorVisible: (
+    author: Author,
+    isUnconfirmed: boolean,
+    index?: number
+  ) => void;
 }
 
 export const AuthorElement = (props: AuthorElementProps): ReactElement => {
-  const { author } = props;
+  const { author, isUnconfirmed, index, setEditAuthorVisible } = props;
+
   return (
-    <AuthorElementWrap>
-      <Avatar>{getInitials(author.firstName, author.lastName)}</Avatar>
-      <AuthorWrap>
-        <AuthorName>
-          {author.firstName} {author.lastName}
-        </AuthorName>
-        <AuthorEmail>{author.shortBio}</AuthorEmail>
-      </AuthorWrap>
-    </AuthorElementWrap>
+    <AuthorRowWrap>
+      <AuthorElementWrap>
+        <Avatar>{getInitials(author.firstName, author.lastName)}</Avatar>
+        <AuthorWrap>
+          <AuthorName>
+            {author.firstName} {author.lastName}
+          </AuthorName>
+          <AuthorShortBio>{author.shortBio}</AuthorShortBio>
+        </AuthorWrap>
+      </AuthorElementWrap>
+      <div>
+        <IconButton
+          onClick={() => {
+            setEditAuthorVisible(author, isUnconfirmed, index);
+          }}>
+          <Edit htmlColor={'gray'} />
+        </IconButton>
+      </div>
+    </AuthorRowWrap>
   );
 };
+
+const AuthorRowWrap = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+`;
 
 const AuthorElementWrap = styled.div`
   display: flex;
@@ -41,7 +66,7 @@ const AuthorName = styled.div`
   font-weight: 400;
 `;
 
-const AuthorEmail = styled.div`
+const AuthorShortBio = styled.div`
   font-size: 14px;
   font-style: normal;
   font-weight: 400;

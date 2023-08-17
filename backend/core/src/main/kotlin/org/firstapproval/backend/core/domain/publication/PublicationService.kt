@@ -14,6 +14,8 @@ import org.firstapproval.backend.core.domain.ipfs.JobStatus
 import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
+import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
+import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthorRepository
 import org.firstapproval.backend.core.domain.user.UnconfirmedUser
 import org.firstapproval.backend.core.domain.user.UnconfirmedUserRepository
 import org.firstapproval.backend.core.domain.user.User
@@ -21,6 +23,7 @@ import org.firstapproval.backend.core.domain.user.UserRepository
 import org.firstapproval.backend.core.elastic.PublicationElastic
 import org.firstapproval.backend.core.elastic.PublicationElasticRepository
 import org.firstapproval.backend.core.exception.RecordConflictException
+import org.firstapproval.backend.core.utils.require
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -36,6 +39,7 @@ import org.firstapproval.api.server.model.Publication as PublicationApiObject
 class PublicationService(
     private val publicationRepository: PublicationRepository,
     private val unconfirmedUserRepository: UnconfirmedUserRepository,
+    private val confirmedAuthorRepository: ConfirmedAuthorRepository,
     private val userRepository: UserRepository,
     private val downloadLinkRepository: DownloadLinkRepository,
     private val jobRepository: JobRepository,
@@ -44,7 +48,10 @@ class PublicationService(
 ) {
     @Transactional
     fun create(user: User): Publication {
-        return publicationRepository.save(Publication(id = randomUUID(), creator = user, confirmedAuthors = listOf(user)))
+        val publication = publicationRepository.save(Publication(id = randomUUID(), creator = user))
+        publication.confirmedAuthors =
+            confirmedAuthorRepository.saveAll(mutableListOf(ConfirmedAuthor(randomUUID(), user, publication)))
+        return publication
     }
 
     @Transactional
@@ -52,6 +59,20 @@ class PublicationService(
         val publication = get(user, id)
         checkAccessToPublication(user, publication)
         with(request) {
+            val unconfirmedAuthorsEmails = unconfirmedAuthors?.let { unconfirmedAuthors.values.map { it.email }.toSet() } ?: setOf()
+            if (unconfirmedAuthorsEmails.isNotEmpty() && userRepository.findByEmailIn(unconfirmedAuthorsEmails).isNotEmpty()) {
+                throw RecordConflictException("User with this email already registered")
+            }
+            val confirmedAuthorsById =
+                confirmedAuthors?.let { authors ->
+                    userRepository.findAllById(authors.values.map { it.userId }).associateBy { it.id }
+                } ?: mapOf()
+            val confirmedAuthorsEmails = confirmedAuthorsById.values.map { { it.email } }
+
+            if (confirmedAuthorsEmails.intersect(unconfirmedAuthorsEmails).isNotEmpty()) {
+                throw RecordConflictException("Author with this email already added to publication as confirmed user")
+            }
+
             if (title?.edited == true) publication.title = title.value
             if (description?.edited == true) publication.description = description.values.map { it.text }
             if (researchArea?.edited == true) publication.researchArea = researchArea.value
@@ -67,12 +88,22 @@ class PublicationService(
             if (methodDescription?.edited == true) publication.methodDescription = methodDescription.values.map { it.text }
             if (predictedGoals?.edited == true) publication.predictedGoals = predictedGoals.values.map { it.text }
             if (confirmedAuthors?.edited == true) {
-                publication.confirmedAuthors = confirmedAuthors.values.map { userRepository.findById(it).get() }
+                val confirmedAuthorsUsersIds = confirmedAuthors.values.map { it.userId }
+                publication.confirmedAuthors.removeIf { !confirmedAuthorsUsersIds.contains(it.user.id) && publication.creator.id != it.user.id }
+                publication.confirmedAuthors.addAll(
+                    confirmedAuthors.values.map { confirmedUser ->
+                        publication.confirmedAuthors.find { it.user.id == confirmedUser.userId } ?: ConfirmedAuthor(
+                            randomUUID(),
+                            confirmedAuthorsById[confirmedUser.userId].require(),
+                            publication,
+                            confirmedUser.shortBio
+                        )
+                    }
+                )
             }
             if (unconfirmedAuthors?.edited == true) {
-                val unconfirmedCoauthorsList = unconfirmedAuthors.values.map {
-                    if (userRepository.findByEmail(it.email) != null) throw RecordConflictException("user with this email already exists")
-                    unconfirmedUserRepository.saveAndFlush(
+                val unconfirmedCoauthorsList = unconfirmedUserRepository.saveAllAndFlush(unconfirmedAuthors.values
+                    .map {
                         UnconfirmedUser(
                             id = randomUUID(),
                             email = it.email,
@@ -81,8 +112,8 @@ class PublicationService(
                             lastName = it.lastName,
                             shortBio = it.shortBio
                         )
-                    )
-                }
+                    }
+                )
                 publication.unconfirmedAuthors = unconfirmedCoauthorsList
             }
         }
@@ -203,8 +234,16 @@ fun Publication.toApiObject() = PublicationApiObject().also {
     it.publicationTime = publicationTime?.toOffsetDateTime()
     it.methodDescription = methodDescription?.map { Paragraph(it) }
     it.predictedGoals = predictedGoals?.map { Paragraph(it) }
-    it.authors = confirmedAuthors.map { user -> Author(user.firstName, user.middleName, user.lastName, user.email, user.selfInfo).id(user.id.toString()) } +
-            unconfirmedAuthors.map { user -> Author(user.firstName, user.middleName, user.lastName, user.email, user.shortBio) }
+    it.authors = confirmedAuthors.map { author: ConfirmedAuthor ->
+        Author(
+            author.user.firstName,
+            author.user.middleName,
+            author.user.lastName,
+            author.user.email,
+            author.shortBio
+        ).id(author.user.id.toString())
+    } +
+        unconfirmedAuthors.map { user -> Author(user.firstName, user.middleName, user.lastName, user.email, user.shortBio) }
     it.status = org.firstapproval.api.server.model.PublicationStatus.valueOf(status.name)
     it.accessType = org.firstapproval.api.server.model.AccessType.valueOf(accessType.name)
     it.creationTime = creationTime.toOffsetDateTime()

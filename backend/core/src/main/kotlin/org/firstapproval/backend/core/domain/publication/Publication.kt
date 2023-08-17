@@ -1,10 +1,12 @@
 package org.firstapproval.backend.core.domain.publication
 
 import jakarta.persistence.*
+import jakarta.persistence.CascadeType.ALL
 import jakarta.persistence.EnumType.STRING
 import jakarta.persistence.FetchType.EAGER
 import org.firstapproval.backend.core.domain.publication.AccessType.CLOSED
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
+import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
 import org.firstapproval.backend.core.domain.user.UnconfirmedUser
 import org.firstapproval.backend.core.domain.user.User
 import java.time.ZonedDateTime
@@ -42,14 +44,9 @@ class Publication(
     var methodDescription: List<String>? = null,
     @Column(columnDefinition = "text")
     var predictedGoals: List<String>? = null,
-    @ManyToMany(fetch = EAGER)
-    @JoinTable(
-        name = "publication_confirmed_authors",
-        joinColumns = [JoinColumn(name = "publication_id")],
-        inverseJoinColumns = [JoinColumn(name = "user_id")]
-    )
-    var confirmedAuthors: List<User> = mutableListOf(),
-    @ManyToMany(fetch = EAGER)
+    @OneToMany(fetch = EAGER, cascade = [ALL], orphanRemoval = true, mappedBy = "publication")
+    var confirmedAuthors: MutableList<ConfirmedAuthor> = mutableListOf(),
+    @OneToMany(fetch = EAGER)
     @JoinTable(
         name = "publication_unconfirmed_authors",
         joinColumns = [JoinColumn(name = "publication_id")],
