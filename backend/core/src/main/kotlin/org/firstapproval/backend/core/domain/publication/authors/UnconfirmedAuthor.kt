@@ -6,6 +6,8 @@ import jakarta.persistence.Id
 import jakarta.persistence.IdClass
 import jakarta.persistence.Table
 import java.io.Serializable
+import java.time.ZonedDateTime
+import java.time.ZonedDateTime.now
 import java.util.UUID
 
 @Entity
@@ -17,7 +19,8 @@ class UnconfirmedAuthor (
     var publicationId: UUID,
     @Id
     @Column(name = "user_id")
-    var userId: UUID
+    var userId: UUID,
+    var creationTime: ZonedDateTime = now(),
 )
 
 class UnconfirmedAuthorPK : Serializable {

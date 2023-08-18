@@ -9,6 +9,8 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import org.firstapproval.backend.core.domain.publication.Publication
 import org.firstapproval.backend.core.domain.user.User
+import java.time.ZonedDateTime
+import java.time.ZonedDateTime.now
 import java.util.UUID
 
 @Entity
@@ -22,4 +24,5 @@ class ConfirmedAuthor(
     @JoinColumn(nullable = false, updatable = false)
     var publication: Publication,
     var shortBio: String? = null,
+    var creationTime: ZonedDateTime = now(),
 )
