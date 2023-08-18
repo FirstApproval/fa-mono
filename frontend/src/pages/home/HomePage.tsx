@@ -1,5 +1,5 @@
 import React, { type FunctionComponent, useState } from 'react';
-import { Button, LinearProgress } from '@mui/material';
+import { Button, Divider, LinearProgress } from '@mui/material';
 import {
   FlexBodyCenter,
   FlexHeader,
@@ -17,6 +17,8 @@ import { Edit } from '@mui/icons-material';
 import styled from '@emotion/styled';
 import { PublicationBox } from './PublicationSection';
 import { CallToAction } from './CallToAction';
+import PopularAuthorsSection from './PopularAuthorsSection';
+import RecommendedPublicationsSection from './RecommendedPublicationsSection';
 
 export const HomePage: FunctionComponent = observer(() => {
   const [store] = useState(() => new HomePageStore());
@@ -41,11 +43,16 @@ export const HomePage: FunctionComponent = observer(() => {
           <UserMenu />
         </FlexHeaderRight>
       </FlexHeader>
+      <RecommendedPublicationsSection
+        publications={store.recommendedPublications}
+      />
       <CallToAction />
       <FlexBodyCenter>
         <FlexBody>
-          {store.isLoading && <LinearProgress />}
-          {!store.isLoading && (
+          <PopularAuthorsSection authors={store.popularAuthors} />
+          <DividerWrap />
+          {store.isLoadingPublications && <LinearProgress />}
+          {!store.isLoadingPublications && (
             <>
               {store.publications.map((p) => (
                 <PublicationBox key={p.id} publication={p} />
@@ -62,4 +69,9 @@ export const FlexBody = styled('div')`
   max-width: 680px;
   padding-left: 40px;
   padding-right: 40px;
+`;
+
+const DividerWrap = styled(Divider)`
+  margin-top: 8px;
+  margin-bottom: 40px;
 `;
