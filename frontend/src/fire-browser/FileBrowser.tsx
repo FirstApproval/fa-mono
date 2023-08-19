@@ -112,7 +112,7 @@ export const FileBrowser = observer((props: FileBrowserProps): ReactElement => {
       setDeleteDialogOpen(true);
     } else if (data.id === ChonkyActions.MoveFiles.id) {
       const fullPath: string = data.payload.destination.fullPath;
-      props.fs.moveFiles(data.payload.files, fullPath + '/');
+      void props.fs.moveFiles(data.payload.files, fullPath + '/');
     } else if (data.id === ChonkyActions.AddNote.id) {
       const payload = data.payload as FilePayload | undefined;
       let file: FileData | null = null;

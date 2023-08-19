@@ -2,7 +2,6 @@ package org.firstapproval.backend.core.domain.publication
 
 import com.amazonaws.services.s3.model.S3Object
 import org.apache.commons.io.FilenameUtils
-import org.firstapproval.api.server.model.UploadType
 import org.firstapproval.backend.core.domain.file.FILES
 import org.firstapproval.backend.core.domain.file.FileStorageService
 import org.firstapproval.backend.core.domain.user.User
@@ -127,12 +126,18 @@ class PublicationFileService(
     @Transactional
     fun editFile(user: User, fileId: UUID, name: String, description: String?) {
         val file = publicationFileRepository.getReferenceById(fileId)
-//        val newFullPath = file.dirPath + name
+        val newFullPath = file.dirPath + name
         checkAccessToPublication(user, file.publication)
-//        if (name != file.name) {
-//            checkDuplicateNames(newFullPath, file.publication.id)
-//        }
-//        file.fullPath = newFullPath
+        if (name != file.name) {
+            checkDuplicateNames(newFullPath, file.publication.id)
+            if (file.isDir) {
+                val nestedFiles = publicationFileRepository.getNestedFiles(file.publication.id, file.fullPath)
+                nestedFiles.forEach {
+
+                }
+            }
+            file.fullPath = newFullPath
+        }
         file.description = description
     }
 
