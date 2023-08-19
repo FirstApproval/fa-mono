@@ -24,12 +24,13 @@ import {
 } from '../common.styled';
 import { routerStore } from '../../core/router';
 
-
 interface PasswordValidationProps {
-    password: string;
+  password: string;
 }
 
-const PasswordValidation: FunctionComponent<PasswordValidationProps> = ({ password }) => {
+const PasswordValidation: FunctionComponent<PasswordValidationProps> = ({
+  password
+}) => {
   const [passwordHint, setPasswordHint] = useState('');
   const [passwordHintColor, setPasswordHintColor] = useState('');
   const [lineColors, setLineColors] = useState(['', '', '']);
@@ -43,22 +44,55 @@ const PasswordValidation: FunctionComponent<PasswordValidationProps> = ({ passwo
     } else if (password.length >= 8 && password.length < 12) {
       setPasswordHint('So-so password');
       setPasswordHintColor(theme.palette.warning.dark);
-      setLineColors([theme.palette.warning.dark, theme.palette.warning.dark, '#D9D9D9']);
+      setLineColors([
+        theme.palette.warning.dark,
+        theme.palette.warning.dark,
+        '#D9D9D9'
+      ]);
     } else {
       setPasswordHint('Great password');
       setPasswordHintColor(theme.palette.info.dark);
-      setLineColors([theme.palette.info.dark, theme.palette.info.dark, theme.palette.info.dark]);
+      setLineColors([
+        theme.palette.info.dark,
+        theme.palette.info.dark,
+        theme.palette.info.dark
+      ]);
     }
   }, [password, theme]);
 
   return (
     <>
-      <span style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'stretch', marginBottom: '16px' }}>
-        <hr style={{ width: '32%', marginLeft: '0', borderTop: `2px solid ${lineColors[0]}` }} />
+      <span
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-start',
+          alignItems: 'stretch',
+          marginBottom: '16px'
+        }}>
+        <hr
+          style={{
+            width: '32%',
+            marginLeft: '0',
+            borderTop: `2px solid ${lineColors[0]}`
+          }}
+        />
         <hr style={{ width: '32%', borderTop: `2px solid ${lineColors[1]}` }} />
-        <hr style={{ width: '32%', marginRight: '0', borderTop: `2px solid ${lineColors[2]}` }} />
+        <hr
+          style={{
+            width: '32%',
+            marginRight: '0',
+            borderTop: `2px solid ${lineColors[2]}`
+          }}
+        />
       </span>
-      <div style={{ color: passwordHintColor, fontSize: '20px', marginBottom: '16px' }}>{passwordHint}</div>
+      <div
+        style={{
+          color: passwordHintColor,
+          fontSize: '20px',
+          marginBottom: '16px'
+        }}>
+        {passwordHint}
+      </div>
     </>
   );
 };
@@ -123,7 +157,9 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
                 }}
               />
             </div>
-            {props.store.password && <PasswordValidation password={props.store.password} />}
+            {props.store.password && (
+              <PasswordValidation password={props.store.password} />
+            )}
             {props.store.isSubmitting && <CircularProgress />}
             {!props.store.isSubmitting && (
               <FullWidthButton
