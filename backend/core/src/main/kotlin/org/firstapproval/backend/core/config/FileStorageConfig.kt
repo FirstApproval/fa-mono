@@ -22,8 +22,7 @@ class FileStorageConfig {
 
     @Bean
     fun fileStorage(s3Properties: S3Properties, applicationContext: ApplicationContext): FileStorageService {
-        val encryptor = applicationContext.getBean(BYTES_ENCRYPTOR_BEAN, BytesEncryptor::class.java)
-        return FileStorageService(defaultS3(s3Properties), encryptor).apply {
+        return FileStorageService(defaultS3(s3Properties)).apply {
             s3Properties.buckets.forEach {
                 createBucketIfNotExist(it)
             }
