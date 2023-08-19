@@ -18,13 +18,13 @@ import org.springframework.web.client.RestTemplate
 class FileStorageConfig {
 
     @Bean
-    fun fileStorage(s3Properties: S3Properties): FileStorageService {
-        return FileStorageService(defaultS3(s3Properties)).apply {
+    fun fileStorage(s3Properties: S3Properties): FileStorageService =
+        FileStorageService(defaultS3(s3Properties)).apply {
             s3Properties.buckets.forEach {
                 createBucketIfNotExist(it)
             }
         }
-    }
+
 
     fun defaultS3(s3Properties: S3Properties): AmazonS3 = standard()
         .withCredentials(AWSStaticCredentialsProvider(BasicAWSCredentials(s3Properties.accessKey, s3Properties.secretKey)))
