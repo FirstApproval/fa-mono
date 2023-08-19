@@ -25,7 +25,6 @@ class FileStorageConfig {
             }
         }
 
-
     fun defaultS3(s3Properties: S3Properties): AmazonS3 = standard()
         .withCredentials(AWSStaticCredentialsProvider(BasicAWSCredentials(s3Properties.accessKey, s3Properties.secretKey)))
         .withEndpointConfiguration(AwsClientBuilder.EndpointConfiguration(s3Properties.url.toString(), DEFAULT_REGION.name))
