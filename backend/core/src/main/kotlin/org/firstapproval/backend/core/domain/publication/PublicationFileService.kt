@@ -133,7 +133,8 @@ class PublicationFileService(
             if (file.isDir) {
                 val nestedFiles = publicationFileRepository.getNestedFiles(file.publication.id, file.fullPath)
                 nestedFiles.forEach {
-
+                    it.dirPath = it.dirPath.replaceFirst(file.fullPath, newFullPath)
+                    it.fullPath = it.dirPath + it.name
                 }
             }
             file.fullPath = newFullPath
