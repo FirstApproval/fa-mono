@@ -1493,8 +1493,15 @@ components:
         values:
           type: array
           items:
-            type: string
-            format: uuid
+            type: object
+            properties:
+              userId:
+                type: string
+                format: uuid
+              shortBio:
+                type: string
+            required:
+              - userId
 
     UnconfirmedAuthors:
       type: object

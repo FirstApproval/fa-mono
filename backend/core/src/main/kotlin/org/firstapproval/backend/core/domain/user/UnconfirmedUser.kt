@@ -3,6 +3,8 @@ package org.firstapproval.backend.core.domain.user
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import java.time.ZonedDateTime
+import java.time.ZonedDateTime.now
 import java.util.UUID
 
 @Entity
@@ -14,5 +16,6 @@ class UnconfirmedUser(
     var firstName: String? = null,
     var middleName: String? = null,
     var lastName: String? = null,
-    var shortBio: String? = null
+    var shortBio: String? = null,
+    var creationTime: ZonedDateTime = now(),
 )
