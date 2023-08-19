@@ -11,6 +11,7 @@ import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDI
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
 import org.firstapproval.backend.core.domain.user.UnconfirmedUser
 import org.firstapproval.backend.core.domain.user.User
+import org.hibernate.annotations.ColumnTransformer
 import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
 import java.util.*
@@ -30,32 +31,40 @@ class Publication(
     var title: String? = null,
     @Convert(converter = StringEncryptionConverter::class)
     var researchArea: String? = null,
-    @Column(columnDefinition = "text")
-    @Convert(converter = StringEncryptionConverter::class)
+    @Column(columnDefinition = "text[]")
+    @ColumnTransformer(write = "?::text[]")
+    @Convert(converter = StringListEncryptionConverter::class)
     var description: List<String>? = null,
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "text[]")
+    @ColumnTransformer(write = "?::text[]")
     @Convert(converter = StringListEncryptionConverter::class)
     var grantOrganizations: List<String>? = null,
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "text[]")
+    @ColumnTransformer(write = "?::text[]")
     @Convert(converter = StringListEncryptionConverter::class)
     var relatedArticles: List<String>? = null,
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "text[]")
+    @ColumnTransformer(write = "?::text[]")
     @Convert(converter = StringListEncryptionConverter::class)
     var tags: List<String>? = null,
     @Convert(converter = StringEncryptionConverter::class)
     var objectOfStudyTitle: String? = null,
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "text[]")
+    @ColumnTransformer(write = "?::text[]")
     @Convert(converter = StringListEncryptionConverter::class)
     var objectOfStudyDescription: List<String>? = null,
-    @Column(columnDefinition = "text")
-    @Convert(converter = StringEncryptionConverter::class)
+    @Column(columnDefinition = "text[]")
+    @ColumnTransformer(write = "?::text[]")
+    @Convert(converter = StringListEncryptionConverter::class)
     var software: List<String>? = null,
     @Convert(converter = StringEncryptionConverter::class)
     var methodTitle: String? = null,
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "text[]")
+    @ColumnTransformer(write = "?::text[]")
     @Convert(converter = StringListEncryptionConverter::class)
     var methodDescription: List<String>? = null,
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "text[]")
+    @ColumnTransformer(write = "?::text[]")
     @Convert(converter = StringListEncryptionConverter::class)
     var predictedGoals: List<String>? = null,
     @OneToMany(fetch = EAGER, cascade = [ALL], orphanRemoval = true, mappedBy = "publication")
