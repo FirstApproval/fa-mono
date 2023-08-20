@@ -29,7 +29,8 @@ class UserController(
             .middleName(user.middleName)
             .email(user.email)
             .username(user.username)
-            .selfInfo(user.selfInfo))
+            .selfInfo(user.selfInfo)
+            .profileImage(userService.getProfileImage(user.profileImage)))
     }
 
     override fun requestPasswordReset(requestPasswordResetRequest: RequestPasswordResetRequest): ResponseEntity<Void> {
@@ -95,7 +96,8 @@ class UserController(
             middleName = request.middleName,
             lastName = request.lastName,
             username = request.username,
-            selfInfo = request.selfInfo
+            selfInfo = request.selfInfo,
+            profileImage = request.profileImage
         )
         return ok().build()
     }

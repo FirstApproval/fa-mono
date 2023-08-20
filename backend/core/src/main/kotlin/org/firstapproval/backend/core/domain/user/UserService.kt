@@ -4,6 +4,8 @@ import mu.KotlinLogging.logger
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import org.firstapproval.backend.core.config.Properties.FrontendProperties
 import org.firstapproval.backend.core.domain.auth.OauthUser
+import org.firstapproval.backend.core.domain.file.FileStorageService
+import org.firstapproval.backend.core.domain.file.PROFILE_IMAGES
 import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.domain.publication.PublicationRepository
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
@@ -27,8 +29,10 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation.REPEATABLE_READ
 import org.springframework.transaction.annotation.Transactional
+import java.io.ByteArrayInputStream
 import java.time.ZonedDateTime.now
 import java.util.UUID
+import java.util.UUID.fromString
 import java.util.UUID.randomUUID
 import javax.naming.LimitExceededException
 
@@ -50,7 +54,8 @@ class UserService(
     private val unconfirmedUserRepository: UnconfirmedUserRepository,
     private val unconfirmedAuthorRepository: UnconfirmedAuthorRepository,
     private val confirmedAuthorRepository: ConfirmedAuthorRepository,
-    private val publicationRepository: PublicationRepository
+    private val publicationRepository: PublicationRepository,
+    private val fileStorageService: FileStorageService
 ) {
 
     val log = logger {}
@@ -93,6 +98,10 @@ class UserService(
     @Transactional
     fun get(id: UUID): User {
         return userRepository.findById(id).orElseThrow()
+    }
+
+    fun getProfileImage(id: String?): ByteArray? {
+        return if (id != null) fileStorageService.get(PROFILE_IMAGES, id).objectContent.readAllBytes() else null
     }
 
     @Transactional
@@ -280,7 +289,15 @@ class UserService(
     }
 
     @Transactional
-    fun update(id: UUID, firstName: String, middleName: String?, lastName: String, username: String, selfInfo: String?) {
+    fun update(
+        id: UUID,
+        firstName: String,
+        middleName: String?,
+        lastName: String,
+        username: String,
+        selfInfo: String?,
+        profileImage: ByteArray?
+    ) {
         val userFromDb = userRepository.findByUsername(username)
         if (userFromDb != null && userFromDb.id != id) throw RecordConflictException("username already taken")
         val user = userRepository.findById(id).orElseThrow()
@@ -289,6 +306,7 @@ class UserService(
         user.lastName = lastName
         user.username = username
         user.selfInfo = selfInfo
+        user.profileImage = saveOrUpdateImage(profileImage, PROFILE_IMAGES, user.profileImage, profileImage?.size?.toLong())
         userRepository.save(user)
     }
 
@@ -317,6 +335,18 @@ class UserService(
             }
             unconfirmedUserRepository.deleteAll(unconfirmedUsers.values)
         }
+    }
+
+    private fun saveOrUpdateImage(image: ByteArray?, storageType: String, previousImageId: String? = null, contentLength: Long?): String? {
+        if (previousImageId != null) {
+            fileStorageService.delete(storageType, fromString(previousImageId))
+        }
+        if (image != null && contentLength != null) {
+            return randomUUID().toString().also {
+                fileStorageService.save(storageType, it, ByteArrayInputStream(image), contentLength)
+            }
+        }
+        return null
     }
 }
 

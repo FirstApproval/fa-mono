@@ -29,5 +29,6 @@ class User(
     var email: String? = null,
     var password: String? = null,
     var selfInfo: String? = null,
+    var profileImage: String? = null,
     var creationTime: ZonedDateTime = now(),
 )

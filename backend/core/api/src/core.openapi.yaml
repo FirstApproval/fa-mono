@@ -1373,6 +1373,9 @@ components:
           type: string
         selfInfo:
           type: string
+        profileImage:
+          type: string
+          format: byte
 
     UploadType:
       type: string
@@ -1425,6 +1428,10 @@ components:
           type: string
         selfInfo:
           type: string
+        profileImage:
+          type: string
+          format: byte
+          maxLength: 2097152
       required:
         - firstName
         - lastName

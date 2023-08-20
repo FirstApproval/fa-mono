@@ -12,6 +12,7 @@ import java.util.UUID
 
 const val FILES = "files"
 const val SAMPLE_FILES = "sample-files"
+const val PROFILE_IMAGES = "profile-images"
 
 class FileStorageService(private val amazonS3: AmazonS3) {
 
