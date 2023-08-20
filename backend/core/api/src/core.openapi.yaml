@@ -528,6 +528,29 @@ paths:
       operationId: requestDownload
       tags: [ publication ]
 
+  /api/publication/{id}/view/increment:
+    post:
+      summary: Update publication view count
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
+      responses:
+        200:
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+      security:
+        - PublicAuth: [ ]
+      operationId: incrementPublicationViewCount
+      tags: [ publication ]
+
   /api/publication/{id}/download-link:
     get:
       summary: Get publication content download link
@@ -1590,6 +1613,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Author'
+        viewsCount:
+          type: integer
+          format: int64
+        downloadsCount:
+          type: integer
+          format: int64
       required:
         - id
         - status

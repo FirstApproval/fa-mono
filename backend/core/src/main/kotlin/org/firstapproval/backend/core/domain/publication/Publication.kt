@@ -53,6 +53,8 @@ class Publication(
         inverseJoinColumns = [JoinColumn(name = "user_id")]
     )
     var unconfirmedAuthors: List<UnconfirmedUser> = mutableListOf(),
+    var downloadsCount: Long = 0,
+    var viewsCount: Long = 0,
     var creationTime: ZonedDateTime = now(),
     var publicationTime: ZonedDateTime? = null,
     var contentId: Long? = null,
