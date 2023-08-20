@@ -1,7 +1,6 @@
 import React, { type FunctionComponent, useState } from 'react';
-import { Button, LinearProgress, Link } from '@mui/material';
+import { Button, Divider, LinearProgress } from '@mui/material';
 import {
-  FlexBody,
   FlexBodyCenter,
   FlexHeader,
   FlexHeaderRight,
@@ -16,6 +15,10 @@ import { Page } from '../../core/RouterStore';
 import { UserMenu } from '../../components/UserMenu';
 import { Edit } from '@mui/icons-material';
 import styled from '@emotion/styled';
+import { PublicationBox } from './PublicationSection';
+import { CallToAction } from './CallToAction';
+import PopularAuthorsSection from './PopularAuthorsSection';
+import RecommendedPublicationsSection from './RecommendedPublicationsSection';
 
 export const HomePage: FunctionComponent = observer(() => {
   const [store] = useState(() => new HomePageStore());
@@ -40,26 +43,20 @@ export const HomePage: FunctionComponent = observer(() => {
           <UserMenu />
         </FlexHeaderRight>
       </FlexHeader>
+      <RecommendedPublicationsSection
+        publications={store.recommendedPublications}
+      />
+      <CallToAction />
       <FlexBodyCenter>
         <FlexBody>
-          {store.isLoading && <LinearProgress />}
-          {!store.isLoading && (
+          <PopularAuthorsSection authors={store.popularAuthors} />
+          <DividerWrap />
+          {store.isLoadingPublications && <LinearProgress />}
+          {!store.isLoadingPublications && (
             <>
-              {store.publications.map((p) => {
-                return (
-                  <div key={p.id} style={{ marginBottom: '16px' }}>
-                    <LinkWrap
-                      onClick={() => {
-                        routerStore.navigatePage(
-                          Page.PUBLICATION,
-                          `/publication/${p.id}`
-                        );
-                      }}>
-                      {p.title ?? p.id}
-                    </LinkWrap>
-                  </div>
-                );
-              })}
+              {store.publications.map((p) => (
+                <PublicationBox key={p.id} publication={p} />
+              ))}
             </>
           )}
         </FlexBody>
@@ -68,6 +65,13 @@ export const HomePage: FunctionComponent = observer(() => {
   );
 });
 
-const LinkWrap = styled(Link)`
-  cursor: pointer;
+export const FlexBody = styled('div')`
+  max-width: 680px;
+  padding-left: 40px;
+  padding-right: 40px;
+`;
+
+const DividerWrap = styled(Divider)`
+  margin-top: 8px;
+  margin-bottom: 40px;
 `;
