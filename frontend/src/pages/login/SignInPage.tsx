@@ -54,8 +54,7 @@ export const SignInPage: FunctionComponent<SignInPageProps> = observer(
             <div>
               <FullWidthTextField
                 autoFocus
-                // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-                value={props.store.email || null}
+                value={props.store.email}
                 onChange={(e) => {
                   props.store.setEmail(e.currentTarget.value);
                 }}
@@ -68,8 +67,7 @@ export const SignInPage: FunctionComponent<SignInPageProps> = observer(
             <div>
               <FullWidthTextField
                 type={'password'}
-                // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-                value={props.store.password || null}
+                value={props.store.password}
                 onChange={(e) => {
                   props.store.setPassword(e.currentTarget.value);
                 }}

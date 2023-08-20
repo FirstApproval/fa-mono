@@ -38,6 +38,16 @@ export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
     const nameNonEmpty =
       props.store.firstName.length > 0 && props.store.lastName.length > 0;
 
+    const validateAndConfirm = (event: any): void => {
+      if (event.key === 'Enter' || event.keyCode === 13 || event.button === 0) {
+        event.preventDefault();
+        const isValid = validate();
+        if (isValid) {
+          props.onContinueClick();
+        }
+      }
+    };
+
     return (
       <Parent>
         <FlexHeader>
@@ -64,6 +74,7 @@ export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
                 onChange={(e) => {
                   props.store.firstName = e.currentTarget.value;
                 }}
+                onKeyDown={validateAndConfirm}
                 label="Name"
                 variant="outlined"
               />
@@ -76,6 +87,7 @@ export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
                 onChange={(e) => {
                   props.store.lastName = e.currentTarget.value;
                 }}
+                onKeyDown={validateAndConfirm}
                 label="Surname"
                 variant="outlined"
               />
@@ -85,12 +97,7 @@ export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
               variant="contained"
               size={'large'}
               endIcon={<ArrowForward />}
-              onClick={() => {
-                const isValid = validate();
-                if (isValid) {
-                  props.onContinueClick();
-                }
-              }}>
+              onClick={validateAndConfirm}>
               Continue
             </FullWidthButton>
           </FlexBody>

@@ -1349,6 +1349,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/OauthType'
+      required:
+        - firstName
+        - lastName
+        - username
+        - email
 
     UserInfo:
       type: object
