@@ -1368,6 +1368,9 @@ components:
           type: string
         selfInfo:
           type: string
+        profileImage:
+          type: string
+          format: byte
 
     UploadType:
       type: string
@@ -1420,6 +1423,9 @@ components:
           type: string
         selfInfo:
           type: string
+        profileImage:
+          type: string
+          format: byte
       required:
         - firstName
         - lastName
