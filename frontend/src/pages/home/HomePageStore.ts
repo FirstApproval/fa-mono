@@ -32,6 +32,7 @@ export class HomePageStore {
         100
       );
       this.publications = response.data.publications ?? [];
+      this.recommendedPublications = response.data.publications ?? [];
     } finally {
       this.isLoadingPublications = false;
     }
@@ -50,11 +51,11 @@ export class HomePageStore {
   private async loadRecommendedPublications(): Promise<void> {
     this.isLoadingRecommendedPublications = true;
     try {
-      const response = await publicationService.getAllFeaturedPublications(
-        0,
-        4
-      );
-      this.recommendedPublications = response.data.publications ?? [];
+      // const response = await publicationService.getAllFeaturedPublications(
+      //   0,
+      //   4
+      // );
+      // this.recommendedPublications = response.data.publications ?? [];
     } finally {
       this.isLoadingRecommendedPublications = false;
     }

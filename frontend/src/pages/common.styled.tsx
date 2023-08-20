@@ -13,6 +13,9 @@ export const FlexHeader = styled('div')`
   align-items: center;
   position: sticky;
   top: 0;
+
+  background-color: #fff;
+  z-index: 10;
 `;
 
 export const FlexHeaderRight = styled('div')`

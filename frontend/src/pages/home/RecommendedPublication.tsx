@@ -17,9 +17,11 @@ export const RecommendedPublication = (props: {
     <>
       <div>
         <FlexWrap>
-          <Avatar sx={{ width: 24, height: 24 }}>
-            {getInitials(author.firstName, author.lastName)}
-          </Avatar>
+          <AvatarWrap>
+            <Avatar sx={{ width: 24, height: 24 }}>
+              {getInitials(author.firstName, author.lastName)}
+            </Avatar>
+          </AvatarWrap>
           <div>
             {author.firstName} {author.lastName}
           </div>
@@ -33,6 +35,12 @@ export const RecommendedPublication = (props: {
 const FlexWrap = styled.div`
   display: flex;
   align-items: center;
+
+  margin-bottom: 12px;
+`;
+
+const AvatarWrap = styled.div`
+  margin-right: 8px;
 `;
 
 const NameWrap = styled.div`

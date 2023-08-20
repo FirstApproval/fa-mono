@@ -1,9 +1,5 @@
 import styled from '@emotion/styled';
-import {
-  type Publication,
-  type RecommendedAuthor
-} from '../../apis/first-approval-api';
-import { PopularAuthor } from './PopularAuthor';
+import { type Publication } from '../../apis/first-approval-api';
 import { type ReactElement } from 'react';
 import { RecommendedPublication } from './RecommendedPublication';
 
@@ -23,8 +19,8 @@ const RecommendedPublicationsSection = (props: {
 }): ReactElement => {
   const { publications } = props;
   return (
-    <>
-      <NameWrap>Popular authors</NameWrap>
+    <Wrap>
+      <NameWrap>Recommended</NameWrap>
       <GridContainer>
         {publications.map((publication, idx) => (
           <AuthorCard key={idx}>
@@ -32,9 +28,17 @@ const RecommendedPublicationsSection = (props: {
           </AuthorCard>
         ))}
       </GridContainer>
-    </>
+    </Wrap>
   );
 };
+
+export const Wrap = styled('div')`
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+
+  margin-bottom: 40px;
+`;
 
 const NameWrap = styled.div`
   font-size: 20px;
@@ -44,6 +48,8 @@ const NameWrap = styled.div`
   letter-spacing: 0.15px;
 
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
+
+  margin-bottom: 24px;
 `;
 
 export default RecommendedPublicationsSection;

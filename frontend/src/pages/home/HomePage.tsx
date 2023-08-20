@@ -1,5 +1,11 @@
 import React, { type FunctionComponent, useState } from 'react';
-import { Button, Divider, LinearProgress } from '@mui/material';
+import {
+  Button,
+  Divider,
+  InputAdornment,
+  LinearProgress,
+  TextField
+} from '@mui/material';
 import {
   FlexBodyCenter,
   FlexHeader,
@@ -13,7 +19,7 @@ import { HomePageStore } from './HomePageStore';
 import { observer } from 'mobx-react-lite';
 import { Page } from '../../core/RouterStore';
 import { UserMenu } from '../../components/UserMenu';
-import { Edit } from '@mui/icons-material';
+import { Edit, Search } from '@mui/icons-material';
 import styled from '@emotion/styled';
 import { PublicationBox } from './PublicationSection';
 import { CallToAction } from './CallToAction';
@@ -43,6 +49,18 @@ export const HomePage: FunctionComponent = observer(() => {
           <UserMenu />
         </FlexHeaderRight>
       </FlexHeader>
+      <Wrap>
+        <FullWidthTextField
+          placeholder={'Search the data you need...'}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="start">
+                <Search />
+              </InputAdornment>
+            )
+          }}
+        />
+      </Wrap>
       <RecommendedPublicationsSection
         publications={store.recommendedPublications}
       />
@@ -74,4 +92,16 @@ export const FlexBody = styled('div')`
 const DividerWrap = styled(Divider)`
   margin-top: 8px;
   margin-bottom: 40px;
+`;
+
+export const Wrap = styled('div')`
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+
+  margin-bottom: 40px;
+`;
+
+const FullWidthTextField = styled(TextField)`
+  width: 100%;
 `;
