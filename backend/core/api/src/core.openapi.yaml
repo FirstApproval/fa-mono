@@ -542,10 +542,6 @@ paths:
       responses:
         200:
           description: Success
-          content:
-            text/plain:
-              schema:
-                type: string
       security:
         - PublicAuth: [ ]
       operationId: incrementPublicationViewCount
@@ -572,6 +568,58 @@ paths:
       security:
         - TokenAuth: [ ]
       operationId: getDownloadLink
+      tags: [ publication ]
+
+  /api/publication/files/download:
+    get:
+      parameters:
+        - name: downloadToken
+          in: query
+          required: true
+          schema:
+            type: string
+            maxLength: 2048
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: File not found
+        '500':
+          description: Server error
+      security:
+        - PublicAuth: [ ]
+      operationId: downloadPublicationFiles
+      tags: [ publication ]
+
+  /api/publication/{id}/files/sample/download:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+    get:
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: File not found
+        '500':
+          description: Server error
+      security:
+        - PublicAuth: [ ]
+      operationId: downloadPublicationSampleFiles
       tags: [ publication ]
 
   /api/files/check-duplicates/{publicationId}:

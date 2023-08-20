@@ -1,9 +1,16 @@
 package org.firstapproval.backend.core.domain.publication
 
+import com.amazonaws.services.s3.model.S3ObjectInputStream
 import org.firstapproval.api.server.model.Author
 import org.firstapproval.api.server.model.Paragraph
 import org.firstapproval.api.server.model.PublicationEditRequest
 import org.firstapproval.api.server.model.PublicationsResponse
+import org.firstapproval.backend.core.config.Properties
+import org.firstapproval.backend.core.config.Properties.FrontendProperties
+import org.firstapproval.backend.core.domain.auth.TokenService
+import org.firstapproval.backend.core.domain.file.ARCHIVED_PUBLICATION_FILES
+import org.firstapproval.backend.core.domain.file.ARCHIVED_PUBLICATION_SAMPLE_FILES
+import org.firstapproval.backend.core.domain.file.FileStorageService
 import org.firstapproval.backend.core.domain.ipfs.DownloadLink
 import org.firstapproval.backend.core.domain.ipfs.DownloadLinkRepository
 import org.firstapproval.backend.core.domain.ipfs.IpfsClient
@@ -44,7 +51,10 @@ class PublicationService(
     private val downloadLinkRepository: DownloadLinkRepository,
     private val jobRepository: JobRepository,
     private val ipfsClient: IpfsClient,
-    private val elasticRepository: PublicationElasticRepository
+    private val elasticRepository: PublicationElasticRepository,
+    private val tokenService: TokenService,
+    private val frontendProperties: FrontendProperties,
+    private val fileStorageService: FileStorageService
 ) {
     @Transactional
     fun create(user: User): Publication {
@@ -92,14 +102,14 @@ class PublicationService(
                     throw RecordConflictException("Creator cannot be deleted from authors list")
                 }
                 val confirmedAuthors = confirmedAuthors.values.map { confirmedAuthor ->
-                        publication.confirmedAuthors.find { it.user.id == confirmedAuthor.userId }
-                            ?.also { it.shortBio = confirmedAuthor.shortBio } ?: ConfirmedAuthor(
-                            randomUUID(),
-                            confirmedAuthorsById[confirmedAuthor.userId].require(),
-                            publication,
-                            confirmedAuthor.shortBio
-                        )
-                    }
+                    publication.confirmedAuthors.find { it.user.id == confirmedAuthor.userId }
+                        ?.also { it.shortBio = confirmedAuthor.shortBio } ?: ConfirmedAuthor(
+                        randomUUID(),
+                        confirmedAuthorsById[confirmedAuthor.userId].require(),
+                        publication,
+                        confirmedAuthor.shortBio
+                    )
+                }
                 publication.confirmedAuthors.clear()
                 publication.confirmedAuthors.addAll(confirmedAuthors)
             }
@@ -120,6 +130,43 @@ class PublicationService(
             }
         }
         publicationRepository.saveAndFlush(publication)
+    }
+
+    @Transactional
+    fun getPublicationArchive(token: String): FileResponse {
+        val claims = tokenService.parseDownloadPublicationArchiveToken(token)
+        val publicationId = claims["publicationId"].toString()
+        val publication = publicationRepository.getReferenceById(UUID.fromString(publicationId))
+        publication.downloadsCount += 1
+        val title = if (publication.title != null) {
+            publication.title
+        } else {
+            publicationId
+        }
+        return FileResponse(
+            name = title!! + ".zip",
+            fileStorageService.get(ARCHIVED_PUBLICATION_FILES, publicationId)
+        )
+    }
+
+    @Transactional
+    fun getPublicationSamplesArchive(id: UUID): FileResponse {
+        val publication = publicationRepository.getReferenceById(id)
+        val title = if (publication.title != null) {
+            publication.title
+        } else {
+            id.toString()
+        }
+        return FileResponse(
+            name = title!! + ".zip",
+            s3Object = fileStorageService.get(ARCHIVED_PUBLICATION_SAMPLE_FILES, id.toString())
+        )
+    }
+
+    @Transactional
+    fun incrementViewCount(id: UUID) {
+        val publication = publicationRepository.getReferenceById(id)
+        publication.viewsCount += 1
     }
 
     @Transactional
@@ -154,14 +201,13 @@ class PublicationService(
         }
     }
 
-    fun getDownloadLink(id: UUID): DownloadLink {
-        return downloadLinkRepository.findByPublicationIdAndExpirationTimeLessThan(id, ZonedDateTime.now().minusMinutes(5)) ?: run {
-            val pub = getPublicationAndCheckStatus(id, PUBLISHED)
-            val downloadLinkInfo = ipfsClient.getDownloadLink(pub.contentId!!)
-            val expirationTime = ZonedDateTime.now().plusSeconds(downloadLinkInfo.expiresIn)
-            downloadLinkRepository.deleteById(id)
-            downloadLinkRepository.save(DownloadLink(pub.id, downloadLinkInfo.url, expirationTime))
+    fun getDownloadLink(user: User, publicationId: UUID): String {
+        val publication = publicationRepository.getReferenceById(publicationId)
+        if (publication.status != PUBLISHED) {
+            throw IllegalArgumentException()
         }
+        val downloadToken = tokenService.generateDownloadPublicationArchiveToken(user.id.toString(), publicationId.toString())
+        return "${frontendProperties.url}/api/publication/files/download?downloadToken=$downloadToken"
     }
 
     private fun getPublicationAndCheckStatus(id: UUID, status: PublicationStatus): Publication {
