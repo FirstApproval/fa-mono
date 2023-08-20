@@ -67,6 +67,8 @@ export class RouterStore {
       (token) => {
         if (!token) {
           this.navigatePage(Page.SIGN_IN);
+        } else {
+          this.navigatePage(Page.HOME_PAGE);
         }
       }
     );
