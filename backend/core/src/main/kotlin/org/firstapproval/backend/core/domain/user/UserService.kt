@@ -306,7 +306,9 @@ class UserService(
         user.lastName = lastName
         user.username = username
         user.selfInfo = selfInfo
-        user.profileImage = saveOrUpdateImage(profileImage, PROFILE_IMAGES, user.profileImage, profileImage?.size?.toLong())
+        if (profileImage != null) {
+            user.profileImage = saveOrUpdateImage(profileImage, user.profileImage, profileImage.size.toLong())
+        }
         userRepository.save(user)
     }
 
@@ -337,16 +339,13 @@ class UserService(
         }
     }
 
-    private fun saveOrUpdateImage(image: ByteArray?, storageType: String, previousImageId: String? = null, contentLength: Long?): String? {
+    private fun saveOrUpdateImage(image: ByteArray, previousImageId: String? = null, contentLength: Long): String {
         if (previousImageId != null) {
-            fileStorageService.delete(storageType, fromString(previousImageId))
+            fileStorageService.delete(PROFILE_IMAGES, fromString(previousImageId))
         }
-        if (image != null && contentLength != null) {
-            return randomUUID().toString().also {
-                fileStorageService.save(storageType, it, ByteArrayInputStream(image), contentLength)
-            }
+        return randomUUID().toString().also {
+            fileStorageService.save(PROFILE_IMAGES, it, ByteArrayInputStream(image), contentLength)
         }
-        return null
     }
 }
 
@@ -356,4 +355,3 @@ enum class OauthType {
     LINKEDIN,
     ORCID
 }
-
