@@ -20,9 +20,9 @@ class UserController(
     private val authHolderService: AuthHolderService
 ) : UserApi {
 
-    override fun getUserInfo(id: UUID): ResponseEntity<GetUserInfoResponse> {
+    override fun getUserInfo(id: UUID): ResponseEntity<UserInfo> {
         val user = userService.getPublicUserProfile(id)
-        return ok().body(GetUserInfoResponse()
+        return ok().body(UserInfo()
             .id(user.id)
             .firstName(user.firstName)
             .lastName(user.lastName)

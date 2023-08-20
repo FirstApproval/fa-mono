@@ -1,6 +1,7 @@
 env:
-  browser: true
-  es2021: true
+  browser: false
+  es2021: true,
+  node: true
 extends:
   - prettier
   - standard-with-typescript
