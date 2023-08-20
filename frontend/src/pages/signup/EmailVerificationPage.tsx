@@ -16,10 +16,12 @@ import {
   Header
 } from '../common.styled';
 import { routerStore } from '../../core/router';
+import { authStore } from '../../core/auth';
 
 interface EmailVerificationPageProps {
   store: SignUpStore;
   onSignInClick: () => void;
+  onContinueClick: () => void;
 }
 
 export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps> =
@@ -38,7 +40,7 @@ export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps
         }
         props.store.code = code;
         props.store.lastResponse = { registrationToken };
-        void props.store.submitSubmitRegistrationRequest();
+        void props.store.submitRegistrationRequest();
         localStorage.removeItem(REGISTRATION_CONFIRMATION_TOKEN_STORAGE_KEY);
       }
     }, []);
@@ -70,27 +72,32 @@ export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps
                 helperText={
                   props.store.isCodeError ? 'Invalid code' : undefined
                 }
+                type={'number'}
                 value={props.store.code}
                 onChange={(e) => {
                   const code = e.currentTarget.value;
                   props.store.code = code;
                   if (code.length === 6) {
-                    void props.store.submitSubmitRegistrationRequest();
+                    void props.store.submitRegistrationRequest().then(() => {
+                      if (authStore.token) {
+                        props.onContinueClick();
+                      }
+                    });
                   }
                 }}
                 label="Enter 6-digit code"
                 variant="outlined"
               />
             </div>
-            <ForgotPasswordLabel>
+            <SendCodeAgain>
               <Link
                 color="inherit"
                 onClick={async () => {
-                  await props.store.submitRegistrationRequest();
+                  await props.store.sendCodeAgain();
                 }}>
                 Send code again
               </Link>
-            </ForgotPasswordLabel>
+            </SendCodeAgain>
           </FlexBody>
         </FlexBodyCenter>
         {isError && (
@@ -119,14 +126,14 @@ const FullWidthTextField = styled(TextField)`
   margin-bottom: 20px;
 `;
 
-const EmailLabel = styled('div')`
+const EmailLabel = styled.div`
   margin-top: 24px;
   margin-bottom: 32px;
   font-weight: 400;
   font-size: 20px;
 `;
 
-const ForgotPasswordLabel = styled('div')`
+const SendCodeAgain = styled.div`
   margin-top: 16px;
   font-weight: 400;
   font-size: 20px;

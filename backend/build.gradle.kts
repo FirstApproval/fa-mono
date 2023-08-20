@@ -51,6 +51,7 @@ subprojects {
             dependency("com.amazonaws:aws-java-sdk-s3:1.12.449")
             dependency("net.logstash.logback:logstash-logback-encoder:7.3")
             dependency("org.springframework.data:spring-data-elasticsearch:5.1.2")
+            dependency("com.vladmihalcea:hibernate-types-52:2.21.1")
         }
     }
 

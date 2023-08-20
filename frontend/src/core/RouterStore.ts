@@ -19,6 +19,7 @@ export enum Page {
   ACCOUNT,
 
   SIGN_UP_NAME,
+  SELF_INFO,
   SIGN_UP_PASSWORD,
   EMAIL_VERIFICATION,
 
@@ -67,6 +68,8 @@ export class RouterStore {
       (token) => {
         if (!token) {
           this.navigatePage(Page.SIGN_IN);
+        } else {
+          this.navigatePage(Page.HOME_PAGE);
         }
       }
     );
@@ -115,8 +118,7 @@ export class RouterStore {
             type: authType
           })
           .then((response) => {
-            const token = response.data.token;
-            authStore.token = token;
+            authStore.token = response.data.token;
             this.navigatePage(Page.HOME_PAGE, '/', true);
           })
           .catch(() => {

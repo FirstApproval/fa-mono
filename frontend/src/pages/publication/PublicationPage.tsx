@@ -3,17 +3,12 @@ import React, {
   type ReactElement,
   useState
 } from 'react';
-import { Button, LinearProgress } from '@mui/material';
-import {
-  FlexBodyCenter,
-  FlexHeader,
-  FlexHeaderRight,
-  Logo,
-  Parent
-} from '../common.styled';
+import { Button, IconButton, LinearProgress } from '@mui/material';
+import { FlexBodyCenter, FlexHeader, Parent } from '../common.styled';
 import { FileUploader } from '../../fire-browser/FileUploader';
 import { routerStore } from '../../core/router';
 import styled from '@emotion/styled';
+import { action } from 'mobx';
 import {
   AuthorsPlaceholder,
   FilesPlaceholder,
@@ -42,10 +37,9 @@ import { AuthorsEditor } from './editors/AuthorsEditor';
 import { TitleEditor } from './editors/TitleEditor';
 import { ResearchAreaEditor } from './editors/ResearchAreaEditor';
 import { ResearchAreaPage } from './ResearchAreaPage';
-import { action } from 'mobx';
+import logo from './asset/logo.svg';
 import { UserMenu } from '../../components/UserMenu';
 import { Page } from '../../core/RouterStore';
-import { Edit } from '@mui/icons-material';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -60,48 +54,58 @@ export const PublicationPage: FunctionComponent = observer(() => {
 
   const emptyResearchArea = researchArea.length === 0;
 
+  const nextViewMode =
+    publicationStore.viewMode === ViewMode.PREVIEW
+      ? ViewMode.EDIT
+      : ViewMode.PREVIEW;
+
   return (
     <>
       <Parent>
         <FlexHeader>
-          <Logo onClick={routerStore.goHome}>First Approval</Logo>
-          <FlexHeaderRight>
-            <ButtonWrap
-              variant="contained"
-              size={'medium'}
-              onClick={() => {
-                routerStore.navigatePage(
-                  Page.SHARING_OPTIONS,
-                  routerStore.path,
-                  true,
-                  { publicationTitle: publicationStore.title }
-                );
-              }}>
-              Publish
-            </ButtonWrap>
-            {publicationStore.viewMode === ViewMode.EDIT && (
+          <ToolbarContainer>
+            <div>
+              <IconButton
+                onClick={() => {
+                  routerStore.goHome();
+                }}>
+                <img src={logo} />
+              </IconButton>
+              <DraftedBy>
+                Drafted by
+                {/* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */}
+                {` ${publicationStore.creator?.firstName} ${publicationStore.creator?.lastName}`}
+              </DraftedBy>
+              <SavingStatus></SavingStatus>
+            </div>
+            <FlexDiv>
               <ButtonWrap
-                variant="outlined"
+                variant="contained"
                 size={'medium'}
                 onClick={() => {
-                  publicationStore.viewMode = ViewMode.PREVIEW;
+                  routerStore.navigatePage(
+                    Page.SHARING_OPTIONS,
+                    routerStore.path,
+                    true,
+                    { publicationTitle: publicationStore.title }
+                  );
                 }}>
-                Preview
+                Publish
               </ButtonWrap>
-            )}
-            {publicationStore.viewMode === ViewMode.PREVIEW && (
-              <ButtonWrap
-                variant="outlined"
-                size={'medium'}
-                startIcon={<Edit />}
-                onClick={() => {
-                  publicationStore.viewMode = ViewMode.EDIT;
-                }}>
-                Edit
-              </ButtonWrap>
-            )}
-            <UserMenu />
-          </FlexHeaderRight>
+              {publicationStore.viewMode && (
+                <ButtonWrap
+                  marginRight="0px"
+                  variant="outlined"
+                  size={'medium'}
+                  onClick={() => {
+                    publicationStore.viewMode = nextViewMode;
+                  }}>
+                  {nextViewMode}
+                </ButtonWrap>
+              )}
+              <UserMenu />
+            </FlexDiv>
+          </ToolbarContainer>
         </FlexHeader>
         <FlexBodyCenter>
           <PublicationBodyWrap>
@@ -253,6 +257,46 @@ const PublicationBodyWrap = styled('div')`
   padding-right: 40px;
 `;
 
-const ButtonWrap = styled(Button)`
-  margin-right: 24px;
+const ButtonWrap = styled(Button)<{ marginRight?: string }>`
+  margin-right: ${(props) => props.marginRight ?? '24px'};
+  width: 90px;
+  height: 36px;
+`;
+
+const ToolbarContainer = styled.div`
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  width: 55%;
+  padding: 0 16px;
+  display: flex;
+`;
+
+const DraftedBy = styled.span`
+  margin: 0 16px;
+  color: var(--text-primary, #040036);
+  font-feature-settings: 'clig' off, 'liga' off;
+  /* typography/body1 */
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%; /* 24px */
+  letter-spacing: 0.15px;
+`;
+
+const SavingStatus = styled.span`
+  color: var(--text-secondary, #68676e);
+  font-feature-settings: 'clig' off, 'liga' off;
+  /* typography/body1 */
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%; /* 24px */
+  letter-spacing: 0.15px;
+`;
+
+const FlexDiv = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 `;

@@ -11,8 +11,12 @@ export const FlexHeader = styled('div')`
   padding: 12px 32px;
   margin-bottom: 40px;
   align-items: center;
+  justify-content: center;
   position: sticky;
   top: 0;
+
+  background-color: #fff;
+  z-index: 10;
 `;
 
 export const FlexHeaderRight = styled('div')`

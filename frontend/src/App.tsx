@@ -1,5 +1,5 @@
 import './App.css';
-import { type FunctionComponent, useState } from 'react';
+import React, { type FunctionComponent, useState } from 'react';
 import { SignInPage } from './pages/login/SignInPage';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
@@ -24,6 +24,7 @@ import { ProfilePage } from './pages/user/ProfilePage';
 import { AccountPage } from './pages/user/AccountPage';
 import { ResetPasswordPage } from './pages/restore/set-password/RestorePasswordPage';
 import { SharingOptionsPage } from './pages/publication/SharingOptionsPage';
+import { EnterSelfInfoPage } from './pages/signup/EnterSelfInfo';
 
 const App: FunctionComponent = observer(() => {
   const { page, navigatePage } = routerStore;
@@ -90,7 +91,7 @@ const App: FunctionComponent = observer(() => {
               }}
               onContinueClick={() => {
                 if (!signUpStore.isSubmitting) {
-                  void signUpStore.submitRegistrationRequest().then(() => {
+                  void signUpStore.sendCodeAgain().then(() => {
                     if (!signUpStore.isError) {
                       navigatePage(Page.EMAIL_VERIFICATION);
                     }
@@ -104,6 +105,20 @@ const App: FunctionComponent = observer(() => {
               store={signUpStore}
               onSignInClick={() => {
                 navigatePage(Page.SIGN_IN);
+              }}
+              onContinueClick={() => {
+                navigatePage(Page.SELF_INFO);
+              }}
+            />
+          )}
+          {page === Page.SELF_INFO && (
+            <EnterSelfInfoPage
+              store={signUpStore}
+              onSignInClick={() => {
+                navigatePage(Page.SIGN_IN);
+              }}
+              onContinueClick={() => {
+                navigatePage(Page.SIGN_UP_PASSWORD);
               }}
             />
           )}

@@ -11,6 +11,7 @@ import org.firstapproval.backend.core.domain.auth.TokenService
 import org.firstapproval.backend.core.domain.file.ARCHIVED_PUBLICATION_FILES
 import org.firstapproval.backend.core.domain.file.ARCHIVED_PUBLICATION_SAMPLE_FILES
 import org.firstapproval.backend.core.domain.file.FileStorageService
+import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.backend.core.domain.ipfs.DownloadLink
 import org.firstapproval.backend.core.domain.ipfs.DownloadLinkRepository
 import org.firstapproval.backend.core.domain.ipfs.IpfsClient
@@ -269,6 +270,14 @@ class PublicationService(
 
 fun Publication.toApiObject() = PublicationApiObject().also {
     it.id = id
+    it.creator = UserInfo()
+        .id(creator.id)
+        .firstName(creator.firstName)
+        .lastName(creator.lastName)
+        .middleName(creator.middleName)
+        .email(creator.email)
+        .username(creator.username)
+        .selfInfo(creator.selfInfo)
     it.title = title
     it.description = description?.map { Paragraph(it) }
     it.researchArea = researchArea

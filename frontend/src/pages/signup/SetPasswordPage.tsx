@@ -145,6 +145,19 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
                 onChange={(e) => {
                   props.store.password = e.currentTarget.value;
                 }}
+                onKeyDown={(event: any) => {
+                  if (
+                    event.key === 'Enter' ||
+                    event.keyCode === 13 ||
+                    event.button === 0
+                  ) {
+                    event.preventDefault();
+                    const isValid = validate();
+                    if (isValid) {
+                      props.onContinueClick();
+                    }
+                  }
+                }}
                 type={'password'}
                 label="Password 8+ characters"
                 variant="outlined"

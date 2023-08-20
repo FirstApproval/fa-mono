@@ -296,7 +296,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetUserInfoResponse'
+                $ref: '#/components/schemas/UserInfo'
       security:
         - PublicAuth: [ ]
       operationId: getUserInfo
@@ -1420,8 +1420,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/OauthType'
+      required:
+        - firstName
+        - lastName
+        - username
+        - email
 
-    GetUserInfoResponse:
+    UserInfo:
       type: object
       properties:
         id:
@@ -1617,6 +1622,8 @@ components:
         id:
           type: string
           format: uuid
+        creator:
+          $ref: '#/components/schemas/UserInfo'
         status:
           $ref: '#/components/schemas/PublicationStatus'
         accessType:

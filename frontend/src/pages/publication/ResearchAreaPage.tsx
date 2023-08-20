@@ -52,7 +52,7 @@ export const ResearchAreaPage = (props: EditorProps): ReactElement => {
         }}>
         Continue
       </Button>
-      <div>You can change it later</div>
+      <ChangeItLater>You can change it later</ChangeItLater>
     </>
   );
 };
@@ -68,4 +68,16 @@ const ResearchAreaTitle = styled.div`
 const FullWidthTextField = styled(TextField)`
   width: 100%;
   margin-bottom: 40px;
+`;
+
+const ChangeItLater = styled.div`
+  margin-top: 8px;
+  color: var(--text-disabled, rgba(4, 0, 54, 0.38));
+  font-feature-settings: 'clig' off, 'liga' off;
+  /* typography/body2 */
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 143%; /* 20.02px */
+  letter-spacing: 0.17px;
 `;
