@@ -21,7 +21,7 @@ class PublicationElastic(
     val creatorId: UUID,
     @Field(type = Keyword)
     var status: PublicationStatus = PENDING,
-    var accessType: AccessType? = null,
+    var accessType: AccessType,
     @Field(type = Text)
     var title: String? = null,
     var description: List<String>? = null,
