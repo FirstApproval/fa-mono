@@ -3,11 +3,14 @@ package org.firstapproval.backend.core.domain.file
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.DeleteObjectsRequest
 import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest
 import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.services.s3.model.PutObjectResult
 import com.amazonaws.services.s3.model.S3Object
 import mu.KotlinLogging.logger
 import java.io.InputStream
+import java.time.Duration
+import java.util.Date
 import java.util.UUID
 
 const val FILES = "files"
@@ -40,5 +43,13 @@ class FileStorageService(private val amazonS3: AmazonS3) {
             amazonS3.createBucket(bucketName)
             log.info { "bucket $bucketName created" }
         }
+    }
+
+    fun generateTemporaryDownloadLink(bucketName: String, id: String, ttl: Duration): String {
+        val expiration = Date(System.currentTimeMillis() + ttl.toMillis())
+        val generatePresignedUrlRequest = GeneratePresignedUrlRequest(bucketName, id)
+            .withExpiration(expiration)
+        val url = amazonS3.generatePresignedUrl(generatePresignedUrlRequest)
+        return url.toString()
     }
 }

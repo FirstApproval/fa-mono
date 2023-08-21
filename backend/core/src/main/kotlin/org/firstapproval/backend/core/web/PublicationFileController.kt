@@ -93,6 +93,14 @@ class PublicationFileController(
             .body(InputStreamResource(file.s3Object.objectContent))
     }
 
+    override fun getTokenToRetrieveDownloadLink(fileId: UUID): ResponseEntity<DownloadTokenResponse> {
+        return ok(DownloadTokenResponse(publicationFileService.getTokenToRetrieveDownloadLink(authHolderService.user, fileId)))
+    }
+
+    override fun getDownloadLinkForPublicationFile(downloadLinkRequest: DownloadLinkRequest): ResponseEntity<DownloadLinkResponse> {
+        return ok(DownloadLinkResponse(publicationFileService.getDownloadLink(downloadLinkRequest.token)))
+    }
+
     override fun deleteFiles(deleteByIdsRequest: DeleteByIdsRequest): ResponseEntity<Void> {
         publicationFileService.deleteFiles(authHolderService.user, deleteByIdsRequest.ids.toList())
         return ok().build()

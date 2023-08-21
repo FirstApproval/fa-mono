@@ -2,13 +2,13 @@ package org.firstapproval.backend.core.domain.publication
 
 import com.amazonaws.services.s3.model.S3Object
 import org.apache.commons.io.FilenameUtils
-import org.firstapproval.api.server.model.UploadType
+import org.firstapproval.backend.core.config.Properties.S3Properties
+import org.firstapproval.backend.core.domain.auth.TokenService
 import org.firstapproval.backend.core.domain.file.FILES
 import org.firstapproval.backend.core.domain.file.FileStorageService
 import org.firstapproval.backend.core.domain.user.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.util.UUID
 import java.util.UUID.randomUUID
@@ -17,7 +17,9 @@ import java.util.UUID.randomUUID
 class PublicationFileService(
     private val publicationFileRepository: PublicationFileRepository,
     private val fileStorageService: FileStorageService,
-    private val publicationRepository: PublicationRepository
+    private val publicationRepository: PublicationRepository,
+    private val s3Properties: S3Properties,
+    private val tokenService: TokenService
 ) {
 
     fun getPublicationFiles(user: User, publicationId: UUID, dirPath: String): List<PublicationFile> {
@@ -177,6 +179,17 @@ class PublicationFileService(
         )
         publicationFileRepository.save(file)
         return file
+    }
+
+    fun getTokenToRetrieveDownloadLink(user: User, fileId: UUID): String {
+        val publication = publicationFileRepository.findById(fileId).get().publication
+        checkAccessToPublication(user, publication)
+        return tokenService.generateForFileDownloadLink(user.id.toString(), fileId.toString(), s3Properties.ttl)
+    }
+
+    fun getDownloadLink(token: String): String {
+        val fileId = tokenService.checkAndParseFileDownloadToken(token)
+        return fileStorageService.generateTemporaryDownloadLink(FILES, fileId, s3Properties.ttl)
     }
 
     private fun extractDirPath(fullPath: String) = fullPath.substring(0, fullPath.lastIndexOf('/') + 1)

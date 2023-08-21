@@ -662,6 +662,53 @@ paths:
       operationId: downloadPublicationFile
       tags: [ file ]
 
+  /api/files/token/{file_id}:
+    get:
+      summary: Get token to retrieve download link
+      parameters:
+        - name: file_id
+          in: path
+          description: ID of the file to download
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadTokenResponse'
+        '404':
+          description: File not found
+        '500':
+          description: Server error
+      security:
+        - TokenAuth: [ ]
+      operationId: getTokenToRetrieveDownloadLink
+      tags: [ file ]
+
+  /api/files/download-link:
+    get:
+      summary: Get download link for publication file
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DownloadLinkRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadLinkResponse'
+      security:
+        - PublicToken: [ ]
+      operationId: getDownloadLinkForPublicationFile
+      tags: [ file ]
+
   /api/author/{searchText}:
     get:
       summary: Get users by search text
@@ -1703,6 +1750,29 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/Paragraph'
+
+    DownloadTokenResponse:
+      type: object
+      properties:
+        token:
+          type: string
+      required:
+        - token
+
+    DownloadLinkRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          maxLength: 2048
+
+    DownloadLinkResponse:
+      type: object
+      properties:
+        link:
+          type: string
+      required:
+        - link
 
   securitySchemes:
     PublicAuth:
