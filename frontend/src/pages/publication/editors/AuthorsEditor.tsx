@@ -46,7 +46,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
       authorStore.firstName = user.firstName!;
       authorStore.lastName = user.lastName!;
       authorStore.email = user.email!;
-      authorStore.id = user.id;
+      authorStore.userId = user.id;
     } else {
       const unconfirmedAuthor = author as UnconfirmedAuthor;
       authorStore.firstName = unconfirmedAuthor.firstName;
@@ -265,7 +265,10 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
         </DialogContent>
         <DialogActions>
           <SpaceBetweenWrap>
-            {(authorStore.isNew && <div />) || (
+            {((authorStore.isNew ||
+              authorStore.userId === props.publicationStore.creator?.id) && (
+              <div />
+            )) || (
               <IconButton
                 onClick={() => {
                   setDeleteDialogOpen(true);

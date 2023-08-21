@@ -1636,6 +1636,7 @@ components:
       required:
         - id
         - status
+        - creator
         - creationTime
 
     PublicationsResponse:

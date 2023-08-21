@@ -31,7 +31,7 @@ export class PublicationStore {
   title = '';
   researchArea = '';
 
-  creator?: UserInfo;
+  creator: UserInfo | undefined;
   predictedGoalsEnabled = false;
   methodEnabled = false;
   objectOfStudyEnabled = false;
@@ -384,9 +384,6 @@ export class PublicationStore {
           if (publication.title) {
             this.title = publication.title;
           }
-          if (publication.creator) {
-            this.creator = publication.creator;
-          }
           if (publication.researchArea) {
             this.researchArea = publication.researchArea;
           }
@@ -436,6 +433,7 @@ export class PublicationStore {
           if (publication.status !== PublicationStatus.PUBLISHED) {
             this.viewMode = ViewMode.EDIT;
           }
+          this.creator = publication.creator;
           this.authorsEnabled =
             this.confirmedAuthors.length + this.unconfirmedAuthors.length > 1;
         })
