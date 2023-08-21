@@ -1,12 +1,13 @@
 import styled from '@emotion/styled';
 import { LoadingButton } from '@mui/lab';
+import { Tab } from '@mui/material';
 
-export const Parent = styled('div')`
+export const Parent = styled.div`
   width: 100%;
   padding-bottom: 40px;
 `;
 
-export const FlexHeader = styled('div')`
+export const FlexHeader = styled.div`
   display: flex;
   padding: 12px 32px;
   margin-bottom: 40px;
@@ -19,23 +20,23 @@ export const FlexHeader = styled('div')`
   z-index: 10;
 `;
 
-export const FlexHeaderRight = styled('div')`
+export const FlexHeaderRight = styled.div`
   margin-left: auto;
   display: flex;
 `;
 
-export const FlexBodyCenter = styled('div')`
+export const FlexBodyCenter = styled.div`
   display: flex;
   justify-content: center;
 `;
 
-export const FlexBody = styled('div')`
-  width: 580px;
+export const FlexBody = styled.div`
+  width: 680px;
   padding-left: 40px;
   padding-right: 40px;
 `;
 
-export const Logo = styled('div')`
+export const Logo = styled.div`
   cursor: pointer;
   display: flex;
 `;
@@ -44,8 +45,24 @@ export const FullWidthButton = styled(LoadingButton)`
   width: 100%;
 `;
 
-export const Header = styled('div')`
+export const Header = styled.div`
   font-weight: 700;
   font-size: 48px;
   margin-bottom: 24px;
+`;
+
+export const HeightElement = styled('div')<{ value?: string }>`
+  height: ${(props) => props.value ?? '0px'};
+`;
+
+export const CustomTab = styled(Tab)`
+  color: var(--text-secondary, #68676e);
+  font-feature-settings: 'clig' off, 'liga' off;
+  /* components/button-large */
+  font-family: Roboto;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 26px; /* 144.444% */
+  letter-spacing: 0.46px;
 `;

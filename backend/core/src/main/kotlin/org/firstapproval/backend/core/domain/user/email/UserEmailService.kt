@@ -65,4 +65,8 @@ class UserEmailService(
     fun existsByEmail(email: String): Boolean {
         return userRepository.existsByEmail(email)
     }
+
+    fun existsByUsername(username: String): Boolean {
+        return userRepository.existsByEmail(username)
+    }
 }

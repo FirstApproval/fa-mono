@@ -1,7 +1,7 @@
 env:
   browser: false
-  es2021: true,
-  node: true
+  es2021: false,
+  node: false
 extends:
   - prettier
   - standard-with-typescript
@@ -25,5 +25,15 @@ rules: {
   "n/no-callback-literal": "off",
   "@typescript-eslint/indent": "off",
   "@typescript-eslint/no-non-null-assertion": "off",
-  "no-debugger": "off"
+  "no-debugger": "off",
+  "max-len": [
+    "error",
+    {
+      "code": 140,
+      "ignoreComments": true,
+      "ignoreUrls": true,
+      "ignoreStrings": true,
+      "ignoreTemplateLiterals": true
+    }
+  ]
 }

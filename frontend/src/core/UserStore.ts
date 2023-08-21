@@ -1,12 +1,13 @@
-import { makeAutoObservable, reaction, runInAction } from 'mobx';
+import { makeAutoObservable, observable, reaction, runInAction } from 'mobx';
 import { userService } from './service';
 import { type GetMeResponse } from '../apis/first-approval-api';
 import { authStore } from './auth';
 
 export class UserStore {
   user: GetMeResponse | undefined = undefined;
+  editableUser: GetMeResponse | undefined = undefined;
   constructor() {
-    makeAutoObservable(this);
+    makeAutoObservable(this, { user: observable });
     reaction(
       () => authStore.token,
       (token) => {
@@ -18,10 +19,11 @@ export class UserStore {
     );
   }
 
-  private requestUserData(): void {
+  public requestUserData(): void {
     void userService.getMe().then((response) => {
       runInAction(() => {
         this.user = response.data;
+        this.editableUser = response.data;
       });
     });
   }

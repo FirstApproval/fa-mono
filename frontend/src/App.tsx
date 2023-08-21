@@ -48,8 +48,8 @@ const App: FunctionComponent = observer(() => {
               publicationTitle={routerStore.payload.publicationTitle}
             />
           )}
-          {page === Page.PROFILE && <ProfilePage />}
-          {page === Page.ACCOUNT && <AccountPage />}
+          {page === Page.PROFILE && <ProfilePage key={routerStore.key} />}
+          {page === Page.ACCOUNT && <AccountPage key={routerStore.key} />}
           {page === Page.SIGN_IN && (
             <SignInPage
               store={signInStore}
