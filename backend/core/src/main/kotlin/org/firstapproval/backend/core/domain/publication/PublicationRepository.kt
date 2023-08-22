@@ -11,4 +11,6 @@ interface PublicationRepository : JpaRepository<Publication, UUID> {
     fun findAllByStatusAndCreatorId(publicationStatus: PublicationStatus, creatorId: UUID, page: Pageable): Page<Publication>
 
     fun findAllByAccessTypeAndIsFeatured(accessType: AccessType, isFeatured: Boolean, page: Pageable): Page<Publication>
+
+    fun findAllByStatusAndAccessType(status: PublicationStatus, accessType: AccessType, page: Pageable): Page<Publication>
 }
