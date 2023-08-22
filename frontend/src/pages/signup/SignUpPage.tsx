@@ -1,4 +1,4 @@
-import { type FunctionComponent, useState } from 'react';
+import React, { type FunctionComponent, useState } from 'react';
 import {
   Alert,
   Button,
@@ -24,6 +24,7 @@ import {
 } from '../common.styled';
 import { validateEmail } from 'src/util/emailUtil';
 import { routerStore } from '../../core/router';
+import logo from '../../assets/logo.svg';
 
 interface SignUpPageProps {
   store: SignUpStore;
@@ -64,7 +65,9 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
     return (
       <Parent>
         <FlexHeader>
-          <Logo onClick={routerStore.goHome}>First Approval</Logo>
+          <Logo onClick={routerStore.goHome}>
+            <img src={logo} />
+          </Logo>
           <FlexHeaderRight>
             <Button
               variant="outlined"

@@ -37,6 +37,7 @@ export const FlexBody = styled('div')`
 
 export const Logo = styled('div')`
   cursor: pointer;
+  display: flex;
 `;
 
 export const FullWidthButton = styled(LoadingButton)`

@@ -1,4 +1,4 @@
-import { type FunctionComponent, useEffect } from 'react';
+import React, { type FunctionComponent, useEffect } from 'react';
 import { Alert, Button, Link, Snackbar, TextField } from '@mui/material';
 import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
@@ -17,6 +17,7 @@ import {
 } from '../common.styled';
 import { routerStore } from '../../core/router';
 import { authStore } from '../../core/auth';
+import logo from '../../assets/logo.svg';
 
 interface EmailVerificationPageProps {
   store: SignUpStore;
@@ -48,7 +49,9 @@ export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps
     return (
       <Parent>
         <FlexHeader>
-          <Logo onClick={routerStore.goHome}>First Approval</Logo>
+          <Logo onClick={routerStore.goHome}>
+            <img src={logo} />
+          </Logo>
           <FlexHeaderRight>
             <Button
               variant="outlined"
