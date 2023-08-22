@@ -9,8 +9,8 @@ export const RecommendedPublication = (props: {
   publication: Publication;
 }): ReactElement | null => {
   const { publication } = props;
-  const { title, authors } = publication;
-  const author = authors?.[0];
+  const { title, confirmedAuthors } = publication;
+  const author = confirmedAuthors?.[0];
 
   if (!author) return null;
 
@@ -20,11 +20,11 @@ export const RecommendedPublication = (props: {
         <FlexWrap>
           <AvatarWrap>
             <Avatar sx={{ width: 24, height: 24 }}>
-              {getInitials(author.firstName, author.lastName)}
+              {getInitials(author.user.firstName, author.user.lastName)}
             </Avatar>
           </AvatarWrap>
           <div>
-            {author.firstName} {author.lastName}
+            {author.user.firstName} {author.user.lastName}
           </div>
         </FlexWrap>
         <NameWrap>{title}</NameWrap>

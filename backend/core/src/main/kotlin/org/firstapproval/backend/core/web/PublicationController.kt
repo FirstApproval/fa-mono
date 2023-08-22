@@ -38,7 +38,7 @@ class PublicationController(
     override fun getMyPublications(
         status: PublicationStatus, page: Int, pageSize: Int
     ): ResponseEntity<PublicationsResponse> {
-        val publications = publicationService.getUserPublications(authHolderService.user, status, page, pageSize)
+        val publications = publicationService.getCreatorPublications(authHolderService.user, status, page, pageSize)
         return ok().body(publications)
     }
 

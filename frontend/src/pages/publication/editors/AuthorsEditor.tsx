@@ -1,6 +1,10 @@
 import { observer } from 'mobx-react-lite';
 import React, { type ReactElement, useEffect, useState } from 'react';
-import { type Author } from '../../../apis/first-approval-api';
+import {
+  type Author,
+  type ConfirmedAuthor,
+  type UnconfirmedAuthor
+} from '../../../apis/first-approval-api';
 import { AuthorEditorStore } from '../store/AuthorEditorStore';
 import { AuthorElement } from './element/AuthorElement';
 import { userService } from '../../../core/service';
@@ -33,15 +37,25 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
   const [authorStore] = useState(() => new AuthorEditorStore());
 
   const setEditAuthorVisible = (
-    author: Author,
-    isUnconfirmed: boolean,
+    author: ConfirmedAuthor | UnconfirmedAuthor,
+    isConfirmed: boolean,
     index?: number
   ): void => {
-    authorStore.email = author.email;
-    authorStore.fistName = author.firstName;
-    authorStore.lastName = author.lastName;
-    authorStore.shortBio = author.shortBio;
-    authorStore.isUnconfirmed = isUnconfirmed;
+    if (isConfirmed) {
+      const user = (author as ConfirmedAuthor).user;
+      authorStore.firstName = user.firstName!;
+      authorStore.lastName = user.lastName!;
+      authorStore.email = user.email!;
+      authorStore.userId = user.id;
+    } else {
+      const unconfirmedAuthor = author as UnconfirmedAuthor;
+      authorStore.firstName = unconfirmedAuthor.firstName;
+      authorStore.lastName = unconfirmedAuthor.lastName;
+      authorStore.email = unconfirmedAuthor.email;
+    }
+    authorStore.isConfirmed = isConfirmed;
+    authorStore.id = author.id;
+    authorStore.shortBio = author.shortBio ?? '';
     authorStore.isNew = false;
     authorStore.index = index;
     setAddAuthorVisible(true);
@@ -82,28 +96,32 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
     <>
       <ContentEditorWrap>
         <LabelWrap>Authors</LabelWrap>
-        {props.publicationStore.confirmedAuthors.map((author, index) => {
-          return (
-            <AuthorElement
-              key={author.email}
-              author={author}
-              isUnconfirmed={false}
-              index={index}
-              setEditAuthorVisible={setEditAuthorVisible}
-            />
-          );
-        })}
-        {props.publicationStore.unconfirmedAuthors.map((author, index) => {
-          return (
-            <AuthorElement
-              key={author.email}
-              author={author}
-              isUnconfirmed={true}
-              index={index}
-              setEditAuthorVisible={setEditAuthorVisible}
-            />
-          );
-        })}
+        {props.publicationStore.confirmedAuthors.map(
+          (confirmedAuthor, index) => {
+            return (
+              <AuthorElement
+                key={confirmedAuthor.id}
+                author={confirmedAuthor}
+                isConfirmed={true}
+                index={index}
+                setEditAuthorVisible={setEditAuthorVisible}
+              />
+            );
+          }
+        )}
+        {props.publicationStore.unconfirmedAuthors.map(
+          (unconfirmedAuthor, index) => {
+            return (
+              <AuthorElement
+                key={unconfirmedAuthor.id}
+                author={unconfirmedAuthor}
+                isConfirmed={false}
+                index={index}
+                setEditAuthorVisible={setEditAuthorVisible}
+              />
+            );
+          }
+        )}
         {!props.publicationStore.isReadonly && !searchVisible && (
           <Button
             variant={'outlined'}
@@ -165,7 +183,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
               startIcon={<PersonAdd />}
               onClick={() => {
                 authorStore.isNew = true;
-                authorStore.isUnconfirmed = true;
+                authorStore.isConfirmed = false;
                 setAddAuthorVisible(true);
               }}>
               Add manually
@@ -182,53 +200,75 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
           {authorStore.isNew ? 'Add author' : 'Edit author'}
         </DialogTitle>
         <DialogContent>
-          <AddAuthorWrap>
-            <FullWidthTextField
-              autoFocus
-              value={authorStore.email}
-              onChange={(e) => {
-                authorStore.email = e.currentTarget.value;
-              }}
-              disabled={!authorStore.isUnconfirmed}
-              label="Email"
-              variant="outlined"
-            />
-            <OneLineWrap>
-              <MarginTextField
-                value={authorStore.fistName}
-                onChange={(e) => {
-                  authorStore.fistName = e.currentTarget.value;
-                }}
-                disabled={!authorStore.isUnconfirmed}
-                label="First name"
-                variant="outlined"
-              />
+          {!authorStore.isConfirmed && (
+            <AddAuthorWrap>
               <FullWidthTextField
-                value={authorStore.lastName}
+                autoFocus
+                value={authorStore.email}
                 onChange={(e) => {
-                  authorStore.lastName = e.currentTarget.value;
+                  authorStore.email = e.currentTarget.value;
                 }}
-                disabled={!authorStore.isUnconfirmed}
-                label="Last name"
+                disabled={authorStore.isConfirmed}
+                label="Email"
                 variant="outlined"
               />
-            </OneLineWrap>
-            <FullWidthTextField
-              multiline
-              minRows={4}
-              maxRows={4}
-              value={authorStore.shortBio}
-              onChange={(e) => {
-                authorStore.shortBio = e.currentTarget.value;
-              }}
-              label="Short bio"
-              variant="outlined"
-            />
-          </AddAuthorWrap>
+              <OneLineWrap>
+                <MarginTextField
+                  value={authorStore.firstName}
+                  onChange={(e) => {
+                    authorStore.firstName = e.currentTarget.value;
+                  }}
+                  disabled={authorStore.isConfirmed}
+                  label="First name"
+                  variant="outlined"
+                />
+                <FullWidthTextField
+                  value={authorStore.lastName}
+                  onChange={(e) => {
+                    authorStore.lastName = e.currentTarget.value;
+                  }}
+                  disabled={authorStore.isConfirmed}
+                  label="Last name"
+                  variant="outlined"
+                />
+              </OneLineWrap>
+              <FullWidthTextField
+                multiline
+                minRows={4}
+                maxRows={4}
+                value={authorStore.shortBio}
+                onChange={(e) => {
+                  authorStore.shortBio = e.currentTarget.value;
+                }}
+                label="Short bio"
+                variant="outlined"
+              />
+            </AddAuthorWrap>
+          )}
+          {authorStore.isConfirmed && (
+            <EditConfirmedAuthor>
+              {/* dirty hack to show user name and email without possibility to edit any fields except of short bio */}
+              <AuthorElement author={authorStore} isConfirmed={false} />
+              <FullWidthTextField
+                multiline
+                minRows={4}
+                maxRows={4}
+                value={authorStore.shortBio}
+                onChange={(e) => {
+                  authorStore.shortBio = e.currentTarget.value;
+                }}
+                label="Short bio"
+                variant="outlined"
+              />
+            </EditConfirmedAuthor>
+          )}
         </DialogContent>
         <DialogActions>
           <SpaceBetweenWrap>
-            {(authorStore.isNew && <div />) || (
+            {((authorStore.isNew ||
+              authorStore.userId === props.publicationStore.creator?.id) && (
+              <div />
+            )) || (
               <IconButton
                 onClick={() => {
                   setDeleteDialogOpen(true);
@@ -252,12 +292,12 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                         }
                       });
                   }
-                  if (authorStore.isUnconfirmed) {
+                  if (authorStore.isConfirmed) {
+                    props.publicationStore.editConfirmedAuthor(authorStore);
+                  } else {
                     props.publicationStore.addOrEditUnconfirmedAuthor(
                       authorStore
                     );
-                  } else {
-                    props.publicationStore.editConfirmedAuthor(authorStore);
                   }
                   handleCloseAddAuthor();
                 }}>
@@ -289,7 +329,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
             </Button>
             <Button
               onClick={() => {
-                props.publicationStore.deletedAuthor(authorStore);
+                props.publicationStore.deleteAuthor(authorStore);
                 authorStore.clean();
                 setDeleteDialogOpen(false);
                 setAddAuthorVisible(false);
@@ -308,6 +348,13 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
 const AddAuthorWrap = styled.div`
   min-width: 488px;
   margin-top: 8px;
+`;
+
+const EditConfirmedAuthor = styled.div`
+  min-width: 488px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
 `;
 
 const OneLineWrap = styled.div`
