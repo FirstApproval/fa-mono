@@ -5,6 +5,7 @@ import org.firstapproval.api.server.model.*
 import org.firstapproval.api.server.model.UploadType.RENAME
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
+import org.firstapproval.backend.core.config.security.userOrNull
 import org.firstapproval.backend.core.domain.publication.PublicationFileService
 import org.springframework.core.io.InputStreamResource
 import org.springframework.core.io.Resource
@@ -23,7 +24,7 @@ class PublicationFileController(
 ) : FileApi {
 
     override fun getPublicationFiles(publicationId: UUID, dirPath: String): ResponseEntity<List<PublicationFile>> {
-        val files = publicationFileService.getPublicationFiles(authHolderService.user, publicationId, dirPath)
+        val files = publicationFileService.getPublicationFiles(authHolderService.userOrNull(), publicationId, dirPath)
         return ok(files.map {
             PublicationFile()
                 .id(it.id)
@@ -80,7 +81,7 @@ class PublicationFileController(
     }
 
     override fun downloadPublicationFile(fileId: UUID): ResponseEntity<Resource> {
-        val file = publicationFileService.getPublicationFileWithContent(fileId)
+        val file = publicationFileService.getPublicationFileWithContent(authHolderService.user, fileId)
         val contentType: MediaType = try {
             MediaType.parseMediaType(guessContentTypeFromName(file.name))
         } catch (ex: Exception) {

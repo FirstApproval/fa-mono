@@ -4,13 +4,13 @@ import org.firstapproval.api.server.PublicationApi
 import org.firstapproval.api.server.model.AccessType
 import org.firstapproval.api.server.model.CreatePublicationResponse
 import org.firstapproval.api.server.model.Publication
-import org.firstapproval.api.server.model.PublicationContentStatus
 import org.firstapproval.api.server.model.PublicationEditRequest
 import org.firstapproval.api.server.model.PublicationStatus
 import org.firstapproval.api.server.model.SearchPublicationsResponse
 import org.firstapproval.api.server.model.PublicationsResponse
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
+import org.firstapproval.backend.core.config.security.userOrNull
 import org.firstapproval.backend.core.domain.ipfs.IpfsClient
 import org.firstapproval.backend.core.domain.publication.PublicationService
 import org.firstapproval.backend.core.domain.publication.toApiObject
@@ -58,16 +58,22 @@ class PublicationController(
 
     override fun searchPublications(text: String, limit: Int, page: Int): ResponseEntity<SearchPublicationsResponse> {
         val pageResult = publicationService.search(text, limit, page)
+        val dbModels = publicationService.findAllByIdIn(pageResult.content.map { it.id })
         return ok().body(
             SearchPublicationsResponse()
                 .pageNum(pageResult.number)
                 .isLast(pageResult.isLast)
-                .items(pageResult.map { it.toApiObject() }.toList())
+                .items(
+                    pageResult.map { elasticModel ->
+                        val dbModel = dbModels.first { it.id == elasticModel.id }
+                        elasticModel.toApiObject(dbModel.downloadsCount, dbModel.viewsCount)
+                    }.toList()
+                )
         )
     }
 
     override fun getPublication(id: UUID): ResponseEntity<Publication> {
-        val pub = publicationService.get(authHolderService.user, id)
+        val pub = publicationService.get(authHolderService.userOrNull(), id)
 //        val contentStatus = pub.contentId?.let { contentId ->
 //            val publicationArchiveInfo = ipfsClient.getInfo(contentId)
 //            publicationArchiveInfo.availability.let { PublicationContentStatus.valueOf(it.name) }

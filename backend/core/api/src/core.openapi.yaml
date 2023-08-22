@@ -814,7 +814,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/PublicationFile'
       security:
-        - TokenAuth: [ ]
+        - PublicAuth: [ ]
       operationId: getPublicationFiles
       tags: [ file ]
     post:

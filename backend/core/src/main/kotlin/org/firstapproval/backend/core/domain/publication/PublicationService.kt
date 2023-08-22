@@ -66,6 +66,9 @@ class PublicationService(
         return publication
     }
 
+    @Transactional(readOnly = true)
+    fun findAllByIdIn(ids: List<UUID>) = publicationRepository.findAllByIdIn(ids)
+
     @Transactional
     fun edit(user: User, id: UUID, request: PublicationEditRequest) {
         val publication = get(user, id)
@@ -175,6 +178,9 @@ class PublicationService(
     fun submitPublication(user: User, id: UUID, accessType: AccessType) {
         val publication = publicationRepository.getReferenceById(id)
         checkAccessToPublication(user, publication)
+        if (publication.status == PUBLISHED) {
+            throw IllegalArgumentException()
+        }
         publication.status = READY_FOR_PUBLICATION
         publication.accessType = accessType
     }
@@ -222,10 +228,10 @@ class PublicationService(
     }
 
     @Transactional
-    fun get(user: User, id: UUID): Publication {
+    fun get(user: User?, id: UUID): Publication {
         val publication = publicationRepository.getReferenceById(id)
         if (publication.accessType != OPEN) {
-            checkAccessToPublication(user, publication)
+            checkAccessToPublication(user!!, publication)
         }
         return publication
     }
@@ -294,12 +300,14 @@ fun Publication.toApiObject() = PublicationApiObject().also { publicationApiMode
     publicationApiModel.predictedGoals = predictedGoals?.map { Paragraph(it) }
     publicationApiModel.confirmedAuthors = confirmedAuthors.map { it.toApiObject() }
     publicationApiModel.unconfirmedAuthors = unconfirmedAuthors.map { it.toApiObject() }
+    publicationApiModel.viewsCount = viewsCount
+    publicationApiModel.downloadsCount = downloadsCount
     publicationApiModel.status = org.firstapproval.api.server.model.PublicationStatus.valueOf(status.name)
     publicationApiModel.accessType = org.firstapproval.api.server.model.AccessType.valueOf(accessType.name)
     publicationApiModel.creationTime = creationTime.toOffsetDateTime()
 }
 
-fun PublicationElastic.toApiObject() = PublicationApiObject().also { publicationApiModel ->
+fun PublicationElastic.toApiObject(viewCount: Long? = null, downloadsCount: Long? = null) = PublicationApiObject().also { publicationApiModel ->
     publicationApiModel.id = id
     publicationApiModel.title = title
     publicationApiModel.description = description?.map { Paragraph(it) }
@@ -315,6 +323,8 @@ fun PublicationElastic.toApiObject() = PublicationApiObject().also { publication
     publicationApiModel.predictedGoals = predictedGoals?.map { Paragraph(it) }
     publicationApiModel.status = PublicationStatusApiObject.valueOf(status.name)
     publicationApiModel.accessType = AccessTypeApiObject.valueOf(accessType.name)
+    publicationApiModel.downloadsCount = downloadsCount
+    publicationApiModel.viewsCount = viewCount
     publicationApiModel.creationTime = creationTime.toOffsetDateTime()
 }
 
