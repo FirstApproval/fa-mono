@@ -4,6 +4,7 @@ import { Divider } from '@mui/material';
 import { type Publication } from '../../apis/first-approval-api';
 import { routerStore } from '../../core/router';
 import { Page } from '../../core/RouterStore';
+import { Download, RemoveRedEyeOutlined } from '@mui/icons-material';
 
 export const PublicationBox = (props: {
   publication: Publication;
@@ -26,7 +27,15 @@ export const PublicationBox = (props: {
           title={publication.description?.[0]?.text ?? ''}
         />
       </LinkWrap>
-      <PublicationAreaBox title={publication.researchArea ?? ''} />
+      <FlexWrap>
+        <PublicationAreaBox title={publication.researchArea ?? ''} />
+        <Footer>
+          <RemoveRedEyeOutlined fontSize={'small'} />
+          {publication.viewsCount}
+          <DownloadWrap fontSize={'small'} />
+          {publication.downloadsCount}
+        </Footer>
+      </FlexWrap>
       <DividerWrap />
     </>
   );
@@ -80,4 +89,22 @@ const PublicationLabel = styled.div`
 
 const LinkWrap = styled.div`
   cursor: pointer;
+`;
+
+const FlexWrap = styled.div`
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+`;
+
+const Footer = styled.div`
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+
+  color: var(--text-disabled, rgba(4, 0, 54, 0.38));
+`;
+
+const DownloadWrap = styled(Download)`
+  margin-left: 24px;
 `;

@@ -1,4 +1,4 @@
-import { type FunctionComponent } from 'react';
+import React, { type FunctionComponent } from 'react';
 import {
   Alert,
   Button,
@@ -22,6 +22,7 @@ import {
 import { routerStore } from '../../core/router';
 import { type SignInStore } from './SignInStore';
 import { observer } from 'mobx-react-lite';
+import logo from '../../assets/logo.svg';
 
 interface SignInPageProps {
   store: SignInStore;
@@ -36,7 +37,9 @@ export const SignInPage: FunctionComponent<SignInPageProps> = observer(
     return (
       <Parent>
         <FlexHeader>
-          <Logo>First Approval</Logo>
+          <Logo onClick={routerStore.goHome}>
+            <img src={logo} />
+          </Logo>
           <FlexHeaderRight>
             <Button
               variant="outlined"

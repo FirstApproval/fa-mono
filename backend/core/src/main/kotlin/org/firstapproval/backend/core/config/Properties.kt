@@ -29,6 +29,7 @@ class Properties {
     class JwtProperties {
         lateinit var signature: String
         lateinit var ttl: Duration
+        lateinit var publicationArchiveTokenTtl: Duration
     }
 
     @Component

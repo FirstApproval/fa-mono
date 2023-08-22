@@ -1,4 +1,4 @@
-import { type FunctionComponent, useState } from 'react';
+import React, { type FunctionComponent, useState } from 'react';
 import { Button, TextField } from '@mui/material';
 import styled from '@emotion/styled';
 import { ArrowForward } from '@mui/icons-material';
@@ -15,6 +15,7 @@ import {
   Header
 } from '../common.styled';
 import { routerStore } from '../../core/router';
+import logo from '../../assets/logo.svg';
 
 interface EnterNamePageProps {
   store: SignUpStore;
@@ -51,7 +52,9 @@ export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
     return (
       <Parent>
         <FlexHeader>
-          <Logo onClick={routerStore.goHome}>First Approval</Logo>
+          <Logo onClick={routerStore.goHome}>
+            <img src={logo} />
+          </Logo>
           <FlexHeaderRight>
             <Button
               variant="outlined"
