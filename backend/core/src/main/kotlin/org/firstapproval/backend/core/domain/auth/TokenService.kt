@@ -1,6 +1,8 @@
 package org.firstapproval.backend.core.domain.auth
 
 import io.jsonwebtoken.Claims
+import org.firstapproval.backend.core.config.Properties
+import org.firstapproval.backend.core.config.Properties.JwtProperties
 import org.firstapproval.backend.core.config.security.AuthToken
 import org.firstapproval.backend.core.config.security.JwtService
 import org.firstapproval.backend.core.domain.user.OauthType
@@ -14,7 +16,8 @@ import java.util.UUID.fromString
 class TokenService(
     private val oauthUserSuppliers: Map<OauthType, OauthUserSupplier>,
     private val userService: UserService,
-    private val jwtService: JwtService
+    private val jwtService: JwtService,
+    private val jwtProperties: JwtProperties,
 ) {
 
     fun exchangeOauthToken(code: String, type: OauthType): String {
@@ -46,7 +49,7 @@ class TokenService(
                 "sub" to userId,
                 "publicationId" to publicationId,
             ),
-            Duration.parse("PT24H")
+            jwtProperties.publicationArchiveTokenTtl
         )
     }
 
