@@ -72,7 +72,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
                 <img src={logo} />
               </IconButton>
               <DraftedBy>
-                Drafted by
+                Draft by
                 {/* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */}
                 {` ${publicationStore.creator?.firstName} ${publicationStore.creator?.lastName}`}
               </DraftedBy>
@@ -267,7 +267,8 @@ const ToolbarContainer = styled.div`
   align-items: center;
   justify-content: space-between;
   height: 64px;
-  width: 55%;
+  width: 100%;
+  max-width: 988px;
   padding: 0 16px;
   display: flex;
 `;

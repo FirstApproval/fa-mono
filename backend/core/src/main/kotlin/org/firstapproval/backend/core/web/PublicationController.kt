@@ -42,7 +42,7 @@ class PublicationController(
     override fun getMyPublications(
         status: PublicationStatus, page: Int, pageSize: Int
     ): ResponseEntity<PublicationsResponse> {
-        val publications = publicationService.getUserPublications(authHolderService.user, status, page, pageSize)
+        val publications = publicationService.getCreatorPublications(authHolderService.user, status, page, pageSize)
         return ok().body(publications)
     }
 
@@ -68,11 +68,11 @@ class PublicationController(
 
     override fun getPublication(id: UUID): ResponseEntity<Publication> {
         val pub = publicationService.get(authHolderService.user, id)
-        val contentStatus = pub.contentId?.let { contentId ->
-            val publicationArchiveInfo = ipfsClient.getInfo(contentId)
-            publicationArchiveInfo.availability.let { PublicationContentStatus.valueOf(it.name) }
-        }
-        val publicationResponse = pub.toApiObject().contentStatus(contentStatus)
+//        val contentStatus = pub.contentId?.let { contentId ->
+//            val publicationArchiveInfo = ipfsClient.getInfo(contentId)
+//            publicationArchiveInfo.availability.let { PublicationContentStatus.valueOf(it.name) }
+//        }
+        val publicationResponse = pub.toApiObject()//.contentStatus(contentStatus)
         return ok().body(publicationResponse)
     }
 

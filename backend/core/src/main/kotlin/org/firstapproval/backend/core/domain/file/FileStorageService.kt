@@ -14,6 +14,7 @@ const val FILES = "files"
 const val SAMPLE_FILES = "sample-files"
 const val ARCHIVED_PUBLICATION_FILES = "archived-publication-files"
 const val ARCHIVED_PUBLICATION_SAMPLE_FILES = "archived-publication-sample-files"
+const val PROFILE_IMAGES = "profile-images"
 
 class FileStorageService(private val amazonS3: AmazonS3) {
 

@@ -1,5 +1,7 @@
 package org.firstapproval.backend.core.domain.publication
 
+import org.firstapproval.api.server.model.*
+import org.firstapproval.backend.core.domain.ipfs.*
 import org.firstapproval.api.server.model.Author
 import org.firstapproval.api.server.model.Paragraph
 import org.firstapproval.api.server.model.PublicationEditRequest
@@ -21,8 +23,7 @@ import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLI
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthorRepository
-import org.firstapproval.backend.core.domain.user.UnconfirmedUser
-import org.firstapproval.backend.core.domain.user.UnconfirmedUserRepository
+import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthor
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
 import org.firstapproval.backend.core.elastic.PublicationElastic
@@ -36,14 +37,17 @@ import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
-import java.util.UUID
+import java.util.*
 import java.util.UUID.randomUUID
+import org.firstapproval.api.server.model.ConfirmedAuthor as ConfirmedAuthorApiObject
+import org.firstapproval.api.server.model.UnconfirmedAuthor as UnconfirmedAuthorApiObject
 import org.firstapproval.api.server.model.Publication as PublicationApiObject
+import org.firstapproval.api.server.model.PublicationStatus as PublicationStatusApiObject
+import org.firstapproval.api.server.model.AccessType as AccessTypeApiObject
 
 @Service
 class PublicationService(
     private val publicationRepository: PublicationRepository,
-    private val unconfirmedUserRepository: UnconfirmedUserRepository,
     private val confirmedAuthorRepository: ConfirmedAuthorRepository,
     private val userRepository: UserRepository,
     private val downloadLinkRepository: DownloadLinkRepository,
@@ -99,32 +103,32 @@ class PublicationService(
                 if (confirmedAuthors.values.none { it.userId == publication.creator.id }) {
                     throw RecordConflictException("Creator cannot be deleted from authors list")
                 }
-                val confirmedAuthors = confirmedAuthors.values.map { confirmedAuthor ->
-                    publication.confirmedAuthors.find { it.user.id == confirmedAuthor.userId }
-                        ?.also { it.shortBio = confirmedAuthor.shortBio } ?: ConfirmedAuthor(
+                val confirmedPublicationAuthors = confirmedAuthors.values.map { confirmedAuthor ->
+                    ConfirmedAuthor(
+                        id = confirmedAuthor.id ?:
                         randomUUID(),
-                        confirmedAuthorsById[confirmedAuthor.userId].require(),
-                        publication,
-                        confirmedAuthor.shortBio
+                        user =confirmedAuthorsById[confirmedAuthor.userId].require(),
+                        publication =publication,
+                        shortBio =confirmedAuthor.shortBio
                     )
                 }
                 publication.confirmedAuthors.clear()
-                publication.confirmedAuthors.addAll(confirmedAuthors)
+                publication.confirmedAuthors.addAll(confirmedPublicationAuthors)
             }
             if (unconfirmedAuthors?.edited == true) {
-                val unconfirmedCoauthorsList = unconfirmedUserRepository.saveAllAndFlush(unconfirmedAuthors.values
-                    .map {
-                        UnconfirmedUser(
-                            id = randomUUID(),
-                            email = it.email,
-                            firstName = it.firstName,
-                            middleName = it.middleName,
-                            lastName = it.lastName,
-                            shortBio = it.shortBio
-                        )
-                    }
-                )
-                publication.unconfirmedAuthors = unconfirmedCoauthorsList
+                val unconfirmedPublicationAuthors = unconfirmedAuthors.values.map { unconfirmedAuthor ->
+                    UnconfirmedAuthor(
+                        id = unconfirmedAuthor.id ?: randomUUID(),
+                        email = unconfirmedAuthor.email,
+                        firstName = unconfirmedAuthor.firstName,
+                        middleName = unconfirmedAuthor.middleName,
+                        lastName = unconfirmedAuthor.lastName,
+                        shortBio = unconfirmedAuthor.shortBio,
+                        publication = publication
+                    )
+                }
+                publication.unconfirmedAuthors.clear()
+                publication.unconfirmedAuthors.addAll(unconfirmedPublicationAuthors)
             }
         }
         publicationRepository.saveAndFlush(publication)
@@ -247,9 +251,9 @@ class PublicationService(
     }
 
     @Transactional
-    fun getUserPublications(
+    fun getCreatorPublications(
         user: User,
-        status: org.firstapproval.api.server.model.PublicationStatus,
+        status: PublicationStatusApiObject,
         page: Int,
         pageSize: Int,
     ): PublicationsResponse {
@@ -265,9 +269,9 @@ class PublicationService(
     }
 }
 
-fun Publication.toApiObject() = PublicationApiObject().also {
-    it.id = id
-    it.creator = UserInfo()
+fun Publication.toApiObject() = PublicationApiObject().also { publicationApiModel ->
+    publicationApiModel.id = id
+    publicationApiModel.creator = UserInfo()
         .id(creator.id)
         .firstName(creator.firstName)
         .lastName(creator.lastName)
@@ -275,35 +279,27 @@ fun Publication.toApiObject() = PublicationApiObject().also {
         .email(creator.email)
         .username(creator.username)
         .selfInfo(creator.selfInfo)
-    it.title = title
-    it.description = description?.map { Paragraph(it) }
-    it.researchArea = researchArea
-    it.grantOrganizations = grantOrganizations?.map { Paragraph(it) }
-    it.relatedArticles = relatedArticles?.map { Paragraph(it) }
-    it.tags = tags?.map { Paragraph(it) }
-    it.objectOfStudyTitle = objectOfStudyTitle
-    it.objectOfStudyDescription = objectOfStudyDescription?.map { Paragraph(it) }
-    it.software = software?.map { Paragraph(it) }
-    it.methodTitle = methodTitle
-    it.publicationTime = publicationTime?.toOffsetDateTime()
-    it.methodDescription = methodDescription?.map { Paragraph(it) }
-    it.predictedGoals = predictedGoals?.map { Paragraph(it) }
-    it.authors = confirmedAuthors.map { author: ConfirmedAuthor ->
-        Author(
-            author.user.firstName,
-            author.user.middleName,
-            author.user.lastName,
-            author.user.email,
-            author.shortBio
-        ).id(author.user.id.toString())
-    } +
-        unconfirmedAuthors.map { user -> Author(user.firstName, user.middleName, user.lastName, user.email, user.shortBio) }
-    it.status = org.firstapproval.api.server.model.PublicationStatus.valueOf(status.name)
-    it.accessType = org.firstapproval.api.server.model.AccessType.valueOf(accessType.name)
-    it.creationTime = creationTime.toOffsetDateTime()
+    publicationApiModel.title = title
+    publicationApiModel.description = description?.map { Paragraph(it) }
+    publicationApiModel.researchArea = researchArea
+    publicationApiModel.grantOrganizations = grantOrganizations?.map { Paragraph(it) }
+    publicationApiModel.relatedArticles = relatedArticles?.map { Paragraph(it) }
+    publicationApiModel.tags = tags?.map { Paragraph(it) }
+    publicationApiModel.objectOfStudyTitle = objectOfStudyTitle
+    publicationApiModel.objectOfStudyDescription = objectOfStudyDescription?.map { Paragraph(it) }
+    publicationApiModel.software = software?.map { Paragraph(it) }
+    publicationApiModel.methodTitle = methodTitle
+    publicationApiModel.publicationTime = publicationTime?.toOffsetDateTime()
+    publicationApiModel.methodDescription = methodDescription?.map { Paragraph(it) }
+    publicationApiModel.predictedGoals = predictedGoals?.map { Paragraph(it) }
+    publicationApiModel.confirmedAuthors = confirmedAuthors.map { it.toApiObject() }
+    publicationApiModel.unconfirmedAuthors = unconfirmedAuthors.map { it.toApiObject() }
+    publicationApiModel.status = org.firstapproval.api.server.model.PublicationStatus.valueOf(status.name)
+    publicationApiModel.accessType = org.firstapproval.api.server.model.AccessType.valueOf(accessType.name)
+    publicationApiModel.creationTime = creationTime.toOffsetDateTime()
 }
 
-fun PublicationElastic.toApiObject() = org.firstapproval.api.server.model.Publication().also { publicationApiModel ->
+fun PublicationElastic.toApiObject() = PublicationApiObject().also { publicationApiModel ->
     publicationApiModel.id = id
     publicationApiModel.title = title
     publicationApiModel.description = description?.map { Paragraph(it) }
@@ -317,8 +313,8 @@ fun PublicationElastic.toApiObject() = org.firstapproval.api.server.model.Public
     publicationApiModel.publicationTime = publicationTime?.toOffsetDateTime()
     publicationApiModel.methodDescription = methodDescription?.map { Paragraph(it) }
     publicationApiModel.predictedGoals = predictedGoals?.map { Paragraph(it) }
-    publicationApiModel.status = org.firstapproval.api.server.model.PublicationStatus.valueOf(status.name)
-    publicationApiModel.accessType = org.firstapproval.api.server.model.AccessType.valueOf(accessType!!.name)
+    publicationApiModel.status = PublicationStatusApiObject.valueOf(status.name)
+    publicationApiModel.accessType = AccessTypeApiObject.valueOf(accessType.name)
     publicationApiModel.creationTime = creationTime.toOffsetDateTime()
 }
 
@@ -342,3 +338,24 @@ fun Publication.toPublicationElastic() =
         creationTime = creationTime,
         publicationTime = publicationTime
     )
+
+fun ConfirmedAuthor.toApiObject() = ConfirmedAuthorApiObject().also {
+    it.id = id
+    it.shortBio = shortBio
+    it.user = Author(
+        user.firstName,
+        user.middleName,
+        user.lastName,
+        user.email,
+        user.selfInfo,
+    ).id(user.id)
+}
+
+fun UnconfirmedAuthor.toApiObject() = UnconfirmedAuthorApiObject().also {
+    it.id = id
+    it.firstName = firstName
+    it.lastName = lastName
+    it.middleName = middleName
+    it.email = email
+    it.shortBio = shortBio
+}

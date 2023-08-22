@@ -1,4 +1,4 @@
-import { type FunctionComponent, useState } from 'react';
+import React, { type FunctionComponent, useState } from 'react';
 import {
   Button,
   CircularProgress,
@@ -23,6 +23,7 @@ import { type RestorePasswordStore } from './RestorePasswordStore';
 import { validateEmail } from 'src/util/emailUtil';
 import { routerStore } from '../../../core/router';
 import { LoadingButton } from '@mui/lab';
+import logo from '../../../assets/logo.svg';
 
 interface RestorePasswordEmailProps {
   store: RestorePasswordStore;
@@ -46,7 +47,9 @@ export const RestorePasswordEmailPage: FunctionComponent<RestorePasswordEmailPro
     return (
       <Parent>
         <FlexHeader>
-          <Logo onClick={routerStore.goHome}>First Approval</Logo>
+          <Logo onClick={routerStore.goHome}>
+            <img src={logo} />
+          </Logo>
           <FlexHeaderRight>
             <Button
               variant="outlined"

@@ -4,4 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
 interface ConfirmedAuthorRepository : JpaRepository<ConfirmedAuthor, UUID> {
+    fun findAllByUserId(userId: UUID): List<ConfirmedAuthor>
 }
