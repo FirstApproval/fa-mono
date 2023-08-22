@@ -1,4 +1,4 @@
-import { type FunctionComponent } from 'react';
+import React, { type FunctionComponent } from 'react';
 import { LinearProgress } from '@mui/material';
 import {
   FlexBody,
@@ -9,12 +9,15 @@ import {
   Parent
 } from './common.styled';
 import { routerStore } from '../core/router';
+import logo from '../assets/logo.svg';
 
 export const LoadingPage: FunctionComponent = () => {
   return (
     <Parent>
       <FlexHeader>
-        <Logo onClick={routerStore.goHome}>First Approval</Logo>
+        <Logo onClick={routerStore.goHome}>
+          <img src={logo} />
+        </Logo>
         <FlexHeaderRight></FlexHeaderRight>
       </FlexHeader>
       <FlexBodyCenter>
