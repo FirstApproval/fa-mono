@@ -23,10 +23,10 @@ class JwtService(
     private val googlePublicKey0 = UrlJwkProvider(URL(oauthProperties.google.certsUrl)).all[0].publicKey
     private val googlePublicKey1 = UrlJwkProvider(URL(oauthProperties.google.certsUrl)).all[1].publicKey
 
-    fun generate(claims: Map<String, Any>): String {
+    fun generate(claims: Map<String, Any>, ttl: Duration = jwtProperties.ttl): String {
         return Jwts.builder()
             .setClaims(claims.toMutableMap())
-            .setExpiration(newExpirationDate(jwtProperties.ttl))
+            .setExpiration(newExpirationDate(ttl))
             .signWith(HS512, jwtProperties.signature.toByteArray())
             .compact()
     }

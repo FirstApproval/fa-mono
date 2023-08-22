@@ -31,9 +31,9 @@ export const PublicationBox = (props: {
         <PublicationAreaBox title={publication.researchArea ?? ''} />
         <Footer>
           <RemoveRedEyeOutlined fontSize={'small'} />
-          123
+          {publication.viewsCount}
           <DownloadWrap fontSize={'small'} />
-          45
+          {publication.downloadsCount}
         </Footer>
       </FlexWrap>
       <DividerWrap />
