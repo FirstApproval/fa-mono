@@ -36,8 +36,6 @@ export const FlexBody = styled('div')`
 `;
 
 export const Logo = styled('div')`
-  font-weight: 860;
-  font-size: 20px;
   cursor: pointer;
 `;
 

@@ -2,7 +2,6 @@ import { makeAutoObservable } from 'mobx';
 import { authorService, publicationService } from '../../core/service';
 import {
   type Publication,
-  PublicationStatus,
   type RecommendedAuthor
 } from '../../apis/first-approval-api';
 

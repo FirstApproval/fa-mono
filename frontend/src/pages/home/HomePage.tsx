@@ -25,6 +25,7 @@ import { PublicationBox } from './PublicationSection';
 import { CallToAction } from './CallToAction';
 import PopularAuthorsSection from './PopularAuthorsSection';
 import RecommendedPublicationsSection from './RecommendedPublicationsSection';
+import logo from '../../assets/logo.svg';
 
 export const HomePage: FunctionComponent = observer(() => {
   const [store] = useState(() => new HomePageStore());
@@ -39,7 +40,9 @@ export const HomePage: FunctionComponent = observer(() => {
   return (
     <Parent>
       <FlexHeader>
-        <Logo onClick={routerStore.goHome}>First Approval</Logo>
+        <Logo onClick={routerStore.goHome}>
+          <img src={logo} />
+        </Logo>
         <FlexHeaderRight>
           <Button
             onClick={createPublication}
@@ -52,7 +55,11 @@ export const HomePage: FunctionComponent = observer(() => {
         </FlexHeaderRight>
       </FlexHeader>
       <Wrap>
+        <Header>Discover science</Header>
+      </Wrap>
+      <Wrap>
         <FullWidthTextField
+          autoFocus
           value={store.inputValue}
           onChange={(event) => {
             store.inputValue = event.currentTarget.value;
@@ -116,6 +123,12 @@ export const HomePage: FunctionComponent = observer(() => {
   );
 });
 
+export const Header = styled('div')`
+  font-size: 48px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 116.7%;
+`;
 export const ResultsLabel = styled('div')`
   font-size: 34px;
   font-style: normal;
