@@ -34,6 +34,8 @@ export const HomePage: FunctionComponent = observer(() => {
     routerStore.navigatePage(Page.PUBLICATION, `/publication/${pub}`);
   };
 
+  const hasSearch = store.searchQuery.length > 0;
+
   return (
     <Parent>
       <FlexHeader>
@@ -51,7 +53,19 @@ export const HomePage: FunctionComponent = observer(() => {
       </FlexHeader>
       <Wrap>
         <FullWidthTextField
+          value={store.inputValue}
+          onChange={(event) => {
+            store.inputValue = event.currentTarget.value;
+            if (!store.inputValue) {
+              store.searchQuery = '';
+            }
+          }}
           placeholder={'Search the data you need...'}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.keyCode === 13) {
+              void store.search();
+            }
+          }}
           InputProps={{
             endAdornment: (
               <InputAdornment position="start">
@@ -61,27 +75,56 @@ export const HomePage: FunctionComponent = observer(() => {
           }}
         />
       </Wrap>
-      <RecommendedPublicationsSection
-        publications={store.recommendedPublications}
-      />
-      <CallToAction />
-      <FlexBodyCenter>
-        <FlexBody>
-          <PopularAuthorsSection authors={store.popularAuthors} />
-          <DividerWrap />
-          {store.isLoadingPublications && <LinearProgress />}
-          {!store.isLoadingPublications && (
-            <>
-              {store.publications.map((p) => (
-                <PublicationBox key={p.id} publication={p} />
-              ))}
-            </>
-          )}
-        </FlexBody>
-      </FlexBodyCenter>
+      {!hasSearch && (
+        <>
+          <RecommendedPublicationsSection
+            publications={store.recommendedPublications}
+          />
+          <CallToAction />
+          <FlexBodyCenter>
+            <FlexBody>
+              <PopularAuthorsSection authors={store.popularAuthors} />
+              <DividerWrap />
+              {store.isLoadingPublications && <LinearProgress />}
+              {!store.isLoadingPublications && (
+                <>
+                  {store.publications.map((p) => (
+                    <PublicationBox key={p.id} publication={p} />
+                  ))}
+                </>
+              )}
+            </FlexBody>
+          </FlexBodyCenter>
+        </>
+      )}
+      {hasSearch && (
+        <>
+          <Wrap>
+            <ResultsLabel>Results for {store.searchQuery}</ResultsLabel>
+            {store.isSearching && <LinearProgress />}
+            {!store.isSearching && (
+              <>
+                {store.searchResults.map((p) => (
+                  <PublicationBox key={p.id} publication={p} />
+                ))}
+              </>
+            )}
+          </Wrap>
+        </>
+      )}
     </Parent>
   );
 });
+
+export const ResultsLabel = styled('div')`
+  font-size: 34px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 123.5%; /* 41.99px */
+  letter-spacing: 0.25px;
+
+  margin-bottom: 40px;
+`;
 
 export const FlexBody = styled('div')`
   max-width: 680px;
