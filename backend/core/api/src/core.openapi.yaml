@@ -426,7 +426,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Publication'
       security:
-        - TokenAuth: [ ]
+        - PublicAuth: [ ]
       operationId: getPublication
       tags: [ publication ]
     patch:

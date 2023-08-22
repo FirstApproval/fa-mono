@@ -64,11 +64,11 @@ class PublicationController(
 
     override fun getPublication(id: UUID): ResponseEntity<Publication> {
         val pub = publicationService.get(authHolderService.user, id)
-        val contentStatus = pub.contentId?.let { contentId ->
-            val publicationArchiveInfo = ipfsClient.getInfo(contentId)
-            publicationArchiveInfo.availability.let { PublicationContentStatus.valueOf(it.name) }
-        }
-        val publicationResponse = pub.toApiObject().contentStatus(contentStatus)
+//        val contentStatus = pub.contentId?.let { contentId ->
+//            val publicationArchiveInfo = ipfsClient.getInfo(contentId)
+//            publicationArchiveInfo.availability.let { PublicationContentStatus.valueOf(it.name) }
+//        }
+        val publicationResponse = pub.toApiObject()//.contentStatus(contentStatus)
         return ok().body(publicationResponse)
     }
 
