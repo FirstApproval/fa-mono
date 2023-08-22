@@ -3,11 +3,13 @@ import { type Author } from '../../../apis/first-approval-api';
 import { authorService } from '../../../core/service';
 
 export class AuthorEditorStore {
+  id: string | undefined = '';
+  userId: string | undefined;
   email: string = '';
-  fistName: string = '';
+  firstName: string = '';
   lastName: string = '';
   shortBio: string = '';
-  isUnconfirmed: boolean = false;
+  isConfirmed: boolean = false;
   isNew: boolean = false;
   index?: number;
   constructor() {
@@ -20,8 +22,10 @@ export class AuthorEditorStore {
   }
 
   clean(): void {
+    this.id = '';
+    this.userId = '';
     this.email = '';
-    this.fistName = '';
+    this.firstName = '';
     this.lastName = '';
     this.shortBio = '';
     this.index = undefined;
