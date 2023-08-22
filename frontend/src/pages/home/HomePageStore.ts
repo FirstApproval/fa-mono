@@ -4,6 +4,8 @@ import {
   type Publication,
   type RecommendedAuthor
 } from '../../apis/first-approval-api';
+import { routerStore } from '../../core/router';
+import { Page } from '../../core/RouterStore';
 
 export class HomePageStore {
   isLoadingPublications = false;
@@ -73,4 +75,10 @@ export class HomePageStore {
         this.isSearching = false;
       });
   }
+
+  createPublication = async (): Promise<void> => {
+    const response = await publicationService.createPublication();
+    const pub: string = response.data.id;
+    routerStore.navigatePage(Page.PUBLICATION, `/publication/${pub}`);
+  };
 }

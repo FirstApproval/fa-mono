@@ -168,12 +168,7 @@ export class RouterStore {
   };
 
   goHome = (): void => {
-    const token = authStore.token;
-    if (token !== undefined) {
-      this.navigatePage(Page.HOME_PAGE);
-    } else {
-      this.navigatePage(Page.SIGN_IN);
-    }
+    this.navigatePage(Page.HOME_PAGE);
   };
 
   setInitialPageError = (value: string | undefined): void => {

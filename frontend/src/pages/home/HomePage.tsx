@@ -14,29 +14,22 @@ import {
   Logo,
   Parent
 } from '../common.styled';
-import { publicationService } from '../../core/service';
 import { routerStore } from '../../core/router';
 import { HomePageStore } from './HomePageStore';
 import { observer } from 'mobx-react-lite';
 import { Page } from '../../core/RouterStore';
 import { UserMenu } from '../../components/UserMenu';
-import { Edit, Search } from '@mui/icons-material';
+import { Search } from '@mui/icons-material';
 import styled from '@emotion/styled';
 import { PublicationBox } from './PublicationSection';
 import { CallToAction } from './CallToAction';
 import PopularAuthorsSection from './PopularAuthorsSection';
 import RecommendedPublicationsSection from './RecommendedPublicationsSection';
 import logo from '../../assets/logo.svg';
-import { userStore } from '../../core/user';
 import { authStore } from '../../core/auth';
 
 export const HomePage: FunctionComponent = observer(() => {
   const [store] = useState(() => new HomePageStore());
-  const createPublication = async (): Promise<void> => {
-    const response = await publicationService.createPublication();
-    const pub: string = response.data.id;
-    routerStore.navigatePage(Page.PUBLICATION, `/publication/${pub}`);
-  };
 
   const hasSearch = store.searchQuery.length > 0;
 
@@ -48,24 +41,36 @@ export const HomePage: FunctionComponent = observer(() => {
         </Logo>
         <FlexHeaderRight>
           <Stack direction="row" spacing={2}>
-            <ButtonWrap onClick={createPublication} size={'medium'}>
-              Publish
-            </ButtonWrap>
             <ButtonWrap
               onClick={() => {
-                routerStore.navigatePage(Page.SIGN_IN);
+                if (authStore.token) {
+                  void store.createPublication();
+                } else {
+                  routerStore.navigatePage(Page.SIGN_UP);
+                }
               }}
               size={'medium'}>
-              Sign in
+              Publish
             </ButtonWrap>
-            <Button
-              size={'medium'}
-              variant={'contained'}
-              onClick={() => {
-                routerStore.navigatePage(Page.SIGN_UP);
-              }}>
-              Sign up
-            </Button>
+            {!authStore.token && (
+              <>
+                <ButtonWrap
+                  onClick={() => {
+                    routerStore.navigatePage(Page.SIGN_IN);
+                  }}
+                  size={'medium'}>
+                  Sign in
+                </ButtonWrap>
+                <Button
+                  size={'medium'}
+                  variant={'contained'}
+                  onClick={() => {
+                    routerStore.navigatePage(Page.SIGN_UP);
+                  }}>
+                  Sign up
+                </Button>
+              </>
+            )}
           </Stack>
           {authStore.token && <UserMenu />}
         </FlexHeaderRight>
@@ -103,7 +108,7 @@ export const HomePage: FunctionComponent = observer(() => {
           <RecommendedPublicationsSection
             publications={store.recommendedPublications}
           />
-          <CallToAction />
+          <CallToAction store={store} />
           <FlexBodyCenter>
             <FlexBody>
               <PopularAuthorsSection authors={store.popularAuthors} />

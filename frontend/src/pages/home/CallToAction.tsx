@@ -1,8 +1,12 @@
 import styled from '@emotion/styled';
 import { type ReactElement } from 'react';
 import { Button } from '@mui/material';
+import { authStore } from '../../core/auth';
+import { routerStore } from '../../core/router';
+import { Page } from '../../core/RouterStore';
+import { type HomePageStore } from './HomePageStore';
 
-export const CallToAction = (): ReactElement => {
+export const CallToAction = (props: { store: HomePageStore }): ReactElement => {
   return (
     <Wrap>
       <CallToActionWrap>
@@ -11,7 +15,17 @@ export const CallToAction = (): ReactElement => {
           <Text>
             Share your datasets and let them fuel new scientific breakthroughs
           </Text>
-          <Button variant="contained">Start publishing for free</Button>
+          <Button
+            variant="contained"
+            onClick={() => {
+              if (authStore.token) {
+                void props.store.createPublication();
+              } else {
+                routerStore.navigatePage(Page.SIGN_UP);
+              }
+            }}>
+            Start publishing for free
+          </Button>
         </FlexWrap>
       </CallToActionWrap>
     </Wrap>
