@@ -4,6 +4,7 @@ import {
   Divider,
   InputAdornment,
   LinearProgress,
+  Stack,
   TextField
 } from '@mui/material';
 import {
@@ -26,6 +27,8 @@ import { CallToAction } from './CallToAction';
 import PopularAuthorsSection from './PopularAuthorsSection';
 import RecommendedPublicationsSection from './RecommendedPublicationsSection';
 import logo from '../../assets/logo.svg';
+import { userStore } from '../../core/user';
+import { authStore } from '../../core/auth';
 
 export const HomePage: FunctionComponent = observer(() => {
   const [store] = useState(() => new HomePageStore());
@@ -44,14 +47,27 @@ export const HomePage: FunctionComponent = observer(() => {
           <img src={logo} />
         </Logo>
         <FlexHeaderRight>
-          <Button
-            onClick={createPublication}
-            startIcon={<Edit />}
-            size={'medium'}
-            variant="outlined">
-            Create
-          </Button>
-          <UserMenu />
+          <Stack direction="row" spacing={2}>
+            <ButtonWrap onClick={createPublication} size={'medium'}>
+              Publish
+            </ButtonWrap>
+            <ButtonWrap
+              onClick={() => {
+                routerStore.navigatePage(Page.SIGN_IN);
+              }}
+              size={'medium'}>
+              Sign in
+            </ButtonWrap>
+            <Button
+              size={'medium'}
+              variant={'contained'}
+              onClick={() => {
+                routerStore.navigatePage(Page.SIGN_UP);
+              }}>
+              Sign up
+            </Button>
+          </Stack>
+          {authStore.token && <UserMenu />}
         </FlexHeaderRight>
       </FlexHeader>
       <Wrap>
@@ -143,6 +159,10 @@ export const FlexBody = styled('div')`
   max-width: 680px;
   padding-left: 40px;
   padding-right: 40px;
+`;
+
+export const ButtonWrap = styled(Button)`
+  color: var(--inherit-text-primary-main, #040036);
 `;
 
 const DividerWrap = styled(Divider)`
