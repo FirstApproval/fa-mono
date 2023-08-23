@@ -73,4 +73,13 @@ class NotificationService(
         mailService.send(email, "[FirstApproval] Password changed", html, true)
     }
 
+    fun sendArchivePassword(email: String, publicationName: String?, password: String) {
+        if (emailProperties.noopMode) {
+            log.info { "Archive password $password" }
+            return
+        }
+        val content = "Your password from archive of publication $publicationName { $password } you can download it in application"
+        mailService.send(email, "[FirstApproval] Archive is ready", content)
+    }
+
 }

@@ -2,12 +2,19 @@ package org.firstapproval.backend.core.domain.archive
 
 import mu.KotlinLogging.logger
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
+import net.lingala.zip4j.io.outputstream.ZipOutputStream
+import net.lingala.zip4j.model.ZipParameters
+import net.lingala.zip4j.model.enums.EncryptionMethod.ZIP_STANDARD
+import org.firstapproval.backend.core.domain.file.ARCHIVED_PUBLICATION_FILES
+import org.firstapproval.backend.core.domain.file.ARCHIVED_PUBLICATION_SAMPLE_FILES
 import org.firstapproval.backend.core.domain.file.FILES
 import org.firstapproval.backend.core.domain.file.FileStorageService
 import org.firstapproval.backend.core.domain.ipfs.IpfsClient
+import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.domain.publication.Publication
 import org.firstapproval.backend.core.domain.publication.PublicationFileRepository
 import org.firstapproval.backend.core.domain.publication.PublicationRepository
+import org.firstapproval.backend.core.domain.publication.PublicationSampleFileRepository
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
 import org.firstapproval.backend.core.domain.publication.toPublicationElastic
@@ -22,10 +29,9 @@ import java.io.FileOutputStream
 import java.nio.file.Files
 import java.time.ZonedDateTime.now
 import java.util.UUID
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
 import kotlin.io.path.Path
 import kotlin.io.path.exists
+
 
 private const val BATCH_SIZE = 10
 private const val TMP_FOLDER = "archive_tmp"
@@ -34,6 +40,8 @@ private const val TMP_FOLDER = "archive_tmp"
 class ArchiveService(
     private val publicationRepository: PublicationRepository,
     private val publicationFileRepository: PublicationFileRepository,
+    private val publicationSampleFileRepository: PublicationSampleFileRepository,
+    private val notificationService: NotificationService,
     private val ipfsClient: IpfsClient,
     private val fileStorageService: FileStorageService,
     private val transactionTemplate: TransactionTemplate,
@@ -50,10 +58,12 @@ class ArchiveService(
             runCatching {
                 log.debug { "Publication files for id=${publication.id} started" }
                 transactionTemplate.execute { _ ->
-                    val publicationFilesIds = archiveProcess(publication)
+                    val password = (100000000..999999999).random().toString()
+                    val publicationFilesIds = archiveProcess(publication, password)
                     if (publicationFilesIds.isNotEmpty()) {
                         fileStorageService.deleteByIds(FILES, publicationFilesIds)
                     }
+                    notificationService.sendArchivePassword(publication.creator.email!!, publication.title, password)
                 }
             }.onSuccess {
                 log.debug { "Publication files for id=${publication.id} finished successfully" }
@@ -70,22 +80,36 @@ class ArchiveService(
         }
     }
 
-    private fun archiveProcess(publication: Publication): List<UUID> {
+    private fun archiveProcess(publication: Publication, password: String): List<UUID> {
+        archiveSampleFilesProcess(publication)
+        val filesIds = archivePublicationFilesProcess(publication, password)
+        publication.status = PUBLISHED
+        publication.publicationTime = now()
+        publicationRepository.save(publication)
+        elasticRepository.save(publication.toPublicationElastic())
+        return filesIds
+    }
+
+    private fun archivePublicationFilesProcess(publication: Publication, password: String): MutableList<UUID> {
         val filesIds = mutableListOf<UUID>()
         var page = PageRequest.of(0, BATCH_SIZE)
         var files = publicationFileRepository.findByPublicationIdOrderByCreationTimeAsc(publication.id, page)
         val folder = getOrCreateTmpFolder()
         val tempArchive = createTempFile(publication.id.toString(), ".zip", folder)
         val fileOutputStream = FileOutputStream(tempArchive)
-        val zipOutputStream = ZipOutputStream(fileOutputStream)
+        val zipOutputStream = ZipOutputStream(fileOutputStream, password.toCharArray())
+        var err: Exception? = null
         try {
             while (!files.isEmpty) {
                 filesIds.addAll(files.map { it.id })
                 files.forEach {
                     if (!it.isDir) {
                         val inputStream = fileStorageService.get(FILES, it.id.toString()).objectContent
-                        val zipEntry = ZipEntry(it.fullPath)
-                        zipOutputStream.putNextEntry(zipEntry)
+                        val zipParms = ZipParameters()
+                        zipParms.fileNameInZip = it.fullPath
+                        zipParms.isEncryptFiles = true
+                        zipParms.encryptionMethod = ZIP_STANDARD
+                        zipOutputStream.putNextEntry(zipParms)
                         val buffer = ByteArray(1024)
                         var len: Int
 
@@ -101,26 +125,70 @@ class ArchiveService(
             }
         } catch (ex: Exception) {
             log.error(ex) { "archive error" }
+            err = ex
             throw ex
         } finally {
             zipOutputStream.close()
             fileOutputStream.close()
+            if (err == null) {
+                fileStorageService.save(
+                    ARCHIVED_PUBLICATION_FILES,
+                    publication.id.toString(),
+                    tempArchive.inputStream()
+                )
+            }
             tempArchive.delete()
         }
-        // TODO uncomment when we will be finally integrated with ipfs
-//        if (filesIds.isNotEmpty()) {
-//            uploadToIpfs(publication, tempArchive)
-//        }
-        publication.status = PUBLISHED
-        publication.publicationTime = now()
-        publicationRepository.save(publication)
-        elasticRepository.save(publication.toPublicationElastic())
         return filesIds
     }
 
-    private fun uploadToIpfs(publication: Publication, tempArchive: File) {
-        val ipfsFileInfo = ipfsClient.upload(tempArchive)
-        publication.contentId = ipfsFileInfo.id
+    private fun archiveSampleFilesProcess(publication: Publication) {
+        var page = PageRequest.of(0, BATCH_SIZE)
+        var files = publicationSampleFileRepository.findByPublicationIdOrderByCreationTimeAsc(publication.id, page)
+        val filesIds = mutableListOf<UUID>()
+        val folder = getOrCreateTmpFolder()
+        val tempArchive = createTempFile(publication.id.toString() + " samples", ".zip", folder)
+        val fileOutputStream = FileOutputStream(tempArchive)
+        val zipOutputStream = ZipOutputStream(fileOutputStream)
+        var err: Exception? = null
+        try {
+            while (!files.isEmpty) {
+                filesIds.addAll(files.map { it.id })
+                files.forEach {
+                    if (!it.isDir) {
+                        val inputStream = fileStorageService.get(FILES, it.id.toString()).objectContent
+                        val zipParms = ZipParameters()
+                        zipParms.fileNameInZip = it.fullPath
+                        zipOutputStream.putNextEntry(zipParms)
+                        val buffer = ByteArray(1024)
+                        var len: Int
+
+                        while (inputStream.read(buffer).also { len = it } > 0) {
+                            zipOutputStream.write(buffer, 0, len)
+                        }
+                        inputStream.close()
+                        zipOutputStream.closeEntry()
+                    }
+                }
+                page = page.next()
+                files = publicationSampleFileRepository.findByPublicationIdOrderByCreationTimeAsc(publication.id, page)
+            }
+        } catch (ex: Exception) {
+            log.error(ex) { "archive error" }
+            err = ex
+            throw ex
+        } finally {
+            zipOutputStream.close()
+            fileOutputStream.close()
+            if (err == null) {
+                fileStorageService.save(
+                    ARCHIVED_PUBLICATION_SAMPLE_FILES,
+                    publication.id.toString(),
+                    tempArchive.inputStream(),
+                )
+            }
+            tempArchive.delete()
+        }
     }
 
     private fun getOrCreateTmpFolder(): File {

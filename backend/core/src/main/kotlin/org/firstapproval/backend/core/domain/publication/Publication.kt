@@ -72,6 +72,8 @@ class Publication(
     var confirmedAuthors: MutableList<ConfirmedAuthor> = mutableListOf(),
     @OneToMany(fetch = EAGER, cascade = [ALL], orphanRemoval = true, mappedBy = "publication")
     var unconfirmedAuthors: MutableList<UnconfirmedAuthor> = mutableListOf(),
+    var downloadsCount: Long = 0,
+    var viewsCount: Long = 0,
     var creationTime: ZonedDateTime = now(),
     var publicationTime: ZonedDateTime? = null,
     var contentId: Long? = null,

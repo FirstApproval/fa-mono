@@ -30,6 +30,7 @@ subprojects {
 
     dependencies {
         "implementation"(kotlin("stdlib-jdk8"))
+        "implementation"("net.lingala.zip4j:zip4j:2.11.3")
     }
 
     configure<DependencyManagementExtension> {
