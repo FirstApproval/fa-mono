@@ -6,6 +6,7 @@ import org.firstapproval.backend.core.config.Properties.S3Properties
 import org.firstapproval.backend.core.config.security.JwtService
 import org.firstapproval.backend.core.domain.file.FILES
 import org.firstapproval.backend.core.domain.file.FileStorageService
+import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
 import org.firstapproval.backend.core.domain.user.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -22,9 +23,11 @@ class PublicationFileService(
     private val jwtService: JwtService
 ) {
 
-    fun getPublicationFiles(user: User, publicationId: UUID, dirPath: String): List<PublicationFile> {
+    fun getPublicationFiles(user: User?, publicationId: UUID, dirPath: String): List<PublicationFile> {
         val publication = publicationRepository.getReferenceById(publicationId)
-        checkAccessToPublication(user, publication)
+        if (publication.accessType != OPEN) {
+            checkAccessToPublication(user!!, publication)
+        }
         return publicationFileRepository.findAllByPublicationIdAndDirPath(publicationId, dirPath)
     }
 
@@ -90,8 +93,11 @@ class PublicationFileService(
     }
 
     @Transactional(readOnly = true)
-    fun getPublicationFileWithContent(fileId: UUID): FileResponse {
+    fun getPublicationFileWithContent(user: User, fileId: UUID): FileResponse {
         val file = publicationFileRepository.getReferenceById(fileId)
+        if (file.publication.accessType != OPEN) {
+            checkAccessToPublication(user, file.publication)
+        }
         return FileResponse(
             name = file.name,
             s3Object = fileStorageService.get(FILES, fileId.toString())

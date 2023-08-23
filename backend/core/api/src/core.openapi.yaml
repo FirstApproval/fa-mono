@@ -426,7 +426,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Publication'
       security:
-        - TokenAuth: [ ]
+        - PublicAuth: [ ]
       operationId: getPublication
       tags: [ publication ]
     patch:
@@ -528,6 +528,25 @@ paths:
       operationId: requestDownload
       tags: [ publication ]
 
+  /api/publication/{id}/view/increment:
+    post:
+      summary: Update publication view count
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
+      responses:
+        200:
+          description: Success
+      security:
+        - PublicAuth: [ ]
+      operationId: incrementPublicationViewCount
+      tags: [ publication ]
+
   /api/publication/{id}/download-link:
     get:
       summary: Get publication content download link
@@ -549,6 +568,58 @@ paths:
       security:
         - TokenAuth: [ ]
       operationId: getDownloadLink
+      tags: [ publication ]
+
+  /api/publication/files/download:
+    get:
+      parameters:
+        - name: downloadToken
+          in: query
+          required: true
+          schema:
+            type: string
+            maxLength: 2048
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: File not found
+        '500':
+          description: Server error
+      security:
+        - PublicAuth: [ ]
+      operationId: downloadPublicationFiles
+      tags: [ publication ]
+
+  /api/publication/{id}/files/sample/download:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+    get:
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: File not found
+        '500':
+          description: Server error
+      security:
+        - PublicAuth: [ ]
+      operationId: downloadPublicationSampleFiles
       tags: [ publication ]
 
   /api/files/check-duplicates/{publicationId}:
@@ -757,7 +828,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/TopAuthorsResponse'
       security:
-        - TokenAuth: [ ]
+        - PublicAuth: [ ]
       operationId: getTopAuthors
       tags: [ author ]
 
@@ -790,7 +861,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/PublicationFile'
       security:
-        - TokenAuth: [ ]
+        - PublicAuth: [ ]
       operationId: getPublicationFiles
       tags: [ file ]
     post:
@@ -1680,6 +1751,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UnconfirmedAuthor'
+        viewsCount:
+          type: integer
+          format: int64
+        downloadsCount:
+          type: integer
+          format: int64
       required:
         - id
         - status

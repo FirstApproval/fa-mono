@@ -23,6 +23,7 @@ import {
   Header
 } from '../common.styled';
 import { routerStore } from '../../core/router';
+import logo from '../../assets/logo.svg';
 
 interface PasswordValidationProps {
   password: string;
@@ -120,7 +121,9 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
     return (
       <Parent>
         <FlexHeader>
-          <Logo onClick={routerStore.goHome}>First Approval</Logo>
+          <Logo onClick={routerStore.goHome}>
+            <img src={logo} />
+          </Logo>
           <FlexHeaderRight>
             <Button
               variant="outlined"

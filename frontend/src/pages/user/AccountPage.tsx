@@ -10,12 +10,15 @@ import {
 import { routerStore } from '../../core/router';
 import { observer } from 'mobx-react-lite';
 import { UserMenu } from '../../components/UserMenu';
+import logo from '../../assets/logo.svg';
 
 export const AccountPage: FunctionComponent = observer(() => {
   return (
     <Parent>
       <FlexHeader>
-        <Logo onClick={routerStore.goHome}>First Approval</Logo>
+        <Logo onClick={routerStore.goHome}>
+          <img src={logo} />
+        </Logo>
         <FlexHeaderRight>
           <UserMenu />
         </FlexHeaderRight>

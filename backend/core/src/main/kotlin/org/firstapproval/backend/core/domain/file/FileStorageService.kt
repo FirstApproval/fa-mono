@@ -15,15 +15,20 @@ import java.util.UUID
 
 const val FILES = "files"
 const val SAMPLE_FILES = "sample-files"
+const val ARCHIVED_PUBLICATION_FILES = "archived-publication-files"
+const val ARCHIVED_PUBLICATION_SAMPLE_FILES = "archived-publication-sample-files"
 const val PROFILE_IMAGES = "profile-images"
 
 class FileStorageService(private val amazonS3: AmazonS3) {
 
     private val log = logger {}
 
-    fun save(bucketName: String, id: String, data: InputStream, contentLength: Long): PutObjectResult {
-        val metadata = ObjectMetadata().apply {
-            this.contentLength = contentLength
+    fun save(bucketName: String, id: String, data: InputStream, contentLength: Long? = null): PutObjectResult {
+        val metadata = ObjectMetadata()
+        if (contentLength != null) {
+            metadata.apply {
+                this.contentLength = contentLength
+            }
         }
         return amazonS3.putObject(bucketName, id, data, metadata)
     }

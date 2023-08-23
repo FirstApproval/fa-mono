@@ -3,6 +3,7 @@ import { OauthType } from '../apis/first-approval-api';
 import { action, computed, makeObservable, observable, reaction } from 'mobx';
 import { createBrowserHistory } from 'history';
 import { authService } from './service';
+import { v4 as uuidv4 } from 'uuid';
 
 export enum Page {
   LOADING,
@@ -37,6 +38,7 @@ const pathToOauthType: Record<string, OauthType> = {
 const history = createBrowserHistory();
 
 export class RouterStore {
+  key = uuidv4();
   private _page: Page = Page.LOADING;
   private _path: string = history.location.pathname;
   private _queryParams: URLSearchParams = new URLSearchParams(
@@ -50,6 +52,7 @@ export class RouterStore {
     makeObservable<RouterStore, '_page' | '_path' | '_queryParams' | 'setPage'>(
       this,
       {
+        key: observable,
         _page: observable,
         _path: observable,
         _queryParams: observable,
@@ -66,11 +69,7 @@ export class RouterStore {
     reaction(
       () => authStore.token,
       (token) => {
-        if (!token) {
-          this.navigatePage(Page.SIGN_IN);
-        } else {
-          this.navigatePage(Page.HOME_PAGE);
-        }
+        this.navigatePage(Page.HOME_PAGE, '/', true);
       }
     );
 
@@ -125,10 +124,8 @@ export class RouterStore {
             this.setInitialPageError('Authorization failed');
             this.navigatePage(Page.SIGN_IN, '/', true);
           });
-      } else if (authStore.token) {
-        this.navigatePage(Page.HOME_PAGE, '/', true);
       } else {
-        this.navigatePage(Page.SIGN_IN, '/', true);
+        this.navigatePage(Page.HOME_PAGE, '/', true);
       }
     };
 
@@ -147,6 +144,7 @@ export class RouterStore {
     this._page = value;
     this._path = path;
     this._queryParams = new URLSearchParams(path);
+    this.key = uuidv4();
   };
 
   setPayload = (value: any): void => {
@@ -170,12 +168,7 @@ export class RouterStore {
   };
 
   goHome = (): void => {
-    const token = authStore.token;
-    if (token !== undefined) {
-      this.navigatePage(Page.HOME_PAGE);
-    } else {
-      this.navigatePage(Page.SIGN_IN);
-    }
+    this.navigatePage(Page.HOME_PAGE);
   };
 
   setInitialPageError = (value: string | undefined): void => {

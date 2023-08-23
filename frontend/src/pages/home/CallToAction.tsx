@@ -1,53 +1,60 @@
 import styled from '@emotion/styled';
 import { type ReactElement } from 'react';
-import group_6 from './assets/group_6.svg';
-import group_7 from './assets/group_7.svg';
 import { Button } from '@mui/material';
+import { authStore } from '../../core/auth';
+import { routerStore } from '../../core/router';
+import { Page } from '../../core/RouterStore';
+import { type HomePageStore } from './HomePageStore';
 
-export const CallToAction = (): ReactElement => {
+export const CallToAction = (props: { store: HomePageStore }): ReactElement => {
   return (
     <Wrap>
       <CallToActionWrap>
-        <LeftImgWrap>
-          <img src={group_6} />
-        </LeftImgWrap>
         <FlexWrap>
           <Heading>Unleash your data&apos;s potential</Heading>
           <Text>
             Share your datasets and let them fuel new scientific breakthroughs
           </Text>
-          <Button variant="contained">Start publishing for free</Button>
+          <Button
+            variant="contained"
+            onClick={() => {
+              if (authStore.token) {
+                void props.store.createPublication();
+              } else {
+                routerStore.navigatePage(Page.SIGN_UP);
+              }
+            }}>
+            Start publishing for free
+          </Button>
         </FlexWrap>
-        <FlexLeftWrap>
-          <img src={group_7} />
-        </FlexLeftWrap>
       </CallToActionWrap>
     </Wrap>
   );
 };
-
-const LeftImgWrap = styled.div``;
 
 export const Wrap = styled('div')`
   width: 80%;
   margin-left: auto;
   margin-right: auto;
 
-  background: var(--primary-states-hover, rgba(59, 78, 255, 0.04));
+  border-radius: 8px;
+  background: linear-gradient(90deg, #3b4eff 0%, #3c47e5 36.32%, #030d96 100%);
+
+  color: var(--primary-contrast, #fff);
+
+  padding: 40px 48px;
 
   margin-bottom: 80px;
 `;
 
 export const CallToActionWrap = styled('div')`
   display: flex;
-  align-items: center;
-  justify-content: center;
 `;
 
-export const FlexLeftWrap = styled('div')``;
-
 export const Text = styled('div')`
-  margin-bottom: 16px;
+  max-width: 332px;
+
+  margin-bottom: 40px;
 `;
 
 export const Heading = styled('div')`
@@ -56,13 +63,10 @@ export const Heading = styled('div')`
   font-weight: 600;
   line-height: 133.4%;
 
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 `;
 
 export const FlexWrap = styled('div')`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex-grow: 1;
 `;

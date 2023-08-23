@@ -1,4 +1,4 @@
-import { type FunctionComponent, useState } from 'react';
+import React, { type FunctionComponent, useState } from 'react';
 import { Button, TextField } from '@mui/material';
 import styled from '@emotion/styled';
 import { type SignUpStore } from './SignUpStore';
@@ -16,6 +16,7 @@ import {
 import { routerStore } from '../../core/router';
 import { userService } from '../../core/service';
 import { Page } from '../../core/RouterStore';
+import logo from '../../assets/logo.svg';
 
 interface EnterSelfInfoPageProps {
   store: SignUpStore;
@@ -46,7 +47,9 @@ export const EnterSelfInfoPage: FunctionComponent<EnterSelfInfoPageProps> =
     return (
       <Parent>
         <FlexHeader>
-          <Logo onClick={routerStore.goHome}>First Approval</Logo>
+          <Logo onClick={routerStore.goHome}>
+            <img src={logo} />
+          </Logo>
           <FlexHeaderRight>
             <Button
               variant="outlined"

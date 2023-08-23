@@ -41,7 +41,7 @@ const App: FunctionComponent = observer(() => {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           {page === Page.LOADING && <LoadingPage />}
-          {page === Page.HOME_PAGE && <HomePage />}
+          {page === Page.HOME_PAGE && <HomePage key={routerStore.key} />}
           {page === Page.PUBLICATION && <PublicationPage />}
           {page === Page.SHARING_OPTIONS && (
             <SharingOptionsPage

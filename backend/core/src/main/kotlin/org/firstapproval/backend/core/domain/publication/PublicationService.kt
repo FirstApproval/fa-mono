@@ -7,7 +7,11 @@ import org.firstapproval.api.server.model.Paragraph
 import org.firstapproval.api.server.model.PublicationEditRequest
 import org.firstapproval.api.server.model.PublicationsResponse
 import org.firstapproval.api.server.model.UserInfo
-import org.firstapproval.backend.core.domain.ipfs.DownloadLink
+import org.firstapproval.backend.core.config.Properties.FrontendProperties
+import org.firstapproval.backend.core.domain.auth.TokenService
+import org.firstapproval.backend.core.domain.file.ARCHIVED_PUBLICATION_FILES
+import org.firstapproval.backend.core.domain.file.ARCHIVED_PUBLICATION_SAMPLE_FILES
+import org.firstapproval.backend.core.domain.file.FileStorageService
 import org.firstapproval.backend.core.domain.ipfs.DownloadLinkRepository
 import org.firstapproval.backend.core.domain.ipfs.IpfsClient
 import org.firstapproval.backend.core.domain.ipfs.Job
@@ -49,7 +53,10 @@ class PublicationService(
     private val downloadLinkRepository: DownloadLinkRepository,
     private val jobRepository: JobRepository,
     private val ipfsClient: IpfsClient,
-    private val elasticRepository: PublicationElasticRepository
+    private val elasticRepository: PublicationElasticRepository,
+    private val tokenService: TokenService,
+    private val frontendProperties: FrontendProperties,
+    private val fileStorageService: FileStorageService
 ) {
     @Transactional
     fun create(user: User): Publication {
@@ -58,6 +65,9 @@ class PublicationService(
             confirmedAuthorRepository.saveAll(mutableListOf(ConfirmedAuthor(randomUUID(), user, publication)))
         return publication
     }
+
+    @Transactional(readOnly = true)
+    fun findAllByIdIn(ids: List<UUID>) = publicationRepository.findAllByIdIn(ids)
 
     @Transactional
     fun edit(user: User, id: UUID, request: PublicationEditRequest) {
@@ -98,10 +108,11 @@ class PublicationService(
                 }
                 val confirmedPublicationAuthors = confirmedAuthors.values.map { confirmedAuthor ->
                     ConfirmedAuthor(
-                        id = confirmedAuthor.id ?: randomUUID(),
-                        user = confirmedAuthorsById[confirmedAuthor.userId].require(),
-                        publication = publication,
-                        shortBio = confirmedAuthor.shortBio
+                        id = confirmedAuthor.id ?:
+                        randomUUID(),
+                        user =confirmedAuthorsById[confirmedAuthor.userId].require(),
+                        publication =publication,
+                        shortBio =confirmedAuthor.shortBio
                     )
                 }
                 publication.confirmedAuthors.clear()
@@ -127,9 +138,49 @@ class PublicationService(
     }
 
     @Transactional
+    fun getPublicationArchive(token: String): FileResponse {
+        val claims = tokenService.parseDownloadPublicationArchiveToken(token)
+        val publicationId = claims["publicationId"].toString()
+        val publication = publicationRepository.getReferenceById(UUID.fromString(publicationId))
+        publication.downloadsCount += 1
+        val title = if (publication.title != null) {
+            publication.title
+        } else {
+            publicationId
+        }
+        return FileResponse(
+            name = title!! + ".zip",
+            fileStorageService.get(ARCHIVED_PUBLICATION_FILES, publicationId)
+        )
+    }
+
+    @Transactional
+    fun getPublicationSamplesArchive(id: UUID): FileResponse {
+        val publication = publicationRepository.getReferenceById(id)
+        val title = if (publication.title != null) {
+            publication.title
+        } else {
+            id.toString()
+        }
+        return FileResponse(
+            name = title!! + ".zip",
+            s3Object = fileStorageService.get(ARCHIVED_PUBLICATION_SAMPLE_FILES, id.toString())
+        )
+    }
+
+    @Transactional
+    fun incrementViewCount(id: UUID) {
+        val publication = publicationRepository.getReferenceById(id)
+        publication.viewsCount += 1
+    }
+
+    @Transactional
     fun submitPublication(user: User, id: UUID, accessType: AccessType) {
         val publication = publicationRepository.getReferenceById(id)
         checkAccessToPublication(user, publication)
+        if (publication.status == PUBLISHED) {
+            throw IllegalArgumentException()
+        }
         publication.status = READY_FOR_PUBLICATION
         publication.accessType = accessType
     }
@@ -158,14 +209,13 @@ class PublicationService(
         }
     }
 
-    fun getDownloadLink(id: UUID): DownloadLink {
-        return downloadLinkRepository.findByPublicationIdAndExpirationTimeLessThan(id, ZonedDateTime.now().minusMinutes(5)) ?: run {
-            val pub = getPublicationAndCheckStatus(id, PUBLISHED)
-            val downloadLinkInfo = ipfsClient.getDownloadLink(pub.contentId!!)
-            val expirationTime = ZonedDateTime.now().plusSeconds(downloadLinkInfo.expiresIn)
-            downloadLinkRepository.deleteById(id)
-            downloadLinkRepository.save(DownloadLink(pub.id, downloadLinkInfo.url, expirationTime))
+    fun getDownloadLink(user: User, publicationId: UUID): String {
+        val publication = publicationRepository.getReferenceById(publicationId)
+        if (publication.status != PUBLISHED) {
+            throw IllegalArgumentException()
         }
+        val downloadToken = tokenService.generateDownloadPublicationArchiveToken(user.id.toString(), publicationId.toString())
+        return "${frontendProperties.url}/api/publication/files/download?downloadToken=$downloadToken"
     }
 
     private fun getPublicationAndCheckStatus(id: UUID, status: PublicationStatus): Publication {
@@ -178,17 +228,17 @@ class PublicationService(
     }
 
     @Transactional
-    fun get(user: User, id: UUID): Publication {
+    fun get(user: User?, id: UUID): Publication {
         val publication = publicationRepository.getReferenceById(id)
         if (publication.accessType != OPEN) {
-            checkAccessToPublication(user, publication)
+            checkAccessToPublication(user!!, publication)
         }
         return publication
     }
 
     @Transactional(readOnly = true)
     fun getAllPublications(page: Int, pageSize: Int): PublicationsResponse {
-        val publicationsPage = publicationRepository.findAll(PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime")))
+        val publicationsPage = publicationRepository.findAllByStatusAndAccessType(PUBLISHED, OPEN, PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime")))
         return PublicationsResponse()
             .publications(publicationsPage.map { it.toApiObject() }.toList())
             .isLastPage(publicationsPage.isLast)
@@ -250,12 +300,14 @@ fun Publication.toApiObject() = PublicationApiObject().also { publicationApiMode
     publicationApiModel.predictedGoals = predictedGoals?.map { Paragraph(it) }
     publicationApiModel.confirmedAuthors = confirmedAuthors.map { it.toApiObject() }
     publicationApiModel.unconfirmedAuthors = unconfirmedAuthors.map { it.toApiObject() }
+    publicationApiModel.viewsCount = viewsCount
+    publicationApiModel.downloadsCount = downloadsCount
     publicationApiModel.status = org.firstapproval.api.server.model.PublicationStatus.valueOf(status.name)
     publicationApiModel.accessType = org.firstapproval.api.server.model.AccessType.valueOf(accessType.name)
     publicationApiModel.creationTime = creationTime.toOffsetDateTime()
 }
 
-fun PublicationElastic.toApiObject() = PublicationApiObject().also { publicationApiModel ->
+fun PublicationElastic.toApiObject(viewCount: Long? = null, downloadsCount: Long? = null) = PublicationApiObject().also { publicationApiModel ->
     publicationApiModel.id = id
     publicationApiModel.title = title
     publicationApiModel.description = description?.map { Paragraph(it) }
@@ -271,6 +323,8 @@ fun PublicationElastic.toApiObject() = PublicationApiObject().also { publication
     publicationApiModel.predictedGoals = predictedGoals?.map { Paragraph(it) }
     publicationApiModel.status = PublicationStatusApiObject.valueOf(status.name)
     publicationApiModel.accessType = AccessTypeApiObject.valueOf(accessType.name)
+    publicationApiModel.downloadsCount = downloadsCount
+    publicationApiModel.viewsCount = viewCount
     publicationApiModel.creationTime = creationTime.toOffsetDateTime()
 }
 

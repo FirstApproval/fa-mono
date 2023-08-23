@@ -1,4 +1,4 @@
-import { type FunctionComponent, useState } from 'react';
+import React, { type FunctionComponent, useState } from 'react';
 import {
   Alert,
   Button,
@@ -23,6 +23,7 @@ import {
 import { routerStore } from '../../../core/router';
 import { userService } from '../../../core/service';
 import { LoadingButton } from '@mui/lab';
+import logo from '../../../assets/logo.svg';
 
 interface SetPasswordPageProps {
   onSignUpClick: () => void;
@@ -58,7 +59,9 @@ export const ResetPasswordPage: FunctionComponent<SetPasswordPageProps> =
     return (
       <Parent>
         <FlexHeader>
-          <Logo onClick={routerStore.goHome}>First Approval</Logo>
+          <Logo onClick={routerStore.goHome}>
+            <img src={logo} />
+          </Logo>
           <FlexHeaderRight>
             <Button
               variant="outlined"

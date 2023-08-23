@@ -20,7 +20,7 @@ const RecommendedPublicationsSection = (props: {
   const { publications } = props;
   return (
     <Wrap>
-      <NameWrap>Recommended</NameWrap>
+      <NameWrap>Recommended datasets</NameWrap>
       <GridContainer>
         {publications.map((publication, idx) => (
           <AuthorCard key={idx}>
