@@ -70,6 +70,7 @@ export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
             <EmailLabel>To start, what&apos;s your name?</EmailLabel>
             <div>
               <FullWidthTextField
+                autoComplete="given-name"
                 autoFocus
                 error={!isValidFirstName}
                 helperText={!isValidFirstName ? 'Enter valid name' : undefined}
@@ -78,12 +79,13 @@ export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
                   props.store.firstName = e.currentTarget.value;
                 }}
                 onKeyDown={validateAndConfirm}
-                label="Name"
+                label="First Name"
                 variant="outlined"
               />
             </div>
             <div>
               <FullWidthTextField
+                autoComplete="family-name"
                 error={!isValidLastName}
                 helperText={!isValidLastName ? 'Enter valid name' : undefined}
                 value={props.store.lastName}
@@ -91,7 +93,7 @@ export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
                   props.store.lastName = e.currentTarget.value;
                 }}
                 onKeyDown={validateAndConfirm}
-                label="Surname"
+                label="Last Name"
                 variant="outlined"
               />
             </div>

@@ -18,9 +18,9 @@ import {
   FlexHeader,
   FlexHeaderRight,
   FullWidthButton,
+  Header,
   Logo,
-  Parent,
-  Header
+  Parent
 } from '../common.styled';
 import { validateEmail } from 'src/util/emailUtil';
 import { routerStore } from '../../core/router';
@@ -85,6 +85,7 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
             </EmailLabel>
             <div style={{ marginBottom: '12px' }}>
               <FullWidthTextField
+                autoComplete={'email'}
                 autoFocus
                 error={!isValidEmail}
                 helperText={!isValidEmail ? 'Invalid address' : undefined}
@@ -107,7 +108,7 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
             </div>
             {isUsedEmail && (
               <AlertWrap severity="error">
-                Email address already registered by another user
+                Email address already registered
               </AlertWrap>
             )}
             <FullWidthButton
@@ -123,12 +124,21 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
             <LoginOauth />
             <DividerWrap2 />
             <CreateAccount>
-              Already have an account? <Link href="#">Sign in</Link>
+              Already have an account?{' '}
+              <LinkWrap onClick={props.onSignInClick}>Sign in</LinkWrap>
             </CreateAccount>
             <FooterWrap>
               By clicking “Continue with Email/Google/ORCID/Facebook/LinkedIn”
               above, you acknowledge that you have read and understood, and
-              agree to Terms & Conditions and Privacy Policy.
+              agree to{' '}
+              <LinkWrap color="inherit" href={'/docs/terms_and_conditions.pdf'}>
+                Terms & Conditions
+              </LinkWrap>{' '}
+              and{' '}
+              <LinkWrap color="inherit" href={'/docs/privacy_policy.pdf'}>
+                Privacy Policy
+              </LinkWrap>
+              .
             </FooterWrap>
           </FlexBody>
         </FlexBodyCenter>
@@ -136,6 +146,10 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
     );
   }
 );
+
+const LinkWrap = styled(Link)`
+  cursor: pointer;
+`;
 
 const FullWidthTextField = styled(TextField)`
   width: 100%;
@@ -162,7 +176,7 @@ const DividerWrap2 = styled(Divider)`
 `;
 
 const AlertWrap = styled(Alert)`
-  margin-bottom: 16px;
+  margin-bottom: 32px;
   width: 100%;
 `;
 
