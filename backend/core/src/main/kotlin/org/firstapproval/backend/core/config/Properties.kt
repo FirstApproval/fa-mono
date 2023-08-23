@@ -14,7 +14,7 @@ class Properties {
         lateinit var secretKey: String
         lateinit var url: URL
         lateinit var buckets: Set<String>
-        lateinit var ttl: Duration
+        lateinit var downloadLinkTtl: Duration
     }
 
     @Component

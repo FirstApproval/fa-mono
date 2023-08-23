@@ -48,11 +48,6 @@ class JwtService(
         parseOauthToken(token, googlePublicKey1)
     }
 
-    fun isTokenExpired(claims: Claims): Boolean {
-        val expirationDate = claims.expiration
-        return expirationDate.before(Date())
-    }
-
     private fun parseOauthToken(token: String, publicKey: PublicKey): Claims {
         try {
             return Jwts.parser()

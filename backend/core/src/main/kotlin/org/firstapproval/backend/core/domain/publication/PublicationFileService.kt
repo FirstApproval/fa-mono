@@ -3,7 +3,7 @@ package org.firstapproval.backend.core.domain.publication
 import com.amazonaws.services.s3.model.S3Object
 import org.apache.commons.io.FilenameUtils
 import org.firstapproval.backend.core.config.Properties.S3Properties
-import org.firstapproval.backend.core.domain.auth.TokenService
+import org.firstapproval.backend.core.config.security.JwtService
 import org.firstapproval.backend.core.domain.file.FILES
 import org.firstapproval.backend.core.domain.file.FileStorageService
 import org.firstapproval.backend.core.domain.user.User
@@ -19,7 +19,7 @@ class PublicationFileService(
     private val fileStorageService: FileStorageService,
     private val publicationRepository: PublicationRepository,
     private val s3Properties: S3Properties,
-    private val tokenService: TokenService
+    private val jwtService: JwtService
 ) {
 
     fun getPublicationFiles(user: User, publicationId: UUID, dirPath: String): List<PublicationFile> {
@@ -184,12 +184,18 @@ class PublicationFileService(
     fun getTokenToRetrieveDownloadLink(user: User, fileId: UUID): String {
         val publication = publicationFileRepository.findById(fileId).get().publication
         checkAccessToPublication(user, publication)
-        return tokenService.generateForFileDownloadLink(user.id.toString(), fileId.toString(), s3Properties.ttl)
+        return jwtService.generate(
+            mapOf(
+                "creator" to user.id,
+                "fileId" to fileId
+            )
+        )
     }
 
     fun getDownloadLink(token: String): String {
-        val fileId = tokenService.checkAndParseFileDownloadToken(token)
-        return fileStorageService.generateTemporaryDownloadLink(FILES, fileId, s3Properties.ttl)
+        val claims = jwtService.parse(token)
+        val fileId = claims["fileId"].toString()
+        return fileStorageService.generateTemporaryDownloadLink(FILES, fileId, s3Properties.downloadLinkTtl)
     }
 
     private fun extractDirPath(fullPath: String) = fullPath.substring(0, fullPath.lastIndexOf('/') + 1)
