@@ -96,7 +96,7 @@ export const HomePage: FunctionComponent = observer(() => {
           }}
           InputProps={{
             endAdornment: (
-              <InputAdornment position="start">
+              <InputAdornment position="end">
                 <Search />
               </InputAdornment>
             )
