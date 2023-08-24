@@ -74,6 +74,11 @@ export const SignInPage: FunctionComponent<SignInPageProps> = observer(
                 onChange={(e) => {
                   props.store.setPassword(e.currentTarget.value);
                 }}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.keyCode === 13) {
+                    void props.store.submitAuthorizationRequest();
+                  }
+                }}
                 label="Password"
                 variant="outlined"
               />
