@@ -110,8 +110,10 @@ export class PublicationStore {
   }
 
   addTag(tag: string): void {
-    this.tags.add(tag);
-    void this.updateTags();
+    if (tag) {
+      this.tags.add(tag);
+      void this.updateTags();
+    }
   }
 
   deleteTag(tag: string): void {
