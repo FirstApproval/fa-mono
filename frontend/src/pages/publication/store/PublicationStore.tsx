@@ -2,11 +2,11 @@ import { action, makeAutoObservable, reaction } from 'mobx';
 import { publicationService } from '../../../core/service';
 import _ from 'lodash';
 import {
-  PublicationStatus,
   type Author,
   type ConfirmedAuthor,
-  type UnconfirmedAuthor,
   type Paragraph,
+  PublicationStatus,
+  type UnconfirmedAuthor,
   type UserInfo
 } from '../../../apis/first-approval-api';
 import { type ChonkyFileSystem } from '../../../fire-browser/ChonkyFileSystem';
@@ -71,6 +71,10 @@ export class PublicationStore {
     return (
       this.viewMode === ViewMode.PREVIEW || this.viewMode === ViewMode.VIEW
     );
+  }
+
+  get isView(): boolean {
+    return this.viewMode === ViewMode.VIEW;
   }
 
   addDescriptionParagraph(idx: number): void {
@@ -430,12 +434,26 @@ export class PublicationStore {
           if (this.fs.files.length > 0) {
             this.filesEnabled = true;
           }
-          if (publication.status !== PublicationStatus.PUBLISHED) {
+          if (publication.status === PublicationStatus.PENDING) {
             this.viewMode = ViewMode.EDIT;
           }
           this.creator = publication.creator;
           this.authorsEnabled =
             this.confirmedAuthors.length + this.unconfirmedAuthors.length > 1;
+          if (
+            publication.status === PublicationStatus.READY_FOR_PUBLICATION ||
+            publication.status === PublicationStatus.PUBLISHED
+          ) {
+            this.predictedGoalsEnabled = true;
+            this.methodEnabled = true;
+            this.objectOfStudyEnabled = true;
+            this.softwareEnabled = true;
+            this.filesEnabled = true;
+            this.authorsEnabled = true;
+            this.grantingOrganizationsEnabled = true;
+            this.relatedArticlesEnabled = true;
+            this.tagsEnabled = true;
+          }
         })
       )
       .finally(

@@ -71,37 +71,43 @@ export const PublicationPage: FunctionComponent = observer(() => {
                 }}>
                 <img src={logo} />
               </IconButton>
-              <DraftedBy>
-                Draft by
-                {/* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */}
-                {` ${publicationStore.creator?.firstName} ${publicationStore.creator?.lastName}`}
-              </DraftedBy>
-              <SavingStatus></SavingStatus>
+              {!publicationStore.isView && (
+                <>
+                  <DraftedBy>
+                    Draft by
+                    {/* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */}
+                    {` ${publicationStore.creator?.firstName} ${publicationStore.creator?.lastName}`}
+                  </DraftedBy>
+                  <SavingStatus></SavingStatus>
+                </>
+              )}
             </div>
             <FlexDiv>
-              <ButtonWrap
-                variant="contained"
-                size={'medium'}
-                onClick={() => {
-                  routerStore.navigatePage(
-                    Page.SHARING_OPTIONS,
-                    routerStore.path,
-                    true,
-                    { publicationTitle: publicationStore.title }
-                  );
-                }}>
-                Publish
-              </ButtonWrap>
-              {publicationStore.viewMode && (
-                <ButtonWrap
-                  marginRight="0px"
-                  variant="outlined"
-                  size={'medium'}
-                  onClick={() => {
-                    publicationStore.viewMode = nextViewMode;
-                  }}>
-                  {nextViewMode}
-                </ButtonWrap>
+              {!publicationStore.isView && (
+                <>
+                  <ButtonWrap
+                    variant="contained"
+                    size={'medium'}
+                    onClick={() => {
+                      routerStore.navigatePage(
+                        Page.SHARING_OPTIONS,
+                        routerStore.path,
+                        true,
+                        { publicationTitle: publicationStore.title }
+                      );
+                    }}>
+                    Publish
+                  </ButtonWrap>
+                  <ButtonWrap
+                    marginRight="0px"
+                    variant="outlined"
+                    size={'medium'}
+                    onClick={() => {
+                      publicationStore.viewMode = nextViewMode;
+                    }}>
+                    {nextViewMode}
+                  </ButtonWrap>
+                </>
               )}
               <UserMenu />
             </FlexDiv>

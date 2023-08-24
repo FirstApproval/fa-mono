@@ -100,6 +100,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
           (confirmedAuthor, index) => {
             return (
               <AuthorElement
+                isReadonly={props.publicationStore.isReadonly}
                 key={confirmedAuthor.id}
                 author={confirmedAuthor}
                 isConfirmed={true}
@@ -113,6 +114,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
           (unconfirmedAuthor, index) => {
             return (
               <AuthorElement
+                isReadonly={props.publicationStore.isReadonly}
                 key={unconfirmedAuthor.id}
                 author={unconfirmedAuthor}
                 isConfirmed={false}
@@ -248,7 +250,11 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
           {authorStore.isConfirmed && (
             <EditConfirmedAuthor>
               {/* dirty hack to show user name and email without possibility to edit any fields except of short bio */}
-              <AuthorElement author={authorStore} isConfirmed={false} />
+              <AuthorElement
+                isReadonly={props.publicationStore.isReadonly}
+                author={authorStore}
+                isConfirmed={false}
+              />
               <FullWidthTextField
                 multiline
                 minRows={4}

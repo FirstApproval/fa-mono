@@ -105,10 +105,15 @@ export const SharingOptionsPage = (props: {
             variant="contained"
             disabled={!checkboxState}
             onClick={() => {
-              void publicationService.submitPublication(
-                publicationId,
-                AccessType.OPEN
-              );
+              void publicationService
+                .submitPublication(publicationId, AccessType.OPEN)
+                .then(() => {
+                  routerStore.navigatePage(
+                    Page.PUBLICATION,
+                    routerStore.path,
+                    true
+                  );
+                });
             }}>
             Publish now for free
           </ButtonWrap>
