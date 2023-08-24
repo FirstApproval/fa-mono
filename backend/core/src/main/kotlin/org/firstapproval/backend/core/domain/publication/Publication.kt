@@ -7,6 +7,7 @@ import jakarta.persistence.FetchType.EAGER
 import org.firstapproval.backend.core.config.encryption.StringEncryptionConverter
 import org.firstapproval.backend.core.config.encryption.StringListEncryptionConverter
 import org.firstapproval.backend.core.domain.publication.AccessType.CLOSED
+import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
 import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthor
@@ -27,45 +28,37 @@ class Publication(
     @Enumerated(STRING)
     var status: PublicationStatus = PENDING,
     @Enumerated(STRING)
-    var accessType: AccessType = CLOSED,
+    var accessType: AccessType = OPEN,
     @Convert(converter = StringEncryptionConverter::class)
     var title: String? = null,
     @Convert(converter = StringEncryptionConverter::class)
     var researchArea: String? = null,
-    @Column(columnDefinition = "text[]")
-    @ColumnTransformer(write = "?::text[]")
+    @ColumnTransformer(write = "?::text")
     @Convert(converter = StringListEncryptionConverter::class)
     var description: List<String>? = null,
-    @Column(columnDefinition = "text[]")
-    @ColumnTransformer(write = "?::text[]")
+    @ColumnTransformer(write = "?::text")
     @Convert(converter = StringListEncryptionConverter::class)
     var grantOrganizations: List<String>? = null,
-    @Column(columnDefinition = "text[]")
-    @ColumnTransformer(write = "?::text[]")
+    @ColumnTransformer(write = "?::text")
     @Convert(converter = StringListEncryptionConverter::class)
     var relatedArticles: List<String>? = null,
-    @Column(columnDefinition = "text[]")
-    @ColumnTransformer(write = "?::text[]")
+    @ColumnTransformer(write = "?::text")
     @Convert(converter = StringListEncryptionConverter::class)
     var tags: List<String>? = null,
     @Convert(converter = StringEncryptionConverter::class)
     var objectOfStudyTitle: String? = null,
-    @Column(columnDefinition = "text[]")
-    @ColumnTransformer(write = "?::text[]")
+    @ColumnTransformer(write = "?::text")
     @Convert(converter = StringListEncryptionConverter::class)
     var objectOfStudyDescription: List<String>? = null,
-    @Column(columnDefinition = "text[]")
-    @ColumnTransformer(write = "?::text[]")
+    @ColumnTransformer(write = "?::text")
     @Convert(converter = StringListEncryptionConverter::class)
     var software: List<String>? = null,
     @Convert(converter = StringEncryptionConverter::class)
     var methodTitle: String? = null,
-    @Column(columnDefinition = "text[]")
-    @ColumnTransformer(write = "?::text[]")
+    @ColumnTransformer(write = "?::text")
     @Convert(converter = StringListEncryptionConverter::class)
     var methodDescription: List<String>? = null,
-    @Column(columnDefinition = "text[]")
-    @ColumnTransformer(write = "?::text[]")
+    @ColumnTransformer(write = "?::text")
     @Convert(converter = StringListEncryptionConverter::class)
     var predictedGoals: List<String>? = null,
     @OneToMany(fetch = EAGER, cascade = [ALL], orphanRemoval = true, mappedBy = "publication")

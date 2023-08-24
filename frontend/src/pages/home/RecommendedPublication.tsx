@@ -30,9 +30,9 @@ export const RecommendedPublication = (props: {
         <NameWrap>{title}</NameWrap>
         <Footer>
           <RemoveRedEyeOutlined fontSize={'small'} />
-          123
+          {publication.viewsCount}
           <DownloadWrap fontSize={'small'} />
-          45
+          {publication.downloadsCount}
         </Footer>
       </Wrap>
     </>
