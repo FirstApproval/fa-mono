@@ -1,5 +1,7 @@
 package org.firstapproval.backend.core.config.encryption
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.type.TypeFactory
 import jakarta.persistence.AttributeConverter
 import jakarta.persistence.Converter
 import org.firstapproval.backend.core.config.encryption.DatabaseEncryptionStaticBeans.Companion.textEncryptor
@@ -7,16 +9,13 @@ import org.firstapproval.backend.core.config.encryption.DatabaseEncryptionStatic
 @Converter
 class StringListEncryptionConverter : AttributeConverter<List<String>, String> {
     override fun convertToDatabaseColumn(values: List<String>?): String? {
-        return values?.let { "{" + it.joinToString(",") { list -> textEncryptor.encrypt(list) } + "}" }
+        return values?.let { textEncryptor.encrypt(ObjectMapper().writeValueAsString(it)) }
     }
 
     override fun convertToEntityAttribute(dbData: String?): List<String>? {
-        return dbData?.let {
-            it
-                .replace("{", "")
-                .replace("}", "")
-                .replace("\"", "")
-                .split(",").map { v -> textEncryptor.decrypt(v) }.dropLastWhile { v -> v.isEmpty() }
-        }
+        val listType = TypeFactory
+            .defaultInstance()
+            .constructCollectionLikeType(List::class.java, String::class.java)
+        return dbData?.let { ObjectMapper().readValue(textEncryptor.decrypt(it), listType) }
     }
 }
