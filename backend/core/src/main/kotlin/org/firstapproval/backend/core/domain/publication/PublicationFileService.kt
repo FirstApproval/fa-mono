@@ -2,14 +2,14 @@ package org.firstapproval.backend.core.domain.publication
 
 import com.amazonaws.services.s3.model.S3Object
 import org.apache.commons.io.FilenameUtils
-import org.firstapproval.api.server.model.UploadType
+import org.firstapproval.backend.core.config.Properties.S3Properties
+import org.firstapproval.backend.core.config.security.JwtService
 import org.firstapproval.backend.core.domain.file.FILES
 import org.firstapproval.backend.core.domain.file.FileStorageService
 import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
 import org.firstapproval.backend.core.domain.user.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.util.UUID
 import java.util.UUID.randomUUID
@@ -18,7 +18,9 @@ import java.util.UUID.randomUUID
 class PublicationFileService(
     private val publicationFileRepository: PublicationFileRepository,
     private val fileStorageService: FileStorageService,
-    private val publicationRepository: PublicationRepository
+    private val publicationRepository: PublicationRepository,
+    private val s3Properties: S3Properties,
+    private val jwtService: JwtService
 ) {
 
     fun getPublicationFiles(user: User?, publicationId: UUID, dirPath: String): List<PublicationFile> {
@@ -183,6 +185,23 @@ class PublicationFileService(
         )
         publicationFileRepository.save(file)
         return file
+    }
+
+    fun getTokenToRetrieveDownloadLink(user: User, fileId: UUID): String {
+        val publication = publicationFileRepository.findById(fileId).get().publication
+        checkAccessToPublication(user, publication)
+        return jwtService.generate(
+            mapOf(
+                "creator" to user.id,
+                "fileId" to fileId
+            )
+        )
+    }
+
+    fun getDownloadLink(token: String): String {
+        val claims = jwtService.parse(token)
+        val fileId = claims["fileId"].toString()
+        return fileStorageService.generateTemporaryDownloadLink(FILES, fileId, s3Properties.downloadLinkTtl)
     }
 
     private fun extractDirPath(fullPath: String) = fullPath.substring(0, fullPath.lastIndexOf('/') + 1)
