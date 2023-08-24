@@ -9,7 +9,7 @@ import {
   TextField
 } from '@mui/material';
 import styled from '@emotion/styled';
-import { ArrowForward, LockOutlined } from '@mui/icons-material';
+import { ArrowForward, LockOutlined, MailOutlined } from '@mui/icons-material';
 import { observer } from 'mobx-react-lite';
 import { type SignUpStore } from './SignUpStore';
 import {
@@ -138,7 +138,24 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
             <Header>Welcome, {props.store.firstName}</Header>
             <EmailLabel>Now, set your password:</EmailLabel>
             <div>
+              <HiddenTextField
+                hidden={true}
+                autoComplete={'email'}
+                autoFocus
+                value={props.store.email}
+                type={'email'}
+                label="Email"
+                variant="outlined"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <MailOutlined />
+                    </InputAdornment>
+                  )
+                }}
+              />
               <FullWidthTextField
+                autoComplete={'new-password'}
                 autoFocus
                 error={!isValidPassword}
                 helperText={
@@ -218,6 +235,10 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
 const FullWidthTextField = styled(TextField)`
   width: 100%;
   margin-bottom: 20px;
+`;
+
+const HiddenTextField = styled(TextField)`
+  display: none;
 `;
 
 const EmailLabel = styled('div')`
