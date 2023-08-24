@@ -345,7 +345,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/PublicationsResponse'
+                $ref: '#/components/schemas/PublicationsResponse'
       security:
         - TokenAuth: [ ]
       operationId: getMyPublications
@@ -1177,6 +1177,7 @@ components:
           type: string
         description:
           type: string
+          maxLength: 4096
       required:
         - name
 
@@ -1499,6 +1500,7 @@ components:
           type: string
         selfInfo:
           type: string
+          maxLength: 4096
         profileImage:
           type: string
           format: byte
@@ -1769,6 +1771,7 @@ components:
           type: string
         selfInfo:
           type: string
+          maxLength: 4096
       required:
         - firstName
         - middleName

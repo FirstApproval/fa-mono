@@ -7,6 +7,7 @@ import jakarta.persistence.FetchType.EAGER
 import org.firstapproval.backend.core.config.encryption.StringEncryptionConverter
 import org.firstapproval.backend.core.config.encryption.StringListEncryptionConverter
 import org.firstapproval.backend.core.domain.publication.AccessType.CLOSED
+import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
 import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthor
@@ -27,7 +28,7 @@ class Publication(
     @Enumerated(STRING)
     var status: PublicationStatus = PENDING,
     @Enumerated(STRING)
-    var accessType: AccessType = CLOSED,
+    var accessType: AccessType = OPEN,
     @Convert(converter = StringEncryptionConverter::class)
     var title: String? = null,
     @Convert(converter = StringEncryptionConverter::class)

@@ -13,7 +13,7 @@ import { type ChonkyFileSystem } from '../../../fire-browser/ChonkyFileSystem';
 import { v4 as uuidv4 } from 'uuid';
 import { type AuthorEditorStore } from './AuthorEditorStore';
 
-const EDIT_THROTTLE_MS = 5000;
+const EDIT_THROTTLE_MS = 1000;
 
 export type ParagraphWithId = Paragraph & { id: string };
 
