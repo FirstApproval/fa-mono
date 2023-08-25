@@ -9,6 +9,7 @@ import {
 import { getInitials } from '../../../../util/userUtil';
 
 interface AuthorElementProps {
+  isReadonly: boolean;
   author: ConfirmedAuthor | UnconfirmedAuthor;
   isConfirmed: boolean;
   index?: number;
@@ -20,7 +21,8 @@ interface AuthorElementProps {
 }
 
 export const AuthorElement = (props: AuthorElementProps): ReactElement => {
-  const { author, isConfirmed, index, setEditAuthorVisible } = props;
+  const { isReadonly, author, isConfirmed, index, setEditAuthorVisible } =
+    props;
   const shortBio = author.shortBio;
   let firstName;
   let lastName;
@@ -50,16 +52,18 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
           </AuthorShortBio>
         </AuthorWrap>
       </AuthorElementWrap>
-      <div>
-        {setEditAuthorVisible && (
-          <IconButton
-            onClick={() => {
-              setEditAuthorVisible(author, isConfirmed, index);
-            }}>
-            <Edit htmlColor={'gray'} />
-          </IconButton>
-        )}
-      </div>
+      {!isReadonly && (
+        <div>
+          {setEditAuthorVisible && (
+            <IconButton
+              onClick={() => {
+                setEditAuthorVisible(author, isConfirmed, index);
+              }}>
+              <Edit htmlColor={'gray'} />
+            </IconButton>
+          )}
+        </div>
+      )}
     </AuthorRowWrap>
   );
 };

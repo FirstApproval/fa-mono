@@ -41,7 +41,7 @@ export const TagsEditor = observer((props: EditorProps): ReactElement => {
           </a>
         )}
       </div>
-      {enableAddingNewTag && (
+      {enableAddingNewTag && !props.publicationStore.isReadonly && (
         <TagTextInputWrap>
           <FullWidthTextField
             size={'medium'}

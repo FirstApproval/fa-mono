@@ -71,6 +71,9 @@ export class HomePageStore {
       .then((r) => {
         this.searchResults = r.data.items ?? [];
       })
+      .catch(() => {
+        this.searchResults = [];
+      })
       .finally(() => {
         this.isSearching = false;
       });
