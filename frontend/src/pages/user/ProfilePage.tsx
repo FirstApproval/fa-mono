@@ -75,6 +75,13 @@ export const ProfilePage: FunctionComponent = observer(() => {
     return publications && publications.length > 0;
   };
 
+  const notEmptyPublished = notEmpty(
+    store.publications.get(PublicationStatus.PUBLISHED) ?? []
+  );
+  const notEmptyPending = notEmpty(
+    store.publications.get(PublicationStatus.PENDING) ?? []
+  );
+
   return (
     <Parent>
       <FlexHeader>
@@ -151,31 +158,32 @@ export const ProfilePage: FunctionComponent = observer(() => {
                           []
                       )}
                     </div>
-                    {notEmpty(
-                      store.publications.get(PublicationStatus.PUBLISHED) ?? []
-                    ) && loadMoreButton(PublicationStatus.PUBLISHED)}
-                    <Banner>
-                      <BannerLeftPart>
-                        <UploadYourFirstDatasetHeader>
-                          Upload you first dataset
-                        </UploadYourFirstDatasetHeader>
-                        <HeightElement value={'8px'} />
-                        <SelfInfo>
-                          Show off your work. Get recognition and be a part of a
-                          growing community.
-                        </SelfInfo>
-                        <HeightElement value={'10px'} />
-                        <StartPublishingButton
-                          color={'primary'}
-                          variant={'contained'}
-                          onClick={async () => {
-                            await store.createPublication();
-                          }}>
-                          Start publishing
-                        </StartPublishingButton>
-                      </BannerLeftPart>
-                      <img src={upload_your_first_dataset_from} />
-                    </Banner>
+                    {notEmptyPublished &&
+                      loadMoreButton(PublicationStatus.PUBLISHED)}
+                    {!notEmptyPublished && (
+                      <Banner>
+                        <BannerLeftPart>
+                          <UploadYourFirstDatasetHeader>
+                            Upload you first dataset
+                          </UploadYourFirstDatasetHeader>
+                          <HeightElement value={'8px'} />
+                          <SelfInfo>
+                            Show off your work. Get recognition and be a part of
+                            a growing community.
+                          </SelfInfo>
+                          <HeightElement value={'10px'} />
+                          <StartPublishingButton
+                            color={'primary'}
+                            variant={'contained'}
+                            onClick={async () => {
+                              await store.createPublication();
+                            }}>
+                            Start publishing
+                          </StartPublishingButton>
+                        </BannerLeftPart>
+                        <img src={upload_your_first_dataset_from} />
+                      </Banner>
+                    )}
                   </TabContainer>
                 )}
                 {tabNumber === 1 && (
@@ -185,9 +193,10 @@ export const ProfilePage: FunctionComponent = observer(() => {
                         store.publications.get(PublicationStatus.PENDING) ?? []
                       )}
                     </div>
-                    {notEmpty(
-                      store.publications.get(PublicationStatus.PENDING) ?? []
-                    ) && loadMoreButton(PublicationStatus.PENDING)}
+                    {notEmptyPending &&
+                      loadMoreButton(PublicationStatus.PENDING)}
+                    {!notEmptyPending &&
+                      loadMoreButton(PublicationStatus.PENDING)}
                   </TabContainer>
                 )}
               </>
