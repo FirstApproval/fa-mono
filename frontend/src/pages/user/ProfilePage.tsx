@@ -40,6 +40,7 @@ import {
 } from 'src/fire-browser/utils';
 import { userStore } from 'src/core/user';
 import { Page } from '../../core/RouterStore';
+import { Footer } from '../home/Footer';
 
 export const ProfilePage: FunctionComponent = observer(() => {
   const [username] = useState(() => routerStore.profileUsername);
@@ -83,141 +84,145 @@ export const ProfilePage: FunctionComponent = observer(() => {
   );
 
   return (
-    <Parent>
-      <FlexHeader>
-        <Logo onClick={routerStore.goHome}>
-          <img src={logo} />
-        </Logo>
-        <FlexHeaderRight>
-          <UserMenu />
-        </FlexHeaderRight>
-      </FlexHeader>
-      <FlexBodyCenter>
-        <FlexBody>
-          <ColumnElement>
-            <RowElement>
-              <Avatar
-                src={renderProfileImage(user.profileImage)}
-                sx={{ width: 100, height: 100 }}
-              />
-              <UserInfoElement>
-                <NameElement>{lastNameAndFirstName}</NameElement>
-                <SelfInfo style={{ marginTop: '10px', marginBottom: '10px' }}>
-                  {user.selfInfo}
-                </SelfInfo>
-                <EmailElement>
-                  <EmailOutlined
-                    style={{ marginRight: '12px', marginTop: '2.5px' }}
-                    htmlColor={'#68676e'}
-                  />
-                  <SelfInfo>{user.email}</SelfInfo>
-                </EmailElement>
-                <RowElement visibility={username ? 'hidden' : 'visible'}>
-                  <EditProfileAndCreateDraftButtons
-                    onClick={() => {
-                      routerStore.navigatePage(
-                        Page.ACCOUNT,
-                        '/account/profile'
-                      );
-                    }}
-                    variant="outlined"
-                    size={'large'}>
-                    Edit profile
-                  </EditProfileAndCreateDraftButtons>
-                  <CopyProfileLinkButton
-                    size={'large'}
-                    onClick={() => {
-                      void copyTextToClipboard(
-                        getProfileLink(user.username)
-                      ).finally();
-                    }}>
-                    <ContentCopy style={{ marginRight: '8px' }} />
-                    Copy profile link
-                  </CopyProfileLinkButton>
-                </RowElement>
-              </UserInfoElement>
-            </RowElement>
-            <HeightElement value={'40px'}></HeightElement>
-            <Tabs
-              value={tabNumber}
-              onChange={handleChange}
-              aria-label="basic tabs example">
-              <CustomTab sx={{ textTransform: 'none' }} label="Published" />
-              <CustomTab sx={{ textTransform: 'none' }} label="Drafts" />
-            </Tabs>
-            <Divider style={{ marginTop: '-1.3px' }} />
-            <HeightElement value={'40px'}></HeightElement>
-            {store.isLoadingPublications && <LinearProgress />}
-            {!store.isLoadingPublications && (
-              <>
-                {tabNumber === 0 && (
-                  <TabContainer>
-                    <div>
-                      {mapPublications(
-                        store.publications.get(PublicationStatus.PUBLISHED) ??
-                          []
+    <>
+      <Parent>
+        <FlexHeader>
+          <Logo onClick={routerStore.goHome}>
+            <img src={logo} />
+          </Logo>
+          <FlexHeaderRight>
+            <UserMenu />
+          </FlexHeaderRight>
+        </FlexHeader>
+        <FlexBodyCenter>
+          <FlexBody>
+            <ColumnElement>
+              <RowElement>
+                <Avatar
+                  src={renderProfileImage(user.profileImage)}
+                  sx={{ width: 100, height: 100 }}
+                />
+                <UserInfoElement>
+                  <NameElement>{lastNameAndFirstName}</NameElement>
+                  <SelfInfo style={{ marginTop: '10px', marginBottom: '10px' }}>
+                    {user.selfInfo}
+                  </SelfInfo>
+                  <EmailElement>
+                    <EmailOutlined
+                      style={{ marginRight: '12px', marginTop: '2.5px' }}
+                      htmlColor={'#68676e'}
+                    />
+                    <SelfInfo>{user.email}</SelfInfo>
+                  </EmailElement>
+                  <RowElement visibility={username ? 'hidden' : 'visible'}>
+                    <EditProfileAndCreateDraftButtons
+                      onClick={() => {
+                        routerStore.navigatePage(
+                          Page.ACCOUNT,
+                          '/account/profile'
+                        );
+                      }}
+                      variant="outlined"
+                      size={'large'}>
+                      Edit profile
+                    </EditProfileAndCreateDraftButtons>
+                    <CopyProfileLinkButton
+                      size={'large'}
+                      onClick={() => {
+                        void copyTextToClipboard(
+                          getProfileLink(user.username)
+                        ).finally();
+                      }}>
+                      <ContentCopy style={{ marginRight: '8px' }} />
+                      Copy profile link
+                    </CopyProfileLinkButton>
+                  </RowElement>
+                </UserInfoElement>
+              </RowElement>
+              <HeightElement value={'40px'}></HeightElement>
+              <Tabs
+                value={tabNumber}
+                onChange={handleChange}
+                aria-label="basic tabs example">
+                <CustomTab sx={{ textTransform: 'none' }} label="Published" />
+                <CustomTab sx={{ textTransform: 'none' }} label="Drafts" />
+              </Tabs>
+              <Divider style={{ marginTop: '-1.3px' }} />
+              <HeightElement value={'40px'}></HeightElement>
+              {store.isLoadingPublications && <LinearProgress />}
+              {!store.isLoadingPublications && (
+                <>
+                  {tabNumber === 0 && (
+                    <TabContainer>
+                      <div>
+                        {mapPublications(
+                          store.publications.get(PublicationStatus.PUBLISHED) ??
+                            []
+                        )}
+                      </div>
+                      {notEmptyPublished &&
+                        loadMoreButton(PublicationStatus.PUBLISHED)}
+                      {!notEmptyPublished && (
+                        <Banner>
+                          <BannerLeftPart>
+                            <UploadYourFirstDatasetHeader>
+                              Upload you first dataset
+                            </UploadYourFirstDatasetHeader>
+                            <HeightElement value={'8px'} />
+                            <SelfInfo>
+                              Show off your work. Get recognition and be a part
+                              of a growing community.
+                            </SelfInfo>
+                            <HeightElement value={'10px'} />
+                            <StartPublishingButton
+                              color={'primary'}
+                              variant={'contained'}
+                              onClick={async () => {
+                                await store.createPublication();
+                              }}>
+                              Start publishing
+                            </StartPublishingButton>
+                          </BannerLeftPart>
+                          <img src={upload_your_first_dataset_from} />
+                        </Banner>
                       )}
-                    </div>
-                    {notEmptyPublished &&
-                      loadMoreButton(PublicationStatus.PUBLISHED)}
-                    {!notEmptyPublished && (
-                      <Banner>
-                        <BannerLeftPart>
-                          <UploadYourFirstDatasetHeader>
-                            Upload you first dataset
-                          </UploadYourFirstDatasetHeader>
-                          <HeightElement value={'8px'} />
-                          <SelfInfo>
-                            Show off your work. Get recognition and be a part of
-                            a growing community.
-                          </SelfInfo>
-                          <HeightElement value={'10px'} />
-                          <StartPublishingButton
-                            color={'primary'}
-                            variant={'contained'}
+                    </TabContainer>
+                  )}
+                  {tabNumber === 1 && (
+                    <TabContainer>
+                      <div>
+                        {mapPublications(
+                          store.publications.get(PublicationStatus.PENDING) ??
+                            []
+                        )}
+                      </div>
+                      {notEmptyPending &&
+                        loadMoreButton(PublicationStatus.PENDING)}
+                      {!notEmptyPending && (
+                        <CenterColumnElement>
+                          <YouDontHaveAnyDrafts>
+                            {"You don't have any drafts yet 🤷‍"}
+                          </YouDontHaveAnyDrafts>
+                          <HeightElement value="16px" />
+                          <EditProfileAndCreateDraftButtons
+                            variant={'outlined'}
                             onClick={async () => {
                               await store.createPublication();
                             }}>
-                            Start publishing
-                          </StartPublishingButton>
-                        </BannerLeftPart>
-                        <img src={upload_your_first_dataset_from} />
-                      </Banner>
-                    )}
-                  </TabContainer>
-                )}
-                {tabNumber === 1 && (
-                  <TabContainer>
-                    <div>
-                      {mapPublications(
-                        store.publications.get(PublicationStatus.PENDING) ?? []
+                            Create draft
+                          </EditProfileAndCreateDraftButtons>
+                        </CenterColumnElement>
                       )}
-                    </div>
-                    {notEmptyPending &&
-                      loadMoreButton(PublicationStatus.PENDING)}
-                    {!notEmptyPending && (
-                      <CenterColumnElement>
-                        <YouDontHaveAnyDrafts>
-                          {"You don't have any drafts yet 🤷‍"}
-                        </YouDontHaveAnyDrafts>
-                        <HeightElement value="16px" />
-                        <EditProfileAndCreateDraftButtons
-                          variant={'outlined'}
-                          onClick={async () => {
-                            await store.createPublication();
-                          }}>
-                          Create draft
-                        </EditProfileAndCreateDraftButtons>
-                      </CenterColumnElement>
-                    )}
-                  </TabContainer>
-                )}
-              </>
-            )}
-          </ColumnElement>
-        </FlexBody>
-      </FlexBodyCenter>
-    </Parent>
+                    </TabContainer>
+                  )}
+                </>
+              )}
+            </ColumnElement>
+          </FlexBody>
+        </FlexBodyCenter>
+      </Parent>
+      <Footer />
+    </>
   );
 });
 

@@ -27,6 +27,7 @@ import PopularAuthorsSection from './PopularAuthorsSection';
 import RecommendedPublicationsSection from './RecommendedPublicationsSection';
 import logo from '../../assets/logo.svg';
 import { authStore } from '../../core/auth';
+import { Footer } from './Footer';
 
 export const HomePage: FunctionComponent = observer(() => {
   const [store] = useState(() => new HomePageStore());
@@ -34,113 +35,116 @@ export const HomePage: FunctionComponent = observer(() => {
   const hasSearch = store.searchQuery.length > 0;
 
   return (
-    <Parent>
-      <FlexHeader>
-        <Logo onClick={routerStore.goHome}>
-          <img src={logo} />
-        </Logo>
-        <FlexHeaderRight>
-          <Stack direction="row" spacing={2}>
-            <ButtonWrap
-              onClick={() => {
-                if (authStore.token) {
-                  void store.createPublication();
-                } else {
-                  routerStore.navigatePage(Page.SIGN_UP);
-                }
-              }}
-              size={'medium'}>
-              Publish
-            </ButtonWrap>
-            {!authStore.token && (
-              <>
-                <ButtonWrap
-                  onClick={() => {
-                    routerStore.navigatePage(Page.SIGN_IN);
-                  }}
-                  size={'medium'}>
-                  Sign in
-                </ButtonWrap>
-                <Button
-                  size={'medium'}
-                  variant={'contained'}
-                  onClick={() => {
+    <>
+      <Parent>
+        <FlexHeader>
+          <Logo onClick={routerStore.goHome}>
+            <img src={logo} />
+          </Logo>
+          <FlexHeaderRight>
+            <Stack direction="row" spacing={2}>
+              <ButtonWrap
+                onClick={() => {
+                  if (authStore.token) {
+                    void store.createPublication();
+                  } else {
                     routerStore.navigatePage(Page.SIGN_UP);
-                  }}>
-                  Sign up
-                </Button>
-              </>
-            )}
-          </Stack>
-          {authStore.token && <UserMenu />}
-        </FlexHeaderRight>
-      </FlexHeader>
-      <Wrap>
-        <Header>Discover science</Header>
-      </Wrap>
-      <Wrap>
-        <FullWidthTextField
-          autoFocus
-          value={store.inputValue}
-          onChange={(event) => {
-            store.inputValue = event.currentTarget.value;
-            if (!store.inputValue) {
-              store.searchQuery = '';
-            }
-          }}
-          placeholder={'Search the data you need...'}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter' || event.keyCode === 13) {
-              void store.search();
-            }
-          }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <Search />
-              </InputAdornment>
-            )
-          }}
-        />
-      </Wrap>
-      {!hasSearch && (
-        <>
-          <RecommendedPublicationsSection
-            publications={store.recommendedPublications}
-          />
-          <CallToAction store={store} />
-          <FlexBodyCenter>
-            <FlexBody>
-              <PopularAuthorsSection authors={store.popularAuthors} />
-              <DividerWrap />
-              {store.isLoadingPublications && <LinearProgress />}
-              {!store.isLoadingPublications && (
+                  }
+                }}
+                size={'medium'}>
+                Publish
+              </ButtonWrap>
+              {!authStore.token && (
                 <>
-                  {store.publications.map((p) => (
+                  <ButtonWrap
+                    onClick={() => {
+                      routerStore.navigatePage(Page.SIGN_IN);
+                    }}
+                    size={'medium'}>
+                    Sign in
+                  </ButtonWrap>
+                  <Button
+                    size={'medium'}
+                    variant={'contained'}
+                    onClick={() => {
+                      routerStore.navigatePage(Page.SIGN_UP);
+                    }}>
+                    Sign up
+                  </Button>
+                </>
+              )}
+            </Stack>
+            {authStore.token && <UserMenu />}
+          </FlexHeaderRight>
+        </FlexHeader>
+        <Wrap>
+          <Header>Discover science</Header>
+        </Wrap>
+        <Wrap>
+          <FullWidthTextField
+            autoFocus
+            value={store.inputValue}
+            onChange={(event) => {
+              store.inputValue = event.currentTarget.value;
+              if (!store.inputValue) {
+                store.searchQuery = '';
+              }
+            }}
+            placeholder={'Search the data you need...'}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.keyCode === 13) {
+                void store.search();
+              }
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Search />
+                </InputAdornment>
+              )
+            }}
+          />
+        </Wrap>
+        {!hasSearch && (
+          <>
+            <RecommendedPublicationsSection
+              publications={store.recommendedPublications}
+            />
+            <CallToAction store={store} />
+            <FlexBodyCenter>
+              <FlexBody>
+                <PopularAuthorsSection authors={store.popularAuthors} />
+                <DividerWrap />
+                {store.isLoadingPublications && <LinearProgress />}
+                {!store.isLoadingPublications && (
+                  <>
+                    {store.publications.map((p) => (
+                      <PublicationSection key={p.id} publication={p} />
+                    ))}
+                  </>
+                )}
+              </FlexBody>
+            </FlexBodyCenter>
+          </>
+        )}
+        {hasSearch && (
+          <>
+            <Wrap>
+              <ResultsLabel>Results for {store.searchQuery}</ResultsLabel>
+              {store.isSearching && <LinearProgress />}
+              {!store.isSearching && (
+                <>
+                  {store.searchResults.map((p) => (
                     <PublicationSection key={p.id} publication={p} />
                   ))}
                 </>
               )}
-            </FlexBody>
-          </FlexBodyCenter>
-        </>
-      )}
-      {hasSearch && (
-        <>
-          <Wrap>
-            <ResultsLabel>Results for {store.searchQuery}</ResultsLabel>
-            {store.isSearching && <LinearProgress />}
-            {!store.isSearching && (
-              <>
-                {store.searchResults.map((p) => (
-                  <PublicationSection key={p.id} publication={p} />
-                ))}
-              </>
-            )}
-          </Wrap>
-        </>
-      )}
-    </Parent>
+            </Wrap>
+          </>
+        )}
+      </Parent>
+      <Footer />
+    </>
   );
 });
 
@@ -166,7 +170,7 @@ export const FlexBody = styled('div')`
   padding-right: 40px;
 `;
 
-export const ButtonWrap = styled(Button)`
+const ButtonWrap = styled(Button)`
   color: var(--inherit-text-primary-main, #040036);
 `;
 

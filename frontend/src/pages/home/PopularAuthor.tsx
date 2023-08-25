@@ -32,7 +32,7 @@ export const PopularAuthor = (props: {
 
 const FlexWrap = styled.div`
   display: flex;
-  align-items: baseline;
+  align-items: start;
 `;
 
 const MarginWrap = styled.div`

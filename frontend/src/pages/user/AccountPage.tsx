@@ -43,6 +43,7 @@ import { validateEmail } from 'src/util/emailUtil';
 import { userStore } from '../../core/user';
 import { getInitials } from 'src/util/userUtil';
 import { cloneDeep } from 'lodash';
+import { Footer } from '../home/Footer';
 
 const tabs: string[] = ['general', 'profile', 'password'];
 
@@ -456,6 +457,7 @@ export const AccountPage: FunctionComponent = observer(() => {
           </FlexBody>
         </FlexBodyCenter>
       </Parent>
+      <Footer />
       <Dialog
         open={deleteDialogOpen}
         onClose={handleCloseDeleteDialog}

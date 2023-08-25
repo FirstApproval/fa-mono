@@ -15,7 +15,7 @@ export const PublicationSection = (props: {
     .confirmedAuthors!.map(
       (author) => `${author.user.firstName} ${author.user.lastName}`
     )
-    .join(' , ');
+    .join(', ');
 
   return (
     <>
