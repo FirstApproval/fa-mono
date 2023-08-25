@@ -11,7 +11,7 @@ import {
   LinearProgress,
   Tabs
 } from '@mui/material';
-import { EmailOutlined, IosShare } from '@mui/icons-material';
+import { ContentCopy, EmailOutlined } from '@mui/icons-material';
 import { observer } from 'mobx-react-lite';
 import {
   CustomTab,
@@ -113,7 +113,7 @@ export const ProfilePage: FunctionComponent = observer(() => {
                   <SelfInfo>{user.email}</SelfInfo>
                 </EmailElement>
                 <RowElement visibility={username ? 'hidden' : 'visible'}>
-                  <EditProfileButton
+                  <EditProfileAndCreateDraftButtons
                     onClick={() => {
                       routerStore.navigatePage(
                         Page.ACCOUNT,
@@ -123,7 +123,7 @@ export const ProfilePage: FunctionComponent = observer(() => {
                     variant="outlined"
                     size={'large'}>
                     Edit profile
-                  </EditProfileButton>
+                  </EditProfileAndCreateDraftButtons>
                   <CopyProfileLinkButton
                     size={'large'}
                     onClick={() => {
@@ -131,7 +131,7 @@ export const ProfilePage: FunctionComponent = observer(() => {
                         getProfileLink(user.username)
                       ).finally();
                     }}>
-                    <IosShare style={{ marginRight: '8px' }} />
+                    <ContentCopy style={{ marginRight: '8px' }} />
                     Copy profile link
                   </CopyProfileLinkButton>
                 </RowElement>
@@ -195,8 +195,21 @@ export const ProfilePage: FunctionComponent = observer(() => {
                     </div>
                     {notEmptyPending &&
                       loadMoreButton(PublicationStatus.PENDING)}
-                    {!notEmptyPending &&
-                      loadMoreButton(PublicationStatus.PENDING)}
+                    {!notEmptyPending && (
+                      <CenterColumnElement>
+                        <YouDontHaveAnyDrafts>
+                          {"You don't have any drafts yet 🤷‍"}
+                        </YouDontHaveAnyDrafts>
+                        <HeightElement value="16px" />
+                        <EditProfileAndCreateDraftButtons
+                          variant={'outlined'}
+                          onClick={async () => {
+                            await store.createPublication();
+                          }}>
+                          Create draft
+                        </EditProfileAndCreateDraftButtons>
+                      </CenterColumnElement>
+                    )}
                   </TabContainer>
                 )}
               </>
@@ -220,6 +233,13 @@ export const ColumnElement = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
+`;
+
+export const CenterColumnElement = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 export const EmailElement = styled.div`
@@ -257,7 +277,7 @@ export const SelfInfo = styled.div`
   letter-spacing: 0.15px;
 `;
 
-export const EditProfileButton = styled(Button)`
+export const EditProfileAndCreateDraftButtons = styled(Button)`
   width: 140px;
   color: var(--inherit-text-primary-main, #040036);
   font-feature-settings: 'clig' off, 'liga' off;
@@ -347,6 +367,19 @@ const BannerLeftPart = styled.div`
 
 export const StartPublishingButton = styled(Button)`
   width: 180px;
+`;
+
+export const YouDontHaveAnyDrafts = styled(Button)`
+  color: var(--text-secondary, #68676e);
+  text-align: center;
+  font-feature-settings: 'clig' off, 'liga' off;
+  /* typography/body */
+  font-family: Roboto;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 160%; /* 32px */
+  letter-spacing: 0.15px;
 `;
 
 export const FlexBody = styled.div`
