@@ -26,7 +26,7 @@ export const PredictedGoalsPlaceholder = (
   return (
     <ContentPlaceholder
       onClick={props.onClick}
-      text={'Predicted goals'}
+      text={'Experiment goals'}
       icon={<img src={predicted_goals} />}
     />
   );
@@ -123,11 +123,16 @@ export const ContentPlaceholder = (
 ): ReactElement => {
   return (
     <ContentPlaceholderWrap tabIndex={0} onClick={props.onClick}>
-      <div>{props.icon} </div>
+      <FlexWrap>{props.icon} </FlexWrap>
       <LabelWrap>{props.text}</LabelWrap>
     </ContentPlaceholderWrap>
   );
 };
+
+const FlexWrap = styled.div`
+  display: flex;
+  mix-blend-mode: luminosity;
+`;
 
 const ContentPlaceholderWrap = styled.div`
   display: flex;

@@ -37,7 +37,7 @@ export const DescriptionEditor = observer(
         onAddClick={(idx) => {
           props.publicationStore.addDescriptionParagraph(idx);
         }}
-        placeholder={'Describe the aim of your experiment or research...'}
+        placeholder={'Publication summary'}
       />
     );
   }
@@ -55,8 +55,8 @@ export const PredictedGoalsEditor = observer(
         onAddClick={(idx) => {
           props.publicationStore.addPredictedGoalsParagraph(idx);
         }}
-        text={'Predicted goals'}
-        placeholder={'Mention your expected outcomes or hypotheses...'}
+        text={'Experiment goals'}
+        placeholder={'Describe the experiment goals and preliminary results...'}
       />
     );
   }
