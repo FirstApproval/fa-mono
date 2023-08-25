@@ -12,6 +12,7 @@ export class AuthorEditorStore {
   isConfirmed: boolean = false;
   isNew: boolean = false;
   index?: number;
+  profileImage?: string;
   constructor() {
     makeAutoObservable(this);
   }
@@ -28,6 +29,7 @@ export class AuthorEditorStore {
     this.firstName = '';
     this.lastName = '';
     this.shortBio = '';
+    this.profileImage = '';
     this.index = undefined;
   }
 }

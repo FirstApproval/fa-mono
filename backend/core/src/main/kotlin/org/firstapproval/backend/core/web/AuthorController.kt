@@ -5,6 +5,7 @@ import org.firstapproval.api.server.model.Author
 import org.firstapproval.api.server.model.RecommendedAuthor
 import org.firstapproval.api.server.model.TopAuthorsResponse
 import org.firstapproval.backend.core.domain.user.UserRepository
+import org.firstapproval.backend.core.domain.user.UserService
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
@@ -12,7 +13,10 @@ import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class AuthorController(private val userRepository: UserRepository) : AuthorApi {
+class AuthorController(
+    private val userRepository: UserRepository,
+    private val userService: UserService
+) : AuthorApi {
     override fun getAuthors(searchText: String): ResponseEntity<List<Author>> {
         val textArray = searchText.trim().split("\\s+".toRegex())
         val email = textArray.find { it.contains("@") }?.let { "%$it%" }
@@ -21,6 +25,7 @@ class AuthorController(private val userRepository: UserRepository) : AuthorApi {
             .let { it.ifEmpty { null } }
         val authors = userRepository.findByTextAndEmail(preparedText, email).map {
             Author(it.firstName, it.middleName, it.lastName, it.email, it.selfInfo).id(it.id)
+                .profileImage(userService.getProfileImage(it.profileImage))
         }
         return ok().body(authors)
     }
@@ -31,7 +36,12 @@ class AuthorController(private val userRepository: UserRepository) : AuthorApi {
             TopAuthorsResponse()
                 .authors(
                     authorsPage.map {
-                        RecommendedAuthor(it.firstName, it.middleName, it.lastName, it.selfInfo)
+                        RecommendedAuthor(
+                            it.firstName,
+                            it.middleName,
+                            it.lastName,
+                            it.selfInfo
+                        ).profileImage(userService.getProfileImage(it.profileImage))
                     }.toList()
                 )
                 .isLastPage(authorsPage.isLast)

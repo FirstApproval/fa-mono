@@ -14,6 +14,7 @@ import org.firstapproval.backend.core.config.security.userOrNull
 import org.firstapproval.backend.core.domain.ipfs.IpfsClient
 import org.firstapproval.backend.core.domain.publication.PublicationService
 import org.firstapproval.backend.core.domain.publication.toApiObject
+import org.firstapproval.backend.core.domain.user.UserService
 import org.springframework.core.io.InputStreamResource
 import org.springframework.core.io.Resource
 import org.springframework.http.MediaType
@@ -27,6 +28,7 @@ import org.firstapproval.backend.core.domain.publication.AccessType as AccessTyp
 @RestController
 class PublicationController(
     private val publicationService: PublicationService,
+    private val userService: UserService,
     private val ipfsClient: IpfsClient,
     private val authHolderService: AuthHolderService
 ) : PublicationApi {
@@ -78,7 +80,7 @@ class PublicationController(
 //            val publicationArchiveInfo = ipfsClient.getInfo(contentId)
 //            publicationArchiveInfo.availability.let { PublicationContentStatus.valueOf(it.name) }
 //        }
-        val publicationResponse = pub.toApiObject()//.contentStatus(contentStatus)
+        val publicationResponse = pub.toApiObject(userService)//.contentStatus(contentStatus)
         return ok().body(publicationResponse)
     }
 

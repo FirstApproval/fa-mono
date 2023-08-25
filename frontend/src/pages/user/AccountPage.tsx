@@ -41,6 +41,7 @@ import {
 } from '../../fire-browser/utils';
 import { validateEmail } from 'src/util/emailUtil';
 import { userStore } from '../../core/user';
+import { getInitials } from 'src/util/userUtil';
 import { cloneDeep } from 'lodash';
 
 const tabs: string[] = ['general', 'profile', 'password'];
@@ -80,8 +81,15 @@ export const AccountPage: FunctionComponent = observer(() => {
     return isVP;
   };
 
-  const open = Boolean(anchor);
-  const handleClose = (): void => {
+  const openMenu = Boolean(anchor);
+
+  const handleMenuClick = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ): void => {
+    setAnchor(event.currentTarget);
+  };
+
+  const handleMenuClose = (): void => {
     setAnchor(null);
   };
 
@@ -208,20 +216,20 @@ export const AccountPage: FunctionComponent = observer(() => {
                 <>
                   <div>
                     <IconButton
-                      onClick={handleFileInputClick}
+                      onClick={handleMenuClick}
                       size="small"
                       sx={{ ml: 3 }}
-                      aria-controls={open ? 'user-menu' : undefined}
+                      aria-controls={openMenu ? 'user-menu' : undefined}
                       aria-haspopup="true"
-                      aria-expanded={open ? 'true' : undefined}>
+                      aria-expanded={openMenu ? 'true' : undefined}>
                       <MoreVertIcon htmlColor={'#68676E'} />
                     </IconButton>
                   </div>
                   <Menu
                     id="user-menu"
                     anchorEl={anchor}
-                    open={open}
-                    onClose={handleClose}
+                    open={openMenu}
+                    onClose={handleMenuClose}
                     anchorOrigin={{
                       vertical: 'bottom',
                       horizontal: 'left'
@@ -236,7 +244,7 @@ export const AccountPage: FunctionComponent = observer(() => {
                     <MenuItem
                       onClick={() => {
                         setDeleteDialogOpen(true);
-                        handleClose();
+                        handleMenuClose();
                       }}>
                       <DeleteForever style={{ marginRight: '10px' }} />
                       Delete account
@@ -246,7 +254,9 @@ export const AccountPage: FunctionComponent = observer(() => {
               </SpaceBetween>
               <HeightElement value={'27px'}></HeightElement>
               <RowElement>
-                <Avatar src={avatarImg} sx={{ width: 100, height: 100 }} />
+                <Avatar src={avatarImg} sx={{ width: 100, height: 100 }}>
+                  {getInitials(user.firstName, user.lastName)}
+                </Avatar>
                 <input
                   type="file"
                   ref={hiddenFileInput}

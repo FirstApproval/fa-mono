@@ -1860,6 +1860,9 @@ components:
           type: string
         shortBio:
           type: string
+        profileImage:
+          type: string
+          format: byte
       required:
         - firstName
         - middleName
@@ -1883,6 +1886,9 @@ components:
         selfInfo:
           type: string
           maxLength: 4096
+        profileImage:
+          type: string
+          format: byte
       required:
         - firstName
         - middleName
