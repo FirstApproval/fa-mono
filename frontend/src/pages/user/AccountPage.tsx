@@ -28,7 +28,7 @@ import logo from '../../assets/logo.svg';
 import styled from '@emotion/styled';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { DeleteForever, LockOutlined } from '@mui/icons-material';
+import { ContentCopy, DeleteForever, LockOutlined } from '@mui/icons-material';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -325,6 +325,11 @@ export const AccountPage: FunctionComponent = observer(() => {
                       }}>
                       {'Your FA URL: https://firstapproval.com/profile/' +
                         editableUser.username}
+                      <ContentCopy
+                        sx={{ width: '15px', height: '15px' }}
+                        htmlColor={'#68676e'}
+                        style={{ marginTop: '2px', marginLeft: '4px' }}
+                      />
                     </UsernameTip>
                   )}
                   <HeightElement value={'32px'} />
@@ -583,7 +588,6 @@ const FullWidthTextField = styled(TextField)<{
 const UsernameTip = styled.span`
   display: flex;
   padding: 3px 14px 0 14px;
-  flex-direction: column;
   align-items: flex-start;
   align-self: stretch;
   cursor: pointer;
