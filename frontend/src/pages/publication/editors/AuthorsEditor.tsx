@@ -25,6 +25,7 @@ import styled from '@emotion/styled';
 import { ContentEditorWrap, LabelWrap } from './styled';
 import { type EditorProps } from './ParagraphEditor';
 import { getInitials } from '../../../util/userUtil';
+import { renderProfileImage } from '../../../fire-browser/utils';
 
 export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
   const [addAuthorVisible, setAddAuthorVisible] = useState(false);
@@ -47,6 +48,8 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
       authorStore.lastName = user.lastName!;
       authorStore.email = user.email!;
       authorStore.userId = user.id;
+      authorStore.profileImage = user.profileImage;
+      debugger;
     } else {
       const unconfirmedAuthor = author as UnconfirmedAuthor;
       authorStore.firstName = unconfirmedAuthor.firstName;
@@ -150,7 +153,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                 renderOption={(props, option, state) => {
                   return (
                     <AuthorSelectOption {...props}>
-                      <Avatar>
+                      <Avatar src={renderProfileImage(option.profileImage)}>
                         {getInitials(option.firstName, option.lastName)}
                       </Avatar>
                       <AuthorWrap>

@@ -1,9 +1,10 @@
 import styled from '@emotion/styled';
-import { type ReactElement } from 'react';
+import React, { type ReactElement } from 'react';
 import { type Publication } from '../../apis/first-approval-api';
 import { Avatar } from '@mui/material';
-import { getInitials } from '../../util/userUtil';
 import { Download, RemoveRedEyeOutlined } from '@mui/icons-material';
+import { renderProfileImage } from '../../fire-browser/utils';
+import { getInitials } from '../../util/userUtil';
 
 export const RecommendedPublication = (props: {
   publication: Publication;
@@ -19,9 +20,11 @@ export const RecommendedPublication = (props: {
       <Wrap>
         <FlexWrap>
           <AvatarWrap>
-            <Avatar sx={{ width: 24, height: 24 }}>
-              {getInitials(author.user.firstName, author.user.lastName)}
-            </Avatar>
+            <Avatar
+              src={renderProfileImage(publication.creator.profileImage)}
+              sx={{ width: 24, height: 24 }}
+            />
+            {getInitials(author.user.firstName, author.user.lastName)}
           </AvatarWrap>
           <div>
             {author.user.firstName} {author.user.lastName}

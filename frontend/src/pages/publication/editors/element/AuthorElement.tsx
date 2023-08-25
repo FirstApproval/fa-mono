@@ -7,6 +7,8 @@ import {
   type UnconfirmedAuthor
 } from '../../../../apis/first-approval-api';
 import { getInitials } from '../../../../util/userUtil';
+import { renderProfileImage } from '../../../../fire-browser/utils';
+import { type AuthorEditorStore } from '../../store/AuthorEditorStore';
 
 interface AuthorElementProps {
   isReadonly: boolean;
@@ -39,10 +41,16 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
     email = unconfirmedAuthor.email;
   }
 
+  const profileImage =
+    (author as ConfirmedAuthor).user?.profileImage ||
+    (author as AuthorEditorStore).profileImage;
+  debugger;
   return (
     <AuthorRowWrap>
       <AuthorElementWrap>
-        <Avatar>{getInitials(firstName, lastName)}</Avatar>
+        <Avatar src={renderProfileImage(profileImage)}>
+          {getInitials(firstName, lastName)}
+        </Avatar>
         <AuthorWrap>
           <AuthorName>
             {firstName} {lastName}

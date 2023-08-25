@@ -12,7 +12,6 @@ import org.firstapproval.backend.core.domain.auth.TokenService
 import org.firstapproval.backend.core.domain.file.ARCHIVED_PUBLICATION_FILES
 import org.firstapproval.backend.core.domain.file.ARCHIVED_PUBLICATION_SAMPLE_FILES
 import org.firstapproval.backend.core.domain.file.FileStorageService
-import org.firstapproval.backend.core.domain.ipfs.DownloadLinkRepository
 import org.firstapproval.backend.core.domain.ipfs.IpfsClient
 import org.firstapproval.backend.core.domain.ipfs.Job
 import org.firstapproval.backend.core.domain.ipfs.JobKind
@@ -26,6 +25,7 @@ import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
 import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthor
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
+import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.elastic.PublicationElastic
 import org.firstapproval.backend.core.elastic.PublicationElasticRepository
 import org.firstapproval.backend.core.exception.RecordConflictException
@@ -50,7 +50,7 @@ class PublicationService(
     private val publicationRepository: PublicationRepository,
     private val confirmedAuthorRepository: ConfirmedAuthorRepository,
     private val userRepository: UserRepository,
-    private val downloadLinkRepository: DownloadLinkRepository,
+    private val userService: UserService,
     private val jobRepository: JobRepository,
     private val ipfsClient: IpfsClient,
     private val elasticRepository: PublicationElasticRepository,
@@ -240,7 +240,7 @@ class PublicationService(
     fun getAllPublications(page: Int, pageSize: Int): PublicationsResponse {
         val publicationsPage = publicationRepository.findAllByStatusAndAccessType(PUBLISHED, OPEN, PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime")))
         return PublicationsResponse()
-            .publications(publicationsPage.map { it.toApiObject() }.toList())
+            .publications(publicationsPage.map { it.toApiObject(userService) }.toList())
             .isLastPage(publicationsPage.isLast)
     }
 
@@ -252,7 +252,7 @@ class PublicationService(
             PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime"))
         )
         return PublicationsResponse()
-            .publications(publicationsPage.map { it.toApiObject() }.toList())
+            .publications(publicationsPage.map { it.toApiObject(userService) }.toList())
             .isLastPage(publicationsPage.isLast)
     }
 
@@ -270,12 +270,12 @@ class PublicationService(
         )
 
         return PublicationsResponse()
-            .publications(publicationsPage.map { it.toApiObject() }.toList())
+            .publications(publicationsPage.map { it.toApiObject(userService) }.toList())
             .isLastPage(publicationsPage.isLast)
     }
 }
 
-fun Publication.toApiObject() = PublicationApiObject().also { publicationApiModel ->
+fun Publication.toApiObject(userService: UserService) = PublicationApiObject().also { publicationApiModel ->
     publicationApiModel.id = id
     publicationApiModel.creator = UserInfo()
         .id(creator.id)
@@ -298,7 +298,7 @@ fun Publication.toApiObject() = PublicationApiObject().also { publicationApiMode
     publicationApiModel.publicationTime = publicationTime?.toOffsetDateTime()
     publicationApiModel.methodDescription = methodDescription?.map { Paragraph(it) }
     publicationApiModel.predictedGoals = predictedGoals?.map { Paragraph(it) }
-    publicationApiModel.confirmedAuthors = confirmedAuthors.map { it.toApiObject() }
+    publicationApiModel.confirmedAuthors = confirmedAuthors.map { it.toApiObject(userService.getProfileImage(it.user.profileImage)) }
     publicationApiModel.unconfirmedAuthors = unconfirmedAuthors.map { it.toApiObject() }
     publicationApiModel.viewsCount = viewsCount
     publicationApiModel.downloadsCount = downloadsCount
@@ -349,7 +349,7 @@ fun Publication.toPublicationElastic() =
         publicationTime = publicationTime
     )
 
-fun ConfirmedAuthor.toApiObject() = ConfirmedAuthorApiObject().also {
+fun ConfirmedAuthor.toApiObject(profileImage: ByteArray?) = ConfirmedAuthorApiObject().also {
     it.id = id
     it.shortBio = shortBio
     it.user = Author(
@@ -359,6 +359,7 @@ fun ConfirmedAuthor.toApiObject() = ConfirmedAuthorApiObject().also {
         user.email,
         user.selfInfo,
     ).id(user.id)
+        .profileImage(profileImage)
 }
 
 fun UnconfirmedAuthor.toApiObject() = UnconfirmedAuthorApiObject().also {

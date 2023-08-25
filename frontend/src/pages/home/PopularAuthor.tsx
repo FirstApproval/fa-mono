@@ -1,8 +1,9 @@
 import styled from '@emotion/styled';
-import { type ReactElement } from 'react';
+import React, { type ReactElement } from 'react';
 import { type RecommendedAuthor } from '../../apis/first-approval-api';
 import { Avatar } from '@mui/material';
 import { getInitials } from '../../util/userUtil';
+import { renderProfileImage } from '../../fire-browser/utils';
 
 export const PopularAuthor = (props: {
   author: RecommendedAuthor;
@@ -12,7 +13,9 @@ export const PopularAuthor = (props: {
     <>
       <FlexWrap>
         <MarginWrap>
-          <Avatar sx={{ width: 32, height: 32 }}>
+          <Avatar
+            sx={{ width: 32, height: 32 }}
+            src={renderProfileImage(author.profileImage)}>
             {getInitials(author.firstName, author.lastName)}
           </Avatar>
         </MarginWrap>

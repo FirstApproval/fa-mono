@@ -9,6 +9,7 @@ import { userStore } from '../core/user';
 import { authStore } from '../core/auth';
 import { routerStore } from '../core/router';
 import { Page } from '../core/RouterStore';
+import { renderProfileImage } from '../fire-browser/utils';
 
 export const UserMenu = observer((): ReactElement => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -35,9 +36,10 @@ export const UserMenu = observer((): ReactElement => {
         aria-controls={open ? 'user-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}>
-        <Avatar>{getInitials(user.firstName, user.lastName)}</Avatar>
+        <Avatar src={renderProfileImage(user.profileImage)}>
+          {getInitials(user.firstName, user.lastName)}
+        </Avatar>
       </IconButton>
-
       <Menu
         id="user-menu"
         anchorEl={anchorEl}
