@@ -31,7 +31,7 @@ export const FlexBodyCenter = styled.div`
 `;
 
 export const FlexBody = styled.div`
-  width: 680px;
+  width: 580px;
   padding-left: 40px;
   padding-right: 40px;
 `;

@@ -15,7 +15,6 @@ import { EmailOutlined, IosShare } from '@mui/icons-material';
 import { observer } from 'mobx-react-lite';
 import {
   CustomTab,
-  FlexBody,
   FlexBodyCenter,
   FlexHeader,
   FlexHeaderRight,
@@ -339,4 +338,10 @@ const BannerLeftPart = styled.div`
 
 export const StartPublishingButton = styled(Button)`
   width: 180px;
+`;
+
+export const FlexBody = styled.div`
+  width: 680px;
+  padding-left: 40px;
+  padding-right: 40px;
 `;
