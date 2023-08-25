@@ -20,6 +20,7 @@ import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirma
 import org.firstapproval.backend.core.exception.RecordConflictException
 import org.firstapproval.backend.core.utils.EMAIL_CONFIRMATION_CODE_LENGTH
 import org.firstapproval.backend.core.utils.generateCode
+import org.firstapproval.backend.core.utils.require
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.access.AccessDeniedException
@@ -58,6 +59,9 @@ class UserService(
 
     @Transactional(readOnly = true)
     fun getPublicUserProfile(id: UUID): User = userRepository.getReferenceById(id)
+
+    @Transactional(readOnly = true)
+    fun getPublicUserProfile(username: String): User = userRepository.findByUsername(username).require()
 
     @Transactional(isolation = REPEATABLE_READ)
     fun saveOrUpdate(oauthUser: OauthUser): User {

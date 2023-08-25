@@ -1,15 +1,21 @@
 import React, { type ReactElement } from 'react';
 import styled from '@emotion/styled';
-import { Divider } from '@mui/material';
-import { type Publication } from '../../apis/first-approval-api';
-import { routerStore } from '../../core/router';
-import { Page } from '../../core/RouterStore';
+import { Avatar, Divider } from '@mui/material';
+import { type Publication } from '../apis/first-approval-api';
+import { routerStore } from '../core/router';
+import { Page } from '../core/RouterStore';
 import { Download, RemoveRedEyeOutlined } from '@mui/icons-material';
+import { renderProfileImage } from '../fire-browser/utils';
 
-export const PublicationBox = (props: {
+export const PublicationSection = (props: {
   publication: Publication;
 }): ReactElement => {
   const { publication } = props;
+  const authorsString = publication
+    .confirmedAuthors!.map(
+      (author) => `${author.user.firstName} ${author.user.lastName}`
+    )
+    .join(' , ');
 
   return (
     <>
@@ -20,6 +26,13 @@ export const PublicationBox = (props: {
             `/publication/${publication.id}`
           );
         }}>
+        <AuthorsWrap>
+          <Avatar
+            src={renderProfileImage(publication.creator.profileImage)}
+            sx={{ width: 24, height: 24 }}
+          />
+          <Authors>{authorsString}</Authors>
+        </AuthorsWrap>
         <PublicationLabel>
           {publication.title ?? publication.id}
         </PublicationLabel>
@@ -40,6 +53,26 @@ export const PublicationBox = (props: {
     </>
   );
 };
+
+const AuthorsWrap = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const Authors = styled.span`
+  margin-left: 8px;
+  color: var(--text-primary, #040036);
+  font-feature-settings: 'clig' off, 'liga' off;
+
+  /* typography/body2 */
+  font-family: Roboto;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 143%; /* 20.02px */
+  letter-spacing: 0.17px;
+`;
+
 const PublicationDescriptionBox = (props: { title: string }): ReactElement => {
   return <PublicationDescriptionWrap>{props.title}</PublicationDescriptionWrap>;
 };
@@ -84,7 +117,7 @@ const PublicationLabel = styled.div`
   line-height: 123.5%; /* 41.99px */
   letter-spacing: 0.25px;
 
-  margin-bottom: 16px;
+  margin: 16px 0;
 `;
 
 const LinkWrap = styled.div`

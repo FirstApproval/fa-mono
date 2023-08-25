@@ -32,3 +32,22 @@ export function calculatePathChain(currentPath: string): string[] {
 export const fullPathToName = (fullPath: string): string => {
   return fullPath.substring(fullPath.lastIndexOf('/') + 1);
 };
+
+export const copyTextToClipboard = async (text: string): Promise<void> => {
+  if ('clipboard' in navigator) {
+    await navigator.clipboard.writeText(text);
+  } else {
+    document.execCommand('copy', true, text);
+  }
+};
+
+export const getProfileLink = (username = ''): string => {
+  debugger;
+  return window.location.host + '/p/' + username;
+};
+
+export const renderProfileImage = (profileImage: string | undefined): string =>
+  profileImage
+    ? 'data:image/png;base64,' +
+      profileImage.substring(profileImage.indexOf(',') + 1)
+    : '';

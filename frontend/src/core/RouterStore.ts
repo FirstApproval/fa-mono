@@ -35,6 +35,9 @@ const pathToOauthType: Record<string, OauthType> = {
   '/orcid-callback': OauthType.ORCID
 };
 
+const profilePath = '/p/';
+const accountPath = '/account/';
+
 const history = createBrowserHistory();
 
 export class RouterStore {
@@ -109,6 +112,10 @@ export class RouterStore {
         this.navigatePage(Page.PROFILE, path, true);
         return;
       }
+      if (path.startsWith('/p/')) {
+        this.navigatePage(Page.PROFILE, path, true);
+        return;
+      }
 
       if (authType !== undefined && authCode !== undefined) {
         authService
@@ -177,5 +184,21 @@ export class RouterStore {
 
   get lastPathSegment(): string {
     return this._path.substring(this._path.lastIndexOf('/') + 1);
+  }
+
+  get profileUsername(): string | null {
+    return this._path.includes(profilePath)
+      ? this._path.substring(
+          this._path.lastIndexOf(profilePath) + profilePath.length
+        )
+      : null;
+  }
+
+  get accountTab(): string | null {
+    return this._path.includes(accountPath)
+      ? this._path.substring(
+          this._path.lastIndexOf(accountPath) + accountPath.length
+        )
+      : null;
   }
 }

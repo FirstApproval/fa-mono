@@ -145,7 +145,7 @@ export class PublicationStore {
     const newValue = [...this.confirmedAuthors];
     newValue.push({
       user: author,
-      shortBio: ''
+      shortBio: author.selfInfo
     });
     this.confirmedAuthors = newValue;
     void this.updateConfirmedAuthors();

@@ -16,6 +16,7 @@ interface UserRepository : JpaRepository<User, UUID> {
     )
     fun findByEmailOrExternalIdAndType(email: String? = null, externalId: String, type: OauthType): User?
     fun existsByEmail(email: String): Boolean
+    fun existsByUsername(username: String): Boolean
     fun findByEmailAndPasswordIsNull(email: String): User?
 
     @Query(

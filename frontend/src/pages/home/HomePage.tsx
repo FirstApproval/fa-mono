@@ -21,7 +21,7 @@ import { Page } from '../../core/RouterStore';
 import { UserMenu } from '../../components/UserMenu';
 import { Search } from '@mui/icons-material';
 import styled from '@emotion/styled';
-import { PublicationBox } from './PublicationSection';
+import { PublicationSection } from '../../components/PublicationSection';
 import { CallToAction } from './CallToAction';
 import PopularAuthorsSection from './PopularAuthorsSection';
 import RecommendedPublicationsSection from './RecommendedPublicationsSection';
@@ -117,7 +117,7 @@ export const HomePage: FunctionComponent = observer(() => {
               {!store.isLoadingPublications && (
                 <>
                   {store.publications.map((p) => (
-                    <PublicationBox key={p.id} publication={p} />
+                    <PublicationSection key={p.id} publication={p} />
                   ))}
                 </>
               )}
@@ -133,7 +133,7 @@ export const HomePage: FunctionComponent = observer(() => {
             {!store.isSearching && (
               <>
                 {store.searchResults.map((p) => (
-                  <PublicationBox key={p.id} publication={p} />
+                  <PublicationSection key={p.id} publication={p} />
                 ))}
               </>
             )}

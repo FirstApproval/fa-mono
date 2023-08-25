@@ -47,6 +47,20 @@ class UserController(
                 .profileImage(userService.getProfileImage(user.profileImage)))
     }
 
+    override fun getUserInfoByUsername(username: String): ResponseEntity<UserInfo> {
+        val user = userService.getPublicUserProfile(username)
+        return ok().body(
+            UserInfo()
+                .id(user.id)
+                .firstName(user.firstName)
+                .lastName(user.lastName)
+                .middleName(user.middleName)
+                .email(user.email)
+                .username(user.username)
+                .selfInfo(user.selfInfo)
+                .profileImage(userService.getProfileImage(user.profileImage)))
+    }
+
     override fun requestPasswordReset(requestPasswordResetRequest: RequestPasswordResetRequest): ResponseEntity<Void> {
         userService.requestPasswordReset(requestPasswordResetRequest.email)
         return ok().build()
@@ -81,6 +95,7 @@ class UserController(
     override fun getMe(): ResponseEntity<GetMeResponse> {
         val user = authHolderService.user
         val getMeResponse = GetMeResponse()
+        getMeResponse.id = user.id
         getMeResponse.firstName = user.firstName
         getMeResponse.lastName = user.lastName
         getMeResponse.middleName = user.middleName
@@ -89,6 +104,7 @@ class UserController(
         getMeResponse.canSetPassword = user.password.isNullOrEmpty()
         getMeResponse.canChangePassword = !user.password.isNullOrEmpty()
         getMeResponse.selfInfo = user.selfInfo
+        getMeResponse.profileImage = userService.getProfileImage(user.profileImage)
         getMeResponse.signedVia = user.externalIds.keys.map { OauthType.valueOf(it.name) }
         return ok(getMeResponse)
     }
@@ -115,6 +131,11 @@ class UserController(
 
     override fun existsByEmail(email: String): ResponseEntity<Boolean> {
         val isExists = userEmailService.existsByEmail(email)
+        return ok().body(isExists)
+    }
+
+    override fun existsByUsername(username: String): ResponseEntity<Boolean> {
+        val isExists = userEmailService.existsByUsername(username)
         return ok().body(isExists)
     }
 
