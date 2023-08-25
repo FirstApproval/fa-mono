@@ -42,7 +42,7 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
   }
 
   const profileImage =
-    (author as ConfirmedAuthor).user?.profileImage ||
+    (author as ConfirmedAuthor).user?.profileImage ??
     (author as AuthorEditorStore).profileImage;
   debugger;
   return (
