@@ -1,6 +1,6 @@
 import { action, makeAutoObservable, reaction } from 'mobx';
 import { publicationService } from '../../../core/service';
-import _ from 'lodash';
+import _, { some } from 'lodash';
 import {
   type Author,
   type ConfirmedAuthor,
@@ -16,6 +16,14 @@ import { type AuthorEditorStore } from './AuthorEditorStore';
 const EDIT_THROTTLE_MS = 1000;
 
 export type ParagraphWithId = Paragraph & { id: string };
+export type Section =
+  | 'title'
+  | 'summary'
+  | 'goals'
+  | 'method'
+  | 'object_of_study'
+  | 'files'
+  | 'tags';
 
 export enum ViewMode {
   EDIT = 'Edit',
@@ -32,7 +40,7 @@ export class PublicationStore {
   researchArea = '';
 
   creator: UserInfo | undefined;
-  predictedGoalsEnabled = false;
+  experimentGoalsEnabled = false;
   methodEnabled = false;
   objectOfStudyEnabled = false;
   softwareEnabled = false;
@@ -46,7 +54,7 @@ export class PublicationStore {
   savingStatus: SavingStatusState = SavingStatusState.PREVIEW;
 
   description: ParagraphWithId[] = [];
-  predictedGoals: ParagraphWithId[] = [];
+  experimentGoals: ParagraphWithId[] = [];
   method: ParagraphWithId[] = [];
   objectOfStudy: ParagraphWithId[] = [];
   software: ParagraphWithId[] = [];
@@ -87,10 +95,10 @@ export class PublicationStore {
     this.description = newValue;
   }
 
-  addPredictedGoalsParagraph(idx: number): void {
-    const newValue = [...this.predictedGoals];
+  addExperimentGoalsParagraph(idx: number): void {
+    const newValue = [...this.experimentGoals];
     newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
-    this.predictedGoals = newValue;
+    this.experimentGoals = newValue;
   }
 
   addMethodParagraph(idx: number): void {
@@ -304,16 +312,16 @@ export class PublicationStore {
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
-  updatePredictedGoalsParagraph(idx: number, value: string): void {
-    const newValue = [...this.predictedGoals];
+  updateExperimentGoalsParagraph(idx: number, value: string): void {
+    const newValue = [...this.experimentGoals];
     newValue[idx] = { text: value, id: newValue[idx].id };
-    this.predictedGoals = newValue;
+    this.experimentGoals = newValue;
     this.savingStatus = SavingStatusState.SAVING;
-    void this.updatePredictedGoals();
+    void this.updateExperimentGoals();
   }
 
-  updatePredictedGoals = _.throttle(async () => {
-    const predictedGoals: Paragraph[] = this.predictedGoals.filter(
+  updateExperimentGoals = _.throttle(async () => {
+    const predictedGoals: Paragraph[] = this.experimentGoals.filter(
       (p) => p.text.length > 0
     );
 
@@ -434,6 +442,81 @@ export class PublicationStore {
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
+  openExperimentGoals = (): void => {
+    this.experimentGoalsEnabled = true;
+    this.addExperimentGoalsParagraph(0);
+  };
+
+  openMethod = (): void => {
+    this.methodEnabled = true;
+    this.addMethodParagraph(0);
+  };
+
+  openObjectOfStudy = (): void => {
+    this.objectOfStudyEnabled = true;
+    this.addObjectOfStudyParagraph(0);
+  };
+
+  openSoftware = (): void => {
+    this.softwareEnabled = true;
+    this.addSoftwareParagraph(0);
+  };
+
+  openFiles = (): void => {
+    this.filesEnabled = true;
+  };
+
+  openAuthors = (): void => {
+    this.authorsEnabled = true;
+  };
+
+  openGrantingOrganizations = (): void => {
+    this.grantingOrganizationsEnabled = true;
+    this.addGrantingOrganization(0);
+  };
+
+  openRelatedArticles = (): void => {
+    this.relatedArticlesEnabled = true;
+    this.addRelatedArticle(0);
+  };
+
+  openTags = (): void => {
+    this.tagsEnabled = true;
+  };
+
+  validate = (): Section[] => {
+    const result: Section[] = [];
+
+    const hasContent = (paragraphs: Paragraph[]): boolean => {
+      return some(paragraphs, (p) => p.text.length > 0);
+    };
+
+    if (this.title.length === 0) {
+      result.push('title');
+    }
+    if (!hasContent(this.description)) {
+      result.push('summary');
+    }
+    if (!hasContent(this.experimentGoals)) {
+      result.push('goals');
+    }
+    if (!hasContent(this.method)) {
+      result.push('method');
+    }
+    if (!hasContent(this.objectOfStudy)) {
+      result.push('object_of_study');
+    }
+    // TODO buggy check, fix (checks files in current dir, not in root)
+    if (this.fs.files.length === 0) {
+      result.push('files');
+    }
+    if (this.tags.size === 0) {
+      result.push('tags');
+    }
+
+    return result;
+  };
+
   private loadInitialState(): void {
     void publicationService
       .getPublication(this.publicationId)
@@ -450,12 +533,12 @@ export class PublicationStore {
           if (publication.researchArea) {
             this.researchArea = publication.researchArea;
           }
-          if (publication.description) {
+          if (publication.description?.length) {
             this.description = publication.description.map(mapParagraph);
           }
           if (publication.predictedGoals?.length) {
-            this.predictedGoals = publication.predictedGoals.map(mapParagraph);
-            this.predictedGoalsEnabled = true;
+            this.experimentGoals = publication.predictedGoals.map(mapParagraph);
+            this.experimentGoalsEnabled = true;
           }
           if (publication.methodDescription?.length) {
             this.method = publication.methodDescription.map(mapParagraph);
@@ -509,7 +592,7 @@ export class PublicationStore {
             publication.status === PublicationStatus.READY_FOR_PUBLICATION ||
             publication.status === PublicationStatus.PUBLISHED
           ) {
-            this.predictedGoalsEnabled = true;
+            this.experimentGoalsEnabled = true;
             this.methodEnabled = true;
             this.objectOfStudyEnabled = true;
             this.softwareEnabled = true;

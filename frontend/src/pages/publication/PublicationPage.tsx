@@ -8,14 +8,13 @@ import { FlexBodyCenter, FlexHeader, Parent } from '../common.styled';
 import { FileUploader } from '../../fire-browser/FileUploader';
 import { routerStore } from '../../core/router';
 import styled from '@emotion/styled';
-import { action } from 'mobx';
 import {
   AuthorsPlaceholder,
   FilesPlaceholder,
   GrantingOrganisationsPlaceholder,
   MethodPlaceholder,
   ObjectOfStudyPlaceholder,
-  PredictedGoalsPlaceholder,
+  ExperimentGoalsPlaceholder,
   PrimaryArticlesPlaceholder,
   RelatedArticlesPlaceholder,
   SoftwarePlaceholder,
@@ -46,17 +45,28 @@ import { ResearchAreaPage } from './ResearchAreaPage';
 import logo from './asset/logo.svg';
 import { UserMenu } from '../../components/UserMenu';
 import { Page } from '../../core/RouterStore';
+import { ValidationDialog } from './ValidationDialog';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
 
   const [fs] = useState(() => new ChonkyFileSystem(publicationId));
+  const [validationDialogOpen, setValidationDialogOpen] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Section[]>([]);
 
   const [publicationStore] = useState(
     () => new PublicationStore(publicationId, fs)
   );
 
-  const { isLoading, researchArea } = publicationStore;
+  const { isLoading, researchArea, validate } = publicationStore;
+
+  const validateSections = (): boolean => {
+    const result = validate();
+    const isValid = result.length === 0;
+    setValidationDialogOpen(!isValid);
+    setValidationErrors(result);
+    return isValid;
+  };
 
   const emptyResearchArea = researchArea.length === 0;
 
@@ -102,12 +112,15 @@ export const PublicationPage: FunctionComponent = observer(() => {
                     variant="contained"
                     size={'medium'}
                     onClick={() => {
-                      routerStore.navigatePage(
-                        Page.SHARING_OPTIONS,
-                        routerStore.path,
-                        true,
-                        { publicationTitle: publicationStore.title }
-                      );
+                      const isValid = validateSections();
+                      if (isValid) {
+                        routerStore.navigatePage(
+                          Page.SHARING_OPTIONS,
+                          routerStore.path,
+                          true,
+                          { publicationTitle: publicationStore.title }
+                        );
+                      }
                     }}>
                     Publish
                   </ButtonWrap>
@@ -146,6 +159,14 @@ export const PublicationPage: FunctionComponent = observer(() => {
           </PublicationBodyWrap>
         </FlexBodyCenter>
       </Parent>
+      <ValidationDialog
+        publicationStore={publicationStore}
+        isOpen={validationDialogOpen}
+        onClose={() => {
+          setValidationDialogOpen(false);
+        }}
+        errors={validationErrors}
+      />
     </>
   );
 });
@@ -159,7 +180,16 @@ const PublicationBody = observer(
     const { fs, publicationStore } = props;
 
     const {
-      predictedGoalsEnabled,
+      openExperimentGoals,
+      openMethod,
+      openObjectOfStudy,
+      openSoftware,
+      openFiles,
+      openAuthors,
+      openGrantingOrganizations,
+      openRelatedArticles,
+      openTags,
+      experimentGoalsEnabled,
       methodEnabled,
       objectOfStudyEnabled,
       softwareEnabled,
@@ -176,72 +206,33 @@ const PublicationBody = observer(
         <TitleEditor publicationStore={publicationStore} />
         <ResearchAreaEditor publicationStore={publicationStore} />
         <DescriptionEditor publicationStore={publicationStore} />
-        {!predictedGoalsEnabled && (
-          <PredictedGoalsPlaceholder
-            onClick={action(() => {
-              publicationStore.predictedGoalsEnabled = true;
-              publicationStore.addPredictedGoalsParagraph(0);
-            })}
-          />
+        {!experimentGoalsEnabled && (
+          <ExperimentGoalsPlaceholder onClick={openExperimentGoals} />
         )}
-        {predictedGoalsEnabled && (
+        {experimentGoalsEnabled && (
           <PredictedGoalsEditor publicationStore={publicationStore} />
         )}
-        {!methodEnabled && (
-          <MethodPlaceholder
-            onClick={action(() => {
-              publicationStore.methodEnabled = true;
-              publicationStore.addMethodParagraph(0);
-            })}
-          />
-        )}
+        {!methodEnabled && <MethodPlaceholder onClick={openMethod} />}
         {methodEnabled && <MethodEditor publicationStore={publicationStore} />}
         {!objectOfStudyEnabled && (
-          <ObjectOfStudyPlaceholder
-            onClick={action(() => {
-              publicationStore.objectOfStudyEnabled = true;
-              publicationStore.addObjectOfStudyParagraph(0);
-            })}
-          />
+          <ObjectOfStudyPlaceholder onClick={openObjectOfStudy} />
         )}
         {objectOfStudyEnabled && (
           <ObjectOfStudyEditor publicationStore={publicationStore} />
         )}
-        {!softwareEnabled && (
-          <SoftwarePlaceholder
-            onClick={action(() => {
-              publicationStore.softwareEnabled = true;
-              publicationStore.addSoftwareParagraph(0);
-            })}
-          />
-        )}
+        {!softwareEnabled && <SoftwarePlaceholder onClick={openSoftware} />}
         {softwareEnabled && (
           <SoftwareEditor publicationStore={publicationStore} />
         )}
-        {!filesEnabled && (
-          <FilesPlaceholder
-            onClick={action(() => {
-              publicationStore.filesEnabled = true;
-            })}
-          />
-        )}
+        {!filesEnabled && <FilesPlaceholder onClick={openFiles} />}
         {filesEnabled && <FileUploader fs={fs} />}
-        {!authorsEnabled && (
-          <AuthorsPlaceholder
-            onClick={action(() => {
-              publicationStore.authorsEnabled = true;
-            })}
-          />
-        )}
+        {!authorsEnabled && <AuthorsPlaceholder onClick={openAuthors} />}
         {authorsEnabled && (
           <AuthorsEditor publicationStore={publicationStore} />
         )}
         {!grantingOrganizationsEnabled && (
           <GrantingOrganisationsPlaceholder
-            onClick={action(() => {
-              publicationStore.grantingOrganizationsEnabled = true;
-              publicationStore.addGrantingOrganization(0);
-            })}
+            onClick={openGrantingOrganizations}
           />
         )}
         {grantingOrganizationsEnabled && (
@@ -259,23 +250,12 @@ const PublicationBody = observer(
           <PrimaryArticlesEditor publicationStore={publicationStore} />
         )}
         {!relatedArticlesEnabled && (
-          <RelatedArticlesPlaceholder
-            onClick={action(() => {
-              publicationStore.relatedArticlesEnabled = true;
-              publicationStore.addRelatedArticle(0);
-            })}
-          />
+          <RelatedArticlesPlaceholder onClick={openRelatedArticles} />
         )}
         {relatedArticlesEnabled && (
           <RelatedArticlesEditor publicationStore={publicationStore} />
         )}
-        {!tagsEnabled && (
-          <TagsPlaceholder
-            onClick={action(() => {
-              publicationStore.tagsEnabled = true;
-            })}
-          />
-        )}
+        {!tagsEnabled && <TagsPlaceholder onClick={openTags} />}
         {tagsEnabled && <TagsEditor publicationStore={publicationStore} />}
       </>
     );

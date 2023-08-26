@@ -1,33 +1,57 @@
 import { type ReactElement } from 'react';
 import styled from '@emotion/styled';
-import predicted_goals from './asset/predicted_goals.svg';
-import method from './asset/method.svg';
-import object_of_study from './asset/object_of_study.svg';
-import software from './asset/software.svg';
-import files from './asset/files.svg';
-import authors from './asset/authors.svg';
-import granting_organizations from './asset/granting_organizations.svg';
-import related_articles from './asset/related_articles.svg';
-import tags from './asset/tags.svg';
+import {
+  AuthorsIcon,
+  FilesIcon,
+  GrantingOrganisationsIcon,
+  MethodIcon,
+  ObjectOfStudyIcon,
+  PredictedGoalsIcon,
+  RelatedArticlesIcon,
+  SoftwareIcon,
+  SummaryIcon,
+  TagsIcon,
+  TitleIcon
+} from './SectionIcon';
 
 interface PlaceholderProps {
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 interface ContentPlaceholderProps {
-  onClick: () => void;
+  onClick?: () => void;
   text: string;
   icon: ReactElement;
 }
 
-export const PredictedGoalsPlaceholder = (
+export const TitlePlaceholder = (props: PlaceholderProps): ReactElement => {
+  return (
+    <ContentPlaceholder
+      onClick={props.onClick}
+      text={'Title'}
+      icon={<TitleIcon />}
+    />
+  );
+};
+
+export const SummaryPlaceholder = (props: PlaceholderProps): ReactElement => {
+  return (
+    <ContentPlaceholder
+      onClick={props.onClick}
+      text={'Publication summary'}
+      icon={<SummaryIcon />}
+    />
+  );
+};
+
+export const ExperimentGoalsPlaceholder = (
   props: PlaceholderProps
 ): ReactElement => {
   return (
     <ContentPlaceholder
       onClick={props.onClick}
       text={'Experiment goals'}
-      icon={<img src={predicted_goals} />}
+      icon={<PredictedGoalsIcon />}
     />
   );
 };
@@ -37,7 +61,7 @@ export const MethodPlaceholder = (props: PlaceholderProps): ReactElement => {
     <ContentPlaceholder
       onClick={props.onClick}
       text={'Method'}
-      icon={<img src={method} />}
+      icon={<MethodIcon />}
     />
   );
 };
@@ -49,7 +73,7 @@ export const ObjectOfStudyPlaceholder = (
     <ContentPlaceholder
       onClick={props.onClick}
       text={'Object of study'}
-      icon={<img src={object_of_study} />}
+      icon={<ObjectOfStudyIcon />}
     />
   );
 };
@@ -59,7 +83,7 @@ export const SoftwarePlaceholder = (props: PlaceholderProps): ReactElement => {
     <ContentPlaceholder
       onClick={props.onClick}
       text={'Software | optional'}
-      icon={<img src={software} />}
+      icon={<SoftwareIcon />}
     />
   );
 };
@@ -69,7 +93,7 @@ export const FilesPlaceholder = (props: PlaceholderProps): ReactElement => {
     <ContentPlaceholder
       onClick={props.onClick}
       text={'Files'}
-      icon={<img src={files} />}
+      icon={<FilesIcon />}
     />
   );
 };
@@ -79,7 +103,7 @@ export const AuthorsPlaceholder = (props: PlaceholderProps): ReactElement => {
     <ContentPlaceholder
       onClick={props.onClick}
       text={'Authors'}
-      icon={<img src={authors} />}
+      icon={<AuthorsIcon />}
     />
   );
 };
@@ -91,7 +115,7 @@ export const GrantingOrganisationsPlaceholder = (
     <ContentPlaceholder
       onClick={props.onClick}
       text={'Granting organizations | optional'}
-      icon={<img src={granting_organizations} />}
+      icon={<GrantingOrganisationsIcon />}
     />
   );
 };
@@ -103,7 +127,7 @@ export const RelatedArticlesPlaceholder = (
     <ContentPlaceholder
       onClick={props.onClick}
       text={'Related articles | optional'}
-      icon={<img src={related_articles} />}
+      icon={<RelatedArticlesIcon />}
     />
   );
 };
@@ -125,7 +149,7 @@ export const TagsPlaceholder = (props: PlaceholderProps): ReactElement => {
     <ContentPlaceholder
       onClick={props.onClick}
       text={'Tags'}
-      icon={<img src={tags} />}
+      icon={<TagsIcon />}
     />
   );
 };
