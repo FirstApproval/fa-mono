@@ -221,7 +221,7 @@ export const ParagraphContentEditor = (
               props.onAddParagraph(idx);
             }}
             onMergeParagraph={(idx) => {
-              setCursorPosition(props.value[idx - 1].text.length);
+              setCursorPosition(props.value[idx - 1]?.text.length);
               setParagraphToFocus(idx - 1);
               props.onMergeParagraph(idx);
             }}
