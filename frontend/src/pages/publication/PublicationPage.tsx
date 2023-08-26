@@ -8,7 +8,6 @@ import { FlexBodyCenter, FlexHeader, Parent } from '../common.styled';
 import { FileUploader } from '../../fire-browser/FileUploader';
 import { routerStore } from '../../core/router';
 import styled from '@emotion/styled';
-import { action } from 'mobx';
 import {
   AuthorsPlaceholder,
   FilesPlaceholder,
