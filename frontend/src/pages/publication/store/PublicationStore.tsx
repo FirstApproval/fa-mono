@@ -1,6 +1,6 @@
 import { action, makeAutoObservable, reaction } from 'mobx';
 import { publicationService } from '../../../core/service';
-import _ from 'lodash';
+import _, { some } from 'lodash';
 import {
   type Author,
   type ConfirmedAuthor,
@@ -16,6 +16,14 @@ import { type AuthorEditorStore } from './AuthorEditorStore';
 const EDIT_THROTTLE_MS = 1000;
 
 export type ParagraphWithId = Paragraph & { id: string };
+export type Section =
+  | 'title'
+  | 'summary'
+  | 'goals'
+  | 'method'
+  | 'object_of_study'
+  | 'files'
+  | 'tags';
 
 export enum ViewMode {
   EDIT = 'Edit',
@@ -376,6 +384,81 @@ export class PublicationStore {
       relatedArticles: { values: relatedArticles, edited: true }
     });
   }, EDIT_THROTTLE_MS);
+
+  openPredictedGoals = (): void => {
+    this.predictedGoalsEnabled = true;
+    this.addPredictedGoalsParagraph(0);
+  };
+
+  openMethod = (): void => {
+    this.methodEnabled = true;
+    this.addMethodParagraph(0);
+  };
+
+  openObjectOfStudy = (): void => {
+    this.objectOfStudyEnabled = true;
+    this.addObjectOfStudyParagraph(0);
+  };
+
+  openSoftware = (): void => {
+    this.softwareEnabled = true;
+    this.addSoftwareParagraph(0);
+  };
+
+  openFiles = (): void => {
+    this.filesEnabled = true;
+  };
+
+  openAuthors = (): void => {
+    this.authorsEnabled = true;
+  };
+
+  openGrantingOrganizations = (): void => {
+    this.grantingOrganizationsEnabled = true;
+    this.addGrantingOrganization(0);
+  };
+
+  openRelatedArticles = (): void => {
+    this.relatedArticlesEnabled = true;
+    this.addRelatedArticle(0);
+  };
+
+  openTags = (): void => {
+    this.tagsEnabled = true;
+  };
+
+  validate = (): Section[] => {
+    const result: Section[] = [];
+
+    const hasContent = (paragraphs: Paragraph[]): boolean => {
+      return some(paragraphs, (p) => p.text.length > 0);
+    };
+
+    if (this.title.length === 0) {
+      result.push('title');
+    }
+    if (!hasContent(this.description)) {
+      result.push('summary');
+    }
+    if (!hasContent(this.predictedGoals)) {
+      result.push('goals');
+    }
+    if (!hasContent(this.method)) {
+      result.push('method');
+    }
+    if (!hasContent(this.objectOfStudy)) {
+      result.push('object_of_study');
+    }
+    // TODO buggy check, fix (checks files in current dir, not in root)
+    if (this.fs.files.length === 0) {
+      result.push('files');
+    }
+    if (this.tags.size === 0) {
+      result.push('tags');
+    }
+
+    return result;
+  };
 
   private loadInitialState(): void {
     void publicationService
