@@ -476,7 +476,7 @@ export class PublicationStore {
           if (publication.researchArea) {
             this.researchArea = publication.researchArea;
           }
-          if (publication.description) {
+          if (publication.description?.length) {
             this.description = publication.description.map(mapParagraph);
           }
           if (publication.predictedGoals?.length) {

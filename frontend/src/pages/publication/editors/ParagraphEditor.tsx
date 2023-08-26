@@ -186,7 +186,7 @@ export const ParagraphContentEditor = (
               props.onAddClick(idx);
             }}
             onChange={props.onChange}
-            placeholder={props.placeholder}
+            placeholder={idx === 0 ? props.placeholder : ''}
             paragraphPrefixType={props.paragraphPrefixType}
           />
         );
