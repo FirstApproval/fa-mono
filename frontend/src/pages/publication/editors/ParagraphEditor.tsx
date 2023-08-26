@@ -165,6 +165,26 @@ export const RelatedArticlesEditor = observer(
   }
 );
 
+export const PrimaryArticlesEditor = observer(
+  (props: EditorProps): ReactElement => {
+    return (
+      <ParagraphContentEditor
+        isReadonly={props.publicationStore.isReadonly}
+        value={props.publicationStore.primaryArticles}
+        onChange={(idx, value) => {
+          props.publicationStore.updatePrimaryArticle(idx, value);
+        }}
+        onAddClick={(idx) => {
+          props.publicationStore.addPrimaryArticle(idx);
+        }}
+        paragraphPrefixType={ParagraphPrefixType.NUMERATION}
+        text={'Primary articles'}
+        placeholder={'Provide primary articles'}
+      />
+    );
+  }
+);
+
 export const ParagraphContentEditor = (
   props: ContentEditorProps
 ): ReactElement => {

@@ -59,7 +59,6 @@ export class ProfilePageStore {
   }
 
   private async loadUser(username: string | null): Promise<void> {
-    debugger;
     if (username) {
       const userInfoResponse = await userService.getUserInfoByUsername(
         username

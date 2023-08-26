@@ -40,7 +40,10 @@ export class PublicationStore {
   authorsEnabled = false;
   grantingOrganizationsEnabled = false;
   relatedArticlesEnabled = false;
+  primaryArticlesEnabled = false;
   tagsEnabled = false;
+
+  savingStatus: SavingStatusState = SavingStatusState.PREVIEW;
 
   description: ParagraphWithId[] = [];
   predictedGoals: ParagraphWithId[] = [];
@@ -51,6 +54,7 @@ export class PublicationStore {
   unconfirmedAuthors: UnconfirmedAuthor[] = [];
   grantingOrganizations: ParagraphWithId[] = [];
   relatedArticles: ParagraphWithId[] = [];
+  primaryArticles: ParagraphWithId[] = [];
   tags = new Set<string>();
 
   constructor(readonly publicationId: string, readonly fs: ChonkyFileSystem) {
@@ -116,12 +120,14 @@ export class PublicationStore {
   addTag(tag: string): void {
     if (tag) {
       this.tags.add(tag);
+      this.savingStatus = SavingStatusState.SAVING;
       void this.updateTags();
     }
   }
 
   deleteTag(tag: string): void {
     this.tags.delete(tag);
+    this.savingStatus = SavingStatusState.SAVING;
     void this.updateTags();
   }
 
@@ -133,6 +139,7 @@ export class PublicationStore {
           throw Error('Tried to delete wrong unconfirmed author');
         }
         this.confirmedAuthors.splice(store.index, 1);
+        this.savingStatus = SavingStatusState.SAVING;
         void this.updateConfirmedAuthors();
       } else {
         const unconfirmedAuthor = this.unconfirmedAuthors[store.index];
@@ -140,6 +147,7 @@ export class PublicationStore {
           throw Error('Tried to delete wrong unconfirmed author');
         }
         this.unconfirmedAuthors.splice(store.index, 1);
+        this.savingStatus = SavingStatusState.SAVING;
         void this.updateUnconfirmedAuthors();
       }
     }
@@ -152,6 +160,7 @@ export class PublicationStore {
       shortBio: author.selfInfo
     });
     this.confirmedAuthors = newValue;
+    this.savingStatus = SavingStatusState.SAVING;
     void this.updateConfirmedAuthors();
   }
 
@@ -163,11 +172,12 @@ export class PublicationStore {
       }
       confirmedAuthor.shortBio = store.shortBio;
     }
+    this.savingStatus = SavingStatusState.SAVING;
     void this.updateConfirmedAuthors();
   }
 
   updateConfirmedAuthors = _.throttle(async () => {
-    return await publicationService.editPublication(this.publicationId, {
+    await publicationService.editPublication(this.publicationId, {
       confirmedAuthors: {
         values: this.confirmedAuthors
           .filter((it) => it.user.id && it.user.id.length > 0)
@@ -181,6 +191,7 @@ export class PublicationStore {
         edited: true
       }
     });
+    this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
   addOrEditUnconfirmedAuthor(store: AuthorEditorStore): void {
@@ -204,55 +215,62 @@ export class PublicationStore {
       });
       this.unconfirmedAuthors = newValue;
     }
+    this.savingStatus = SavingStatusState.SAVING;
     void this.updateUnconfirmedAuthors();
   }
 
   updateUnconfirmedAuthors = _.throttle(async () => {
-    return await publicationService.editPublication(this.publicationId, {
+    await publicationService.editPublication(this.publicationId, {
       unconfirmedAuthors: {
         values: this.unconfirmedAuthors,
         edited: true
       }
     });
+    this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
   updateTags = _.throttle(async () => {
-    return await publicationService.editPublication(this.publicationId, {
+    await publicationService.editPublication(this.publicationId, {
       tags: {
         values: Array.from(this.tags).map((t) => ({ text: t })),
         edited: true
       }
     });
+    this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
   updateTitle(title: string): void {
     this.title = title;
+    this.savingStatus = SavingStatusState.SAVING;
     void this.updateTitleRequest();
   }
 
   updateTitleRequest = _.throttle(async () => {
     const title = this.title;
-    return await publicationService.editPublication(this.publicationId, {
+    await publicationService.editPublication(this.publicationId, {
       title: {
         value: title,
         edited: true
       }
     });
+    this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
   updateResearchArea(researchArea: string): void {
     this.researchArea = researchArea;
+    this.savingStatus = SavingStatusState.SAVING;
     void this.updateResearchAreaRequest();
   }
 
   updateResearchAreaRequest = _.throttle(async () => {
     const researchArea = this.researchArea;
-    return await publicationService.editPublication(this.publicationId, {
+    await publicationService.editPublication(this.publicationId, {
       researchArea: {
         value: researchArea,
         edited: true
       }
     });
+    this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
   addRelatedArticle(idx: number): void {
@@ -261,10 +279,17 @@ export class PublicationStore {
     this.relatedArticles = newValue;
   }
 
+  addPrimaryArticle(idx: number): void {
+    const newValue = [...this.primaryArticles];
+    newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
+    this.primaryArticles = newValue;
+  }
+
   updateDescriptionParagraph(idx: number, value: string): void {
     const newValue = [...this.description];
     newValue[idx] = { text: value, id: newValue[idx].id };
     this.description = newValue;
+    this.savingStatus = SavingStatusState.SAVING;
     void this.updateDescription();
   }
 
@@ -273,15 +298,17 @@ export class PublicationStore {
       (p) => p.text.length > 0
     );
 
-    return await publicationService.editPublication(this.publicationId, {
+    await publicationService.editPublication(this.publicationId, {
       description: { values: description, edited: true }
     });
+    this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
   updatePredictedGoalsParagraph(idx: number, value: string): void {
     const newValue = [...this.predictedGoals];
     newValue[idx] = { text: value, id: newValue[idx].id };
     this.predictedGoals = newValue;
+    this.savingStatus = SavingStatusState.SAVING;
     void this.updatePredictedGoals();
   }
 
@@ -290,30 +317,34 @@ export class PublicationStore {
       (p) => p.text.length > 0
     );
 
-    return await publicationService.editPublication(this.publicationId, {
+    await publicationService.editPublication(this.publicationId, {
       predictedGoals: { values: predictedGoals, edited: true }
     });
+    this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
   updateMethodParagraph(idx: number, value: string): void {
     const newValue = [...this.method];
     newValue[idx] = { text: value, id: newValue[idx].id };
     this.method = newValue;
+    this.savingStatus = SavingStatusState.SAVING;
     void this.updateMethod();
   }
 
   updateMethod = _.throttle(async () => {
     const method: Paragraph[] = this.method.filter((p) => p.text.length > 0);
 
-    return await publicationService.editPublication(this.publicationId, {
+    await publicationService.editPublication(this.publicationId, {
       methodDescription: { values: method, edited: true }
     });
+    this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
   updateObjectOfStudyParagraph(idx: number, value: string): void {
     const newValue = [...this.objectOfStudy];
     newValue[idx] = { text: value, id: newValue[idx].id };
     this.objectOfStudy = newValue;
+    this.savingStatus = SavingStatusState.SAVING;
     void this.updateObjectOfStudy();
   }
 
@@ -322,15 +353,17 @@ export class PublicationStore {
       (p) => p.text.length > 0
     );
 
-    return await publicationService.editPublication(this.publicationId, {
+    await publicationService.editPublication(this.publicationId, {
       objectOfStudyDescription: { values: objectOfStudy, edited: true }
     });
+    this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
   updateSoftwareParagraph(idx: number, value: string): void {
     const newValue = [...this.software];
     newValue[idx] = { text: value, id: newValue[idx].id };
     this.software = newValue;
+    this.savingStatus = SavingStatusState.SAVING;
     void this.updateSoftware();
   }
 
@@ -339,15 +372,17 @@ export class PublicationStore {
       (p) => p.text.length > 0
     );
 
-    return await publicationService.editPublication(this.publicationId, {
+    await publicationService.editPublication(this.publicationId, {
       software: { values: software, edited: true }
     });
+    this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
   updateGrantingOrganization(idx: number, value: string): void {
     const newValue = [...this.grantingOrganizations];
     newValue[idx] = { text: value, id: newValue[idx].id };
     this.grantingOrganizations = newValue;
+    this.savingStatus = SavingStatusState.SAVING;
     void this.updateGrantingOrganizations();
   }
 
@@ -355,15 +390,36 @@ export class PublicationStore {
     const grantingOrganizations: Paragraph[] =
       this.grantingOrganizations.filter((p) => p.text.length > 0);
 
-    return await publicationService.editPublication(this.publicationId, {
+    await publicationService.editPublication(this.publicationId, {
       grantOrganizations: { values: grantingOrganizations, edited: true }
     });
+    this.savingStatus = SavingStatusState.SAVED;
+  }, EDIT_THROTTLE_MS);
+
+  updatePrimaryArticle(idx: number, value: string): void {
+    const newValue = [...this.primaryArticles];
+    newValue[idx] = { text: value, id: newValue[idx].id };
+    this.primaryArticles = newValue;
+    this.savingStatus = SavingStatusState.SAVING;
+    void this.updatePrimaryArticles();
+  }
+
+  updatePrimaryArticles = _.throttle(async () => {
+    const primaryArticles: Paragraph[] = this.primaryArticles.filter(
+      (p) => p.text.length > 0
+    );
+
+    await publicationService.editPublication(this.publicationId, {
+      primaryArticles: { values: primaryArticles, edited: true }
+    });
+    this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
   updateRelatedArticle(idx: number, value: string): void {
     const newValue = [...this.relatedArticles];
     newValue[idx] = { text: value, id: newValue[idx].id };
     this.relatedArticles = newValue;
+    this.savingStatus = SavingStatusState.SAVING;
     void this.updateRelatedArticles();
   }
 
@@ -372,9 +428,10 @@ export class PublicationStore {
       (p) => p.text.length > 0
     );
 
-    return await publicationService.editPublication(this.publicationId, {
+    await publicationService.editPublication(this.publicationId, {
       relatedArticles: { values: relatedArticles, edited: true }
     });
+    this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
   private loadInitialState(): void {
@@ -423,6 +480,11 @@ export class PublicationStore {
               publication.relatedArticles.map(mapParagraph);
             this.relatedArticlesEnabled = true;
           }
+          if (publication.primaryArticles?.length) {
+            this.primaryArticles =
+              publication.primaryArticles.map(mapParagraph);
+            this.primaryArticlesEnabled = true;
+          }
           if (publication.tags?.length) {
             this.tags = new Set(publication.tags.map((p) => p.text));
             this.tagsEnabled = true;
@@ -438,6 +500,7 @@ export class PublicationStore {
           }
           if (publication.status === PublicationStatus.PENDING) {
             this.viewMode = ViewMode.EDIT;
+            this.savingStatus = SavingStatusState.SAVED;
           }
           this.creator = publication.creator;
           this.authorsEnabled =
@@ -454,6 +517,7 @@ export class PublicationStore {
             this.authorsEnabled = true;
             this.grantingOrganizationsEnabled = true;
             this.relatedArticlesEnabled = true;
+            this.primaryArticlesEnabled = true;
             this.tagsEnabled = true;
           }
         })
@@ -464,4 +528,10 @@ export class PublicationStore {
         })
       );
   }
+}
+
+export enum SavingStatusState {
+  SAVED,
+  SAVING,
+  PREVIEW
 }

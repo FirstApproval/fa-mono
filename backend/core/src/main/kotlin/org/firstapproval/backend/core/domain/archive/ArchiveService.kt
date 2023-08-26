@@ -63,7 +63,6 @@ class ArchiveService(
                     if (publicationFilesIds.isNotEmpty()) {
                         fileStorageService.deleteByIds(FILES, publicationFilesIds)
                     }
-                    notificationService.sendArchivePassword(publication.creator.email!!, publication.title, password)
                 }
             }.onSuccess {
                 log.debug { "Publication files for id=${publication.id} finished successfully" }
@@ -85,6 +84,7 @@ class ArchiveService(
         val filesIds = archivePublicationFilesProcess(publication, password)
         publication.status = PUBLISHED
         publication.publicationTime = now()
+        publication.archivePassword = password
         publicationRepository.save(publication)
         elasticRepository.save(publication.toPublicationElastic())
         return filesIds

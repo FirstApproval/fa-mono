@@ -17,6 +17,7 @@ import org.firstapproval.backend.core.domain.ipfs.Job
 import org.firstapproval.backend.core.domain.ipfs.JobKind
 import org.firstapproval.backend.core.domain.ipfs.JobRepository
 import org.firstapproval.backend.core.domain.ipfs.JobStatus
+import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
@@ -56,7 +57,8 @@ class PublicationService(
     private val elasticRepository: PublicationElasticRepository,
     private val tokenService: TokenService,
     private val frontendProperties: FrontendProperties,
-    private val fileStorageService: FileStorageService
+    private val fileStorageService: FileStorageService,
+    private val notificationService: NotificationService
 ) {
     @Transactional
     fun create(user: User): Publication {
@@ -92,6 +94,7 @@ class PublicationService(
             if (description?.edited == true) publication.description = description.values.map { it.text }
             if (researchArea?.edited == true) publication.researchArea = researchArea.value
             if (grantOrganizations?.edited == true) publication.grantOrganizations = grantOrganizations.values.map { it.text }
+            if (primaryArticles?.edited == true) publication.primaryArticles = primaryArticles.values.map { it.text }
             if (relatedArticles?.edited == true) publication.relatedArticles = relatedArticles.values.map { it.text }
             if (tags?.edited == true) publication.tags = tags.values.map { it.text }
             if (objectOfStudyTitle?.edited == true) publication.objectOfStudyTitle = objectOfStudyTitle.value
@@ -140,7 +143,7 @@ class PublicationService(
     @Transactional
     fun getPublicationArchive(token: String): FileResponse {
         val claims = tokenService.parseDownloadPublicationArchiveToken(token)
-        val publicationId = claims["publicationId"].toString()
+        val publicationId = claims.subject.toString()
         val publication = publicationRepository.getReferenceById(UUID.fromString(publicationId))
         publication.downloadsCount += 1
         val title = if (publication.title != null) {
@@ -148,6 +151,8 @@ class PublicationService(
         } else {
             publicationId
         }
+        val user = userService.get(UUID.fromString(claims["userId"].toString()))
+        notificationService.sendArchivePassword(user.email!!, publication.title, publication.archivePassword!!)
         return FileResponse(
             name = title!! + ".zip",
             fileStorageService.get(ARCHIVED_PUBLICATION_FILES, publicationId)
@@ -211,7 +216,7 @@ class PublicationService(
 
     fun getDownloadLink(user: User, publicationId: UUID): String {
         val publication = publicationRepository.getReferenceById(publicationId)
-        if (publication.status != PUBLISHED) {
+        if (publication.status != PUBLISHED && publication.accessType != OPEN) {
             throw IllegalArgumentException()
         }
         val downloadToken = tokenService.generateDownloadPublicationArchiveToken(user.id.toString(), publicationId.toString())
@@ -289,6 +294,7 @@ fun Publication.toApiObject(userService: UserService) = PublicationApiObject().a
     publicationApiModel.description = description?.map { Paragraph(it) }
     publicationApiModel.researchArea = researchArea
     publicationApiModel.grantOrganizations = grantOrganizations?.map { Paragraph(it) }
+    publicationApiModel.primaryArticles = primaryArticles?.map { Paragraph(it) }
     publicationApiModel.relatedArticles = relatedArticles?.map { Paragraph(it) }
     publicationApiModel.tags = tags?.map { Paragraph(it) }
     publicationApiModel.objectOfStudyTitle = objectOfStudyTitle
@@ -312,6 +318,7 @@ fun PublicationElastic.toApiObject(viewCount: Long? = null, downloadsCount: Long
     publicationApiModel.title = title
     publicationApiModel.description = description?.map { Paragraph(it) }
     publicationApiModel.grantOrganizations = grantOrganizations?.map { Paragraph(it) }
+    publicationApiModel.primaryArticles = primaryArticles?.map { Paragraph(it) }
     publicationApiModel.relatedArticles = relatedArticles?.map { Paragraph(it) }
     publicationApiModel.tags = tags?.map { Paragraph(it) }
     publicationApiModel.objectOfStudyTitle = objectOfStudyTitle
@@ -337,6 +344,7 @@ fun Publication.toPublicationElastic() =
         title = title,
         description = description,
         grantOrganizations = grantOrganizations,
+        primaryArticles = primaryArticles,
         relatedArticles = relatedArticles,
         tags = tags,
         objectOfStudyTitle = objectOfStudyTitle,

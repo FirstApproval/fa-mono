@@ -41,6 +41,9 @@ class Publication(
     var grantOrganizations: List<String>? = null,
     @ColumnTransformer(write = "?::text")
     @Convert(converter = StringListEncryptionConverter::class)
+    var primaryArticles: List<String>? = null,
+    @ColumnTransformer(write = "?::text")
+    @Convert(converter = StringListEncryptionConverter::class)
     var relatedArticles: List<String>? = null,
     @ColumnTransformer(write = "?::text")
     @Convert(converter = StringListEncryptionConverter::class)
@@ -69,6 +72,8 @@ class Publication(
     var viewsCount: Long = 0,
     var creationTime: ZonedDateTime = now(),
     var publicationTime: ZonedDateTime? = null,
+    @Convert(converter = StringEncryptionConverter::class)
+    var archivePassword: String? = null,
     var contentId: Long? = null,
     var isFeatured: Boolean = false,
 )

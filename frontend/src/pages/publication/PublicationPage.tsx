@@ -16,11 +16,16 @@ import {
   MethodPlaceholder,
   ObjectOfStudyPlaceholder,
   PredictedGoalsPlaceholder,
+  PrimaryArticlesPlaceholder,
   RelatedArticlesPlaceholder,
   SoftwarePlaceholder,
   TagsPlaceholder
 } from './ContentPlaceholder';
-import { PublicationStore, ViewMode } from './store/PublicationStore';
+import {
+  PublicationStore,
+  SavingStatusState,
+  ViewMode
+} from './store/PublicationStore';
 import { observer } from 'mobx-react-lite';
 import {
   DescriptionEditor,
@@ -28,6 +33,7 @@ import {
   MethodEditor,
   ObjectOfStudyEditor,
   PredictedGoalsEditor,
+  PrimaryArticlesEditor,
   RelatedArticlesEditor,
   SoftwareEditor
 } from './editors/ParagraphEditor';
@@ -78,7 +84,14 @@ export const PublicationPage: FunctionComponent = observer(() => {
                     {/* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */}
                     {` ${publicationStore.creator?.firstName} ${publicationStore.creator?.lastName}`}
                   </DraftedBy>
-                  <SavingStatus></SavingStatus>
+                  {publicationStore.savingStatus ===
+                    SavingStatusState.SAVING && (
+                    <SavingStatus>Saving...</SavingStatus>
+                  )}
+                  {publicationStore.savingStatus ===
+                    SavingStatusState.SAVED && (
+                    <SavingStatus>Saved</SavingStatus>
+                  )}
                 </>
               )}
             </div>
@@ -153,6 +166,7 @@ const PublicationBody = observer(
       filesEnabled,
       authorsEnabled,
       grantingOrganizationsEnabled,
+      primaryArticlesEnabled,
       relatedArticlesEnabled,
       tagsEnabled
     } = publicationStore;
@@ -232,6 +246,17 @@ const PublicationBody = observer(
         )}
         {grantingOrganizationsEnabled && (
           <GrantingOrganizationsEditor publicationStore={publicationStore} />
+        )}
+        {!primaryArticlesEnabled && (
+          <PrimaryArticlesPlaceholder
+            onClick={action(() => {
+              publicationStore.primaryArticlesEnabled = true;
+              publicationStore.addPrimaryArticle(0);
+            })}
+          />
+        )}
+        {primaryArticlesEnabled && (
+          <PrimaryArticlesEditor publicationStore={publicationStore} />
         )}
         {!relatedArticlesEnabled && (
           <RelatedArticlesPlaceholder

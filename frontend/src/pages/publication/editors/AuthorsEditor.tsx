@@ -49,7 +49,6 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
       authorStore.email = user.email!;
       authorStore.userId = user.id;
       authorStore.profileImage = user.profileImage;
-      debugger;
     } else {
       const unconfirmedAuthor = author as UnconfirmedAuthor;
       authorStore.firstName = unconfirmedAuthor.firstName;

@@ -1631,6 +1631,8 @@ components:
           $ref: '#/components/schemas/PublicationStringArrayValue'
         grantOrganizations:
           $ref: '#/components/schemas/PublicationStringArrayValue'
+        primaryArticles:
+          $ref: '#/components/schemas/PublicationStringArrayValue'
         relatedArticles:
           $ref: '#/components/schemas/PublicationStringArrayValue'
         tags:
@@ -1788,6 +1790,8 @@ components:
           type: string
           maxLength: 40
         grantOrganizations:
+          $ref: '#/components/schemas/StringArray'
+        primaryArticles:
           $ref: '#/components/schemas/StringArray'
         relatedArticles:
           $ref: '#/components/schemas/StringArray'

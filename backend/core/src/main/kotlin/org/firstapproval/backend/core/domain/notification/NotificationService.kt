@@ -78,8 +78,8 @@ class NotificationService(
             log.info { "Archive password $password" }
             return
         }
-        val content = "Your password from archive of publication $publicationName { $password } you can download it in application"
-        mailService.send(email, "[FirstApproval] Archive is ready", content)
+        val content = "Your password from archive of publication $publicationName { $password }"
+        mailService.send(email, "[FirstApproval] Password of dataset", content)
     }
 
 }

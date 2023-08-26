@@ -44,7 +44,6 @@ import { Footer } from '../home/Footer';
 
 export const ProfilePage: FunctionComponent = observer(() => {
   const [username] = useState(() => routerStore.profileUsername);
-  debugger;
   const [store] = useState(() => new ProfilePageStore(username));
   const user = (username ? store : userStore).user!;
   const [tabNumber, setTabNumber] = React.useState(0);

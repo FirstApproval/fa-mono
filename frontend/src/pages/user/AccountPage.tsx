@@ -190,7 +190,6 @@ export const AccountPage: FunctionComponent = observer(() => {
       editableUser.profileImage = fileString.substring(
         fileString.indexOf(',') + 1
       );
-      debugger;
       user.profileImage = fileString;
       await updateUserInfo();
     }

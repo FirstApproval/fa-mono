@@ -27,6 +27,7 @@ class PublicationElastic(
     var description: List<String>? = null,
     @Field(type = Keyword)
     var grantOrganizations: List<String>? = null,
+    var primaryArticles: List<String>? = null,
     var relatedArticles: List<String>? = null,
     @Field(type = Keyword)
     var tags: List<String>? = null,

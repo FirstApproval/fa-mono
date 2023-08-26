@@ -46,8 +46,8 @@ class TokenService(
     fun generateDownloadPublicationArchiveToken(userId: String, publicationId: String): String {
         return jwtService.generate(
             mapOf(
-                "sub" to userId,
-                "publicationId" to publicationId,
+                "sub" to publicationId,
+                "userId" to userId
             ),
             jwtProperties.publicationArchiveTokenTtl
         )
