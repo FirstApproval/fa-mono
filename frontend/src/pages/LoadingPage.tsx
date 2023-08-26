@@ -9,7 +9,7 @@ import {
   Parent
 } from './common.styled';
 import { routerStore } from '../core/router';
-import logo from '../assets/logo.svg';
+import logo from '../assets/logo-black.svg';
 
 export const LoadingPage: FunctionComponent = () => {
   return (

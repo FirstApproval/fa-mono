@@ -17,7 +17,7 @@ import {
 } from '../common.styled';
 import { routerStore } from '../../core/router';
 import { authStore } from '../../core/auth';
-import logo from '../../assets/logo.svg';
+import logo from '../../assets/logo-black.svg';
 
 interface EmailVerificationPageProps {
   store: SignUpStore;

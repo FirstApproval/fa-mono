@@ -24,7 +24,7 @@ import {
 } from '../common.styled';
 import { routerStore } from '../../core/router';
 import { UserMenu } from '../../components/UserMenu';
-import logo from '../../assets/logo.svg';
+import logo from '../../assets/logo-black.svg';
 import upload_your_first_dataset_from from '../../assets/upload-your-first-dataset.svg';
 import styled from '@emotion/styled';
 import { ProfilePageStore } from './ProfilePageStore';

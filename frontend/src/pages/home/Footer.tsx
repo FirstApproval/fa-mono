@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import React, { type ReactElement } from 'react';
-import logo from './assets/Logo.svg';
+import logo from '../../assets/logo.svg';
 import { Button, Stack } from '@mui/material';
 
 export const Footer = (): ReactElement => {

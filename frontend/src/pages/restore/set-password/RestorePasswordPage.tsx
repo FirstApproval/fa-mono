@@ -23,7 +23,7 @@ import {
 import { routerStore } from '../../../core/router';
 import { userService } from '../../../core/service';
 import { LoadingButton } from '@mui/lab';
-import logo from '../../../assets/logo.svg';
+import logo from '../../../assets/logo-black.svg';
 
 interface SetPasswordPageProps {
   onSignUpClick: () => void;

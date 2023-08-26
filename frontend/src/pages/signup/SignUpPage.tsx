@@ -24,7 +24,7 @@ import {
 } from '../common.styled';
 import { validateEmail } from 'src/util/emailUtil';
 import { routerStore } from '../../core/router';
-import logo from '../../assets/logo.svg';
+import logo from '../../assets/logo-black.svg';
 
 interface SignUpPageProps {
   store: SignUpStore;

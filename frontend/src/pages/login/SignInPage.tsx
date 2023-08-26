@@ -22,7 +22,7 @@ import {
 import { routerStore } from '../../core/router';
 import { type SignInStore } from './SignInStore';
 import { observer } from 'mobx-react-lite';
-import logo from '../../assets/logo.svg';
+import logo from '../../assets/logo-black.svg';
 
 interface SignInPageProps {
   store: SignInStore;
