@@ -174,9 +174,10 @@ export const RelatedArticlesEditor = observer(
             props.publicationStore.updateRelatedArticle(idx, value);
           }}
           onAddParagraph={(idx) => {
-            props.publicationStore.addRelatedArticle(idx);}}
-        onMergeParagraph={(idx) => {
-          props.publicationStore.mergeRelatedArticlesParagraph(idx);
+            props.publicationStore.addRelatedArticle(idx);
+          }}
+          onMergeParagraph={(idx) => {
+            props.publicationStore.mergeRelatedArticlesParagraph(idx);
           }}
           paragraphPrefixType={ParagraphPrefixType.NUMERATION}
           text={'Related articles'}
