@@ -1,26 +1,30 @@
-import React, { type ReactElement } from 'react';
+import React, { type ReactElement, useEffect, useRef } from 'react';
 import styled from '@emotion/styled';
 import { TextField } from '@mui/material';
 
 interface ParagraphProps {
+  cursorPosition: number;
+  paragraphToFocus: number;
   isReadonly?: boolean;
   paragraphPrefixType?: ParagraphPrefixType;
   idx: number;
   value: string;
   onChange: (idx: number, value: string) => void;
   onAddParagraph: (idx: number) => void;
+  onMergeParagraph: (idx: number) => void;
   placeholder: string;
-  autoFocus: boolean;
 }
 
 export const ParagraphElement = (props: ParagraphProps): ReactElement => {
   const {
+    paragraphToFocus,
+    cursorPosition,
     idx,
     value,
     onChange,
     onAddParagraph,
+    onMergeParagraph,
     placeholder,
-    autoFocus,
     paragraphPrefixType
   } = props;
 
@@ -31,17 +35,46 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
       ? (idx + 1).toString() + '.'
       : '';
 
+  const ref = useRef<HTMLDivElement>();
+
+  useEffect(() => {
+    if (!ref.current) return;
+    if (paragraphToFocus === idx) {
+      ref.current.focus();
+      // @ts-expect-error wrong types
+      ref.current.selectionStart = cursorPosition;
+      // @ts-expect-error wrong types
+      ref.current.selectionEnd = cursorPosition;
+    }
+  }, [paragraphToFocus, cursorPosition, ref]);
+
   return (
     <ParagraphWrap paragraphPrefixType={paragraphPrefixType}>
       {prefix && <PrefixRowWrap>{prefix}</PrefixRowWrap>}
       {!props.isReadonly && (
         <TextFieldWrap
-          autoFocus={autoFocus}
+          inputRef={ref}
           onKeyDown={(event) => {
-            if (event.key === 'Enter' || event.keyCode === 13) {
+            // @ts-expect-error wrong types
+            const selectionStart = event.target.selectionStart;
+            // @ts-expect-error wrong types
+            const selectionEnd = event.target.selectionEnd;
+            if (
+              selectionStart === value.length &&
+              selectionEnd === value.length &&
+              (event.key === 'Enter' || event.keyCode === 13)
+            ) {
               event.preventDefault();
               event.stopPropagation();
               onAddParagraph(idx);
+            } else if (
+              selectionStart === 0 &&
+              selectionEnd === 0 &&
+              (event.key === 'Backspace' || event.key === 'Delete')
+            ) {
+              event.preventDefault();
+              event.stopPropagation();
+              onMergeParagraph(idx);
             }
           }}
           value={value}

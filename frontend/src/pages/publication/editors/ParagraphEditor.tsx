@@ -22,7 +22,8 @@ interface ContentEditorProps {
   placeholder: string;
   value: ParagraphWithId[];
   onChange: (idx: number, value: string) => void;
-  onAddClick: (idx: number) => void;
+  onAddParagraph: (idx: number) => void;
+  onMergeParagraph: (idx: number) => void;
 }
 
 export const DescriptionEditor = observer(
@@ -30,12 +31,15 @@ export const DescriptionEditor = observer(
     return (
       <ParagraphContentEditor
         isReadonly={props.publicationStore.isReadonly}
-        value={props.publicationStore.description}
+        value={props.publicationStore.summary}
         onChange={(idx, value) => {
-          props.publicationStore.updateDescriptionParagraph(idx, value);
+          props.publicationStore.updateSummaryParagraph(idx, value);
         }}
-        onAddClick={(idx) => {
+        onAddParagraph={(idx) => {
           props.publicationStore.addDescriptionParagraph(idx);
+        }}
+        onMergeParagraph={(idx) => {
+          props.publicationStore.mergeSummaryParagraph(idx);
         }}
         placeholder={'Publication summary'}
       />
@@ -43,7 +47,7 @@ export const DescriptionEditor = observer(
   }
 );
 
-export const PredictedGoalsEditor = observer(
+export const ExperimentGoalsEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <ParagraphContentEditor
@@ -52,8 +56,11 @@ export const PredictedGoalsEditor = observer(
         onChange={(idx, value) => {
           props.publicationStore.updateExperimentGoalsParagraph(idx, value);
         }}
-        onAddClick={(idx) => {
+        onAddParagraph={(idx) => {
           props.publicationStore.addExperimentGoalsParagraph(idx);
+        }}
+        onMergeParagraph={(idx) => {
+          props.publicationStore.mergeExperimentGoalsParagraph(idx);
         }}
         text={'Experiment goals'}
         placeholder={'Describe the experiment goals and preliminary results...'}
@@ -70,8 +77,11 @@ export const MethodEditor = observer((props: EditorProps): ReactElement => {
       onChange={(idx, value) => {
         props.publicationStore.updateMethodParagraph(idx, value);
       }}
-      onAddClick={(idx) => {
+      onAddParagraph={(idx) => {
         props.publicationStore.addMethodParagraph(idx);
+      }}
+      onMergeParagraph={(idx) => {
+        props.publicationStore.mergeMethodParagraph(idx);
       }}
       text={'Method'}
       placeholder={
@@ -90,8 +100,11 @@ export const ObjectOfStudyEditor = observer(
         onChange={(idx, value) => {
           props.publicationStore.updateObjectOfStudyParagraph(idx, value);
         }}
-        onAddClick={(idx) => {
+        onAddParagraph={(idx) => {
           props.publicationStore.addObjectOfStudyParagraph(idx);
+        }}
+        onMergeParagraph={(idx) => {
+          props.publicationStore.mergeObjectOfStudyParagraph(idx);
         }}
         text={'Object of study'}
         placeholder={
@@ -110,8 +123,11 @@ export const SoftwareEditor = observer((props: EditorProps): ReactElement => {
       onChange={(idx, value) => {
         props.publicationStore.updateSoftwareParagraph(idx, value);
       }}
-      onAddClick={(idx) => {
+      onAddParagraph={(idx) => {
         props.publicationStore.addSoftwareParagraph(idx);
+      }}
+      onMergeParagraph={(idx) => {
+        props.publicationStore.mergeSoftwareParagraph(idx);
       }}
       text={'Software'}
       placeholder={
@@ -130,8 +146,11 @@ export const GrantingOrganizationsEditor = observer(
         onChange={(idx, value) => {
           props.publicationStore.updateGrantingOrganization(idx, value);
         }}
-        onAddClick={(idx) => {
+        onAddParagraph={(idx) => {
           props.publicationStore.addGrantingOrganization(idx);
+        }}
+        onMergeParagraph={(idx) => {
+          props.publicationStore.mergeGrantingOrganizationsParagraph(idx);
         }}
         paragraphPrefixType={ParagraphPrefixType.BULLET}
         text={'Granting organizations'}
@@ -152,8 +171,11 @@ export const RelatedArticlesEditor = observer(
         onChange={(idx, value) => {
           props.publicationStore.updateRelatedArticle(idx, value);
         }}
-        onAddClick={(idx) => {
+        onAddParagraph={(idx) => {
           props.publicationStore.addRelatedArticle(idx);
+        }}
+        onMergeParagraph={(idx) => {
+          props.publicationStore.mergeRelatedArticlesParagraph(idx);
         }}
         paragraphPrefixType={ParagraphPrefixType.NUMERATION}
         text={'Related articles'}
@@ -168,7 +190,8 @@ export const RelatedArticlesEditor = observer(
 export const ParagraphContentEditor = (
   props: ContentEditorProps
 ): ReactElement => {
-  const [paragraphToFocus, setParagraphToFocus] = useState<number>();
+  const [paragraphToFocus, setParagraphToFocus] = useState<number>(0);
+  const [cursorPosition, setCursorPosition] = useState<number>(0);
 
   return (
     <ContentEditorWrap>
@@ -176,14 +199,20 @@ export const ParagraphContentEditor = (
       {props.value.map((p, idx) => {
         return (
           <ParagraphElement
+            cursorPosition={cursorPosition}
+            paragraphToFocus={paragraphToFocus}
             isReadonly={props.isReadonly}
-            autoFocus={paragraphToFocus === idx}
             key={p.id}
             idx={idx}
             value={p.text}
             onAddParagraph={(idx) => {
               setParagraphToFocus(idx + 1);
-              props.onAddClick(idx);
+              props.onAddParagraph(idx);
+            }}
+            onMergeParagraph={(idx) => {
+              setCursorPosition(props.value[idx - 1].text.length);
+              setParagraphToFocus(idx - 1);
+              props.onMergeParagraph(idx);
             }}
             onChange={props.onChange}
             placeholder={idx === 0 ? props.placeholder : ''}
