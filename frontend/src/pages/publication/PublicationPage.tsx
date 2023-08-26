@@ -31,7 +31,7 @@ import {
   GrantingOrganizationsEditor,
   MethodEditor,
   ObjectOfStudyEditor,
-  PredictedGoalsEditor,
+  ExperimentGoalsEditor,
   RelatedArticlesEditor,
   SoftwareEditor
 } from './editors/ParagraphEditor';
@@ -208,7 +208,7 @@ const PublicationBody = observer(
           <ExperimentGoalsPlaceholder onClick={openExperimentGoals} />
         )}
         {experimentGoalsEnabled && (
-          <PredictedGoalsEditor publicationStore={publicationStore} />
+          <ExperimentGoalsEditor publicationStore={publicationStore} />
         )}
         {!methodEnabled && <MethodPlaceholder onClick={openMethod} />}
         {methodEnabled && <MethodEditor publicationStore={publicationStore} />}

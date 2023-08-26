@@ -23,7 +23,7 @@ import { type RestorePasswordStore } from './RestorePasswordStore';
 import { validateEmail } from 'src/util/emailUtil';
 import { routerStore } from '../../../core/router';
 import { LoadingButton } from '@mui/lab';
-import logo from '../../../assets/logo.svg';
+import logo from '../../../assets/logo-black.svg';
 
 interface RestorePasswordEmailProps {
   store: RestorePasswordStore;

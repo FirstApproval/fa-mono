@@ -1,7 +1,7 @@
 import {
   AuthApi,
   AuthorApi,
-  type Configuration,
+  Configuration,
   FileApi,
   PublicationApi,
   RegistrationApi,
@@ -9,15 +9,15 @@ import {
 } from '../apis/first-approval-api';
 import { authStore } from './auth';
 
-const configuration: Configuration = {
-  accessToken: async () => await Promise.resolve(authStore.token ?? ''),
-  isJsonMime(mime: string): boolean {
-    return (
-      mime.toLowerCase() === 'application/json' ||
-      mime.toLowerCase().startsWith('application/json;')
-    );
+const configuration: Configuration = new Configuration({
+  accessToken: async () => {
+    if (authStore.token) {
+      return authStore.token;
+    } else {
+      throw Error('No auth token set');
+    }
   }
-};
+});
 
 export const registrationService = new RegistrationApi(configuration);
 

@@ -25,7 +25,7 @@ import { PublicationSection } from '../../components/PublicationSection';
 import { CallToAction } from './CallToAction';
 import PopularAuthorsSection from './PopularAuthorsSection';
 import RecommendedPublicationsSection from './RecommendedPublicationsSection';
-import logo from '../../assets/logo.svg';
+import logo from '../../assets/logo-black.svg';
 import { authStore } from '../../core/auth';
 import { Footer } from './Footer';
 

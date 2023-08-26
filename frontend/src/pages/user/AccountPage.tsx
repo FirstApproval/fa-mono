@@ -24,7 +24,7 @@ import {
 } from '../common.styled';
 import { routerStore } from '../../core/router';
 import { UserMenu } from '../../components/UserMenu';
-import logo from '../../assets/logo.svg';
+import logo from '../../assets/logo-black.svg';
 import styled from '@emotion/styled';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';

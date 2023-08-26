@@ -16,7 +16,7 @@ import {
 import { routerStore } from '../../core/router';
 import { userService } from '../../core/service';
 import { Page } from '../../core/RouterStore';
-import logo from '../../assets/logo.svg';
+import logo from '../../assets/logo-black.svg';
 
 interface EnterSelfInfoPageProps {
   store: SignUpStore;

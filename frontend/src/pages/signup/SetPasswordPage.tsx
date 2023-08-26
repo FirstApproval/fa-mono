@@ -23,7 +23,7 @@ import {
   Header
 } from '../common.styled';
 import { routerStore } from '../../core/router';
-import logo from '../../assets/logo.svg';
+import logo from '../../assets/logo-black.svg';
 
 interface PasswordValidationProps {
   password: string;

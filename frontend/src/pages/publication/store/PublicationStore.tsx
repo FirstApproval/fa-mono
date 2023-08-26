@@ -50,6 +50,7 @@ export class PublicationStore {
   relatedArticlesEnabled = false;
   tagsEnabled = false;
 
+  summary: ParagraphWithId[] = [];
   savingStatus: SavingStatusState = SavingStatusState.PREVIEW;
 
   description: ParagraphWithId[] = [];
@@ -89,9 +90,9 @@ export class PublicationStore {
   }
 
   addDescriptionParagraph(idx: number): void {
-    const newValue = [...this.description];
+    const newValue = [...this.summary];
     newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
-    this.description = newValue;
+    this.summary = newValue;
   }
 
   addExperimentGoalsParagraph(idx: number): void {
@@ -286,16 +287,16 @@ export class PublicationStore {
     this.relatedArticles = newValue;
   }
 
-  updateDescriptionParagraph(idx: number, value: string): void {
-    const newValue = [...this.description];
+  updateSummaryParagraph(idx: number, value: string): void {
+    const newValue = [...this.summary];
     newValue[idx] = { text: value, id: newValue[idx].id };
-    this.description = newValue;
+    this.summary = newValue;
     this.savingStatus = SavingStatusState.SAVING;
-    void this.updateDescription();
+    void this.updateSummary();
   }
 
-  updateDescription = _.throttle(async () => {
-    const description: Paragraph[] = this.description.filter(
+  updateSummary = _.throttle(async () => {
+    const description: Paragraph[] = this.summary.filter(
       (p) => p.text.length > 0
     );
 
@@ -433,6 +434,90 @@ export class PublicationStore {
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
+  mergeSummaryParagraph = (idx: number): void => {
+    if (idx <= 0) return;
+    const newValue = [...this.summary];
+    newValue[idx - 1] = {
+      text: newValue[idx - 1].text + newValue[idx].text,
+      id: newValue[idx - 1].id
+    };
+    newValue.splice(idx, 1);
+    this.summary = newValue;
+    void this.updateSummary();
+  };
+
+  mergeExperimentGoalsParagraph = (idx: number): void => {
+    if (idx <= 0) return;
+    const newValue = [...this.experimentGoals];
+    newValue[idx - 1] = {
+      text: newValue[idx - 1].text + newValue[idx].text,
+      id: newValue[idx - 1].id
+    };
+    newValue.splice(idx, 1);
+    this.experimentGoals = newValue;
+    void this.updateExperimentGoals();
+  };
+
+  mergeMethodParagraph = (idx: number): void => {
+    if (idx <= 0) return;
+    const newValue = [...this.method];
+    newValue[idx - 1] = {
+      text: newValue[idx - 1].text + newValue[idx].text,
+      id: newValue[idx - 1].id
+    };
+    newValue.splice(idx, 1);
+    this.method = newValue;
+    void this.updateMethod();
+  };
+
+  mergeObjectOfStudyParagraph = (idx: number): void => {
+    if (idx <= 0) return;
+    const newValue = [...this.objectOfStudy];
+    newValue[idx - 1] = {
+      text: newValue[idx - 1].text + newValue[idx].text,
+      id: newValue[idx - 1].id
+    };
+    newValue.splice(idx, 1);
+    this.objectOfStudy = newValue;
+    void this.updateObjectOfStudy();
+  };
+
+  mergeSoftwareParagraph = (idx: number): void => {
+    if (idx <= 0) return;
+    const newValue = [...this.software];
+    newValue[idx - 1] = {
+      text: newValue[idx - 1].text + newValue[idx].text,
+      id: newValue[idx - 1].id
+    };
+    newValue.splice(idx, 1);
+    this.software = newValue;
+    void this.updateSoftware();
+  };
+
+  mergeGrantingOrganizationsParagraph = (idx: number): void => {
+    if (idx <= 0) return;
+    const newValue = [...this.grantingOrganizations];
+    newValue[idx - 1] = {
+      text: newValue[idx - 1].text + newValue[idx].text,
+      id: newValue[idx - 1].id
+    };
+    newValue.splice(idx, 1);
+    this.grantingOrganizations = newValue;
+    void this.updateGrantingOrganizations();
+  };
+
+  mergeRelatedArticlesParagraph = (idx: number): void => {
+    if (idx <= 0) return;
+    const newValue = [...this.relatedArticles];
+    newValue[idx - 1] = {
+      text: newValue[idx - 1].text + newValue[idx].text,
+      id: newValue[idx - 1].id
+    };
+    newValue.splice(idx, 1);
+    this.relatedArticles = newValue;
+    void this.updateRelatedArticles();
+  };
+
   openExperimentGoals = (): void => {
     this.experimentGoalsEnabled = true;
     this.addExperimentGoalsParagraph(0);
@@ -485,7 +570,7 @@ export class PublicationStore {
     if (this.title.length === 0) {
       result.push('title');
     }
-    if (!hasContent(this.description)) {
+    if (!hasContent(this.summary)) {
       result.push('summary');
     }
     if (!hasContent(this.experimentGoals)) {
@@ -525,7 +610,7 @@ export class PublicationStore {
             this.researchArea = publication.researchArea;
           }
           if (publication.description?.length) {
-            this.description = publication.description.map(mapParagraph);
+            this.summary = publication.description.map(mapParagraph);
           }
           if (publication.predictedGoals?.length) {
             this.experimentGoals = publication.predictedGoals.map(mapParagraph);
