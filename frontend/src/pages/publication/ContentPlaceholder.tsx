@@ -132,18 +132,6 @@ export const RelatedArticlesPlaceholder = (
   );
 };
 
-export const PrimaryArticlesPlaceholder = (
-  props: PlaceholderProps
-): ReactElement => {
-  return (
-    <ContentPlaceholder
-      onClick={props.onClick}
-      text={'Primary articles | optional'}
-      icon={<img src={related_articles} />}
-    />
-  );
-};
-
 export const TagsPlaceholder = (props: PlaceholderProps): ReactElement => {
   return (
     <ContentPlaceholder

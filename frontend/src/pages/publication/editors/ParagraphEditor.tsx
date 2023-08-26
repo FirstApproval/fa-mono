@@ -10,6 +10,7 @@ import {
   ParagraphPrefixType
 } from './element/ParagraphElement';
 import { ContentEditorWrap, LabelWrap } from './styled';
+import { PrimaryArticleData } from './PrimaryArticleData';
 
 export interface EditorProps {
   publicationStore: PublicationStore;
@@ -146,41 +147,31 @@ export const GrantingOrganizationsEditor = observer(
 export const RelatedArticlesEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
-      <ParagraphContentEditor
-        isReadonly={props.publicationStore.isReadonly}
-        value={props.publicationStore.relatedArticles}
-        onChange={(idx, value) => {
-          props.publicationStore.updateRelatedArticle(idx, value);
-        }}
-        onAddClick={(idx) => {
-          props.publicationStore.addRelatedArticle(idx);
-        }}
-        paragraphPrefixType={ParagraphPrefixType.NUMERATION}
-        text={'Related articles'}
-        placeholder={
-          'Provide citations or references of articles that are closely related to your research...'
-        }
-      />
-    );
-  }
-);
-
-export const PrimaryArticlesEditor = observer(
-  (props: EditorProps): ReactElement => {
-    return (
-      <ParagraphContentEditor
-        isReadonly={props.publicationStore.isReadonly}
-        value={props.publicationStore.primaryArticles}
-        onChange={(idx, value) => {
-          props.publicationStore.updatePrimaryArticle(idx, value);
-        }}
-        onAddClick={(idx) => {
-          props.publicationStore.addPrimaryArticle(idx);
-        }}
-        paragraphPrefixType={ParagraphPrefixType.NUMERATION}
-        text={'Primary articles'}
-        placeholder={'Provide primary articles'}
-      />
+      <>
+        <ParagraphContentEditor
+          isReadonly={props.publicationStore.isReadonly}
+          value={props.publicationStore.relatedArticles}
+          onChange={(idx, value) => {
+            props.publicationStore.updateRelatedArticle(idx, value);
+          }}
+          onAddClick={(idx) => {
+            props.publicationStore.addRelatedArticle(idx);
+          }}
+          paragraphPrefixType={ParagraphPrefixType.NUMERATION}
+          text={'Related articles'}
+          placeholder={
+            'Provide citations or references of articles that are closely related to your research...'
+          }
+        />
+        <div style={{ marginBottom: 48 }}>
+          <PrimaryArticleData
+            isReadOnly={props.publicationStore.isReadonly}
+            onChange={(value) => {
+              props.publicationStore.updatePrimaryArticle(value);
+            }}
+            value={props.publicationStore.primaryArticles}></PrimaryArticleData>
+        </div>
+      </>
     );
   }
 );

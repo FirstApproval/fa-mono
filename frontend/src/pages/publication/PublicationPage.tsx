@@ -15,7 +15,6 @@ import {
   MethodPlaceholder,
   ObjectOfStudyPlaceholder,
   ExperimentGoalsPlaceholder,
-  PrimaryArticlesPlaceholder,
   RelatedArticlesPlaceholder,
   SoftwarePlaceholder,
   TagsPlaceholder
@@ -23,6 +22,7 @@ import {
 import {
   PublicationStore,
   SavingStatusState,
+  type Section,
   ViewMode
 } from './store/PublicationStore';
 import { observer } from 'mobx-react-lite';
@@ -32,7 +32,6 @@ import {
   MethodEditor,
   ObjectOfStudyEditor,
   PredictedGoalsEditor,
-  PrimaryArticlesEditor,
   RelatedArticlesEditor,
   SoftwareEditor
 } from './editors/ParagraphEditor';
@@ -196,7 +195,6 @@ const PublicationBody = observer(
       filesEnabled,
       authorsEnabled,
       grantingOrganizationsEnabled,
-      primaryArticlesEnabled,
       relatedArticlesEnabled,
       tagsEnabled
     } = publicationStore;
@@ -237,17 +235,6 @@ const PublicationBody = observer(
         )}
         {grantingOrganizationsEnabled && (
           <GrantingOrganizationsEditor publicationStore={publicationStore} />
-        )}
-        {!primaryArticlesEnabled && (
-          <PrimaryArticlesPlaceholder
-            onClick={action(() => {
-              publicationStore.primaryArticlesEnabled = true;
-              publicationStore.addPrimaryArticle(0);
-            })}
-          />
-        )}
-        {primaryArticlesEnabled && (
-          <PrimaryArticlesEditor publicationStore={publicationStore} />
         )}
         {!relatedArticlesEnabled && (
           <RelatedArticlesPlaceholder onClick={openRelatedArticles} />

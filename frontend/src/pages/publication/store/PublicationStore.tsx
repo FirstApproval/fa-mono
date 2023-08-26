@@ -48,7 +48,6 @@ export class PublicationStore {
   authorsEnabled = false;
   grantingOrganizationsEnabled = false;
   relatedArticlesEnabled = false;
-  primaryArticlesEnabled = false;
   tagsEnabled = false;
 
   savingStatus: SavingStatusState = SavingStatusState.PREVIEW;
@@ -62,7 +61,7 @@ export class PublicationStore {
   unconfirmedAuthors: UnconfirmedAuthor[] = [];
   grantingOrganizations: ParagraphWithId[] = [];
   relatedArticles: ParagraphWithId[] = [];
-  primaryArticles: ParagraphWithId[] = [];
+  primaryArticles: Paragraph[] = [];
   tags = new Set<string>();
 
   constructor(readonly publicationId: string, readonly fs: ChonkyFileSystem) {
@@ -287,12 +286,6 @@ export class PublicationStore {
     this.relatedArticles = newValue;
   }
 
-  addPrimaryArticle(idx: number): void {
-    const newValue = [...this.primaryArticles];
-    newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
-    this.primaryArticles = newValue;
-  }
-
   updateDescriptionParagraph(idx: number, value: string): void {
     const newValue = [...this.description];
     newValue[idx] = { text: value, id: newValue[idx].id };
@@ -404,10 +397,8 @@ export class PublicationStore {
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
-  updatePrimaryArticle(idx: number, value: string): void {
-    const newValue = [...this.primaryArticles];
-    newValue[idx] = { text: value, id: newValue[idx].id };
-    this.primaryArticles = newValue;
+  updatePrimaryArticle(list: Paragraph[]): void {
+    this.primaryArticles = [...list];
     this.savingStatus = SavingStatusState.SAVING;
     void this.updatePrimaryArticles();
   }
@@ -566,7 +557,10 @@ export class PublicationStore {
           if (publication.primaryArticles?.length) {
             this.primaryArticles =
               publication.primaryArticles.map(mapParagraph);
-            this.primaryArticlesEnabled = true;
+            this.relatedArticlesEnabled = true;
+            if (publication.relatedArticles?.length === 0) {
+              this.addRelatedArticle(0);
+            }
           }
           if (publication.tags?.length) {
             this.tags = new Set(publication.tags.map((p) => p.text));
@@ -600,7 +594,6 @@ export class PublicationStore {
             this.authorsEnabled = true;
             this.grantingOrganizationsEnabled = true;
             this.relatedArticlesEnabled = true;
-            this.primaryArticlesEnabled = true;
             this.tagsEnabled = true;
           }
         })
