@@ -48,12 +48,12 @@ export const PredictedGoalsEditor = observer(
     return (
       <ParagraphContentEditor
         isReadonly={props.publicationStore.isReadonly}
-        value={props.publicationStore.predictedGoals}
+        value={props.publicationStore.experimentGoals}
         onChange={(idx, value) => {
-          props.publicationStore.updatePredictedGoalsParagraph(idx, value);
+          props.publicationStore.updateExperimentGoalsParagraph(idx, value);
         }}
         onAddClick={(idx) => {
-          props.publicationStore.addPredictedGoalsParagraph(idx);
+          props.publicationStore.addExperimentGoalsParagraph(idx);
         }}
         text={'Experiment goals'}
         placeholder={'Describe the experiment goals and preliminary results...'}

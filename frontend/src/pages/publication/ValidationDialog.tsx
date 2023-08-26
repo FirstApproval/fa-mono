@@ -6,8 +6,10 @@ import {
   FilesPlaceholder,
   MethodPlaceholder,
   ObjectOfStudyPlaceholder,
-  PredictedGoalsPlaceholder,
-  TagsPlaceholder
+  ExperimentGoalsPlaceholder,
+  SummaryPlaceholder,
+  TagsPlaceholder,
+  TitlePlaceholder
 } from './ContentPlaceholder';
 
 export const ValidationDialog = (props: {
@@ -18,7 +20,7 @@ export const ValidationDialog = (props: {
 }): ReactElement => {
   const { isOpen, onClose, errors, publicationStore } = props;
   const {
-    openPredictedGoals,
+    openExperimentGoals,
     openMethod,
     openObjectOfStudy,
     openFiles,
@@ -34,18 +36,30 @@ export const ValidationDialog = (props: {
         Fill in all the required sections:
       </DialogTitle>
       <DialogContentWrap>
-        {errors.includes('goals') && (
-          <PredictedGoalsPlaceholder
-            isReadonly
+        {errors.includes('title') && (
+          <TitlePlaceholder
             onClick={() => {
               onClose();
-              openPredictedGoals();
+            }}
+          />
+        )}
+        {errors.includes('summary') && (
+          <SummaryPlaceholder
+            onClick={() => {
+              onClose();
+            }}
+          />
+        )}
+        {errors.includes('goals') && (
+          <ExperimentGoalsPlaceholder
+            onClick={() => {
+              onClose();
+              openExperimentGoals();
             }}
           />
         )}
         {errors.includes('method') && (
           <MethodPlaceholder
-            isReadonly
             onClick={() => {
               onClose();
               openMethod();
@@ -54,7 +68,6 @@ export const ValidationDialog = (props: {
         )}
         {errors.includes('object_of_study') && (
           <ObjectOfStudyPlaceholder
-            isReadonly
             onClick={() => {
               onClose();
               openObjectOfStudy();
@@ -63,7 +76,6 @@ export const ValidationDialog = (props: {
         )}
         {errors.includes('files') && (
           <FilesPlaceholder
-            isReadonly
             onClick={() => {
               onClose();
               openFiles();
@@ -72,7 +84,6 @@ export const ValidationDialog = (props: {
         )}
         {errors.includes('tags') && (
           <TagsPlaceholder
-            isReadonly
             onClick={() => {
               onClose();
               openTags();

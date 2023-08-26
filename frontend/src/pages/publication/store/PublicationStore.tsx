@@ -40,7 +40,7 @@ export class PublicationStore {
   researchArea = '';
 
   creator: UserInfo | undefined;
-  predictedGoalsEnabled = false;
+  experimentGoalsEnabled = false;
   methodEnabled = false;
   objectOfStudyEnabled = false;
   softwareEnabled = false;
@@ -51,7 +51,7 @@ export class PublicationStore {
   tagsEnabled = false;
 
   description: ParagraphWithId[] = [];
-  predictedGoals: ParagraphWithId[] = [];
+  experimentGoals: ParagraphWithId[] = [];
   method: ParagraphWithId[] = [];
   objectOfStudy: ParagraphWithId[] = [];
   software: ParagraphWithId[] = [];
@@ -91,10 +91,10 @@ export class PublicationStore {
     this.description = newValue;
   }
 
-  addPredictedGoalsParagraph(idx: number): void {
-    const newValue = [...this.predictedGoals];
+  addExperimentGoalsParagraph(idx: number): void {
+    const newValue = [...this.experimentGoals];
     newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
-    this.predictedGoals = newValue;
+    this.experimentGoals = newValue;
   }
 
   addMethodParagraph(idx: number): void {
@@ -286,15 +286,15 @@ export class PublicationStore {
     });
   }, EDIT_THROTTLE_MS);
 
-  updatePredictedGoalsParagraph(idx: number, value: string): void {
-    const newValue = [...this.predictedGoals];
+  updateExperimentGoalsParagraph(idx: number, value: string): void {
+    const newValue = [...this.experimentGoals];
     newValue[idx] = { text: value, id: newValue[idx].id };
-    this.predictedGoals = newValue;
-    void this.updatePredictedGoals();
+    this.experimentGoals = newValue;
+    void this.updateExperimentGoals();
   }
 
-  updatePredictedGoals = _.throttle(async () => {
-    const predictedGoals: Paragraph[] = this.predictedGoals.filter(
+  updateExperimentGoals = _.throttle(async () => {
+    const predictedGoals: Paragraph[] = this.experimentGoals.filter(
       (p) => p.text.length > 0
     );
 
@@ -385,9 +385,9 @@ export class PublicationStore {
     });
   }, EDIT_THROTTLE_MS);
 
-  openPredictedGoals = (): void => {
-    this.predictedGoalsEnabled = true;
-    this.addPredictedGoalsParagraph(0);
+  openExperimentGoals = (): void => {
+    this.experimentGoalsEnabled = true;
+    this.addExperimentGoalsParagraph(0);
   };
 
   openMethod = (): void => {
@@ -440,7 +440,7 @@ export class PublicationStore {
     if (!hasContent(this.description)) {
       result.push('summary');
     }
-    if (!hasContent(this.predictedGoals)) {
+    if (!hasContent(this.experimentGoals)) {
       result.push('goals');
     }
     if (!hasContent(this.method)) {
@@ -480,8 +480,8 @@ export class PublicationStore {
             this.description = publication.description.map(mapParagraph);
           }
           if (publication.predictedGoals?.length) {
-            this.predictedGoals = publication.predictedGoals.map(mapParagraph);
-            this.predictedGoalsEnabled = true;
+            this.experimentGoals = publication.predictedGoals.map(mapParagraph);
+            this.experimentGoalsEnabled = true;
           }
           if (publication.methodDescription?.length) {
             this.method = publication.methodDescription.map(mapParagraph);
@@ -529,7 +529,7 @@ export class PublicationStore {
             publication.status === PublicationStatus.READY_FOR_PUBLICATION ||
             publication.status === PublicationStatus.PUBLISHED
           ) {
-            this.predictedGoalsEnabled = true;
+            this.experimentGoalsEnabled = true;
             this.methodEnabled = true;
             this.objectOfStudyEnabled = true;
             this.softwareEnabled = true;

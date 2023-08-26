@@ -14,7 +14,7 @@ import {
   GrantingOrganisationsPlaceholder,
   MethodPlaceholder,
   ObjectOfStudyPlaceholder,
-  PredictedGoalsPlaceholder,
+  ExperimentGoalsPlaceholder,
   RelatedArticlesPlaceholder,
   SoftwarePlaceholder,
   TagsPlaceholder
@@ -171,7 +171,7 @@ const PublicationBody = observer(
     const { fs, publicationStore } = props;
 
     const {
-      openPredictedGoals,
+      openExperimentGoals,
       openMethod,
       openObjectOfStudy,
       openSoftware,
@@ -180,7 +180,7 @@ const PublicationBody = observer(
       openGrantingOrganizations,
       openRelatedArticles,
       openTags,
-      predictedGoalsEnabled,
+      experimentGoalsEnabled,
       methodEnabled,
       objectOfStudyEnabled,
       softwareEnabled,
@@ -196,10 +196,10 @@ const PublicationBody = observer(
         <TitleEditor publicationStore={publicationStore} />
         <ResearchAreaEditor publicationStore={publicationStore} />
         <DescriptionEditor publicationStore={publicationStore} />
-        {!predictedGoalsEnabled && (
-          <PredictedGoalsPlaceholder onClick={openPredictedGoals} />
+        {!experimentGoalsEnabled && (
+          <ExperimentGoalsPlaceholder onClick={openExperimentGoals} />
         )}
-        {predictedGoalsEnabled && (
+        {experimentGoalsEnabled && (
           <PredictedGoalsEditor publicationStore={publicationStore} />
         )}
         {!methodEnabled && <MethodPlaceholder onClick={openMethod} />}

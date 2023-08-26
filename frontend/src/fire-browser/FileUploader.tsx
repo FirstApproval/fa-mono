@@ -210,6 +210,7 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
 );
 
 const Wrap = styled('div')`
+  margin-top: 48px;
   margin-bottom: 40px;
 `;
 

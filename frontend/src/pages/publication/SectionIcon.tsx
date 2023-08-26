@@ -8,6 +8,15 @@ import granting_organizations from './asset/granting_organizations.svg';
 import related_articles from './asset/related_articles.svg';
 import tags from './asset/tags.svg';
 import { type ReactElement } from 'react';
+import { ShortText, Title } from '@mui/icons-material';
+
+export const TitleIcon = (): ReactElement => {
+  return <Title fontSize={'small'} />;
+};
+
+export const SummaryIcon = (): ReactElement => {
+  return <ShortText fontSize={'small'} />;
+};
 
 export const PredictedGoalsIcon = (): ReactElement => {
   return <img src={predicted_goals} />;

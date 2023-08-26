@@ -9,22 +9,42 @@ import {
   PredictedGoalsIcon,
   RelatedArticlesIcon,
   SoftwareIcon,
-  TagsIcon
+  SummaryIcon,
+  TagsIcon,
+  TitleIcon
 } from './SectionIcon';
 
 interface PlaceholderProps {
-  isReadonly?: boolean;
   onClick?: () => void;
 }
 
 interface ContentPlaceholderProps {
-  isReadonly?: boolean;
   onClick?: () => void;
   text: string;
   icon: ReactElement;
 }
 
-export const PredictedGoalsPlaceholder = (
+export const TitlePlaceholder = (props: PlaceholderProps): ReactElement => {
+  return (
+    <ContentPlaceholder
+      onClick={props.onClick}
+      text={'Title'}
+      icon={<TitleIcon />}
+    />
+  );
+};
+
+export const SummaryPlaceholder = (props: PlaceholderProps): ReactElement => {
+  return (
+    <ContentPlaceholder
+      onClick={props.onClick}
+      text={'Publication summary'}
+      icon={<SummaryIcon />}
+    />
+  );
+};
+
+export const ExperimentGoalsPlaceholder = (
   props: PlaceholderProps
 ): ReactElement => {
   return (
