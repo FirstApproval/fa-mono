@@ -643,7 +643,10 @@ export class PublicationStore {
             this.primaryArticles =
               publication.primaryArticles.map(mapParagraph);
             this.relatedArticlesEnabled = true;
-            if (publication.relatedArticles?.length === 0) {
+            if (
+              publication.relatedArticles == null ||
+              publication.relatedArticles?.length === 0
+            ) {
               this.addRelatedArticle(0);
             }
           }
