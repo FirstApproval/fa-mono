@@ -32,15 +32,24 @@ export const RecommendedPublication = (props: {
         </FlexWrap>
         <NameWrap>{title}</NameWrap>
         <Footer>
-          <RemoveRedEyeOutlined fontSize={'small'} />
-          {publication.viewsCount}
-          <DownloadWrap fontSize={'small'} />
-          {publication.downloadsCount}
+          <IconWrap>
+            <RemoveRedEyeOutlined fontSize={'small'} />
+          </IconWrap>
+          <div>{publication.viewsCount}</div>
+          <IconWrap>
+            <DownloadWrap fontSize={'small'} />
+          </IconWrap>
+          <div>{publication.downloadsCount}</div>
         </Footer>
       </Wrap>
     </>
   );
 };
+
+const IconWrap = styled.div`
+  display: flex;
+  margin-right: 4px;
+`;
 
 const Wrap = styled.div`
   display: flex;

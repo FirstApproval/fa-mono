@@ -43,10 +43,14 @@ export const PublicationSection = (props: {
       <FlexWrap>
         <PublicationAreaBox title={publication.researchArea ?? ''} />
         <Footer>
-          <RemoveRedEyeOutlined fontSize={'small'} />
-          {publication.viewsCount}
-          <DownloadWrap fontSize={'small'} />
-          {publication.downloadsCount}
+          <IconWrap>
+            <RemoveRedEyeOutlined fontSize={'small'} />
+          </IconWrap>
+          <div>{publication.viewsCount}</div>
+          <IconWrap>
+            <DownloadWrap fontSize={'small'} />
+          </IconWrap>
+          <div>{publication.downloadsCount}</div>
         </Footer>
       </FlexWrap>
       <DividerWrap />
@@ -59,13 +63,15 @@ const AuthorsWrap = styled.div`
   align-items: center;
 `;
 
+const IconWrap = styled.div`
+  display: flex;
+  margin-right: 4px;
+`;
+
 const Authors = styled.span`
   margin-left: 8px;
   color: var(--text-primary, #040036);
-  font-feature-settings: 'clig' off, 'liga' off;
 
-  /* typography/body2 */
-  font-family: Roboto;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;

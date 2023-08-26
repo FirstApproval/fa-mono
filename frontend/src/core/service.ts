@@ -10,7 +10,13 @@ import {
 import { authStore } from './auth';
 
 const configuration: Configuration = {
-  accessToken: async () => await Promise.resolve(authStore.token ?? ''),
+  accessToken: async () => {
+    if (authStore.token) {
+      return await Promise.resolve(authStore.token);
+    } else {
+      return await Promise.reject(Error('No auth token set'));
+    }
+  },
   isJsonMime(mime: string): boolean {
     return (
       mime.toLowerCase() === 'application/json' ||
