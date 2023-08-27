@@ -3,10 +3,10 @@ import React, { type ReactElement } from 'react';
 import { type Publication } from '../../apis/first-approval-api';
 import { Avatar } from '@mui/material';
 import { Download, RemoveRedEyeOutlined } from '@mui/icons-material';
-import { renderProfileImage } from '../../fire-browser/utils';
 import { getInitials } from '../../util/userUtil';
 import { routerStore } from '../../core/router';
 import { Page } from '../../core/RouterStore';
+import { renderProfileImage } from '../../fire-browser/utils';
 
 export const RecommendedPublication = (props: {
   publication: Publication;
@@ -24,9 +24,9 @@ export const RecommendedPublication = (props: {
           <AvatarWrap>
             <Avatar
               src={renderProfileImage(publication.creator.profileImage)}
-              sx={{ width: 24, height: 24 }}
-            />
-            {getInitials(author.user.firstName, author.user.lastName)}
+              sx={{ width: 24, height: 24 }}>
+              {getInitials(author.user.firstName, author.user.lastName)}
+            </Avatar>
           </AvatarWrap>
           <div>
             {author.user.firstName} {author.user.lastName}
