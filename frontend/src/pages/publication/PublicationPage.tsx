@@ -1,6 +1,7 @@
 import React, {
   type FunctionComponent,
   type ReactElement,
+  useEffect,
   useState
 } from 'react';
 import { Button, IconButton, LinearProgress } from '@mui/material';
@@ -45,6 +46,7 @@ import logo from './asset/logo.svg';
 import { UserMenu } from '../../components/UserMenu';
 import { Page } from '../../core/RouterStore';
 import { ValidationDialog } from './ValidationDialog';
+import { incrementPublicationViewCounter } from './SeenPublicationService';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -66,6 +68,12 @@ export const PublicationPage: FunctionComponent = observer(() => {
     setValidationErrors(result);
     return isValid;
   };
+
+  useEffect(() => {
+    if (publicationStore.viewMode === ViewMode.VIEW) {
+      incrementPublicationViewCounter(publicationStore.publicationId);
+    }
+  }, [publicationStore.publicationId]);
 
   const emptyResearchArea = researchArea.length === 0;
 
