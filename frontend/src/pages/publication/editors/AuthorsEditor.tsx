@@ -78,7 +78,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
           result.filter(
             (a1) =>
               !props.publicationStore.confirmedAuthors.find(
-                (a2) => a1.id === a2.id
+                (a2) => a1.id === a2.user.id
               )
           )
         );
