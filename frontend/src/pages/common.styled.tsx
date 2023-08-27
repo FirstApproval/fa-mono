@@ -55,6 +55,10 @@ export const HeightElement = styled('div')<{ value?: string }>`
   height: ${(props) => props.value ?? '0px'};
 `;
 
+export const WidthElement = styled('div')<{ value?: string }>`
+  width: ${(props) => props.value ?? '0px'};
+`;
+
 export const CustomTab = styled(Tab)`
   color: var(--text-secondary, #68676e);
   font-feature-settings: 'clig' off, 'liga' off;

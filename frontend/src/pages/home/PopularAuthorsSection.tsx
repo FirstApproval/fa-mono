@@ -10,9 +10,9 @@ const GridContainer = styled.div`
 `;
 
 const AuthorCard = styled.div`
-  width: calc(50% - 32px);
+  display: flex;
+  width: calc(50% - 16px);
   margin-bottom: 32px;
-  margin-right: 32px;
 `;
 
 const PopularAuthorsSection = (props: { authors: Author[] }): ReactElement => {

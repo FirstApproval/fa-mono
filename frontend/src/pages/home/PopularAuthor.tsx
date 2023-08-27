@@ -10,27 +10,25 @@ import { routerStore } from '../../core/router';
 export const PopularAuthor = (props: { author: Author }): ReactElement => {
   const { author } = props;
   return (
-    <>
-      <FlexWrap
-        onClick={() => {
-          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-          routerStore.navigatePage(Page.PROFILE, `/p/${author.username}`);
-        }}>
-        <MarginWrap>
-          <Avatar
-            sx={{ width: 32, height: 32 }}
-            src={renderProfileImage(author.profileImage)}>
-            {getInitials(author.firstName, author.lastName)}
-          </Avatar>
-        </MarginWrap>
-        <div>
-          <NameWrap>
-            {author.firstName} {author.lastName}
-          </NameWrap>
-          <BioWrap>{author.selfInfo}</BioWrap>
-        </div>
-      </FlexWrap>
-    </>
+    <FlexWrap
+      onClick={() => {
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        routerStore.navigatePage(Page.PROFILE, `/p/${author.username}`);
+      }}>
+      <MarginWrap>
+        <Avatar
+          sx={{ width: 32, height: 32 }}
+          src={renderProfileImage(author.profileImage)}>
+          {getInitials(author.firstName, author.lastName)}
+        </Avatar>
+      </MarginWrap>
+      <div>
+        <NameWrap>
+          {author.firstName} {author.lastName}
+        </NameWrap>
+        <BioWrap>{author.selfInfo}</BioWrap>
+      </div>
+    </FlexWrap>
   );
 };
 
@@ -58,6 +56,10 @@ const BioWrap = styled.div`
   font-weight: 400;
   line-height: 143%; /* 20.02px */
   letter-spacing: 0.17px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 
   color: var(--text-secondary, #68676e);
 `;
