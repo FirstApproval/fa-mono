@@ -260,6 +260,7 @@ export const NameElement = styled.span`
   line-height: 42px;
   letter-spacing: 0.25px;
   text-align: left;
+  word-break: break-word;
 `;
 
 export const UserInfoElement = styled.div`
@@ -279,6 +280,7 @@ export const SelfInfo = styled.div`
   font-weight: 400;
   line-height: 150%; /* 24px */
   letter-spacing: 0.15px;
+  word-break: break-word;
 `;
 
 export const EditProfileAndCreateDraftButtons = styled(Button)`
@@ -388,6 +390,4 @@ export const YouDontHaveAnyDrafts = styled(Button)`
 
 export const FlexBody = styled.div`
   width: 680px;
-  padding-left: 40px;
-  padding-right: 40px;
 `;

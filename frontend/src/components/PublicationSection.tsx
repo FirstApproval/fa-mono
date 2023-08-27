@@ -43,14 +43,13 @@ export const PublicationSection = (props: {
       <FlexWrap>
         <PublicationAreaBox title={publication.researchArea ?? ''} />
         <Footer>
-          <IconWrap>
-            <RemoveRedEyeOutlined fontSize={'small'} />
-          </IconWrap>
-          <div>{publication.viewsCount}</div>
-          <IconWrap>
-            <DownloadWrap fontSize={'small'} />
-          </IconWrap>
-          <div>{publication.downloadsCount}</div>
+          <RemoveRedEyeOutlined
+            style={{ marginRight: '6px' }}
+            fontSize={'small'}
+          />
+          {publication.viewsCount}
+          <DownloadWrap style={{ marginRight: '6px' }} fontSize={'small'} />
+          {publication.downloadsCount}
         </Footer>
       </FlexWrap>
       <DividerWrap />
@@ -61,11 +60,6 @@ export const PublicationSection = (props: {
 const AuthorsWrap = styled.div`
   display: flex;
   align-items: center;
-`;
-
-const IconWrap = styled.div`
-  display: flex;
-  margin-right: 4px;
 `;
 
 const Authors = styled.span`
@@ -91,6 +85,8 @@ const PublicationDescriptionWrap = styled.div`
   letter-spacing: 0.15px;
 
   margin-bottom: 24px;
+
+  word-break: break-word;
 `;
 const PublicationAreaBox = (props: { title: string }): ReactElement => {
   return <PublicationAreaWrap>{props.title}</PublicationAreaWrap>;
@@ -114,6 +110,8 @@ const PublicationAreaWrap = styled.div`
   font-weight: 400;
   line-height: 143%; /* 20.02px */
   letter-spacing: 0.17px;
+
+  word-break: break-word;
 `;
 
 const PublicationLabel = styled.div`
