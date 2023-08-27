@@ -29,7 +29,7 @@ export const PopularAuthor = (props: { author: Author }): ReactElement => {
           {author.firstName} {author.lastName}
         </NameWrap>
         <Tooltip
-          disableHoverListener={author.selfInfo.length < MAX_SELF_BIO_LENGTH}
+          disableHoverListener={author.selfInfo?.length < MAX_SELF_BIO_LENGTH}
           title={author.selfInfo}>
           <BioWrap>{author.selfInfo}</BioWrap>
         </Tooltip>
