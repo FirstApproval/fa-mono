@@ -96,6 +96,7 @@ export const ResearchAreaEditor = (props: EditorProps): ReactElement => {
 };
 
 const ContentPlaceholderWrap = styled.div`
+  word-break: break-word;
   display: flex;
   align-items: center;
   padding: 8px 16px;
