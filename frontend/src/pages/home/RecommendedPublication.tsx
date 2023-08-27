@@ -5,6 +5,8 @@ import { Avatar } from '@mui/material';
 import { Download, RemoveRedEyeOutlined } from '@mui/icons-material';
 import { renderProfileImage } from '../../fire-browser/utils';
 import { getInitials } from '../../util/userUtil';
+import { routerStore } from '../../core/router';
+import { Page } from '../../core/RouterStore';
 
 export const RecommendedPublication = (props: {
   publication: Publication;
@@ -30,7 +32,15 @@ export const RecommendedPublication = (props: {
             {author.user.firstName} {author.user.lastName}
           </div>
         </FlexWrap>
-        <NameWrap>{title}</NameWrap>
+        <NameWrap
+          onClick={() => {
+            routerStore.navigatePage(
+              Page.PUBLICATION,
+              `/publication/${publication.id}`
+            );
+          }}>
+          {title}
+        </NameWrap>
         <Footer>
           <IconWrap>
             <RemoveRedEyeOutlined fontSize={'small'} />
@@ -82,6 +92,7 @@ const NameWrap = styled.div`
   font-weight: 500;
   line-height: 160%; /* 32px */
   letter-spacing: 0.15px;
+  cursor: pointer;
 
   margin-bottom: 16px;
 `;
