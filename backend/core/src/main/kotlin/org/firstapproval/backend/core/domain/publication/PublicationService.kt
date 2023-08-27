@@ -361,13 +361,14 @@ fun ConfirmedAuthor.toApiObject(profileImage: ByteArray?) = ConfirmedAuthorApiOb
     it.id = id
     it.shortBio = shortBio
     it.user = Author(
+        user.id,
         user.firstName,
         user.middleName,
         user.lastName,
         user.email,
+        user.username,
         user.selfInfo,
-    ).id(user.id)
-        .profileImage(profileImage)
+    ).profileImage(profileImage)
 }
 
 fun UnconfirmedAuthor.toApiObject() = UnconfirmedAuthorApiObject().also {

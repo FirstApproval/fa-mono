@@ -12,26 +12,29 @@ export const RecommendedPublication = (props: {
   publication: Publication;
 }): ReactElement | null => {
   const { publication } = props;
-  const { title, confirmedAuthors } = publication;
-  const author = confirmedAuthors?.[0];
+  const { title, creator } = publication;
 
-  if (!author) return null;
+  if (!creator) return null;
 
   return (
     <>
       <Wrap>
-        <FlexWrap>
+        <AuthorFlexWrap
+          onClick={() => {
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+            routerStore.navigatePage(Page.PROFILE, `/p/${creator.username}`);
+          }}>
           <AvatarWrap>
             <Avatar
-              src={renderProfileImage(publication.creator.profileImage)}
+              src={renderProfileImage(creator.profileImage)}
               sx={{ width: 24, height: 24 }}>
-              {getInitials(author.user.firstName, author.user.lastName)}
+              {getInitials(creator.firstName, creator.lastName)}
             </Avatar>
           </AvatarWrap>
           <div>
-            {author.user.firstName} {author.user.lastName}
+            {creator.firstName} {creator.lastName}
           </div>
-        </FlexWrap>
+        </AuthorFlexWrap>
         <NameWrap
           onClick={() => {
             routerStore.navigatePage(
@@ -67,9 +70,10 @@ const Wrap = styled.div`
   height: 100%;
 `;
 
-const FlexWrap = styled.div`
+const AuthorFlexWrap = styled.div`
   display: flex;
   align-items: center;
+  cursor: pointer;
 
   margin-bottom: 12px;
 `;

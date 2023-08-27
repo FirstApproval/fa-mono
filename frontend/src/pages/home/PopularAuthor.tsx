@@ -1,17 +1,21 @@
 import styled from '@emotion/styled';
 import React, { type ReactElement } from 'react';
-import { type RecommendedAuthor } from '../../apis/first-approval-api';
+import { type Author } from '../../apis/first-approval-api';
 import { Avatar } from '@mui/material';
 import { getInitials } from '../../util/userUtil';
 import { renderProfileImage } from '../../fire-browser/utils';
+import { Page } from '../../core/RouterStore';
+import { routerStore } from '../../core/router';
 
-export const PopularAuthor = (props: {
-  author: RecommendedAuthor;
-}): ReactElement => {
+export const PopularAuthor = (props: { author: Author }): ReactElement => {
   const { author } = props;
   return (
     <>
-      <FlexWrap>
+      <FlexWrap
+        onClick={() => {
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+          routerStore.navigatePage(Page.PROFILE, `/p/${author.username}`);
+        }}>
         <MarginWrap>
           <Avatar
             sx={{ width: 32, height: 32 }}
@@ -23,7 +27,7 @@ export const PopularAuthor = (props: {
           <NameWrap>
             {author.firstName} {author.lastName}
           </NameWrap>
-          <BioWrap>{author.shortBio}</BioWrap>
+          <BioWrap>{author.selfInfo}</BioWrap>
         </div>
       </FlexWrap>
     </>
@@ -33,6 +37,7 @@ export const PopularAuthor = (props: {
 const FlexWrap = styled.div`
   display: flex;
   align-items: start;
+  cursor: pointer;
 `;
 
 const MarginWrap = styled.div`
