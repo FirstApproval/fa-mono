@@ -86,7 +86,7 @@ const AvatarWrap = styled.div`
   margin-right: 8px;
 `;
 
-const NameWrap = styled.div`
+const NameWrap = styled.span`
   font-size: 20px;
   font-style: normal;
   font-weight: 500;
@@ -95,6 +95,7 @@ const NameWrap = styled.div`
   cursor: pointer;
 
   margin-bottom: 16px;
+  word-wrap: break-word;
 `;
 
 const DownloadWrap = styled(Download)`

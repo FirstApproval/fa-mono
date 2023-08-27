@@ -81,7 +81,7 @@ export class HomePageStore {
 
   createPublication = async (): Promise<void> => {
     const response = await publicationService.createPublication();
-    const pub: string = response.data.id;
-    routerStore.navigatePage(Page.PUBLICATION, `/publication/${pub}`);
+    const pubId: string = response.data.id;
+    routerStore.navigatePage(Page.PUBLICATION, `/publication/${pubId}`);
   };
 }
