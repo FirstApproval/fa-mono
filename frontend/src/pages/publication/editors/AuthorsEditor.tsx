@@ -145,6 +145,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                     props.publicationStore.addConfirmedAuthor(newValue);
                   }
                 }}
+                forcePopupIcon={false}
                 inputValue={query}
                 onInputChange={(event, newInputValue) => {
                   setQuery(newInputValue);
