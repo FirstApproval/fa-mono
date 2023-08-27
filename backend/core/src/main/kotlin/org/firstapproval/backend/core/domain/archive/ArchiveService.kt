@@ -99,6 +99,7 @@ class ArchiveService(
         val fileOutputStream = FileOutputStream(tempArchive)
         val zipOutputStream = ZipOutputStream(fileOutputStream, password.toCharArray())
         var err: Exception? = null
+        // TODO rebuild for try with resources
         try {
             while (!files.isEmpty) {
                 filesIds.addAll(files.map { it.id })
