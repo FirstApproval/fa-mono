@@ -1,11 +1,13 @@
 import styled from '@emotion/styled';
 import React, { type ReactElement } from 'react';
 import { type Author } from '../../apis/first-approval-api';
-import { Avatar } from '@mui/material';
+import { Avatar, Tooltip } from '@mui/material';
 import { getInitials } from '../../util/userUtil';
 import { renderProfileImage } from '../../fire-browser/utils';
 import { Page } from '../../core/RouterStore';
 import { routerStore } from '../../core/router';
+
+const MAX_SELF_BIO_LENGTH = 116;
 
 export const PopularAuthor = (props: { author: Author }): ReactElement => {
   const { author } = props;
@@ -26,7 +28,11 @@ export const PopularAuthor = (props: { author: Author }): ReactElement => {
         <NameWrap>
           {author.firstName} {author.lastName}
         </NameWrap>
-        <BioWrap>{author.selfInfo}</BioWrap>
+        <Tooltip
+          disableHoverListener={author.selfInfo.length < MAX_SELF_BIO_LENGTH}
+          title={author.selfInfo}>
+          <BioWrap>{author.selfInfo}</BioWrap>
+        </Tooltip>
       </div>
     </FlexWrap>
   );
@@ -56,6 +62,7 @@ const BioWrap = styled.div`
   font-weight: 400;
   line-height: 143%; /* 20.02px */
   letter-spacing: 0.17px;
+  word-break: break-word;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 3;

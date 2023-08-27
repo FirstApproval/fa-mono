@@ -290,6 +290,7 @@ fun Publication.toApiObject(userService: UserService) = PublicationApiObject().a
         .email(creator.email)
         .username(creator.username)
         .selfInfo(creator.selfInfo)
+        .profileImage(userService.getProfileImage(creator.profileImage))
     publicationApiModel.title = title
     publicationApiModel.description = description?.map { Paragraph(it) }
     publicationApiModel.researchArea = researchArea
