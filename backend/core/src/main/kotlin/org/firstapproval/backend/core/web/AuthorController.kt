@@ -3,6 +3,8 @@ package org.firstapproval.backend.core.web
 import org.firstapproval.api.server.AuthorApi
 import org.firstapproval.api.server.model.Author
 import org.firstapproval.api.server.model.TopAuthorsResponse
+import org.firstapproval.backend.core.config.security.AuthHolderService
+import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
 import org.firstapproval.backend.core.domain.user.UserService
@@ -15,7 +17,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class AuthorController(
     private val userRepository: UserRepository,
-    private val userService: UserService
+    private val userService: UserService,
+    private val authHolderService: AuthHolderService
 ) : AuthorApi {
     override fun getAuthors(searchText: String): ResponseEntity<List<Author>> {
         val textArray = searchText.trim().split("\\s+".toRegex())
@@ -23,7 +26,7 @@ class AuthorController(
         val preparedText = textArray.filter { it.contains("@").not() }
             .joinToString(" & ") { "$it:*" }
             .let { it.ifEmpty { null } }
-        val authors = userRepository.findByTextAndEmail(preparedText, email).map { it.toAuthor(userService) }
+        val authors = userRepository.findByTextAndEmailAndNotId(preparedText, email, authHolderService.user.id).map { it.toAuthor(userService) }
         return ok().body(authors)
     }
 

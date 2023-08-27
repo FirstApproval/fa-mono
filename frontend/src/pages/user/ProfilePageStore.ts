@@ -1,4 +1,4 @@
-import { makeAutoObservable, observable } from 'mobx';
+import { makeAutoObservable } from 'mobx';
 import { publicationService, userService } from '../../core/service';
 import {
   type Publication,
@@ -17,12 +17,7 @@ export class ProfilePageStore {
   user?: UserInfo;
 
   constructor(username: string | null) {
-    makeAutoObservable(this, {
-      publicationsLastPage: observable,
-      publicationsPageNum: observable,
-      publications: observable,
-      user: observable
-    });
+    makeAutoObservable(this);
     void this.loadUser(username);
     this.isLoadingPublications = true;
     try {

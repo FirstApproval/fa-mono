@@ -22,8 +22,9 @@ interface UserRepository : JpaRepository<User, UUID> {
     @Query(
         value = "select * from users where " +
             "(:text is null or tsv @@ to_tsquery('simple', :text)) and " +
-            "(:email is null or email = :email)",
+            "(:email is null or email = :email) and " +
+            "(:id is null or id != :id)",
         nativeQuery = true
     )
-    fun findByTextAndEmail(text: String?, email: String?): List<User>
+    fun findByTextAndEmailAndNotId(text: String?, email: String?, id: UUID): List<User>
 }
