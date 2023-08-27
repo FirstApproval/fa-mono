@@ -166,8 +166,6 @@ export const ResultsLabel = styled('div')`
 
 export const FlexBody = styled('div')`
   max-width: 680px;
-  padding-left: 40px;
-  padding-right: 40px;
 `;
 
 const ButtonWrap = styled(Button)`

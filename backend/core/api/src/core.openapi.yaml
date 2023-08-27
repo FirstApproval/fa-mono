@@ -1851,27 +1851,7 @@ components:
         authors:
           type: array
           items:
-            $ref: '#/components/schemas/RecommendedAuthor'
-
-    RecommendedAuthor:
-      type: object
-      properties:
-        firstName:
-          type: string
-        middleName:
-          type: string
-        lastName:
-          type: string
-        shortBio:
-          type: string
-        profileImage:
-          type: string
-          format: byte
-      required:
-        - firstName
-        - middleName
-        - lastName
-        - shortBio
+            $ref: '#/components/schemas/Author'
 
     Author:
       type: object
@@ -1887,6 +1867,8 @@ components:
           type: string
         email:
           type: string
+        username:
+          type: string
         selfInfo:
           type: string
           maxLength: 4096
@@ -1894,10 +1876,12 @@ components:
           type: string
           format: byte
       required:
+        - id
         - firstName
         - middleName
         - lastName
         - email
+        - username
         - selfInfo
 
     StringArray:

@@ -1,4 +1,4 @@
-import { makeAutoObservable, observable, reaction, runInAction } from 'mobx';
+import { makeAutoObservable, reaction, runInAction } from 'mobx';
 import { userService } from './service';
 import { type GetMeResponse } from '../apis/first-approval-api';
 import { authStore } from './auth';
@@ -6,13 +6,17 @@ import { authStore } from './auth';
 export class UserStore {
   user: GetMeResponse | undefined = undefined;
   editableUser: GetMeResponse | undefined = undefined;
+
   constructor() {
-    makeAutoObservable(this, { user: observable });
+    makeAutoObservable(this);
     reaction(
       () => authStore.token,
       (token) => {
         if (token) {
           this.requestUserData();
+        } else {
+          this.user = undefined;
+          this.editableUser = undefined;
         }
       },
       { fireImmediately: true }

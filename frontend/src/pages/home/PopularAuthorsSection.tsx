@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { type RecommendedAuthor } from '../../apis/first-approval-api';
+import { type Author } from '../../apis/first-approval-api';
 import { PopularAuthor } from './PopularAuthor';
 import { type ReactElement } from 'react';
 
@@ -10,14 +10,12 @@ const GridContainer = styled.div`
 `;
 
 const AuthorCard = styled.div`
-  width: calc(50% - 32px);
+  display: flex;
+  width: calc(50% - 16px);
   margin-bottom: 32px;
-  margin-right: 32px;
 `;
 
-const PopularAuthorsSection = (props: {
-  authors: RecommendedAuthor[];
-}): ReactElement => {
+const PopularAuthorsSection = (props: { authors: Author[] }): ReactElement => {
   const { authors } = props;
   return (
     <>

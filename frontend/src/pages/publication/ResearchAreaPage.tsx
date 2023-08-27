@@ -16,6 +16,13 @@ export const ResearchAreaPage = (props: EditorProps): ReactElement => {
 
   const researchAreaNonEmpty = researchArea.length > 0;
 
+  const updateResearchArea = (): void => {
+    const isValid = validate();
+    if (isValid) {
+      props.publicationStore.updateResearchArea(researchArea);
+    }
+  };
+
   return (
     <>
       <ResearchAreaTitle>
@@ -28,6 +35,12 @@ export const ResearchAreaPage = (props: EditorProps): ReactElement => {
         value={researchArea}
         onChange={(e) => {
           setResearchArea(e.currentTarget.value);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.keyCode === 13) {
+            e.preventDefault();
+            updateResearchArea();
+          }
         }}
         error={!isValidResearchArea}
         helperText={
@@ -44,12 +57,7 @@ export const ResearchAreaPage = (props: EditorProps): ReactElement => {
         variant="contained"
         size={'large'}
         endIcon={<ArrowForward />}
-        onClick={() => {
-          const isValid = validate();
-          if (isValid) {
-            props.publicationStore.updateResearchArea(researchArea);
-          }
-        }}>
+        onClick={updateResearchArea}>
         Continue
       </Button>
       <ChangeItLater>You can change it later</ChangeItLater>

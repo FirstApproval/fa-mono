@@ -3,34 +3,47 @@ import React, { type ReactElement } from 'react';
 import { type Publication } from '../../apis/first-approval-api';
 import { Avatar } from '@mui/material';
 import { Download, RemoveRedEyeOutlined } from '@mui/icons-material';
-import { renderProfileImage } from '../../fire-browser/utils';
 import { getInitials } from '../../util/userUtil';
+import { routerStore } from '../../core/router';
+import { Page } from '../../core/RouterStore';
+import { renderProfileImage } from '../../fire-browser/utils';
 
 export const RecommendedPublication = (props: {
   publication: Publication;
 }): ReactElement | null => {
   const { publication } = props;
-  const { title, confirmedAuthors } = publication;
-  const author = confirmedAuthors?.[0];
+  const { title, creator } = publication;
 
-  if (!author) return null;
+  if (!creator) return null;
 
   return (
     <>
       <Wrap>
-        <FlexWrap>
+        <AuthorFlexWrap
+          onClick={() => {
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+            routerStore.navigatePage(Page.PROFILE, `/p/${creator.username}`);
+          }}>
           <AvatarWrap>
             <Avatar
-              src={renderProfileImage(publication.creator.profileImage)}
-              sx={{ width: 24, height: 24 }}
-            />
-            {getInitials(author.user.firstName, author.user.lastName)}
+              src={renderProfileImage(creator.profileImage)}
+              sx={{ width: 24, height: 24 }}>
+              {getInitials(creator.firstName, creator.lastName)}
+            </Avatar>
           </AvatarWrap>
           <div>
-            {author.user.firstName} {author.user.lastName}
+            {creator.firstName} {creator.lastName}
           </div>
-        </FlexWrap>
-        <NameWrap>{title}</NameWrap>
+        </AuthorFlexWrap>
+        <NameWrap
+          onClick={() => {
+            routerStore.navigatePage(
+              Page.PUBLICATION,
+              `/publication/${publication.id}`
+            );
+          }}>
+          {title}
+        </NameWrap>
         <Footer>
           <IconWrap>
             <RemoveRedEyeOutlined fontSize={'small'} />
@@ -57,9 +70,10 @@ const Wrap = styled.div`
   height: 100%;
 `;
 
-const FlexWrap = styled.div`
+const AuthorFlexWrap = styled.div`
   display: flex;
   align-items: center;
+  cursor: pointer;
 
   margin-bottom: 12px;
 `;
@@ -76,14 +90,16 @@ const AvatarWrap = styled.div`
   margin-right: 8px;
 `;
 
-const NameWrap = styled.div`
+const NameWrap = styled.span`
   font-size: 20px;
   font-style: normal;
   font-weight: 500;
   line-height: 160%; /* 32px */
   letter-spacing: 0.15px;
+  cursor: pointer;
 
   margin-bottom: 16px;
+  word-wrap: break-word;
 `;
 
 const DownloadWrap = styled(Download)`

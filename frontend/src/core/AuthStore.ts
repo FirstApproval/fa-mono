@@ -1,5 +1,4 @@
-import { makeObservable, observable } from 'mobx';
-import { setBearerAuthToObject } from '../apis/first-approval-api/common';
+import { computed, makeObservable, observable } from 'mobx';
 
 const ACCESS_TOKEN_KEY = 'access-token';
 
@@ -8,7 +7,8 @@ export class AuthStore {
 
   constructor() {
     makeObservable<AuthStore, '_token'>(this, {
-      _token: observable
+      _token: observable,
+      token: computed
     });
 
     const token = localStorage.getItem(ACCESS_TOKEN_KEY);
@@ -24,7 +24,6 @@ export class AuthStore {
   set token(value: string | undefined | null) {
     this._token = value ?? undefined;
     if (this._token !== undefined) {
-      void setBearerAuthToObject(this._token);
       localStorage.setItem(ACCESS_TOKEN_KEY, this._token);
     } else {
       localStorage.removeItem(ACCESS_TOKEN_KEY);

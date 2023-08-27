@@ -35,6 +35,14 @@ export const ResearchAreaEditor = (props: EditorProps): ReactElement => {
     );
   }
 
+  const updateResearchArea = (): void => {
+    const isValid = validate();
+    if (isValid) {
+      props.publicationStore.updateResearchArea(researchArea);
+      handleCloseEdit();
+    }
+  };
+
   return (
     <>
       <ContentPlaceholderWrap
@@ -58,6 +66,12 @@ export const ResearchAreaEditor = (props: EditorProps): ReactElement => {
               onChange={(e) => {
                 setResearchArea(e.currentTarget.value);
               }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.keyCode === 13) {
+                  e.preventDefault();
+                  updateResearchArea();
+                }
+              }}
               error={!isValidResearchArea}
               helperText={
                 !isValidResearchArea ? 'Please enter research area' : undefined
@@ -72,15 +86,7 @@ export const ResearchAreaEditor = (props: EditorProps): ReactElement => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseEdit}>Cancel</Button>
-          <Button
-            disabled={!researchAreaNonEmpty}
-            onClick={() => {
-              const isValid = validate();
-              if (isValid) {
-                props.publicationStore.updateResearchArea(researchArea);
-                handleCloseEdit();
-              }
-            }}>
+          <Button disabled={!researchAreaNonEmpty} onClick={updateResearchArea}>
             Save
           </Button>
         </DialogActions>
@@ -90,6 +96,7 @@ export const ResearchAreaEditor = (props: EditorProps): ReactElement => {
 };
 
 const ContentPlaceholderWrap = styled.div`
+  word-break: break-word;
   display: flex;
   align-items: center;
   padding: 8px 16px;

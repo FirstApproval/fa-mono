@@ -6,10 +6,10 @@ import { RecommendedPublication } from './RecommendedPublication';
 const GridContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: start;
 `;
 
-const AuthorCard = styled.div`
+const PublicationCard = styled.div`
   width: calc(25% - 42px);
   margin-right: 42px;
 `;
@@ -23,9 +23,9 @@ const RecommendedPublicationsSection = (props: {
       <NameWrap>Recommended datasets</NameWrap>
       <GridContainer>
         {publications.map((publication, idx) => (
-          <AuthorCard key={idx}>
+          <PublicationCard key={idx}>
             <RecommendedPublication publication={publication} />
-          </AuthorCard>
+          </PublicationCard>
         ))}
       </GridContainer>
     </Wrap>

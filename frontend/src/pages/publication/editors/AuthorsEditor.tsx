@@ -9,11 +9,13 @@ import { AuthorEditorStore } from '../store/AuthorEditorStore';
 import { AuthorElement } from './element/AuthorElement';
 import { userService } from '../../../core/service';
 import {
+  Alert,
   Autocomplete,
   Avatar,
   Button,
   Divider,
   IconButton,
+  Snackbar,
   TextField
 } from '@mui/material';
 import { Add, DeleteOutlined, PersonAdd } from '@mui/icons-material';
@@ -31,6 +33,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
   const [addAuthorVisible, setAddAuthorVisible] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [searchVisible, setSearchVisible] = useState(false);
+  const [isUserExistsByEmail, setIsUserExistsByEmail] = useState(false);
   const [authorOptions, setAuthorOptions] = useState<Author[]>([]);
 
   const [query, setQuery] = useState('');
@@ -75,7 +78,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
           result.filter(
             (a1) =>
               !props.publicationStore.confirmedAuthors.find(
-                (a2) => a1.id === a2.id
+                (a2) => a1.id === a2.user.id
               )
           )
         );
@@ -145,6 +148,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                     props.publicationStore.addConfirmedAuthor(newValue);
                   }
                 }}
+                forcePopupIcon={false}
                 inputValue={query}
                 onInputChange={(event, newInputValue) => {
                   setQuery(newInputValue);
@@ -288,26 +292,24 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
               <Button onClick={handleCloseAddAuthor}>Cancel</Button>
               <Button
                 onClick={async () => {
-                  if (authorStore.isNew) {
+                  if (authorStore.isConfirmed) {
+                    props.publicationStore.editConfirmedAuthor(authorStore);
+                    handleCloseAddAuthor();
+                  } else {
                     await userService
                       .existsByEmail(authorStore.email)
                       .then((result) => {
                         if (result.data) {
                           authorStore.clean();
-                          throw Error(
-                            'User with this email already registered. Required to add this author as confirmed'
+                          setIsUserExistsByEmail(true);
+                        } else {
+                          props.publicationStore.addOrEditUnconfirmedAuthor(
+                            authorStore
                           );
                         }
+                        handleCloseAddAuthor();
                       });
                   }
-                  if (authorStore.isConfirmed) {
-                    props.publicationStore.editConfirmedAuthor(authorStore);
-                  } else {
-                    props.publicationStore.addOrEditUnconfirmedAuthor(
-                      authorStore
-                    );
-                  }
-                  handleCloseAddAuthor();
                 }}>
                 Save
               </Button>
@@ -349,6 +351,19 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
           </div>
         </DeleteDialogActions>
       </Dialog>
+      {isUserExistsByEmail && (
+        <Snackbar
+          open={isUserExistsByEmail}
+          autoHideDuration={6000}
+          onClose={() => {
+            setIsUserExistsByEmail(false);
+          }}>
+          <Alert severity="error" sx={{ width: '100%' }}>
+            User with this email already registered and can be added searching
+            by email
+          </Alert>
+        </Snackbar>
+      )}
     </>
   );
 });
