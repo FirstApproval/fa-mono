@@ -283,6 +283,7 @@ export const AccountPage: FunctionComponent = observer(() => {
                 <TabContainer>
                   <NameElement>Email</NameElement>
                   <FullWidthTextField
+                    disabled={true}
                     value={editableUser.email}
                     error={!isValidEmail}
                     helperText={!isValidEmail ? 'Invalid address' : undefined}
