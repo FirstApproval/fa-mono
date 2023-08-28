@@ -1,5 +1,7 @@
 import React, { type ReactElement, useState } from 'react';
-import { type ParagraphWithId } from '../store/PublicationStore';
+import {
+  type ParagraphWithId
+} from '../store/PublicationStore';
 import { observer } from 'mobx-react-lite';
 import {
   ParagraphElement,
@@ -7,9 +9,10 @@ import {
 } from './element/ParagraphElement';
 import { ContentEditorWrap, LabelWrap } from './styled';
 import { PrimaryArticleData } from './PrimaryArticleData';
-import styled from '@emotion/styled';
-import { TextField } from '@mui/material';
+import WarningIcon from '@mui/icons-material/Warning';
+import { Switch } from '@mui/material';
 import { type EditorProps } from './types';
+import styled from '@emotion/styled';
 
 interface ParagraphEditorProps {
   isReadonly?: boolean;
@@ -45,25 +48,77 @@ export const DescriptionEditor = observer(
 
 export const ExperimentGoalsEditor = observer(
   (props: EditorProps): ReactElement => {
+    const { publicationStore } = props;
     return (
-      <ParagraphContentEditor
-        isReadonly={props.publicationStore.isReadonly}
-        value={props.publicationStore.experimentGoals}
-        onChange={(idx, value) => {
-          props.publicationStore.updateExperimentGoalsParagraph(idx, value);
-        }}
-        onAddParagraph={(idx) => {
-          props.publicationStore.addExperimentGoalsParagraph(idx);
-        }}
-        onMergeParagraph={(idx) => {
-          props.publicationStore.mergeExperimentGoalsParagraph(idx);
-        }}
-        text={'Experiment goals'}
-        placeholder={'Describe the experiment goals and preliminary results...'}
-      />
+      <>
+        <ParagraphContentEditor
+          isReadonly={publicationStore.isReadonly}
+          value={publicationStore.experimentGoals}
+          onChange={(idx, value) => {
+            publicationStore.updateExperimentGoalsParagraph(idx, value);
+          }}
+          onAddParagraph={(idx) => {
+            publicationStore.addExperimentGoalsParagraph(idx);
+          }}
+          onMergeParagraph={(idx) => {
+            publicationStore.mergeExperimentGoalsParagraph(idx);
+          }}
+          text={'Experiment goals'}
+          placeholder={
+            'Describe the experiment goals and preliminary results...'
+          }
+        />
+        <NegativeData publicationStore={props.publicationStore} />
+      </>
     );
   }
 );
+
+export const NegativeData = observer((props: EditorProps): ReactElement => {
+  const { publicationStore } = props;
+  return (
+    <NegativeDataAllWrapper>
+      <NegativeDataWrapper>
+        <NegativeDataHeaderWrapper>
+          {!publicationStore.isNegative && (
+            <>
+              <WarningIcon
+                htmlColor={'#a8a8b4'}
+                style={{ marginRight: '5px' }}
+              />
+              <NegativeDataHeaderDisabled>
+                My data is negative
+              </NegativeDataHeaderDisabled>
+            </>
+          )}
+          {publicationStore.isNegative && (
+            <NegativeDataHeaderEnabled>
+              My data is negative
+            </NegativeDataHeaderEnabled>
+          )}
+        </NegativeDataHeaderWrapper>
+        <Switch
+          checked={publicationStore.isNegative}
+          onClick={publicationStore.invertNegativeData}
+        />
+      </NegativeDataWrapper>
+      {publicationStore.isNegative && (
+        <FullWidthTextField
+          autoFocus
+          value={publicationStore.negativeData}
+          onChange={(e) => {
+            publicationStore.updateNegativeData(e.currentTarget.value);
+          }}
+          disableUnderline={true}
+          multiline={true}
+          placeholder="Why your data didn't confirm the initial hypothesis or expectations"
+          minRows={1}
+          maxRows={4}
+        />
+      )}
+    </NegativeDataAllWrapper>
+  );
+});
 
 export const MethodEditor = observer((props: EditorProps): ReactElement => {
   return (
@@ -266,7 +321,54 @@ const ParagraphElementWrap = (
   );
 };
 
-const FullWidthTextField = styled(TextField)`
+const NegativeDataHeaderEnabled = styled.span`
+  color: var(--text-primary, #040036);
+  font-feature-settings: 'clig' off, 'liga' off;
+
+  /* typography/h6 */
+  font-family: Roboto;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 160%; /* 32px */
+  letter-spacing: 0.15px;
+  padding-top: 4px;
+`;
+
+const NegativeDataHeaderDisabled = styled.span`
+  color: var(--text-disabled, rgba(4, 0, 54, 0.38));
+  font-feature-settings: 'clig' off, 'liga' off;
+
+  /* typography/h6 */
+  font-family: Roboto;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 160%; /* 32px */
+  letter-spacing: 0.15px;
+`;
+
+const NegativeDataHeaderWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const NegativeDataWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const NegativeDataAllWrapper = styled.div`
+  border: 1px solid #d2d2d6;
+  border-radius: 4px 0 4px 8px;
+  gap: 8px;
+  align-self: stretch;
+  margin-bottom: 15px;
+  padding-left: 10px;
+`;
+
+const FullWidthTextField = styled(Input)`
   width: 100%;
-  margin-bottom: 32px;
+  padding-bottom: 12px;
 `;
