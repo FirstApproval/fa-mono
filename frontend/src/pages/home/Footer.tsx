@@ -38,6 +38,8 @@ const FooterWrap = styled.div`
 
   padding-left: 32px;
   padding-right: 32px;
+  position: sticky;
+  bottom: 0;
 `;
 
 const MarginLeftWrap = styled.div`
