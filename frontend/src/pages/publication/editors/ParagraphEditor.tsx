@@ -1,7 +1,5 @@
 import React, { type ReactElement, useState } from 'react';
-import {
-  type ParagraphWithId
-} from '../store/PublicationStore';
+import { type ParagraphWithId } from '../store/PublicationStore';
 import { observer } from 'mobx-react-lite';
 import {
   ParagraphElement,
@@ -10,7 +8,7 @@ import {
 import { ContentEditorWrap, LabelWrap } from './styled';
 import { PrimaryArticleData } from './PrimaryArticleData';
 import WarningIcon from '@mui/icons-material/Warning';
-import { Switch } from '@mui/material';
+import { Input, Switch, TextField } from '@mui/material';
 import { type EditorProps } from './types';
 import styled from '@emotion/styled';
 
@@ -103,7 +101,7 @@ export const NegativeData = observer((props: EditorProps): ReactElement => {
         />
       </NegativeDataWrapper>
       {publicationStore.isNegative && (
-        <FullWidthTextField
+        <FullWidthInput
           autoFocus
           value={publicationStore.negativeData}
           onChange={(e) => {
@@ -323,10 +321,7 @@ const ParagraphElementWrap = (
 
 const NegativeDataHeaderEnabled = styled.span`
   color: var(--text-primary, #040036);
-  font-feature-settings: 'clig' off, 'liga' off;
 
-  /* typography/h6 */
-  font-family: Roboto;
   font-size: 20px;
   font-style: normal;
   font-weight: 500;
@@ -337,10 +332,7 @@ const NegativeDataHeaderEnabled = styled.span`
 
 const NegativeDataHeaderDisabled = styled.span`
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
-  font-feature-settings: 'clig' off, 'liga' off;
 
-  /* typography/h6 */
-  font-family: Roboto;
   font-size: 20px;
   font-style: normal;
   font-weight: 500;
@@ -361,14 +353,19 @@ const NegativeDataWrapper = styled.div`
 
 const NegativeDataAllWrapper = styled.div`
   border: 1px solid #d2d2d6;
-  border-radius: 4px 0 4px 8px;
+  padding: 4px 0px 4px 8px;
+  border-radius: 4px;
   gap: 8px;
   align-self: stretch;
   margin-bottom: 15px;
-  padding-left: 10px;
 `;
 
-const FullWidthTextField = styled(Input)`
+const FullWidthInput = styled(Input)`
   width: 100%;
   padding-bottom: 12px;
+`;
+
+const FullWidthTextField = styled(TextField)`
+  width: 100%;
+  margin-bottom: 32px;
 `;
