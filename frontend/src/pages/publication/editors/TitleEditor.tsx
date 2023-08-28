@@ -1,8 +1,8 @@
-import { type EditorProps } from './ParagraphEditor';
 import React from 'react';
 import styled from '@emotion/styled';
 import { TextField } from '@mui/material';
 import { observer } from 'mobx-react-lite';
+import { type EditorProps } from './types';
 
 export const TitleEditor = observer((props: EditorProps) => {
   const { publicationStore } = props;

@@ -25,9 +25,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import styled from '@emotion/styled';
 import { ContentEditorWrap, LabelWrap } from './styled';
-import { type EditorProps } from './ParagraphEditor';
 import { getInitials } from '../../../util/userUtil';
 import { renderProfileImage } from '../../../fire-browser/utils';
+import { type EditorProps } from './types';
 
 export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
   const [addAuthorVisible, setAddAuthorVisible] = useState(false);

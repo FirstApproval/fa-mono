@@ -1,9 +1,5 @@
-import React from 'react';
-import { type ReactElement, useState } from 'react';
-import {
-  type ParagraphWithId,
-  type PublicationStore
-} from '../store/PublicationStore';
+import React, { type ReactElement, useState } from 'react';
+import { type ParagraphWithId } from '../store/PublicationStore';
 import { observer } from 'mobx-react-lite';
 import {
   ParagraphElement,
@@ -11,12 +7,11 @@ import {
 } from './element/ParagraphElement';
 import { ContentEditorWrap, LabelWrap } from './styled';
 import { PrimaryArticleData } from './PrimaryArticleData';
+import styled from '@emotion/styled';
+import { TextField } from '@mui/material';
+import { type EditorProps } from './types';
 
-export interface EditorProps {
-  publicationStore: PublicationStore;
-}
-
-interface ContentEditorProps {
+interface ParagraphEditorProps {
   isReadonly?: boolean;
   text?: string;
   paragraphPrefixType?: ParagraphPrefixType;
@@ -72,46 +67,70 @@ export const ExperimentGoalsEditor = observer(
 
 export const MethodEditor = observer((props: EditorProps): ReactElement => {
   return (
-    <ParagraphContentEditor
-      isReadonly={props.publicationStore.isReadonly}
-      value={props.publicationStore.method}
-      onChange={(idx, value) => {
-        props.publicationStore.updateMethodParagraph(idx, value);
-      }}
-      onAddParagraph={(idx) => {
-        props.publicationStore.addMethodParagraph(idx);
-      }}
-      onMergeParagraph={(idx) => {
-        props.publicationStore.mergeMethodParagraph(idx);
-      }}
-      text={'Method'}
-      placeholder={
-        'Detail the steps of your method, helping others to reproduce it...'
-      }
-    />
+    <ContentEditorWrap>
+      <LabelWrap>Method</LabelWrap>
+      <FullWidthTextField
+        autoFocus
+        value={props.publicationStore.methodTitle}
+        onChange={(event) => {
+          props.publicationStore.updateMethodTitle(event.currentTarget.value);
+        }}
+        placeholder={'Method name'}
+      />
+      <ParagraphElementWrap
+        isReadonly={props.publicationStore.isReadonly}
+        value={props.publicationStore.method}
+        onChange={(idx, value) => {
+          props.publicationStore.updateMethodParagraph(idx, value);
+        }}
+        onAddParagraph={(idx) => {
+          props.publicationStore.addMethodParagraph(idx);
+        }}
+        onMergeParagraph={(idx) => {
+          props.publicationStore.mergeMethodParagraph(idx);
+        }}
+        placeholder={
+          'Detail the steps of your method, helping others to reproduce it...'
+        }
+        disableInitFocus
+      />
+    </ContentEditorWrap>
   );
 });
 
 export const ObjectOfStudyEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
-      <ParagraphContentEditor
-        isReadonly={props.publicationStore.isReadonly}
-        value={props.publicationStore.objectOfStudy}
-        onChange={(idx, value) => {
-          props.publicationStore.updateObjectOfStudyParagraph(idx, value);
-        }}
-        onAddParagraph={(idx) => {
-          props.publicationStore.addObjectOfStudyParagraph(idx);
-        }}
-        onMergeParagraph={(idx) => {
-          props.publicationStore.mergeObjectOfStudyParagraph(idx);
-        }}
-        text={'Object of study'}
-        placeholder={
-          'Describe the specific conditions or features of your object of study...'
-        }
-      />
+      <ContentEditorWrap>
+        <LabelWrap>Object of study</LabelWrap>
+        <FullWidthTextField
+          autoFocus
+          value={props.publicationStore.objectOfStudyTitle}
+          onChange={(event) => {
+            props.publicationStore.updateObjectOfStudyTitle(
+              event.currentTarget.value
+            );
+          }}
+          placeholder={'Object category'}
+        />
+        <ParagraphElementWrap
+          isReadonly={props.publicationStore.isReadonly}
+          value={props.publicationStore.objectOfStudy}
+          onChange={(idx, value) => {
+            props.publicationStore.updateObjectOfStudyParagraph(idx, value);
+          }}
+          onAddParagraph={(idx) => {
+            props.publicationStore.addObjectOfStudyParagraph(idx);
+          }}
+          onMergeParagraph={(idx) => {
+            props.publicationStore.mergeObjectOfStudyParagraph(idx);
+          }}
+          placeholder={
+            'Describe the specific conditions or features of your object of study...'
+          }
+          disableInitFocus
+        />
+      </ContentEditorWrap>
     );
   }
 );
@@ -199,14 +218,26 @@ export const RelatedArticlesEditor = observer(
 );
 
 export const ParagraphContentEditor = (
-  props: ContentEditorProps
+  props: ParagraphEditorProps
 ): ReactElement => {
-  const [paragraphToFocus, setParagraphToFocus] = useState<number>(0);
-  const [cursorPosition, setCursorPosition] = useState<number>(0);
-
   return (
     <ContentEditorWrap>
       {props.text && <LabelWrap>{props.text}</LabelWrap>}
+      <ParagraphElementWrap {...props} />
+    </ContentEditorWrap>
+  );
+};
+
+const ParagraphElementWrap = (
+  props: Omit<ParagraphEditorProps, 'text'> & { disableInitFocus?: boolean }
+): ReactElement => {
+  const [paragraphToFocus, setParagraphToFocus] = useState<number>(
+    props.disableInitFocus ? -1 : 0
+  );
+  const [cursorPosition, setCursorPosition] = useState<number>(0);
+
+  return (
+    <>
       {props.value.map((p, idx) => {
         return (
           <ParagraphElement
@@ -231,6 +262,11 @@ export const ParagraphContentEditor = (
           />
         );
       })}
-    </ContentEditorWrap>
+    </>
   );
 };
+
+const FullWidthTextField = styled(TextField)`
+  width: 100%;
+  margin-bottom: 32px;
+`;

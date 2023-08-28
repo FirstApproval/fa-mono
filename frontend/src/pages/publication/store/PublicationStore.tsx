@@ -55,7 +55,9 @@ export class PublicationStore {
 
   description: ParagraphWithId[] = [];
   experimentGoals: ParagraphWithId[] = [];
+  methodTitle: string = '';
   method: ParagraphWithId[] = [];
+  objectOfStudyTitle: string = '';
   objectOfStudy: ParagraphWithId[] = [];
   software: ParagraphWithId[] = [];
   confirmedAuthors: ConfirmedAuthor[] = [];
@@ -192,7 +194,7 @@ export class PublicationStore {
           .map((t) => {
             return {
               id: t.id,
-              userId: t.user.id!,
+              userId: t.user.id,
               shortBio: t.shortBio
             };
           }),
@@ -338,6 +340,38 @@ export class PublicationStore {
 
     await publicationService.editPublication(this.publicationId, {
       methodDescription: { values: method, edited: true }
+    });
+    this.savingStatus = SavingStatusState.SAVED;
+  }, EDIT_THROTTLE_MS);
+
+  updateMethodTitle(value: string): void {
+    this.methodTitle = value;
+    this.savingStatus = SavingStatusState.SAVING;
+    void this.doUpdateMethodTitle();
+  }
+
+  doUpdateMethodTitle = _.throttle(async () => {
+    await publicationService.editPublication(this.publicationId, {
+      methodTitle: {
+        value: this.methodTitle,
+        edited: true
+      }
+    });
+    this.savingStatus = SavingStatusState.SAVED;
+  }, EDIT_THROTTLE_MS);
+
+  updateObjectOfStudyTitle(value: string): void {
+    this.objectOfStudyTitle = value;
+    this.savingStatus = SavingStatusState.SAVING;
+    void this.doUpdateObjectOfStudyTitle();
+  }
+
+  doUpdateObjectOfStudyTitle = _.throttle(async () => {
+    await publicationService.editPublication(this.publicationId, {
+      objectOfStudyTitle: {
+        value: this.objectOfStudyTitle,
+        edited: true
+      }
     });
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
@@ -616,6 +650,10 @@ export class PublicationStore {
             this.experimentGoals = publication.predictedGoals.map(mapParagraph);
             this.experimentGoalsEnabled = true;
           }
+          if (publication.methodTitle?.length) {
+            this.methodTitle = publication.methodTitle;
+            this.methodEnabled = true;
+          }
           if (publication.methodDescription?.length) {
             this.method = publication.methodDescription.map(mapParagraph);
             this.methodEnabled = true;
@@ -628,6 +666,10 @@ export class PublicationStore {
             this.grantingOrganizations =
               publication.grantOrganizations.map(mapParagraph);
             this.grantingOrganizationsEnabled = true;
+          }
+          if (publication.objectOfStudyTitle?.length) {
+            this.objectOfStudyTitle = publication.objectOfStudyTitle;
+            this.objectOfStudyEnabled = true;
           }
           if (publication.objectOfStudyDescription?.length) {
             this.objectOfStudy =

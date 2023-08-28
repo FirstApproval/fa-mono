@@ -1,11 +1,11 @@
 import React, { type ReactElement, useState } from 'react';
-import { type EditorProps } from './ParagraphEditor';
 import styled from '@emotion/styled';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import { Button, TextField } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
+import { type EditorProps } from './types';
 
 export const ResearchAreaEditor = (props: EditorProps): ReactElement => {
   const [addAuthorVisible, setAddAuthorVisible] = useState(false);

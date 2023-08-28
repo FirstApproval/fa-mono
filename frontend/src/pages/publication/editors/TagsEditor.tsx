@@ -5,7 +5,8 @@ import styled from '@emotion/styled';
 import { Button, Chip, IconButton, TextField } from '@mui/material';
 import { Add } from '@mui/icons-material';
 import { ContentEditorWrap, LabelWrap } from './styled';
-import { type EditorProps } from './ParagraphEditor';
+
+import { type EditorProps } from './types';
 
 export const TagsEditor = observer((props: EditorProps): ReactElement => {
   const [newTag, setNewTag] = useState('');

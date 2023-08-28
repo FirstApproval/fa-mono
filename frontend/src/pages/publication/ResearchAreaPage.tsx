@@ -1,8 +1,8 @@
-import { type EditorProps } from './editors/ParagraphEditor';
 import React, { type ReactElement, useState } from 'react';
 import { Button, TextField } from '@mui/material';
 import { ArrowForward } from '@mui/icons-material';
 import styled from '@emotion/styled';
+import { type EditorProps } from './editors/types';
 
 export const ResearchAreaPage = (props: EditorProps): ReactElement => {
   const [researchArea, setResearchArea] = useState('');
