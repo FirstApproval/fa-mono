@@ -6,7 +6,6 @@ import jakarta.persistence.EnumType.STRING
 import jakarta.persistence.FetchType.EAGER
 import org.firstapproval.backend.core.config.encryption.StringEncryptionConverter
 import org.firstapproval.backend.core.config.encryption.StringListEncryptionConverter
-import org.firstapproval.backend.core.domain.publication.AccessType.CLOSED
 import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
@@ -76,6 +75,8 @@ class Publication(
     var archivePassword: String? = null,
     var contentId: Long? = null,
     var isFeatured: Boolean = false,
+    var isNegative: Boolean = false,
+    var negativeData: String? = null,
 )
 
 enum class PublicationStatus {

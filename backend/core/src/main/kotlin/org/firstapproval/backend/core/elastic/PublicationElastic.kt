@@ -7,6 +7,7 @@ import org.firstapproval.backend.core.domain.publication.PublicationStatus
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
 import org.springframework.data.elasticsearch.annotations.Document
 import org.springframework.data.elasticsearch.annotations.Field
+import org.springframework.data.elasticsearch.annotations.FieldType
 import org.springframework.data.elasticsearch.annotations.FieldType.Date_Nanos
 import org.springframework.data.elasticsearch.annotations.FieldType.Keyword
 import org.springframework.data.elasticsearch.annotations.FieldType.Text
@@ -46,4 +47,8 @@ class PublicationElastic(
     var creationTime: ZonedDateTime = ZonedDateTime.now(),
     @Field(type = Date_Nanos)
     var publicationTime: ZonedDateTime? = null,
+    @Field(type = Text)
+    var negativeData: String? = null,
+    @Field(type = FieldType.Boolean)
+    var isNegative: Boolean? = null,
 )

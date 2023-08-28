@@ -64,6 +64,8 @@ export class PublicationStore {
   relatedArticles: ParagraphWithId[] = [];
   primaryArticles: Paragraph[] = [];
   tags = new Set<string>();
+  isNegative = false;
+  negativeData = '';
 
   constructor(readonly publicationId: string, readonly fs: ChonkyFileSystem) {
     makeAutoObservable(this);
@@ -192,7 +194,7 @@ export class PublicationStore {
           .map((t) => {
             return {
               id: t.id,
-              userId: t.user.id!,
+              userId: t.user.id,
               shortBio: t.shortBio
             };
           }),
@@ -434,6 +436,27 @@ export class PublicationStore {
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
+  doUpdateIsNegativeData = _.throttle(async () => {
+    debugger;
+    await publicationService.editPublication(this.publicationId, {
+      isNegative: this.isNegative
+    });
+    this.savingStatus = SavingStatusState.SAVED;
+  }, EDIT_THROTTLE_MS);
+
+  updateNegativeData(newValue: string): void {
+    this.negativeData = newValue;
+    this.savingStatus = SavingStatusState.SAVING;
+    void this.doUpdateNegativeData();
+  }
+
+  doUpdateNegativeData = _.throttle(async () => {
+    await publicationService.editPublication(this.publicationId, {
+      negativeData: { value: this.negativeData, edited: true }
+    });
+    this.savingStatus = SavingStatusState.SAVED;
+  }, EDIT_THROTTLE_MS);
+
   mergeSummaryParagraph = (idx: number): void => {
     if (idx <= 0) return;
     const newValue = [...this.summary];
@@ -560,6 +583,12 @@ export class PublicationStore {
     this.tagsEnabled = true;
   };
 
+  invertNegativeData = (): void => {
+    this.isNegative = !this.isNegative;
+    this.savingStatus = SavingStatusState.SAVING;
+    void this.doUpdateIsNegativeData();
+  };
+
   validate = (): Section[] => {
     const result: Section[] = [];
 
@@ -663,6 +692,10 @@ export class PublicationStore {
           if (this.fs.files.length > 0) {
             this.filesEnabled = true;
           }
+          if (publication.negativeData?.length) {
+            this.negativeData = publication.negativeData ?? '';
+          }
+          this.isNegative = publication.isNegative;
           if (publication.status === PublicationStatus.PENDING) {
             this.viewMode = ViewMode.EDIT;
             this.savingStatus = SavingStatusState.SAVED;
