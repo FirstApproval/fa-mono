@@ -18,7 +18,8 @@ import {
   ExperimentGoalsPlaceholder,
   RelatedArticlesPlaceholder,
   SoftwarePlaceholder,
-  TagsPlaceholder
+  TagsPlaceholder,
+  SampleFilesPlaceholder
 } from './ContentPlaceholder';
 import {
   PublicationStore,
@@ -47,16 +48,19 @@ import { UserMenu } from '../../components/UserMenu';
 import { Page } from '../../core/RouterStore';
 import { ValidationDialog } from './ValidationDialog';
 import { incrementPublicationViewCounter } from './SeenPublicationService';
+import { ChonkySampleFileSystem } from '../../fire-browser/sample-files/ChonkySampleFileSystem';
+import { SampleFileUploader } from '../../fire-browser/sample-files/SampleFileUploader';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
 
   const [fs] = useState(() => new ChonkyFileSystem(publicationId));
+  const [sfs] = useState(() => new ChonkySampleFileSystem(publicationId));
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Section[]>([]);
 
   const [publicationStore] = useState(
-    () => new PublicationStore(publicationId, fs)
+    () => new PublicationStore(publicationId, fs, sfs)
   );
 
   const { isLoading, researchArea, validate } = publicationStore;
@@ -156,6 +160,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
                     publicationId={publicationId}
                     publicationStore={publicationStore}
                     fs={fs}
+                    sfs={sfs}
                   />
                 )}
                 {emptyResearchArea && (
@@ -183,8 +188,9 @@ const PublicationBody = observer(
     publicationId: string;
     publicationStore: PublicationStore;
     fs: ChonkyFileSystem;
+    sfs: ChonkySampleFileSystem;
   }): ReactElement => {
-    const { fs, publicationStore } = props;
+    const { fs, sfs, publicationStore } = props;
 
     const {
       openExperimentGoals,
@@ -192,6 +198,7 @@ const PublicationBody = observer(
       openObjectOfStudy,
       openSoftware,
       openFiles,
+      openSampleFiles,
       openAuthors,
       openGrantingOrganizations,
       openRelatedArticles,
@@ -201,6 +208,7 @@ const PublicationBody = observer(
       objectOfStudyEnabled,
       softwareEnabled,
       filesEnabled,
+      sampleFilesEnabled,
       authorsEnabled,
       grantingOrganizationsEnabled,
       relatedArticlesEnabled,
@@ -232,6 +240,10 @@ const PublicationBody = observer(
         )}
         {!filesEnabled && <FilesPlaceholder onClick={openFiles} />}
         {filesEnabled && <FileUploader fs={fs} />}
+        {!sampleFilesEnabled && (
+          <SampleFilesPlaceholder onClick={openSampleFiles} />
+        )}
+        {sampleFilesEnabled && <SampleFileUploader sfs={sfs} />}
         {!authorsEnabled && <AuthorsPlaceholder onClick={openAuthors} />}
         {authorsEnabled && (
           <AuthorsEditor publicationStore={publicationStore} />
