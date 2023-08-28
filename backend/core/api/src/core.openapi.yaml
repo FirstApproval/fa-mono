@@ -395,6 +395,46 @@ paths:
       operationId: getMyPublications
       tags: [ publication ]
 
+  /api/user-publications/{username}:
+    get:
+      summary: Get user publications by username
+      parameters:
+        - in: path
+          name: username
+          schema:
+            type: string
+          required: true
+          description: Username
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/PublicationStatus'
+          required: true
+          description: Status of publication
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: true
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          required: true
+          description: Page size
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicationsResponse'
+      security:
+        - PublicAuth: [ ]
+      operationId: getUserPublications
+      tags: [ publication ]
+
   /api/publications:
     get:
       summary: Get all publications

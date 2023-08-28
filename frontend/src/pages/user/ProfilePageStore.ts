@@ -27,15 +27,19 @@ export class ProfilePageStore {
       ]) {
         this.publicationsLastPage.set(status, false);
         this.publicationsPageNum.set(status, 0);
-        void this.load(status);
+        void this.load(username, status);
       }
     } finally {
       this.isLoadingPublications = false;
     }
   }
 
-  public async load(status: PublicationStatus): Promise<void> {
-    const publicationsResponse = await publicationService.getMyPublications(
+  public async load(
+    username: string | null,
+    status: PublicationStatus
+  ): Promise<void> {
+    const publicationsResponse = await publicationService.getUserPublications(
+      username ?? userStore.user!.username,
       status,
       this.publicationsPageNum.get(status)!,
       25
