@@ -46,4 +46,6 @@ class PublicationElastic(
     var creationTime: ZonedDateTime = ZonedDateTime.now(),
     @Field(type = Date_Nanos)
     var publicationTime: ZonedDateTime? = null,
+    @Field(type = Text)
+    var negativeData: String? = null,
 )

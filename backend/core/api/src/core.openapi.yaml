@@ -1649,6 +1649,8 @@ components:
           $ref: '#/components/schemas/PublicationStringArrayValue'
         predictedGoals:
           $ref: '#/components/schemas/PublicationStringArrayValue'
+        negativeData:
+          $ref: '#/components/schemas/PublicationStringValue'
 
     PublicationStringValue:
       type: object
@@ -1819,6 +1821,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UnconfirmedAuthor'
+        negativeData:
+          type: string
+          maxLength: 32768
         viewsCount:
           type: integer
           format: int64
