@@ -49,7 +49,6 @@ export class PublicationStore {
   grantingOrganizationsEnabled = false;
   relatedArticlesEnabled = false;
   tagsEnabled = false;
-  negativeDataEnabled = false;
 
   summary: ParagraphWithId[] = [];
   savingStatus: SavingStatusState = SavingStatusState.PREVIEW;
@@ -65,6 +64,7 @@ export class PublicationStore {
   relatedArticles: ParagraphWithId[] = [];
   primaryArticles: Paragraph[] = [];
   tags = new Set<string>();
+  isNegative = false;
   negativeData = '';
 
   constructor(readonly publicationId: string, readonly fs: ChonkyFileSystem) {
@@ -436,6 +436,14 @@ export class PublicationStore {
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
+  doUpdateIsNegativeData = _.throttle(async () => {
+    debugger;
+    await publicationService.editPublication(this.publicationId, {
+      isNegative: this.isNegative
+    });
+    this.savingStatus = SavingStatusState.SAVED;
+  }, EDIT_THROTTLE_MS);
+
   updateNegativeData(newValue: string): void {
     this.negativeData = newValue;
     this.savingStatus = SavingStatusState.SAVING;
@@ -576,10 +584,9 @@ export class PublicationStore {
   };
 
   invertNegativeData = (): void => {
-    this.negativeDataEnabled = !this.negativeDataEnabled;
-    if (!this.negativeDataEnabled) {
-      this.updateNegativeData('');
-    }
+    this.isNegative = !this.isNegative;
+    this.savingStatus = SavingStatusState.SAVING;
+    void this.doUpdateIsNegativeData();
   };
 
   validate = (): Section[] => {
@@ -687,8 +694,8 @@ export class PublicationStore {
           }
           if (publication.negativeData?.length) {
             this.negativeData = publication.negativeData ?? '';
-            this.negativeDataEnabled = true;
           }
+          this.isNegative = publication.isNegative;
           if (publication.status === PublicationStatus.PENDING) {
             this.viewMode = ViewMode.EDIT;
             this.savingStatus = SavingStatusState.SAVED;

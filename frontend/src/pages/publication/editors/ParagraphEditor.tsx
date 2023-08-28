@@ -84,7 +84,7 @@ export const NegativeData = observer((props: EditorProps): ReactElement => {
     <NegativeDataAllWrapper>
       <NegativeDataWrapper>
         <NegativeDataHeaderWrapper>
-          {!publicationStore.negativeDataEnabled && (
+          {!publicationStore.isNegative && (
             <>
               <WarningIcon
                 htmlColor={'#a8a8b4'}
@@ -95,18 +95,18 @@ export const NegativeData = observer((props: EditorProps): ReactElement => {
               </NegativeDataHeaderDisabled>
             </>
           )}
-          {publicationStore.negativeDataEnabled && (
+          {publicationStore.isNegative && (
             <NegativeDataHeaderEnabled>
               My data is negative
             </NegativeDataHeaderEnabled>
           )}
         </NegativeDataHeaderWrapper>
         <Switch
-          checked={publicationStore.negativeDataEnabled}
+          checked={publicationStore.isNegative}
           onClick={publicationStore.invertNegativeData}
         />
       </NegativeDataWrapper>
-      {publicationStore.negativeDataEnabled && (
+      {publicationStore.isNegative && (
         <FullWidthTextField
           autoFocus
           value={publicationStore.negativeData}

@@ -75,6 +75,7 @@ class Publication(
     var archivePassword: String? = null,
     var contentId: Long? = null,
     var isFeatured: Boolean = false,
+    var isNegative: Boolean = false,
     var negativeData: String? = null,
 )
 

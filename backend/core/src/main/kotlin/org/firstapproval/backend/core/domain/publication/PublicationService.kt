@@ -91,7 +91,8 @@ class PublicationService(
             }
 
             if (title?.edited == true) publication.title = title.value
-            if (negativeData.edited == true) publication.negativeData = negativeData.value
+            if (negativeData?.edited == true) publication.negativeData = negativeData.value
+            if (isNegative != null) publication.isNegative = isNegative
             if (description?.edited == true) publication.description = description.values.map { it.text }
             if (researchArea?.edited == true) publication.researchArea = researchArea.value
             if (grantOrganizations?.edited == true) publication.grantOrganizations = grantOrganizations.values.map { it.text }
@@ -314,6 +315,7 @@ fun Publication.toApiObject(userService: UserService) = PublicationApiObject().a
     publicationApiModel.accessType = org.firstapproval.api.server.model.AccessType.valueOf(accessType.name)
     publicationApiModel.creationTime = creationTime.toOffsetDateTime()
     publicationApiModel.negativeData = negativeData
+    publicationApiModel.isNegative = isNegative
 }
 
 fun PublicationElastic.toApiObject(viewCount: Long? = null, downloadsCount: Long? = null) = PublicationApiObject().also { publicationApiModel ->
@@ -337,6 +339,7 @@ fun PublicationElastic.toApiObject(viewCount: Long? = null, downloadsCount: Long
     publicationApiModel.viewsCount = viewCount
     publicationApiModel.creationTime = creationTime.toOffsetDateTime()
     publicationApiModel.negativeData = negativeData
+    publicationApiModel.isNegative = isNegative
 }
 
 fun Publication.toPublicationElastic() =
@@ -359,7 +362,8 @@ fun Publication.toPublicationElastic() =
         predictedGoals = predictedGoals,
         creationTime = creationTime,
         publicationTime = publicationTime,
-        negativeData = negativeData
+        negativeData = negativeData,
+        isNegative = isNegative
     )
 
 fun ConfirmedAuthor.toApiObject(profileImage: ByteArray?) = ConfirmedAuthorApiObject().also {

@@ -1651,6 +1651,8 @@ components:
           $ref: '#/components/schemas/PublicationStringArrayValue'
         negativeData:
           $ref: '#/components/schemas/PublicationStringValue'
+        isNegative:
+          type: boolean
 
     PublicationStringValue:
       type: object
@@ -1824,6 +1826,8 @@ components:
         negativeData:
           type: string
           maxLength: 32768
+        isNegative:
+          type: boolean
         viewsCount:
           type: integer
           format: int64
@@ -1834,6 +1838,7 @@ components:
         - id
         - status
         - creator
+        - isNegative
         - creationTime
 
     PublicationsResponse:
