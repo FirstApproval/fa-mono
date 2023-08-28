@@ -9,8 +9,10 @@ export const Parent = styled.div`
 
 export const FlexHeader = styled.div`
   display: flex;
+  border-bottom: 1px solid #eeeeee;
   padding: 12px 32px;
-  margin-bottom: 40px;
+  height: 64px;
+  margin-bottom: 80px;
   align-items: center;
   justify-content: center;
   position: sticky;

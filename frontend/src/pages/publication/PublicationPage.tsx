@@ -4,18 +4,18 @@ import React, {
   useEffect,
   useState
 } from 'react';
-import { Button, IconButton, LinearProgress } from '@mui/material';
-import { FlexBodyCenter, FlexHeader, Parent } from '../common.styled';
+import { Button, LinearProgress } from '@mui/material';
+import { FlexBodyCenter, FlexHeader, Logo, Parent } from '../common.styled';
 import { FileUploader } from '../../fire-browser/FileUploader';
 import { routerStore } from '../../core/router';
 import styled from '@emotion/styled';
 import {
   AuthorsPlaceholder,
+  ExperimentGoalsPlaceholder,
   FilesPlaceholder,
   GrantingOrganisationsPlaceholder,
   MethodPlaceholder,
   ObjectOfStudyPlaceholder,
-  ExperimentGoalsPlaceholder,
   RelatedArticlesPlaceholder,
   SoftwarePlaceholder,
   TagsPlaceholder
@@ -29,10 +29,10 @@ import {
 import { observer } from 'mobx-react-lite';
 import {
   DescriptionEditor,
+  ExperimentGoalsEditor,
   GrantingOrganizationsEditor,
   MethodEditor,
   ObjectOfStudyEditor,
-  ExperimentGoalsEditor,
   RelatedArticlesEditor,
   SoftwareEditor
 } from './editors/ParagraphEditor';
@@ -42,7 +42,7 @@ import { AuthorsEditor } from './editors/AuthorsEditor';
 import { TitleEditor } from './editors/TitleEditor';
 import { ResearchAreaEditor } from './editors/ResearchAreaEditor';
 import { ResearchAreaPage } from './ResearchAreaPage';
-import logo from './asset/logo.svg';
+import logo from '../../assets/logo-black.svg';
 import { UserMenu } from '../../components/UserMenu';
 import { Page } from '../../core/RouterStore';
 import { ValidationDialog } from './ValidationDialog';
@@ -87,13 +87,10 @@ export const PublicationPage: FunctionComponent = observer(() => {
       <Parent>
         <FlexHeader>
           <ToolbarContainer>
-            <div>
-              <IconButton
-                onClick={() => {
-                  routerStore.goHome();
-                }}>
+            <div style={{ display: 'flex' }}>
+              <Logo onClick={routerStore.goHome}>
                 <img src={logo} />
-              </IconButton>
+              </Logo>
               {!publicationStore.isView && (
                 <>
                   <DraftedBy>
@@ -274,8 +271,6 @@ const ToolbarContainer = styled.div`
   justify-content: space-between;
   height: 64px;
   width: 100%;
-  max-width: 988px;
-  padding: 0 16px;
   display: flex;
 `;
 

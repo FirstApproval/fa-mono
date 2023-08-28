@@ -10,8 +10,8 @@ const GridContainer = styled.div`
 `;
 
 const PublicationCard = styled.div`
-  width: calc(25% - 42px);
-  margin-right: 42px;
+  width: calc(25%);
+  padding: 4px;
 `;
 
 const RecommendedPublicationsSection = (props: {
