@@ -716,8 +716,14 @@ export class PublicationStore {
     if (!hasContent(this.experimentGoals)) {
       result.push('goals');
     }
+    if (this.methodTitle.length === 0) {
+      result.push('method');
+    }
     if (!hasContent(this.method)) {
       result.push('method');
+    }
+    if (this.objectOfStudyTitle.length === 0) {
+      result.push('object_of_study');
     }
     if (!hasContent(this.objectOfStudy)) {
       result.push('object_of_study');
