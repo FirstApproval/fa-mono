@@ -47,7 +47,7 @@ import logo from '../../assets/logo-black.svg';
 import { UserMenu } from '../../components/UserMenu';
 import { Page } from '../../core/RouterStore';
 import { ValidationDialog } from './ValidationDialog';
-import { incrementPublicationViewCounter } from './SeenPublicationService';
+import { publicationService } from '../../core/service';
 import { DraftText } from './DraftText';
 import { Authors } from './Authors';
 import { DateViewsDownloads } from './DateViewsDownloads';
@@ -78,7 +78,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
 
   useEffect(() => {
     if (publicationStore.viewMode === ViewMode.VIEW) {
-      incrementPublicationViewCounter(publicationStore.publicationId);
+      void publicationService.incrementPublicationViewCount(publicationId);
     }
   }, [publicationStore.publicationId]);
 
