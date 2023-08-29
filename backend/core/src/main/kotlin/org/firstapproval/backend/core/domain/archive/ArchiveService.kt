@@ -9,6 +9,7 @@ import org.firstapproval.backend.core.domain.file.ARCHIVED_PUBLICATION_FILES
 import org.firstapproval.backend.core.domain.file.ARCHIVED_PUBLICATION_SAMPLE_FILES
 import org.firstapproval.backend.core.domain.file.FILES
 import org.firstapproval.backend.core.domain.file.FileStorageService
+import org.firstapproval.backend.core.domain.file.SAMPLE_FILES
 import org.firstapproval.backend.core.domain.ipfs.IpfsClient
 import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.domain.publication.Publication
@@ -26,6 +27,7 @@ import org.springframework.transaction.support.TransactionTemplate
 import java.io.File
 import java.io.File.createTempFile
 import java.io.FileOutputStream
+import java.lang.StringBuilder
 import java.nio.file.Files
 import java.time.ZonedDateTime.now
 import java.util.UUID
@@ -35,6 +37,8 @@ import kotlin.io.path.exists
 
 private const val BATCH_SIZE = 10
 private const val TMP_FOLDER = "archive_tmp"
+
+private const val DESCRIPTIONS_FILE_DEFAULT_NAME = "descriptions"
 
 @Service
 class ArchiveService(
@@ -99,6 +103,7 @@ class ArchiveService(
         val fileOutputStream = FileOutputStream(tempArchive)
         val zipOutputStream = ZipOutputStream(fileOutputStream, password.toCharArray())
         var err: Exception? = null
+        val descriptions = StringBuilder()
         // TODO rebuild for try with resources
         try {
             while (!files.isEmpty) {
@@ -120,9 +125,23 @@ class ArchiveService(
                         inputStream.close()
                         zipOutputStream.closeEntry()
                     }
+                    if (it.description != null) {
+                        descriptions.append(it.fullPath + "\n" + it.description + "\n\n")
+                    }
                 }
                 page = page.next()
                 files = publicationFileRepository.findByPublicationIdOrderByCreationTimeAsc(publication.id, page)
+            }
+            val zipParms = ZipParameters()
+            zipParms.fileNameInZip = getFileNameForDescriptionsFile(publication.id)
+            zipOutputStream.putNextEntry(zipParms)
+            val buffer = ByteArray(1024)
+            var len: Int
+            descriptions.toString().byteInputStream().use {
+                while (it.read(buffer).also { len = it } > 0) {
+                    zipOutputStream.write(buffer, 0, len)
+                }
+                zipOutputStream.closeEntry()
             }
         } catch (ex: Exception) {
             log.error(ex) { "archive error" }
@@ -152,12 +171,13 @@ class ArchiveService(
         val fileOutputStream = FileOutputStream(tempArchive)
         val zipOutputStream = ZipOutputStream(fileOutputStream)
         var err: Exception? = null
+        val descriptions = StringBuilder()
         try {
             while (!files.isEmpty) {
                 filesIds.addAll(files.map { it.id })
                 files.forEach {
                     if (!it.isDir) {
-                        val inputStream = fileStorageService.get(FILES, it.id.toString()).objectContent
+                        val inputStream = fileStorageService.get(SAMPLE_FILES, it.id.toString()).objectContent
                         val zipParms = ZipParameters()
                         zipParms.fileNameInZip = it.fullPath
                         zipOutputStream.putNextEntry(zipParms)
@@ -170,9 +190,23 @@ class ArchiveService(
                         inputStream.close()
                         zipOutputStream.closeEntry()
                     }
+                    if (it.description != null) {
+                        descriptions.append(it.fullPath + "\n" + it.description + "\n\n")
+                    }
                 }
                 page = page.next()
                 files = publicationSampleFileRepository.findByPublicationIdOrderByCreationTimeAsc(publication.id, page)
+            }
+            val zipParms = ZipParameters()
+            zipParms.fileNameInZip = getFileNameForDescriptionsFile(publication.id)
+            zipOutputStream.putNextEntry(zipParms)
+            val buffer = ByteArray(1024)
+            var len: Int
+            descriptions.toString().byteInputStream().use {
+                while (it.read(buffer).also { len = it } > 0) {
+                    zipOutputStream.write(buffer, 0, len)
+                }
+                zipOutputStream.closeEntry()
             }
         } catch (ex: Exception) {
             log.error(ex) { "archive error" }
@@ -190,6 +224,14 @@ class ArchiveService(
             }
             tempArchive.delete()
         }
+    }
+
+    fun getFileNameForDescriptionsFile(publicationId: UUID): String {
+        var fileName = DESCRIPTIONS_FILE_DEFAULT_NAME
+        while (publicationFileRepository.existsByPublicationIdAndFullPath(publicationId, "/$fileName.txt")) {
+            fileName += "_1"
+        }
+        return "$fileName.txt"
     }
 
     private fun getOrCreateTmpFolder(): File {
