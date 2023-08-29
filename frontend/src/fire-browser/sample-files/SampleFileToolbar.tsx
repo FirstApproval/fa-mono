@@ -13,7 +13,7 @@ import {
   DeleteOutlined,
   DownloadOutlined,
   EditNote,
-  FileDownloadOutlined
+  FileUploadOutlined
 } from '@mui/icons-material';
 import styled from '@emotion/styled';
 import { useSelector } from 'react-redux';
@@ -33,12 +33,10 @@ export const SampleFileToolbar: React.FC = React.memo(() => {
           multiple
           style={{ display: 'none' }}
         />
-        <ButtonWrap>
-          <MainAction
-            item={ChonkyActions.DownloadFiles.id}
-            icon={<FileDownloadOutlined />}
-          />
-        </ButtonWrap>
+        <MainAction
+          item={ChonkyActions.UploadFiles.id}
+          icon={<FileUploadOutlined />}
+        />
         {selectionSize !== 0 && (
           <>
             <DividerWrap variant={'middle'} orientation={'vertical'} />
