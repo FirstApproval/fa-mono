@@ -1,19 +1,6 @@
 import React, { type FunctionComponent, useState } from 'react';
-import {
-  Button,
-  Divider,
-  InputAdornment,
-  LinearProgress,
-  Stack,
-  TextField
-} from '@mui/material';
-import {
-  FlexBodyCenter,
-  FlexHeader,
-  FlexHeaderRight,
-  Logo,
-  Parent
-} from '../common.styled';
+import { Button, Divider, InputAdornment, LinearProgress, Stack, TextField } from '@mui/material';
+import { FlexBodyCenter, FlexHeader, FlexHeaderRight, Logo, Parent } from '../common.styled';
 import { routerStore } from '../../core/router';
 import { HomePageStore } from './HomePageStore';
 import { observer } from 'mobx-react-lite';
@@ -42,8 +29,9 @@ export const HomePage: FunctionComponent = observer(() => {
             <img src={logo} />
           </Logo>
           <FlexHeaderRight>
-            <Stack direction="row" spacing={2}>
+            <Stack direction='row' alignItems='center' spacing={2}>
               <ButtonWrap
+                variant='contained'
                 onClick={() => {
                   if (authStore.token) {
                     void store.createPublication();
@@ -57,91 +45,88 @@ export const HomePage: FunctionComponent = observer(() => {
               {!authStore.token && (
                 <>
                   <ButtonWrap
+                    variant='outlined'
                     onClick={() => {
                       routerStore.navigatePage(Page.SIGN_IN);
                     }}
                     size={'medium'}>
                     Sign in
                   </ButtonWrap>
-                  <Button
-                    size={'medium'}
-                    variant={'contained'}
-                    onClick={() => {
-                      routerStore.navigatePage(Page.SIGN_UP);
-                    }}>
-                    Sign up
-                  </Button>
                 </>
               )}
             </Stack>
             {authStore.token && <UserMenu />}
           </FlexHeaderRight>
         </FlexHeader>
-        <Wrap>
-          <Header>Discover science</Header>
-        </Wrap>
-        <Wrap>
-          <FullWidthTextField
-            autoFocus
-            value={store.inputValue}
-            onChange={(event) => {
-              store.inputValue = event.currentTarget.value;
-              if (!store.inputValue) {
-                store.searchQuery = '';
-              }
-            }}
-            placeholder={'Search the data you need...'}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' || event.keyCode === 13) {
-                void store.search();
-              }
-            }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <Search />
-                </InputAdornment>
-              )
-            }}
-          />
-        </Wrap>
-        {!hasSearch && (
-          <>
-            <RecommendedPublicationsSection
-              publications={store.recommendedPublications}
-            />
-            <CallToAction store={store} />
-            <FlexBodyCenter>
-              <FlexBody>
-                <PopularAuthorsSection authors={store.popularAuthors} />
-                <DividerWrap />
-                {store.isLoadingPublications && <LinearProgress />}
-                {!store.isLoadingPublications && (
-                  <>
-                    {store.publications.map((p) => (
-                      <PublicationSection key={p.id} publication={p} />
-                    ))}
-                  </>
-                )}
-              </FlexBody>
-            </FlexBodyCenter>
-          </>
-        )}
-        {hasSearch && (
-          <>
+        <ContentWrap>
+          <ContentWrapInner>
             <Wrap>
-              <ResultsLabel>Results for {store.searchQuery}</ResultsLabel>
-              {store.isSearching && <LinearProgress />}
-              {!store.isSearching && (
-                <>
-                  {store.searchResults.map((p) => (
-                    <PublicationSection key={p.id} publication={p} />
-                  ))}
-                </>
-              )}
+              <Header>Discover science</Header>
             </Wrap>
-          </>
-        )}
+            <Wrap>
+              <FullWidthTextField
+                autoFocus
+                value={store.inputValue}
+                onChange={(event) => {
+                  store.inputValue = event.currentTarget.value;
+                  if (!store.inputValue) {
+                    store.searchQuery = '';
+                  }
+                }}
+                placeholder={'Search the data you need...'}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.keyCode === 13) {
+                    void store.search();
+                  }
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position='end'>
+                      <Search />
+                    </InputAdornment>
+                  )
+                }}
+              />
+            </Wrap>
+            {!hasSearch && (
+              <>
+                <RecommendedPublicationsSection
+                  publications={store.recommendedPublications}
+                />
+                <CallToAction store={store} />
+                <FlexBodyCenter>
+                  <FlexBody>
+                    <PopularAuthorsSection authors={store.popularAuthors} />
+                    <DividerWrap />
+                    {store.isLoadingPublications && <LinearProgress />}
+                    {!store.isLoadingPublications && (
+                      <>
+                        {store.publications.map((p) => (
+                          <PublicationSection key={p.id} publication={p} />
+                        ))}
+                      </>
+                    )}
+                  </FlexBody>
+                </FlexBodyCenter>
+              </>
+            )}
+            {hasSearch && (
+              <>
+                <Wrap>
+                  <ResultsLabel>Results for {store.searchQuery}</ResultsLabel>
+                  {store.isSearching && <LinearProgress />}
+                  {!store.isSearching && (
+                    <>
+                      {store.searchResults.map((p) => (
+                        <PublicationSection key={p.id} publication={p} />
+                      ))}
+                    </>
+                  )}
+                </Wrap>
+              </>
+            )}
+          </ContentWrapInner>
+        </ContentWrap>
       </Parent>
       <Footer />
     </>
@@ -164,12 +149,26 @@ export const ResultsLabel = styled('div')`
   margin-bottom: 40px;
 `;
 
+export const ContentWrap = styled('div')`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+`;
+
+export const ContentWrapInner = styled('div')`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 1240px;
+`;
+
 export const FlexBody = styled('div')`
   max-width: 680px;
 `;
 
 const ButtonWrap = styled(Button)`
-  color: var(--inherit-text-primary-main, #040036);
+  width: 90px;
+  height: 36px;
 `;
 
 const DividerWrap = styled(Divider)`

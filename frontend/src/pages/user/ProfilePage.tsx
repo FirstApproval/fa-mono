@@ -60,7 +60,7 @@ export const ProfilePage: FunctionComponent = observer(() => {
     <LoadMorePublicationsButton
       disabled={store.publicationsLastPage.get(status)}
       onClick={async () => {
-        await store.load(status);
+        await store.load(username, status);
       }}>
       Load more datasets
     </LoadMorePublicationsButton>
@@ -153,15 +153,18 @@ export const ProfilePage: FunctionComponent = observer(() => {
                 <>
                   {tabNumber === 0 && (
                     <TabContainer>
-                      <div>
+                      <PublicationsContainer>
                         {mapPublications(
                           store.publications.get(PublicationStatus.PUBLISHED) ??
                             []
                         )}
-                      </div>
+                      </PublicationsContainer>
                       {notEmptyPublished &&
+                        !store.publicationsLastPage.get(
+                          PublicationStatus.PUBLISHED
+                        ) &&
                         loadMoreButton(PublicationStatus.PUBLISHED)}
-                      {!notEmptyPublished && (
+                      {!notEmptyPublished && !username && (
                         <Banner>
                           <BannerLeftPart>
                             <UploadYourFirstDatasetHeader>
@@ -189,15 +192,18 @@ export const ProfilePage: FunctionComponent = observer(() => {
                   )}
                   {tabNumber === 1 && (
                     <TabContainer>
-                      <div>
+                      <PublicationsContainer>
                         {mapPublications(
                           store.publications.get(PublicationStatus.PENDING) ??
                             []
                         )}
-                      </div>
+                      </PublicationsContainer>
                       {notEmptyPending &&
+                        !store.publicationsLastPage.get(
+                          PublicationStatus.PENDING
+                        ) &&
                         loadMoreButton(PublicationStatus.PENDING)}
-                      {!notEmptyPending && (
+                      {!notEmptyPending && !username && (
                         <CenterColumnElement>
                           <YouDontHaveAnyDrafts>
                             {"You don't have any drafts yet 🤷‍"}
@@ -371,11 +377,11 @@ const BannerLeftPart = styled.div`
   justify-content: center;
 `;
 
-export const StartPublishingButton = styled(Button)`
+const StartPublishingButton = styled(Button)`
   width: 180px;
 `;
 
-export const YouDontHaveAnyDrafts = styled(Button)`
+const YouDontHaveAnyDrafts = styled(Button)`
   color: var(--text-secondary, #68676e);
   text-align: center;
   font-feature-settings: 'clig' off, 'liga' off;
@@ -388,6 +394,13 @@ export const YouDontHaveAnyDrafts = styled(Button)`
   letter-spacing: 0.15px;
 `;
 
-export const FlexBody = styled.div`
+const FlexBody = styled.div`
   width: 680px;
+`;
+
+const PublicationsContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
 `;

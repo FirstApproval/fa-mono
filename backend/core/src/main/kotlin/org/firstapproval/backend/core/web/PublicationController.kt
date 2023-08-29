@@ -37,6 +37,12 @@ class PublicationController(
         return ok().body(publicationService.getAllPublications(page, pageSize))
     }
 
+    override fun getUserPublications(username: String, status: PublicationStatus, page: Int, pageSize: Int): ResponseEntity<PublicationsResponse> {
+        val user = userService.getPublicUserProfile(username)
+        val publications = publicationService.getCreatorPublications(user, status, page, pageSize)
+        return ok().body(publications)
+    }
+
     override fun getAllFeaturedPublications(page: Int, pageSize: Int): ResponseEntity<PublicationsResponse> {
         return ok().body(publicationService.getAllFeaturedPublications(page, pageSize))
     }

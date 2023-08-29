@@ -27,19 +27,29 @@ export class ProfilePageStore {
       ]) {
         this.publicationsLastPage.set(status, false);
         this.publicationsPageNum.set(status, 0);
-        void this.load(status);
+        void this.load(username, status);
       }
     } finally {
       this.isLoadingPublications = false;
     }
   }
 
-  public async load(status: PublicationStatus): Promise<void> {
-    const publicationsResponse = await publicationService.getMyPublications(
-      status,
-      this.publicationsPageNum.get(status)!,
-      25
-    );
+  public async load(
+    username: string | null,
+    status: PublicationStatus
+  ): Promise<void> {
+    const publicationsResponse = username
+      ? await publicationService.getUserPublications(
+          username,
+          status,
+          this.publicationsPageNum.get(status)!,
+          20
+        )
+      : await publicationService.getMyPublications(
+          status,
+          this.publicationsPageNum.get(status)!,
+          20
+        );
     const publicationsData = publicationsResponse.data;
     const newPublicationArray = [
       ...(this.publications.get(status) ?? []),

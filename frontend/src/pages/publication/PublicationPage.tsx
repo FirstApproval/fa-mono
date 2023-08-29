@@ -1,39 +1,29 @@
-import React, {
-  type FunctionComponent,
-  type ReactElement,
-  useEffect,
-  useState
-} from 'react';
-import { Button, IconButton, LinearProgress } from '@mui/material';
-import { FlexBodyCenter, FlexHeader, Parent } from '../common.styled';
+import React, { type FunctionComponent, type ReactElement, useEffect, useState } from 'react';
+import { Button, LinearProgress } from '@mui/material';
+import { FlexBodyCenter, FlexHeader, Logo, Parent } from '../common.styled';
 import { FileUploader } from '../../fire-browser/FileUploader';
 import { routerStore } from '../../core/router';
 import styled from '@emotion/styled';
 import {
   AuthorsPlaceholder,
+  ExperimentGoalsPlaceholder,
   FilesPlaceholder,
   GrantingOrganisationsPlaceholder,
   MethodPlaceholder,
   ObjectOfStudyPlaceholder,
-  ExperimentGoalsPlaceholder,
   RelatedArticlesPlaceholder,
   SoftwarePlaceholder,
   TagsPlaceholder,
   SampleFilesPlaceholder
 } from './ContentPlaceholder';
-import {
-  PublicationStore,
-  SavingStatusState,
-  type Section,
-  ViewMode
-} from './store/PublicationStore';
+import { PublicationStore, SavingStatusState, type Section, ViewMode } from './store/PublicationStore';
 import { observer } from 'mobx-react-lite';
 import {
   DescriptionEditor,
+  ExperimentGoalsEditor,
   GrantingOrganizationsEditor,
   MethodEditor,
   ObjectOfStudyEditor,
-  ExperimentGoalsEditor,
   RelatedArticlesEditor,
   SoftwareEditor
 } from './editors/ParagraphEditor';
@@ -43,11 +33,14 @@ import { AuthorsEditor } from './editors/AuthorsEditor';
 import { TitleEditor } from './editors/TitleEditor';
 import { ResearchAreaEditor } from './editors/ResearchAreaEditor';
 import { ResearchAreaPage } from './ResearchAreaPage';
-import logo from './asset/logo.svg';
+import logo from '../../assets/logo-black.svg';
 import { UserMenu } from '../../components/UserMenu';
 import { Page } from '../../core/RouterStore';
 import { ValidationDialog } from './ValidationDialog';
 import { incrementPublicationViewCounter } from './SeenPublicationService';
+import { DraftText } from './DraftText';
+import { Authors } from './Authors';
+import { DateViewsDownloads } from './DateViewsDownloads';
 import { ChonkySampleFileSystem } from '../../fire-browser/sample-files/ChonkySampleFileSystem';
 import { SampleFileUploader } from '../../fire-browser/sample-files/SampleFileUploader';
 
@@ -63,7 +56,11 @@ export const PublicationPage: FunctionComponent = observer(() => {
     () => new PublicationStore(publicationId, fs, sfs)
   );
 
-  const { isLoading, researchArea, validate } = publicationStore;
+  const {
+    isLoading,
+    researchArea,
+    validate
+  } = publicationStore;
 
   const validateSections = (): boolean => {
     const result = validate();
@@ -91,13 +88,10 @@ export const PublicationPage: FunctionComponent = observer(() => {
       <Parent>
         <FlexHeader>
           <ToolbarContainer>
-            <div>
-              <IconButton
-                onClick={() => {
-                  routerStore.goHome();
-                }}>
+            <div style={{ display: 'flex' }}>
+              <Logo onClick={routerStore.goHome}>
                 <img src={logo} />
-              </IconButton>
+              </Logo>
               {!publicationStore.isView && (
                 <>
                   <DraftedBy>
@@ -107,12 +101,12 @@ export const PublicationPage: FunctionComponent = observer(() => {
                   </DraftedBy>
                   {publicationStore.savingStatus ===
                     SavingStatusState.SAVING && (
-                    <SavingStatus>Saving...</SavingStatus>
-                  )}
+                      <SavingStatus>Saving...</SavingStatus>
+                    )}
                   {publicationStore.savingStatus ===
                     SavingStatusState.SAVED && (
-                    <SavingStatus>Saved</SavingStatus>
-                  )}
+                      <SavingStatus>Saved</SavingStatus>
+                    )}
                 </>
               )}
             </div>
@@ -120,7 +114,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
               {!publicationStore.isView && (
                 <>
                   <ButtonWrap
-                    variant="contained"
+                    variant='contained'
                     size={'medium'}
                     onClick={() => {
                       const isValid = validateSections();
@@ -136,8 +130,8 @@ export const PublicationPage: FunctionComponent = observer(() => {
                     Publish
                   </ButtonWrap>
                   <ButtonWrap
-                    marginRight="0px"
-                    variant="outlined"
+                    marginRight='0px'
+                    variant='outlined'
                     size={'medium'}
                     onClick={() => {
                       publicationStore.viewMode = nextViewMode;
@@ -190,7 +184,11 @@ const PublicationBody = observer(
     fs: ChonkyFileSystem;
     sfs: ChonkySampleFileSystem;
   }): ReactElement => {
-    const { fs, sfs, publicationStore } = props;
+    const {
+      fs,
+      sfs,
+      publicationStore
+    } = props;
 
     const {
       openExperimentGoals,
@@ -217,7 +215,17 @@ const PublicationBody = observer(
 
     return (
       <>
+        {publicationStore.isPreview && (
+          <DraftText />
+        )}
+        {publicationStore.isView && (
+          <DateViewsDownloads publicationStore={publicationStore} />
+        )}
+        <div style={{ height: '16px' }}></div>
         <TitleEditor publicationStore={publicationStore} />
+        {publicationStore.isReadonly && (
+          <Authors publicationStore={publicationStore} />
+        )}
         <ResearchAreaEditor publicationStore={publicationStore} />
         <DescriptionEditor publicationStore={publicationStore} />
         {!experimentGoalsEnabled && (
@@ -264,6 +272,9 @@ const PublicationBody = observer(
         )}
         {!tagsEnabled && <TagsPlaceholder onClick={openTags} />}
         {tagsEnabled && <TagsEditor publicationStore={publicationStore} />}
+        {publicationStore.isPreview && (
+          <DraftText />
+        )}
       </>
     );
   }
@@ -286,8 +297,6 @@ const ToolbarContainer = styled.div`
   justify-content: space-between;
   height: 64px;
   width: 100%;
-  max-width: 988px;
-  padding: 0 16px;
   display: flex;
 `;
 
