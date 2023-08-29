@@ -1,6 +1,19 @@
 import React, { type FunctionComponent, useState } from 'react';
-import { Button, Divider, InputAdornment, LinearProgress, Stack, TextField } from '@mui/material';
-import { FlexBodyCenter, FlexHeader, FlexHeaderRight, Logo, Parent } from '../common.styled';
+import {
+  Button,
+  Divider,
+  InputAdornment,
+  LinearProgress,
+  Stack,
+  TextField
+} from '@mui/material';
+import {
+  FlexBodyCenter,
+  FlexHeader,
+  FlexHeaderRight,
+  Logo,
+  Parent
+} from '../common.styled';
 import { routerStore } from '../../core/router';
 import { HomePageStore } from './HomePageStore';
 import { observer } from 'mobx-react-lite';
@@ -29,9 +42,9 @@ export const HomePage: FunctionComponent = observer(() => {
             <img src={logo} />
           </Logo>
           <FlexHeaderRight>
-            <Stack direction='row' alignItems='center' spacing={2}>
+            <Stack direction="row" alignItems="center" spacing={2}>
               <ButtonWrap
-                variant='contained'
+                variant="contained"
                 onClick={() => {
                   if (authStore.token) {
                     void store.createPublication();
@@ -45,7 +58,7 @@ export const HomePage: FunctionComponent = observer(() => {
               {!authStore.token && (
                 <>
                   <ButtonWrap
-                    variant='outlined'
+                    variant="outlined"
                     onClick={() => {
                       routerStore.navigatePage(Page.SIGN_IN);
                     }}
@@ -81,7 +94,7 @@ export const HomePage: FunctionComponent = observer(() => {
                 }}
                 InputProps={{
                   endAdornment: (
-                    <InputAdornment position='end'>
+                    <InputAdornment position="end">
                       <Search />
                     </InputAdornment>
                   )

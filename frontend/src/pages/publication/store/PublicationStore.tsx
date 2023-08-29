@@ -95,9 +95,7 @@ export class PublicationStore {
   }
 
   get isPreview(): boolean {
-    return (
-      this.viewMode === ViewMode.PREVIEW
-    );
+    return this.viewMode === ViewMode.PREVIEW;
   }
 
   get isView(): boolean {
@@ -106,37 +104,55 @@ export class PublicationStore {
 
   addDescriptionParagraph(idx: number): void {
     const newValue = [...this.summary];
-    newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
+    newValue.splice(idx + 1, 0, {
+      text: '',
+      id: uuidv4()
+    });
     this.summary = newValue;
   }
 
   addExperimentGoalsParagraph(idx: number): void {
     const newValue = [...this.experimentGoals];
-    newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
+    newValue.splice(idx + 1, 0, {
+      text: '',
+      id: uuidv4()
+    });
     this.experimentGoals = newValue;
   }
 
   addMethodParagraph(idx: number): void {
     const newValue = [...this.method];
-    newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
+    newValue.splice(idx + 1, 0, {
+      text: '',
+      id: uuidv4()
+    });
     this.method = newValue;
   }
 
   addObjectOfStudyParagraph(idx: number): void {
     const newValue = [...this.objectOfStudy];
-    newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
+    newValue.splice(idx + 1, 0, {
+      text: '',
+      id: uuidv4()
+    });
     this.objectOfStudy = newValue;
   }
 
   addSoftwareParagraph(idx: number): void {
     const newValue = [...this.software];
-    newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
+    newValue.splice(idx + 1, 0, {
+      text: '',
+      id: uuidv4()
+    });
     this.software = newValue;
   }
 
   addGrantingOrganization(idx: number): void {
     const newValue = [...this.grantingOrganizations];
-    newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
+    newValue.splice(idx + 1, 0, {
+      text: '',
+      id: uuidv4()
+    });
     this.grantingOrganizations = newValue;
   }
 
@@ -298,13 +314,19 @@ export class PublicationStore {
 
   addRelatedArticle(idx: number): void {
     const newValue = [...this.relatedArticles];
-    newValue.splice(idx + 1, 0, { text: '', id: uuidv4() });
+    newValue.splice(idx + 1, 0, {
+      text: '',
+      id: uuidv4()
+    });
     this.relatedArticles = newValue;
   }
 
   updateSummaryParagraph(idx: number, value: string): void {
     const newValue = [...this.summary];
-    newValue[idx] = { text: value, id: newValue[idx].id };
+    newValue[idx] = {
+      text: value,
+      id: newValue[idx].id
+    };
     this.summary = newValue;
     this.savingStatus = SavingStatusState.SAVING;
     void this.updateSummary();
@@ -316,14 +338,20 @@ export class PublicationStore {
     );
 
     await publicationService.editPublication(this.publicationId, {
-      description: { values: description, edited: true }
+      description: {
+        values: description,
+        edited: true
+      }
     });
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
   updateExperimentGoalsParagraph(idx: number, value: string): void {
     const newValue = [...this.experimentGoals];
-    newValue[idx] = { text: value, id: newValue[idx].id };
+    newValue[idx] = {
+      text: value,
+      id: newValue[idx].id
+    };
     this.experimentGoals = newValue;
     this.savingStatus = SavingStatusState.SAVING;
     void this.updateExperimentGoals();
@@ -335,14 +363,20 @@ export class PublicationStore {
     );
 
     await publicationService.editPublication(this.publicationId, {
-      predictedGoals: { values: predictedGoals, edited: true }
+      predictedGoals: {
+        values: predictedGoals,
+        edited: true
+      }
     });
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
   updateMethodParagraph(idx: number, value: string): void {
     const newValue = [...this.method];
-    newValue[idx] = { text: value, id: newValue[idx].id };
+    newValue[idx] = {
+      text: value,
+      id: newValue[idx].id
+    };
     this.method = newValue;
     this.savingStatus = SavingStatusState.SAVING;
     void this.updateMethod();
@@ -352,7 +386,10 @@ export class PublicationStore {
     const method: Paragraph[] = this.method.filter((p) => p.text.length > 0);
 
     await publicationService.editPublication(this.publicationId, {
-      methodDescription: { values: method, edited: true }
+      methodDescription: {
+        values: method,
+        edited: true
+      }
     });
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
@@ -391,7 +428,10 @@ export class PublicationStore {
 
   updateObjectOfStudyParagraph(idx: number, value: string): void {
     const newValue = [...this.objectOfStudy];
-    newValue[idx] = { text: value, id: newValue[idx].id };
+    newValue[idx] = {
+      text: value,
+      id: newValue[idx].id
+    };
     this.objectOfStudy = newValue;
     this.savingStatus = SavingStatusState.SAVING;
     void this.updateObjectOfStudy();
@@ -403,14 +443,20 @@ export class PublicationStore {
     );
 
     await publicationService.editPublication(this.publicationId, {
-      objectOfStudyDescription: { values: objectOfStudy, edited: true }
+      objectOfStudyDescription: {
+        values: objectOfStudy,
+        edited: true
+      }
     });
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
   updateSoftwareParagraph(idx: number, value: string): void {
     const newValue = [...this.software];
-    newValue[idx] = { text: value, id: newValue[idx].id };
+    newValue[idx] = {
+      text: value,
+      id: newValue[idx].id
+    };
     this.software = newValue;
     this.savingStatus = SavingStatusState.SAVING;
     void this.updateSoftware();
@@ -422,14 +468,20 @@ export class PublicationStore {
     );
 
     await publicationService.editPublication(this.publicationId, {
-      software: { values: software, edited: true }
+      software: {
+        values: software,
+        edited: true
+      }
     });
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
   updateGrantingOrganization(idx: number, value: string): void {
     const newValue = [...this.grantingOrganizations];
-    newValue[idx] = { text: value, id: newValue[idx].id };
+    newValue[idx] = {
+      text: value,
+      id: newValue[idx].id
+    };
     this.grantingOrganizations = newValue;
     this.savingStatus = SavingStatusState.SAVING;
     void this.updateGrantingOrganizations();
@@ -440,7 +492,10 @@ export class PublicationStore {
       this.grantingOrganizations.filter((p) => p.text.length > 0);
 
     await publicationService.editPublication(this.publicationId, {
-      grantOrganizations: { values: grantingOrganizations, edited: true }
+      grantOrganizations: {
+        values: grantingOrganizations,
+        edited: true
+      }
     });
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
@@ -457,14 +512,20 @@ export class PublicationStore {
     );
 
     await publicationService.editPublication(this.publicationId, {
-      primaryArticles: { values: primaryArticles, edited: true }
+      primaryArticles: {
+        values: primaryArticles,
+        edited: true
+      }
     });
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
   updateRelatedArticle(idx: number, value: string): void {
     const newValue = [...this.relatedArticles];
-    newValue[idx] = { text: value, id: newValue[idx].id };
+    newValue[idx] = {
+      text: value,
+      id: newValue[idx].id
+    };
     this.relatedArticles = newValue;
     this.savingStatus = SavingStatusState.SAVING;
     void this.updateRelatedArticles();
@@ -476,7 +537,10 @@ export class PublicationStore {
     );
 
     await publicationService.editPublication(this.publicationId, {
-      relatedArticles: { values: relatedArticles, edited: true }
+      relatedArticles: {
+        values: relatedArticles,
+        edited: true
+      }
     });
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
@@ -496,7 +560,10 @@ export class PublicationStore {
 
   doUpdateNegativeData = _.throttle(async () => {
     await publicationService.editPublication(this.publicationId, {
-      negativeData: { value: this.negativeData, edited: true }
+      negativeData: {
+        value: this.negativeData,
+        edited: true
+      }
     });
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
@@ -751,20 +818,21 @@ export class PublicationStore {
             this.downloadsCount = publication.downloadsCount;
           }
 
-          const confirmedAuthorNames = this.confirmedAuthors.map<PublicationAuthorName>(
-            (author) => ({
-                userName: author.user.username,
-                firstName: author.user.firstName,
-                lastName: author.user.lastName
-              }
-            ));
-          const unconfirmedAuthorNames = this.unconfirmedAuthors.map<PublicationAuthorName>(
-            (author) => ({
-                firstName: author.firstName,
-                lastName: author.lastName
-              }
-            ));
-          this.authorNames = [...confirmedAuthorNames, ...unconfirmedAuthorNames];
+          const confirmedAuthorNames =
+            this.confirmedAuthors.map<PublicationAuthorName>((author) => ({
+              userName: author.user.username,
+              firstName: author.user.firstName,
+              lastName: author.user.lastName
+            }));
+          const unconfirmedAuthorNames =
+            this.unconfirmedAuthors.map<PublicationAuthorName>((author) => ({
+              firstName: author.firstName,
+              lastName: author.lastName
+            }));
+          this.authorNames = [
+            ...confirmedAuthorNames,
+            ...unconfirmedAuthorNames
+          ];
 
           if (this.fs.files.length > 0) {
             this.filesEnabled = true;
@@ -811,7 +879,7 @@ export enum SavingStatusState {
 }
 
 export interface PublicationAuthorName {
-  'userName'?: string;
-  'firstName': string;
-  'lastName': string;
+  userName?: string;
+  firstName: string;
+  lastName: string;
 }
