@@ -6,8 +6,8 @@ import org.firstapproval.api.server.model.CreatePublicationResponse
 import org.firstapproval.api.server.model.Publication
 import org.firstapproval.api.server.model.PublicationEditRequest
 import org.firstapproval.api.server.model.PublicationStatus
-import org.firstapproval.api.server.model.SearchPublicationsResponse
 import org.firstapproval.api.server.model.PublicationsResponse
+import org.firstapproval.api.server.model.SearchPublicationsResponse
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.config.security.userOrNull
@@ -37,7 +37,12 @@ class PublicationController(
         return ok().body(publicationService.getAllPublications(page, pageSize))
     }
 
-    override fun getUserPublications(username: String, status: PublicationStatus, page: Int, pageSize: Int): ResponseEntity<PublicationsResponse> {
+    override fun getUserPublications(
+        username: String,
+        status: PublicationStatus,
+        page: Int,
+        pageSize: Int
+    ): ResponseEntity<PublicationsResponse> {
         val user = userService.getPublicUserProfile(username)
         val publications = publicationService.getCreatorPublications(user, status, page, pageSize)
         return ok().body(publications)
@@ -73,8 +78,9 @@ class PublicationController(
                 .isLast(pageResult.isLast)
                 .items(
                     pageResult.map { elasticModel ->
-                        val dbModel = dbModels.first { it.id == elasticModel.id }
-                        elasticModel.toApiObject(dbModel.downloadsCount, dbModel.viewsCount)
+                        dbModels
+                            .first { it.id == elasticModel.id }
+                            .toApiObject(userService)
                     }.toList()
                 )
         )

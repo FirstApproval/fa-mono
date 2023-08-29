@@ -69,10 +69,7 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
             <img src={logo} />
           </Logo>
           <FlexHeaderRight>
-            <Button
-              variant="outlined"
-              size={'large'}
-              onClick={props.onSignInClick}>
+            <Button variant="outlined" onClick={props.onSignInClick}>
               Sign in
             </Button>
           </FlexHeaderRight>

@@ -52,7 +52,16 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
         </Avatar>
         <AuthorWrap>
           <AuthorName>
-            {firstName} {lastName}
+            {isConfirmed && (
+              <span style={{ textDecoration: 'underline' }}>
+                {firstName} {lastName}
+              </span>
+            )}
+            {!isConfirmed && (
+              <span>
+                {firstName} {lastName}
+              </span>
+            )}
           </AuthorName>
           <AuthorShortBio>
             {setEditAuthorVisible ? shortBio : email}

@@ -1,7 +1,5 @@
 package org.firstapproval.backend.core.domain.publication
 
-import org.firstapproval.api.server.model.*
-import org.firstapproval.backend.core.domain.ipfs.*
 import org.firstapproval.api.server.model.Author
 import org.firstapproval.api.server.model.Paragraph
 import org.firstapproval.api.server.model.PublicationEditRequest
@@ -38,13 +36,12 @@ import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.UUID
 import java.util.UUID.randomUUID
 import org.firstapproval.api.server.model.ConfirmedAuthor as ConfirmedAuthorApiObject
-import org.firstapproval.api.server.model.UnconfirmedAuthor as UnconfirmedAuthorApiObject
 import org.firstapproval.api.server.model.Publication as PublicationApiObject
 import org.firstapproval.api.server.model.PublicationStatus as PublicationStatusApiObject
-import org.firstapproval.api.server.model.AccessType as AccessTypeApiObject
+import org.firstapproval.api.server.model.UnconfirmedAuthor as UnconfirmedAuthorApiObject
 
 @Service
 class PublicationService(
@@ -113,11 +110,10 @@ class PublicationService(
                 }
                 val confirmedPublicationAuthors = confirmedAuthors.values.map { confirmedAuthor ->
                     ConfirmedAuthor(
-                        id = confirmedAuthor.id ?:
-                        randomUUID(),
-                        user =confirmedAuthorsById[confirmedAuthor.userId].require(),
-                        publication =publication,
-                        shortBio =confirmedAuthor.shortBio
+                        id = confirmedAuthor.id ?: randomUUID(),
+                        user = confirmedAuthorsById[confirmedAuthor.userId].require(),
+                        publication = publication,
+                        shortBio = confirmedAuthor.shortBio
                     )
                 }
                 publication.confirmedAuthors.clear()
@@ -245,7 +241,11 @@ class PublicationService(
 
     @Transactional(readOnly = true)
     fun getAllPublications(page: Int, pageSize: Int): PublicationsResponse {
-        val publicationsPage = publicationRepository.findAllByStatusAndAccessType(PUBLISHED, OPEN, PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime")))
+        val publicationsPage = publicationRepository.findAllByStatusAndAccessType(
+            PUBLISHED,
+            OPEN,
+            PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime"))
+        )
         return PublicationsResponse()
             .publications(publicationsPage.map { it.toApiObject(userService) }.toList())
             .isLastPage(publicationsPage.isLast)
@@ -313,30 +313,6 @@ fun Publication.toApiObject(userService: UserService) = PublicationApiObject().a
     publicationApiModel.downloadsCount = downloadsCount
     publicationApiModel.status = org.firstapproval.api.server.model.PublicationStatus.valueOf(status.name)
     publicationApiModel.accessType = org.firstapproval.api.server.model.AccessType.valueOf(accessType.name)
-    publicationApiModel.creationTime = creationTime.toOffsetDateTime()
-    publicationApiModel.negativeData = negativeData
-    publicationApiModel.isNegative = isNegative
-}
-
-fun PublicationElastic.toApiObject(viewCount: Long? = null, downloadsCount: Long? = null) = PublicationApiObject().also { publicationApiModel ->
-    publicationApiModel.id = id
-    publicationApiModel.title = title
-    publicationApiModel.description = description?.map { Paragraph(it) }
-    publicationApiModel.grantOrganizations = grantOrganizations?.map { Paragraph(it) }
-    publicationApiModel.primaryArticles = primaryArticles?.map { Paragraph(it) }
-    publicationApiModel.relatedArticles = relatedArticles?.map { Paragraph(it) }
-    publicationApiModel.tags = tags?.map { Paragraph(it) }
-    publicationApiModel.objectOfStudyTitle = objectOfStudyTitle
-    publicationApiModel.objectOfStudyDescription = objectOfStudyDescription?.map { Paragraph(it) }
-    publicationApiModel.software = software?.map { Paragraph(it) }
-    publicationApiModel.methodTitle = methodTitle
-    publicationApiModel.publicationTime = publicationTime?.toOffsetDateTime()
-    publicationApiModel.methodDescription = methodDescription?.map { Paragraph(it) }
-    publicationApiModel.predictedGoals = predictedGoals?.map { Paragraph(it) }
-    publicationApiModel.status = PublicationStatusApiObject.valueOf(status.name)
-    publicationApiModel.accessType = AccessTypeApiObject.valueOf(accessType.name)
-    publicationApiModel.downloadsCount = downloadsCount
-    publicationApiModel.viewsCount = viewCount
     publicationApiModel.creationTime = creationTime.toOffsetDateTime()
     publicationApiModel.negativeData = negativeData
     publicationApiModel.isNegative = isNegative

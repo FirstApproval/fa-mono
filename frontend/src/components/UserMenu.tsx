@@ -3,13 +3,14 @@ import { type ReactElement } from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { getInitials } from '../util/userUtil';
-import { Avatar, CircularProgress, IconButton } from '@mui/material';
+import { Avatar, Button, IconButton } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 import { userStore } from '../core/user';
 import { authStore } from '../core/auth';
 import { routerStore } from '../core/router';
 import { Page } from '../core/RouterStore';
 import { renderProfileImage } from '../fire-browser/utils';
+import styled from '@emotion/styled';
 
 export const UserMenu = observer((): ReactElement => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -24,7 +25,16 @@ export const UserMenu = observer((): ReactElement => {
   const { user } = userStore;
 
   if (!user) {
-    return <CircularProgress />;
+    return (
+      <ButtonWrap
+        variant="outlined"
+        onClick={() => {
+          routerStore.navigatePage(Page.SIGN_IN);
+        }}
+        size={'medium'}>
+        Sign in
+      </ButtonWrap>
+    );
   }
 
   return (
@@ -73,3 +83,8 @@ export const UserMenu = observer((): ReactElement => {
     </div>
   );
 });
+
+const ButtonWrap = styled(Button)`
+  width: 90px;
+  height: 36px;
+`;
