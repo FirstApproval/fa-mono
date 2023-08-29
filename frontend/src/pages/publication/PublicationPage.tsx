@@ -1,4 +1,9 @@
-import React, { type FunctionComponent, type ReactElement, useEffect, useState } from 'react';
+import React, {
+  type FunctionComponent,
+  type ReactElement,
+  useEffect,
+  useState
+} from 'react';
 import { Button, LinearProgress } from '@mui/material';
 import { FlexBodyCenter, FlexHeader, Logo, Parent } from '../common.styled';
 import { FileUploader } from '../../fire-browser/FileUploader';
@@ -16,7 +21,12 @@ import {
   TagsPlaceholder,
   SampleFilesPlaceholder
 } from './ContentPlaceholder';
-import { PublicationStore, SavingStatusState, type Section, ViewMode } from './store/PublicationStore';
+import {
+  PublicationStore,
+  SavingStatusState,
+  type Section,
+  ViewMode
+} from './store/PublicationStore';
 import { observer } from 'mobx-react-lite';
 import {
   DescriptionEditor,
@@ -56,11 +66,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
     () => new PublicationStore(publicationId, fs, sfs)
   );
 
-  const {
-    isLoading,
-    researchArea,
-    validate
-  } = publicationStore;
+  const { isLoading, researchArea, validate } = publicationStore;
 
   const validateSections = (): boolean => {
     const result = validate();
@@ -101,12 +107,12 @@ export const PublicationPage: FunctionComponent = observer(() => {
                   </DraftedBy>
                   {publicationStore.savingStatus ===
                     SavingStatusState.SAVING && (
-                      <SavingStatus>Saving...</SavingStatus>
-                    )}
+                    <SavingStatus>Saving...</SavingStatus>
+                  )}
                   {publicationStore.savingStatus ===
                     SavingStatusState.SAVED && (
-                      <SavingStatus>Saved</SavingStatus>
-                    )}
+                    <SavingStatus>Saved</SavingStatus>
+                  )}
                 </>
               )}
             </div>
@@ -114,7 +120,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
               {!publicationStore.isView && (
                 <>
                   <ButtonWrap
-                    variant='contained'
+                    variant="contained"
                     size={'medium'}
                     onClick={() => {
                       const isValid = validateSections();
@@ -130,8 +136,8 @@ export const PublicationPage: FunctionComponent = observer(() => {
                     Publish
                   </ButtonWrap>
                   <ButtonWrap
-                    marginRight='0px'
-                    variant='outlined'
+                    marginRight="0px"
+                    variant="outlined"
                     size={'medium'}
                     onClick={() => {
                       publicationStore.viewMode = nextViewMode;
@@ -184,11 +190,7 @@ const PublicationBody = observer(
     fs: ChonkyFileSystem;
     sfs: ChonkySampleFileSystem;
   }): ReactElement => {
-    const {
-      fs,
-      sfs,
-      publicationStore
-    } = props;
+    const { fs, sfs, publicationStore } = props;
 
     const {
       openExperimentGoals,
@@ -215,9 +217,7 @@ const PublicationBody = observer(
 
     return (
       <>
-        {publicationStore.isPreview && (
-          <DraftText />
-        )}
+        {publicationStore.isPreview && <DraftText />}
         {publicationStore.isView && (
           <DateViewsDownloads publicationStore={publicationStore} />
         )}
@@ -272,9 +272,7 @@ const PublicationBody = observer(
         )}
         {!tagsEnabled && <TagsPlaceholder onClick={openTags} />}
         {tagsEnabled && <TagsEditor publicationStore={publicationStore} />}
-        {publicationStore.isPreview && (
-          <DraftText />
-        )}
+        {publicationStore.isPreview && <DraftText />}
       </>
     );
   }
