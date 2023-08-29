@@ -5,6 +5,7 @@ import { Tab } from '@mui/material';
 export const Parent = styled.div`
   width: 100%;
   padding-bottom: 40px;
+  min-height: calc(100vh - 100px);
 `;
 
 export const FlexHeader = styled.div`
