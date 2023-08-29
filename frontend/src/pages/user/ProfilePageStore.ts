@@ -38,12 +38,18 @@ export class ProfilePageStore {
     username: string | null,
     status: PublicationStatus
   ): Promise<void> {
-    const publicationsResponse = await publicationService.getUserPublications(
-      username ?? userStore.user!.username,
-      status,
-      this.publicationsPageNum.get(status)!,
-      25
-    );
+    const publicationsResponse = username
+      ? await publicationService.getUserPublications(
+          username,
+          status,
+          this.publicationsPageNum.get(status)!,
+          20
+        )
+      : await publicationService.getMyPublications(
+          status,
+          this.publicationsPageNum.get(status)!,
+          20
+        );
     const publicationsData = publicationsResponse.data;
     const newPublicationArray = [
       ...(this.publications.get(status) ?? []),

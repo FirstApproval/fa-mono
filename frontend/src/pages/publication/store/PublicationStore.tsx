@@ -471,7 +471,6 @@ export class PublicationStore {
   }, EDIT_THROTTLE_MS);
 
   doUpdateIsNegativeData = _.throttle(async () => {
-    debugger;
     await publicationService.editPublication(this.publicationId, {
       isNegative: this.isNegative
     });

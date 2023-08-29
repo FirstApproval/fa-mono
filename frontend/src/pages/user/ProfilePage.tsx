@@ -60,7 +60,7 @@ export const ProfilePage: FunctionComponent = observer(() => {
     <LoadMorePublicationsButton
       disabled={store.publicationsLastPage.get(status)}
       onClick={async () => {
-        await store.load(store.user!.username, status);
+        await store.load(username, status);
       }}>
       Load more datasets
     </LoadMorePublicationsButton>
