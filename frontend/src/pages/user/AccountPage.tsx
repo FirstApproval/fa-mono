@@ -197,7 +197,7 @@ export const AccountPage: FunctionComponent = observer(() => {
     }
   };
 
-  const avatarImg = renderProfileImage(user.profileImage);
+  const avatarImg = renderProfileImage(editableUser.profileImage);
 
   return (
     <>
@@ -347,14 +347,16 @@ export const AccountPage: FunctionComponent = observer(() => {
                     <UploadPictureButton onClick={handleFileInputClick}>
                       Upload picture
                     </UploadPictureButton>
-                    <DeletePictureButton
-                      onClick={() => {
-                        editableUser.profileImage = undefined;
-                        userStore.deleteProfileImage = true;
-                        setSaveDisabled(false);
-                      }}>
-                      Delete
-                    </DeletePictureButton>
+                    {editableUser.profileImage && (
+                      <DeletePictureButton
+                        onClick={() => {
+                          editableUser.profileImage = undefined;
+                          userStore.deleteProfileImage = true;
+                          setSaveDisabled(false);
+                        }}>
+                        Delete
+                      </DeletePictureButton>
+                    )}
                   </RowElement>
                   <HeightElement value={'32px'}></HeightElement>
                   <NameElement>Name</NameElement>
