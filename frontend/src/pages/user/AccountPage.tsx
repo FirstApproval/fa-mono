@@ -157,7 +157,8 @@ export const AccountPage: FunctionComponent = observer(() => {
           username,
           selfInfo: editableUser.selfInfo,
           middleName: editableUser.middleName,
-          profileImage: editableUser.profileImage
+          profileImage: editableUser.profileImage,
+          deleteProfileImage: userStore.deleteProfileImage
         })
         .then(() => {
           setSaveDisabled(true);
@@ -190,8 +191,9 @@ export const AccountPage: FunctionComponent = observer(() => {
       editableUser.profileImage = fileString.substring(
         fileString.indexOf(',') + 1
       );
-      user.profileImage = fileString;
-      await updateUserInfo();
+      editableUser.profileImage = fileString;
+      userStore.deleteProfileImage = false;
+      setSaveDisabled(false);
     }
   };
 
@@ -345,6 +347,14 @@ export const AccountPage: FunctionComponent = observer(() => {
                     <UploadPictureButton onClick={handleFileInputClick}>
                       Upload picture
                     </UploadPictureButton>
+                    <DeletePictureButton
+                      onClick={() => {
+                        editableUser.profileImage = undefined;
+                        userStore.deleteProfileImage = true;
+                        setSaveDisabled(false);
+                      }}>
+                      Delete
+                    </DeletePictureButton>
                   </RowElement>
                   <HeightElement value={'32px'}></HeightElement>
                   <NameElement>Name</NameElement>
@@ -564,6 +574,20 @@ export const UploadPictureButton = styled(Button)`
 
   border-radius: 4px;
   border: 1px solid var(--inherit-text-primary-main, #040036);
+`;
+
+export const DeletePictureButton = styled(Button)`
+  color: var(--inherit-text-primary-main, #040036);
+
+  /* components/button-medium */
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px; /* 150% */
+  letter-spacing: 0.4px;
+
+  margin-left: 16px;
 `;
 
 export const SaveButton = styled(Button)`

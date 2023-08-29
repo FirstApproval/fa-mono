@@ -295,7 +295,8 @@ class UserService(
         lastName: String,
         username: String,
         selfInfo: String?,
-        profileImage: ByteArray?
+        profileImage: ByteArray?,
+        deleteProfileImage: Boolean
     ) {
         val userFromDb = userRepository.findByUsername(username)
         if (userFromDb != null && userFromDb.id != id) throw RecordConflictException("username already taken")
@@ -305,7 +306,10 @@ class UserService(
         user.lastName = lastName
         user.username = username
         user.selfInfo = selfInfo
-        if (profileImage != null) {
+        if (deleteProfileImage && user.profileImage != null) {
+            fileStorageService.delete(PROFILE_IMAGES, fromString(user.profileImage))
+            user.profileImage = null
+        } else if (profileImage != null) {
             user.profileImage = saveOrUpdateImage(profileImage, user.profileImage, profileImage.size.toLong())
         }
         userRepository.save(user)

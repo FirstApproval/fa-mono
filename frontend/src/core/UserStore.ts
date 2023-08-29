@@ -6,6 +6,7 @@ import { authStore } from './auth';
 export class UserStore {
   user: GetMeResponse | undefined = undefined;
   editableUser: GetMeResponse | undefined = undefined;
+  deleteProfileImage = false;
 
   constructor() {
     makeAutoObservable(this);

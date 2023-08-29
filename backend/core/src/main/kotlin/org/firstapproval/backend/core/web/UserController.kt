@@ -1,12 +1,17 @@
 package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.UserApi
-import org.firstapproval.api.server.model.*
+import org.firstapproval.api.server.model.AuthorizeResponse
+import org.firstapproval.api.server.model.ChangeEmailConfirmationRequest
+import org.firstapproval.api.server.model.ChangeEmailRequest
+import org.firstapproval.api.server.model.ChangeEmailResponse
+import org.firstapproval.api.server.model.GetMeResponse
 import org.firstapproval.api.server.model.OauthType
 import org.firstapproval.api.server.model.PasswordChangeRequest
 import org.firstapproval.api.server.model.PasswordResetRequest
 import org.firstapproval.api.server.model.RequestPasswordResetRequest
 import org.firstapproval.api.server.model.SetPasswordRequest
+import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.api.server.model.UserUpdateRequest
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.JwtService
@@ -44,7 +49,8 @@ class UserController(
                 .email(user.email)
                 .username(user.username)
                 .selfInfo(user.selfInfo)
-                .profileImage(userService.getProfileImage(user.profileImage)))
+                .profileImage(userService.getProfileImage(user.profileImage))
+        )
     }
 
     override fun getUserInfoByUsername(username: String): ResponseEntity<UserInfo> {
@@ -58,7 +64,8 @@ class UserController(
                 .email(user.email)
                 .username(user.username)
                 .selfInfo(user.selfInfo)
-                .profileImage(userService.getProfileImage(user.profileImage)))
+                .profileImage(userService.getProfileImage(user.profileImage))
+        )
     }
 
     override fun requestPasswordReset(requestPasswordResetRequest: RequestPasswordResetRequest): ResponseEntity<Void> {
@@ -147,7 +154,8 @@ class UserController(
             lastName = request.lastName,
             username = request.username,
             selfInfo = request.selfInfo,
-            profileImage = request.profileImage
+            profileImage = request.profileImage,
+            deleteProfileImage = request.deleteProfileImage
         )
         return ok().build()
     }

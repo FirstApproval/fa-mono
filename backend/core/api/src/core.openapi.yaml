@@ -1651,6 +1651,8 @@ components:
           type: string
           format: byte
           maxLength: 2097152
+        deleteProfileImage:
+          type: boolean
       required:
         - firstName
         - lastName
