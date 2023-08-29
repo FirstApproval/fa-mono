@@ -237,6 +237,7 @@ export class PublicationStore {
         edited: true
       }
     });
+    this.setAuthorNames();
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
@@ -272,6 +273,7 @@ export class PublicationStore {
         edited: true
       }
     });
+    this.setAuthorNames();
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
@@ -565,6 +567,44 @@ export class PublicationStore {
     void this.doUpdateNegativeData();
   }
 
+  downloadFiles(): void {
+    void this.doDownloadFiles();
+  }
+
+  downloadSampleFiles(): void {
+    void this.doDownloadSampleFiles();
+  }
+
+  doDownloadFiles = _.throttle(async () => {
+    const link = await publicationService.getDownloadLink(this.publicationId);
+    const downloadLink = document.createElement('a');
+    downloadLink.href = link.data;
+    downloadLink.download = this.title + '_files.zip';
+    downloadLink.style.display = 'none';
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  }, EDIT_THROTTLE_MS);
+
+  doDownloadSampleFiles = _.throttle(async () => {
+    const downloadLink = document.createElement('a');
+    downloadLink.href = `/api/publication/${this.publicationId}/files/sample/download`;
+    downloadLink.download = this.title + '_files.zip';
+    downloadLink.style.display = 'none';
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  }, EDIT_THROTTLE_MS);
+
+  copyPublicationLinkToClipboard = async (): Promise<void> => {
+    const text = window.location.host + '/publication/' + this.publicationId;
+    if ('clipboard' in navigator) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      document.execCommand('copy', true, text);
+    }
+  };
+
   doUpdateNegativeData = _.throttle(async () => {
     await publicationService.editPublication(this.publicationId, {
       negativeData: {
@@ -753,6 +793,21 @@ export class PublicationStore {
     return result;
   };
 
+  setAuthorNames = (): void => {
+    const confirmedAuthorNames =
+      this.confirmedAuthors.map<PublicationAuthorName>((author) => ({
+        userName: author.user.username,
+        firstName: author.user.firstName,
+        lastName: author.user.lastName
+      }));
+    const unconfirmedAuthorNames =
+      this.unconfirmedAuthors.map<PublicationAuthorName>((author) => ({
+        firstName: author.firstName,
+        lastName: author.lastName
+      }));
+    this.authorNames = [...confirmedAuthorNames, ...unconfirmedAuthorNames];
+  };
+
   private loadInitialState(): void {
     void publicationService
       .getPublication(this.publicationId)
@@ -838,21 +893,7 @@ export class PublicationStore {
             this.downloadsCount = publication.downloadsCount;
           }
 
-          const confirmedAuthorNames =
-            this.confirmedAuthors.map<PublicationAuthorName>((author) => ({
-              userName: author.user.username,
-              firstName: author.user.firstName,
-              lastName: author.user.lastName
-            }));
-          const unconfirmedAuthorNames =
-            this.unconfirmedAuthors.map<PublicationAuthorName>((author) => ({
-              firstName: author.firstName,
-              lastName: author.lastName
-            }));
-          this.authorNames = [
-            ...confirmedAuthorNames,
-            ...unconfirmedAuthorNames
-          ];
+          this.setAuthorNames();
 
           if (this.fs.files.length > 0) {
             this.filesEnabled = true;
