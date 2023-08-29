@@ -46,5 +46,5 @@ const ContentWrap = styled.div`
   font-style: normal;
   font-weight: 700;
   line-height: 116.7%;
-  margin-bottom: 48px;
+  margin-bottom: 24px;
 `;

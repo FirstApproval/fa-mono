@@ -62,6 +62,7 @@ export class PublicationStore {
   software: ParagraphWithId[] = [];
   confirmedAuthors: ConfirmedAuthor[] = [];
   unconfirmedAuthors: UnconfirmedAuthor[] = [];
+  authorNames: PublicationAuthorName[] = [];
   grantingOrganizations: ParagraphWithId[] = [];
   relatedArticles: ParagraphWithId[] = [];
   primaryArticles: Paragraph[] = [];
@@ -86,6 +87,12 @@ export class PublicationStore {
   get isReadonly(): boolean {
     return (
       this.viewMode === ViewMode.PREVIEW || this.viewMode === ViewMode.VIEW
+    );
+  }
+
+  get isPreview(): boolean {
+    return (
+      this.viewMode === ViewMode.PREVIEW
     );
   }
 
@@ -730,6 +737,22 @@ export class PublicationStore {
           if (publication.unconfirmedAuthors?.length) {
             this.unconfirmedAuthors = publication.unconfirmedAuthors || [];
           }
+
+          const confirmedAuthorNames = this.confirmedAuthors.map<PublicationAuthorName>(
+            (author) => ({
+                userName: author.user.username,
+                firstName: author.user.firstName,
+                lastName: author.user.lastName
+              }
+            ));
+          const unconfirmedAuthorNames = this.unconfirmedAuthors.map<PublicationAuthorName>(
+            (author) => ({
+                firstName: author.firstName,
+                lastName: author.lastName
+              }
+            ));
+          this.authorNames = [...confirmedAuthorNames, ...unconfirmedAuthorNames];
+
           if (this.fs.files.length > 0) {
             this.filesEnabled = true;
           }
@@ -772,4 +795,10 @@ export enum SavingStatusState {
   SAVED,
   SAVING,
   PREVIEW
+}
+
+export interface PublicationAuthorName {
+  'userName'?: string;
+  'firstName': string;
+  'lastName': string;
 }
