@@ -70,6 +70,10 @@ export const ProfilePage: FunctionComponent = observer(() => {
     return <CircularProgress />;
   }
 
+  if (username && user.id === userStore.user?.id) {
+    routerStore.navigatePage(Page.PROFILE, '/profile');
+  }
+
   const lastNameAndFirstName = `${user.lastName ?? ''} ${user.firstName ?? ''}`;
   const notEmpty = (publications: Publication[]): boolean => {
     return publications && publications.length > 0;

@@ -191,7 +191,6 @@ export const AccountPage: FunctionComponent = observer(() => {
       editableUser.profileImage = fileString.substring(
         fileString.indexOf(',') + 1
       );
-      editableUser.profileImage = fileString;
       userStore.deleteProfileImage = false;
       setSaveDisabled(false);
     }
