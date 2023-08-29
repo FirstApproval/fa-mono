@@ -252,22 +252,6 @@ export const AccountPage: FunctionComponent = observer(() => {
                   </Menu>
                 </>
               </SpaceBetween>
-              <HeightElement value={'27px'}></HeightElement>
-              <RowElement>
-                <Avatar src={avatarImg} sx={{ width: 100, height: 100 }}>
-                  {getInitials(user.firstName, user.lastName)}
-                </Avatar>
-                <input
-                  type="file"
-                  ref={hiddenFileInput}
-                  onChange={handleFileChange}
-                  hidden={true}
-                  accept={'image/jpeg,image/png'}
-                />
-                <UploadPictureButton onClick={handleFileInputClick}>
-                  Upload picture
-                </UploadPictureButton>
-              </RowElement>
               <HeightElement value={'40px'}></HeightElement>
               <Tabs
                 value={tabNumber}
@@ -347,6 +331,22 @@ export const AccountPage: FunctionComponent = observer(() => {
               )}
               {tabNumber === 1 && (
                 <TabContainer>
+                  <RowElement>
+                    <Avatar src={avatarImg} sx={{ width: 100, height: 100 }}>
+                      {getInitials(user.firstName, user.lastName)}
+                    </Avatar>
+                    <input
+                      type="file"
+                      ref={hiddenFileInput}
+                      onChange={handleFileChange}
+                      hidden={true}
+                      accept={'image/jpeg,image/png'}
+                    />
+                    <UploadPictureButton onClick={handleFileInputClick}>
+                      Upload picture
+                    </UploadPictureButton>
+                  </RowElement>
+                  <HeightElement value={'32px'}></HeightElement>
                   <NameElement>Name</NameElement>
                   <FullWidthTextField
                     value={editableUser.firstName}
