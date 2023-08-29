@@ -122,14 +122,21 @@ export const MethodEditor = observer((props: EditorProps): ReactElement => {
   return (
     <ContentEditorWrap>
       <LabelWrap>Method</LabelWrap>
-      <FullWidthTextField
-        autoFocus
-        value={props.publicationStore.methodTitle}
-        onChange={(event) => {
-          props.publicationStore.updateMethodTitle(event.currentTarget.value);
-        }}
-        placeholder={'Method name'}
-      />
+      {!props.publicationStore.isReadonly && (
+        <FullWidthTextField
+          autoFocus
+          value={props.publicationStore.methodTitle}
+          onChange={(event) => {
+            props.publicationStore.updateMethodTitle(event.currentTarget.value);
+          }}
+          placeholder={'Method name'}
+        />
+      )}
+      {props.publicationStore.isReadonly && (
+        <ReadonlyContentPlaceholderWrap>
+          {props.publicationStore.methodTitle}
+        </ReadonlyContentPlaceholderWrap>
+      )}
       <ParagraphElementWrap
         isReadonly={props.publicationStore.isReadonly}
         value={props.publicationStore.method}
@@ -156,16 +163,23 @@ export const ObjectOfStudyEditor = observer(
     return (
       <ContentEditorWrap>
         <LabelWrap>Object of study</LabelWrap>
-        <FullWidthTextField
-          autoFocus
-          value={props.publicationStore.objectOfStudyTitle}
-          onChange={(event) => {
-            props.publicationStore.updateObjectOfStudyTitle(
-              event.currentTarget.value
-            );
-          }}
-          placeholder={'Object category'}
-        />
+        {!props.publicationStore.isReadonly && (
+          <FullWidthTextField
+            autoFocus
+            value={props.publicationStore.objectOfStudyTitle}
+            onChange={(event) => {
+              props.publicationStore.updateObjectOfStudyTitle(
+                event.currentTarget.value
+              );
+            }}
+            placeholder={'Object category'}
+          />
+        )}
+        {props.publicationStore.isReadonly && (
+          <ReadonlyContentPlaceholderWrap>
+            {props.publicationStore.objectOfStudyTitle}
+          </ReadonlyContentPlaceholderWrap>
+        )}
         <ParagraphElementWrap
           isReadonly={props.publicationStore.isReadonly}
           value={props.publicationStore.objectOfStudy}
@@ -367,5 +381,22 @@ const FullWidthInput = styled(Input)`
 
 const FullWidthTextField = styled(TextField)`
   width: 100%;
+  margin-bottom: 32px;
+`;
+
+const ReadonlyContentPlaceholderWrap = styled.div`
+  display: inline-flex;
+  padding: 8px 16px;
+  align-items: center;
+
+  border-radius: 4px;
+  background: var(--grey-50, #f8f7fa);
+
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+
+  width: 100%;
+
   margin-bottom: 32px;
 `;

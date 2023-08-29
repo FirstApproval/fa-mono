@@ -80,7 +80,7 @@ export const PrimaryArticleData = observer(
             setDialogArticleIndex(null);
             setAddPrimaryArticleOpened(true);
           }}>
-          {props.value.length === 0 && (
+          {!props.isReadOnly && props.value.length === 0 && (
             <span>
               Published elsewhere? Provide the primary article based on this
               dataset.
