@@ -37,8 +37,9 @@ import { UserMenu } from '../../components/UserMenu';
 import { Page } from '../../core/RouterStore';
 import { ValidationDialog } from './ValidationDialog';
 import { incrementPublicationViewCounter } from './SeenPublicationService';
-import { DraftText } from './editors/DraftText';
-import { Authors } from './editors/Authors';
+import { DraftText } from './DraftText';
+import { Authors } from './Authors';
+import { DateViewsDownloads } from './DateViewsDownloads';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -207,6 +208,9 @@ const PublicationBody = observer(
       <>
         {publicationStore.isPreview && (
           <DraftText />
+        )}
+        {publicationStore.isView && (
+          <DateViewsDownloads publicationStore={publicationStore} />
         )}
         <div style={{ height: '16px' }}></div>
         <TitleEditor publicationStore={publicationStore} />

@@ -70,6 +70,10 @@ export class PublicationStore {
   isNegative = false;
   negativeData = '';
 
+  publicationTime: Date = new Date();
+  viewsCount: number = 0;
+  downloadsCount: number = 0;
+
   constructor(readonly publicationId: string, readonly fs: ChonkyFileSystem) {
     makeAutoObservable(this);
     this.addDescriptionParagraph(0);
@@ -736,6 +740,15 @@ export class PublicationStore {
           }
           if (publication.unconfirmedAuthors?.length) {
             this.unconfirmedAuthors = publication.unconfirmedAuthors || [];
+          }
+          if (publication.publicationTime) {
+            this.publicationTime = new Date(publication.publicationTime);
+          }
+          if (publication.viewsCount) {
+            this.viewsCount = publication.viewsCount;
+          }
+          if (publication.downloadsCount) {
+            this.downloadsCount = publication.downloadsCount;
           }
 
           const confirmedAuthorNames = this.confirmedAuthors.map<PublicationAuthorName>(

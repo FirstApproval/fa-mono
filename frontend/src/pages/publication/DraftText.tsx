@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
-import lock from '../asset/lock.svg';
+import lock from './asset/lock.svg';
 
 export const DraftText = observer(
   (): ReactElement => {
