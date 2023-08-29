@@ -58,6 +58,7 @@ import { Authors } from './Authors';
 import { DateViewsDownloads } from './DateViewsDownloads';
 import { ChonkySampleFileSystem } from '../../fire-browser/sample-files/ChonkySampleFileSystem';
 import { SampleFileUploader } from '../../fire-browser/sample-files/SampleFileUploader';
+import { authStore } from '../../core/auth';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -257,7 +258,13 @@ const PublicationBody = observer(
                 }}>
                 <DownloadFilesButtonWrap
                   variant="outlined"
-                  onClick={() => publicationStore.downloadFiles()}
+                  onClick={() => {
+                    if (authStore.token) {
+                      publicationStore.downloadFiles();
+                    } else {
+                      routerStore.navigatePage(Page.SIGN_UP);
+                    }
+                  }}
                   size={'medium'}>
                   <img src={download} style={{ marginRight: '8px' }} /> Download
                 </DownloadFilesButtonWrap>
