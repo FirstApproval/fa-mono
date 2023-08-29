@@ -3,6 +3,7 @@ import method from './asset/method.svg';
 import object_of_study from './asset/object_of_study.svg';
 import software from './asset/software.svg';
 import files from './asset/files.svg';
+import sample_files from './asset/sample_files.svg';
 import authors from './asset/authors.svg';
 import granting_organizations from './asset/granting_organizations.svg';
 import related_articles from './asset/related_articles.svg';
@@ -36,6 +37,10 @@ export const SoftwareIcon = (): ReactElement => {
 
 export const FilesIcon = (): ReactElement => {
   return <img src={files} />;
+};
+
+export const SampleFilesIcon = (): ReactElement => {
+  return <img src={sample_files} />;
 };
 
 export const AuthorsIcon = (): ReactElement => {

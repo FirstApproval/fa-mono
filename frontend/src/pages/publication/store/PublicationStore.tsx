@@ -12,6 +12,7 @@ import {
 import { type ChonkyFileSystem } from '../../../fire-browser/ChonkyFileSystem';
 import { v4 as uuidv4 } from 'uuid';
 import { type AuthorEditorStore } from './AuthorEditorStore';
+import { type ChonkySampleFileSystem } from '../../../fire-browser/sample-files/ChonkySampleFileSystem';
 
 const EDIT_THROTTLE_MS = 1000;
 
@@ -23,6 +24,7 @@ export type Section =
   | 'method'
   | 'object_of_study'
   | 'files'
+  | 'sample_files'
   | 'tags';
 
 export enum ViewMode {
@@ -45,6 +47,7 @@ export class PublicationStore {
   objectOfStudyEnabled = false;
   softwareEnabled = false;
   filesEnabled = false;
+  sampleFilesEnabled = false;
   authorsEnabled = false;
   grantingOrganizationsEnabled = false;
   relatedArticlesEnabled = false;
@@ -74,7 +77,11 @@ export class PublicationStore {
   viewsCount: number = 0;
   downloadsCount: number = 0;
 
-  constructor(readonly publicationId: string, readonly fs: ChonkyFileSystem) {
+  constructor(
+    readonly publicationId: string,
+    readonly fs: ChonkyFileSystem,
+    readonly sfs: ChonkySampleFileSystem
+  ) {
     makeAutoObservable(this);
     this.addDescriptionParagraph(0);
     reaction(
@@ -676,6 +683,10 @@ export class PublicationStore {
     this.filesEnabled = true;
   };
 
+  openSampleFiles = (): void => {
+    this.sampleFilesEnabled = true;
+  };
+
   openAuthors = (): void => {
     this.authorsEnabled = true;
   };
@@ -731,6 +742,9 @@ export class PublicationStore {
     // TODO buggy check, fix (checks files in current dir, not in root)
     if (this.fs.files.length === 0) {
       result.push('files');
+    }
+    if (this.sfs.files.length === 0) {
+      result.push('sample_files');
     }
     if (this.tags.size === 0) {
       result.push('tags');
@@ -843,6 +857,9 @@ export class PublicationStore {
           if (this.fs.files.length > 0) {
             this.filesEnabled = true;
           }
+          if (this.sfs.files.length > 0) {
+            this.sampleFilesEnabled = true;
+          }
           if (publication.negativeData?.length) {
             this.negativeData = publication.negativeData ?? '';
           }
@@ -863,6 +880,7 @@ export class PublicationStore {
             this.objectOfStudyEnabled = true;
             this.softwareEnabled = true;
             this.filesEnabled = true;
+            this.sampleFilesEnabled = true;
             this.authorsEnabled = true;
             this.grantingOrganizationsEnabled = true;
             this.relatedArticlesEnabled = true;

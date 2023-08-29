@@ -5,6 +5,7 @@ import {
   FileApi,
   PublicationApi,
   RegistrationApi,
+  SampleFileApi,
   UserApi
 } from '../apis/first-approval-api';
 import { authStore } from './auth';
@@ -28,5 +29,7 @@ export const authorService = new AuthorApi(configuration);
 export const authService = new AuthApi(configuration);
 
 export const fileService = new FileApi(configuration);
+
+export const sampleFileService = new SampleFileApi(configuration);
 
 export const publicationService = new PublicationApi(configuration);

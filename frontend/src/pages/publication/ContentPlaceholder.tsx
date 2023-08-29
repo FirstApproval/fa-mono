@@ -8,6 +8,7 @@ import {
   ObjectOfStudyIcon,
   PredictedGoalsIcon,
   RelatedArticlesIcon,
+  SampleFilesIcon,
   SoftwareIcon,
   SummaryIcon,
   TagsIcon,
@@ -21,6 +22,7 @@ interface PlaceholderProps {
 interface ContentPlaceholderProps {
   onClick?: () => void;
   text: string;
+  description?: string;
   icon: ReactElement;
 }
 
@@ -98,6 +100,21 @@ export const FilesPlaceholder = (props: PlaceholderProps): ReactElement => {
   );
 };
 
+export const SampleFilesPlaceholder = (
+  props: PlaceholderProps
+): ReactElement => {
+  return (
+    <ContentPlaceholder
+      onClick={props.onClick}
+      text={'Sample Files | optional'}
+      description={
+        'Give others a "sneak peek" into your files without committing to a full download - provide a sample/preview file(s)'
+      }
+      icon={<SampleFilesIcon />}
+    />
+  );
+};
+
 export const AuthorsPlaceholder = (props: PlaceholderProps): ReactElement => {
   return (
     <ContentPlaceholder
@@ -148,7 +165,12 @@ export const ContentPlaceholder = (
   return (
     <ContentPlaceholderWrap tabIndex={0} onClick={props.onClick}>
       <FlexWrap>{props.icon} </FlexWrap>
-      <LabelWrap>{props.text}</LabelWrap>
+      <TextWrap>
+        <LabelWrap>{props.text}</LabelWrap>
+        {props.description && (
+          <DescriptionWrap>{props.description}</DescriptionWrap>
+        )}
+      </TextWrap>
     </ContentPlaceholderWrap>
   );
 };
@@ -160,7 +182,7 @@ const FlexWrap = styled.div`
 
 const ContentPlaceholderWrap = styled.div`
   display: flex;
-  align-items: center;
+  align-items: start;
   padding: 8px 16px;
   margin-bottom: 8px;
   &:hover {
@@ -179,5 +201,19 @@ const LabelWrap = styled.div`
   font-style: normal;
   font-weight: 500;
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
+  margin-left: 8px;
+`;
+
+const DescriptionWrap = styled.div`
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  color: var(--text-disabled, rgba(4, 0, 54, 0.38));
+  margin-left: 8px;
+`;
+
+const TextWrap = styled.div`
+  display: flex;
+  flex-direction: column;
   margin-left: 8px;
 `;
