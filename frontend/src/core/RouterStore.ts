@@ -88,6 +88,12 @@ export class RouterStore {
       const authType = pathToOauthType[path] ?? undefined;
       const authCode = queryParams.get('code') ?? undefined;
 
+      if (path.startsWith('/sign_in')) {
+        authStore.token = undefined;
+        this.navigatePage(Page.SIGN_IN, path, true);
+        return;
+      }
+
       if (path.startsWith('/registration-confirmation')) {
         authStore.token = undefined;
         this.navigatePage(Page.EMAIL_VERIFICATION, path, true);
