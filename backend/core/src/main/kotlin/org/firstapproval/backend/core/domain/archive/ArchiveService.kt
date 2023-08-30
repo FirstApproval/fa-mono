@@ -1,6 +1,5 @@
 package org.firstapproval.backend.core.domain.archive
 
-import co.elastic.clients.elasticsearch._types.aggregations.AdjacencyMatrixBucket
 import mu.KotlinLogging.logger
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import net.lingala.zip4j.io.outputstream.ZipOutputStream
