@@ -18,7 +18,6 @@ export const TitleEditor = observer((props: EditorProps) => {
       onChange={(e) => {
         publicationStore.updateTitle(e.currentTarget.value);
       }}
-      multiline
       autoComplete={'off'}
       variant={'standard'}
       placeholder={'Title'}
