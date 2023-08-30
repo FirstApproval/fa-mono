@@ -783,9 +783,6 @@ export class PublicationStore {
     if (this.fs.files.length === 0) {
       result.push('files');
     }
-    if (this.sfs.files.length === 0) {
-      result.push('sample_files');
-    }
     if (this.tags.size === 0) {
       result.push('tags');
     }
