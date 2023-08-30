@@ -154,7 +154,8 @@ class ArchiveService(
                 fileStorageService.save(
                     ARCHIVED_PUBLICATION_FILES,
                     publication.id.toString(),
-                    tempArchive.inputStream()
+                    tempArchive.inputStream(),
+                    tempArchive.length()
                 )
             }
             tempArchive.delete()
@@ -220,6 +221,7 @@ class ArchiveService(
                     ARCHIVED_PUBLICATION_SAMPLE_FILES,
                     publication.id.toString(),
                     tempArchive.inputStream(),
+                    tempArchive.length()
                 )
             }
             tempArchive.delete()
