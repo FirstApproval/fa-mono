@@ -10,6 +10,7 @@ import org.firstapproval.backend.core.domain.user.UserRepository
 import org.firstapproval.backend.core.domain.user.UserService
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
+import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
@@ -31,7 +32,7 @@ class AuthorController(
     }
 
     override fun getTopAuthors(page: Int, pageSize: Int): ResponseEntity<TopAuthorsResponse> {
-        val authorsPage = userRepository.findAll(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "creationTime")))
+        val authorsPage = userRepository.findAll(PageRequest.of(page, pageSize, Sort.by(DESC, "viewsCount")))
         return ok(
             TopAuthorsResponse()
                 .authors(authorsPage.map { it.toAuthor(userService) }.toList())

@@ -31,4 +31,5 @@ class User(
     var selfInfo: String? = null,
     var profileImage: String? = null,
     var creationTime: ZonedDateTime = now(),
+    var viewsCount: Long = 0,
 )

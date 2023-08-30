@@ -175,6 +175,7 @@ class PublicationService(
     fun incrementViewCount(id: UUID) {
         val publication = publicationRepository.getReferenceById(id)
         publication.viewsCount += 1
+        publication.creator.viewsCount += 1
     }
 
     @Transactional
