@@ -1,5 +1,6 @@
 package org.firstapproval.backend.core.domain.archive
 
+import co.elastic.clients.elasticsearch._types.aggregations.AdjacencyMatrixBucket
 import mu.KotlinLogging.logger
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import net.lingala.zip4j.io.outputstream.ZipOutputStream
@@ -27,6 +28,7 @@ import org.springframework.transaction.support.TransactionTemplate
 import java.io.File
 import java.io.File.createTempFile
 import java.io.FileOutputStream
+import java.io.InputStream
 import java.lang.StringBuilder
 import java.nio.file.Files
 import java.time.ZonedDateTime.now
@@ -151,14 +153,10 @@ class ArchiveService(
             zipOutputStream.close()
             fileOutputStream.close()
             if (err == null) {
-                fileStorageService.save(
-                    ARCHIVED_PUBLICATION_FILES,
-                    publication.id.toString(),
-                    tempArchive.inputStream(),
-                    tempArchive.length()
-                )
+                saveArchiveToS3(ARCHIVED_PUBLICATION_FILES, publication.id.toString(), tempArchive)
+            } else {
+                tempArchive.delete()
             }
-            tempArchive.delete()
         }
         return filesIds
     }
@@ -217,14 +215,21 @@ class ArchiveService(
             zipOutputStream.close()
             fileOutputStream.close()
             if (err == null) {
-                fileStorageService.save(
-                    ARCHIVED_PUBLICATION_SAMPLE_FILES,
-                    publication.id.toString(),
-                    tempArchive.inputStream(),
-                    tempArchive.length()
-                )
+                saveArchiveToS3(ARCHIVED_PUBLICATION_SAMPLE_FILES, publication.id.toString(), tempArchive)
+            } else {
+                tempArchive.delete()
             }
-            tempArchive.delete()
+        }
+    }
+
+    private fun saveArchiveToS3(bucket: String, id: String, file: File) {
+        try {
+            file.inputStream().use { fileStorageService.save(bucket, id, it, file.length()) }
+        } catch (ex: Exception) {
+            log.error(ex) { "s3 persistence error" }
+            throw ex
+        } finally {
+            file.delete()
         }
     }
 
