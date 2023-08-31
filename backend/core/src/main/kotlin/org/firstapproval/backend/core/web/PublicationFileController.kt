@@ -98,8 +98,8 @@ class PublicationFileController(
         return ok(DownloadTokenResponse(publicationFileService.getTokenToRetrieveDownloadLink(authHolderService.user, fileId)))
     }
 
-    override fun getDownloadLinkForPublicationFile(downloadLinkRequest: DownloadLinkRequest): ResponseEntity<DownloadLinkResponse> {
-        return ok(DownloadLinkResponse(publicationFileService.getDownloadLink(downloadLinkRequest.token)))
+    override fun getDownloadLinkForPublicationFile(downloadLinkRequest: DownloadLinkRequest): ResponseEntity<String> {
+        return ok(publicationFileService.getDownloadLink(downloadLinkRequest.token))
     }
 
     override fun deleteFiles(deleteByIdsRequest: DeleteByIdsRequest): ResponseEntity<Void> {

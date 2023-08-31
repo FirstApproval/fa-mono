@@ -1,6 +1,7 @@
 package org.firstapproval.backend.core.domain.publication
 
 import org.firstapproval.api.server.model.Author
+import org.firstapproval.api.server.model.DownloadLinkResponse
 import org.firstapproval.api.server.model.Paragraph
 import org.firstapproval.api.server.model.PublicationEditRequest
 import org.firstapproval.api.server.model.PublicationsResponse
@@ -213,13 +214,15 @@ class PublicationService(
         }
     }
 
-    fun getDownloadLink(user: User, publicationId: UUID): String {
+    fun getDownloadLink(user: User, publicationId: UUID): DownloadLinkResponse {
         val publication = publicationRepository.getReferenceById(publicationId)
         if (publication.status != PUBLISHED && publication.accessType != OPEN) {
             throw IllegalArgumentException()
         }
         val downloadToken = tokenService.generateDownloadPublicationArchiveToken(user.id.toString(), publicationId.toString())
-        return "${frontendProperties.url}/api/publication/files/download?downloadToken=$downloadToken"
+        val link = "${frontendProperties.url}/api/publication/files/download?downloadToken=$downloadToken"
+        val passcode = publication.archivePassword
+        return DownloadLinkResponse(link, passcode)
     }
 
     private fun getPublicationAndCheckStatus(id: UUID, status: PublicationStatus): Publication {

@@ -72,6 +72,7 @@ export class PublicationStore {
   tags = new Set<string>();
   isNegative = false;
   negativeData = '';
+  passcode = '';
 
   publicationTime: Date = new Date();
   viewsCount: number = 0;
@@ -576,9 +577,12 @@ export class PublicationStore {
   }
 
   doDownloadFiles = _.throttle(async () => {
-    const link = await publicationService.getDownloadLink(this.publicationId);
+    const response = await publicationService.getDownloadLink(
+      this.publicationId
+    );
+    this.passcode = response.data.passcode;
     const downloadLink = document.createElement('a');
-    downloadLink.href = link.data;
+    downloadLink.href = response.data.link;
     downloadLink.download = this.title + '_files.zip';
     downloadLink.style.display = 'none';
     document.body.appendChild(downloadLink);

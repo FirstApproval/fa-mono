@@ -73,3 +73,9 @@ export const CustomTab = styled(Tab)`
   line-height: 26px; /* 144.444% */
   letter-spacing: 0.46px;
 `;
+
+export const ColumnElement = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+`;
