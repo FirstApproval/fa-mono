@@ -15,6 +15,7 @@ export enum Page {
 
   PUBLICATION,
   SHARING_OPTIONS,
+  PDF,
 
   PROFILE,
   ACCOUNT,
@@ -120,6 +121,10 @@ export class RouterStore {
       }
       if (path.startsWith('/p/')) {
         this.navigatePage(Page.PROFILE, path, true);
+        return;
+      }
+      if (path.startsWith('/pdf')) {
+        this.navigatePage(Page.PDF, path, true);
         return;
       }
 

@@ -25,6 +25,7 @@ import { AccountPage } from './pages/user/AccountPage';
 import { ResetPasswordPage } from './pages/restore/set-password/RestorePasswordPage';
 import { SharingOptionsPage } from './pages/publication/SharingOptionsPage';
 import { EnterSelfInfoPage } from './pages/signup/EnterSelfInfo';
+import { PdfPage } from './pages/publication/PdfPage';
 
 const App: FunctionComponent = observer(() => {
   const { page, navigatePage } = routerStore;
@@ -43,6 +44,7 @@ const App: FunctionComponent = observer(() => {
           {page === Page.LOADING && <LoadingPage />}
           {page === Page.HOME_PAGE && <HomePage key={routerStore.key} />}
           {page === Page.PUBLICATION && <PublicationPage />}
+          {page === Page.PDF && <PdfPage />}
           {page === Page.SHARING_OPTIONS && (
             <SharingOptionsPage
               publicationTitle={routerStore.payload.publicationTitle}
