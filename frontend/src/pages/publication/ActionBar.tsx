@@ -73,13 +73,16 @@ export const ActionBar = observer(
               size={'medium'}>
               <img src={download} style={{ marginRight: '8px' }} /> Download
             </DownloadFilesButtonWrap>
-            <DownloadSampleFilesButtonWrap
-              variant="outlined"
-              onClick={props.publicationStore.downloadSampleFiles}
-              size={'medium'}>
-              <img src={downloadSample} style={{ marginRight: '8px' }} />{' '}
-              Download sample
-            </DownloadSampleFilesButtonWrap>
+            {props.publicationStore.sampleFilesEnabled && (
+              <DownloadSampleFilesButtonWrap
+                hidden={true}
+                variant="outlined"
+                onClick={props.publicationStore.downloadSampleFiles}
+                size={'medium'}>
+                <img src={downloadSample} style={{ marginRight: '8px' }} />{' '}
+                Download sample
+              </DownloadSampleFilesButtonWrap>
+            )}
           </div>
           <div
             style={{

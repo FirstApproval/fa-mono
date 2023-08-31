@@ -918,7 +918,6 @@ export class PublicationStore {
             this.objectOfStudyEnabled = true;
             this.softwareEnabled = true;
             this.filesEnabled = true;
-            this.sampleFilesEnabled = true;
             this.authorsEnabled = true;
             this.grantingOrganizationsEnabled = true;
             this.relatedArticlesEnabled = true;
