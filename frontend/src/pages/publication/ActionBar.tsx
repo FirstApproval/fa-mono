@@ -8,9 +8,9 @@ import download from './asset/download.svg';
 import downloadSample from './asset/download_sample.svg';
 import pdf from './asset/pdf.svg';
 import citate from './asset/citate.svg';
-import share from './asset/share.svg';
-import { Button } from '@mui/material';
+import { Button, Tooltip } from '@mui/material';
 import { PublicationStore } from './store/PublicationStore';
+import { ContentCopy } from '@mui/icons-material';
 
 export const ActionBar = observer(
   (props: { publicationStore: PublicationStore }): ReactElement => {
@@ -95,12 +95,14 @@ export const ActionBar = observer(
             <ActionButtonWrap variant="outlined" size={'medium'}>
               <img src={citate} />
             </ActionButtonWrap>
-            <ActionButtonWrap
-              variant="outlined"
-              onClick={props.publicationStore.copyPublicationLinkToClipboard}
-              size={'medium'}>
-              <img src={share} />
-            </ActionButtonWrap>
+            <Tooltip title="Copy link to publication">
+              <ActionButtonWrap
+                variant="outlined"
+                onClick={props.publicationStore.copyPublicationLinkToClipboard}
+                size={'medium'}>
+                <ContentCopy style={{ marginRight: '8px' }} />
+              </ActionButtonWrap>
+            </Tooltip>
           </div>
         </div>
 
