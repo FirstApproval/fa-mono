@@ -122,6 +122,7 @@ const PublicationLabel = styled.div`
   letter-spacing: 0.25px;
 
   margin: 16px 0;
+  word-break: break-word;
 `;
 
 const LinkWrap = styled.div`
