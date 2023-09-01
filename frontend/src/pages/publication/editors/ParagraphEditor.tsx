@@ -66,57 +66,79 @@ export const ExperimentGoalsEditor = observer(
             'Describe the experiment goals and preliminary results...'
           }
         />
-        <NegativeData publicationStore={props.publicationStore} />
+        {!publicationStore.isReadonly && (
+          <NegativeDataEditMode publicationStore={props.publicationStore} />
+        )}
+        {publicationStore.isReadonly && publicationStore.isNegative && (
+          <NegativeDataViewMode publicationStore={props.publicationStore} />
+        )}
       </>
     );
   }
 );
 
-export const NegativeData = observer((props: EditorProps): ReactElement => {
-  const { publicationStore } = props;
-  return (
-    <NegativeDataAllWrapper>
-      <NegativeDataWrapper>
-        <NegativeDataHeaderWrapper>
-          {!publicationStore.isNegative && (
-            <>
-              <WarningIcon
-                htmlColor={'#a8a8b4'}
-                style={{ marginRight: '5px' }}
-              />
-              <NegativeDataHeaderDisabled>
+export const NegativeDataEditMode = observer(
+  (props: EditorProps): ReactElement => {
+    const { publicationStore } = props;
+    return (
+      <NegativeDataAllWrapper>
+        <NegativeDataWrapper>
+          <NegativeDataHeaderWrapper>
+            {!publicationStore.isNegative && (
+              <>
+                <WarningIcon
+                  htmlColor={'#a8a8b4'}
+                  style={{ marginRight: '5px' }}
+                />
+                <NegativeDataHeaderDisabled>
+                  My data is negative
+                </NegativeDataHeaderDisabled>
+              </>
+            )}
+            {publicationStore.isNegative && (
+              <NegativeDataHeaderEnabled>
                 My data is negative
-              </NegativeDataHeaderDisabled>
-            </>
-          )}
-          {publicationStore.isNegative && (
-            <NegativeDataHeaderEnabled>
-              My data is negative
-            </NegativeDataHeaderEnabled>
-          )}
-        </NegativeDataHeaderWrapper>
-        <Switch
-          checked={publicationStore.isNegative}
-          onClick={publicationStore.invertNegativeData}
-        />
-      </NegativeDataWrapper>
-      {publicationStore.isNegative && (
-        <FullWidthInput
-          autoFocus
-          value={publicationStore.negativeData}
-          onChange={(e) => {
-            publicationStore.updateNegativeData(e.currentTarget.value);
-          }}
-          disableUnderline={true}
-          multiline={true}
-          placeholder="Why your data didn't confirm the initial hypothesis or expectations"
-          minRows={1}
-          maxRows={4}
-        />
-      )}
-    </NegativeDataAllWrapper>
-  );
-});
+              </NegativeDataHeaderEnabled>
+            )}
+          </NegativeDataHeaderWrapper>
+          <Switch
+            checked={publicationStore.isNegative}
+            onClick={publicationStore.invertNegativeData}
+          />
+        </NegativeDataWrapper>
+        {publicationStore.isNegative && (
+          <FullWidthInput
+            autoFocus
+            value={publicationStore.negativeData}
+            onChange={(e) => {
+              publicationStore.updateNegativeData(e.currentTarget.value);
+            }}
+            disableUnderline={true}
+            multiline={true}
+            placeholder="Why your data didn't confirm the initial hypothesis or expectations"
+            minRows={1}
+            maxRows={4}
+          />
+        )}
+      </NegativeDataAllWrapper>
+    );
+  }
+);
+export const NegativeDataViewMode = observer(
+  (props: EditorProps): ReactElement => {
+    const { publicationStore } = props;
+    return (
+      <NegativeDataViewWrapper>
+        <NegativeDataHeaderEnabled>
+          The data is negative
+        </NegativeDataHeaderEnabled>
+        <NegativeDataTextViewMode>
+          {publicationStore.negativeData}
+        </NegativeDataTextViewMode>
+      </NegativeDataViewWrapper>
+    );
+  }
+);
 
 export const MethodEditor = observer((props: EditorProps): ReactElement => {
   return (
@@ -367,7 +389,7 @@ const NegativeDataWrapper = styled.div`
 
 const NegativeDataAllWrapper = styled.div`
   border: 1px solid #d2d2d6;
-  padding: 4px 0px 4px 8px;
+  padding: 4px 0 4px 8px;
   border-radius: 4px;
   gap: 8px;
   align-self: stretch;
@@ -399,4 +421,33 @@ const ReadonlyContentPlaceholderWrap = styled.div`
   width: 100%;
 
   margin-bottom: 32px;
+`;
+
+const NegativeDataViewWrapper = styled.div`
+  display: flex;
+  width: var(--stringLength, 680px);
+  flex-direction: column;
+  padding: 16px;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 8px;
+
+  border-radius: 4px;
+  background: var(--grey-50, #f8f7fa);
+
+  margin-bottom: 15px;
+`;
+
+const NegativeDataTextViewMode = styled.div`
+  color: var(--text-primary, #040036);
+  font-feature-settings: 'clig' off, 'liga' off;
+
+  /* typography/body */
+  font-family: Roboto;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 160%; /* 32px */
+  letter-spacing: 0.15px;
+  word-break: break-word;
 `;

@@ -93,7 +93,7 @@ export const ActionBar = observer(
             <ActionButtonWrap variant="outlined" size={'medium'}>
               <img src={citate} />
             </ActionButtonWrap>
-            <Tooltip title="Copy link to publication">
+            <Tooltip title="Copy publication link">
               <ActionButtonWrap
                 variant="outlined"
                 onClick={publicationStore.copyPublicationLinkToClipboard}
