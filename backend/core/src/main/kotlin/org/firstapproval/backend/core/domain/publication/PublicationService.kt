@@ -22,6 +22,8 @@ import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthorRepository
 import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthor
+import org.firstapproval.backend.core.domain.publication.downloader.Downloader
+import org.firstapproval.backend.core.domain.publication.downloader.DownloaderRepository
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
 import org.firstapproval.backend.core.domain.user.UserService
@@ -36,6 +38,7 @@ import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
+import java.time.ZonedDateTime.now
 import java.util.UUID
 import java.util.UUID.randomUUID
 import org.firstapproval.api.server.model.ConfirmedAuthor as ConfirmedAuthorApiObject
@@ -55,7 +58,8 @@ class PublicationService(
     private val tokenService: TokenService,
     private val frontendProperties: FrontendProperties,
     private val fileStorageService: FileStorageService,
-    private val notificationService: NotificationService
+    private val notificationService: NotificationService,
+    private val downloaderRepository: DownloaderRepository
 ) {
     @Transactional
     fun create(user: User): Publication {
@@ -143,18 +147,28 @@ class PublicationService(
         val claims = tokenService.parseDownloadPublicationArchiveToken(token)
         val publicationId = claims.subject.toString()
         val publication = publicationRepository.getReferenceById(UUID.fromString(publicationId))
-        publication.downloadsCount += 1
         val title = if (publication.title != null) {
             publication.title
         } else {
             publicationId
         }
         val user = userService.get(UUID.fromString(claims["userId"].toString()))
+        publication.downloadsCount += 1
+        addDownloadHistory(user, publication)
         notificationService.sendArchivePassword(user.email!!, publication.title, publication.archivePassword!!)
         return FileResponse(
             name = title!! + ".zip",
             fileStorageService.get(ARCHIVED_PUBLICATION_FILES, publicationId)
         )
+    }
+
+    private fun addDownloadHistory(user: User, publication: Publication) {
+        val prevTry = downloaderRepository.getByUserAndPublication(user, publication)
+        if (prevTry != null) {
+            prevTry.history.add(now())
+        } else {
+            downloaderRepository.save(Downloader(publication = publication, user = user, history = mutableListOf(now())))
+        }
     }
 
     @Transactional
@@ -205,7 +219,7 @@ class PublicationService(
                     publication = pub,
                     status = JobStatus.valueOf(createdJob.status.name),
                     kind = JobKind.valueOf(createdJob.kind.name),
-                    creationTime = ZonedDateTime.now(),
+                    creationTime = now(),
                     completionTime = null
                 )
             )
