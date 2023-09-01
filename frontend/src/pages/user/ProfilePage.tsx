@@ -173,21 +173,27 @@ export const ProfilePage: FunctionComponent = observer(() => {
                         <Banner>
                           <BannerLeftPart>
                             <UploadYourFirstDatasetHeader>
-                              Upload you first dataset
+                              Upload your first dataset
                             </UploadYourFirstDatasetHeader>
-                            <HeightElement value={'8px'} />
+                            <HeightElement value={'24px'} />
                             <SelfInfo>
                               Show off your work. Get recognition and be a part
                               of a growing community.
                             </SelfInfo>
-                            <HeightElement value={'10px'} />
+                            <HeightElement value={'24px'} />
                             <StartPublishingButton
                               color={'primary'}
                               variant={'contained'}
                               onClick={async () => {
                                 await store.createPublication();
                               }}>
-                              Start publishing
+                              <span
+                                style={{
+                                  fontSize: 18,
+                                  fontWeight: 500
+                                }}>
+                                Start publishing
+                              </span>
                             </StartPublishingButton>
                           </BannerLeftPart>
                           <img src={upload_your_first_dataset_from} />
@@ -363,8 +369,8 @@ const UploadYourFirstDatasetHeader = styled.span`
 const Banner = styled.div`
   display: flex;
   width: 100%;
-  border-style: dashed;
-  border-color: gray;
+  border-radius: 4px;
+  border: 1px dashed var(--divider, #d2d2d6);
 `;
 
 const BannerLeftPart = styled.div`
