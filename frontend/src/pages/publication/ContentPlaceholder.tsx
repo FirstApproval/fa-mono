@@ -164,7 +164,7 @@ export const ContentPlaceholder = (
 ): ReactElement => {
   return (
     <ContentPlaceholderWrap tabIndex={0} onClick={props.onClick}>
-      <FlexWrap>{props.icon} </FlexWrap>
+      <FlexWrap>{props.icon}</FlexWrap>
       <TextWrap>
         <LabelWrap>{props.text}</LabelWrap>
         {props.description && (
@@ -182,14 +182,16 @@ const FlexWrap = styled.div`
 
 const ContentPlaceholderWrap = styled.div`
   display: flex;
-  align-items: start;
+  align-items: center;
   padding: 8px 16px;
   margin-bottom: 8px;
+
   &:hover {
     border-radius: 4px;
     background: var(--action-hover, rgba(4, 0, 54, 0.05));
     cursor: pointer;
   }
+
   &:focus {
     border-radius: 4px;
     background: var(--action-hover, rgba(4, 0, 54, 0.05));
@@ -215,5 +217,5 @@ const DescriptionWrap = styled.div`
 const TextWrap = styled.div`
   display: flex;
   flex-direction: column;
-  margin-left: 8px;
+  margin-left: 4px;
 `;

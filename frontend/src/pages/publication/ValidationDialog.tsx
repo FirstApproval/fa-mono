@@ -3,10 +3,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { Dialog, DialogContent, styled } from '@mui/material';
 import { type PublicationStore, type Section } from './store/PublicationStore';
 import {
+  ExperimentGoalsPlaceholder,
   FilesPlaceholder,
   MethodPlaceholder,
   ObjectOfStudyPlaceholder,
-  ExperimentGoalsPlaceholder,
   SummaryPlaceholder,
   TagsPlaceholder,
   TitlePlaceholder
@@ -90,6 +90,21 @@ export const ValidationDialog = (props: {
             }}
           />
         )}
+
+        <div
+          style={{
+            marginTop: 24,
+            padding: 16,
+            fontSize: 16,
+            fontStyle: 'normal',
+            fontWeight: 400,
+            borderRadius: 4,
+            background: 'rgba(59, 78, 255, 0.04)'
+          }}>
+          Required sections help your work be understood and utilized to its
+          fullest potential by other researchers. Completing them also enhances
+          your recognition as an author.
+        </div>
       </DialogContentWrap>
     </Dialog>
   );
