@@ -14,6 +14,7 @@ import {
 import { ContentCopy, EmailOutlined } from '@mui/icons-material';
 import { observer } from 'mobx-react-lite';
 import {
+  ColumnElement,
   CustomTab,
   FlexBodyCenter,
   FlexHeader,
@@ -241,12 +242,6 @@ export const RowElement = styled('div')<{
   width: 100%;
   display: flex;
   visibility: ${(props) => props.visibility ?? 'visible'};
-`;
-
-export const ColumnElement = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
 `;
 
 export const CenterColumnElement = styled.div`

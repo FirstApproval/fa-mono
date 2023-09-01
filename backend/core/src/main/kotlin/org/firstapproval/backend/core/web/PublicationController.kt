@@ -3,6 +3,7 @@ package org.firstapproval.backend.core.web
 import org.firstapproval.api.server.PublicationApi
 import org.firstapproval.api.server.model.AccessType
 import org.firstapproval.api.server.model.CreatePublicationResponse
+import org.firstapproval.api.server.model.DownloadLinkResponse
 import org.firstapproval.api.server.model.Publication
 import org.firstapproval.api.server.model.PublicationEditRequest
 import org.firstapproval.api.server.model.PublicationStatus
@@ -101,9 +102,9 @@ class PublicationController(
         return ok().build()
     }
 
-    override fun getDownloadLink(id: UUID): ResponseEntity<String> {
+    override fun getDownloadLink(id: UUID): ResponseEntity<DownloadLinkResponse> {
         val downloadLink = publicationService.getDownloadLink(authHolderService.user, id)
-        return ok().body(downloadLink)
+        return ok(downloadLink)
     }
 
     override fun downloadPublicationFiles(downloadToken: String): ResponseEntity<Resource> {

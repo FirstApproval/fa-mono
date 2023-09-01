@@ -254,7 +254,7 @@ const PublicationBody = observer(
         )}
         {!filesEnabled && <FilesPlaceholder onClick={openFiles} />}
         {filesEnabled && <FileUploader fs={fs} />}
-        {!sampleFilesEnabled && (
+        {!sampleFilesEnabled && publicationStore.viewMode === ViewMode.EDIT && (
           <SampleFilesPlaceholder onClick={openSampleFiles} />
         )}
         {sampleFilesEnabled && <SampleFileUploader sfs={sfs} />}
