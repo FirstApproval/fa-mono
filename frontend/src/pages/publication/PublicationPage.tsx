@@ -286,8 +286,8 @@ const PublicationBody = observer(
 
 const PublicationBodyWrap = styled('div')`
   width: 728px;
-  padding-left: 40px;
-  padding-right: 40px;
+  padding-left: 24px;
+  padding-right: 24px;
 `;
 
 const ButtonWrap = styled(Button)<{ marginRight?: string }>`

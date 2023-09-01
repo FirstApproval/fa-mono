@@ -52,28 +52,32 @@ export const ActionBar = observer(
               display: 'flex',
               alignItems: 'center'
             }}>
-            <DownloadFilesButtonWrap
-              variant="outlined"
-              onClick={() => {
-                if (authStore.token) {
-                  publicationStore.downloadFiles();
-                  setIsPasscodeOpen(true);
-                } else {
-                  routerStore.navigatePage(Page.SIGN_UP);
-                }
-              }}
-              size={'medium'}>
-              <img src={download} style={{ marginRight: '8px' }} /> Download
-            </DownloadFilesButtonWrap>
-            {publicationStore.sampleFilesEnabled && (
-              <DownloadSampleFilesButtonWrap
-                hidden={true}
+            <Tooltip title="Download publication files">
+              <DownloadFilesButtonWrap
                 variant="outlined"
-                onClick={publicationStore.downloadSampleFiles}
+                onClick={() => {
+                  if (authStore.token) {
+                    publicationStore.downloadFiles();
+                    setIsPasscodeOpen(true);
+                  } else {
+                    routerStore.navigatePage(Page.SIGN_UP);
+                  }
+                }}
                 size={'medium'}>
-                <img src={downloadSample} style={{ marginRight: '8px' }} />{' '}
-                Download sample
-              </DownloadSampleFilesButtonWrap>
+                <img src={download} style={{ marginRight: '8px' }} /> Download
+              </DownloadFilesButtonWrap>
+            </Tooltip>
+            {publicationStore.sampleFilesEnabled && (
+              <Tooltip title="Download publication sample files">
+                <DownloadSampleFilesButtonWrap
+                  hidden={true}
+                  variant="outlined"
+                  onClick={publicationStore.downloadSampleFiles}
+                  size={'medium'}>
+                  <img src={downloadSample} style={{ marginRight: '8px' }} />{' '}
+                  Download sample
+                </DownloadSampleFilesButtonWrap>
+              </Tooltip>
             )}
           </div>
           <div
@@ -81,9 +85,11 @@ export const ActionBar = observer(
               display: 'flex',
               alignItems: 'center'
             }}>
-            <PdfButtonWrap variant="outlined" size={'medium'}>
-              <img src={pdf} style={{ marginRight: '8px' }} /> PDF
-            </PdfButtonWrap>
+            <Tooltip title="Download publication PDF">
+              <PdfButtonWrap variant="outlined" size={'medium'}>
+                <img src={pdf} style={{ marginRight: '8px' }} /> PDF
+              </PdfButtonWrap>
+            </Tooltip>
             <ActionButtonWrap variant="outlined" size={'medium'}>
               <img src={citate} />
             </ActionButtonWrap>
@@ -92,7 +98,7 @@ export const ActionBar = observer(
                 variant="outlined"
                 onClick={publicationStore.copyPublicationLinkToClipboard}
                 size={'medium'}>
-                <ContentCopy style={{ marginRight: '8px' }} />
+                <ContentCopy />
               </ActionButtonWrap>
             </Tooltip>
           </div>
