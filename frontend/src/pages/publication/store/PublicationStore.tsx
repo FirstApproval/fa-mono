@@ -643,6 +643,22 @@ export class PublicationStore {
     void this.updateExperimentGoals();
   };
 
+  splitExperimentGoalsParagraph = (idx: number, splitIndex: number): void => {
+    if (idx < 0) return;
+    const newValue = [...this.experimentGoals];
+    const newElement = {
+      text: newValue[idx].text.substring(splitIndex),
+      id: uuidv4()
+    };
+    newValue.splice(idx + 1, 0, newElement);
+    newValue[idx] = {
+      text: newValue[idx].text.substring(0, splitIndex),
+      id: newValue[idx].id
+    };
+    this.experimentGoals = newValue;
+    void this.updateExperimentGoals();
+  };
+
   mergeMethodParagraph = (idx: number): void => {
     if (idx <= 0) return;
     const newValue = [...this.method];
@@ -667,6 +683,22 @@ export class PublicationStore {
     void this.updateObjectOfStudy();
   };
 
+  splitObjectOfStudyParagraph = (idx: number, splitIndex: number): void => {
+    if (idx < 0) return;
+    const newValue = [...this.objectOfStudy];
+    const newElement = {
+      text: newValue[idx].text.substring(splitIndex),
+      id: uuidv4()
+    };
+    newValue.splice(idx + 1, 0, newElement);
+    newValue[idx] = {
+      text: newValue[idx].text.substring(0, splitIndex),
+      id: newValue[idx].id
+    };
+    this.objectOfStudy = newValue;
+    void this.updateObjectOfStudy();
+  };
+
   mergeSoftwareParagraph = (idx: number): void => {
     if (idx <= 0) return;
     const newValue = [...this.software];
@@ -675,6 +707,22 @@ export class PublicationStore {
       id: newValue[idx - 1].id
     };
     newValue.splice(idx, 1);
+    this.software = newValue;
+    void this.updateSoftware();
+  };
+
+  splitSoftwareParagraph = (idx: number, splitIndex: number): void => {
+    if (idx < 0) return;
+    const newValue = [...this.software];
+    const newElement = {
+      text: newValue[idx].text.substring(splitIndex),
+      id: uuidv4()
+    };
+    newValue.splice(idx + 1, 0, newElement);
+    newValue[idx] = {
+      text: newValue[idx].text.substring(0, splitIndex),
+      id: newValue[idx].id
+    };
     this.software = newValue;
     void this.updateSoftware();
   };
@@ -691,6 +739,26 @@ export class PublicationStore {
     void this.updateGrantingOrganizations();
   };
 
+  splitGrantingOrganizationsParagraph = (
+    idx: number,
+    splitIndex: number
+  ): void => {
+    if (idx < 0) return;
+    const newValue = [...this.grantingOrganizations];
+    const newElement = {
+      text: newValue[idx].text.substring(splitIndex),
+      id: uuidv4()
+    };
+    debugger;
+    newValue.splice(idx + 1, 0, newElement);
+    newValue[idx] = {
+      text: newValue[idx].text.substring(0, splitIndex),
+      id: newValue[idx].id
+    };
+    this.grantingOrganizations = newValue;
+    void this.updateGrantingOrganizations();
+  };
+
   mergeRelatedArticlesParagraph = (idx: number): void => {
     if (idx <= 0) return;
     const newValue = [...this.relatedArticles];
@@ -699,6 +767,22 @@ export class PublicationStore {
       id: newValue[idx - 1].id
     };
     newValue.splice(idx, 1);
+    this.relatedArticles = newValue;
+    void this.updateRelatedArticles();
+  };
+
+  splitRelatedArticlesParagraph = (idx: number, splitIndex: number): void => {
+    if (idx < 0) return;
+    const newValue = [...this.relatedArticles];
+    const newElement = {
+      text: newValue[idx].text.substring(splitIndex),
+      id: uuidv4()
+    };
+    newValue.splice(idx + 1, 0, newElement);
+    newValue[idx] = {
+      text: newValue[idx].text.substring(0, splitIndex),
+      id: newValue[idx].id
+    };
     this.relatedArticles = newValue;
     void this.updateRelatedArticles();
   };

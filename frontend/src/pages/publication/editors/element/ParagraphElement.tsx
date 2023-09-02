@@ -12,6 +12,7 @@ interface ParagraphProps {
   onChange: (idx: number, value: string) => void;
   onAddParagraph: (idx: number) => void;
   onMergeParagraph: (idx: number) => void;
+  onSplitParagraph: (idx: number, splitIndex: number) => void;
   placeholder: string;
 }
 
@@ -24,6 +25,7 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
     onChange,
     onAddParagraph,
     onMergeParagraph,
+    onSplitParagraph,
     placeholder,
     paragraphPrefixType
   } = props;
@@ -62,7 +64,14 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
             if (event.key === 'Enter' || event.keyCode === 13) {
               event.preventDefault();
               event.stopPropagation();
-              onAddParagraph(idx);
+              if (
+                selectionEnd === value.length &&
+                selectionStart === value.length
+              ) {
+                onAddParagraph(idx);
+              } else {
+                onSplitParagraph(idx, selectionEnd);
+              }
             } else if (
               selectionStart === 0 &&
               selectionEnd === 0 &&

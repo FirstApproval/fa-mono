@@ -21,6 +21,7 @@ interface ParagraphEditorProps {
   onChange: (idx: number, value: string) => void;
   onAddParagraph: (idx: number) => void;
   onMergeParagraph: (idx: number) => void;
+  onSplitParagraph: (idx: number, splitIndex: number) => void;
 }
 
 export const DescriptionEditor = observer(
@@ -36,6 +37,9 @@ export const DescriptionEditor = observer(
           props.publicationStore.addDescriptionParagraph(idx);
         }}
         onMergeParagraph={(idx) => {
+          props.publicationStore.mergeSummaryParagraph(idx);
+        }}
+        onSplitParagraph={(idx) => {
           props.publicationStore.mergeSummaryParagraph(idx);
         }}
         placeholder={'Publication summary'}
@@ -60,6 +64,9 @@ export const ExperimentGoalsEditor = observer(
           }}
           onMergeParagraph={(idx) => {
             publicationStore.mergeExperimentGoalsParagraph(idx);
+          }}
+          onSplitParagraph={(idx, splitIndex) => {
+            publicationStore.splitExperimentGoalsParagraph(idx, splitIndex);
           }}
           text={'Experiment goals'}
           placeholder={
@@ -171,6 +178,9 @@ export const MethodEditor = observer((props: EditorProps): ReactElement => {
         onMergeParagraph={(idx) => {
           props.publicationStore.mergeMethodParagraph(idx);
         }}
+        onSplitParagraph={(idx, splitIndex) => {
+          props.publicationStore.mergeMethodParagraph(idx);
+        }}
         placeholder={
           'Detail the steps of your method, helping others to reproduce it...'
         }
@@ -214,6 +224,9 @@ export const ObjectOfStudyEditor = observer(
           onMergeParagraph={(idx) => {
             props.publicationStore.mergeObjectOfStudyParagraph(idx);
           }}
+          onSplitParagraph={(idx, splitIndex) => {
+            props.publicationStore.splitObjectOfStudyParagraph(idx, splitIndex);
+          }}
           placeholder={
             'Describe the specific conditions or features of your object of study...'
           }
@@ -238,6 +251,9 @@ export const SoftwareEditor = observer((props: EditorProps): ReactElement => {
       onMergeParagraph={(idx) => {
         props.publicationStore.mergeSoftwareParagraph(idx);
       }}
+      onSplitParagraph={(idx, splitIndex) => {
+        props.publicationStore.splitSoftwareParagraph(idx, splitIndex);
+      }}
       text={'Software'}
       placeholder={
         'Provide the software you used, with configuration options...'
@@ -260,6 +276,12 @@ export const GrantingOrganizationsEditor = observer(
         }}
         onMergeParagraph={(idx) => {
           props.publicationStore.mergeGrantingOrganizationsParagraph(idx);
+        }}
+        onSplitParagraph={(idx, splitIndex) => {
+          props.publicationStore.splitGrantingOrganizationsParagraph(
+            idx,
+            splitIndex
+          );
         }}
         paragraphPrefixType={ParagraphPrefixType.BULLET}
         text={'Granting organizations'}
@@ -286,6 +308,12 @@ export const RelatedArticlesEditor = observer(
           }}
           onMergeParagraph={(idx) => {
             props.publicationStore.mergeRelatedArticlesParagraph(idx);
+          }}
+          onSplitParagraph={(idx, splitIndex) => {
+            props.publicationStore.splitRelatedArticlesParagraph(
+              idx,
+              splitIndex
+            );
           }}
           paragraphPrefixType={ParagraphPrefixType.NUMERATION}
           text={'Related articles'}
@@ -344,6 +372,11 @@ const ParagraphElementWrap = (
               setCursorPosition(props.value[idx - 1]?.text.length);
               setParagraphToFocus(idx - 1);
               props.onMergeParagraph(idx);
+            }}
+            onSplitParagraph={(idx, splitIndex) => {
+              setParagraphToFocus(idx + 1);
+              setCursorPosition(0);
+              props.onSplitParagraph(idx, splitIndex);
             }}
             onChange={props.onChange}
             placeholder={idx === 0 ? props.placeholder : ''}
