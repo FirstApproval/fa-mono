@@ -59,11 +59,7 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
             const selectionStart = event.target.selectionStart;
             // @ts-expect-error wrong types
             const selectionEnd = event.target.selectionEnd;
-            if (
-              selectionStart === value.length &&
-              selectionEnd === value.length &&
-              (event.key === 'Enter' || event.keyCode === 13)
-            ) {
+            if (event.key === 'Enter' || event.keyCode === 13) {
               event.preventDefault();
               event.stopPropagation();
               onAddParagraph(idx);
