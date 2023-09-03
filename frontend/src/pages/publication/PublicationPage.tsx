@@ -274,6 +274,7 @@ const PublicationBody = observer(
         {sampleFilesEnabled && (
           <SampleFileUploader
             sfs={sfs}
+            publicationStore={publicationStore}
             isReadonly={publicationStore.isReadonly}
           />
         )}

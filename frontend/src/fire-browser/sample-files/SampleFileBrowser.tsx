@@ -51,6 +51,7 @@ interface SampleFileBrowserProps {
   isReadonly: boolean;
   sfs: ChonkySampleFileSystem;
   isChonkyDragRef: MutableRefObject<boolean>;
+  onArchiveDownload: (files: FileData[]) => void;
 }
 
 export const SampleFileBrowser = observer(
@@ -184,6 +185,8 @@ export const SampleFileBrowser = observer(
         props.isChonkyDragRef.current = true;
       } else if (data.id === ChonkyActions.EndDragNDrop.id) {
         props.isChonkyDragRef.current = false;
+      } else if (data.id === ChonkyActions.DownloadFilesArchive.id) {
+        props.onArchiveDownload(data.state.selectedFiles);
       }
     };
 

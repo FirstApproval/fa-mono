@@ -19,9 +19,11 @@ import {
 } from './ChonkySampleFileSystem';
 import { UploadType } from 'src/apis/first-approval-api';
 import { SampleFileBrowser } from './SampleFileBrowser';
+import { PublicationStore } from '../../pages/publication/store/PublicationStore';
 
 interface SampleFileUploaderProps {
   isReadonly: boolean;
+  publicationStore: PublicationStore;
   sfs: ChonkySampleFileSystem;
 }
 
@@ -98,6 +100,9 @@ export const SampleFileUploader: FunctionComponent<SampleFileUploaderProps> =
         )}
         <SampleFileBrowser
           sfs={sfs}
+          onArchiveDownload={(files) => {
+            props.publicationStore.downloadSampleMultiFiles(files);
+          }}
           isChonkyDragRef={isChonkyDragRef}
           isReadonly={props.isReadonly}
         />

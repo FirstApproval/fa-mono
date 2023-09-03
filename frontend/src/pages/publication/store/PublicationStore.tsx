@@ -13,6 +13,7 @@ import { type ChonkyFileSystem } from '../../../fire-browser/ChonkyFileSystem';
 import { v4 as uuidv4 } from 'uuid';
 import { type AuthorEditorStore } from './AuthorEditorStore';
 import { type ChonkySampleFileSystem } from '../../../fire-browser/sample-files/ChonkySampleFileSystem';
+import { FileData } from '@first-approval/chonky/dist/types/file.types';
 
 const EDIT_THROTTLE_MS = 1000;
 
@@ -576,6 +577,22 @@ export class PublicationStore {
 
   downloadSampleFiles(): void {
     void this.doDownloadSampleFiles();
+  }
+
+  downloadSampleMultiFiles(files: FileData[]): void {
+    if (files.length === 0) {
+      void this.doDownloadSampleFiles();
+    } else {
+      files.forEach((fileData) => {
+        const downloadLink = document.createElement('a');
+        downloadLink.href = `/api/sample-files/download/${fileData.id}`;
+        downloadLink.download = fileData.name;
+        downloadLink.style.display = 'none';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      });
+    }
   }
 
   doDownloadFiles = _.throttle(async () => {
