@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Close, CopyAll } from '@mui/icons-material';
 import DialogContent from '@mui/material/DialogContent';
-import { ColumnElement } from '../common.styled';
+import { ColumnElement, TitleRowWrap } from '../common.styled';
 import { copyTextToClipboard } from '../../fire-browser/utils';
 import Dialog from '@mui/material/Dialog';
 import styled from '@emotion/styled';
@@ -86,12 +86,6 @@ const DialogContentWrap = styled.div`
 const TextWrap = styled.div`
   display: flex;
   flex-direction: column;
-`;
-
-const TitleRowWrap = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 `;
 
 const PasscodeRowWrap = styled.div`

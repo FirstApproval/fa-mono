@@ -1,6 +1,5 @@
 package org.firstapproval.backend.core.domain.publication
 
-import org.firstapproval.api.server.model.Author
 import org.firstapproval.api.server.model.DownloadLinkResponse
 import org.firstapproval.api.server.model.Paragraph
 import org.firstapproval.api.server.model.PublicationEditRequest
@@ -38,7 +37,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.ZonedDateTime
+import java.math.BigDecimal
 import java.time.ZonedDateTime.now
 import java.util.UUID
 import java.util.UUID.randomUUID
@@ -363,15 +362,16 @@ fun Publication.toPublicationElastic() =
 fun ConfirmedAuthor.toApiObject(profileImage: ByteArray?) = ConfirmedAuthorApiObject().also {
     it.id = id
     it.shortBio = shortBio
-    it.user = Author(
+    it.user = UserInfo(
         user.id,
         user.firstName,
-        user.middleName,
         user.lastName,
         user.email,
         user.username,
         user.selfInfo,
-    ).profileImage(profileImage)
+    )
+        .middleName(user.middleName)
+        .profileImage(profileImage)
 }
 
 fun UnconfirmedAuthor.toApiObject() = UnconfirmedAuthorApiObject().also {

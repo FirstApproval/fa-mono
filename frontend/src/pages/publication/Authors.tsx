@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { type PublicationStore } from './store/PublicationStore';
 import { routerStore } from '../../core/router';
 import { Page } from '../../core/RouterStore';
+import { getRelativeProfileLink } from '../../fire-browser/utils';
 
 export const Authors = observer(
   (props: { publicationStore: PublicationStore }): ReactElement => {
@@ -20,12 +21,15 @@ export const Authors = observer(
         }}>
         <span style={{ marginRight: '6px' }}>Authored by</span>
         {props.publicationStore.authorNames.map((author, index) =>
-          author.userName ? (
+          author.username ? (
             <div
-              key={author.userName}
+              key={author.username}
               style={{ marginRight: '4px' }}
               onClick={() => {
-                routerStore.navigatePage(Page.PROFILE, `/p/${author.userName}`);
+                routerStore.navigatePage(
+                  Page.PROFILE,
+                  getRelativeProfileLink(author.username)
+                );
               }}>
               <span
                 style={{

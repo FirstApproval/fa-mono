@@ -2,7 +2,6 @@ import { action, makeAutoObservable, reaction } from 'mobx';
 import { publicationService } from '../../../core/service';
 import _, { some } from 'lodash';
 import {
-  type Author,
   type ConfirmedAuthor,
   type Paragraph,
   PublicationStatus,
@@ -80,6 +79,10 @@ export class PublicationStore {
   publicationTime: Date = new Date();
   viewsCount: number = 0;
   downloadsCount: number = 0;
+  downloaders: UserInfo[] = [];
+  downloadersIsLastPage = false;
+
+  loadDownloadersLocked = false;
 
   constructor(
     readonly publicationId: string,
@@ -203,7 +206,7 @@ export class PublicationStore {
     }
   }
 
-  addConfirmedAuthor(author: Author): void {
+  addConfirmedAuthor(author: UserInfo): void {
     const newValue = [...this.confirmedAuthors];
     newValue.push({
       user: author,
@@ -768,7 +771,6 @@ export class PublicationStore {
       text: newValue[idx].text.substring(splitIndex),
       id: uuidv4()
     };
-    debugger;
     newValue.splice(idx + 1, 0, newElement);
     newValue[idx] = {
       text: newValue[idx].text.substring(0, splitIndex),
@@ -900,7 +902,7 @@ export class PublicationStore {
   setAuthorNames = (): void => {
     const confirmedAuthorNames =
       this.confirmedAuthors.map<PublicationAuthorName>((author) => ({
-        userName: author.user.username,
+        username: author.user.username,
         firstName: author.user.firstName,
         lastName: author.user.lastName
       }));
@@ -996,7 +998,6 @@ export class PublicationStore {
           if (publication.downloadsCount) {
             this.downloadsCount = publication.downloadsCount;
           }
-
           this.setAuthorNames();
 
           if (this.fs.files.length > 0) {
@@ -1038,6 +1039,24 @@ export class PublicationStore {
         })
       );
   }
+
+  public loadDownloaders(page: number): void {
+    if (!this.loadDownloadersLocked) {
+      this.loadDownloadersLocked = true;
+      void publicationService
+        .getPublicationDownloaders(this.publicationId, page, 15)
+        .then(
+          action((response) => {
+            this.downloaders = [
+              ...this.downloaders,
+              ...response.data.downloaders
+            ];
+            this.downloadersIsLastPage = response.data.isLastPage;
+            this.loadDownloadersLocked = false;
+          })
+        );
+    }
+  }
 }
 
 export enum SavingStatusState {
@@ -1047,7 +1066,7 @@ export enum SavingStatusState {
 }
 
 export interface PublicationAuthorName {
-  userName?: string;
+  username?: string;
   firstName: string;
   lastName: string;
 }

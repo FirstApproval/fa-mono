@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx';
-import { type Author } from '../../../apis/first-approval-api';
+import { type UserInfo } from '../../../apis/first-approval-api';
 import { authorService } from '../../../core/service';
 
 export class AuthorEditorStore {
@@ -17,7 +17,7 @@ export class AuthorEditorStore {
     makeAutoObservable(this);
   }
 
-  async searchAuthors(query: string): Promise<Author[]> {
+  async searchAuthors(query: string): Promise<UserInfo[]> {
     const response = await authorService.getAuthors(query);
     return response.data;
   }

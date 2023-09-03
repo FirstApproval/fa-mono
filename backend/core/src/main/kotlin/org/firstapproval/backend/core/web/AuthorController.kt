@@ -1,13 +1,13 @@
 package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.AuthorApi
-import org.firstapproval.api.server.model.Author
 import org.firstapproval.api.server.model.TopAuthorsResponse
+import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
-import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
 import org.firstapproval.backend.core.domain.user.UserService
+import org.firstapproval.backend.core.domain.user.toApiObject
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.DESC
@@ -21,13 +21,14 @@ class AuthorController(
     private val userService: UserService,
     private val authHolderService: AuthHolderService
 ) : AuthorApi {
-    override fun getAuthors(searchText: String): ResponseEntity<List<Author>> {
+    override fun getAuthors(searchText: String): ResponseEntity<List<UserInfo>> {
         val textArray = searchText.trim().split("\\s+".toRegex())
         val email = textArray.find { it.contains("@") }?.let { "%$it%" }
         val preparedText = textArray.filter { it.contains("@").not() }
             .joinToString(" & ") { "$it:*" }
             .let { it.ifEmpty { null } }
-        val authors = userRepository.findByTextAndEmailAndNotId(preparedText, email, authHolderService.user.id).map { it.toAuthor(userService) }
+        val authors =
+            userRepository.findByTextAndEmailAndNotId(preparedText, email, authHolderService.user.id).map { it.toApiObject(userService) }
         return ok().body(authors)
     }
 
@@ -35,19 +36,8 @@ class AuthorController(
         val authorsPage = userRepository.findAll(PageRequest.of(page, pageSize, Sort.by(DESC, "viewsCount")))
         return ok(
             TopAuthorsResponse()
-                .authors(authorsPage.map { it.toAuthor(userService) }.toList())
+                .authors(authorsPage.map { it.toApiObject(userService) }.toList())
                 .isLastPage(authorsPage.isLast)
         )
-    }
-
-    fun User.toAuthor(userService: UserService) = Author().also { author ->
-        author.id = id
-        author.firstName = firstName
-        author.middleName = middleName
-        author.lastName = lastName
-        author.email = email
-        author.selfInfo = selfInfo
-        author.username = username
-        author.profileImage = userService.getProfileImage(profileImage)
     }
 }

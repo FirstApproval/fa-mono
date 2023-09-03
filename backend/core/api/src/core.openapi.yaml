@@ -537,6 +537,41 @@ paths:
       operationId: editPublication
       tags: [ publication ]
 
+  /api/publication/downloaders/{id}:
+    get:
+      summary: Get publication
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: true
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          required: true
+          description: Page size
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDownloadersResponse'
+      security:
+        - PublicAuth: [ ]
+      operationId: getPublicationDownloaders
+      tags: [ publication ]
+
   /api/publication/search:
     get:
       summary: Search publications
@@ -882,7 +917,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Author'
+                  $ref: '#/components/schemas/UserInfo'
       security:
         - TokenAuth: [ ]
       operationId: getAuthors
@@ -1566,6 +1601,7 @@ components:
         - email
         - canSetPassword
         - canChangePassword
+        - selfInfo
 
     UserInfo:
       type: object
@@ -1579,9 +1615,9 @@ components:
           type: string
         lastName:
           type: string
-        username:
-          type: string
         email:
+          type: string
+        username:
           type: string
         selfInfo:
           type: string
@@ -1594,6 +1630,7 @@ components:
         - lastName
         - email
         - username
+        - selfInfo
 
     UploadType:
       type: string
@@ -1741,7 +1778,7 @@ components:
           type: string
           format: uuid
         user:
-          $ref: '#/components/schemas/Author'
+          $ref: '#/components/schemas/UserInfo'
         shortBio:
           type: string
       required:
@@ -1787,6 +1824,17 @@ components:
           type: string
         shortBio:
           type: string
+      required:
+        - email
+        - firstName
+        - lastName
+
+    Downloader:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
       required:
         - email
         - firstName
@@ -1876,12 +1924,16 @@ components:
         downloadsCount:
           type: integer
           format: int64
+        total:
+          type: number
+          format: integer
       required:
         - id
         - status
         - creator
         - isNegative
         - creationTime
+        - total
 
     PublicationsResponse:
       type: object
@@ -1903,38 +1955,20 @@ components:
         authors:
           type: array
           items:
-            $ref: '#/components/schemas/Author'
+            $ref: '#/components/schemas/UserInfo'
 
-    Author:
+    GetDownloadersResponse:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
-        firstName:
-          type: string
-        middleName:
-          type: string
-        lastName:
-          type: string
-        email:
-          type: string
-        username:
-          type: string
-        selfInfo:
-          type: string
-          maxLength: 4096
-        profileImage:
-          type: string
-          format: byte
+        isLastPage:
+          type: boolean
+        downloaders:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserInfo'
       required:
-        - id
-        - firstName
-        - middleName
-        - lastName
-        - email
-        - username
-        - selfInfo
+        - downloaders
+        - isLastPage
 
     StringArray:
       type: array

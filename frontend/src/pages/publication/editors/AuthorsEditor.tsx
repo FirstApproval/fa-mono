@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import React, { type ReactElement, useEffect, useState } from 'react';
 import {
-  type Author,
+  type UserInfo,
   type ConfirmedAuthor,
   type UnconfirmedAuthor
 } from '../../../apis/first-approval-api';
@@ -36,7 +36,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [searchVisible, setSearchVisible] = useState(false);
   const [isUserExistsByEmail, setIsUserExistsByEmail] = useState(false);
-  const [authorOptions, setAuthorOptions] = useState<Author[]>([]);
+  const [authorOptions, setAuthorOptions] = useState<UserInfo[]>([]);
 
   const [query, setQuery] = useState('');
 
@@ -44,9 +44,10 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
 
   const setEditAuthorVisible = (
     author: ConfirmedAuthor | UnconfirmedAuthor,
-    isConfirmed: boolean,
+    isConfirmed?: boolean,
     index?: number
   ): void => {
+    if (isConfirmed == null) return;
     if (isConfirmed) {
       const user = (author as ConfirmedAuthor).user;
       authorStore.firstName = user.firstName!;
@@ -154,7 +155,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
           <SearchBar>
             <FlexGrowWrap>
               <Autocomplete
-                onChange={(event: any, newValue: Author | null) => {
+                onChange={(event: any, newValue: UserInfo | null) => {
                   if (newValue) {
                     props.publicationStore.addConfirmedAuthor(newValue);
                   }

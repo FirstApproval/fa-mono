@@ -3,6 +3,7 @@ package org.firstapproval.backend.core.domain.user
 import jakarta.persistence.*
 import jakarta.persistence.EnumType.STRING
 import jakarta.persistence.FetchType.EAGER
+import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.backend.core.config.encryption.StringEncryptionConverter
 import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
@@ -33,3 +34,14 @@ class User(
     var creationTime: ZonedDateTime = now(),
     var viewsCount: Long = 0,
 )
+
+fun User.toApiObject(userService: UserService) = UserInfo().also { author ->
+    author.id = id
+    author.firstName = firstName
+    author.middleName = middleName
+    author.lastName = lastName
+    author.email = email
+    author.selfInfo = selfInfo
+    author.username = username
+    author.profileImage = userService.getProfileImage(profileImage)
+}

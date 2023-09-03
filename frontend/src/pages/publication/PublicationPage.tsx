@@ -55,12 +55,14 @@ import { ChonkySampleFileSystem } from '../../fire-browser/sample-files/ChonkySa
 import { SampleFileUploader } from '../../fire-browser/sample-files/SampleFileUploader';
 import { ActionBar } from './ActionBar';
 import { authStore } from '../../core/auth';
+import { DownloadersDialog } from './DownloadersDialog';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
 
   const [fs] = useState(() => new ChonkyFileSystem(publicationId));
   const [sfs] = useState(() => new ChonkySampleFileSystem(publicationId));
+  const [downloadersDialogOpen, setDownloadersDialogOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Section[]>([]);
 
@@ -161,6 +163,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
                   <PublicationBody
                     publicationId={publicationId}
                     publicationStore={publicationStore}
+                    openDownloadersDialog={() => setDownloadersDialogOpen(true)}
                     fs={fs}
                     sfs={sfs}
                   />
@@ -181,6 +184,12 @@ export const PublicationPage: FunctionComponent = observer(() => {
         }}
         errors={validationErrors}
       />
+      <DownloadersDialog
+        isOpen={downloadersDialogOpen}
+        onClose={() => setDownloadersDialogOpen(false)}
+        publicationStore={publicationStore}
+        downloaders={publicationStore.downloaders}
+      />
     </>
   );
 });
@@ -189,6 +198,7 @@ const PublicationBody = observer(
   (props: {
     publicationId: string;
     publicationStore: PublicationStore;
+    openDownloadersDialog: () => void;
     fs: ChonkyFileSystem;
     sfs: ChonkySampleFileSystem;
   }): ReactElement => {
@@ -221,7 +231,14 @@ const PublicationBody = observer(
       <>
         {publicationStore.isPreview && <DraftText />}
         {publicationStore.isView && (
-          <DateViewsDownloads publicationStore={publicationStore} />
+          <DateViewsDownloads
+            openDownloadersDialog={() => {
+              if (publicationStore.downloadsCount > 0) {
+                props.openDownloadersDialog();
+              }
+            }}
+            publicationStore={publicationStore}
+          />
         )}
         <div style={{ height: '16px' }}></div>
         <TitleEditor publicationStore={publicationStore} />
