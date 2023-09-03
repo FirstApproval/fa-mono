@@ -8,11 +8,12 @@ import {
   useLocalizedFileActionStrings,
   useParamSelector
 } from '@first-approval/chonky';
-import { Button, Divider, IconButton } from '@mui/material';
+import { Button, Divider, IconButton, Stack } from '@mui/material';
 import {
   DeleteOutlined,
   DownloadOutlined,
   EditNote,
+  FileDownload,
   FileUploadOutlined
 } from '@mui/icons-material';
 import styled from '@emotion/styled';
@@ -33,10 +34,18 @@ export const SampleFileToolbar: React.FC = React.memo(() => {
           multiple
           style={{ display: 'none' }}
         />
-        <MainAction
-          item={ChonkyActions.UploadFiles.id}
-          icon={<FileUploadOutlined />}
-        />
+
+        <Stack direction="row" alignItems="center" spacing={2}>
+          <MainAction
+            item={ChonkyActions.DownloadFilesArchive.id}
+            icon={<FileDownload />}
+          />
+          <MainAction
+            item={ChonkyActions.UploadFiles.id}
+            icon={<FileUploadOutlined />}
+          />
+        </Stack>
+
         {selectionSize !== 0 && (
           <>
             <DividerWrap variant={'middle'} orientation={'vertical'} />
@@ -84,6 +93,9 @@ const MainAction: React.FC<ToolbarButtonProps> = (
   const triggerAction = useFileActionTrigger(item);
   const { buttonName } = useLocalizedFileActionStrings(action);
   const key = `toolbar-item-${item}`;
+  if (!action) {
+    return null;
+  }
   return (
     <Button
       key={key}
@@ -100,7 +112,13 @@ const SampleFileAction: React.FC<ToolbarButtonProps> = (
 ) => {
   const { item } = props;
 
+  const action = useParamSelector(selectFileActionData, item);
   const triggerAction = useFileActionTrigger(item);
+
+  if (!action) {
+    return null;
+  }
+
   return <IconButton onClick={triggerAction}>{props.icon}</IconButton>;
 };
 
