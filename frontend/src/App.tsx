@@ -25,6 +25,13 @@ import { AccountPage } from './pages/user/AccountPage';
 import { ResetPasswordPage } from './pages/restore/set-password/RestorePasswordPage';
 import { SharingOptionsPage } from './pages/publication/SharingOptionsPage';
 import { EnterSelfInfoPage } from './pages/signup/EnterSelfInfo';
+import logo from '../src/assets/logo-black.svg';
+import developing from '../src/assets/developing.svg';
+import { Button } from '@mui/material';
+import DesktopMacOutlinedIcon from '@mui/icons-material/DesktopMacOutlined';
+import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
+
+const MOBILE_VERSION_NOT_SUPPORT_STORAGE_KEY = 'mobileVersionNotSupportShown';
 
 const App: FunctionComponent = observer(() => {
   const { page, navigatePage } = routerStore;
@@ -33,6 +40,14 @@ const App: FunctionComponent = observer(() => {
   const [signUpStore] = useState(() => new SignUpStore());
   const [restorePasswordStore] = useState(() => new RestorePasswordStore());
 
+  const [mobileVersionNowSupportShown, setMobileVersionNowSupportShown] =
+    useState(
+      Boolean(localStorage.getItem(MOBILE_VERSION_NOT_SUPPORT_STORAGE_KEY))
+    );
+
+  const showMobileNotSupporting =
+    window.innerWidth < 960 && !mobileVersionNowSupportShown;
+
   return (
     <>
       {/*
@@ -40,112 +55,181 @@ const App: FunctionComponent = observer(() => {
       <DndProvider backend={HTML5Backend}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          {page === Page.LOADING && <LoadingPage />}
-          {page === Page.HOME_PAGE && <HomePage key={routerStore.key} />}
-          {page === Page.PUBLICATION && <PublicationPage />}
-          {page === Page.SHARING_OPTIONS && (
-            <SharingOptionsPage
-              publicationTitle={routerStore.payload.publicationTitle}
-            />
+          {showMobileNotSupporting && (
+            <MobileVersionIsNotSupporting
+              close={() => {
+                localStorage.setItem(
+                  MOBILE_VERSION_NOT_SUPPORT_STORAGE_KEY,
+                  String(true)
+                );
+                setMobileVersionNowSupportShown(true);
+              }}></MobileVersionIsNotSupporting>
           )}
-          {page === Page.PROFILE && <ProfilePage key={routerStore.key} />}
-          {page === Page.ACCOUNT && <AccountPage key={routerStore.key} />}
-          {page === Page.SIGN_IN && (
-            <SignInPage
-              store={signInStore}
-              onSignUpClick={() => {
-                navigatePage(Page.SIGN_UP);
-              }}
-              onRestorePasswordClick={() => {
-                navigatePage(Page.RESTORE_PASSWORD_EMAIL);
-              }}
-            />
-          )}
-          {page === Page.SIGN_UP && (
-            <SignUpPage
-              store={signUpStore}
-              onSignInClick={() => {
-                navigatePage(Page.SIGN_IN);
-              }}
-              onContinueClick={() => {
-                navigatePage(Page.SIGN_UP_NAME);
-              }}
-            />
-          )}
-          {page === Page.SIGN_UP_NAME && (
-            <EnterNamePage
-              store={signUpStore}
-              onSignInClick={() => {
-                navigatePage(Page.SIGN_IN);
-              }}
-              onContinueClick={() => {
-                navigatePage(Page.SIGN_UP_PASSWORD);
-              }}
-            />
-          )}
-          {page === Page.SIGN_UP_PASSWORD && (
-            <SetPasswordPage
-              store={signUpStore}
-              onSignInClick={() => {
-                navigatePage(Page.SIGN_IN);
-              }}
-              onContinueClick={() => {
-                if (!signUpStore.isSubmitting) {
-                  void signUpStore.sendCodeAgain().then(() => {
-                    if (!signUpStore.isError) {
-                      navigatePage(Page.EMAIL_VERIFICATION);
+          {!showMobileNotSupporting && (
+            <>
+              {page === Page.LOADING && <LoadingPage />}
+              {page === Page.HOME_PAGE && <HomePage key={routerStore.key} />}
+              {page === Page.PUBLICATION && <PublicationPage />}
+              {page === Page.SHARING_OPTIONS && (
+                <SharingOptionsPage
+                  publicationTitle={routerStore.payload.publicationTitle}
+                />
+              )}
+              {page === Page.PROFILE && <ProfilePage key={routerStore.key} />}
+              {page === Page.ACCOUNT && <AccountPage key={routerStore.key} />}
+              {page === Page.SIGN_IN && (
+                <SignInPage
+                  store={signInStore}
+                  onSignUpClick={() => {
+                    navigatePage(Page.SIGN_UP);
+                  }}
+                  onRestorePasswordClick={() => {
+                    navigatePage(Page.RESTORE_PASSWORD_EMAIL);
+                  }}
+                />
+              )}
+              {page === Page.SIGN_UP && (
+                <SignUpPage
+                  store={signUpStore}
+                  onSignInClick={() => {
+                    navigatePage(Page.SIGN_IN);
+                  }}
+                  onContinueClick={() => {
+                    navigatePage(Page.SIGN_UP_NAME);
+                  }}
+                />
+              )}
+              {page === Page.SIGN_UP_NAME && (
+                <EnterNamePage
+                  store={signUpStore}
+                  onSignInClick={() => {
+                    navigatePage(Page.SIGN_IN);
+                  }}
+                  onContinueClick={() => {
+                    navigatePage(Page.SIGN_UP_PASSWORD);
+                  }}
+                />
+              )}
+              {page === Page.SIGN_UP_PASSWORD && (
+                <SetPasswordPage
+                  store={signUpStore}
+                  onSignInClick={() => {
+                    navigatePage(Page.SIGN_IN);
+                  }}
+                  onContinueClick={() => {
+                    if (!signUpStore.isSubmitting) {
+                      void signUpStore.sendCodeAgain().then(() => {
+                        if (!signUpStore.isError) {
+                          navigatePage(Page.EMAIL_VERIFICATION);
+                        }
+                      });
                     }
-                  });
-                }
-              }}
-            />
-          )}
-          {page === Page.EMAIL_VERIFICATION && (
-            <EmailVerificationPage
-              store={signUpStore}
-              onSignInClick={() => {
-                navigatePage(Page.SIGN_IN);
-              }}
-              onContinueClick={() => {
-                navigatePage(Page.SELF_INFO);
-              }}
-            />
-          )}
-          {page === Page.SELF_INFO && (
-            <EnterSelfInfoPage
-              store={signUpStore}
-              onSignInClick={() => {
-                navigatePage(Page.SIGN_IN);
-              }}
-              onContinueClick={() => {
-                navigatePage(Page.SIGN_UP_PASSWORD);
-              }}
-            />
-          )}
-          {page === Page.RESET_PASSWORD && (
-            <ResetPasswordPage
-              onSignInClick={() => {
-                navigatePage(Page.SIGN_IN);
-              }}
-              onSignUpClick={() => {
-                navigatePage(Page.SIGN_UP);
-              }}></ResetPasswordPage>
-          )}
-          {page === Page.RESTORE_PASSWORD_EMAIL && (
-            <RestorePasswordEmailPage
-              store={restorePasswordStore}
-              onSignUpClick={() => {
-                navigatePage(Page.SIGN_UP);
-              }}
-              onSignInClick={() => {
-                navigatePage(Page.SIGN_IN);
-              }}
-            />
+                  }}
+                />
+              )}
+              {page === Page.EMAIL_VERIFICATION && (
+                <EmailVerificationPage
+                  store={signUpStore}
+                  onSignInClick={() => {
+                    navigatePage(Page.SIGN_IN);
+                  }}
+                  onContinueClick={() => {
+                    navigatePage(Page.SELF_INFO);
+                  }}
+                />
+              )}
+              {page === Page.SELF_INFO && (
+                <EnterSelfInfoPage
+                  store={signUpStore}
+                  onSignInClick={() => {
+                    navigatePage(Page.SIGN_IN);
+                  }}
+                  onContinueClick={() => {
+                    navigatePage(Page.SIGN_UP_PASSWORD);
+                  }}
+                />
+              )}
+              {page === Page.RESET_PASSWORD && (
+                <ResetPasswordPage
+                  onSignInClick={() => {
+                    navigatePage(Page.SIGN_IN);
+                  }}
+                  onSignUpClick={() => {
+                    navigatePage(Page.SIGN_UP);
+                  }}></ResetPasswordPage>
+              )}
+              {page === Page.RESTORE_PASSWORD_EMAIL && (
+                <RestorePasswordEmailPage
+                  store={restorePasswordStore}
+                  onSignUpClick={() => {
+                    navigatePage(Page.SIGN_UP);
+                  }}
+                  onSignInClick={() => {
+                    navigatePage(Page.SIGN_IN);
+                  }}
+                />
+              )}
+            </>
           )}
         </ThemeProvider>
       </DndProvider>
     </>
   );
 });
+
+interface MobileVersionIsNotSupportingProps {
+  close: () => void;
+}
+
+const MobileVersionIsNotSupporting = observer(
+  (props: MobileVersionIsNotSupportingProps) => {
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'white',
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexDirection: 'column',
+          padding: 24
+        }}>
+        <img src={logo} />
+        <img style={{ marginTop: 24 }} src={developing} />
+        <div
+          style={{
+            fontSize: 24,
+            fontWeight: 600,
+            marginTop: 24
+          }}>
+          No mobile version yet
+        </div>
+        <div
+          style={{
+            marginTop: 16,
+            fontSize: 16,
+            color: '#68676E',
+            textAlign: 'center',
+            marginBottom: 24
+          }}>
+          We recommend you to switch on a desktop while we&apos;re still
+          perfecting our mobile version. Or you can use Desktop Mode.
+        </div>
+        <Button
+          style={{ width: '100%' }}
+          startIcon={<DesktopMacOutlinedIcon />}
+          endIcon={<ArrowForwardOutlinedIcon />}
+          color={'primary'}
+          variant="contained"
+          onClick={props.close}>
+          Continue in Desktop Mode
+        </Button>
+      </div>
+    );
+  }
+);
 
 export default App;
