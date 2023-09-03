@@ -72,7 +72,9 @@ export class PublicationStore {
   tags = new Set<string>();
   isNegative = false;
   negativeData = '';
+
   passcode = '';
+  isPasscodeDialogOpen = false;
 
   publicationTime: Date = new Date();
   viewsCount: number = 0;

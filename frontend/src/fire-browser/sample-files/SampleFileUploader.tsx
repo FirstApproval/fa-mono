@@ -21,6 +21,7 @@ import { UploadType } from 'src/apis/first-approval-api';
 import { SampleFileBrowser } from './SampleFileBrowser';
 
 interface SampleFileUploaderProps {
+  isReadonly: boolean;
   sfs: ChonkySampleFileSystem;
 }
 
@@ -95,7 +96,11 @@ export const SampleFileUploader: FunctionComponent<SampleFileUploaderProps> =
         {isDropZoneVisibleForSampleFile && (
           <DropZone onDrop={onDrop}>Drag sample files here for upload</DropZone>
         )}
-        <SampleFileBrowser sfs={sfs} isChonkyDragRef={isChonkyDragRef} />
+        <SampleFileBrowser
+          sfs={sfs}
+          isChonkyDragRef={isChonkyDragRef}
+          isReadonly={props.isReadonly}
+        />
         <Dialog
           open={props.sfs.renameOrReplaceDialogOpen}
           onClose={props.sfs.closeReplaceOrRenameDialog}

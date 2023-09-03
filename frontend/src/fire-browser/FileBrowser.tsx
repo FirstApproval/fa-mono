@@ -7,7 +7,8 @@ import {
   type FileData,
   FileList,
   FileNavbar,
-  setChonkyDefaults
+  setChonkyDefaults,
+  FileAction
 } from '@first-approval/chonky';
 import React, {
   type MutableRefObject,
@@ -49,6 +50,8 @@ interface FilePayload {
 }
 
 interface FileBrowserProps {
+  isReadonly: boolean;
+  onArchiveDownload: () => void;
   fs: ChonkyFileSystem;
   isChonkyDragRef: MutableRefObject<boolean>;
 }
@@ -181,6 +184,8 @@ export const FileBrowser = observer((props: FileBrowserProps): ReactElement => {
         downloadLink.click();
         document.body.removeChild(downloadLink);
       }
+    } else if (data.id === ChonkyActions.DownloadFilesArchive.id) {
+      props.onArchiveDownload();
     } else if (data.id === ChonkyActions.StartDragNDrop.id) {
       props.isChonkyDragRef.current = true;
     } else if (data.id === ChonkyActions.EndDragNDrop.id) {
@@ -188,17 +193,26 @@ export const FileBrowser = observer((props: FileBrowserProps): ReactElement => {
     }
   };
 
-  const myFileActions = [
+  const myFileActions: FileAction[] = [
     ChonkyActions.EnableListView,
     ChonkyActions.EnableGridView,
     ChonkyActions.ToggleShowFoldersFirst,
-    ChonkyActions.CreateFolder,
-    ChonkyActions.SortFilesByName,
-    ChonkyActions.UploadFiles,
-    ChonkyActions.DeleteFiles,
-    ChonkyActions.DownloadFiles,
-    ChonkyActions.AddNote
+    ChonkyActions.SortFilesByName
   ];
+
+  if (!props.isReadonly) {
+    myFileActions.push(
+      ChonkyActions.CreateFolder,
+      ChonkyActions.UploadFiles,
+      ChonkyActions.DeleteFiles,
+      ChonkyActions.DownloadFiles,
+      ChonkyActions.AddNote
+    );
+  }
+
+  if (props.isReadonly) {
+    myFileActions.push(ChonkyActions.DownloadFilesArchive);
+  }
 
   const [files, setFiles] = useState<FileArray>([]);
 
@@ -219,6 +233,7 @@ export const FileBrowser = observer((props: FileBrowserProps): ReactElement => {
     <>
       <Wrap>
         <ChonkyFileBrowser
+          disableDragAndDrop={props.isReadonly}
           disableDragAndDropProvider={true}
           files={files}
           folderChain={folderChain}

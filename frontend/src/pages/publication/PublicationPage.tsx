@@ -54,6 +54,7 @@ import { DateViewsDownloads } from './DateViewsDownloads';
 import { ChonkySampleFileSystem } from '../../fire-browser/sample-files/ChonkySampleFileSystem';
 import { SampleFileUploader } from '../../fire-browser/sample-files/SampleFileUploader';
 import { ActionBar } from './ActionBar';
+import { authStore } from '../../core/auth';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -253,11 +254,29 @@ const PublicationBody = observer(
           <SoftwareEditor publicationStore={publicationStore} />
         )}
         {!filesEnabled && <FilesPlaceholder onClick={openFiles} />}
-        {filesEnabled && <FileUploader fs={fs} />}
+        {filesEnabled && (
+          <FileUploader
+            fs={fs}
+            isReadonly={publicationStore.isReadonly}
+            onArchiveDownload={() => {
+              if (authStore.token) {
+                publicationStore.downloadFiles();
+                publicationStore.isPasscodeDialogOpen = true;
+              } else {
+                routerStore.navigatePage(Page.SIGN_UP);
+              }
+            }}
+          />
+        )}
         {!sampleFilesEnabled && publicationStore.viewMode === ViewMode.EDIT && (
           <SampleFilesPlaceholder onClick={openSampleFiles} />
         )}
-        {sampleFilesEnabled && <SampleFileUploader sfs={sfs} />}
+        {sampleFilesEnabled && (
+          <SampleFileUploader
+            sfs={sfs}
+            isReadonly={publicationStore.isReadonly}
+          />
+        )}
         {!authorsEnabled && <AuthorsPlaceholder onClick={openAuthors} />}
         {authorsEnabled && (
           <AuthorsEditor publicationStore={publicationStore} />

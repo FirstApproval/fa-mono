@@ -1,5 +1,6 @@
 import {
   ChonkyActions,
+  FileAction,
   type FileActionHandler,
   type FileArray,
   FileBrowser as ChonkySampleFileBrowser,
@@ -47,6 +48,7 @@ interface SampleFilePayload {
 }
 
 interface SampleFileBrowserProps {
+  isReadonly: boolean;
   sfs: ChonkySampleFileSystem;
   isChonkyDragRef: MutableRefObject<boolean>;
 }
@@ -185,16 +187,26 @@ export const SampleFileBrowser = observer(
       }
     };
 
-    const myFileActions = [
+    const myFileActions: FileAction[] = [
       ChonkyActions.EnableListView,
       ChonkyActions.EnableGridView,
       ChonkyActions.ToggleShowFoldersFirst,
-      ChonkyActions.SortFilesByName,
-      ChonkyActions.UploadFiles,
-      ChonkyActions.DeleteFiles,
-      ChonkyActions.DownloadFiles,
-      ChonkyActions.AddNote
+      ChonkyActions.SortFilesByName
     ];
+
+    if (!props.isReadonly) {
+      myFileActions.push(
+        ChonkyActions.CreateFolder,
+        ChonkyActions.UploadFiles,
+        ChonkyActions.DeleteFiles,
+        ChonkyActions.DownloadFiles,
+        ChonkyActions.AddNote
+      );
+    }
+
+    if (props.isReadonly) {
+      myFileActions.push(ChonkyActions.DownloadFilesArchive);
+    }
 
     const [files, setFiles] = useState<FileArray>([]);
 
@@ -215,6 +227,7 @@ export const SampleFileBrowser = observer(
       <>
         <Wrap>
           <ChonkySampleFileBrowser
+            disableDragAndDrop={props.isReadonly}
             disableDragAndDropProvider={true}
             files={files}
             folderChain={folderChain}

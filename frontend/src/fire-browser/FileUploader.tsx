@@ -21,6 +21,8 @@ import Dialog from '@mui/material/Dialog';
 import { FileBrowser } from './FileBrowser';
 
 interface FileUploaderProps {
+  isReadonly: boolean;
+  onArchiveDownload: () => void;
   fs: ChonkyFileSystem;
 }
 
@@ -94,7 +96,12 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
         {isDropZoneVisible && (
           <DropZone onDrop={onDrop}>Drag files here for upload</DropZone>
         )}
-        <FileBrowser fs={fs} isChonkyDragRef={isChonkyDragRef} />
+        <FileBrowser
+          fs={fs}
+          isChonkyDragRef={isChonkyDragRef}
+          isReadonly={props.isReadonly}
+          onArchiveDownload={props.onArchiveDownload}
+        />
         <Dialog
           open={props.fs.renameOrReplaceDialogOpen}
           onClose={props.fs.closeReplaceOrRenameDialog}

@@ -8,11 +8,12 @@ import {
   useLocalizedFileActionStrings,
   useParamSelector
 } from '@first-approval/chonky';
-import { Button, Divider, IconButton } from '@mui/material';
+import { Button, Divider, IconButton, Stack } from '@mui/material';
 import {
   DeleteOutlined,
   DownloadOutlined,
   EditNote,
+  FileDownload,
   FileUploadOutlined,
   FolderOpen
 } from '@mui/icons-material';
@@ -34,16 +35,24 @@ export const FileToolbar: React.FC = React.memo(() => {
           multiple
           style={{ display: 'none' }}
         />
-        <MainAction
-          item={ChonkyActions.UploadFiles.id}
-          icon={<FileUploadOutlined />}
-        />
-        <ButtonWrap>
+
+        <Stack direction="row" alignItems="center" spacing={2}>
+          <MainAction
+            item={ChonkyActions.DownloadFilesArchive.id}
+            icon={<FileDownload />}
+          />
+
+          <MainAction
+            item={ChonkyActions.UploadFiles.id}
+            icon={<FileUploadOutlined />}
+          />
+
           <MainAction
             item={ChonkyActions.CreateFolder.id}
             icon={<FolderOpen />}
           />
-        </ButtonWrap>
+        </Stack>
+
         {selectionSize !== 0 && (
           <>
             <DividerWrap variant={'middle'} orientation={'vertical'} />
@@ -88,6 +97,9 @@ const MainAction: React.FC<ToolbarButtonProps> = (
   const triggerAction = useFileActionTrigger(item);
   const { buttonName } = useLocalizedFileActionStrings(action);
   const key = `toolbar-item-${item}`;
+  if (!action) {
+    return null;
+  }
   return (
     <Button
       key={key}
@@ -103,8 +115,13 @@ const FileAction: React.FC<ToolbarButtonProps> = (
   props: ToolbarButtonProps
 ) => {
   const { item } = props;
-
+  const action = useParamSelector(selectFileActionData, item);
   const triggerAction = useFileActionTrigger(item);
+
+  if (!action) {
+    return null;
+  }
+
   return <IconButton onClick={triggerAction}>{props.icon}</IconButton>;
 };
 
@@ -119,10 +136,6 @@ const ToolbarWrap = styled.div`
 const ToolbarLeft = styled.div`
   display: flex;
   margin-left: auto;
-`;
-
-const ButtonWrap = styled.div`
-  margin-left: 24px;
 `;
 
 const SelectedCountWrap = styled.div`
