@@ -44,6 +44,7 @@ import { userStore } from '../../core/user';
 import { getInitials } from 'src/util/userUtil';
 import { cloneDeep } from 'lodash';
 import { Footer } from '../home/Footer';
+import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
 
 const tabs: string[] = ['general', 'profile', 'password'];
 
@@ -205,6 +206,7 @@ export const AccountPage: FunctionComponent = observer(() => {
           <Logo onClick={routerStore.goHome}>
             <img src={logo} />
           </Logo>
+          <BetaDialogWithButton />
           <FlexHeaderRight>
             <UserMenu />
           </FlexHeaderRight>

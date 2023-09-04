@@ -10,12 +10,13 @@ import {
   FlexHeader,
   FlexHeaderRight,
   FullWidthButton,
+  Header,
   Logo,
-  Parent,
-  Header
+  Parent
 } from '../common.styled';
 import { routerStore } from '../../core/router';
 import logo from '../../assets/logo-black.svg';
+import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
 
 interface EnterNamePageProps {
   store: SignUpStore;
@@ -55,6 +56,7 @@ export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
           <Logo onClick={routerStore.goHome}>
             <img src={logo} />
           </Logo>
+          <BetaDialogWithButton />
           <FlexHeaderRight>
             <Button
               variant="outlined"

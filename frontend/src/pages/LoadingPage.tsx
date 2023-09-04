@@ -10,6 +10,7 @@ import {
 } from './common.styled';
 import { routerStore } from '../core/router';
 import logo from '../assets/logo-black.svg';
+import { BetaDialogWithButton } from '../components/BetaDialogWithButton';
 
 export const LoadingPage: FunctionComponent = () => {
   return (
@@ -18,6 +19,7 @@ export const LoadingPage: FunctionComponent = () => {
         <Logo onClick={routerStore.goHome}>
           <img src={logo} />
         </Logo>
+        <BetaDialogWithButton />
         <FlexHeaderRight></FlexHeaderRight>
       </FlexHeader>
       <FlexBodyCenter>

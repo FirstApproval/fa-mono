@@ -25,6 +25,7 @@ import {
 import { validateEmail } from 'src/util/emailUtil';
 import { routerStore } from '../../core/router';
 import logo from '../../assets/logo-black.svg';
+import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
 
 interface SignUpPageProps {
   store: SignUpStore;
@@ -68,6 +69,7 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
           <Logo onClick={routerStore.goHome}>
             <img src={logo} />
           </Logo>
+          <BetaDialogWithButton />
           <FlexHeaderRight>
             <Button variant="outlined" onClick={props.onSignInClick}>
               Sign in

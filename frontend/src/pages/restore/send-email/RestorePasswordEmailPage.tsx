@@ -15,15 +15,16 @@ import {
   FlexHeader,
   FlexHeaderRight,
   FullWidthButton,
+  Header,
   Logo,
-  Parent,
-  Header
+  Parent
 } from '../../common.styled';
 import { type RestorePasswordStore } from './RestorePasswordStore';
 import { validateEmail } from 'src/util/emailUtil';
 import { routerStore } from '../../../core/router';
 import { LoadingButton } from '@mui/lab';
 import logo from '../../../assets/logo-black.svg';
+import { BetaDialogWithButton } from '../../../components/BetaDialogWithButton';
 
 interface RestorePasswordEmailProps {
   store: RestorePasswordStore;
@@ -50,6 +51,7 @@ export const RestorePasswordEmailPage: FunctionComponent<RestorePasswordEmailPro
           <Logo onClick={routerStore.goHome}>
             <img src={logo} />
           </Logo>
+          <BetaDialogWithButton />
           <FlexHeaderRight>
             <Button
               variant="outlined"

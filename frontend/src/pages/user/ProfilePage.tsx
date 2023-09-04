@@ -42,6 +42,7 @@ import {
 import { userStore } from 'src/core/user';
 import { Page } from '../../core/RouterStore';
 import { Footer } from '../home/Footer';
+import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
 
 export const ProfilePage: FunctionComponent = observer(() => {
   const [username] = useState(() => routerStore.profileUsername);
@@ -94,6 +95,7 @@ export const ProfilePage: FunctionComponent = observer(() => {
           <Logo onClick={routerStore.goHome}>
             <img src={logo} />
           </Logo>
+          <BetaDialogWithButton />
           <FlexHeaderRight>
             <UserMenu />
           </FlexHeaderRight>

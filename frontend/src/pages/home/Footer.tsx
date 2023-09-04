@@ -2,26 +2,32 @@ import styled from '@emotion/styled';
 import React, { type ReactElement } from 'react';
 import logo from '../../assets/logo.svg';
 import { Button, Stack } from '@mui/material';
+import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
 
 export const Footer = (): ReactElement => {
   return (
-    <FooterWrap>
-      <LogoWrap>
-        <img src={logo} />
-      </LogoWrap>
-      <MarginLeftWrap>
+    <>
+      <FooterWrap>
         <LogoWrap>
-          <Stack direction="row" spacing={2}>
-            <ButtonWrap href={'/docs/privacy_policy.pdf'} size={'medium'}>
-              Privacy
-            </ButtonWrap>{' '}
-            <ButtonWrap href={'/docs/terms_and_conditions.pdf'} size={'medium'}>
-              Terms
-            </ButtonWrap>
-          </Stack>
+          <img src={logo} />
         </LogoWrap>
-      </MarginLeftWrap>
-    </FooterWrap>
+        <BetaDialogWithButton />
+        <MarginLeftWrap>
+          <LogoWrap>
+            <Stack direction="row" spacing={2}>
+              <ButtonWrap href={'/docs/privacy_policy.pdf'} size={'medium'}>
+                Privacy
+              </ButtonWrap>{' '}
+              <ButtonWrap
+                href={'/docs/terms_and_conditions.pdf'}
+                size={'medium'}>
+                Terms
+              </ButtonWrap>
+            </Stack>
+          </LogoWrap>
+        </MarginLeftWrap>
+      </FooterWrap>
+    </>
   );
 };
 

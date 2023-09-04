@@ -56,6 +56,7 @@ import { SampleFileUploader } from '../../fire-browser/sample-files/SampleFileUp
 import { ActionBar } from './ActionBar';
 import { authStore } from '../../core/auth';
 import { DownloadersDialog } from './DownloadersDialog';
+import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -102,6 +103,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
               <Logo onClick={routerStore.goHome}>
                 <img src={logo} />
               </Logo>
+              <BetaDialogWithButton />
               {!publicationStore.isView && (
                 <>
                   <DraftedBy>

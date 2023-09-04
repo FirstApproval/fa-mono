@@ -23,6 +23,7 @@ import { routerStore } from '../../core/router';
 import { type SignInStore } from './SignInStore';
 import { observer } from 'mobx-react-lite';
 import logo from '../../assets/logo-black.svg';
+import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
 
 interface SignInPageProps {
   store: SignInStore;
@@ -40,6 +41,7 @@ export const SignInPage: FunctionComponent<SignInPageProps> = observer(
           <Logo onClick={routerStore.goHome}>
             <img src={logo} />
           </Logo>
+          <BetaDialogWithButton />
           <FlexHeaderRight>
             <Button variant="outlined" onClick={props.onSignUpClick}>
               Sign up

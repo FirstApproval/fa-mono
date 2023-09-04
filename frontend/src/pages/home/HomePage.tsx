@@ -26,21 +26,51 @@ import { CallToAction } from './CallToAction';
 import PopularAuthorsSection from './PopularAuthorsSection';
 import RecommendedPublicationsSection from './RecommendedPublicationsSection';
 import logo from '../../assets/logo-black.svg';
+import developer from '../../assets/developer.svg';
+import cloud from '../../assets/cloud.svg';
 import { authStore } from '../../core/auth';
 import { Footer } from './Footer';
+import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
+import { BetaDialog } from '../../components/BetaDialog';
 
 export const HomePage: FunctionComponent = observer(() => {
   const [store] = useState(() => new HomePageStore());
+  const [isBetaDialogOpen, setIsBetaDialogOpen] = useState(() => false);
 
   const hasSearch = store.searchQuery.length > 0;
 
   return (
     <>
       <Parent>
+        <div
+          onClick={() => {
+            setIsBetaDialogOpen(true);
+          }}
+          style={{
+            display: 'flex',
+            width: '100%',
+            height: '48px',
+            backgroundColor: 'var(--primary-main, #3B4EFF)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            alignContent: 'center',
+            cursor: 'pointer'
+          }}>
+          <img src={developer} />
+          <BetaHeaderText>
+            We are fine-tuning the platform and would love your feedback
+          </BetaHeaderText>
+          <img src={cloud} />
+        </div>
+        <BetaDialog
+          isOpen={isBetaDialogOpen}
+          onClose={() => setIsBetaDialogOpen(false)}
+        />
         <FlexHeader>
           <Logo onClick={routerStore.goHome}>
             <img src={logo} />
           </Logo>
+          <BetaDialogWithButton />
           <FlexHeaderRight>
             <Stack direction="row" alignItems="center" spacing={2}>
               <ButtonWrap
@@ -199,4 +229,20 @@ export const Wrap = styled('div')`
 
 const FullWidthTextField = styled(TextField)`
   width: 100%;
+`;
+
+const BetaHeaderText = styled.span`
+  color: var(--primary-contrast, #fff);
+  text-align: center;
+  font-feature-settings: 'clig' off, 'liga' off;
+
+  /* typography/subtitle2 */
+  font-family: Roboto;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 157%; /* 21.98px */
+  letter-spacing: 0.1px;
+  margin-left: 12px;
+  margin-right: 12px;
 `;

@@ -81,6 +81,7 @@ export const ColumnElement = styled.div`
 `;
 
 export const TitleRowWrap = styled.div`
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;

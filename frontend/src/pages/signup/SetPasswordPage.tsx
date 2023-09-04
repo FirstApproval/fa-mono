@@ -1,4 +1,4 @@
-import React, { type FunctionComponent, useState, useEffect } from 'react';
+import React, { type FunctionComponent, useEffect, useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import {
   Alert,
@@ -18,12 +18,13 @@ import {
   FlexHeader,
   FlexHeaderRight,
   FullWidthButton,
+  Header,
   Logo,
-  Parent,
-  Header
+  Parent
 } from '../common.styled';
 import { routerStore } from '../../core/router';
 import logo from '../../assets/logo-black.svg';
+import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
 
 interface PasswordValidationProps {
   password: string;
@@ -124,6 +125,7 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
           <Logo onClick={routerStore.goHome}>
             <img src={logo} />
           </Logo>
+          <BetaDialogWithButton />
           <FlexHeaderRight>
             <Button
               variant="outlined"

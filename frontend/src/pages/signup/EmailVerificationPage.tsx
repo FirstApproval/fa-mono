@@ -11,13 +11,14 @@ import {
   FlexBodyCenter,
   FlexHeader,
   FlexHeaderRight,
+  Header,
   Logo,
-  Parent,
-  Header
+  Parent
 } from '../common.styled';
 import { routerStore } from '../../core/router';
 import { authStore } from '../../core/auth';
 import logo from '../../assets/logo-black.svg';
+import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
 
 interface EmailVerificationPageProps {
   store: SignUpStore;
@@ -52,6 +53,7 @@ export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps
           <Logo onClick={routerStore.goHome}>
             <img src={logo} />
           </Logo>
+          <BetaDialogWithButton />
           <FlexHeaderRight>
             <Button
               variant="outlined"

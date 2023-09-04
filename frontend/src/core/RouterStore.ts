@@ -181,6 +181,7 @@ export class RouterStore {
   };
 
   goHome = (): void => {
+    debugger;
     this.navigatePage(Page.HOME_PAGE);
   };
 
@@ -206,5 +207,9 @@ export class RouterStore {
           this._path.lastIndexOf(accountPath) + accountPath.length
         )
       : null;
+  }
+
+  openInNewTab(url: string): void {
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 }
