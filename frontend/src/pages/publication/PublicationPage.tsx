@@ -144,7 +144,12 @@ export const PublicationPage: FunctionComponent = observer(() => {
                     variant="outlined"
                     size={'medium'}
                     onClick={() => {
-                      publicationStore.viewMode = nextViewMode;
+                      if (
+                        nextViewMode !== ViewMode.PREVIEW ||
+                        validateSections()
+                      ) {
+                        publicationStore.viewMode = nextViewMode;
+                      }
                     }}>
                     {nextViewMode}
                   </ButtonWrap>
