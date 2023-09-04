@@ -37,7 +37,6 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.math.BigDecimal
 import java.time.ZonedDateTime.now
 import java.util.UUID
 import java.util.UUID.randomUUID
@@ -70,7 +69,7 @@ class PublicationService(
     }
 
     @Transactional(readOnly = true)
-    fun findAllByIdIn(ids: List<UUID>) = publicationRepository.findAllByIdIn(ids)
+    fun findAllByIdIn(ids: List<UUID>) = publicationRepository.findAllByIdInAndStatus(ids, PUBLISHED)
 
     @Transactional
     fun edit(user: User, id: UUID, request: PublicationEditRequest) {
@@ -270,8 +269,9 @@ class PublicationService(
 
     @Transactional(readOnly = true)
     fun getAllFeaturedPublications(page: Int, pageSize: Int): PublicationsResponse {
-        val publicationsPage = publicationRepository.findAllByAccessTypeAndIsFeatured(
-            AccessType.OPEN,
+        val publicationsPage = publicationRepository.findAllByStatusAndAccessTypeAndIsFeatured(
+            PUBLISHED,
+            OPEN,
             true,
             PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime"))
         )
