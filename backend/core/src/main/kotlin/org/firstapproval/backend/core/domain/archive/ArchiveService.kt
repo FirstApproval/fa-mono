@@ -138,11 +138,13 @@ class ArchiveService(
             zipOutputStream.putNextEntry(zipParms)
             val buffer = ByteArray(1024)
             var len: Int
-            descriptions.toString().byteInputStream().use {
-                while (it.read(buffer).also { len = it } > 0) {
-                    zipOutputStream.write(buffer, 0, len)
+            if (descriptions.isNotEmpty()) {
+                descriptions.toString().byteInputStream().use {
+                    while (it.read(buffer).also { len = it } > 0) {
+                        zipOutputStream.write(buffer, 0, len)
+                    }
+                    zipOutputStream.closeEntry()
                 }
-                zipOutputStream.closeEntry()
             }
         } catch (ex: Exception) {
             log.error(ex) { "archive error" }
@@ -200,11 +202,13 @@ class ArchiveService(
             zipOutputStream.putNextEntry(zipParms)
             val buffer = ByteArray(1024)
             var len: Int
-            descriptions.toString().byteInputStream().use {
-                while (it.read(buffer).also { len = it } > 0) {
-                    zipOutputStream.write(buffer, 0, len)
+            if (descriptions.isNotEmpty()) {
+                descriptions.toString().byteInputStream().use {
+                    while (it.read(buffer).also { len = it } > 0) {
+                        zipOutputStream.write(buffer, 0, len)
+                    }
+                    zipOutputStream.closeEntry()
                 }
-                zipOutputStream.closeEntry()
             }
         } catch (ex: Exception) {
             log.error(ex) { "archive error" }
