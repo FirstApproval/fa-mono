@@ -30,8 +30,9 @@ class Publication(
     var accessType: AccessType = OPEN,
     @Convert(converter = StringEncryptionConverter::class)
     var title: String? = null,
-    @Convert(converter = StringEncryptionConverter::class)
-    var researchArea: String? = null,
+    @ColumnTransformer(write = "?::text")
+    @Convert(converter = StringListEncryptionConverter::class)
+    var researchAreas: List<String>? = null,
     @ColumnTransformer(write = "?::text")
     @Convert(converter = StringListEncryptionConverter::class)
     var description: List<String>? = null,
