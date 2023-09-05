@@ -146,16 +146,21 @@ export const ProfilePage: FunctionComponent = observer(() => {
                 </UserInfoElement>
               </RowElement>
               <HeightElement value={'40px'}></HeightElement>
-              <Tabs
-                value={tabNumber}
-                onChange={handleChange}
-                aria-label="basic tabs example">
-                <CustomTab sx={{ textTransform: 'none' }} label="Published" />
-                {!username && (
-                  <CustomTab sx={{ textTransform: 'none' }} label="Drafts" />
-                )}
-              </Tabs>
-              <Divider style={{ marginTop: '-1.3px' }} />
+              {!username && (
+                <>
+                  <Tabs
+                    value={tabNumber}
+                    onChange={handleChange}
+                    aria-label="basic tabs example">
+                    <CustomTab
+                      sx={{ textTransform: 'none' }}
+                      label="Published"
+                    />
+                    <CustomTab sx={{ textTransform: 'none' }} label="Drafts" />
+                  </Tabs>
+                  <Divider style={{ marginTop: '-1.3px' }} />
+                </>
+              )}
               <HeightElement value={'40px'}></HeightElement>
               {store.isLoadingPublications && <LinearProgress />}
               {!store.isLoadingPublications && (
