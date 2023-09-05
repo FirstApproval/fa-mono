@@ -26,6 +26,7 @@ import {
 import { routerStore } from '../../core/router';
 import { UserMenu } from '../../components/UserMenu';
 import logo from '../../assets/logo-black.svg';
+import noPublications from '../../assets/no-publications.svg';
 import upload_your_first_dataset_from from '../../assets/upload-your-first-dataset.svg';
 import styled from '@emotion/styled';
 import { ProfilePageStore } from './ProfilePageStore';
@@ -55,7 +56,7 @@ export const ProfilePage: FunctionComponent = observer(() => {
   };
 
   const mapPublications = (publications: Publication[]): ReactElement[] =>
-    publications.map((publication, index) => (
+    (publications ?? []).map((publication, index) => (
       <PublicationSection publication={publication} key={publication.id} />
     ));
   const loadMoreButton = (status: PublicationStatus): ReactElement => (
@@ -145,9 +146,9 @@ export const ProfilePage: FunctionComponent = observer(() => {
                   </RowElement>
                 </UserInfoElement>
               </RowElement>
-              <HeightElement value={'40px'}></HeightElement>
               {!username && (
                 <>
+                  <HeightElement value={'40px'}></HeightElement>
                   <Tabs
                     value={tabNumber}
                     onChange={handleChange}
@@ -159,9 +160,9 @@ export const ProfilePage: FunctionComponent = observer(() => {
                     <CustomTab sx={{ textTransform: 'none' }} label="Drafts" />
                   </Tabs>
                   <Divider style={{ marginTop: '-1.3px' }} />
+                  <HeightElement value={'40px'}></HeightElement>
                 </>
               )}
-              <HeightElement value={'40px'}></HeightElement>
               {store.isLoadingPublications && <LinearProgress />}
               {!store.isLoadingPublications && (
                 <>
@@ -171,6 +172,26 @@ export const ProfilePage: FunctionComponent = observer(() => {
                         {mapPublications(
                           store.publications.get(PublicationStatus.PUBLISHED) ??
                             []
+                        )}
+                        {store.publications.get(
+                          PublicationStatus.PUBLISHED
+                        ) && (
+                          <div
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'column',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              marginTop: '11.5px'
+                            }}>
+                            <img src={noPublications} />
+                            <NoPublicationsText>
+                              No publications :(
+                            </NoPublicationsText>
+                            <ItLooksLikeUserHasntUploaded>
+                              {`It looks like ${user.firstName} hasn’t uploaded any datasets yet.\nCheck back soon!`}
+                            </ItLooksLikeUserHasntUploaded>
+                          </div>
                         )}
                       </PublicationsContainer>
                       {notEmptyPublished &&
@@ -417,4 +438,35 @@ const PublicationsContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: start;
+`;
+
+const NoPublicationsText = styled.span`
+  color: var(--text-primary, #040036);
+  text-align: center;
+  font-feature-settings: 'clig' off, 'liga' off;
+
+  /* typography/h5 */
+  font-family: Roboto;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 133.4%; /* 32.016px */
+
+  margin-top: 16px;
+  margin-bottom: 16px;
+`;
+
+const ItLooksLikeUserHasntUploaded = styled.span`
+  color: var(--text-secondary, #68676e);
+  text-align: center;
+  font-feature-settings: 'clig' off, 'liga' off;
+
+  /* typography/body1 */
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%; /* 24px */
+  letter-spacing: 0.15px;
+  white-space: pre-line;
 `;
