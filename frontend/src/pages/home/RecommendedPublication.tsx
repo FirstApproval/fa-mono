@@ -114,10 +114,10 @@ const AvatarWrap = styled.div`
 `;
 
 const NameWrap = styled.span`
-  font-size: 14px;
+  font-size: 20px;
   font-style: normal;
   font-weight: 500;
-  line-height: 130%; /* 32px */
+  line-height: 160%; /* 32px */
   letter-spacing: 0.15px;
 
   margin-bottom: 16px;
