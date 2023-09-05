@@ -75,7 +75,7 @@ export class PublicationStore {
 
   passcode = '';
   isPasscodeDialogOpen = false;
-  isCitateDialogOpen = true;
+  isCitateDialogOpen = false;
 
   publicationTime: Date = new Date();
   viewsCount: number = 0;
