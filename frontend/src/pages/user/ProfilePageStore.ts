@@ -21,10 +21,10 @@ export class ProfilePageStore {
     void this.loadUser(username);
     this.isLoadingPublications = true;
     try {
-      for (const status of [
-        PublicationStatus.PENDING,
-        PublicationStatus.PUBLISHED
-      ]) {
+      const statuses = username
+        ? [PublicationStatus.PUBLISHED]
+        : [PublicationStatus.PUBLISHED, PublicationStatus.PENDING];
+      for (const status of statuses) {
         this.publicationsLastPage.set(status, false);
         this.publicationsPageNum.set(status, 0);
         void this.load(username, status);

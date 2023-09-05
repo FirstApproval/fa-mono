@@ -1,8 +1,16 @@
 package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.PublicationApi
-import org.firstapproval.api.server.model.*
 import org.firstapproval.api.server.model.AccessType
+import org.firstapproval.api.server.model.CreatePublicationResponse
+import org.firstapproval.api.server.model.DownloadLinkResponse
+import org.firstapproval.api.server.model.GetDownloadersResponse
+import org.firstapproval.api.server.model.Publication
+import org.firstapproval.api.server.model.PublicationEditRequest
+import org.firstapproval.api.server.model.PublicationStatus
+import org.firstapproval.api.server.model.PublicationStatus.PUBLISHED
+import org.firstapproval.api.server.model.PublicationsResponse
+import org.firstapproval.api.server.model.SearchPublicationsResponse
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.config.security.userOrNull
@@ -19,9 +27,10 @@ import org.springframework.data.domain.Sort
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.annotation.RestController
 import java.net.URLConnection
-import java.util.*
+import java.util.UUID
 import org.firstapproval.backend.core.domain.publication.AccessType as AccessTypeEntity
 
 @RestController
@@ -43,6 +52,9 @@ class PublicationController(
         page: Int,
         pageSize: Int
     ): ResponseEntity<PublicationsResponse> {
+        if (status != PUBLISHED) {
+            throw AccessDeniedException("Access denied")
+        }
         val user = userService.getPublicUserProfile(username)
         val publications = publicationService.getCreatorPublications(user, status, page, pageSize)
         return ok().body(publications)

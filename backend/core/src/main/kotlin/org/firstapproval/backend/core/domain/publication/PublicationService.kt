@@ -287,8 +287,9 @@ class PublicationService(
         page: Int,
         pageSize: Int,
     ): PublicationsResponse {
-        val publicationsPage = publicationRepository.findAllByStatusAndCreatorId(
+        val publicationsPage = publicationRepository.findAllByStatusAndAccessTypeAndCreatorId(
             PublicationStatus.valueOf(status.name),
+            OPEN,
             user.id,
             PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime"))
         )
