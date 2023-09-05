@@ -181,7 +181,6 @@ export class RouterStore {
   };
 
   goHome = (): void => {
-    debugger;
     this.navigatePage(Page.HOME_PAGE);
   };
 

@@ -83,6 +83,10 @@ export class PublicationStore {
   downloaders: UserInfo[] = [];
   downloadersIsLastPage = false;
 
+  publicationStatus: PublicationStatus | null = null;
+
+  viewCounterUpdated: boolean = false;
+
   loadDownloadersLocked = false;
 
   constructor(
@@ -998,6 +1002,9 @@ export class PublicationStore {
           }
           if (publication.downloadsCount) {
             this.downloadsCount = publication.downloadsCount;
+          }
+          if (publication.status) {
+            this.publicationStatus = publication.status;
           }
           this.setAuthorNames();
 

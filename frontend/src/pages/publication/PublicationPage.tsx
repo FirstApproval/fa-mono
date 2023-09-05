@@ -60,6 +60,7 @@ import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
 import developer from '../../assets/developer.svg';
 import cloud from '../../assets/cloud.svg';
 import { BetaDialog } from '../../components/BetaDialog';
+import { PublicationStatus } from '../../apis/first-approval-api';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -86,10 +87,14 @@ export const PublicationPage: FunctionComponent = observer(() => {
   };
 
   useEffect(() => {
-    if (publicationStore.viewMode === ViewMode.VIEW) {
+    if (
+      publicationStore.publicationStatus === PublicationStatus.PUBLISHED &&
+      !publicationStore.viewCounterUpdated
+    ) {
+      publicationStore.viewCounterUpdated = true;
       void publicationService.incrementPublicationViewCount(publicationId);
     }
-  }, [publicationStore.publicationId]);
+  }, [publicationStore.publicationStatus]);
 
   const emptyResearchArea = researchArea.length === 0;
 
