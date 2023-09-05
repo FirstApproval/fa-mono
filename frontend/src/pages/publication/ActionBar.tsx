@@ -12,6 +12,7 @@ import { Button, Tooltip } from '@mui/material';
 import { PublicationStore } from './store/PublicationStore';
 import { ContentCopy } from '@mui/icons-material';
 import { ArchiveDownloader } from './ArchiveDownloader';
+import { CitateDialog } from './CitateDialog';
 
 export const ActionBar = observer(
   (props: { publicationStore: PublicationStore }): ReactElement => {
@@ -81,7 +82,12 @@ export const ActionBar = observer(
                 <img src={pdf} style={{ marginRight: '8px' }} /> PDF
               </PdfButtonWrap>
             </Tooltip>
-            <ActionButtonWrap variant="outlined" size={'medium'}>
+            <ActionButtonWrap
+              variant="outlined"
+              size={'medium'}
+              onClick={() => {
+                publicationStore.isCitateDialogOpen = true;
+              }}>
               <img src={citate} />
             </ActionButtonWrap>
             <Tooltip title="Copy publication link">
@@ -108,6 +114,11 @@ export const ActionBar = observer(
           setIsPasscodeOpen={(value) =>
             (publicationStore.isPasscodeDialogOpen = value)
           }
+          publicationStore={publicationStore}
+        />
+        <CitateDialog
+          isOpen={publicationStore.isCitateDialogOpen}
+          setIsOpen={(value) => (publicationStore.isCitateDialogOpen = value)}
           publicationStore={publicationStore}
         />
       </div>
