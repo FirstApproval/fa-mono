@@ -125,6 +125,16 @@ export const NegativeDataEditMode = observer(
             placeholder="Why your data didn't confirm the initial hypothesis or expectations"
             minRows={1}
             maxRows={4}
+            inputProps={{
+              disableUnderline: true,
+              autoComplete: 'off',
+              style: {
+                fontSize: '20px',
+                fontWeight: '400',
+                fontStyle: 'normal',
+                lineHeight: '160%'
+              }
+            }}
           />
         )}
       </NegativeDataAllWrapper>
@@ -447,9 +457,11 @@ const ReadonlyContentPlaceholderWrap = styled.div`
   border-radius: 4px;
   background: var(--grey-50, #f8f7fa);
 
-  font-size: 16px;
+  font-size: 20px;
   font-style: normal;
   font-weight: 400;
+  line-height: 160%; /* 32px */
+  letter-spacing: 0.15px;
 
   width: 100%;
 

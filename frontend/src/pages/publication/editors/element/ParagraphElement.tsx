@@ -92,11 +92,17 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
           placeholder={placeholder}
           InputProps={{
             disableUnderline: true,
-            autoComplete: 'off'
+            autoComplete: 'off',
+            style: {
+              fontSize: '20px',
+              fontWeight: '400',
+              fontStyle: 'normal',
+              lineHeight: '160%'
+            }
           }}
         />
       )}
-      {props.isReadonly && <div>{value}</div>}
+      {props.isReadonly && <ValueWrap>{value}</ValueWrap>}
     </ParagraphWrap>
   );
 };
@@ -113,6 +119,14 @@ const TextFieldWrap = styled(TextField)`
 export const PrefixRowWrap = styled.span`
   margin: 3.5px 6px 0;
   text-align: center;
+`;
+
+export const ValueWrap = styled.div`
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 160%; /* 32px */
+  letter-spacing: 0.15px;
 `;
 
 export enum ParagraphPrefixType {
