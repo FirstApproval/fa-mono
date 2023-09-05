@@ -173,26 +173,25 @@ export const ProfilePage: FunctionComponent = observer(() => {
                           store.publications.get(PublicationStatus.PUBLISHED) ??
                             []
                         )}
-                        {store.publications.get(
-                          PublicationStatus.PUBLISHED
-                        ) && (
-                          <div
-                            style={{
-                              display: 'flex',
-                              flexDirection: 'column',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              marginTop: '11.5px'
-                            }}>
-                            <img src={noPublications} />
-                            <NoPublicationsText>
-                              No publications :(
-                            </NoPublicationsText>
-                            <ItLooksLikeUserHasntUploaded>
-                              {`It looks like ${user.firstName} hasn’t uploaded any datasets yet.\nCheck back soon!`}
-                            </ItLooksLikeUserHasntUploaded>
-                          </div>
-                        )}
+                        {store.publications.get(PublicationStatus.PUBLISHED) &&
+                          username && (
+                            <div
+                              style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                marginTop: '11.5px'
+                              }}>
+                              <img src={noPublications} />
+                              <NoPublicationsText>
+                                No publications :(
+                              </NoPublicationsText>
+                              <ItLooksLikeUserHasntUploaded>
+                                {`It looks like ${user.firstName} hasn’t uploaded any datasets yet.\nCheck back soon!`}
+                              </ItLooksLikeUserHasntUploaded>
+                            </div>
+                          )}
                       </PublicationsContainer>
                       {notEmptyPublished &&
                         !store.publicationsLastPage.get(
