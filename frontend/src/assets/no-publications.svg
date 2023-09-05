@@ -1,0 +1,24 @@
+<svg width="196" height="123" viewBox="0 0 196 123" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M98 50.0002L194 77.0002L98 104L2 77.0002L98 50.0002Z" fill="white" stroke="#D2D2D6"/>
+    <path d="M66.0005 72.9995L98.0003 63.9997L130 72.9998L98 81.9997L66.0005 72.9995Z" fill="white" stroke="#D2D2D6"/>
+    <path d="M98.0005 81.9995L130 72.9997L162 81.9998L130 90.9997L98.0005 81.9995Z" fill="white" stroke="#D2D2D6"/>
+    <path d="M34.0004 63.9995L66.0001 54.9997L97.9996 63.9998L65.9999 72.9997L34.0004 63.9995Z" fill="white" stroke="#D2D2D6"/>
+    <path d="M34.0007 81.9995L66.0004 72.9997L97.9999 81.9998L66.0001 90.9997L34.0007 81.9995Z" fill="white" stroke="#D2D2D6"/>
+    <path d="M66.0007 90.9995L98.0004 81.9997L130 90.9998L98.0001 99.9997L66.0007 90.9995Z" fill="white" stroke="#D2D2D6"/>
+    <path d="M2.00043 72.9995L34.0001 63.9997L65.9996 72.9998L33.9999 81.9997L2.00043 72.9995Z" fill="white" stroke="#D2D2D6"/>
+    <path d="M98.0007 63.9995L130 54.9997L162 63.9998L130 72.9997L98.0007 63.9995Z" fill="white" stroke="#D2D2D6"/>
+    <path d="M130.001 72.9995L162 63.9997L194 72.9998L162 81.9997L130.001 72.9995Z" fill="white" stroke="#D2D2D6"/>
+    <path d="M66.0004 54.9995L98.0001 45.9997L130 54.9998L97.9999 63.9997L66.0004 54.9995Z" fill="white" stroke="#D2D2D6"/>
+    <g opacity="0.3" filter="url(#filter0_f_2271_16744)">
+        <ellipse cx="98.0002" cy="73.0002" rx="20" ry="5" fill="#040036" fill-opacity="0.38"/>
+    </g>
+    <circle cx="98.0005" cy="21" r="20" fill="white" stroke="#D2D2D6"/>
+    <path d="M115 21C115 11.6112 107.389 4 98.0005 4" stroke="#D2D2D6"/>
+    <defs>
+        <filter id="filter0_f_2271_16744" x="74.0002" y="64.0002" width="48" height="18" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+            <feGaussianBlur stdDeviation="2" result="effect1_foregroundBlur_2271_16744"/>
+        </filter>
+    </defs>
+</svg>

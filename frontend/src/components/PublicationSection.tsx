@@ -1,11 +1,12 @@
 import React, { type ReactElement } from 'react';
 import styled from '@emotion/styled';
-import { Avatar, Divider } from '@mui/material';
+import { Avatar, Divider, Tooltip } from '@mui/material';
 import { type Publication } from '../apis/first-approval-api';
 import { routerStore } from '../core/router';
 import { Page } from '../core/RouterStore';
 import { Download, RemoveRedEyeOutlined } from '@mui/icons-material';
 import { renderProfileImage } from '../fire-browser/utils';
+import { findResearchAreaIcon } from '../pages/publication/store/ResearchAreas';
 
 export const PublicationSection = (props: {
   publication: Publication;
@@ -29,7 +30,10 @@ export const PublicationSection = (props: {
         <AuthorsWrap>
           <Avatar
             src={renderProfileImage(publication.creator.profileImage)}
-            sx={{ width: 24, height: 24 }}
+            sx={{
+              width: 24,
+              height: 24
+            }}
           />
           <Authors>{authorsString}</Authors>
         </AuthorsWrap>
@@ -41,7 +45,7 @@ export const PublicationSection = (props: {
         />
       </LinkWrap>
       <FlexWrap>
-        <PublicationAreaBox title={publication.researchArea ?? ''} />
+        <ResearchAreas publication={publication} />
         <Footer>
           <RemoveRedEyeOutlined
             style={{ marginRight: '6px' }}
@@ -53,6 +57,57 @@ export const PublicationSection = (props: {
         </Footer>
       </FlexWrap>
       <DividerWrap />
+    </>
+  );
+};
+
+const ResearchAreas = (props: { publication: Publication }): ReactElement => {
+  return (
+    <>
+      {props.publication.researchAreas
+        ?.map((researchArea) => {
+          return (
+            <PublicationAreaWrap key={researchArea.text}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>
+                <div
+                  style={{
+                    paddingTop: 4,
+                    marginRight: 4
+                  }}>
+                  {findResearchAreaIcon(researchArea.text)}
+                </div>
+                {researchArea.text}
+              </div>
+            </PublicationAreaWrap>
+          );
+        })
+        .slice(0, 1)}
+      {props.publication.researchAreas?.length &&
+        props.publication.researchAreas?.length > 1 && (
+          <PublicationAreaWrap>
+            <Tooltip
+              title={props.publication.researchAreas
+                .map((ra) => ra.text)
+                .join(', ')}>
+              <div
+                style={{
+                  cursor: 'pointer',
+                  height: 32,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                {(props.publication.researchAreas?.length &&
+                  props.publication.researchAreas?.length) - 1}{' '}
+                more...
+              </div>
+            </Tooltip>
+          </PublicationAreaWrap>
+        )}
     </>
   );
 };
@@ -88,9 +143,6 @@ const PublicationDescriptionWrap = styled.div`
 
   word-break: break-word;
 `;
-const PublicationAreaBox = (props: { title: string }): ReactElement => {
-  return <PublicationAreaWrap>{props.title}</PublicationAreaWrap>;
-};
 
 const DividerWrap = styled(Divider)`
   margin-top: 40px;
@@ -101,6 +153,7 @@ const PublicationAreaWrap = styled.div`
   display: inline-flex;
   padding: 2px 8px;
   align-items: center;
+  margin-right: 8px;
 
   border-radius: 4px;
   background: var(--grey-50, #f8f7fa);

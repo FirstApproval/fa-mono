@@ -94,7 +94,7 @@ class PublicationService(
             if (negativeData?.edited == true) publication.negativeData = negativeData.value
             if (isNegative != null) publication.isNegative = isNegative
             if (description?.edited == true) publication.description = description.values.map { it.text }
-            if (researchArea?.edited == true) publication.researchArea = researchArea.value
+            if (researchAreas?.edited == true) publication.researchAreas = researchAreas.values.map { it.text }
             if (grantOrganizations?.edited == true) publication.grantOrganizations = grantOrganizations.values.map { it.text }
             if (primaryArticles?.edited == true) publication.primaryArticles = primaryArticles.values.map { it.text }
             if (relatedArticles?.edited == true) publication.relatedArticles = relatedArticles.values.map { it.text }
@@ -313,7 +313,7 @@ fun Publication.toApiObject(userService: UserService) = PublicationApiObject().a
         .profileImage(userService.getProfileImage(creator.profileImage))
     publicationApiModel.title = title
     publicationApiModel.description = description?.map { Paragraph(it) }
-    publicationApiModel.researchArea = researchArea
+    publicationApiModel.researchAreas = researchAreas?.map { Paragraph(it) }
     publicationApiModel.grantOrganizations = grantOrganizations?.map { Paragraph(it) }
     publicationApiModel.primaryArticles = primaryArticles?.map { Paragraph(it) }
     publicationApiModel.relatedArticles = relatedArticles?.map { Paragraph(it) }

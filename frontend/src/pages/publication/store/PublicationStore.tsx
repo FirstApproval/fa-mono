@@ -39,7 +39,7 @@ export class PublicationStore {
   isLoading = true;
 
   title = '';
-  researchArea = '';
+  researchAreas: Paragraph[] = [];
 
   creator: UserInfo | undefined;
   experimentGoalsEnabled = false;
@@ -316,18 +316,22 @@ export class PublicationStore {
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
-  updateResearchArea(researchArea: string): void {
-    this.researchArea = researchArea;
+  updateResearchArea(newResearchAreas: any[]): void {
+    this.researchAreas = newResearchAreas.map((ra) => {
+      return {
+        text: ra.subcategory
+      };
+    });
     this.savingStatus = SavingStatusState.SAVING;
     void this.updateResearchAreaRequest();
   }
 
   updateResearchAreaRequest = _.throttle(async () => {
-    const researchArea = this.researchArea;
+    const researchAreas = this.researchAreas;
     await publicationService.editPublication(this.publicationId, {
-      researchArea: {
-        value: researchArea,
-        edited: true
+      researchAreas: {
+        edited: true,
+        values: researchAreas
       }
     });
     this.savingStatus = SavingStatusState.SAVED;
@@ -932,8 +936,8 @@ export class PublicationStore {
           if (publication.title) {
             this.title = publication.title;
           }
-          if (publication.researchArea) {
-            this.researchArea = publication.researchArea;
+          if (publication.researchAreas) {
+            this.researchAreas = publication.researchAreas;
           }
           if (publication.description?.length) {
             this.summary = publication.description.map(mapParagraph);

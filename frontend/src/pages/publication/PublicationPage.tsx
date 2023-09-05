@@ -76,7 +76,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
     () => new PublicationStore(publicationId, fs, sfs)
   );
 
-  const { isLoading, researchArea, validate } = publicationStore;
+  const { isLoading, researchAreas, validate } = publicationStore;
 
   const validateSections = (): boolean => {
     const result = validate();
@@ -96,7 +96,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
     }
   }, [publicationStore.publicationStatus]);
 
-  const emptyResearchArea = researchArea.length === 0;
+  const emptyResearchArea = researchAreas.length === 0;
 
   const nextViewMode =
     publicationStore.viewMode === ViewMode.PREVIEW
