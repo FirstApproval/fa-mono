@@ -133,12 +133,12 @@ class ArchiveService(
                 page = page.next()
                 files = publicationFileRepository.findByPublicationIdOrderByCreationTimeAsc(publication.id, page)
             }
-            val zipParms = ZipParameters()
-            zipParms.fileNameInZip = getFileNameForDescriptionsFile(publication.id)
-            zipOutputStream.putNextEntry(zipParms)
-            val buffer = ByteArray(1024)
-            var len: Int
             if (descriptions.isNotEmpty()) {
+                val zipParms = ZipParameters()
+                zipParms.fileNameInZip = getFileNameForDescriptionsFile(publication.id)
+                zipOutputStream.putNextEntry(zipParms)
+                val buffer = ByteArray(1024)
+                var len: Int
                 descriptions.toString().byteInputStream().use {
                     while (it.read(buffer).also { len = it } > 0) {
                         zipOutputStream.write(buffer, 0, len)
@@ -197,12 +197,12 @@ class ArchiveService(
                 page = page.next()
                 files = publicationSampleFileRepository.findByPublicationIdOrderByCreationTimeAsc(publication.id, page)
             }
-            val zipParms = ZipParameters()
-            zipParms.fileNameInZip = getFileNameForDescriptionsFile(publication.id)
-            zipOutputStream.putNextEntry(zipParms)
-            val buffer = ByteArray(1024)
-            var len: Int
             if (descriptions.isNotEmpty()) {
+                val zipParms = ZipParameters()
+                zipParms.fileNameInZip = getFileNameForDescriptionsFile(publication.id)
+                zipOutputStream.putNextEntry(zipParms)
+                val buffer = ByteArray(1024)
+                var len: Int
                 descriptions.toString().byteInputStream().use {
                     while (it.read(buffer).also { len = it } > 0) {
                         zipOutputStream.write(buffer, 0, len)
