@@ -36,13 +36,14 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
   let lastName;
   let email;
   let username: string;
+
   if (isConfirmed) {
     const confirmedAuthor = author as ConfirmedAuthor;
     firstName = confirmedAuthor.user.firstName;
     lastName = confirmedAuthor.user.lastName;
     email = confirmedAuthor.user.email;
     username = confirmedAuthor.user.username;
-    shortBio = confirmedAuthor.shortBio;
+    shortBio = confirmedAuthor.user.selfInfo;
   } else if (isConfirmed === false) {
     const unconfirmedAuthor = author as UnconfirmedAuthor;
     firstName = unconfirmedAuthor.firstName;
