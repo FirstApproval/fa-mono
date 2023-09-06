@@ -175,6 +175,7 @@ export const ResearchAreaEditor = (props: EditorProps): ReactElement => {
                     }}
                     label={option.subcategory}
                     {...getTagProps({ index })}
+                    disabled={researchAreas.length === 1}
                   />
                 ))
               }
