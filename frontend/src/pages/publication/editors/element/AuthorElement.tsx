@@ -84,7 +84,7 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
             )}
             {!isConfirmed && (
               <span>
-                {firstName} {lastName}
+                {firstName} {lastName} (not registered)
               </span>
             )}
           </AuthorName>
