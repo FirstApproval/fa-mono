@@ -13,6 +13,7 @@ import { PublicationStore } from './store/PublicationStore';
 import { ContentCopy } from '@mui/icons-material';
 import { ArchiveDownloader } from './ArchiveDownloader';
 import { CitateDialog } from './CitateDialog';
+import { PublicationStatus } from '../../apis/first-approval-api';
 
 export const ActionBar = observer(
   (props: { publicationStore: PublicationStore }): ReactElement => {
@@ -44,33 +45,38 @@ export const ActionBar = observer(
               display: 'flex',
               alignItems: 'center'
             }}>
-            <Tooltip title="Download publication files">
-              <DownloadFilesButtonWrap
-                variant="outlined"
-                onClick={() => {
-                  if (authStore.token) {
-                    publicationStore.downloadFiles();
-                    publicationStore.isPasscodeDialogOpen = true;
-                  } else {
-                    routerStore.navigatePage(Page.SIGN_UP);
-                  }
-                }}
-                size={'medium'}>
-                <img src={download} style={{ marginRight: '8px' }} /> Download
-              </DownloadFilesButtonWrap>
-            </Tooltip>
-            {publicationStore.sampleFilesEnabled && (
-              <Tooltip title="Download publication sample files">
-                <DownloadSampleFilesButtonWrap
-                  hidden={true}
+            {publicationStore.publicationStatus ===
+              PublicationStatus.PUBLISHED && (
+              <Tooltip title="Download publication files">
+                <DownloadFilesButtonWrap
                   variant="outlined"
-                  onClick={() => publicationStore.downloadSampleFiles()}
+                  onClick={() => {
+                    if (authStore.token) {
+                      publicationStore.downloadFiles();
+                      publicationStore.isPasscodeDialogOpen = true;
+                    } else {
+                      routerStore.navigatePage(Page.SIGN_UP);
+                    }
+                  }}
                   size={'medium'}>
-                  <img src={downloadSample} style={{ marginRight: '8px' }} />{' '}
-                  Download sample
-                </DownloadSampleFilesButtonWrap>
+                  <img src={download} style={{ marginRight: '8px' }} /> Download
+                </DownloadFilesButtonWrap>
               </Tooltip>
             )}
+            {publicationStore.sampleFilesEnabled &&
+              publicationStore.publicationStatus ===
+                PublicationStatus.PUBLISHED && (
+                <Tooltip title="Download publication sample files">
+                  <DownloadSampleFilesButtonWrap
+                    hidden={true}
+                    variant="outlined"
+                    onClick={() => publicationStore.downloadSampleFiles()}
+                    size={'medium'}>
+                    <img src={downloadSample} style={{ marginRight: '8px' }} />{' '}
+                    Download sample
+                  </DownloadSampleFilesButtonWrap>
+                </Tooltip>
+              )}
           </div>
           <div
             style={{

@@ -154,7 +154,9 @@ class PublicationService(
         val user = userService.get(UUID.fromString(claims["userId"].toString()))
         publication.downloadsCount += 1
         addDownloadHistory(user, publication)
-        notificationService.sendArchivePassword(user.email!!, publication.title, publication.archivePassword!!)
+        if (user.email != null) {
+            notificationService.sendArchivePassword(user.email!!, publication.title, publication.archivePassword!!)
+        }
         return FileResponse(
             name = title!! + ".zip",
             fileStorageService.get(ARCHIVED_PUBLICATION_FILES, publicationId)
