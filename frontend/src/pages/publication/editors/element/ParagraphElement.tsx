@@ -97,7 +97,9 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
               fontSize: '20px',
               fontWeight: '400',
               fontStyle: 'normal',
-              lineHeight: '160%'
+              lineHeight: '160%',
+              paddingTop: 0,
+              paddingBottom: 0
             }
           }}
         />
@@ -117,7 +119,7 @@ const TextFieldWrap = styled(TextField)`
 `;
 
 export const PrefixRowWrap = styled.span`
-  margin: 9px 6px 0;
+  margin: 3.5px 6px 0;
   text-align: center;
 `;
 

@@ -28,8 +28,6 @@ import { ContentEditorWrap, LabelWrap } from './styled';
 import { getInitials } from '../../../util/userUtil';
 import { renderProfileImage } from '../../../fire-browser/utils';
 import { type EditorProps } from './types';
-import { routerStore } from '../../../core/router';
-import { Page } from '../../../core/RouterStore';
 
 export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
   const [addAuthorVisible, setAddAuthorVisible] = useState(false);
@@ -107,15 +105,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
         {props.publicationStore.confirmedAuthors.map(
           (confirmedAuthor, index) => {
             return (
-              <div
-                key={confirmedAuthor.id}
-                style={{ cursor: 'pointer' }}
-                onClick={() => {
-                  routerStore.navigatePage(
-                    Page.PROFILE,
-                    `/p/${confirmedAuthor.user.username}`
-                  );
-                }}>
+              <div key={confirmedAuthor.id} style={{ cursor: 'pointer' }}>
                 <AuthorElement
                   isReadonly={props.publicationStore.isReadonly}
                   author={confirmedAuthor}
