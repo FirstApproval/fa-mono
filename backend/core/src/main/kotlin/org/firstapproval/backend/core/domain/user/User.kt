@@ -6,7 +6,7 @@ import jakarta.persistence.FetchType.EAGER
 import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.backend.core.config.encryption.StringEncryptionConverter
 import org.hibernate.annotations.Fetch
-import org.hibernate.annotations.FetchMode.SUBSELECT
+import org.hibernate.annotations.FetchMode.SELECT
 import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
 import java.util.*
@@ -21,7 +21,7 @@ class User(
     var middleName: String? = null,
     var lastName: String? = null,
     var fullName: String? = null,
-    @Fetch(value = SUBSELECT)
+    @Fetch(value = SELECT)
     @ElementCollection(fetch = EAGER)
     @CollectionTable(name = "external_ids")
     @MapKeyEnumerated(STRING)
