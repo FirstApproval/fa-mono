@@ -87,8 +87,5 @@ enum class PublicationStatus {
 }
 
 enum class AccessType {
-    CLOSED,
     OPEN,
-    ON_REQUEST,
-    MONETIZE_OR_CO_AUTHORSHIP
 }

@@ -74,7 +74,7 @@ class PublicationService(
     @Transactional
     fun edit(user: User, id: UUID, request: PublicationEditRequest) {
         val publication = get(user, id)
-        checkAccessToPublication(user, publication)
+        checkPublicationCreator(user, publication)
         with(request) {
             val unconfirmedAuthorsEmails = unconfirmedAuthors?.let { unconfirmedAuthors.values.map { it.email }.toSet() } ?: setOf()
             if (unconfirmedAuthorsEmails.isNotEmpty() && userRepository.findByEmailIn(unconfirmedAuthorsEmails).isNotEmpty()) {
@@ -196,7 +196,7 @@ class PublicationService(
     @Transactional
     fun submitPublication(user: User, id: UUID, accessType: AccessType) {
         val publication = publicationRepository.getReferenceById(id)
-        checkAccessToPublication(user, publication)
+        checkPublicationCreator(user, publication)
         if (publication.status == PUBLISHED) {
             throw IllegalArgumentException()
         }
@@ -210,23 +210,23 @@ class PublicationService(
         return elasticRepository.searchByFields(text, PageRequest.of(pageNum, limit, sort))
     }
 
-    @Transactional
-    fun requestDownload(id: UUID) {
-        val pub = getPublicationAndCheckStatus(id, PUBLISHED)
-        jobRepository.findByPublicationId(pub.id) ?: run {
-            val createdJob = ipfsClient.createJob(pub.contentId!!, IpfsClient.IpfsJobKind.RESTORE)
-            jobRepository.save(
-                Job(
-                    id = createdJob.id,
-                    publication = pub,
-                    status = JobStatus.valueOf(createdJob.status.name),
-                    kind = JobKind.valueOf(createdJob.kind.name),
-                    creationTime = now(),
-                    completionTime = null
-                )
-            )
-        }
-    }
+//    @Transactional
+//    fun requestDownload(id: UUID) {
+//        val pub = getPublicationAndCheckStatus(id)
+//        jobRepository.findByPublicationId(pub.id) ?: run {
+//            val createdJob = ipfsClient.createJob(pub.contentId!!, IpfsClient.IpfsJobKind.RESTORE)
+//            jobRepository.save(
+//                Job(
+//                    id = createdJob.id,
+//                    publication = pub,
+//                    status = JobStatus.valueOf(createdJob.status.name),
+//                    kind = JobKind.valueOf(createdJob.kind.name),
+//                    creationTime = now(),
+//                    completionTime = null
+//                )
+//            )
+//        }
+//    }
 
     fun getDownloadLink(user: User, publicationId: UUID): DownloadLinkResponse {
         val publication = publicationRepository.getReferenceById(publicationId)
@@ -239,21 +239,19 @@ class PublicationService(
         return DownloadLinkResponse(link, passcode)
     }
 
-    private fun getPublicationAndCheckStatus(id: UUID, status: PublicationStatus): Publication {
-        return publicationRepository.getReferenceById(id).let {
-            if (it.status != status) {
-                throw IllegalStateException("This publication is not published yet.")
-            }
-            it
-        }
-    }
+//    private fun getPublicationAndCheckStatus(id: UUID): Publication {
+//        return publicationRepository.getReferenceById(id).let {
+//            if (it.status != PUBLISHED && it.accessType != OPEN) {
+//                throw IllegalStateException("This publication is not published yet.")
+//            }
+//            it
+//        }
+//    }
 
     @Transactional
     fun get(user: User?, id: UUID): Publication {
         val publication = publicationRepository.getReferenceById(id)
-        if (publication.accessType != OPEN) {
-            checkAccessToPublication(user!!, publication)
-        }
+        checkAccessToPublication(user, publication)
         return publication
     }
 

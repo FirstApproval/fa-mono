@@ -108,10 +108,10 @@ class PublicationController(
         return ok().body(publicationResponse)
     }
 
-    override fun requestDownload(id: UUID): ResponseEntity<Void> {
-        publicationService.requestDownload(id)
-        return ok().build()
-    }
+//    override fun requestDownload(id: UUID): ResponseEntity<Void> {
+//        publicationService.requestDownload(id)
+//        return ok().build()
+//    }
 
     override fun getDownloadLink(id: UUID): ResponseEntity<DownloadLinkResponse> {
         val downloadLink = publicationService.getDownloadLink(authHolderService.user, id)

@@ -6,7 +6,6 @@ import org.firstapproval.backend.core.config.Properties.S3Properties
 import org.firstapproval.backend.core.config.security.JwtService
 import org.firstapproval.backend.core.domain.file.FILES
 import org.firstapproval.backend.core.domain.file.FileStorageService
-import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
 import org.firstapproval.backend.core.domain.user.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -25,16 +24,14 @@ class PublicationFileService(
 
     fun getPublicationFiles(user: User?, publicationId: UUID, dirPath: String): List<PublicationFile> {
         val publication = publicationRepository.getReferenceById(publicationId)
-        if (publication.accessType != OPEN) {
-            checkAccessToPublication(user!!, publication)
-        }
+        checkAccessToPublication(user!!, publication)
         return publicationFileRepository.findAllByPublicationIdAndDirPath(publicationId, dirPath)
     }
 
     @Transactional(readOnly = true)
     fun checkFileNameDuplicates(user: User, publicationId: UUID, fullPathList: List<String>): Map<String, Boolean> {
         val publication = publicationRepository.getReferenceById(publicationId)
-        checkAccessToPublication(user, publication)
+        checkPublicationCreator(user, publication)
         return fullPathList.associateWith { publicationFileRepository.existsByPublicationIdAndFullPath(publicationId, it) }
     }
 
@@ -50,7 +47,7 @@ class PublicationFileService(
     ): PublicationFile {
         val fileId = randomUUID()
         val publication = publicationRepository.getReferenceById(publicationId)
-        checkAccessToPublication(user, publication)
+        checkPublicationCreator(user, publication)
         val actualFullPath: String
         if (onCollisionRename) {
             actualFullPath = getFileFullPath(publicationId, fullPath)
@@ -95,9 +92,7 @@ class PublicationFileService(
     @Transactional(readOnly = true)
     fun getPublicationFileWithContent(user: User, fileId: UUID): FileResponse {
         val file = publicationFileRepository.getReferenceById(fileId)
-        if (file.publication.accessType != OPEN) {
-            checkAccessToPublication(user, file.publication)
-        }
+        checkAccessToPublication(user, file.publication)
         return FileResponse(
             name = file.name,
             s3Object = fileStorageService.get(FILES, fileId.toString())
@@ -115,7 +110,7 @@ class PublicationFileService(
         if (!files.all { it.dirPath == dirPath }) {
             throw IllegalArgumentException()
         }
-        checkAccessToPublication(user, publication)
+        checkPublicationCreator(user, publication)
         files.forEach { file ->
             if (file.isDir) {
                 val nestedFiles = publicationFileRepository.getNestedFiles(file.publication.id, file.fullPath)
@@ -136,7 +131,7 @@ class PublicationFileService(
     fun editFile(user: User, fileId: UUID, name: String, description: String?) {
         val file = publicationFileRepository.getReferenceById(fileId)
 //        val newFullPath = file.dirPath + name
-        checkAccessToPublication(user, file.publication)
+        checkPublicationCreator(user, file.publication)
 //        if (name != file.name) {
 //            checkDuplicateNames(newFullPath, file.publication.id)
 //        }
@@ -148,7 +143,7 @@ class PublicationFileService(
     fun moveFile(user: User, fileId: UUID, newDirPath: String) {
         val file = publicationFileRepository.getReferenceById(fileId)
         val prevDirPath = file.dirPath
-        checkAccessToPublication(user, file.publication)
+        checkPublicationCreator(user, file.publication)
         checkDirectoryIsExists(newDirPath.dropLast(1), file.publication.id)
         if (file.isDir) {
             checkCollapse(newDirPath, file.fullPath)
@@ -172,7 +167,7 @@ class PublicationFileService(
     fun createFolder(user: User, publicationId: UUID, parentDirPath: String, name: String, description: String?): PublicationFile {
         val publication = publicationRepository.getReferenceById(publicationId)
         checkDirectoryIsExists(parentDirPath.dropLast(1), publicationId)
-        checkAccessToPublication(user, publication)
+        checkPublicationCreator(user, publication)
         val fullPath = "$parentDirPath$name"
         checkDuplicateNames(fullPath, publicationId)
         val file = PublicationFile(
@@ -189,7 +184,7 @@ class PublicationFileService(
 
     fun getTokenToRetrieveDownloadLink(user: User, fileId: UUID): String {
         val publication = publicationFileRepository.findById(fileId).get().publication
-        checkAccessToPublication(user, publication)
+        checkPublicationCreator(user, publication)
         return jwtService.generate(
             mapOf(
                 "creator" to user.id,
