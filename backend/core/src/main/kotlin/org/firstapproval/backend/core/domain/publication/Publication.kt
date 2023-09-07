@@ -12,6 +12,8 @@ import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
 import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthor
 import org.firstapproval.backend.core.domain.user.User
 import org.hibernate.annotations.ColumnTransformer
+import org.hibernate.annotations.Fetch
+import org.hibernate.annotations.FetchMode.SUBSELECT
 import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
 import java.util.*
@@ -64,8 +66,10 @@ class Publication(
     @ColumnTransformer(write = "?::text")
     @Convert(converter = StringListEncryptionConverter::class)
     var predictedGoals: List<String>? = null,
+    @Fetch(value = SUBSELECT)
     @OneToMany(fetch = EAGER, cascade = [ALL], orphanRemoval = true, mappedBy = "publication")
     var confirmedAuthors: MutableList<ConfirmedAuthor> = mutableListOf(),
+    @Fetch(value = SUBSELECT)
     @OneToMany(fetch = EAGER, cascade = [ALL], orphanRemoval = true, mappedBy = "publication")
     var unconfirmedAuthors: MutableList<UnconfirmedAuthor> = mutableListOf(),
     var downloadsCount: Long = 0,
