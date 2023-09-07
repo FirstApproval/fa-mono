@@ -74,7 +74,7 @@ export const ProfilePage: FunctionComponent = observer(() => {
   }
 
   if (username && user.id === userStore.user?.id) {
-    routerStore.navigatePage(Page.PROFILE, '/profile');
+    routerStore.navigatePage(Page.PROFILE, '/profile', true);
   }
 
   const lastNameAndFirstName = `${user.lastName ?? ''} ${user.firstName ?? ''}`;

@@ -19,16 +19,20 @@ const RecommendedPublicationsSection = (props: {
 }): ReactElement => {
   const { publications } = props;
   return (
-    <Wrap>
-      <NameWrap>Recommended datasets</NameWrap>
-      <GridContainer>
-        {publications.map((publication, idx) => (
-          <PublicationCard key={idx}>
-            <RecommendedPublication publication={publication} />
-          </PublicationCard>
-        ))}
-      </GridContainer>
-    </Wrap>
+    <>
+      {publications.length > 0 && (
+        <Wrap>
+          <NameWrap>Recommended datasets</NameWrap>
+          <GridContainer>
+            {publications.map((publication, idx) => (
+              <PublicationCard key={idx}>
+                <RecommendedPublication publication={publication} />
+              </PublicationCard>
+            ))}
+          </GridContainer>
+        </Wrap>
+      )}
+    </>
   );
 };
 

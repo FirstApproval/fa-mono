@@ -21,29 +21,27 @@ interface ParagraphEditorProps {
   onSplitParagraph: (idx: number, splitIndex: number) => void;
 }
 
-export const DescriptionEditor = observer(
-  (props: EditorProps): ReactElement => {
-    return (
-      <ParagraphContentEditor
-        isReadonly={props.publicationStore.isReadonly}
-        value={props.publicationStore.summary}
-        onChange={(idx, value) => {
-          props.publicationStore.updateSummaryParagraph(idx, value);
-        }}
-        onAddParagraph={(idx) => {
-          props.publicationStore.addDescriptionParagraph(idx);
-        }}
-        onMergeParagraph={(idx) => {
-          props.publicationStore.mergeSummaryParagraph(idx);
-        }}
-        onSplitParagraph={(idx) => {
-          props.publicationStore.mergeSummaryParagraph(idx);
-        }}
-        placeholder={'Publication summary'}
-      />
-    );
-  }
-);
+export const SummaryEditor = observer((props: EditorProps): ReactElement => {
+  return (
+    <ParagraphContentEditor
+      isReadonly={props.publicationStore.isReadonly}
+      value={props.publicationStore.summary}
+      onChange={(idx, value) => {
+        props.publicationStore.updateSummaryParagraph(idx, value);
+      }}
+      onAddParagraph={(idx) => {
+        props.publicationStore.addSummaryParagraph(idx);
+      }}
+      onMergeParagraph={(idx) => {
+        props.publicationStore.mergeSummaryParagraph(idx);
+      }}
+      onSplitParagraph={(idx, splitIndex) => {
+        props.publicationStore.splitSummaryParagraph(idx, splitIndex);
+      }}
+      placeholder={'Publication summary'}
+    />
+  );
+});
 
 export const ExperimentGoalsEditor = observer(
   (props: EditorProps): ReactElement => {
@@ -186,7 +184,7 @@ export const MethodEditor = observer((props: EditorProps): ReactElement => {
           props.publicationStore.mergeMethodParagraph(idx);
         }}
         onSplitParagraph={(idx, splitIndex) => {
-          props.publicationStore.mergeMethodParagraph(idx);
+          props.publicationStore.splitMethodParagraph(idx, splitIndex);
         }}
         placeholder={
           'Detail the steps of your method, helping others to reproduce it...'

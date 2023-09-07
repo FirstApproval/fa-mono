@@ -29,7 +29,7 @@ import {
 } from './store/PublicationStore';
 import { observer } from 'mobx-react-lite';
 import {
-  DescriptionEditor,
+  SummaryEditor,
   ExperimentGoalsEditor,
   GrantingOrganizationsEditor,
   MethodEditor,
@@ -291,7 +291,7 @@ const PublicationBody = observer(
           <ActionBar publicationStore={publicationStore} />
         )}
 
-        <DescriptionEditor publicationStore={publicationStore} />
+        <SummaryEditor publicationStore={publicationStore} />
         {!experimentGoalsEnabled && (
           <ExperimentGoalsPlaceholder onClick={openExperimentGoals} />
         )}

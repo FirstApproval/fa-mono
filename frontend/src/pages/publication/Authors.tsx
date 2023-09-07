@@ -14,10 +14,10 @@ export const Authors = observer(
           alignItems: 'center',
           marginBottom: '24px',
           color: '#68676E',
-          fontSize: '20px',
+          fontSize: '16px',
           fontWeight: '400',
-          lineHeight: '32px',
-          letterSpacing: '0.15000000596046448px'
+          lineHeight: '150%',
+          letterSpacing: '0.15px'
         }}>
         <span style={{ marginRight: '6px' }}>Authored by</span>
         {props.publicationStore.authorNames.map((author, index) =>
