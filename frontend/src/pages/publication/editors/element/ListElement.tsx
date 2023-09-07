@@ -115,10 +115,10 @@ export const PrefixRowWrap = styled.span`
 `;
 
 export const ValueWrap = styled.div`
-  font-size: 20px;
+  font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 160%; /* 32px */
+  line-height: 150%; /* 24px */
   letter-spacing: 0.15px;
 `;
 
