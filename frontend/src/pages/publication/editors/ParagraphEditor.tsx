@@ -1,21 +1,18 @@
 import React, { type ReactElement, useState } from 'react';
 import { type ParagraphWithId } from '../store/PublicationStore';
 import { observer } from 'mobx-react-lite';
-import {
-  ParagraphElement,
-  ParagraphPrefixType
-} from './element/ParagraphElement';
+import { ParagraphElement } from './element/ParagraphElement';
 import { ContentEditorWrap, LabelWrap } from './styled';
 import { PrimaryArticleData } from './PrimaryArticleData';
 import WarningIcon from '@mui/icons-material/Warning';
 import { Input, Switch, TextField } from '@mui/material';
 import { type EditorProps } from './types';
 import styled from '@emotion/styled';
+import { ListElement, ParagraphPrefixType } from './element/ListElement';
 
 interface ParagraphEditorProps {
   isReadonly?: boolean;
   text?: string;
-  paragraphPrefixType?: ParagraphPrefixType;
   placeholder: string;
   value: ParagraphWithId[];
   onChange: (idx: number, value: string) => void;
@@ -275,7 +272,7 @@ export const SoftwareEditor = observer((props: EditorProps): ReactElement => {
 export const GrantingOrganizationsEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
-      <ParagraphContentEditor
+      <ListContentEditor
         isReadonly={props.publicationStore.isReadonly}
         value={props.publicationStore.grantingOrganizations}
         onChange={(idx, value) => {
@@ -307,7 +304,7 @@ export const RelatedArticlesEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <>
-        <ParagraphContentEditor
+        <OrderedListContentEditor
           isReadonly={props.publicationStore.isReadonly}
           value={props.publicationStore.relatedArticles}
           onChange={(idx, value) => {
@@ -355,6 +352,32 @@ export const ParagraphContentEditor = (
   );
 };
 
+export const ListContentEditor = (
+  props: ParagraphEditorProps & { paragraphPrefixType?: ParagraphPrefixType }
+): ReactElement => {
+  return (
+    <ContentEditorWrap>
+      {props.text && <LabelWrap>{props.text}</LabelWrap>}
+      <UlWrap>
+        <ListElementWrap {...props} />
+      </UlWrap>
+    </ContentEditorWrap>
+  );
+};
+
+export const OrderedListContentEditor = (
+  props: ParagraphEditorProps & { paragraphPrefixType?: ParagraphPrefixType }
+): ReactElement => {
+  return (
+    <ContentEditorWrap>
+      {props.text && <LabelWrap>{props.text}</LabelWrap>}
+      <OlWrap>
+        <ListElementWrap {...props} />
+      </OlWrap>
+    </ContentEditorWrap>
+  );
+};
+
 const ParagraphElementWrap = (
   props: Omit<ParagraphEditorProps, 'text'> & { disableInitFocus?: boolean }
 ): ReactElement => {
@@ -390,6 +413,51 @@ const ParagraphElementWrap = (
             }}
             onChange={props.onChange}
             placeholder={idx === 0 ? props.placeholder : ''}
+          />
+        );
+      })}
+    </>
+  );
+};
+
+const ListElementWrap = (
+  props: Omit<ParagraphEditorProps, 'text'> & {
+    disableInitFocus?: boolean;
+    paragraphPrefixType?: ParagraphPrefixType;
+  }
+): ReactElement => {
+  const [paragraphToFocus, setParagraphToFocus] = useState<number>(
+    props.disableInitFocus ? -1 : 0
+  );
+  const [cursorPosition, setCursorPosition] = useState<number>(0);
+
+  return (
+    <>
+      {props.value.map((p, idx) => {
+        return (
+          <ListElement
+            cursorPosition={cursorPosition}
+            paragraphToFocus={paragraphToFocus}
+            isReadonly={props.isReadonly}
+            key={p.id}
+            idx={idx}
+            value={p.text}
+            onAddParagraph={(idx) => {
+              setParagraphToFocus(idx + 1);
+              props.onAddParagraph(idx);
+            }}
+            onMergeParagraph={(idx) => {
+              setCursorPosition(props.value[idx - 1]?.text.length);
+              setParagraphToFocus(idx - 1);
+              props.onMergeParagraph(idx);
+            }}
+            onSplitParagraph={(idx, splitIndex) => {
+              setParagraphToFocus(idx + 1);
+              setCursorPosition(0);
+              props.onSplitParagraph(idx, splitIndex);
+            }}
+            onChange={props.onChange}
+            placeholder={idx === 0 ? props.placeholder : ''}
             paragraphPrefixType={props.paragraphPrefixType}
           />
         );
@@ -397,6 +465,32 @@ const ParagraphElementWrap = (
     </>
   );
 };
+
+const UlWrap = styled.ul`
+  list-style-type: disc;
+  list-style-position: outside;
+
+  margin-left: -20px;
+
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%; /* 24px */
+  letter-spacing: 0.15px;
+`;
+
+const OlWrap = styled.ol`
+  list-style-type: decimal;
+  list-style-position: outside;
+
+  margin-left: -20px;
+
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%; /* 24px */
+  letter-spacing: 0.15px;
+`;
 
 const NegativeDataHeaderEnabled = styled.span`
   color: var(--text-primary, #040036);

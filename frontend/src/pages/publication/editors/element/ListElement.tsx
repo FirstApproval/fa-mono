@@ -2,10 +2,11 @@ import React, { type ReactElement, useEffect, useRef } from 'react';
 import styled from '@emotion/styled';
 import { TextField } from '@mui/material';
 
-interface ParagraphProps {
+interface ListProps {
   cursorPosition: number;
   paragraphToFocus: number;
   isReadonly?: boolean;
+  paragraphPrefixType?: ParagraphPrefixType;
   idx: number;
   value: string;
   onChange: (idx: number, value: string) => void;
@@ -15,7 +16,7 @@ interface ParagraphProps {
   placeholder: string;
 }
 
-export const ParagraphElement = (props: ParagraphProps): ReactElement => {
+export const ListElement = (props: ListProps): ReactElement => {
   const {
     paragraphToFocus,
     cursorPosition,
@@ -25,7 +26,8 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
     onAddParagraph,
     onMergeParagraph,
     onSplitParagraph,
-    placeholder
+    placeholder,
+    paragraphPrefixType
   } = props;
 
   const ref = useRef<HTMLDivElement>();
@@ -42,7 +44,7 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
   }, [paragraphToFocus, cursorPosition, ref]);
 
   return (
-    <ParagraphWrap>
+    <ParagraphWrap paragraphPrefixType={paragraphPrefixType}>
       {!props.isReadonly && (
         <TextFieldWrap
           inputRef={ref}
@@ -84,10 +86,10 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
             disableUnderline: true,
             autoComplete: 'off',
             style: {
-              fontSize: '20px',
+              fontSize: '16px',
               fontWeight: '400',
               fontStyle: 'normal',
-              lineHeight: '160%',
+              lineHeight: '150%',
               paddingTop: 0,
               paddingBottom: 0
             }
@@ -99,13 +101,17 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
   );
 };
 
-const ParagraphWrap = styled.div`
-  display: flex;
-  margin-bottom: 16px;
-`;
+const ParagraphWrap = styled.li<{
+  paragraphPrefixType?: ParagraphPrefixType;
+}>``;
 
 const TextFieldWrap = styled(TextField)`
   width: 100%;
+`;
+
+export const PrefixRowWrap = styled.span`
+  margin: 3.5px 6px 0;
+  text-align: center;
 `;
 
 export const ValueWrap = styled.div`
@@ -115,3 +121,8 @@ export const ValueWrap = styled.div`
   line-height: 160%; /* 32px */
   letter-spacing: 0.15px;
 `;
+
+export enum ParagraphPrefixType {
+  NUMERATION = 'NUMERATION',
+  BULLET = 'BULLET'
+}
