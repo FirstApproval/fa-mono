@@ -21,7 +21,14 @@ export const ActionBar = observer(
 
     const getArchiveSizeTitle = (sizeBytes: number | null): string => {
       if (sizeBytes) {
-        return '(' + (sizeBytes / 1048576).toFixed(0) + 'MB' + ')';
+        const megabytes = sizeBytes / (1024 * 1024);
+        if (megabytes > 1000) {
+          return (
+            '(' + (sizeBytes / (1024 * 1024 * 1024)).toFixed(1) + 'GB' + ')'
+          );
+        } else {
+          return '(' + megabytes.toFixed(0) + 'MB' + ')';
+        }
       }
       return '';
     };
