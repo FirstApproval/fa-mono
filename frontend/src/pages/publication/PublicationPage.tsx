@@ -261,6 +261,7 @@ const PublicationBody = observer(
       softwareEnabled,
       filesEnabled,
       sampleFilesEnabled,
+      sampleFilesHidden,
       authorsEnabled,
       grantingOrganizationsEnabled,
       relatedArticlesEnabled,
@@ -325,9 +326,11 @@ const PublicationBody = observer(
             }}
           />
         )}
-        {!sampleFilesEnabled && publicationStore.viewMode === ViewMode.EDIT && (
-          <SampleFilesPlaceholder onClick={openSampleFiles} />
-        )}
+        {!sampleFilesEnabled &&
+          !sampleFilesHidden &&
+          publicationStore.viewMode === ViewMode.EDIT && (
+            <SampleFilesPlaceholder onClick={openSampleFiles} />
+          )}
         {sampleFilesEnabled && (
           <SampleFileUploader
             sfs={sfs}

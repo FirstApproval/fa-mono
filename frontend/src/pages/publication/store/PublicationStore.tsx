@@ -48,6 +48,7 @@ export class PublicationStore {
   softwareEnabled = false;
   filesEnabled = false;
   sampleFilesEnabled = false;
+  sampleFilesHidden = true;
   authorsEnabled = false;
   grantingOrganizationsEnabled = false;
   relatedArticlesEnabled = false;
@@ -104,6 +105,13 @@ export class PublicationStore {
         if (initialized) {
           this.loadInitialState();
         }
+      },
+      { fireImmediately: true }
+    );
+    reaction(
+      () => this.fs.files,
+      () => {
+        this.sampleFilesHidden = this.fs.files.length === 0;
       },
       { fireImmediately: true }
     );
