@@ -1317,6 +1317,9 @@ components:
           type: boolean
         hash:
           type: string
+        size:
+          type: integer
+          format: int64
         creationTime:
           type: string
           format: date-time
@@ -1926,6 +1929,12 @@ components:
         total:
           type: number
           format: integer
+        archiveSize:
+          type: integer
+          format: int64
+        sampleArchiveSize:
+          type: integer
+          format: int64
       required:
         - id
         - status

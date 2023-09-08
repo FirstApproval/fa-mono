@@ -32,6 +32,7 @@ class PublicationFileController(
                 .creationTime(it.creationTime.toOffsetDateTime())
                 .description(it.description)
                 .dirPath(it.dirPath)
+                .size(it.size)
                 .fullPath(it.fullPath)
                 .isDir(it.isDir)
                 .hash(it.hash)
@@ -76,6 +77,7 @@ class PublicationFileController(
                 .dirPath(file.dirPath)
                 .fullPath(file.fullPath)
                 .isDir(file.isDir)
+                .size(file.size)
                 .hash(file.hash), OK
         )
     }
@@ -131,6 +133,7 @@ class PublicationFileController(
                 .creationTime(file.creationTime.toOffsetDateTime())
                 .dirPath(file.dirPath)
                 .fullPath(file.fullPath)
+                .size(file.size)
                 .isDir(file.isDir), OK
         )
     }

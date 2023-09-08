@@ -44,7 +44,8 @@ class PublicationSampleFileService(
                 fullPath = actualFullPath,
                 dirPath = extractDirPath(actualFullPath),
                 isDir = isDir,
-                hash = hash
+                hash = hash,
+                size = contentLength
             )
         )
         return file

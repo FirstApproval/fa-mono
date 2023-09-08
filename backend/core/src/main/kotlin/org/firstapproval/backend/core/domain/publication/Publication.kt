@@ -74,6 +74,8 @@ class Publication(
     var publicationTime: ZonedDateTime? = null,
     @Convert(converter = StringEncryptionConverter::class)
     var archivePassword: String? = null,
+    var archiveSize: Long? = null,
+    var archiveSampleSize: Long? = null,
     var contentId: Long? = null,
     var isFeatured: Boolean = false,
     var isNegative: Boolean = false,

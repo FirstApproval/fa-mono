@@ -22,6 +22,7 @@ class PublicationSampleFile(
     var description: String? = null,
     var dirPath: String,
     val isDir: Boolean,
+    val size: Long? = null,
     var hash: String? = null,
     var creationTime: ZonedDateTime = now()
 ) {

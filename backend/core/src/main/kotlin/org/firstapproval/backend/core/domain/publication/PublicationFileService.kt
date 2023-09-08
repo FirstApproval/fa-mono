@@ -68,6 +68,7 @@ class PublicationFileService(
                 fullPath = actualFullPath,
                 dirPath = extractDirPath(actualFullPath),
                 isDir = isDir,
+                size = contentLength,
                 hash = hash
             )
         )

@@ -49,6 +49,10 @@ class PublicationElastic(
     var publicationTime: ZonedDateTime? = null,
     @Field(type = Text)
     var negativeData: String? = null,
+    @Field(type = FieldType.Long)
+    var archiveSize: Long? = null,
+    @Field(type = FieldType.Long)
+    var archiveSampleSize: Long? = null,
     @Field(type = FieldType.Boolean)
     var isNegative: Boolean? = null,
 )

@@ -335,6 +335,8 @@ fun Publication.toApiObject(userService: UserService) = PublicationApiObject().a
     publicationApiModel.accessType = org.firstapproval.api.server.model.AccessType.valueOf(accessType.name)
     publicationApiModel.creationTime = creationTime.toOffsetDateTime()
     publicationApiModel.negativeData = negativeData
+    publicationApiModel.archiveSize = archiveSize
+    publicationApiModel.sampleArchiveSize = archiveSampleSize
     publicationApiModel.isNegative = isNegative
 }
 
@@ -359,7 +361,9 @@ fun Publication.toPublicationElastic() =
         creationTime = creationTime,
         publicationTime = publicationTime,
         negativeData = negativeData,
-        isNegative = isNegative
+        isNegative = isNegative,
+        archiveSampleSize = archiveSampleSize,
+        archiveSize = archiveSize
     )
 
 fun ConfirmedAuthor.toApiObject(profileImage: ByteArray?) = ConfirmedAuthorApiObject().also {

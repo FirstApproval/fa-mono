@@ -85,17 +85,19 @@ class ArchiveService(
     }
 
     private fun archiveProcess(publication: Publication, password: String): List<UUID> {
-        archiveSampleFilesProcess(publication)
-        val filesIds = archivePublicationFilesProcess(publication, password)
+        val sampleArchiveResult = archiveSampleFilesProcess(publication)
+        val mainArchiveResult = archivePublicationFilesProcess(publication, password)
         publication.status = PUBLISHED
         publication.publicationTime = now()
         publication.archivePassword = password
+        publication.archiveSize = mainArchiveResult.size
+        publication.archiveSampleSize = sampleArchiveResult.size
         publicationRepository.save(publication)
         elasticRepository.save(publication.toPublicationElastic())
-        return filesIds
+        return mainArchiveResult.fileIds
     }
 
-    private fun archivePublicationFilesProcess(publication: Publication, password: String): MutableList<UUID> {
+    private fun archivePublicationFilesProcess(publication: Publication, password: String): ArchiveResult {
         val filesIds = mutableListOf<UUID>()
         var page = PageRequest.of(0, BATCH_SIZE)
         var files = publicationFileRepository.findByPublicationIdOrderByCreationTimeAsc(publication.id, page)
@@ -105,7 +107,7 @@ class ArchiveService(
         val zipOutputStream = ZipOutputStream(fileOutputStream, password.toCharArray())
         var err: Exception? = null
         val descriptions = StringBuilder()
-        // TODO rebuild for try with resources
+        var archiveSize: Long = 0;
         try {
             while (!files.isEmpty) {
                 filesIds.addAll(files.map { it.id })
@@ -154,15 +156,16 @@ class ArchiveService(
             zipOutputStream.close()
             fileOutputStream.close()
             if (err == null) {
+                archiveSize = tempArchive.length()
                 saveArchiveToS3(ARCHIVED_PUBLICATION_FILES, publication.id.toString(), tempArchive)
             } else {
                 tempArchive.delete()
             }
         }
-        return filesIds
+        return ArchiveResult(filesIds, archiveSize)
     }
 
-    private fun archiveSampleFilesProcess(publication: Publication) {
+    private fun archiveSampleFilesProcess(publication: Publication): ArchiveResult {
         var page = PageRequest.of(0, BATCH_SIZE)
         var files = publicationSampleFileRepository.findByPublicationIdOrderByCreationTimeAsc(publication.id, page)
         val filesIds = mutableListOf<UUID>()
@@ -172,6 +175,7 @@ class ArchiveService(
         val zipOutputStream = ZipOutputStream(fileOutputStream)
         var err: Exception? = null
         val descriptions = StringBuilder()
+        var archiveSize: Long = 0;
         try {
             while (!files.isEmpty) {
                 filesIds.addAll(files.map { it.id })
@@ -218,11 +222,13 @@ class ArchiveService(
             zipOutputStream.close()
             fileOutputStream.close()
             if (err == null) {
+                archiveSize = tempArchive.length()
                 saveArchiveToS3(ARCHIVED_PUBLICATION_SAMPLE_FILES, publication.id.toString(), tempArchive)
             } else {
                 tempArchive.delete()
             }
         }
+        return ArchiveResult(filesIds, archiveSize)
     }
 
     private fun saveArchiveToS3(bucket: String, id: String, file: File) {
@@ -253,3 +259,8 @@ class ArchiveService(
         }
     }
 }
+
+data class ArchiveResult(
+    val fileIds: MutableList<UUID>,
+    val size: Long,
+)

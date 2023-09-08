@@ -19,6 +19,13 @@ export const ActionBar = observer(
   (props: { publicationStore: PublicationStore }): ReactElement => {
     const { publicationStore } = props;
 
+    const getArchiveSizeTitle = (sizeBytes: number | null): string => {
+      if (sizeBytes) {
+        return '(' + (sizeBytes / 1048576).toFixed(0) + 'MB' + ')';
+      }
+      return '';
+    };
+
     return (
       <div
         style={{
@@ -59,7 +66,12 @@ export const ActionBar = observer(
                     }
                   }}
                   size={'medium'}>
-                  <img src={download} style={{ marginRight: '8px' }} /> Download
+                  <img src={download} style={{ marginRight: '8px' }} />
+                  <span>Download</span>
+                  <div style={{ marginRight: 4 }}></div>
+                  <span style={{ fontWeight: '400' }}>
+                    {getArchiveSizeTitle(publicationStore.archiveSize)}
+                  </span>
                 </DownloadFilesButtonWrap>
               </Tooltip>
             )}
@@ -73,7 +85,11 @@ export const ActionBar = observer(
                     onClick={() => publicationStore.downloadSampleFiles()}
                     size={'medium'}>
                     <img src={downloadSample} style={{ marginRight: '8px' }} />{' '}
-                    Download sample
+                    <span>Download sample</span>
+                    <div style={{ marginRight: 4 }}></div>
+                    <span style={{ fontWeight: '400' }}>
+                      {getArchiveSizeTitle(publicationStore.sampleArchiveSize)}
+                    </span>
                   </DownloadSampleFilesButtonWrap>
                 </Tooltip>
               )}

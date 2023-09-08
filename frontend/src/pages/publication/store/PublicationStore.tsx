@@ -85,6 +85,9 @@ export class PublicationStore {
 
   publicationStatus: PublicationStatus | null = null;
 
+  archiveSize: number | null = null;
+  sampleArchiveSize: number | null = null;
+
   viewCounterUpdated: boolean = false;
 
   loadDownloadersLocked = false;
@@ -933,6 +936,12 @@ export class PublicationStore {
             text: p.text,
             id: uuidv4()
           });
+          if (publication.archiveSize) {
+            this.archiveSize = publication.archiveSize;
+          }
+          if (publication.sampleArchiveSize) {
+            this.sampleArchiveSize = publication.sampleArchiveSize;
+          }
           if (publication.title) {
             this.title = publication.title;
           }
