@@ -56,7 +56,6 @@ export class PublicationStore {
   summary: ParagraphWithId[] = [];
   savingStatus: SavingStatusState = SavingStatusState.PREVIEW;
 
-  description: ParagraphWithId[] = [];
   experimentGoals: ParagraphWithId[] = [];
   methodTitle: string = '';
   method: ParagraphWithId[] = [];
@@ -98,7 +97,7 @@ export class PublicationStore {
     readonly sfs: ChonkySampleFileSystem
   ) {
     makeAutoObservable(this);
-    this.addDescriptionParagraph(0);
+    this.addSummaryParagraph(0);
     reaction(
       () => this.fs.initialized,
       (initialized) => {
@@ -124,7 +123,7 @@ export class PublicationStore {
     return this.viewMode === ViewMode.VIEW;
   }
 
-  addDescriptionParagraph(idx: number): void {
+  addSummaryParagraph(idx: number): void {
     const newValue = [...this.summary];
     newValue.splice(idx + 1, 0, {
       text: '',
@@ -361,13 +360,11 @@ export class PublicationStore {
   }
 
   updateSummary = _.throttle(async () => {
-    const description: Paragraph[] = this.summary.filter(
-      (p) => p.text.length > 0
-    );
+    const summary: Paragraph[] = this.summary.filter((p) => p.text.length > 0);
 
     await publicationService.editPublication(this.publicationId, {
       description: {
-        values: description,
+        values: summary,
         edited: true
       }
     });
@@ -665,6 +662,22 @@ export class PublicationStore {
     void this.updateSummary();
   };
 
+  splitSummaryParagraph = (idx: number, splitIndex: number): void => {
+    if (idx < 0) return;
+    const newValue = [...this.summary];
+    const newElement = {
+      text: newValue[idx].text.substring(splitIndex),
+      id: uuidv4()
+    };
+    newValue.splice(idx + 1, 0, newElement);
+    newValue[idx] = {
+      text: newValue[idx].text.substring(0, splitIndex),
+      id: newValue[idx].id
+    };
+    this.summary = newValue;
+    void this.updateSummary();
+  };
+
   mergeExperimentGoalsParagraph = (idx: number): void => {
     if (idx <= 0) return;
     const newValue = [...this.experimentGoals];
@@ -701,6 +714,22 @@ export class PublicationStore {
       id: newValue[idx - 1].id
     };
     newValue.splice(idx, 1);
+    this.method = newValue;
+    void this.updateMethod();
+  };
+
+  splitMethodParagraph = (idx: number, splitIndex: number): void => {
+    if (idx < 0) return;
+    const newValue = [...this.method];
+    const newElement = {
+      text: newValue[idx].text.substring(splitIndex),
+      id: uuidv4()
+    };
+    newValue.splice(idx + 1, 0, newElement);
+    newValue[idx] = {
+      text: newValue[idx].text.substring(0, splitIndex),
+      id: newValue[idx].id
+    };
     this.method = newValue;
     void this.updateMethod();
   };

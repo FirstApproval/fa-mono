@@ -26,7 +26,7 @@ class PublicationSampleFileService(
     fun uploadFile(user: User, publicationId: UUID, fullPath: String, isDir: Boolean, data: InputStream?, onCollisionRename: Boolean, contentLength: Long?): PublicationSampleFile {
         val fileId = randomUUID()
         val publication = publicationRepository.getReferenceById(publicationId)
-        checkAccessToPublication(user, publication)
+        checkPublicationCreator(user, publication)
         val actualFullPath: String
         if (onCollisionRename) {
             actualFullPath = getFileFullPath(publicationId, fullPath)
@@ -71,7 +71,7 @@ class PublicationSampleFileService(
     @Transactional(readOnly = true)
     fun checkFileNameDuplicates(user: User, publicationId: UUID, fullPathList: List<String>): Map<String, Boolean> {
         val publication = publicationRepository.getReferenceById(publicationId)
-        checkAccessToPublication(user, publication)
+        checkPublicationCreator(user, publication)
         return fullPathList.associateWith { publicationSampleFileRepository.existsByPublicationIdAndFullPath(publicationId, it) }
     }
 
@@ -95,7 +95,7 @@ class PublicationSampleFileService(
         if (!files.all { it.dirPath == dirPath }) {
             throw IllegalArgumentException()
         }
-        checkAccessToPublication(user, publication)
+        checkPublicationCreator(user, publication)
         files.forEach { file ->
             if (file.isDir) {
                 val nestedFiles = publicationSampleFileRepository.getNestedFiles(file.publication.id, file.fullPath)
@@ -116,7 +116,7 @@ class PublicationSampleFileService(
     fun editFile(user: User, fileId: UUID, name: String, description: String?) {
         val file = publicationSampleFileRepository.getReferenceById(fileId)
 //        val newFullPath = file.dirPath + name
-        checkAccessToPublication(user, file.publication)
+        checkPublicationCreator(user, file.publication)
 //        if (name != file.name) {
 //            checkDuplicateNames(newFullPath, file.publication.id)
 //        }
@@ -128,7 +128,7 @@ class PublicationSampleFileService(
     fun moveFile(user: User, fileId: UUID, newDirPath: String) {
         val file = publicationSampleFileRepository.getReferenceById(fileId)
         val prevDirPath = file.dirPath
-        checkAccessToPublication(user, file.publication)
+        checkPublicationCreator(user, file.publication)
         checkDirectoryIsExists(newDirPath.dropLast(1), file.publication.id)
         if (file.isDir) {
             checkCollapse(newDirPath, file.fullPath)
@@ -152,7 +152,7 @@ class PublicationSampleFileService(
     fun createFolder(user: User, publicationId: UUID, parentDirPath: String, name: String, description: String?): PublicationSampleFile {
         val publication = publicationRepository.getReferenceById(publicationId)
         checkDirectoryIsExists(parentDirPath.dropLast(1), publicationId)
-        checkAccessToPublication(user, publication)
+        checkPublicationCreator(user, publication)
         val fullPath = "$parentDirPath$name"
         checkDuplicateNames(fullPath, publicationId)
         val file = PublicationSampleFile(
