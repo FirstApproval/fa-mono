@@ -3,6 +3,7 @@ import React, {
   type ReactElement,
   useState
 } from 'react';
+import _ from 'lodash';
 import {
   Avatar,
   Button,
@@ -40,11 +41,16 @@ import { Page } from '../../core/RouterStore';
 import { Footer } from '../home/Footer';
 import { HeaderComponent } from '../../components/HeaderComponent';
 
+const tabs: string[] = ['published', 'drafts'];
+
 export const ProfilePage: FunctionComponent = observer(() => {
   const [username] = useState(() => routerStore.profileUsername);
+  const [profileTab] = useState(() => routerStore.profileTab);
+  const [tabNumber, setTabNumber] = React.useState(
+    (profileTab && tabs.findIndex((element) => element === profileTab)) ?? 0
+  );
   const [store] = useState(() => new ProfilePageStore(username));
   const user = (username ? store : userStore).user!;
-  const [tabNumber, setTabNumber] = React.useState(0);
 
   const handleChange = (_: React.SyntheticEvent, newValue: number): void => {
     setTabNumber(newValue);
@@ -144,11 +150,13 @@ export const ProfilePage: FunctionComponent = observer(() => {
                     value={tabNumber}
                     onChange={handleChange}
                     aria-label="basic tabs example">
-                    <CustomTab
-                      sx={{ textTransform: 'none' }}
-                      label="Published"
-                    />
-                    <CustomTab sx={{ textTransform: 'none' }} label="Drafts" />
+                    {tabs.map((tab) => (
+                      <CustomTab
+                        key={tab}
+                        sx={{ textTransform: 'none' }}
+                        label={_.capitalize(tab.toLowerCase())}
+                      />
+                    ))}
                   </Tabs>
                   <Divider style={{ marginTop: '-1.3px' }} />
                   <HeightElement value={'40px'}></HeightElement>

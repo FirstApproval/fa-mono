@@ -37,7 +37,7 @@ import {
 import { validateEmail } from 'src/util/emailUtil';
 import { userStore } from '../../core/user';
 import { getInitials } from 'src/util/userUtil';
-import { cloneDeep } from 'lodash';
+import _, { cloneDeep } from 'lodash';
 import { Footer } from '../home/Footer';
 import { HeaderComponent } from '../../components/HeaderComponent';
 
@@ -247,9 +247,13 @@ export const AccountPage: FunctionComponent = observer(() => {
                 value={tabNumber}
                 onChange={handleChangeTabNumber}
                 aria-label="basic tabs example">
-                <CustomTab sx={{ textTransform: 'none' }} label="General" />
-                <CustomTab sx={{ textTransform: 'none' }} label="Profile" />
-                <CustomTab sx={{ textTransform: 'none' }} label="Password" />
+                {tabs.map((tab) => (
+                  <CustomTab
+                    key={tab}
+                    sx={{ textTransform: 'none' }}
+                    label={_.capitalize(tab.toLowerCase())}
+                  />
+                ))}
               </Tabs>
               <Divider style={{ marginTop: '-1.3px' }} />
               <HeightElement value={'32px'}></HeightElement>

@@ -11,6 +11,9 @@ import { routerStore } from '../core/router';
 import { Page } from '../core/RouterStore';
 import { renderProfileImage } from '../fire-browser/utils';
 import styled from '@emotion/styled';
+import { AuthorElement } from '../pages/publication/editors/element/AuthorElement';
+import { Edit, Logout, SettingsOutlined } from '@mui/icons-material';
+import { HeightElement } from '../pages/common.styled';
 
 export const UserMenu = observer((): ReactElement => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -58,27 +61,53 @@ export const UserMenu = observer((): ReactElement => {
         MenuListProps={{
           'aria-labelledby': 'user-button'
         }}>
-        <MenuItem
+        <StyledMenuItem
           onClick={() => {
             routerStore.navigatePage(Page.PROFILE, '/profile');
             handleClose();
           }}>
-          Profile
-        </MenuItem>
-        <MenuItem
+          <AuthorElement
+            author={{ user }}
+            isReadonly={true}
+            isConfirmed={true}
+          />
+        </StyledMenuItem>
+        <HeightElement value={'12px'} />
+        <StyledMenuItem
+          onClick={() => {
+            routerStore.navigatePage(Page.PROFILE, '/profile/drafts');
+            handleClose();
+          }}>
+          <Edit
+            sx={{ width: 24, height: 24, marginRight: '16px' }}
+            htmlColor={'#040036'}
+          />
+          <span>Drafts</span>
+        </StyledMenuItem>
+        <HeightElement value={'12px'} />
+        <StyledMenuItem
           onClick={() => {
             routerStore.navigatePage(Page.ACCOUNT, '/account');
             handleClose();
           }}>
-          My account
-        </MenuItem>
-        <MenuItem
+          <SettingsOutlined
+            sx={{ width: 24, height: 24, marginRight: '16px' }}
+            htmlColor={'#040036'}
+          />
+          <span>Settings</span>
+        </StyledMenuItem>
+        <HeightElement value={'12px'} />
+        <StyledMenuItem
           onClick={() => {
             authStore.token = undefined;
             handleClose();
           }}>
-          Sign out
-        </MenuItem>
+          <Logout
+            sx={{ width: 24, height: 24, marginRight: '16px' }}
+            htmlColor={'#040036'}
+          />
+          <span>Sign out</span>
+        </StyledMenuItem>
       </Menu>
     </div>
   );
@@ -87,4 +116,10 @@ export const UserMenu = observer((): ReactElement => {
 const ButtonWrap = styled(Button)`
   width: 90px;
   height: 36px;
+`;
+
+const StyledMenuItem = styled(MenuItem)`
+  &:hover {
+    background-color: transparent;
+  }
 `;
