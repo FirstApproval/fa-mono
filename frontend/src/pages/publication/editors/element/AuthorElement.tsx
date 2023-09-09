@@ -48,7 +48,7 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
       lastName = authorUser.lastName;
       email = authorUser.email;
       username = authorUser.username;
-      shortBio = authorUser.selfInfo;
+      shortBio = confirmedAuthor.shortBio;
       profileImage = authorUser.profileImage;
     } else {
       const authorEditorStore = author as AuthorEditorStore;
