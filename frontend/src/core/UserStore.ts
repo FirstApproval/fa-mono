@@ -1,7 +1,9 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx';
-import { userService } from './service';
+import { publicationService, userService } from './service';
 import { type GetMeResponse } from '../apis/first-approval-api';
 import { authStore } from './auth';
+import { routerStore } from './router';
+import { Page } from './RouterStore';
 
 export class UserStore {
   user: GetMeResponse | undefined = undefined;
@@ -32,4 +34,10 @@ export class UserStore {
       });
     });
   }
+
+  createPublication = async (): Promise<void> => {
+    const response = await publicationService.createPublication();
+    const pubId: string = response.data.id;
+    routerStore.navigatePage(Page.PUBLICATION, `/publication/${pubId}`);
+  };
 }

@@ -17,15 +17,10 @@ import {
   ColumnElement,
   CustomTab,
   FlexBodyCenter,
-  FlexHeader,
-  FlexHeaderRight,
   HeightElement,
-  Logo,
   Parent
 } from '../common.styled';
 import { routerStore } from '../../core/router';
-import { UserMenu } from '../../components/UserMenu';
-import logo from '../../assets/logo-black.svg';
 import noPublications from '../../assets/no-publications.svg';
 import upload_your_first_dataset_from from '../../assets/upload-your-first-dataset.svg';
 import styled from '@emotion/styled';
@@ -43,7 +38,7 @@ import {
 import { userStore } from 'src/core/user';
 import { Page } from '../../core/RouterStore';
 import { Footer } from '../home/Footer';
-import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
+import { HeaderComponent } from '../../components/HeaderComponent';
 
 export const ProfilePage: FunctionComponent = observer(() => {
   const [username] = useState(() => routerStore.profileUsername);
@@ -92,15 +87,11 @@ export const ProfilePage: FunctionComponent = observer(() => {
   return (
     <>
       <Parent>
-        <FlexHeader>
-          <Logo onClick={routerStore.goHome}>
-            <img src={logo} />
-          </Logo>
-          <BetaDialogWithButton />
-          <FlexHeaderRight>
-            <UserMenu />
-          </FlexHeaderRight>
-        </FlexHeader>
+        <HeaderComponent
+          showPublishButton={true}
+          showLoginButton={true}
+          showSignUpContainedButton={true}
+        />
         <FlexBodyCenter>
           <FlexBody>
             <ColumnElement>

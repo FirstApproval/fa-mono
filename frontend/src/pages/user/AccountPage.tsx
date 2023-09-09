@@ -16,15 +16,10 @@ import {
   CustomTab,
   FlexBody,
   FlexBodyCenter,
-  FlexHeader,
-  FlexHeaderRight,
   HeightElement,
-  Logo,
   Parent
 } from '../common.styled';
 import { routerStore } from '../../core/router';
-import { UserMenu } from '../../components/UserMenu';
-import logo from '../../assets/logo-black.svg';
 import styled from '@emotion/styled';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -44,7 +39,7 @@ import { userStore } from '../../core/user';
 import { getInitials } from 'src/util/userUtil';
 import { cloneDeep } from 'lodash';
 import { Footer } from '../home/Footer';
-import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
+import { HeaderComponent } from '../../components/HeaderComponent';
 
 const tabs: string[] = ['general', 'profile', 'password'];
 
@@ -202,15 +197,7 @@ export const AccountPage: FunctionComponent = observer(() => {
   return (
     <>
       <Parent>
-        <FlexHeader>
-          <Logo onClick={routerStore.goHome}>
-            <img src={logo} />
-          </Logo>
-          <BetaDialogWithButton />
-          <FlexHeaderRight>
-            <UserMenu />
-          </FlexHeaderRight>
-        </FlexHeader>
+        <HeaderComponent showPublishButton={true} />
         <FlexBodyCenter>
           <FlexBody>
             <ColumnElement>

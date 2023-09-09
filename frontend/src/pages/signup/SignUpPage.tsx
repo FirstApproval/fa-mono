@@ -1,12 +1,5 @@
 import React, { type FunctionComponent, useState } from 'react';
-import {
-  Alert,
-  Button,
-  Divider,
-  InputAdornment,
-  Link,
-  TextField
-} from '@mui/material';
+import { Alert, Divider, InputAdornment, Link, TextField } from '@mui/material';
 import styled from '@emotion/styled';
 import { ArrowForward, MailOutlined } from '@mui/icons-material';
 import { type SignUpStore } from './SignUpStore';
@@ -15,17 +8,12 @@ import { LoginOauth } from '../login/LoginOauth';
 import {
   FlexBody,
   FlexBodyCenter,
-  FlexHeader,
-  FlexHeaderRight,
   FullWidthButton,
   Header,
-  Logo,
   Parent
 } from '../common.styled';
 import { validateEmail } from 'src/util/emailUtil';
-import { routerStore } from '../../core/router';
-import logo from '../../assets/logo-black.svg';
-import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
+import { HeaderComponent } from '../../components/HeaderComponent';
 
 interface SignUpPageProps {
   store: SignUpStore;
@@ -65,17 +53,7 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
 
     return (
       <Parent>
-        <FlexHeader>
-          <Logo onClick={routerStore.goHome}>
-            <img src={logo} />
-          </Logo>
-          <BetaDialogWithButton />
-          <FlexHeaderRight>
-            <Button variant="outlined" onClick={props.onSignInClick}>
-              Sign in
-            </Button>
-          </FlexHeaderRight>
-        </FlexHeader>
+        <HeaderComponent showLoginOutlinedButton={true} />
         <FlexBodyCenter>
           <FlexBody>
             <Header>Sign up for free</Header>
