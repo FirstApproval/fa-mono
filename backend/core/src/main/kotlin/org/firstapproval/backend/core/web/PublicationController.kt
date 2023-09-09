@@ -161,4 +161,8 @@ class PublicationController(
         val mappedDownloaders = downloadersPage.map { it.user.toApiObject(userService) }.toList()
         return ok(GetDownloadersResponse(downloadersPage.isLast, mappedDownloaders))
     }
+
+    override fun downloadPublicationPdf(id: UUID): ResponseEntity<ByteArray> {
+        return ok(publicationService.generatePdf(authHolderService.user, id))
+    }
 }

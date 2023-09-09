@@ -1,0 +1,131 @@
+@import '../../../../../../../fa-mono/frontend/node_modules/@fontsource/roboto/300.css';
+@import '../../../../../../../fa-mono/frontend/node_modules/@fontsource/roboto/400.css';
+@import '../../../../../../../fa-mono/frontend/node_modules/@fontsource/roboto/500.css';
+@import '../../../../../../../fa-mono/frontend/node_modules/@fontsource/roboto/700.css';
+
+html, body {
+    margin: 0;
+    padding: 0;
+    color: rgba(0, 0, 0, 1);
+    font-feature-settings: 'clig' off, 'liga' off;
+}
+
+.header {
+    width: 100%;
+    margin-top: 30px;
+}
+
+.header > .logo {
+    width: 106px;
+    height: 16px;
+    float: left;
+}
+
+.markedAsNegative {
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    padding: 4px 5px 4px 5px;
+    background-color: rgba(0, 0, 0, 1);
+    color: rgba(255, 255, 255, 1);
+    float: right;
+}
+
+.title {
+    font-family: Roboto;
+    font-size: 29px;
+    font-style: normal;
+    font-weight: 700;
+    margin: 10px 0;
+}
+
+.metaInfo {
+    font-family: Roboto;
+    font-size: 9px;
+    font-style: normal;
+    font-weight: 600;
+    text-align: justify;
+    padding: 10px 0;
+    border-top: 1px solid rgba(0, 0, 0, 1);
+    border-bottom: 1px solid rgba(0, 0, 0, 1);
+}
+
+.metaInfo > a {
+    font-family: Roboto;
+    font-size: 9px;
+    font-style: normal;
+    font-weight: 400;
+    color: rgba(59, 78, 255, 1);
+}
+
+.description {
+    font-family: Roboto;
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 500;
+    text-align: justify;
+    margin: 32px 0 24px;
+}
+
+.columns {
+    column-count: auto;
+    column-width: 267px;
+    column-fill: auto !important;
+    column-gap: 12px;
+    text-align: justify;
+    min-height: 100vh;
+}
+
+.sectionTitle {
+    font-family: Roboto;
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 700;
+}
+
+.sectionBody {
+    font-family: Roboto;
+    font-size: 9px;
+    font-style: normal;
+    font-weight: 400;
+    min-height: 100vh;
+}
+
+.sectionBody > .author {
+    font-family: Roboto;
+    font-size: 9px;
+    font-style: normal;
+    font-weight: 600;
+}
+
+.sectionBody > ul, ol {
+    padding: 0 0 0 14px;
+    margin: 0;
+}
+
+.highlightedSection {
+    font-family: Roboto;
+    font-size: 9px;
+    font-style: normal;
+    font-weight: 400;
+    text-align: justify;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    padding: 5px 7px;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+    background: rgba(235, 235, 237, 1);
+}
+
+.highlightedSectionTitle {
+    font-family: Roboto;
+    font-size: 9px;
+    font-style: normal;
+    font-weight: 600;
+}
+
+@page {
+    margin: 40px 40px;
+}

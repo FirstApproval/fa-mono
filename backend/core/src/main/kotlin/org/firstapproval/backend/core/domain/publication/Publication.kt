@@ -84,7 +84,30 @@ class Publication(
     var isFeatured: Boolean = false,
     var isNegative: Boolean = false,
     var negativeData: String? = null,
-)
+) {
+    fun getAuthorsFIOHtml(): String {
+        val confirmedAuthors = confirmedAuthors.joinToString(", ") { "${it.user.lastName} ${it.user.firstName}" }
+        val unconfirmedAuthors = unconfirmedAuthors.joinToString(", ") { "${it.lastName} ${it.firstName}" }
+
+        val authors = when {
+            confirmedAuthors.isNotBlank() && unconfirmedAuthors.isNotBlank() -> "$confirmedAuthors, $unconfirmedAuthors."
+            confirmedAuthors.isNotBlank() -> "$confirmedAuthors."
+            unconfirmedAuthors.isNotBlank() -> "$unconfirmedAuthors."
+            else -> "."
+        }
+        return authors
+    }
+
+    fun getAuthorsAndShortBioHtml(): String {
+        val confirmedAuthors = confirmedAuthors.joinToString("\n") {
+            "<div><span class='author'>${it.user.lastName} ${it.user.firstName}</span>: ${it.shortBio ?: ""}</div>"
+        }
+        val unconfirmedAuthors = unconfirmedAuthors.joinToString("\n") {
+            "<div><span class='author'>${it.lastName} ${it.firstName}</span>: ${it.shortBio ?: ""}</div>"
+        }
+        return "$confirmedAuthors\n$unconfirmedAuthors"
+    }
+}
 
 enum class PublicationStatus {
     PENDING,

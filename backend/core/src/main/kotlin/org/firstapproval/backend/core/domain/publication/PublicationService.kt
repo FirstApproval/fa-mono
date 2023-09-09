@@ -1,5 +1,11 @@
 package org.firstapproval.backend.core.domain.publication
 
+import com.itextpdf.html2pdf.ConverterProperties
+import com.itextpdf.html2pdf.HtmlConverter
+import com.itextpdf.kernel.events.PdfDocumentEvent
+import com.itextpdf.kernel.pdf.PdfDocument
+import com.itextpdf.kernel.pdf.PdfWriter
+import org.firstapproval.api.server.model.Author
 import org.firstapproval.api.server.model.DownloadLinkResponse
 import org.firstapproval.api.server.model.Paragraph
 import org.firstapproval.api.server.model.PublicationEditRequest
@@ -16,6 +22,8 @@ import org.firstapproval.backend.core.domain.ipfs.JobKind
 import org.firstapproval.backend.core.domain.ipfs.JobRepository
 import org.firstapproval.backend.core.domain.ipfs.JobStatus
 import org.firstapproval.backend.core.domain.notification.NotificationService
+import org.firstapproval.backend.core.domain.pdf.PdfFooter
+import org.firstapproval.backend.core.domain.pdf.PdfHeader
 import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
@@ -37,6 +45,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.io.ByteArrayOutputStream
 import java.time.ZonedDateTime.now
 import java.util.UUID
 import java.util.UUID.randomUUID
@@ -297,6 +306,116 @@ class PublicationService(
         return PublicationsResponse()
             .publications(publicationsPage.map { it.toApiObject(userService) }.toList())
             .isLastPage(publicationsPage.isLast)
+    }
+
+    fun generatePdf(user: User, id: UUID): ByteArray {
+        val publication = get(user, id)
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        val baseUri = "classpath:/pdf/"
+        val properties = ConverterProperties()
+        properties.baseUri = baseUri
+        val writer = PdfWriter(byteArrayOutputStream)
+        val pdfDocument = PdfDocument(writer)
+        val headerHandler = PdfHeader(publication.isNegative)
+        val footerHandler = PdfFooter()
+        pdfDocument.addEventHandler(PdfDocumentEvent.START_PAGE, headerHandler)
+        pdfDocument.addEventHandler(PdfDocumentEvent.END_PAGE, footerHandler)
+        HtmlConverter.convertToPdf(getHtml(publication), pdfDocument, properties)
+        writer.close()
+        pdfDocument.close()
+        byteArrayOutputStream.close()
+        return byteArrayOutputStream.toByteArray()
+    }
+
+    private fun getHtml(publication: Publication): String {
+        val html = StringBuilder()
+        html.append(
+            """
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <title>Title</title>
+                <link rel="stylesheet" type="text/css" href="styles.css">
+            </head>
+            <body>
+            <div class='header'></div>
+            <div class='title'>${publication.title}</div>
+            <div class='metaInfo'>
+                <div>${publication.getAuthorsFIOHtml()}</div>
+                <div>Published online:${publication.publicationTime}</div>
+            </div>
+            """.trimIndent()
+        )
+        html.append("<div class='description'>")
+        publication.description?.forEach {
+            html.append(it)
+        }
+        html.append("</div>")
+
+        html.append("<div class='columns'>")
+        html.append("<div class='sectionTitle'>Experiment goals</div>")
+        publication.predictedGoals?.forEach {
+            html.append("<div class='sectionBody'>$it</div>")
+        }
+
+        if (publication.isNegative) {
+            html.append("<div class='highlightedSection'>")
+            html.append("<div class='highlightedSectionTitle'>The data is negative</div>")
+            html.append("<div>${publication.negativeData}</div></div>")
+        }
+
+        html.append("<div class='sectionTitle'>Method</div>")
+        publication.methodDescription?.forEach {
+            html.append("<div class='sectionBody'>$it</div>")
+        }
+
+        html.append("<div class='sectionTitle'>Object of study</div>")
+        publication.objectOfStudyDescription?.forEach {
+            html.append("<div class='sectionBody'>$it</div>")
+        }
+
+        if (!publication.software.isNullOrEmpty()) {
+            html.append("<div class='sectionTitle'>Software</div>")
+            publication.software?.forEach {
+                html.append("<div class='sectionBody'>$it</div>")
+            }
+        }
+
+        html.append("<div class='sectionTitle'>Authors</div>")
+        html.append("<div class='sectionBody'>${publication.getAuthorsAndShortBioHtml()}</div>")
+
+        if (!publication.grantOrganizations.isNullOrEmpty()) {
+            html.append("<div class='sectionTitle'>Granting organisations</div>")
+            publication.grantOrganizations?.forEach {
+                html.append("<div class='sectionBody'>")
+                html.append("<ul><li>$it</li></ul>")
+                html.append("</div>")
+            }
+        }
+
+        if (!publication.relatedArticles.isNullOrEmpty()) {
+            html.append("<div class='sectionTitle'>Related articles</div>")
+            html.append("<div class='highlightedSection'>")
+            html.append("<div class='highlightedSectionTitle'>Primary articles (publications based on this dataset):</div>")
+            publication.primaryArticles?.forEach {
+                html.append("<div><ol><li>$it</li></ol></div>")
+            }
+            html.append("</div>")
+            publication.relatedArticles?.forEach {
+                html.append("<div class='sectionBody'>")
+                html.append("<ol><li>$it</li></ol>")
+                html.append("</div>")
+            }
+        }
+
+        html.append("</div>")
+        html.append(
+            "</body>" +
+            "</html>"
+        )
+
+        return html.toString()
     }
 }
 

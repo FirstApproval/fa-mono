@@ -741,6 +741,32 @@ paths:
       operationId: downloadPublicationSampleFiles
       tags: [ publication ]
 
+  /api/publication/pdf/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+    get:
+      responses:
+        '200':
+          description: OK
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: byte
+        '404':
+          description: File not found
+        '500':
+          description: Server error
+      security:
+        - TokenAuth: [ ]
+      operationId: downloadPublicationPdf
+      tags: [ publication ]
+
   /api/files/check-duplicates/{publicationId}:
     post:
       summary: Check file duplicates
