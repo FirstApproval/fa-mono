@@ -11,7 +11,7 @@ export const CallToAction = (props: { store: HomePageStore }): ReactElement => {
   return (
     <Wrap>
       <CallToActionWrap>
-        <FlexWrap>
+        <FlexWrapColumn>
           <Heading>Unleash your data&apos;s potential</Heading>
           <Text>
             Share your datasets and let them fuel new scientific breakthroughs
@@ -27,7 +27,7 @@ export const CallToAction = (props: { store: HomePageStore }): ReactElement => {
             }}>
             <ButtonText>Publish for free</ButtonText>
           </ButtonWrap>
-        </FlexWrap>
+        </FlexWrapColumn>
       </CallToActionWrap>
       <img src={bannerBg} />
     </Wrap>
@@ -89,7 +89,11 @@ export const ButtonWrap = styled(Button)`
   height: 40px;
 `;
 
-export const FlexWrap = styled('div')`
+export const FlexWrapColumn = styled.div`
   display: flex;
   flex-direction: column;
+`;
+
+export const FlexWrapRow = styled.div`
+  display: flex;
 `;

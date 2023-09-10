@@ -11,12 +11,10 @@ import org.firstapproval.backend.core.domain.file.ARCHIVED_PUBLICATION_FILES
 import org.firstapproval.backend.core.domain.file.ARCHIVED_PUBLICATION_SAMPLE_FILES
 import org.firstapproval.backend.core.domain.file.FileStorageService
 import org.firstapproval.backend.core.domain.ipfs.IpfsClient
-import org.firstapproval.backend.core.domain.ipfs.Job
-import org.firstapproval.backend.core.domain.ipfs.JobKind
 import org.firstapproval.backend.core.domain.ipfs.JobRepository
-import org.firstapproval.backend.core.domain.ipfs.JobStatus
 import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
+import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
@@ -35,11 +33,13 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.DESC
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime.now
 import java.util.UUID
 import java.util.UUID.randomUUID
+import org.firstapproval.api.server.model.AccessType as AccessTypeApiObject
 import org.firstapproval.api.server.model.ConfirmedAuthor as ConfirmedAuthorApiObject
 import org.firstapproval.api.server.model.Publication as PublicationApiObject
 import org.firstapproval.api.server.model.PublicationStatus as PublicationStatusApiObject
@@ -90,6 +90,7 @@ class PublicationService(
                 throw RecordConflictException("Author with this email already added to publication as confirmed user")
             }
 
+            publication.editingTime = now()
             if (title?.edited == true) publication.title = title.value
             if (negativeData?.edited == true) publication.negativeData = negativeData.value
             if (isNegative != null) publication.isNegative = isNegative
@@ -298,6 +299,16 @@ class PublicationService(
             .publications(publicationsPage.map { it.toApiObject(userService) }.toList())
             .isLastPage(publicationsPage.isLast)
     }
+
+    @Transactional
+    fun delete(id: UUID, user: User) {
+        val publication = publicationRepository.getReferenceById(id)
+        checkPublicationCreator(user, publication)
+        if (publication.status != PENDING) {
+            throw AccessDeniedException("Forbidden delete published publications. Only draft publications can be deleted")
+        }
+        publicationRepository.deleteById(id)
+    }
 }
 
 fun Publication.toApiObject(userService: UserService) = PublicationApiObject().also { publicationApiModel ->
@@ -329,9 +340,10 @@ fun Publication.toApiObject(userService: UserService) = PublicationApiObject().a
     publicationApiModel.unconfirmedAuthors = unconfirmedAuthors.map { it.toApiObject() }
     publicationApiModel.viewsCount = viewsCount
     publicationApiModel.downloadsCount = downloadsCount
-    publicationApiModel.status = org.firstapproval.api.server.model.PublicationStatus.valueOf(status.name)
-    publicationApiModel.accessType = org.firstapproval.api.server.model.AccessType.valueOf(accessType.name)
+    publicationApiModel.status = PublicationStatusApiObject.valueOf(status.name)
+    publicationApiModel.accessType = AccessTypeApiObject.valueOf(accessType.name)
     publicationApiModel.creationTime = creationTime.toOffsetDateTime()
+    publicationApiModel.editingTime = editingTime.toOffsetDateTime()
     publicationApiModel.negativeData = negativeData
     publicationApiModel.archiveSize = archiveSize
     publicationApiModel.sampleArchiveSize = archiveSampleSize

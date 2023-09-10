@@ -75,6 +75,7 @@ class Publication(
     var downloadsCount: Long = 0,
     var viewsCount: Long = 0,
     var creationTime: ZonedDateTime = now(),
+    var editingTime: ZonedDateTime = now(),
     var publicationTime: ZonedDateTime? = null,
     @Convert(converter = StringEncryptionConverter::class)
     var archivePassword: String? = null,

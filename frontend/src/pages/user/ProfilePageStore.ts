@@ -79,4 +79,14 @@ export class ProfilePageStore {
     const pub: string = response.data.id;
     routerStore.navigatePage(Page.PUBLICATION, `/publication/${pub}`);
   };
+
+  deletePublication = async (publicationId: string): Promise<void> => {
+    const response = await publicationService._delete(publicationId);
+    if (response.status === 200) {
+      const newValue = this.publications
+        .get(PublicationStatus.PENDING)!
+        .filter((p) => p.id !== publicationId);
+      this.publications.set(PublicationStatus.PENDING, newValue);
+    }
+  };
 }

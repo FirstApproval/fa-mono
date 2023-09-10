@@ -37,11 +37,11 @@ import {
   renderProfileImage
 } from 'src/fire-browser/utils';
 import { userStore } from 'src/core/user';
+import { downloadersStore } from '../publication/store/downloadsStore';
 import { Page } from '../../core/RouterStore';
 import { Footer } from '../home/Footer';
 import { HeaderComponent } from '../../components/HeaderComponent';
 import { DownloadersDialog } from '../publication/DownloadersDialog';
-import { downloadersStore } from '../publication/store/downloadsStore';
 
 const tabs: string[] = ['published', 'drafts'];
 
@@ -62,6 +62,7 @@ export const ProfilePage: FunctionComponent = observer(() => {
     (publications ?? []).map((publication, index) => (
       <PublicationSection
         publication={publication}
+        profilePageStore={store}
         key={publication.id}
         openDownloadersDialog={() => {
           downloadersStore.clearAndOpen(

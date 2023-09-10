@@ -513,6 +513,23 @@ paths:
         - PublicAuth: [ ]
       operationId: getPublication
       tags: [ publication ]
+    delete:
+      summary: Delete draft publication
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: delete
+      tags: [ publication ]
     patch:
       summary: Edit publication
       parameters:
@@ -1875,6 +1892,9 @@ components:
         creationTime:
           type: string
           format: date-time
+        editingTime:
+          type: string
+          format: date-time
         publicationTime:
           type: string
           format: date-time
@@ -1941,6 +1961,7 @@ components:
         - creator
         - isNegative
         - creationTime
+        - editingTime
         - total
 
     PublicationsResponse:

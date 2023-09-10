@@ -17,7 +17,8 @@ import {
   FlexBody,
   FlexBodyCenter,
   HeightElement,
-  Parent
+  Parent,
+  SpaceBetween
 } from '../common.styled';
 import { routerStore } from '../../core/router';
 import styled from '@emotion/styled';
@@ -512,13 +513,6 @@ const TabContainer = styled.div`
 export const RowElement = styled.div`
   width: 100%;
   display: flex;
-  align-items: center;
-`;
-
-export const SpaceBetween = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
   align-items: center;
 `;
 
