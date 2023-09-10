@@ -62,9 +62,7 @@ export const PublicationSection = (props: {
           />
           <Authors>{authorsString}</Authors>
         </AuthorsWrap>
-        <PublicationLabel>
-          {publication.title ?? publication.id}
-        </PublicationLabel>
+        <PublicationLabel>{publication.title ?? 'Untitled'}</PublicationLabel>
         <PublicationDescriptionBox
           title={publication.description?.[0]?.text ?? ''}
         />
