@@ -80,8 +80,6 @@ export class PublicationStore {
   publicationTime: Date = new Date();
   viewsCount: number = 0;
   downloadsCount: number = 0;
-  downloaders: UserInfo[] = [];
-  downloadersIsLastPage = false;
 
   publicationStatus: PublicationStatus | null = null;
 
@@ -89,8 +87,6 @@ export class PublicationStore {
   sampleArchiveSize: number | null = null;
 
   viewCounterUpdated: boolean = false;
-
-  loadDownloadersLocked = false;
 
   constructor(
     readonly publicationId: string,
@@ -1096,24 +1092,6 @@ export class PublicationStore {
           this.isLoading = false;
         })
       );
-  }
-
-  public loadDownloaders(page: number): void {
-    if (!this.loadDownloadersLocked) {
-      this.loadDownloadersLocked = true;
-      void publicationService
-        .getPublicationDownloaders(this.publicationId, page, 15)
-        .then(
-          action((response) => {
-            this.downloaders = [
-              ...this.downloaders,
-              ...response.data.downloaders
-            ];
-            this.downloadersIsLastPage = response.data.isLastPage;
-            this.loadDownloadersLocked = false;
-          })
-        );
-    }
   }
 }
 

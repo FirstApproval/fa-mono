@@ -10,6 +10,7 @@ import { renderProfileImage } from '../../fire-browser/utils';
 
 export const RecommendedPublication = (props: {
   publication: Publication;
+  openDownloadersDialog: () => void;
 }): ReactElement | null => {
   const { publication } = props;
   const { title, creator } = publication;
@@ -21,11 +22,17 @@ export const RecommendedPublication = (props: {
       {title!.length > 120 ? (
         <Tooltip title={title}>
           <Wrap>
-            <RecommendedPublicationContent publication={publication} />
+            <RecommendedPublicationContent
+              publication={publication}
+              openDownloadersDialog={props.openDownloadersDialog}
+            />
           </Wrap>
         </Tooltip>
       ) : (
-        <RecommendedPublicationContent publication={publication} />
+        <RecommendedPublicationContent
+          publication={publication}
+          openDownloadersDialog={props.openDownloadersDialog}
+        />
       )}
     </>
   );
@@ -33,6 +40,7 @@ export const RecommendedPublication = (props: {
 
 const RecommendedPublicationContent = (props: {
   publication: Publication;
+  openDownloadersDialog: () => void;
 }): ReactElement | null => {
   const { publication } = props;
   const { title, creator } = publication;
@@ -72,10 +80,14 @@ const RecommendedPublicationContent = (props: {
           <RemoveRedEyeOutlined fontSize={'small'} />
         </IconWrap>
         <div>{publication.viewsCount}</div>
-        <IconWrap>
-          <DownloadWrap fontSize={'small'} />
-        </IconWrap>
-        <div>{publication.downloadsCount}</div>
+        <FlexWrap
+          style={{ cursor: 'pointer' }}
+          onClick={props.openDownloadersDialog}>
+          <IconWrap>
+            <DownloadWrap fontSize={'small'} />
+          </IconWrap>
+          <div>{publication.downloadsCount}</div>
+        </FlexWrap>
       </Footer>
     </Wrap>
   );
@@ -126,4 +138,10 @@ const NameWrap = styled.span`
 
 const DownloadWrap = styled(Download)`
   margin-left: 24px;
+`;
+
+const FlexWrap = styled.div`
+  margin-top: auto;
+  display: flex;
+  align-items: center;
 `;

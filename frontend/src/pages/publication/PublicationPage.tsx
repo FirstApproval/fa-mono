@@ -29,13 +29,13 @@ import {
 } from './store/PublicationStore';
 import { observer } from 'mobx-react-lite';
 import {
-  SummaryEditor,
   ExperimentGoalsEditor,
   GrantingOrganizationsEditor,
   MethodEditor,
   ObjectOfStudyEditor,
   RelatedArticlesEditor,
-  SoftwareEditor
+  SoftwareEditor,
+  SummaryEditor
 } from './editors/ParagraphEditor';
 import { ChonkyFileSystem } from '../../fire-browser/ChonkyFileSystem';
 import { TagsEditor } from './editors/TagsEditor';
@@ -61,13 +61,13 @@ import developer from '../../assets/developer.svg';
 import cloud from '../../assets/cloud.svg';
 import { BetaDialog } from '../../components/BetaDialog';
 import { PublicationStatus } from '../../apis/first-approval-api';
+import { downloadersStore } from './store/downloadsStore';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
 
   const [fs] = useState(() => new ChonkyFileSystem(publicationId));
   const [sfs] = useState(() => new ChonkySampleFileSystem(publicationId));
-  const [downloadersDialogOpen, setDownloadersDialogOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [isBetaDialogOpen, setIsBetaDialogOpen] = useState(() => false);
   const [validationErrors, setValidationErrors] = useState<Section[]>([]);
@@ -203,7 +203,12 @@ export const PublicationPage: FunctionComponent = observer(() => {
                   <PublicationBody
                     publicationId={publicationId}
                     publicationStore={publicationStore}
-                    openDownloadersDialog={() => setDownloadersDialogOpen(true)}
+                    openDownloadersDialog={() => {
+                      downloadersStore.clearAndOpen(
+                        publicationId,
+                        publicationStore.downloadsCount
+                      );
+                    }}
                     fs={fs}
                     sfs={sfs}
                   />
@@ -225,10 +230,8 @@ export const PublicationPage: FunctionComponent = observer(() => {
         errors={validationErrors}
       />
       <DownloadersDialog
-        isOpen={downloadersDialogOpen}
-        onClose={() => setDownloadersDialogOpen(false)}
-        publicationStore={publicationStore}
-        downloaders={publicationStore.downloaders}
+        isOpen={downloadersStore.open}
+        downloaders={downloadersStore.downloaders}
       />
     </>
   );
@@ -274,9 +277,10 @@ const PublicationBody = observer(
         {publicationStore.isView && (
           <DateViewsDownloads
             openDownloadersDialog={() => {
-              if (publicationStore.downloadsCount > 0) {
-                props.openDownloadersDialog();
-              }
+              downloadersStore.clearAndOpen(
+                props.publicationId,
+                publicationStore.downloadsCount
+              );
             }}
             publicationStore={publicationStore}
           />

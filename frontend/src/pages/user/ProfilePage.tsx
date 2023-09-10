@@ -40,6 +40,8 @@ import { userStore } from 'src/core/user';
 import { Page } from '../../core/RouterStore';
 import { Footer } from '../home/Footer';
 import { HeaderComponent } from '../../components/HeaderComponent';
+import { DownloadersDialog } from '../publication/DownloadersDialog';
+import { downloadersStore } from '../publication/store/downloadsStore';
 
 const tabs: string[] = ['published', 'drafts'];
 
@@ -58,7 +60,16 @@ export const ProfilePage: FunctionComponent = observer(() => {
 
   const mapPublications = (publications: Publication[]): ReactElement[] =>
     (publications ?? []).map((publication, index) => (
-      <PublicationSection publication={publication} key={publication.id} />
+      <PublicationSection
+        publication={publication}
+        key={publication.id}
+        openDownloadersDialog={() => {
+          downloadersStore.clearAndOpen(
+            publication.id,
+            publication.downloadsCount
+          );
+        }}
+      />
     ));
   const loadMoreButton = (status: PublicationStatus): ReactElement => (
     <LoadMorePublicationsButton
@@ -266,6 +277,10 @@ export const ProfilePage: FunctionComponent = observer(() => {
         </FlexBodyCenter>
       </Parent>
       <Footer />
+      <DownloadersDialog
+        isOpen={downloadersStore.open}
+        downloaders={downloadersStore.downloaders}
+      />
     </>
   );
 });

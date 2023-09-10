@@ -1,4 +1,4 @@
-import React, { type FunctionComponent, useState } from 'react';
+import React, { type FunctionComponent, ReactElement, useState } from 'react';
 import {
   Divider,
   InputAdornment,
@@ -19,12 +19,29 @@ import cloud from '../../assets/cloud.svg';
 import { Footer } from './Footer';
 import { BetaDialog } from '../../components/BetaDialog';
 import { HeaderComponent } from '../../components/HeaderComponent';
+import { DownloadersDialog } from '../publication/DownloadersDialog';
+import { downloadersStore } from '../publication/store/downloadsStore';
+import { Publication } from '../../apis/first-approval-api';
 
 export const HomePage: FunctionComponent = observer(() => {
   const [store] = useState(() => new HomePageStore());
   const [isBetaDialogOpen, setIsBetaDialogOpen] = useState(() => false);
 
   const hasSearch = store.searchQuery.length > 0;
+
+  const mapPublications = (publications: Publication[]): ReactElement[] =>
+    (publications ?? []).map((publication, index) => (
+      <PublicationSection
+        publication={publication}
+        key={publication.id}
+        openDownloadersDialog={() => {
+          downloadersStore.clearAndOpen(
+            publication.id,
+            publication.downloadsCount
+          );
+        }}
+      />
+    ));
 
   return (
     <>
@@ -100,11 +117,7 @@ export const HomePage: FunctionComponent = observer(() => {
                     <DividerWrap />
                     {store.isLoadingPublications && <LinearProgress />}
                     {!store.isLoadingPublications && (
-                      <>
-                        {store.publications.map((p) => (
-                          <PublicationSection key={p.id} publication={p} />
-                        ))}
-                      </>
+                      <>{mapPublications(store.publications)}</>
                     )}
                   </FlexBody>
                 </FlexBodyCenter>
@@ -116,11 +129,7 @@ export const HomePage: FunctionComponent = observer(() => {
                   <ResultsLabel>Results for {store.searchQuery}</ResultsLabel>
                   {store.isSearching && <LinearProgress />}
                   {!store.isSearching && (
-                    <>
-                      {store.searchResults.map((p) => (
-                        <PublicationSection key={p.id} publication={p} />
-                      ))}
-                    </>
+                    <>{mapPublications(store.searchResults)}</>
                   )}
                 </Wrap>
               </>
@@ -129,6 +138,10 @@ export const HomePage: FunctionComponent = observer(() => {
         </ContentWrap>
       </Parent>
       <Footer />
+      <DownloadersDialog
+        isOpen={downloadersStore.open}
+        downloaders={downloadersStore.downloaders}
+      />
     </>
   );
 });

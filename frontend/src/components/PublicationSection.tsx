@@ -1,7 +1,10 @@
 import React, { type ReactElement } from 'react';
 import styled from '@emotion/styled';
 import { Avatar, Divider, Tooltip } from '@mui/material';
-import { type Publication } from '../apis/first-approval-api';
+import {
+  type Publication,
+  PublicationStatus
+} from '../apis/first-approval-api';
 import { routerStore } from '../core/router';
 import { Page } from '../core/RouterStore';
 import { Download, RemoveRedEyeOutlined } from '@mui/icons-material';
@@ -10,6 +13,7 @@ import { findResearchAreaIcon } from '../pages/publication/store/ResearchAreas';
 
 export const PublicationSection = (props: {
   publication: Publication;
+  openDownloadersDialog: () => void;
 }): ReactElement => {
   const { publication } = props;
   const authorsString = publication
@@ -46,15 +50,21 @@ export const PublicationSection = (props: {
       </LinkWrap>
       <FlexWrap>
         <ResearchAreas publication={publication} />
-        <Footer>
-          <RemoveRedEyeOutlined
-            style={{ marginRight: '6px' }}
-            fontSize={'small'}
-          />
-          {publication.viewsCount}
-          <DownloadWrap style={{ marginRight: '6px' }} fontSize={'small'} />
-          {publication.downloadsCount}
-        </Footer>
+        {publication.status === PublicationStatus.PUBLISHED && (
+          <Footer>
+            <RemoveRedEyeOutlined
+              style={{ marginRight: '6px' }}
+              fontSize={'small'}
+            />
+            {publication.viewsCount}
+            <FlexWrap
+              style={{ cursor: 'pointer' }}
+              onClick={props.openDownloadersDialog}>
+              <DownloadWrap style={{ marginRight: '6px' }} fontSize={'small'} />
+              {publication.downloadsCount}
+            </FlexWrap>
+          </Footer>
+        )}
       </FlexWrap>
       <DividerWrap />
     </>
