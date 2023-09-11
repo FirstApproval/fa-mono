@@ -13,6 +13,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { type AuthorEditorStore } from './AuthorEditorStore';
 import { type ChonkySampleFileSystem } from '../../../fire-browser/sample-files/ChonkySampleFileSystem';
 import { FileData } from '@first-approval/chonky/dist/types/file.types';
+import { routerStore } from '../../../core/router';
+import { Page } from '../../../core/RouterStore';
 
 const EDIT_THROTTLE_MS = 1000;
 
@@ -957,6 +959,13 @@ export class PublicationStore {
         lastName: author.lastName
       }));
     this.authorNames = [...confirmedAuthorNames, ...unconfirmedAuthorNames];
+  };
+
+  deletePublication = async (publicationId: string): Promise<void> => {
+    const response = await publicationService._delete(publicationId);
+    if (response.status === 200) {
+      routerStore.navigatePage(Page.PROFILE, '/profile/drafts');
+    }
   };
 
   private loadInitialState(): void {
