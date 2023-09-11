@@ -9,7 +9,9 @@ import org.firstapproval.backend.core.config.Properties.FrontendProperties
 import org.firstapproval.backend.core.domain.auth.TokenService
 import org.firstapproval.backend.core.domain.file.ARCHIVED_PUBLICATION_FILES
 import org.firstapproval.backend.core.domain.file.ARCHIVED_PUBLICATION_SAMPLE_FILES
+import org.firstapproval.backend.core.domain.file.FILES
 import org.firstapproval.backend.core.domain.file.FileStorageService
+import org.firstapproval.backend.core.domain.file.SAMPLE_FILES
 import org.firstapproval.backend.core.domain.ipfs.IpfsClient
 import org.firstapproval.backend.core.domain.ipfs.JobRepository
 import org.firstapproval.backend.core.domain.notification.NotificationService
@@ -36,6 +38,7 @@ import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.support.TransactionTemplate
 import java.time.ZonedDateTime.now
 import java.util.UUID
 import java.util.UUID.randomUUID
@@ -58,7 +61,10 @@ class PublicationService(
     private val frontendProperties: FrontendProperties,
     private val fileStorageService: FileStorageService,
     private val notificationService: NotificationService,
-    private val downloaderRepository: DownloaderRepository
+    private val downloaderRepository: DownloaderRepository,
+    private val publicationFileRepository: PublicationFileRepository,
+    private val sampleFileRepository: PublicationSampleFileRepository,
+    private val transactionTemplate: TransactionTemplate
 ) {
     @Transactional
     fun create(user: User): Publication {
@@ -300,14 +306,27 @@ class PublicationService(
             .isLastPage(publicationsPage.isLast)
     }
 
-    @Transactional
     fun delete(id: UUID, user: User) {
-        val publication = publicationRepository.getReferenceById(id)
-        checkPublicationCreator(user, publication)
-        if (publication.status != PENDING) {
-            throw AccessDeniedException("Forbidden delete published publications. Only draft publications can be deleted")
+        val publicationFilesIds = mutableListOf<UUID>()
+        val publicationSampleFilesIds = mutableListOf<UUID>()
+        transactionTemplate.execute { _ ->
+            val publication = publicationRepository.getReferenceById(id)
+            checkPublicationCreator(user, publication)
+            if (publication.status != PENDING) {
+                throw AccessDeniedException("Forbidden delete published publications. Only draft publications can be deleted")
+            }
+            publicationFilesIds.addAll(publicationFileRepository.findIdsByPublicationId(publication.id))
+            publicationSampleFilesIds.addAll(sampleFileRepository.findIdsByPublicationId(publication.id))
+            publicationFileRepository.deleteAllById(publicationFilesIds)
+            sampleFileRepository.deleteAllById(publicationSampleFilesIds)
+            publicationRepository.deleteById(id)
         }
-        publicationRepository.deleteById(id)
+        if (publicationFilesIds.isNotEmpty()) {
+            fileStorageService.deleteByIds(FILES, publicationFilesIds)
+        }
+        if (publicationSampleFilesIds.isNotEmpty()) {
+            fileStorageService.deleteByIds(SAMPLE_FILES, publicationSampleFilesIds)
+        }
     }
 }
 
