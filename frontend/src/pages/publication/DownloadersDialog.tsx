@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, styled } from '@mui/material';
+import { CircularProgress, Dialog, DialogContent, styled } from '@mui/material';
 import React, { ReactElement } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -54,6 +54,7 @@ export const DownloadersDialog = (props: {
             </>
           ))}
         </InfiniteScroll>
+        {downloadersStore.loadDownloadersLocked && <CircularProgress />}
       </DialogContentWrap>
     </Dialog>
   );

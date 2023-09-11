@@ -1,12 +1,10 @@
 import React, { type ReactElement, useState } from 'react';
 import styled from '@emotion/styled';
-import { Avatar, Divider, IconButton, Tooltip } from '@mui/material';
+import { Avatar, Divider, IconButton, Link, Tooltip } from '@mui/material';
 import {
   type Publication,
   PublicationStatus
 } from '../apis/first-approval-api';
-import { routerStore } from '../core/router';
-import { Page } from '../core/RouterStore';
 import { Download, RemoveRedEyeOutlined } from '@mui/icons-material';
 import { renderProfileImage } from '../fire-browser/utils';
 import { findResearchAreaIcon } from '../pages/publication/store/ResearchAreas';
@@ -45,13 +43,10 @@ export const PublicationSection = (props: {
 
   return (
     <>
-      <LinkWrap
-        onClick={() => {
-          routerStore.navigatePage(
-            Page.PUBLICATION,
-            `/publication/${publication.id}`
-          );
-        }}>
+      <Link
+        href={`/publication/${publication.id}`}
+        underline={'none'}
+        color={'#040036'}>
         <AuthorsWrap>
           <Avatar
             src={renderProfileImage(publication.creator.profileImage)}
@@ -66,7 +61,7 @@ export const PublicationSection = (props: {
         <PublicationDescriptionBox
           title={publication.description?.[0]?.text ?? ''}
         />
-      </LinkWrap>
+      </Link>
       <FlexWrap>
         {publication.status === PublicationStatus.PUBLISHED && (
           <>
@@ -271,10 +266,6 @@ const PublicationLabel = styled.div`
 
   margin: 16px 0;
   word-break: break-word;
-`;
-
-const LinkWrap = styled.div`
-  cursor: pointer;
 `;
 
 const FlexWrap = styled.div`

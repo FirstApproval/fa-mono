@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import React, { type ReactElement } from 'react';
 import { type Publication } from '../../apis/first-approval-api';
-import { Avatar, Tooltip } from '@mui/material';
+import { Avatar, Link, Tooltip } from '@mui/material';
 import { Download, RemoveRedEyeOutlined } from '@mui/icons-material';
 import { getInitials } from '../../util/userUtil';
 import { routerStore } from '../../core/router';
@@ -66,12 +66,9 @@ const RecommendedPublicationContent = (props: {
         </div>
       </AuthorFlexWrap>
       <NameWrap
-        onClick={() => {
-          routerStore.navigatePage(
-            Page.PUBLICATION,
-            `/publication/${publication.id}`
-          );
-        }}>
+        href={`/publication/${publication.id}`}
+        underline={'none'}
+        color={'#040036'}>
         {title?.slice(0, 120)}
         {title!.length > 80 ? '...' : ''}
       </NameWrap>
@@ -125,7 +122,7 @@ const AvatarWrap = styled.div`
   margin-right: 8px;
 `;
 
-const NameWrap = styled.span`
+const NameWrap = styled(Link)`
   font-size: 20px;
   font-style: normal;
   font-weight: 500;
