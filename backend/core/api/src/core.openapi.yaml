@@ -1690,6 +1690,13 @@ components:
         - ON_REQUEST
         - MONETIZE_OR_CO_AUTHORSHIP
 
+    LicenseType:
+      type: string
+      enum:
+        - ATTRIBUTION_NO_DERIVATIVES
+        - ATTRIBUTION_NO_DERIVATIVES_NON_COMMERCIAL
+        - DUMMY
+
     UserUpdateRequest:
       type: object
       properties:
@@ -1752,6 +1759,8 @@ components:
           $ref: '#/components/schemas/PublicationStringValue'
         isNegative:
           type: boolean
+        licenseType:
+          $ref: '#/components/schemas/PublicationLicenseTypeValue'
 
     PublicationStringValue:
       type: object
@@ -1761,6 +1770,14 @@ components:
         value:
           type: string
           maxLength: 32768
+
+    PublicationLicenseTypeValue:
+      type: object
+      properties:
+        edited:
+          type: boolean
+        value:
+          $ref: '#/components/schemas/LicenseType'
 
     PublicationStringArrayValue:
       type: object
@@ -1887,6 +1904,8 @@ components:
           $ref: '#/components/schemas/PublicationStatus'
         accessType:
           $ref: '#/components/schemas/AccessType'
+        licenseType:
+          $ref: '#/components/schemas/LicenseType'
         contentStatus:
           $ref: '#/components/schemas/PublicationContentStatus'
         creationTime:

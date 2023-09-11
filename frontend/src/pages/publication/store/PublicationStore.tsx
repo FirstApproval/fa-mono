@@ -4,6 +4,7 @@ import _, { some } from 'lodash';
 import {
   type ConfirmedAuthor,
   type Paragraph,
+  LicenseType,
   PublicationStatus,
   type UnconfirmedAuthor,
   type UserInfo
@@ -83,6 +84,7 @@ export class PublicationStore {
   viewsCount: number = 0;
   downloadsCount: number = 0;
 
+  licenseType: LicenseType | null = null;
   publicationStatus: PublicationStatus | null = null;
 
   archiveSize: number | null = null;
@@ -306,6 +308,18 @@ export class PublicationStore {
     });
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
+
+  editLicenseType(): void {
+    this.savingStatus = SavingStatusState.SAVING;
+    debugger;
+    void publicationService.editPublication(this.publicationId, {
+      licenseType: {
+        value: this.licenseType ?? undefined,
+        edited: true
+      }
+    });
+    this.savingStatus = SavingStatusState.SAVED;
+  }
 
   updateTitle(title: string): void {
     this.title = title;
@@ -1060,6 +1074,9 @@ export class PublicationStore {
           }
           if (publication.status) {
             this.publicationStatus = publication.status;
+          }
+          if (publication.licenseType) {
+            this.licenseType = publication.licenseType;
           }
           this.setAuthorNames();
 

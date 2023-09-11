@@ -71,6 +71,7 @@ import { downloadersStore } from './store/downloadsStore';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Menu from '@mui/material/Menu';
 import { ConfirmationDialog } from '../../components/ConfirmationDialog';
+import { ContentLicensingDialog } from '../../components/ContentLicensingDialog';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -80,6 +81,8 @@ export const PublicationPage: FunctionComponent = observer(() => {
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [isBetaDialogOpen, setIsBetaDialogOpen] = useState(() => false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [contentLicensingDialogOpen, setContentLicensingDialogOpen] =
+    useState(false);
   const [validationErrors, setValidationErrors] = useState<Section[]>([]);
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -279,6 +282,13 @@ export const PublicationPage: FunctionComponent = observer(() => {
         }}>
         <StyledMenuItem
           onClick={() => {
+            setContentLicensingDialogOpen(true);
+            handleClose();
+          }}>
+          Content licensing
+        </StyledMenuItem>
+        <StyledMenuItem
+          onClick={() => {
             setDeleteDialogOpen(true);
             handleClose();
           }}>
@@ -297,6 +307,12 @@ export const PublicationPage: FunctionComponent = observer(() => {
         }
         yesText={'Delete'}
         noText={'Cancel'}
+      />
+      <ContentLicensingDialog
+        publicationStore={publicationStore}
+        licenseType={publicationStore.licenseType}
+        isOpen={contentLicensingDialogOpen}
+        onClose={() => setContentLicensingDialogOpen(false)}
       />
     </>
   );

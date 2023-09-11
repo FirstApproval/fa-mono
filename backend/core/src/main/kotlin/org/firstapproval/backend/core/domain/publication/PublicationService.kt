@@ -44,6 +44,7 @@ import java.util.UUID
 import java.util.UUID.randomUUID
 import org.firstapproval.api.server.model.AccessType as AccessTypeApiObject
 import org.firstapproval.api.server.model.ConfirmedAuthor as ConfirmedAuthorApiObject
+import org.firstapproval.api.server.model.LicenseType as LicenseTypeApiObject
 import org.firstapproval.api.server.model.Publication as PublicationApiObject
 import org.firstapproval.api.server.model.PublicationStatus as PublicationStatusApiObject
 import org.firstapproval.api.server.model.UnconfirmedAuthor as UnconfirmedAuthorApiObject
@@ -114,6 +115,7 @@ class PublicationService(
             if (methodTitle?.edited == true) publication.methodTitle = methodTitle.value
             if (methodDescription?.edited == true) publication.methodDescription = methodDescription.values.map { it.text }
             if (predictedGoals?.edited == true) publication.predictedGoals = predictedGoals.values.map { it.text }
+            if (licenseType?.edited == true) publication.licenseType = LicenseType.valueOf(licenseType.value.name)
             if (confirmedAuthors?.edited == true) {
                 if (confirmedAuthors.values.none { it.userId == publication.creator.id }) {
                     throw RecordConflictException("Creator cannot be deleted from authors list")
@@ -361,6 +363,7 @@ fun Publication.toApiObject(userService: UserService) = PublicationApiObject().a
     publicationApiModel.downloadsCount = downloadsCount
     publicationApiModel.status = PublicationStatusApiObject.valueOf(status.name)
     publicationApiModel.accessType = AccessTypeApiObject.valueOf(accessType.name)
+    publicationApiModel.licenseType = licenseType?.let { LicenseTypeApiObject.valueOf(it.name) }
     publicationApiModel.creationTime = creationTime.toOffsetDateTime()
     publicationApiModel.editingTime = editingTime.toOffsetDateTime()
     publicationApiModel.negativeData = negativeData

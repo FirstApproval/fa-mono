@@ -85,6 +85,8 @@ class Publication(
     var isFeatured: Boolean = false,
     var isNegative: Boolean = false,
     var negativeData: String? = null,
+    @Enumerated(STRING)
+    var licenseType: LicenseType? = null,
 )
 
 enum class PublicationStatus {
@@ -95,4 +97,9 @@ enum class PublicationStatus {
 
 enum class AccessType {
     OPEN,
+}
+
+enum class LicenseType {
+    ATTRIBUTION_NO_DERIVATIVES,
+    ATTRIBUTION_NO_DERIVATIVES_NON_COMMERCIAL,
 }
