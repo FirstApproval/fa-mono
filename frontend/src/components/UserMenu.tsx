@@ -58,6 +58,14 @@ export const UserMenu = observer((): ReactElement => {
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
         MenuListProps={{
           'aria-labelledby': 'user-button'
         }}>
