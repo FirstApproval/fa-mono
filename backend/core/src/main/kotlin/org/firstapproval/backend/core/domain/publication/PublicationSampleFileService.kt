@@ -1,21 +1,23 @@
 package org.firstapproval.backend.core.domain.publication
 
 import org.apache.commons.io.FilenameUtils
-import org.firstapproval.backend.core.domain.file.FILES
-import org.firstapproval.backend.core.domain.file.SAMPLE_FILES
 import org.firstapproval.backend.core.domain.file.FileStorageService
+import org.firstapproval.backend.core.domain.file.SAMPLE_FILES
 import org.firstapproval.backend.core.domain.user.User
+import org.firstapproval.backend.core.utils.require
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.support.TransactionTemplate
 import java.io.InputStream
-import java.util.UUID
+import java.util.*
 import java.util.UUID.randomUUID
 
 @Service
 class PublicationSampleFileService(
     private val publicationSampleFileRepository: PublicationSampleFileRepository,
     private val fileStorageService: FileStorageService,
-    private val publicationRepository: PublicationRepository
+    private val publicationRepository: PublicationRepository,
+    private val transactionalTemplate: TransactionTemplate
 ) {
 
     fun getPublicationSampleFiles(publicationId: UUID, dirPath: String): List<PublicationSampleFile> {
@@ -23,32 +25,47 @@ class PublicationSampleFileService(
     }
 
     @Transactional
-    fun uploadFile(user: User, publicationId: UUID, fullPath: String, isDir: Boolean, data: InputStream?, onCollisionRename: Boolean, contentLength: Long?): PublicationSampleFile {
-        val fileId = randomUUID()
-        val publication = publicationRepository.getReferenceById(publicationId)
-        checkPublicationCreator(user, publication)
-        val actualFullPath: String
-        if (onCollisionRename) {
-            actualFullPath = getFileFullPath(publicationId, fullPath)
-        } else {
-            actualFullPath = fullPath
-            dropDuplicate(publicationId, actualFullPath)
-        }
-        val hash = if (!isDir) {
-            fileStorageService.save(SAMPLE_FILES, fileId.toString(), data!!, contentLength!!).eTag
-        } else null
-        val file = publicationSampleFileRepository.save(
-            PublicationSampleFile(
-                id = fileId,
-                publication = publication,
-                fullPath = actualFullPath,
-                dirPath = extractDirPath(actualFullPath),
-                isDir = isDir,
-                hash = hash,
-                size = contentLength
+    fun uploadFile(
+        user: User,
+        publicationId: UUID,
+        fullPath: String,
+        isDir: Boolean,
+        data: InputStream?,
+        onCollisionRename: Boolean,
+        contentLength: Long?
+    ): PublicationSampleFile {
+        val filesToDelete = mutableListOf<UUID>()
+        var file: PublicationSampleFile? = null
+        transactionalTemplate.execute { _ ->
+            val fileId = randomUUID()
+            val publication = publicationRepository.getReferenceById(publicationId)
+            checkPublicationCreator(user, publication)
+            val actualFullPath: String
+            if (onCollisionRename) {
+                actualFullPath = getFileFullPath(publicationId, fullPath)
+            } else {
+                actualFullPath = fullPath
+                dropDuplicate(publicationId, actualFullPath)?.let { filesToDelete.add(it) }
+            }
+            val hash = if (!isDir) {
+                fileStorageService.save(SAMPLE_FILES, fileId.toString(), data!!, contentLength!!).eTag
+            } else null
+            file = publicationSampleFileRepository.save(
+                PublicationSampleFile(
+                    id = fileId,
+                    publication = publication,
+                    fullPath = actualFullPath,
+                    dirPath = extractDirPath(actualFullPath),
+                    isDir = isDir,
+                    hash = hash,
+                    size = contentLength
+                )
             )
-        )
-        return file
+        }
+        if (filesToDelete.isNotEmpty()) {
+            fileStorageService.deleteByIds(SAMPLE_FILES, filesToDelete)
+        }
+        return file.require()
     }
 
     private fun getFileFullPath(publicationId: UUID, fullPath: String): String {
@@ -61,10 +78,10 @@ class PublicationSampleFileService(
         return getFileFullPath(publicationId, fullPath.replace(fileNameWithoutExtension, "${fileNameWithoutExtension}_copy"))
     }
 
-    private fun dropDuplicate(publicationId: UUID, fullPath: String) {
-        val publicationFile = publicationSampleFileRepository.findByPublicationIdAndFullPath(publicationId, fullPath)
-        if (publicationFile != null) {
-            fileStorageService.delete(FILES, publicationFile.id)
+    private fun dropDuplicate(publicationId: UUID, fullPath: String): UUID? {
+        return publicationSampleFileRepository.findByPublicationIdAndFullPath(publicationId, fullPath)?.let {
+            publicationSampleFileRepository.delete(it)
+            it.id
         }
     }
 
@@ -86,29 +103,33 @@ class PublicationSampleFileService(
 
     @Transactional
     fun deleteFiles(user: User, fileIds: List<UUID>) {
-        val files = publicationSampleFileRepository.findByIdIn(fileIds)
-        val publication = files.first().publication
-        if (!files.all { it.publication.id == publication.id }) {
-            throw IllegalArgumentException()
-        }
-        val dirPath = files.first().dirPath
-        if (!files.all { it.dirPath == dirPath }) {
-            throw IllegalArgumentException()
-        }
-        checkPublicationCreator(user, publication)
-        files.forEach { file ->
-            if (file.isDir) {
-                val nestedFiles = publicationSampleFileRepository.getNestedFiles(file.publication.id, file.fullPath)
-                val fileForDeletion = nestedFiles.filter { !it.isDir }
-                publicationSampleFileRepository.deleteAll(nestedFiles)
-                publicationSampleFileRepository.delete(file)
-                if (fileForDeletion.isNotEmpty()) {
-                    fileStorageService.deleteByIds(SAMPLE_FILES, fileForDeletion.map { it.id })
-                }
-            } else {
-                publicationSampleFileRepository.delete(file)
-                fileStorageService.delete(SAMPLE_FILES, file.id)
+        val filesIdsForDeletion = mutableListOf<UUID>()
+        transactionalTemplate.execute { _ ->
+            val files = publicationSampleFileRepository.findByIdIn(fileIds)
+            val publication = files.first().publication
+            if (!files.all { it.publication.id == publication.id }) {
+                throw IllegalArgumentException()
             }
+            val dirPath = files.first().dirPath
+            if (!files.all { it.dirPath == dirPath }) {
+                throw IllegalArgumentException()
+            }
+            checkPublicationCreator(user, publication)
+            files.forEach { file ->
+                if (file.isDir) {
+                    val nestedFiles = publicationSampleFileRepository.getNestedFiles(file.publication.id, file.fullPath)
+                    val fileForDeletion = nestedFiles.filter { !it.isDir }
+                    publicationSampleFileRepository.deleteAll(nestedFiles)
+                    publicationSampleFileRepository.delete(file)
+                    filesIdsForDeletion.addAll(fileForDeletion.map { it.id })
+                } else {
+                    publicationSampleFileRepository.delete(file)
+                    filesIdsForDeletion.add(file.id)
+                }
+            }
+        }
+        if (filesIdsForDeletion.isNotEmpty()) {
+            fileStorageService.deleteByIds(SAMPLE_FILES, filesIdsForDeletion)
         }
     }
 
