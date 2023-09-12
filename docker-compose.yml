@@ -32,6 +32,7 @@ services:
     environment:
       - xpack.security.enabled=false
       - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xmx512m -Xms256m
     volumes:
       - ./volumes/elastic-data:/data
     ports:
