@@ -25,7 +25,8 @@ import {
   RelatedArticlesPlaceholder,
   SampleFilesPlaceholder,
   SoftwarePlaceholder,
-  TagsPlaceholder
+  TagsPlaceholder,
+  TagsWrap
 } from './ContentPlaceholder';
 import {
   PublicationStore,
@@ -441,7 +442,11 @@ const PublicationBody = observer(
         {relatedArticlesEnabled && (
           <RelatedArticlesEditor publicationStore={publicationStore} />
         )}
-        {!tagsEnabled && <TagsPlaceholder onClick={openTags} />}
+        {!tagsEnabled && (
+          <TagsWrap>
+            <TagsPlaceholder onClick={openTags} />
+          </TagsWrap>
+        )}
         {tagsEnabled && <TagsEditor publicationStore={publicationStore} />}
         {publicationStore.isPreview && <DraftText />}
       </>

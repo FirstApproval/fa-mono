@@ -175,6 +175,10 @@ export const ContentPlaceholder = (
   );
 };
 
+export const TagsWrap = styled.div`
+  margin-bottom: 120px;
+`;
+
 const FlexWrap = styled.div`
   display: flex;
   mix-blend-mode: luminosity;

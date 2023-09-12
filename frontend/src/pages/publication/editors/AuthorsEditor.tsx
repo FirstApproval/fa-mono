@@ -28,6 +28,7 @@ import { ContentEditorWrap, LabelWrap } from './styled';
 import { getInitials } from '../../../util/userUtil';
 import { renderProfileImage } from '../../../fire-browser/utils';
 import { type EditorProps } from './types';
+import { validateEmail } from '../../../util/emailUtil';
 
 export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
   const [addAuthorVisible, setAddAuthorVisible] = useState(false);
@@ -35,6 +36,9 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
   const [searchVisible, setSearchVisible] = useState(false);
   const [isUserExistsByEmail, setIsUserExistsByEmail] = useState(false);
   const [authorOptions, setAuthorOptions] = useState<UserInfo[]>([]);
+  const [isValidEmail, setIsValidEmail] = useState(true);
+  const [isValidFirstName, setIsValidFirstName] = useState(true);
+  const [isValidLastName, setIsValidLastName] = useState(true);
 
   const [query, setQuery] = useState('');
 
@@ -96,6 +100,33 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
 
   const handleCloseDeleteDialog = (): void => {
     setDeleteDialogOpen(false);
+  };
+
+  const validateFields = (): boolean => {
+    setIsValidEmail(
+      authorStore.email.length > 0 && validateEmail(authorStore.email)
+    );
+    setIsValidFirstName(authorStore.firstName.length > 0);
+    setIsValidLastName(authorStore.lastName.length > 0);
+    return isValidEmail && isValidFirstName && isValidLastName;
+  };
+
+  const handleSaveButton = async (): Promise<void> => {
+    if (authorStore.isConfirmed) {
+      props.publicationStore.editConfirmedAuthor(authorStore);
+      handleCloseAddAuthor();
+    } else {
+      await userService.existsByEmail(authorStore.email).then((result) => {
+        if (result.data) {
+          authorStore.clean();
+          setIsUserExistsByEmail(true);
+        } else {
+          if (validateFields()) return;
+          props.publicationStore.addOrEditUnconfirmedAuthor(authorStore);
+        }
+        handleCloseAddAuthor();
+      });
+    }
   };
 
   return (
@@ -221,6 +252,8 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                 disabled={authorStore.isConfirmed}
                 label="Email"
                 variant="outlined"
+                error={!isValidEmail}
+                helperText={!isValidEmail ? 'Invalid address' : undefined}
               />
               <OneLineWrap>
                 <MarginTextField
@@ -231,6 +264,10 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                   disabled={authorStore.isConfirmed}
                   label="First name"
                   variant="outlined"
+                  error={!isValidFirstName}
+                  helperText={
+                    !isValidFirstName ? 'Invalid first name' : undefined
+                  }
                 />
                 <FullWidthTextField
                   value={authorStore.lastName}
@@ -240,6 +277,10 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                   disabled={authorStore.isConfirmed}
                   label="Last name"
                   variant="outlined"
+                  error={!isValidLastName}
+                  helperText={
+                    !isValidLastName ? 'Invalid last name' : undefined
+                  }
                 />
               </OneLineWrap>
               <FullWidthTextField
@@ -294,25 +335,8 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
             <div>
               <Button onClick={handleCloseAddAuthor}>Cancel</Button>
               <Button
-                onClick={async () => {
-                  if (authorStore.isConfirmed) {
-                    props.publicationStore.editConfirmedAuthor(authorStore);
-                    handleCloseAddAuthor();
-                  } else {
-                    await userService
-                      .existsByEmail(authorStore.email)
-                      .then((result) => {
-                        if (result.data) {
-                          authorStore.clean();
-                          setIsUserExistsByEmail(true);
-                        } else {
-                          props.publicationStore.addOrEditUnconfirmedAuthor(
-                            authorStore
-                          );
-                        }
-                        handleCloseAddAuthor();
-                      });
-                  }
+                onClick={() => {
+                  void handleSaveButton();
                 }}>
                 Save
               </Button>
