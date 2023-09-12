@@ -161,4 +161,9 @@ class PublicationController(
         val mappedDownloaders = downloadersPage.map { it.user.toApiObject(userService) }.toList()
         return ok(GetDownloadersResponse(downloadersPage.isLast, mappedDownloaders))
     }
+
+    override fun delete(id: UUID): ResponseEntity<Void> {
+        publicationService.delete(id, authHolderService.user)
+        return ok().build()
+    }
 }

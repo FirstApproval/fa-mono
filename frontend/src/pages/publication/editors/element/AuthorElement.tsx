@@ -18,7 +18,7 @@ import { Page } from '../../../../core/RouterStore';
 
 interface AuthorElementProps {
   isReadonly: boolean;
-  author: ConfirmedAuthor | UnconfirmedAuthor | UserInfo;
+  author: ConfirmedAuthor | UnconfirmedAuthor | UserInfo | AuthorEditorStore;
   isConfirmed?: boolean;
   index?: number;
   setEditAuthorVisible?: (
@@ -36,14 +36,28 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
   let lastName;
   let email;
   let username: string;
+  let profileImage: string | undefined;
 
+  debugger;
   if (isConfirmed) {
     const confirmedAuthor = author as ConfirmedAuthor;
-    firstName = confirmedAuthor.user.firstName;
-    lastName = confirmedAuthor.user.lastName;
-    email = confirmedAuthor.user.email;
-    username = confirmedAuthor.user.username;
-    shortBio = confirmedAuthor.user.selfInfo;
+    // check that it is really confirmed user
+    if (confirmedAuthor.user?.username) {
+      const authorUser = confirmedAuthor.user;
+      firstName = authorUser.firstName;
+      lastName = authorUser.lastName;
+      email = authorUser.email;
+      username = authorUser.username;
+      shortBio = confirmedAuthor.shortBio;
+      profileImage = authorUser.profileImage;
+    } else {
+      const authorEditorStore = author as AuthorEditorStore;
+      firstName = authorEditorStore.firstName;
+      lastName = authorEditorStore.lastName;
+      email = authorEditorStore.email;
+      shortBio = authorEditorStore.shortBio;
+      profileImage = authorEditorStore.profileImage;
+    }
   } else if (isConfirmed === false) {
     const unconfirmedAuthor = author as UnconfirmedAuthor;
     firstName = unconfirmedAuthor.firstName;
@@ -56,13 +70,11 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
     lastName = userInfo.lastName;
     email = userInfo.email;
     username = userInfo.username;
+    profileImage = userInfo.profileImage;
   }
 
-  const profileImage =
-    (author as ConfirmedAuthor).user?.profileImage ??
-    (author as AuthorEditorStore).profileImage;
   return (
-    <AuthorRowWrap>
+    <AuthorRowWrap useMarginBottom={!isReadonly}>
       <AuthorElementWrap
         onClick={() => {
           if (username) {
@@ -82,7 +94,7 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
                 {firstName} {lastName}
               </span>
             )}
-            {!isConfirmed && (
+            {isConfirmed === false && (
               <span>
                 {firstName} {lastName} (not registered)
               </span>
@@ -109,16 +121,18 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
   );
 };
 
-const AuthorRowWrap = styled.div`
+const AuthorRowWrap = styled.div<{
+  useMarginBottom: boolean;
+}>`
   display: flex;
   width: 100%;
   justify-content: space-between;
+  margin-bottom: ${(props) => (props.useMarginBottom ? '28px' : 0)};
 `;
 
 const AuthorElementWrap = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 28px;
   cursor: pointer;
 `;
 

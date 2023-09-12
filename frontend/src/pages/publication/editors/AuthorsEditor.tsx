@@ -1,9 +1,9 @@
 import { observer } from 'mobx-react-lite';
 import React, { type ReactElement, useEffect, useState } from 'react';
 import {
-  type UserInfo,
   type ConfirmedAuthor,
-  type UnconfirmedAuthor
+  type UnconfirmedAuthor,
+  type UserInfo
 } from '../../../apis/first-approval-api';
 import { AuthorEditorStore } from '../store/AuthorEditorStore';
 import { AuthorElement } from './element/AuthorElement';
@@ -257,11 +257,12 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
           )}
           {authorStore.isConfirmed && (
             <EditConfirmedAuthor>
-              {/* dirty hack to show user name and email without possibility to edit any fields except of short bio */}
+              {/* dirty hack to show user name and email without possibility to edit any fields except of short bio. */}
+              {/* Partly fixed by adding AuthorEditorStore as author type */}
               <AuthorElement
                 isReadonly={props.publicationStore.isReadonly}
                 author={authorStore}
-                isConfirmed={false}
+                isConfirmed={true}
               />
               <FullWidthTextField
                 multiline

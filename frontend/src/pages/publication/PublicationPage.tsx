@@ -5,7 +5,13 @@ import React, {
   useState
 } from 'react';
 import { Button, LinearProgress } from '@mui/material';
-import { FlexBodyCenter, FlexHeader, Logo, Parent } from '../common.styled';
+import {
+  FlexBodyCenter,
+  FlexHeader,
+  Logo,
+  Parent,
+  StyledMenuItem
+} from '../common.styled';
 import { FileUploader } from '../../fire-browser/FileUploader';
 import { routerStore } from '../../core/router';
 import styled from '@emotion/styled';
@@ -29,13 +35,13 @@ import {
 } from './store/PublicationStore';
 import { observer } from 'mobx-react-lite';
 import {
-  SummaryEditor,
   ExperimentGoalsEditor,
   GrantingOrganizationsEditor,
   MethodEditor,
   ObjectOfStudyEditor,
   RelatedArticlesEditor,
-  SoftwareEditor
+  SoftwareEditor,
+  SummaryEditor
 } from './editors/ParagraphEditor';
 import { ChonkyFileSystem } from '../../fire-browser/ChonkyFileSystem';
 import { TagsEditor } from './editors/TagsEditor';
@@ -61,16 +67,32 @@ import developer from '../../assets/developer.svg';
 import cloud from '../../assets/cloud.svg';
 import { BetaDialog } from '../../components/BetaDialog';
 import { PublicationStatus } from '../../apis/first-approval-api';
+import { downloadersStore } from './store/downloadsStore';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import Menu from '@mui/material/Menu';
+import { ConfirmationDialog } from '../../components/ConfirmationDialog';
+import { ContentLicensingDialog } from '../../components/ContentLicensingDialog';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
 
   const [fs] = useState(() => new ChonkyFileSystem(publicationId));
   const [sfs] = useState(() => new ChonkySampleFileSystem(publicationId));
-  const [downloadersDialogOpen, setDownloadersDialogOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [isBetaDialogOpen, setIsBetaDialogOpen] = useState(() => false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [contentLicensingDialogOpen, setContentLicensingDialogOpen] =
+    useState(false);
   const [validationErrors, setValidationErrors] = useState<Section[]>([]);
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = (): void => {
+    setAnchorEl(null);
+  };
 
   const [publicationStore] = useState(
     () => new PublicationStore(publicationId, fs, sfs)
@@ -175,7 +197,6 @@ export const PublicationPage: FunctionComponent = observer(() => {
                     Publish
                   </ButtonWrap>
                   <ButtonWrap
-                    marginRight="0px"
                     variant="outlined"
                     size={'medium'}
                     onClick={() => {
@@ -187,6 +208,16 @@ export const PublicationPage: FunctionComponent = observer(() => {
                       }
                     }}>
                     {nextViewMode}
+                  </ButtonWrap>
+                  <ButtonWrap
+                    marginright="0px"
+                    variant="outlined"
+                    size={'medium'}
+                    onClick={handleClick}>
+                    More
+                    <ExpandMore
+                      sx={{ width: 20, height: 20, marginLeft: '8px' }}
+                    />
                   </ButtonWrap>
                 </>
               )}
@@ -203,7 +234,12 @@ export const PublicationPage: FunctionComponent = observer(() => {
                   <PublicationBody
                     publicationId={publicationId}
                     publicationStore={publicationStore}
-                    openDownloadersDialog={() => setDownloadersDialogOpen(true)}
+                    openDownloadersDialog={() => {
+                      downloadersStore.clearAndOpen(
+                        publicationId,
+                        publicationStore.downloadsCount
+                      );
+                    }}
                     fs={fs}
                     sfs={sfs}
                   />
@@ -225,10 +261,58 @@ export const PublicationPage: FunctionComponent = observer(() => {
         errors={validationErrors}
       />
       <DownloadersDialog
-        isOpen={downloadersDialogOpen}
-        onClose={() => setDownloadersDialogOpen(false)}
+        isOpen={downloadersStore.open}
+        downloaders={downloadersStore.downloaders}
+      />
+      <Menu
+        id="user-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+        MenuListProps={{
+          'aria-labelledby': 'user-button'
+        }}>
+        <StyledMenuItem
+          onClick={() => {
+            setContentLicensingDialogOpen(true);
+            handleClose();
+          }}>
+          Content licensing
+        </StyledMenuItem>
+        <StyledMenuItem
+          onClick={() => {
+            setDeleteDialogOpen(true);
+            handleClose();
+          }}>
+          Delete draft
+        </StyledMenuItem>
+      </Menu>
+      <ConfirmationDialog
+        isOpen={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        onConfirm={async () => {
+          await publicationStore?.deletePublication(publicationId);
+        }}
+        title={'Delete?'}
+        text={
+          'Everything will be deleted and you won’t be able to undo this action.'
+        }
+        yesText={'Delete'}
+        noText={'Cancel'}
+      />
+      <ContentLicensingDialog
         publicationStore={publicationStore}
-        downloaders={publicationStore.downloaders}
+        licenseType={publicationStore.licenseType}
+        isOpen={contentLicensingDialogOpen}
+        onClose={() => setContentLicensingDialogOpen(false)}
       />
     </>
   );
@@ -274,9 +358,10 @@ const PublicationBody = observer(
         {publicationStore.isView && (
           <DateViewsDownloads
             openDownloadersDialog={() => {
-              if (publicationStore.downloadsCount > 0) {
-                props.openDownloadersDialog();
-              }
+              downloadersStore.clearAndOpen(
+                props.publicationId,
+                publicationStore.downloadsCount
+              );
             }}
             publicationStore={publicationStore}
           />
@@ -370,8 +455,8 @@ const PublicationBodyWrap = styled('div')`
   padding-right: 24px;
 `;
 
-const ButtonWrap = styled(Button)<{ marginRight?: string }>`
-  margin-right: ${(props) => props.marginRight ?? '24px'};
+const ButtonWrap = styled(Button)<{ marginright?: string }>`
+  margin-right: ${(props) => props.marginright ?? '24px'};
   width: 90px;
   height: 36px;
 `;

@@ -1,33 +1,36 @@
-import { Dialog, DialogContent, styled } from '@mui/material';
+import { CircularProgress, Dialog, DialogContent, styled } from '@mui/material';
 import React, { ReactElement } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
-import { PublicationStore } from './store/PublicationStore';
 import DialogTitle from '@mui/material/DialogTitle';
 import { AuthorElement } from './editors/element/AuthorElement';
 import { Close } from '@mui/icons-material';
 import { HeightElement, TitleRowWrap } from '../common.styled';
+import { downloadersStore } from './store/downloadsStore';
 import { UserInfo } from '../../apis/first-approval-api';
 
 export const DownloadersDialog = (props: {
   isOpen: boolean;
-  onClose: () => void;
-  publicationStore: PublicationStore;
   downloaders: UserInfo[];
 }): ReactElement => {
-  const { onClose, publicationStore } = props;
+  const { isOpen, downloaders } = props;
+
   return (
     <Dialog
-      open={props.isOpen}
-      onClose={onClose}
+      open={isOpen}
+      onClose={() => {
+        downloadersStore.open = false;
+      }}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description">
       <DialogContentWrap>
         <TitleRowWrap>
           <DialogTitle style={{ paddingLeft: 0, paddingTop: 0 }}>
-            {`${publicationStore.downloadsCount} downloads`}
+            {`${downloadersStore.downloadsCount} downloads`}
           </DialogTitle>
           <Close
-            onClick={onClose}
+            onClick={() => {
+              downloadersStore.open = false;
+            }}
             style={{ cursor: 'pointer' }}
             htmlColor={'#68676E'}
           />
@@ -35,15 +38,23 @@ export const DownloadersDialog = (props: {
         <HeightElement value={'16px'} />
         <InfiniteScroll
           pageStart={-1}
-          loadMore={(page) => publicationStore.loadDownloaders(page)}
+          loadMore={(page) => downloadersStore.loadDownloaders(page)}
           initialLoad={true}
           loader={<div key="loading">Loading ...</div>}
           useWindow={false}
-          hasMore={!publicationStore.downloadersIsLastPage}>
-          {props.downloaders.map((downloader, index) => (
-            <AuthorElement key={index} isReadonly={true} author={downloader} />
+          hasMore={!downloadersStore.downloadersIsLastPage}>
+          {downloaders.map((downloader, index) => (
+            <>
+              <AuthorElement
+                key={index}
+                isReadonly={true}
+                author={downloader}
+              />
+              <HeightElement value={'28px'} />
+            </>
           ))}
         </InfiniteScroll>
+        {downloadersStore.loadDownloadersLocked && <CircularProgress />}
       </DialogContentWrap>
     </Dialog>
   );

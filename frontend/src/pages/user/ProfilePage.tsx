@@ -3,6 +3,7 @@ import React, {
   type ReactElement,
   useState
 } from 'react';
+import _ from 'lodash';
 import {
   Avatar,
   Button,
@@ -17,15 +18,10 @@ import {
   ColumnElement,
   CustomTab,
   FlexBodyCenter,
-  FlexHeader,
-  FlexHeaderRight,
   HeightElement,
-  Logo,
   Parent
 } from '../common.styled';
 import { routerStore } from '../../core/router';
-import { UserMenu } from '../../components/UserMenu';
-import logo from '../../assets/logo-black.svg';
 import noPublications from '../../assets/no-publications.svg';
 import upload_your_first_dataset_from from '../../assets/upload-your-first-dataset.svg';
 import styled from '@emotion/styled';
@@ -41,15 +37,22 @@ import {
   renderProfileImage
 } from 'src/fire-browser/utils';
 import { userStore } from 'src/core/user';
+import { downloadersStore } from '../publication/store/downloadsStore';
 import { Page } from '../../core/RouterStore';
 import { Footer } from '../home/Footer';
-import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
+import { HeaderComponent } from '../../components/HeaderComponent';
+import { DownloadersDialog } from '../publication/DownloadersDialog';
+
+const tabs: string[] = ['published', 'drafts'];
 
 export const ProfilePage: FunctionComponent = observer(() => {
   const [username] = useState(() => routerStore.profileUsername);
+  const [profileTab] = useState(() => routerStore.profileTab);
+  const [tabNumber, setTabNumber] = React.useState(
+    (profileTab && tabs.findIndex((element) => element === profileTab)) ?? 0
+  );
   const [store] = useState(() => new ProfilePageStore(username));
   const user = (username ? store : userStore).user!;
-  const [tabNumber, setTabNumber] = React.useState(0);
 
   const handleChange = (_: React.SyntheticEvent, newValue: number): void => {
     setTabNumber(newValue);
@@ -57,7 +60,17 @@ export const ProfilePage: FunctionComponent = observer(() => {
 
   const mapPublications = (publications: Publication[]): ReactElement[] =>
     (publications ?? []).map((publication, index) => (
-      <PublicationSection publication={publication} key={publication.id} />
+      <PublicationSection
+        publication={publication}
+        profilePageStore={store}
+        key={publication.id}
+        openDownloadersDialog={() => {
+          downloadersStore.clearAndOpen(
+            publication.id,
+            publication.downloadsCount
+          );
+        }}
+      />
     ));
   const loadMoreButton = (status: PublicationStatus): ReactElement => (
     <LoadMorePublicationsButton
@@ -92,15 +105,11 @@ export const ProfilePage: FunctionComponent = observer(() => {
   return (
     <>
       <Parent>
-        <FlexHeader>
-          <Logo onClick={routerStore.goHome}>
-            <img src={logo} />
-          </Logo>
-          <BetaDialogWithButton />
-          <FlexHeaderRight>
-            <UserMenu />
-          </FlexHeaderRight>
-        </FlexHeader>
+        <HeaderComponent
+          showPublishButton={true}
+          showLoginButton={true}
+          showSignUpContainedButton={true}
+        />
         <FlexBodyCenter>
           <FlexBody>
             <ColumnElement>
@@ -153,11 +162,13 @@ export const ProfilePage: FunctionComponent = observer(() => {
                     value={tabNumber}
                     onChange={handleChange}
                     aria-label="basic tabs example">
-                    <CustomTab
-                      sx={{ textTransform: 'none' }}
-                      label="Published"
-                    />
-                    <CustomTab sx={{ textTransform: 'none' }} label="Drafts" />
+                    {tabs.map((tab) => (
+                      <CustomTab
+                        key={tab}
+                        sx={{ textTransform: 'none' }}
+                        label={_.capitalize(tab.toLowerCase())}
+                      />
+                    ))}
                   </Tabs>
                   <Divider style={{ marginTop: '-1.3px' }} />
                   <HeightElement value={'40px'}></HeightElement>
@@ -267,6 +278,10 @@ export const ProfilePage: FunctionComponent = observer(() => {
         </FlexBodyCenter>
       </Parent>
       <Footer />
+      <DownloadersDialog
+        isOpen={downloadersStore.open}
+        downloaders={downloadersStore.downloaders}
+      />
     </>
   );
 });

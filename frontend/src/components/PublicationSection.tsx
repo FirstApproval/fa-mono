@@ -1,15 +1,25 @@
-import React, { type ReactElement } from 'react';
+import React, { type ReactElement, useState } from 'react';
 import styled from '@emotion/styled';
-import { Avatar, Divider, Tooltip } from '@mui/material';
-import { type Publication } from '../apis/first-approval-api';
-import { routerStore } from '../core/router';
-import { Page } from '../core/RouterStore';
+import { Avatar, Divider, IconButton, Link, Tooltip } from '@mui/material';
+import {
+  type Publication,
+  PublicationStatus
+} from '../apis/first-approval-api';
 import { Download, RemoveRedEyeOutlined } from '@mui/icons-material';
 import { renderProfileImage } from '../fire-browser/utils';
 import { findResearchAreaIcon } from '../pages/publication/store/ResearchAreas';
+import MoreHoriz from '@mui/icons-material/MoreHoriz';
+import Menu from '@mui/material/Menu';
+import { SpaceBetween } from '../pages/common.styled';
+import { getTimeElapsedString } from '../util/dateUtil';
+import MenuItem from '@mui/material/MenuItem';
+import { ConfirmationDialog } from './ConfirmationDialog';
+import { ProfilePageStore } from '../pages/user/ProfilePageStore';
 
 export const PublicationSection = (props: {
   publication: Publication;
+  profilePageStore?: ProfilePageStore;
+  openDownloadersDialog: () => void;
 }): ReactElement => {
   const { publication } = props;
   const authorsString = publication
@@ -17,16 +27,26 @@ export const PublicationSection = (props: {
       (author) => `${author.user.firstName} ${author.user.lastName}`
     )
     .join(', ');
+  const [anchor, setAnchor] = useState<null | HTMLElement>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const openMenu = Boolean(anchor);
+
+  const handleMenuClick = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ): void => {
+    setAnchor(event.currentTarget);
+  };
+
+  const handleMenuClose = (): void => {
+    setAnchor(null);
+  };
 
   return (
     <>
-      <LinkWrap
-        onClick={() => {
-          routerStore.navigatePage(
-            Page.PUBLICATION,
-            `/publication/${publication.id}`
-          );
-        }}>
+      <Link
+        href={`/publication/${publication.id}`}
+        underline={'none'}
+        color={'#040036'}>
         <AuthorsWrap>
           <Avatar
             src={renderProfileImage(publication.creator.profileImage)}
@@ -37,26 +57,96 @@ export const PublicationSection = (props: {
           />
           <Authors>{authorsString}</Authors>
         </AuthorsWrap>
-        <PublicationLabel>
-          {publication.title ?? publication.id}
-        </PublicationLabel>
+        <PublicationLabel>{publication.title ?? 'Untitled'}</PublicationLabel>
         <PublicationDescriptionBox
           title={publication.description?.[0]?.text ?? ''}
         />
-      </LinkWrap>
+      </Link>
       <FlexWrap>
-        <ResearchAreas publication={publication} />
-        <Footer>
-          <RemoveRedEyeOutlined
-            style={{ marginRight: '6px' }}
-            fontSize={'small'}
-          />
-          {publication.viewsCount}
-          <DownloadWrap style={{ marginRight: '6px' }} fontSize={'small'} />
-          {publication.downloadsCount}
-        </Footer>
+        {publication.status === PublicationStatus.PUBLISHED && (
+          <>
+            <ResearchAreas publication={publication} />
+            <Footer>
+              <RemoveRedEyeOutlined
+                style={{ marginRight: '6px' }}
+                fontSize={'small'}
+              />
+              {publication.viewsCount}
+              <FlexWrap
+                style={{ cursor: 'pointer' }}
+                onClick={props.openDownloadersDialog}>
+                <DownloadWrap
+                  style={{ marginRight: '6px' }}
+                  fontSize={'small'}
+                />
+                {publication.downloadsCount}
+              </FlexWrap>
+            </Footer>
+          </>
+        )}
+        {publication.status !== PublicationStatus.PUBLISHED && (
+          <SpaceBetween>
+            <FlexWrap>
+              <DraftTag>Draft</DraftTag>
+              <LastEdited>
+                {getTimeElapsedString(publication.editingTime)}
+              </LastEdited>
+            </FlexWrap>
+            <>
+              <div>
+                <IconButton
+                  onClick={handleMenuClick}
+                  size="small"
+                  sx={{ ml: 3 }}
+                  aria-controls={openMenu ? 'user-menu' : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={openMenu ? 'true' : undefined}>
+                  <MoreHoriz htmlColor={'#68676E'} />
+                </IconButton>
+              </div>
+              <Menu
+                id="user-menu"
+                anchorEl={anchor}
+                open={openMenu}
+                onClose={handleMenuClose}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right'
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right'
+                }}
+                MenuListProps={{
+                  sx: { py: 0 },
+                  'aria-labelledby': 'user-button'
+                }}>
+                <CustomMenuItem
+                  onClick={() => {
+                    setDeleteDialogOpen(true);
+                    handleMenuClose();
+                  }}>
+                  Delete draft
+                </CustomMenuItem>
+              </Menu>
+            </>
+          </SpaceBetween>
+        )}
       </FlexWrap>
       <DividerWrap />
+      <ConfirmationDialog
+        isOpen={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        onConfirm={async () => {
+          await props.profilePageStore?.deletePublication(publication.id);
+        }}
+        title={'Delete?'}
+        text={
+          'Everything will be deleted and you won’t be able to undo this action.'
+        }
+        yesText={'Delete'}
+        noText={'Cancel'}
+      />
     </>
   );
 };
@@ -178,10 +268,6 @@ const PublicationLabel = styled.div`
   word-break: break-word;
 `;
 
-const LinkWrap = styled.div`
-  cursor: pointer;
-`;
-
 const FlexWrap = styled.div`
   margin-top: auto;
   display: flex;
@@ -198,4 +284,44 @@ const Footer = styled.div`
 
 const DownloadWrap = styled(Download)`
   margin-left: 24px;
+`;
+
+const DraftTag = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24px;
+
+  width: 48px;
+  height: 32px;
+  border-radius: 4px;
+  background: var(--amber-50, #fff8e1);
+
+  color: var(--text-disabled, rgba(4, 0, 54, 0.38));
+  font-feature-settings: 'clig' off, 'liga' off;
+  /* typography/body2 */
+  font-family: Roboto;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 143%; /* 20.02px */
+  letter-spacing: 0.17px;
+`;
+
+const LastEdited = styled.span`
+  color: var(--text-disabled, rgba(4, 0, 54, 0.38));
+  font-feature-settings: 'clig' off, 'liga' off;
+
+  /* typography/body2 */
+  font-family: Roboto;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 143%; /* 20.02px */
+  letter-spacing: 0.17px;
+`;
+
+const CustomMenuItem = styled(MenuItem)`
+  cursor: pointer;
+  height: 52px;
 `;

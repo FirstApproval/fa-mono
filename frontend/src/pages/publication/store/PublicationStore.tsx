@@ -4,6 +4,7 @@ import _, { some } from 'lodash';
 import {
   type ConfirmedAuthor,
   type Paragraph,
+  LicenseType,
   PublicationStatus,
   type UnconfirmedAuthor,
   type UserInfo
@@ -13,6 +14,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { type AuthorEditorStore } from './AuthorEditorStore';
 import { type ChonkySampleFileSystem } from '../../../fire-browser/sample-files/ChonkySampleFileSystem';
 import { FileData } from '@first-approval/chonky/dist/types/file.types';
+import { routerStore } from '../../../core/router';
+import { Page } from '../../../core/RouterStore';
 
 const EDIT_THROTTLE_MS = 1000;
 
@@ -80,17 +83,14 @@ export class PublicationStore {
   publicationTime: Date = new Date();
   viewsCount: number = 0;
   downloadsCount: number = 0;
-  downloaders: UserInfo[] = [];
-  downloadersIsLastPage = false;
 
+  licenseType: LicenseType | null = null;
   publicationStatus: PublicationStatus | null = null;
 
   archiveSize: number | null = null;
   sampleArchiveSize: number | null = null;
 
   viewCounterUpdated: boolean = false;
-
-  loadDownloadersLocked = false;
 
   constructor(
     readonly publicationId: string,
@@ -308,6 +308,18 @@ export class PublicationStore {
     });
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
+
+  editLicenseType(): void {
+    this.savingStatus = SavingStatusState.SAVING;
+    debugger;
+    void publicationService.editPublication(this.publicationId, {
+      licenseType: {
+        value: this.licenseType ?? undefined,
+        edited: true
+      }
+    });
+    this.savingStatus = SavingStatusState.SAVED;
+  }
 
   updateTitle(title: string): void {
     this.title = title;
@@ -963,6 +975,13 @@ export class PublicationStore {
     this.authorNames = [...confirmedAuthorNames, ...unconfirmedAuthorNames];
   };
 
+  deletePublication = async (publicationId: string): Promise<void> => {
+    const response = await publicationService._delete(publicationId);
+    if (response.status === 200) {
+      routerStore.navigatePage(Page.PROFILE, '/profile/drafts');
+    }
+  };
+
   private loadInitialState(): void {
     void publicationService
       .getPublication(this.publicationId)
@@ -1056,6 +1075,9 @@ export class PublicationStore {
           if (publication.status) {
             this.publicationStatus = publication.status;
           }
+          if (publication.licenseType) {
+            this.licenseType = publication.licenseType;
+          }
           this.setAuthorNames();
 
           if (this.fs.files.length > 0) {
@@ -1096,24 +1118,6 @@ export class PublicationStore {
           this.isLoading = false;
         })
       );
-  }
-
-  public loadDownloaders(page: number): void {
-    if (!this.loadDownloadersLocked) {
-      this.loadDownloadersLocked = true;
-      void publicationService
-        .getPublicationDownloaders(this.publicationId, page, 15)
-        .then(
-          action((response) => {
-            this.downloaders = [
-              ...this.downloaders,
-              ...response.data.downloaders
-            ];
-            this.downloadersIsLastPage = response.data.isLastPage;
-            this.loadDownloadersLocked = false;
-          })
-        );
-    }
   }
 }
 

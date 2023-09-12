@@ -27,8 +27,6 @@ import org.springframework.transaction.support.TransactionTemplate
 import java.io.File
 import java.io.File.createTempFile
 import java.io.FileOutputStream
-import java.io.InputStream
-import java.lang.StringBuilder
 import java.nio.file.Files
 import java.time.ZonedDateTime.now
 import java.util.UUID
@@ -62,12 +60,13 @@ class ArchiveService(
         publications.forEach { publication ->
             runCatching {
                 log.debug { "Publication files for id=${publication.id} started" }
+                val publicationFilesIds = mutableListOf<UUID>()
                 transactionTemplate.execute { _ ->
                     val password = (100000000..999999999).random().toString()
-                    val publicationFilesIds = archiveProcess(publication, password)
-                    if (publicationFilesIds.isNotEmpty()) {
-                        fileStorageService.deleteByIds(FILES, publicationFilesIds)
-                    }
+                    publicationFilesIds.addAll(archiveProcess(publication, password))
+                }
+                if (publicationFilesIds.isNotEmpty()) {
+                    fileStorageService.deleteByIds(FILES, publicationFilesIds)
                 }
             }.onSuccess {
                 log.debug { "Publication files for id=${publication.id} finished successfully" }

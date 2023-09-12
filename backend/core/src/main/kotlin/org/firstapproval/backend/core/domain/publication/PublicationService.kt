@@ -9,14 +9,14 @@ import org.firstapproval.backend.core.config.Properties.FrontendProperties
 import org.firstapproval.backend.core.domain.auth.TokenService
 import org.firstapproval.backend.core.domain.file.ARCHIVED_PUBLICATION_FILES
 import org.firstapproval.backend.core.domain.file.ARCHIVED_PUBLICATION_SAMPLE_FILES
+import org.firstapproval.backend.core.domain.file.FILES
 import org.firstapproval.backend.core.domain.file.FileStorageService
+import org.firstapproval.backend.core.domain.file.SAMPLE_FILES
 import org.firstapproval.backend.core.domain.ipfs.IpfsClient
-import org.firstapproval.backend.core.domain.ipfs.Job
-import org.firstapproval.backend.core.domain.ipfs.JobKind
 import org.firstapproval.backend.core.domain.ipfs.JobRepository
-import org.firstapproval.backend.core.domain.ipfs.JobStatus
 import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
+import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
@@ -35,12 +35,16 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.DESC
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.support.TransactionTemplate
 import java.time.ZonedDateTime.now
 import java.util.UUID
 import java.util.UUID.randomUUID
+import org.firstapproval.api.server.model.AccessType as AccessTypeApiObject
 import org.firstapproval.api.server.model.ConfirmedAuthor as ConfirmedAuthorApiObject
+import org.firstapproval.api.server.model.LicenseType as LicenseTypeApiObject
 import org.firstapproval.api.server.model.Publication as PublicationApiObject
 import org.firstapproval.api.server.model.PublicationStatus as PublicationStatusApiObject
 import org.firstapproval.api.server.model.UnconfirmedAuthor as UnconfirmedAuthorApiObject
@@ -58,7 +62,10 @@ class PublicationService(
     private val frontendProperties: FrontendProperties,
     private val fileStorageService: FileStorageService,
     private val notificationService: NotificationService,
-    private val downloaderRepository: DownloaderRepository
+    private val downloaderRepository: DownloaderRepository,
+    private val publicationFileRepository: PublicationFileRepository,
+    private val sampleFileRepository: PublicationSampleFileRepository,
+    private val transactionTemplate: TransactionTemplate
 ) {
     @Transactional
     fun create(user: User): Publication {
@@ -90,6 +97,7 @@ class PublicationService(
                 throw RecordConflictException("Author with this email already added to publication as confirmed user")
             }
 
+            publication.editingTime = now()
             if (title?.edited == true) publication.title = title.value
             if (negativeData?.edited == true) publication.negativeData = negativeData.value
             if (isNegative != null) publication.isNegative = isNegative
@@ -107,6 +115,7 @@ class PublicationService(
             if (methodTitle?.edited == true) publication.methodTitle = methodTitle.value
             if (methodDescription?.edited == true) publication.methodDescription = methodDescription.values.map { it.text }
             if (predictedGoals?.edited == true) publication.predictedGoals = predictedGoals.values.map { it.text }
+            if (licenseType?.edited == true) publication.licenseType = LicenseType.valueOf(licenseType.value.name)
             if (confirmedAuthors?.edited == true) {
                 if (confirmedAuthors.values.none { it.userId == publication.creator.id }) {
                     throw RecordConflictException("Creator cannot be deleted from authors list")
@@ -298,6 +307,29 @@ class PublicationService(
             .publications(publicationsPage.map { it.toApiObject(userService) }.toList())
             .isLastPage(publicationsPage.isLast)
     }
+
+    fun delete(id: UUID, user: User) {
+        val publicationFilesIds = mutableListOf<UUID>()
+        val publicationSampleFilesIds = mutableListOf<UUID>()
+        transactionTemplate.execute { _ ->
+            val publication = publicationRepository.getReferenceById(id)
+            checkPublicationCreator(user, publication)
+            if (publication.status != PENDING) {
+                throw AccessDeniedException("Forbidden delete published publications. Only draft publications can be deleted")
+            }
+            publicationFilesIds.addAll(publicationFileRepository.findIdsByPublicationId(publication.id))
+            publicationSampleFilesIds.addAll(sampleFileRepository.findIdsByPublicationId(publication.id))
+            publicationFileRepository.deleteAllById(publicationFilesIds)
+            sampleFileRepository.deleteAllById(publicationSampleFilesIds)
+            publicationRepository.deleteById(id)
+        }
+        if (publicationFilesIds.isNotEmpty()) {
+            fileStorageService.deleteByIds(FILES, publicationFilesIds)
+        }
+        if (publicationSampleFilesIds.isNotEmpty()) {
+            fileStorageService.deleteByIds(SAMPLE_FILES, publicationSampleFilesIds)
+        }
+    }
 }
 
 fun Publication.toApiObject(userService: UserService) = PublicationApiObject().also { publicationApiModel ->
@@ -329,9 +361,11 @@ fun Publication.toApiObject(userService: UserService) = PublicationApiObject().a
     publicationApiModel.unconfirmedAuthors = unconfirmedAuthors.map { it.toApiObject() }
     publicationApiModel.viewsCount = viewsCount
     publicationApiModel.downloadsCount = downloadsCount
-    publicationApiModel.status = org.firstapproval.api.server.model.PublicationStatus.valueOf(status.name)
-    publicationApiModel.accessType = org.firstapproval.api.server.model.AccessType.valueOf(accessType.name)
+    publicationApiModel.status = PublicationStatusApiObject.valueOf(status.name)
+    publicationApiModel.accessType = AccessTypeApiObject.valueOf(accessType.name)
+    publicationApiModel.licenseType = licenseType?.let { LicenseTypeApiObject.valueOf(it.name) }
     publicationApiModel.creationTime = creationTime.toOffsetDateTime()
+    publicationApiModel.editingTime = editingTime.toOffsetDateTime()
     publicationApiModel.negativeData = negativeData
     publicationApiModel.archiveSize = archiveSize
     publicationApiModel.sampleArchiveSize = archiveSampleSize

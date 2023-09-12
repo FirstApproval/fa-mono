@@ -1,5 +1,5 @@
 import React, { type FunctionComponent, useState } from 'react';
-import { Button, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 import styled from '@emotion/styled';
 import { ArrowForward } from '@mui/icons-material';
 import { type SignUpStore } from './SignUpStore';
@@ -7,20 +7,14 @@ import { observer } from 'mobx-react-lite';
 import {
   FlexBody,
   FlexBodyCenter,
-  FlexHeader,
-  FlexHeaderRight,
   FullWidthButton,
   Header,
-  Logo,
   Parent
 } from '../common.styled';
-import { routerStore } from '../../core/router';
-import logo from '../../assets/logo-black.svg';
-import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
+import { HeaderComponent } from '../../components/HeaderComponent';
 
 interface EnterNamePageProps {
   store: SignUpStore;
-  onSignInClick: () => void;
   onContinueClick: () => void;
 }
 
@@ -52,20 +46,7 @@ export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
 
     return (
       <Parent>
-        <FlexHeader>
-          <Logo onClick={routerStore.goHome}>
-            <img src={logo} />
-          </Logo>
-          <BetaDialogWithButton />
-          <FlexHeaderRight>
-            <Button
-              variant="outlined"
-              size={'large'}
-              onClick={props.onSignInClick}>
-              Sign in
-            </Button>
-          </FlexHeaderRight>
-        </FlexHeader>
+        <HeaderComponent showLoginOutlinedButton={false} />
         <FlexBodyCenter>
           <FlexBody>
             <Header>Welcome</Header>

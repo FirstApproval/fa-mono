@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import { LoadingButton } from '@mui/lab';
 import { Tab } from '@mui/material';
+import MenuItem from '@mui/material/MenuItem';
 
 export const Parent = styled.div`
   width: 100%;
@@ -85,4 +86,17 @@ export const TitleRowWrap = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+`;
+
+export const SpaceBetween = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const StyledMenuItem = styled(MenuItem)`
+  &:hover {
+    background-color: transparent;
+  }
 `;

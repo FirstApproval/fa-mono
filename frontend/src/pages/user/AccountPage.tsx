@@ -16,15 +16,11 @@ import {
   CustomTab,
   FlexBody,
   FlexBodyCenter,
-  FlexHeader,
-  FlexHeaderRight,
   HeightElement,
-  Logo,
-  Parent
+  Parent,
+  SpaceBetween
 } from '../common.styled';
 import { routerStore } from '../../core/router';
-import { UserMenu } from '../../components/UserMenu';
-import logo from '../../assets/logo-black.svg';
 import styled from '@emotion/styled';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -42,9 +38,9 @@ import {
 import { validateEmail } from 'src/util/emailUtil';
 import { userStore } from '../../core/user';
 import { getInitials } from 'src/util/userUtil';
-import { cloneDeep } from 'lodash';
+import _, { cloneDeep } from 'lodash';
 import { Footer } from '../home/Footer';
-import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
+import { HeaderComponent } from '../../components/HeaderComponent';
 
 const tabs: string[] = ['general', 'profile', 'password'];
 
@@ -202,15 +198,7 @@ export const AccountPage: FunctionComponent = observer(() => {
   return (
     <>
       <Parent>
-        <FlexHeader>
-          <Logo onClick={routerStore.goHome}>
-            <img src={logo} />
-          </Logo>
-          <BetaDialogWithButton />
-          <FlexHeaderRight>
-            <UserMenu />
-          </FlexHeaderRight>
-        </FlexHeader>
+        <HeaderComponent showPublishButton={true} />
         <FlexBodyCenter>
           <FlexBody>
             <ColumnElement>
@@ -260,9 +248,13 @@ export const AccountPage: FunctionComponent = observer(() => {
                 value={tabNumber}
                 onChange={handleChangeTabNumber}
                 aria-label="basic tabs example">
-                <CustomTab sx={{ textTransform: 'none' }} label="General" />
-                <CustomTab sx={{ textTransform: 'none' }} label="Profile" />
-                <CustomTab sx={{ textTransform: 'none' }} label="Password" />
+                {tabs.map((tab) => (
+                  <CustomTab
+                    key={tab}
+                    sx={{ textTransform: 'none' }}
+                    label={_.capitalize(tab.toLowerCase())}
+                  />
+                ))}
               </Tabs>
               <Divider style={{ marginTop: '-1.3px' }} />
               <HeightElement value={'32px'}></HeightElement>
@@ -521,13 +513,6 @@ const TabContainer = styled.div`
 export const RowElement = styled.div`
   width: 100%;
   display: flex;
-  align-items: center;
-`;
-
-export const SpaceBetween = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
   align-items: center;
 `;
 

@@ -1,43 +1,47 @@
-import React, { type FunctionComponent, useState } from 'react';
+import React, { type FunctionComponent, ReactElement, useState } from 'react';
 import {
-  Button,
   Divider,
   InputAdornment,
   LinearProgress,
-  Stack,
   TextField
 } from '@mui/material';
-import {
-  FlexBodyCenter,
-  FlexHeader,
-  FlexHeaderRight,
-  Logo,
-  Parent
-} from '../common.styled';
-import { routerStore } from '../../core/router';
+import { FlexBodyCenter, Parent } from '../common.styled';
 import { HomePageStore } from './HomePageStore';
 import { observer } from 'mobx-react-lite';
-import { Page } from '../../core/RouterStore';
-import { UserMenu } from '../../components/UserMenu';
 import { Search } from '@mui/icons-material';
 import styled from '@emotion/styled';
 import { PublicationSection } from '../../components/PublicationSection';
 import { CallToAction } from './CallToAction';
 import PopularAuthorsSection from './PopularAuthorsSection';
 import RecommendedPublicationsSection from './RecommendedPublicationsSection';
-import logo from '../../assets/logo-black.svg';
 import developer from '../../assets/developer.svg';
 import cloud from '../../assets/cloud.svg';
-import { authStore } from '../../core/auth';
 import { Footer } from './Footer';
-import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
 import { BetaDialog } from '../../components/BetaDialog';
+import { HeaderComponent } from '../../components/HeaderComponent';
+import { DownloadersDialog } from '../publication/DownloadersDialog';
+import { downloadersStore } from '../publication/store/downloadsStore';
+import { Publication } from '../../apis/first-approval-api';
 
 export const HomePage: FunctionComponent = observer(() => {
   const [store] = useState(() => new HomePageStore());
   const [isBetaDialogOpen, setIsBetaDialogOpen] = useState(() => false);
 
   const hasSearch = store.searchQuery.length > 0;
+
+  const mapPublications = (publications: Publication[]): ReactElement[] =>
+    (publications ?? []).map((publication, index) => (
+      <PublicationSection
+        publication={publication}
+        key={publication.id}
+        openDownloadersDialog={() => {
+          downloadersStore.clearAndOpen(
+            publication.id,
+            publication.downloadsCount
+          );
+        }}
+      />
+    ));
 
   return (
     <>
@@ -66,41 +70,11 @@ export const HomePage: FunctionComponent = observer(() => {
           isOpen={isBetaDialogOpen}
           onClose={() => setIsBetaDialogOpen(false)}
         />
-        <FlexHeader>
-          <Logo onClick={routerStore.goHome}>
-            <img src={logo} />
-          </Logo>
-          <BetaDialogWithButton />
-          <FlexHeaderRight>
-            <Stack direction="row" alignItems="center" spacing={2}>
-              <ButtonWrap
-                variant="contained"
-                onClick={() => {
-                  if (authStore.token) {
-                    void store.createPublication();
-                  } else {
-                    routerStore.navigatePage(Page.SIGN_UP);
-                  }
-                }}
-                size={'medium'}>
-                Publish
-              </ButtonWrap>
-              {!authStore.token && (
-                <>
-                  <ButtonWrap
-                    variant="outlined"
-                    onClick={() => {
-                      routerStore.navigatePage(Page.SIGN_IN);
-                    }}
-                    size={'medium'}>
-                    Sign in
-                  </ButtonWrap>
-                </>
-              )}
-            </Stack>
-            {authStore.token && <UserMenu />}
-          </FlexHeaderRight>
-        </FlexHeader>
+        <HeaderComponent
+          showPublishButton={true}
+          showLoginButton={true}
+          showSignUpContainedButton={true}
+        />
         <ContentWrap>
           <ContentWrapInner>
             <Wrap>
@@ -143,11 +117,7 @@ export const HomePage: FunctionComponent = observer(() => {
                     <DividerWrap />
                     {store.isLoadingPublications && <LinearProgress />}
                     {!store.isLoadingPublications && (
-                      <>
-                        {store.publications.map((p) => (
-                          <PublicationSection key={p.id} publication={p} />
-                        ))}
-                      </>
+                      <>{mapPublications(store.publications)}</>
                     )}
                   </FlexBody>
                 </FlexBodyCenter>
@@ -159,11 +129,7 @@ export const HomePage: FunctionComponent = observer(() => {
                   <ResultsLabel>Results for {store.searchQuery}</ResultsLabel>
                   {store.isSearching && <LinearProgress />}
                   {!store.isSearching && (
-                    <>
-                      {store.searchResults.map((p) => (
-                        <PublicationSection key={p.id} publication={p} />
-                      ))}
-                    </>
+                    <>{mapPublications(store.searchResults)}</>
                   )}
                 </Wrap>
               </>
@@ -172,6 +138,10 @@ export const HomePage: FunctionComponent = observer(() => {
         </ContentWrap>
       </Parent>
       <Footer />
+      <DownloadersDialog
+        isOpen={downloadersStore.open}
+        downloaders={downloadersStore.downloaders}
+      />
     </>
   );
 });
@@ -207,11 +177,6 @@ export const ContentWrapInner = styled('div')`
 
 export const FlexBody = styled('div')`
   max-width: 680px;
-`;
-
-const ButtonWrap = styled(Button)`
-  width: 90px;
-  height: 36px;
 `;
 
 const DividerWrap = styled(Divider)`

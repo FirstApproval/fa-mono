@@ -102,9 +102,6 @@ const App: FunctionComponent = observer(() => {
               {page === Page.SIGN_UP_NAME && (
                 <EnterNamePage
                   store={signUpStore}
-                  onSignInClick={() => {
-                    navigatePage(Page.SIGN_IN);
-                  }}
                   onContinueClick={() => {
                     navigatePage(Page.SIGN_UP_PASSWORD);
                   }}
