@@ -1,25 +1,14 @@
 package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.UserApi
-import org.firstapproval.api.server.model.AuthorizeResponse
-import org.firstapproval.api.server.model.ChangeEmailConfirmationRequest
-import org.firstapproval.api.server.model.ChangeEmailRequest
-import org.firstapproval.api.server.model.ChangeEmailResponse
-import org.firstapproval.api.server.model.GetMeResponse
-import org.firstapproval.api.server.model.OauthType
-import org.firstapproval.api.server.model.PasswordChangeRequest
-import org.firstapproval.api.server.model.PasswordResetRequest
-import org.firstapproval.api.server.model.RequestPasswordResetRequest
-import org.firstapproval.api.server.model.SetPasswordRequest
-import org.firstapproval.api.server.model.UserInfo
-import org.firstapproval.api.server.model.UserUpdateRequest
+import org.firstapproval.api.server.model.*
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.JwtService
 import org.firstapproval.backend.core.config.security.user
+import org.firstapproval.backend.core.domain.organizations.toApiObject
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthorRepository
 import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthor
 import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthorRepository
-import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.email.UserEmailService
 import org.firstapproval.backend.core.domain.user.toApiObject
@@ -27,7 +16,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
+import java.util.*
 import java.util.UUID.randomUUID
 
 @RestController
@@ -105,6 +94,7 @@ class UserController(
         getMeResponse.selfInfo = user.selfInfo
         getMeResponse.profileImage = userService.getProfileImage(user.profileImage)
         getMeResponse.signedVia = user.externalIds.keys.map { OauthType.valueOf(it.name) }
+        getMeResponse.workplaces = user.workplaces.map { it.toApiObject() }
         return ok(getMeResponse)
     }
 
@@ -139,16 +129,7 @@ class UserController(
     }
 
     override fun updateUser(request: UserUpdateRequest): ResponseEntity<Void> {
-        userService.update(
-            id = authHolderService.user.id,
-            firstName = request.firstName,
-            middleName = request.middleName,
-            lastName = request.lastName,
-            username = request.username,
-            selfInfo = request.selfInfo,
-            profileImage = request.profileImage,
-            deleteProfileImage = request.deleteProfileImage
-        )
+        userService.update(authHolderService.user.id, request)
         return ok().build()
     }
 }

@@ -6,8 +6,6 @@ import {
   type UserInfo
 } from '../../apis/first-approval-api';
 import { userStore } from '../../core/user';
-import { routerStore } from '../../core/router';
-import { Page } from '../../core/RouterStore';
 
 export class ProfilePageStore {
   isLoadingPublications = false;
@@ -73,12 +71,6 @@ export class ProfilePageStore {
       this.user = userStore.user;
     }
   }
-
-  createPublication = async (): Promise<void> => {
-    const response = await publicationService.createPublication();
-    const pub: string = response.data.id;
-    routerStore.navigatePage(Page.PUBLICATION, `/publication/${pub}`);
-  };
 
   deletePublication = async (publicationId: string): Promise<void> => {
     const response = await publicationService._delete(publicationId);

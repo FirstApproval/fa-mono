@@ -130,9 +130,7 @@ export const ContentLicensingDialog = (props: {
             color="primary"
             variant={'contained'}
             onClick={() => {
-              debugger;
               publicationStore.editLicenseType();
-              debugger;
               onClose();
             }}>
             {'Save'}

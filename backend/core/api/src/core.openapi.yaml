@@ -1259,6 +1259,52 @@ paths:
       operationId: moveSampleFile
       tags: [ sampleFile ]
 
+  /api/organizations/search:
+    get:
+      summary: Search organizations
+      parameters:
+        - in: query
+          name: text
+          schema:
+            type: string
+            minLength: 3
+          required: true
+          description: Name or part of organization name
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchOrganizationsResponse'
+      security:
+        - PublicAuth: [ ]
+      operationId: searchOrganizations
+      tags: [ organization ]
+
+  /api/organization/{id}:
+    get:
+      summary: Search organizations
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Organization id
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+      security:
+        - PublicAuth: [ ]
+      operationId: getOrganization
+      tags: [ organization ]
+
 components:
   schemas:
     PublicationFile:
@@ -1559,6 +1605,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/OauthType'
+        workplaces:
+          type: array
+          items:
+            $ref: '#/components/schemas/Workplace'
       required:
         - id
         - firstName
@@ -1590,6 +1640,10 @@ components:
         profileImage:
           type: string
           format: byte
+        workplaces:
+          type: array
+          items:
+            $ref: '#/components/schemas/Workplace'
       required:
         - id
         - firstName
@@ -1663,10 +1717,35 @@ components:
           maxLength: 2097152
         deleteProfileImage:
           type: boolean
+        workplaces:
+          type: array
+          items:
+            $ref: '#/components/schemas/Workplace'
       required:
         - firstName
         - lastName
         - username
+        - workplaces
+
+    Workplace:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        organization:
+          $ref: '#/components/schemas/Organization'
+        department:
+          $ref: '#/components/schemas/OrganizationDepartment'
+        address:
+          type: string
+        postalCode:
+          type: string
+        isFormer:
+          type: boolean
+        creationTime:
+          type: string
+          format: date-time
 
     PublicationEditRequest:
       type: object
@@ -1822,6 +1901,40 @@ components:
         - email
         - firstName
         - lastName
+
+    Organization:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        departments:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrganizationDepartment'
+      required:
+        - name
+
+    OrganizationDepartment:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+
+    SearchOrganizationsResponse:
+      type: object
+      properties:
+        organizations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Organization"
+      required:
+        - organizations
 
     SearchPublicationsResponse:
       type: object

@@ -45,7 +45,6 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
   let username: string;
   let profileImage: string | undefined;
 
-  debugger;
   if (isConfirmed) {
     const confirmedAuthor = author as ConfirmedAuthor;
     // check that it is really confirmed user

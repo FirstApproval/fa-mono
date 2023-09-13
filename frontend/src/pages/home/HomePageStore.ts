@@ -1,8 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 import { authorService, publicationService } from '../../core/service';
-import { type UserInfo, type Publication } from '../../apis/first-approval-api';
-import { routerStore } from '../../core/router';
-import { Page } from '../../core/RouterStore';
+import { type Publication, type UserInfo } from '../../apis/first-approval-api';
 
 export class HomePageStore {
   isLoadingPublications = false;
@@ -75,10 +73,4 @@ export class HomePageStore {
         this.isSearching = false;
       });
   }
-
-  createPublication = async (): Promise<void> => {
-    const response = await publicationService.createPublication();
-    const pubId: string = response.data.id;
-    routerStore.navigatePage(Page.PUBLICATION, `/publication/${pubId}`);
-  };
 }
