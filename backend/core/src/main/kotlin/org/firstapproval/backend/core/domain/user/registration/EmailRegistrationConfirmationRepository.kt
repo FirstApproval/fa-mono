@@ -1,4 +1,4 @@
-package org.firstapproval.backend.core.domain.registration
+package org.firstapproval.backend.core.domain.user.registration
 
 import org.springframework.data.jpa.repository.JpaRepository
 import java.time.ZonedDateTime

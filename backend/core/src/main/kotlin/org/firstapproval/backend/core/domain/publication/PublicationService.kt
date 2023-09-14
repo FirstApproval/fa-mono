@@ -29,7 +29,7 @@ import org.firstapproval.backend.core.domain.user.UserRepository
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.infra.elastic.PublicationElastic
 import org.firstapproval.backend.core.infra.elastic.PublicationElasticRepository
-import org.firstapproval.backend.core.exception.RecordConflictException
+import org.firstapproval.backend.core.web.errors.RecordConflictException
 import org.firstapproval.backend.core.utils.require
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest

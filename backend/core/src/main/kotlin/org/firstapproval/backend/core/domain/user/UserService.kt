@@ -10,14 +10,14 @@ import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthorRepository
 import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthorRepository
-import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmation
-import org.firstapproval.backend.core.domain.registration.EmailRegistrationConfirmationRepository
+import org.firstapproval.backend.core.domain.user.registration.EmailRegistrationConfirmation
+import org.firstapproval.backend.core.domain.user.registration.EmailRegistrationConfirmationRepository
 import org.firstapproval.backend.core.domain.user.email.EmailChangeConfirmationRepository
 import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimit
 import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimitRepository
 import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmation
 import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmationRepository
-import org.firstapproval.backend.core.exception.RecordConflictException
+import org.firstapproval.backend.core.web.errors.RecordConflictException
 import org.firstapproval.backend.core.utils.EMAIL_CONFIRMATION_CODE_LENGTH
 import org.firstapproval.backend.core.utils.generateCode
 import org.firstapproval.backend.core.utils.require

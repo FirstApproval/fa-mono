@@ -3,8 +3,6 @@ package org.firstapproval.backend.core.web.errors
 import jakarta.persistence.EntityNotFoundException
 import jakarta.validation.ConstraintViolationException
 import mu.KotlinLogging.logger
-import org.firstapproval.backend.core.exception.MissingEmailException
-import org.firstapproval.backend.core.exception.RecordConflictException
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus

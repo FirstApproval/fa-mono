@@ -1,4 +1,4 @@
-package org.firstapproval.backend.core.domain.registration
+package org.firstapproval.backend.core.domain.user.registration
 
 import jakarta.persistence.Convert
 import jakarta.persistence.Entity
