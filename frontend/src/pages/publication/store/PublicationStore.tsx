@@ -12,7 +12,6 @@ import {
 import { type FileSystemFA } from '../../../fire-browser/FileSystemFA';
 import { v4 as uuidv4 } from 'uuid';
 import { type AuthorEditorStore } from './AuthorEditorStore';
-import { FileData } from '@first-approval/chonky/dist/types/file.types';
 import { routerStore } from '../../../core/router';
 import { Page } from '../../../core/RouterStore';
 
@@ -578,36 +577,6 @@ export class PublicationStore {
     this.savingStatus = SavingStatusState.SAVING;
     void this.doUpdateNegativeData();
   }
-
-  downloadSampleFiles(): void {
-    void this.doDownloadSampleFiles();
-  }
-
-  downloadSampleMultiFiles(files: FileData[]): void {
-    if (files.length === 0) {
-      void this.doDownloadSampleFiles();
-    } else {
-      files.forEach((fileData) => {
-        const downloadLink = document.createElement('a');
-        downloadLink.href = `/api/sample-files/download/${fileData.id}`;
-        downloadLink.download = fileData.name;
-        downloadLink.style.display = 'none';
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-      });
-    }
-  }
-
-  doDownloadSampleFiles = _.throttle(async () => {
-    const downloadLink = document.createElement('a');
-    downloadLink.href = `/api/publication/${this.publicationId}/files/sample/download`;
-    downloadLink.download = this.title + '_files.zip';
-    downloadLink.style.display = 'none';
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-  }, EDIT_THROTTLE_MS);
 
   copyPublicationLinkToClipboard = async (): Promise<void> => {
     const text = window.location.host + '/publication/' + this.publicationId;

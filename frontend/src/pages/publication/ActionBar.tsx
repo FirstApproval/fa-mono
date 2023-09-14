@@ -93,7 +93,7 @@ export const ActionBar = observer(
                   <DownloadSampleFilesButtonWrap
                     hidden={true}
                     variant="outlined"
-                    onClick={() => publicationStore.downloadSampleFiles()}
+                    onClick={() => publicationPageStore.downloadSampleFiles()}
                     size={'medium'}>
                     <img src={downloadSample} style={{ marginRight: '8px' }} />{' '}
                     <span>Download sample</span>

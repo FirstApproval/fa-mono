@@ -460,7 +460,7 @@ const PublicationBody = observer(
             rootFolderName={'Sample files'}
             fileDownloadUrlPrefix={'/api/sample-files/download'}
             onArchiveDownload={(files) => {
-              props.publicationStore.downloadSampleMultiFiles(files);
+              props.publicationPageStore.downloadSampleMultiFiles(files);
             }}
             fs={sfs}
             isReadonly={publicationStore.isReadonly}

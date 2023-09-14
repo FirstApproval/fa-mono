@@ -2,6 +2,7 @@ import { publicationService } from '../../../core/service';
 import { makeAutoObservable, reaction } from 'mobx';
 import { PublicationStore } from './PublicationStore';
 import { FileSystemFA } from '../../../fire-browser/FileSystemFA';
+import { FileData } from '@first-approval/chonky/dist/types/file.types';
 
 export class PublicationPageStore {
   get experimentGoalsEnabled(): boolean {
@@ -115,6 +116,36 @@ export class PublicationPageStore {
     this.passcode = response.data.passcode;
     const downloadLink = document.createElement('a');
     downloadLink.href = response.data.link;
+    downloadLink.download = this.publicationStore.title + '_files.zip';
+    downloadLink.style.display = 'none';
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  };
+
+  downloadSampleFiles(): void {
+    void this.doDownloadSampleFiles();
+  }
+
+  downloadSampleMultiFiles(files: FileData[]): void {
+    if (files.length === 0) {
+      void this.doDownloadSampleFiles();
+    } else {
+      files.forEach((fileData) => {
+        const downloadLink = document.createElement('a');
+        downloadLink.href = `/api/sample-files/download/${fileData.id}`;
+        downloadLink.download = fileData.name;
+        downloadLink.style.display = 'none';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      });
+    }
+  }
+
+  doDownloadSampleFiles = async (): Promise<void> => {
+    const downloadLink = document.createElement('a');
+    downloadLink.href = `/api/publication/${this.publicationStore.publicationId}/files/sample/download`;
     downloadLink.download = this.publicationStore.title + '_files.zip';
     downloadLink.style.display = 'none';
     document.body.appendChild(downloadLink);
