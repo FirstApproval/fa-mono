@@ -1,5 +1,5 @@
 import { PublicationStore } from '../PublicationStore';
-import { ChonkyFileSystem } from '../../../../fire-browser/ChonkyFileSystem';
+import { FileSystemFA } from '../../../../fire-browser/FileSystemFA';
 import { type Publication } from '../../../../apis/first-approval-api';
 import { waitFor } from '@testing-library/react';
 import { AxiosResponse } from 'axios';
@@ -11,7 +11,8 @@ jest.mock('../../../../core/service', () => ({
   }
 }));
 jest.mock('../../../../apis/first-approval-api', () => ({
-  PublicationStatus: {}
+  PublicationStatus: {},
+  OauthType: {}
 }));
 
 let publicationStore: PublicationStore;
@@ -23,11 +24,10 @@ describe('should correctly split paragraphs', () => {
     mockPublicationPromise = new Promise((resolve) => {
       publicationPromiseResolve = resolve;
     });
-    publicationStore = new PublicationStore(
-      '',
-      { initialized: true, files: [] } as unknown as ChonkyFileSystem,
-      { initialized: true, files: [] } as unknown as ChonkyFileSystem
-    );
+    publicationStore = new PublicationStore('', {
+      initialized: true,
+      files: []
+    } as unknown as FileSystemFA);
   });
 
   test('summary', async () => {

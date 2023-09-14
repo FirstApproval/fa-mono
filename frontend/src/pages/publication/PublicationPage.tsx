@@ -2,6 +2,7 @@ import React, {
   type FunctionComponent,
   type ReactElement,
   useEffect,
+  useMemo,
   useState
 } from 'react';
 import { Button, LinearProgress } from '@mui/material';
@@ -44,7 +45,7 @@ import {
   SoftwareEditor,
   SummaryEditor
 } from './editors/ParagraphEditor';
-import { ChonkyFileSystem } from '../../fire-browser/ChonkyFileSystem';
+import { FileSystemFA } from '../../fire-browser/FileSystemFA';
 import { TagsEditor } from './editors/TagsEditor';
 import { AuthorsEditor } from './editors/AuthorsEditor';
 import { TitleEditor } from './editors/TitleEditor';
@@ -54,7 +55,11 @@ import logo from '../../assets/logo-black.svg';
 import { UserMenu } from '../../components/UserMenu';
 import { Page } from '../../core/RouterStore';
 import { ValidationDialog } from './ValidationDialog';
-import { fileService, publicationService } from '../../core/service';
+import {
+  fileService,
+  publicationService,
+  sampleFileService
+} from '../../core/service';
 import { DraftText } from './DraftText';
 import { Authors } from './Authors';
 import { DateViewsDownloads } from './DateViewsDownloads';
@@ -71,14 +76,14 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import Menu from '@mui/material/Menu';
 import { ConfirmationDialog } from '../../components/ConfirmationDialog';
 import { ContentLicensingDialog } from '../../components/ContentLicensingDialog';
-import { SampleFileServiceAdapter } from '../../core/SampleFileServiceAdapter';
+import { PublicationPageStore } from './store/PublicationPageStore';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
 
-  const [fs] = useState(() => new ChonkyFileSystem(publicationId, fileService));
+  const [fs] = useState(() => new FileSystemFA(publicationId, fileService));
   const [sfs] = useState(
-    () => new ChonkyFileSystem(publicationId, new SampleFileServiceAdapter())
+    () => new FileSystemFA(publicationId, sampleFileService)
   );
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [isBetaDialogOpen, setIsBetaDialogOpen] = useState(() => false);
@@ -97,7 +102,12 @@ export const PublicationPage: FunctionComponent = observer(() => {
   };
 
   const [publicationStore] = useState(
-    () => new PublicationStore(publicationId, fs, sfs)
+    () => new PublicationStore(publicationId, fs)
+  );
+
+  const publicationPageStore = useMemo(
+    () => new PublicationPageStore(publicationStore, fs, sfs),
+    [publicationStore, fs, sfs]
   );
 
   const { isLoading, researchAreas, validate } = publicationStore;
@@ -236,6 +246,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
                   <PublicationBody
                     publicationId={publicationId}
                     publicationStore={publicationStore}
+                    publicationPageStore={publicationPageStore}
                     openDownloadersDialog={() => {
                       downloadersStore.clearAndOpen(
                         publicationId,
@@ -255,7 +266,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
         </FlexBodyCenter>
       </Parent>
       <ValidationDialog
-        publicationStore={publicationStore}
+        publicationPageStore={publicationPageStore}
         isOpen={validationDialogOpen}
         onClose={() => {
           setValidationDialogOpen(false);
@@ -324,11 +335,12 @@ const PublicationBody = observer(
   (props: {
     publicationId: string;
     publicationStore: PublicationStore;
+    publicationPageStore: PublicationPageStore;
     openDownloadersDialog: () => void;
-    fs: ChonkyFileSystem;
-    sfs: ChonkyFileSystem;
+    fs: FileSystemFA;
+    sfs: FileSystemFA;
   }): ReactElement => {
-    const { fs, sfs, publicationStore } = props;
+    const { fs, sfs, publicationStore, publicationPageStore } = props;
 
     const {
       openExperimentGoals,
@@ -352,7 +364,7 @@ const PublicationBody = observer(
       grantingOrganizationsEnabled,
       relatedArticlesEnabled,
       tagsEnabled
-    } = publicationStore;
+    } = publicationPageStore;
 
     return (
       <>
@@ -376,7 +388,10 @@ const PublicationBody = observer(
         <ResearchAreaEditor publicationStore={publicationStore} />
 
         {publicationStore.isView && (
-          <ActionBar publicationStore={publicationStore} />
+          <ActionBar
+            publicationStore={publicationStore}
+            publicationPageStore={publicationPageStore}
+          />
         )}
 
         <SummaryEditor publicationStore={publicationStore} />
@@ -424,8 +439,8 @@ const PublicationBody = observer(
             isReadonly={publicationStore.isReadonly}
             onArchiveDownload={() => {
               if (authStore.token) {
-                publicationStore.downloadFiles();
-                publicationStore.isPasscodeDialogOpen = true;
+                publicationPageStore.downloadFiles();
+                publicationPageStore.isPasscodeDialogOpen = true;
               } else {
                 routerStore.navigatePage(Page.SIGN_UP);
               }

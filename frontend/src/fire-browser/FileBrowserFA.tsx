@@ -17,10 +17,7 @@ import React, {
   useState
 } from 'react';
 import { ChonkyIconFA } from '@first-approval/chonky-icon-fontawesome';
-import {
-  type ChonkyFileSystem,
-  DuplicateCheckResult
-} from './ChonkyFileSystem';
+import { type FileSystemFA, DuplicateCheckResult } from './FileSystemFA';
 import { observer } from 'mobx-react-lite';
 import { FileToolbar } from './FileToolbar';
 import styled from '@emotion/styled';
@@ -55,7 +52,7 @@ interface FileBrowserProps {
   fileDownloadUrlPrefix: string;
   isReadonly: boolean;
   onArchiveDownload: (files: FileData[]) => void;
-  fs: ChonkyFileSystem;
+  fs: FileSystemFA;
   isChonkyDragRef: MutableRefObject<boolean>;
 }
 

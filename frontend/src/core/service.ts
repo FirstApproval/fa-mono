@@ -9,6 +9,7 @@ import {
   UserApi
 } from '../apis/first-approval-api';
 import { authStore } from './auth';
+import { SampleFileServiceAdapter } from './SampleFileServiceAdapter';
 
 const configuration: Configuration = new Configuration({
   accessToken: async () => {
@@ -30,6 +31,8 @@ export const authService = new AuthApi(configuration);
 
 export const fileService = new FileApi(configuration);
 
-export const sampleFileService = new SampleFileApi(configuration);
+export const sampleFileServiceRaw = new SampleFileApi(configuration);
+
+export const sampleFileService = new SampleFileServiceAdapter();
 
 export const publicationService = new PublicationApi(configuration);

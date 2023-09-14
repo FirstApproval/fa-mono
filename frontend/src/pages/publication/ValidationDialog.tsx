@@ -1,7 +1,7 @@
 import React, { type ReactElement } from 'react';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Dialog, DialogContent, styled } from '@mui/material';
-import { type PublicationStore, type Section } from './store/PublicationStore';
+import { type Section } from './store/PublicationStore';
 import {
   ExperimentGoalsPlaceholder,
   FilesPlaceholder,
@@ -11,21 +11,22 @@ import {
   TagsPlaceholder,
   TitlePlaceholder
 } from './ContentPlaceholder';
+import { PublicationPageStore } from './store/PublicationPageStore';
 
 export const ValidationDialog = (props: {
-  publicationStore: PublicationStore;
+  publicationPageStore: PublicationPageStore;
   isOpen: boolean;
   errors: Section[];
   onClose: () => void;
 }): ReactElement => {
-  const { isOpen, onClose, errors, publicationStore } = props;
+  const { isOpen, onClose, errors, publicationPageStore } = props;
   const {
     openExperimentGoals,
     openMethod,
     openObjectOfStudy,
     openFiles,
     openTags
-  } = publicationStore;
+  } = publicationPageStore;
   return (
     <Dialog
       open={isOpen}

@@ -6,10 +6,7 @@ import React, {
 } from 'react';
 import { getAllFileEntries } from 'src/util/fileUtil';
 import styled from '@emotion/styled';
-import {
-  type ChonkyFileSystem,
-  DuplicateCheckResult
-} from './ChonkyFileSystem';
+import { type FileSystemFA, DuplicateCheckResult } from './FileSystemFA';
 import { observer } from 'mobx-react-lite';
 import { UploadType } from '../apis/first-approval-api';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -27,7 +24,7 @@ interface FileUploaderProps {
   fileDownloadUrlPrefix: string;
   isReadonly: boolean;
   onArchiveDownload: (files: FileData[]) => void;
-  fs: ChonkyFileSystem;
+  fs: FileSystemFA;
 }
 
 export const FileUploader: FunctionComponent<FileUploaderProps> = observer(

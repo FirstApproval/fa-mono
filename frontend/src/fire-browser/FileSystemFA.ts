@@ -25,7 +25,8 @@ interface FileEntry {
 
 type UploadFilesAfterDialogFunction = (value: UploadType) => void;
 
-export class ChonkyFileSystem {
+export class FileSystemFA {
+  rootPathFiles: number = 0;
   currentPath: string = '/';
   private backEndFiles: FileEntry[] = [];
   private localFiles: FileEntry[] = [];
@@ -45,9 +46,10 @@ export class ChonkyFileSystem {
     readonly fileService: Omit<FileApi, 'configuration'>
   ) {
     makeObservable<
-      ChonkyFileSystem,
+      FileSystemFA,
       'backEndFiles' | 'localFiles' | 'allLocalFiles'
     >(this, {
+      rootPathFiles: observable,
       currentPath: observable,
       files: computed,
       backEndFiles: observable,
@@ -76,6 +78,16 @@ export class ChonkyFileSystem {
     reaction(() => this.currentPath, this.updateLocalFiles, {
       fireImmediately: true
     });
+
+    reaction(
+      () => this.files,
+      (files) => {
+        if (this.currentPath === '/') {
+          this.rootPathFiles = files.length;
+        }
+      },
+      { fireImmediately: true }
+    );
   }
 
   closeReplaceOrRenameDialog = (): void => {

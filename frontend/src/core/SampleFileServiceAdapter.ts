@@ -11,13 +11,13 @@ import {
   SampleFileApi,
   UploadType
 } from '../apis/first-approval-api';
-import { sampleFileService } from './service';
+import { sampleFileServiceRaw } from './service';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 export class SampleFileServiceAdapter
   implements Omit<FileApi, 'configuration'>
 {
-  private readonly service: SampleFileApi = sampleFileService;
+  private readonly service: SampleFileApi = sampleFileServiceRaw;
 
   async checkFileDuplicates(
     publicationId: string,
