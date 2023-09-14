@@ -1,6 +1,5 @@
 import { PublicationStore } from '../PublicationStore';
 import { ChonkyFileSystem } from '../../../../fire-browser/ChonkyFileSystem';
-import { ChonkySampleFileSystem } from '../../../../fire-browser/sample-files/ChonkySampleFileSystem';
 import { type Publication } from '../../../../apis/first-approval-api';
 import { waitFor } from '@testing-library/react';
 import { AxiosResponse } from 'axios';
@@ -27,7 +26,7 @@ describe('should correctly split paragraphs', () => {
     publicationStore = new PublicationStore(
       '',
       { initialized: true, files: [] } as unknown as ChonkyFileSystem,
-      { initialized: true, files: [] } as unknown as ChonkySampleFileSystem
+      { initialized: true, files: [] } as unknown as ChonkyFileSystem
     );
   });
 

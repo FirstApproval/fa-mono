@@ -96,7 +96,7 @@ test('should upload files and directories', async () => {
     }
   ];
   const publicationId = 'aaaa-bbbb-cccc-dddd-eeee';
-  const fs = new ChonkyFileSystem(publicationId);
+  const fs = new ChonkyFileSystem(publicationId, fileService);
   fs.addFilesDnd(files, UploadType.REPLACE);
 
   await waitFor(() => {

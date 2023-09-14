@@ -54,12 +54,10 @@ import logo from '../../assets/logo-black.svg';
 import { UserMenu } from '../../components/UserMenu';
 import { Page } from '../../core/RouterStore';
 import { ValidationDialog } from './ValidationDialog';
-import { publicationService } from '../../core/service';
+import { fileService, publicationService } from '../../core/service';
 import { DraftText } from './DraftText';
 import { Authors } from './Authors';
 import { DateViewsDownloads } from './DateViewsDownloads';
-import { ChonkySampleFileSystem } from '../../fire-browser/sample-files/ChonkySampleFileSystem';
-import { SampleFileUploader } from '../../fire-browser/sample-files/SampleFileUploader';
 import { ActionBar } from './ActionBar';
 import { authStore } from '../../core/auth';
 import { DownloadersDialog } from './DownloadersDialog';
@@ -73,12 +71,15 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import Menu from '@mui/material/Menu';
 import { ConfirmationDialog } from '../../components/ConfirmationDialog';
 import { ContentLicensingDialog } from '../../components/ContentLicensingDialog';
+import { SampleFileServiceAdapter } from '../../core/SampleFileServiceAdapter';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
 
-  const [fs] = useState(() => new ChonkyFileSystem(publicationId));
-  const [sfs] = useState(() => new ChonkySampleFileSystem(publicationId));
+  const [fs] = useState(() => new ChonkyFileSystem(publicationId, fileService));
+  const [sfs] = useState(
+    () => new ChonkyFileSystem(publicationId, new SampleFileServiceAdapter())
+  );
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [isBetaDialogOpen, setIsBetaDialogOpen] = useState(() => false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -325,7 +326,7 @@ const PublicationBody = observer(
     publicationStore: PublicationStore;
     openDownloadersDialog: () => void;
     fs: ChonkyFileSystem;
-    sfs: ChonkySampleFileSystem;
+    sfs: ChonkyFileSystem;
   }): ReactElement => {
     const { fs, sfs, publicationStore } = props;
 
@@ -400,6 +401,7 @@ const PublicationBody = observer(
         {!filesEnabled && <FilesPlaceholder onClick={openFiles} />}
         {filesEnabled && (
           <FileUploader
+            rootFolderName={'Files'}
             fs={fs}
             isReadonly={publicationStore.isReadonly}
             onArchiveDownload={() => {
@@ -417,10 +419,13 @@ const PublicationBody = observer(
           publicationStore.viewMode === ViewMode.EDIT && (
             <SampleFilesPlaceholder onClick={openSampleFiles} />
           )}
-        {sampleFilesEnabled && (
-          <SampleFileUploader
-            sfs={sfs}
-            publicationStore={publicationStore}
+        {sampleFilesEnabled && !publicationStore.isReadonly && (
+          <FileUploader
+            rootFolderName={'Sample files'}
+            onArchiveDownload={(files) => {
+              props.publicationStore.downloadSampleMultiFiles(files);
+            }}
+            fs={sfs}
             isReadonly={publicationStore.isReadonly}
           />
         )}

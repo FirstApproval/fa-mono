@@ -12,7 +12,6 @@ import {
 import { type ChonkyFileSystem } from '../../../fire-browser/ChonkyFileSystem';
 import { v4 as uuidv4 } from 'uuid';
 import { type AuthorEditorStore } from './AuthorEditorStore';
-import { type ChonkySampleFileSystem } from '../../../fire-browser/sample-files/ChonkySampleFileSystem';
 import { FileData } from '@first-approval/chonky/dist/types/file.types';
 import { routerStore } from '../../../core/router';
 import { Page } from '../../../core/RouterStore';
@@ -95,7 +94,7 @@ export class PublicationStore {
   constructor(
     readonly publicationId: string,
     readonly fs: ChonkyFileSystem,
-    readonly sfs: ChonkySampleFileSystem
+    readonly sfs: ChonkyFileSystem
   ) {
     makeAutoObservable(this);
     this.addSummaryParagraph(0);
