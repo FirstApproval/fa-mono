@@ -1,4 +1,4 @@
-package org.firstapproval.backend.core.domain.main
+package org.firstapproval.backend.core.domain.mail
 
 import org.firstapproval.backend.core.config.Properties
 import org.springframework.mail.javamail.JavaMailSender
