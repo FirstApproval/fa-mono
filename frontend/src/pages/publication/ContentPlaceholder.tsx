@@ -175,9 +175,7 @@ export const ContentPlaceholder = (
   );
 };
 
-export const TagsWrap = styled.div`
-  margin-bottom: 120px;
-`;
+export const TagsWrap = styled.div``;
 
 const FlexWrap = styled.div`
   display: flex;

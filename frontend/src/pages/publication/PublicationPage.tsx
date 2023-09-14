@@ -380,25 +380,41 @@ const PublicationBody = observer(
         )}
 
         <SummaryEditor publicationStore={publicationStore} />
-        {!experimentGoalsEnabled && (
+
+        {/* Experiment goals */}
+        {!experimentGoalsEnabled && !publicationStore.isReadonly && (
           <ExperimentGoalsPlaceholder onClick={openExperimentGoals} />
         )}
         {experimentGoalsEnabled && (
           <ExperimentGoalsEditor publicationStore={publicationStore} />
         )}
-        {!methodEnabled && <MethodPlaceholder onClick={openMethod} />}
+
+        {/* Method */}
+        {!methodEnabled && !publicationStore.isReadonly && (
+          <MethodPlaceholder onClick={openMethod} />
+        )}
         {methodEnabled && <MethodEditor publicationStore={publicationStore} />}
-        {!objectOfStudyEnabled && (
+
+        {/* Object of study */}
+        {!objectOfStudyEnabled && !publicationStore.isReadonly && (
           <ObjectOfStudyPlaceholder onClick={openObjectOfStudy} />
         )}
         {objectOfStudyEnabled && (
           <ObjectOfStudyEditor publicationStore={publicationStore} />
         )}
-        {!softwareEnabled && <SoftwarePlaceholder onClick={openSoftware} />}
+
+        {/* Software */}
+        {!softwareEnabled && !publicationStore.isReadonly && (
+          <SoftwarePlaceholder onClick={openSoftware} />
+        )}
         {softwareEnabled && (
           <SoftwareEditor publicationStore={publicationStore} />
         )}
-        {!filesEnabled && <FilesPlaceholder onClick={openFiles} />}
+
+        {/* Files */}
+        {!filesEnabled && !publicationStore.isReadonly && (
+          <FilesPlaceholder onClick={openFiles} />
+        )}
         {filesEnabled && (
           <FileUploader
             instanceId={'main'}
@@ -416,9 +432,11 @@ const PublicationBody = observer(
             }}
           />
         )}
+
+        {/* Sample files */}
         {!sampleFilesEnabled &&
-          !sampleFilesHidden &&
-          publicationStore.viewMode === ViewMode.EDIT && (
+          !publicationStore.isReadonly &&
+          !sampleFilesHidden && (
             <SampleFilesPlaceholder onClick={openSampleFiles} />
           )}
         {sampleFilesEnabled && !publicationStore.isReadonly && (
@@ -433,11 +451,17 @@ const PublicationBody = observer(
             isReadonly={publicationStore.isReadonly}
           />
         )}
-        {!authorsEnabled && <AuthorsPlaceholder onClick={openAuthors} />}
+
+        {/* Authors */}
+        {!authorsEnabled && !publicationStore.isReadonly && (
+          <AuthorsPlaceholder onClick={openAuthors} />
+        )}
         {authorsEnabled && (
           <AuthorsEditor publicationStore={publicationStore} />
         )}
-        {!grantingOrganizationsEnabled && (
+
+        {/* Granting organizations */}
+        {!grantingOrganizationsEnabled && !publicationStore.isReadonly && (
           <GrantingOrganisationsPlaceholder
             onClick={openGrantingOrganizations}
           />
@@ -445,19 +469,25 @@ const PublicationBody = observer(
         {grantingOrganizationsEnabled && (
           <GrantingOrganizationsEditor publicationStore={publicationStore} />
         )}
-        {!relatedArticlesEnabled && (
+
+        {/* Related articles */}
+        {!relatedArticlesEnabled && !publicationStore.isReadonly && (
           <RelatedArticlesPlaceholder onClick={openRelatedArticles} />
         )}
         {relatedArticlesEnabled && (
           <RelatedArticlesEditor publicationStore={publicationStore} />
         )}
+
+        {/* Tags */}
         {!tagsEnabled && (
           <TagsWrap>
             <TagsPlaceholder onClick={openTags} />
           </TagsWrap>
         )}
         {tagsEnabled && <TagsEditor publicationStore={publicationStore} />}
+
         {publicationStore.isPreview && <DraftText />}
+        <Space />
       </>
     );
   }
@@ -473,6 +503,10 @@ const ButtonWrap = styled(Button)<{ marginright?: string }>`
   margin-right: ${(props) => props.marginright ?? '24px'};
   width: 90px;
   height: 36px;
+`;
+
+const Space = styled.div`
+  margin-bottom: 120px;
 `;
 
 const ToolbarContainer = styled.div`
