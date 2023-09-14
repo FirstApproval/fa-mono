@@ -476,7 +476,7 @@ export const AccountPage: FunctionComponent = observer(() => {
             {'If you’d like to change your username or bio, you can do that here. ' +
               'We value every member of our community. ' +
               "If you've made up your mind to leave, we understand and respect your decision.\n" +
-              'To proceed with account deletion, please email us at support@firstapproval.io. ' +
+              'To proceed with account deletion, please email us at info@firstapproval.io. ' +
               'Our team will assist you promptly.\n' +
               "We'd also appreciate any feedback or reasons for your decision, " +
               'so we can continuously improve and serve our community better.'}
@@ -487,7 +487,7 @@ export const AccountPage: FunctionComponent = observer(() => {
             <Button
               color="error"
               variant={'outlined'}
-              href={'mailto:hello@firstapproval.io'}
+              href={'mailto:info@firstapproval.io'}
               onClick={handleCloseDeleteDialog}>
               Write email
             </Button>
