@@ -19,7 +19,6 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import { FileBrowserFA } from './FileBrowserFA';
-import { PublicationStore } from '../pages/publication/store/PublicationStore';
 import { FileData } from '@first-approval/chonky';
 
 interface FileUploaderProps {
