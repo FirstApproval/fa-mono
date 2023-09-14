@@ -4,8 +4,8 @@ import mu.KotlinLogging.logger
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import org.firstapproval.backend.core.config.Properties.FrontendProperties
 import org.firstapproval.backend.core.domain.auth.OauthUser
-import org.firstapproval.backend.core.domain.file.FileStorageService
-import org.firstapproval.backend.core.domain.file.PROFILE_IMAGES
+import org.firstapproval.backend.core.external.s3.FileStorageService
+import org.firstapproval.backend.core.external.s3.PROFILE_IMAGES
 import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthorRepository

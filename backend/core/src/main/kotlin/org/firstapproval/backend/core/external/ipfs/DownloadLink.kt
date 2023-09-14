@@ -1,4 +1,4 @@
-package org.firstapproval.backend.core.domain.ipfs
+package org.firstapproval.backend.core.external.ipfs
 
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
