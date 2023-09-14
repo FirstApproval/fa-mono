@@ -26,11 +26,18 @@ interface AuthorElementProps {
     isConfirmed?: boolean,
     index?: number
   ) => void;
+  shouldOpenInNewTab?: boolean;
 }
 
 export const AuthorElement = (props: AuthorElementProps): ReactElement => {
-  const { isReadonly, author, isConfirmed, index, setEditAuthorVisible } =
-    props;
+  const {
+    isReadonly,
+    author,
+    isConfirmed,
+    index,
+    setEditAuthorVisible,
+    shouldOpenInNewTab
+  } = props;
   let shortBio;
   let firstName;
   let lastName;
@@ -78,10 +85,14 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
       <AuthorElementWrap
         onClick={() => {
           if (username) {
-            routerStore.navigatePage(
-              Page.PROFILE,
-              getRelativeProfileLink(username)
-            );
+            if (shouldOpenInNewTab) {
+              routerStore.openInNewTab(getRelativeProfileLink(username));
+            } else {
+              routerStore.navigatePage(
+                Page.PROFILE,
+                getRelativeProfileLink(username)
+              );
+            }
           }
         }}>
         <Avatar src={renderProfileImage(profileImage)}>
