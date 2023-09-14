@@ -1,4 +1,4 @@
-package org.firstapproval.backend.core.domain.ipfs
+package org.firstapproval.backend.core.external.ipfs
 
 import org.springframework.data.jpa.repository.JpaRepository
 import java.time.ZonedDateTime

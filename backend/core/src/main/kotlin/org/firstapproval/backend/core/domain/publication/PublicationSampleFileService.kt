@@ -1,8 +1,8 @@
 package org.firstapproval.backend.core.domain.publication
 
 import org.apache.commons.io.FilenameUtils
-import org.firstapproval.backend.core.domain.file.FileStorageService
-import org.firstapproval.backend.core.domain.file.SAMPLE_FILES
+import org.firstapproval.backend.core.external.s3.FileStorageService
+import org.firstapproval.backend.core.external.s3.SAMPLE_FILES
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.utils.require
 import org.springframework.stereotype.Service

@@ -1,4 +1,4 @@
-package org.firstapproval.backend.core.domain.file
+package org.firstapproval.backend.core.external.s3
 
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.DeleteObjectsRequest

@@ -1,4 +1,4 @@
-package org.firstapproval.backend.core.elastic
+package org.firstapproval.backend.core.infra.elastic
 
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable

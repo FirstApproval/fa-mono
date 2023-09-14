@@ -1,4 +1,4 @@
-package org.firstapproval.backend.core.domain.ipfs
+package org.firstapproval.backend.core.external.ipfs
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonFormat.Feature.ACCEPT_CASE_INSENSITIVE_PROPERTIES

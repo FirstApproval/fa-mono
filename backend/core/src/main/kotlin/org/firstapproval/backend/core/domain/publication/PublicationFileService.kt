@@ -4,8 +4,8 @@ import com.amazonaws.services.s3.model.S3Object
 import org.apache.commons.io.FilenameUtils
 import org.firstapproval.backend.core.config.Properties.S3Properties
 import org.firstapproval.backend.core.config.security.JwtService
-import org.firstapproval.backend.core.domain.file.FILES
-import org.firstapproval.backend.core.domain.file.FileStorageService
+import org.firstapproval.backend.core.external.s3.FILES
+import org.firstapproval.backend.core.external.s3.FileStorageService
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.utils.require
 import org.springframework.stereotype.Service

@@ -732,6 +732,28 @@ paths:
       operationId: downloadPublicationFiles
       tags: [ publication ]
 
+  /api/publication/pdf/download:
+    get:
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: byte
+      security:
+        - PublicAuth: [ ]
+      operationId: downloadPdf
+      tags: [ pdf ]
+
   /api/publication/{id}/files/sample/download:
     parameters:
       - in: path

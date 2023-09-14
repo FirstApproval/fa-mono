@@ -4,7 +4,7 @@ import io.jsonwebtoken.lang.Strings
 import mu.KotlinLogging.logger
 import org.firstapproval.backend.core.config.Properties
 import org.firstapproval.backend.core.config.Properties.EmailProperties
-import org.firstapproval.backend.core.domain.mail.MailService
+import org.firstapproval.backend.core.infra.mail.MailService
 import org.firstapproval.backend.core.domain.user.User
 import org.springframework.stereotype.Service
 import org.thymeleaf.context.Context

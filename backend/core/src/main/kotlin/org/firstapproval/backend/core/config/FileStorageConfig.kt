@@ -8,8 +8,8 @@ import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.AmazonS3ClientBuilder.standard
 import org.firstapproval.backend.core.config.Properties.IpfsProperties
 import org.firstapproval.backend.core.config.Properties.S3Properties
-import org.firstapproval.backend.core.domain.file.FileStorageService
-import org.firstapproval.backend.core.domain.ipfs.IpfsClient
+import org.firstapproval.backend.core.external.s3.FileStorageService
+import org.firstapproval.backend.core.external.ipfs.IpfsClient
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.client.RestTemplate

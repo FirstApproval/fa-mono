@@ -14,7 +14,7 @@ import org.firstapproval.api.server.model.SearchPublicationsResponse
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.config.security.userOrNull
-import org.firstapproval.backend.core.domain.ipfs.IpfsClient
+import org.firstapproval.backend.core.external.ipfs.IpfsClient
 import org.firstapproval.backend.core.domain.publication.PublicationService
 import org.firstapproval.backend.core.domain.publication.downloader.DownloaderRepository
 import org.firstapproval.backend.core.domain.publication.toApiObject
