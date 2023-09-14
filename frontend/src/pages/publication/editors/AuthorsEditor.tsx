@@ -1,9 +1,9 @@
 import { observer } from 'mobx-react-lite';
 import React, { type ReactElement, useEffect, useState } from 'react';
 import {
-  type Author,
   type ConfirmedAuthor,
-  type UnconfirmedAuthor
+  type UnconfirmedAuthor,
+  type UserInfo
 } from '../../../apis/first-approval-api';
 import { AuthorEditorStore } from '../store/AuthorEditorStore';
 import { AuthorElement } from './element/AuthorElement';
@@ -28,15 +28,17 @@ import { ContentEditorWrap, LabelWrap } from './styled';
 import { getInitials } from '../../../util/userUtil';
 import { renderProfileImage } from '../../../fire-browser/utils';
 import { type EditorProps } from './types';
-import { routerStore } from '../../../core/router';
-import { Page } from '../../../core/RouterStore';
+import { validateEmail } from '../../../util/emailUtil';
 
 export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
   const [addAuthorVisible, setAddAuthorVisible] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [searchVisible, setSearchVisible] = useState(false);
   const [isUserExistsByEmail, setIsUserExistsByEmail] = useState(false);
-  const [authorOptions, setAuthorOptions] = useState<Author[]>([]);
+  const [authorOptions, setAuthorOptions] = useState<UserInfo[]>([]);
+  const [isValidEmail, setIsValidEmail] = useState(true);
+  const [isValidFirstName, setIsValidFirstName] = useState(true);
+  const [isValidLastName, setIsValidLastName] = useState(true);
 
   const [query, setQuery] = useState('');
 
@@ -44,9 +46,10 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
 
   const setEditAuthorVisible = (
     author: ConfirmedAuthor | UnconfirmedAuthor,
-    isConfirmed: boolean,
+    isConfirmed?: boolean,
     index?: number
   ): void => {
+    if (isConfirmed == null) return;
     if (isConfirmed) {
       const user = (author as ConfirmedAuthor).user;
       authorStore.firstName = user.firstName!;
@@ -99,6 +102,33 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
     setDeleteDialogOpen(false);
   };
 
+  const validateFields = (): boolean => {
+    setIsValidEmail(
+      authorStore.email.length > 0 && validateEmail(authorStore.email)
+    );
+    setIsValidFirstName(authorStore.firstName.length > 0);
+    setIsValidLastName(authorStore.lastName.length > 0);
+    return isValidEmail && isValidFirstName && isValidLastName;
+  };
+
+  const handleSaveButton = async (): Promise<void> => {
+    if (authorStore.isConfirmed) {
+      props.publicationStore.editConfirmedAuthor(authorStore);
+      handleCloseAddAuthor();
+    } else {
+      await userService.existsByEmail(authorStore.email).then((result) => {
+        if (result.data) {
+          authorStore.clean();
+          setIsUserExistsByEmail(true);
+        } else {
+          if (validateFields()) return;
+          props.publicationStore.addOrEditUnconfirmedAuthor(authorStore);
+        }
+        handleCloseAddAuthor();
+      });
+    }
+  };
+
   return (
     <>
       <ContentEditorWrap>
@@ -106,15 +136,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
         {props.publicationStore.confirmedAuthors.map(
           (confirmedAuthor, index) => {
             return (
-              <div
-                key={confirmedAuthor.id}
-                style={{ cursor: 'pointer' }}
-                onClick={() => {
-                  routerStore.navigatePage(
-                    Page.PROFILE,
-                    `/p/${confirmedAuthor.user.username}`
-                  );
-                }}>
+              <div key={confirmedAuthor.id} style={{ cursor: 'pointer' }}>
                 <AuthorElement
                   isReadonly={props.publicationStore.isReadonly}
                   author={confirmedAuthor}
@@ -154,7 +176,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
           <SearchBar>
             <FlexGrowWrap>
               <Autocomplete
-                onChange={(event: any, newValue: Author | null) => {
+                onChange={(event: any, newValue: UserInfo | null) => {
                   if (newValue) {
                     props.publicationStore.addConfirmedAuthor(newValue);
                   }
@@ -230,6 +252,8 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                 disabled={authorStore.isConfirmed}
                 label="Email"
                 variant="outlined"
+                error={!isValidEmail}
+                helperText={!isValidEmail ? 'Invalid address' : undefined}
               />
               <OneLineWrap>
                 <MarginTextField
@@ -240,6 +264,10 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                   disabled={authorStore.isConfirmed}
                   label="First name"
                   variant="outlined"
+                  error={!isValidFirstName}
+                  helperText={
+                    !isValidFirstName ? 'Invalid first name' : undefined
+                  }
                 />
                 <FullWidthTextField
                   value={authorStore.lastName}
@@ -249,6 +277,10 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                   disabled={authorStore.isConfirmed}
                   label="Last name"
                   variant="outlined"
+                  error={!isValidLastName}
+                  helperText={
+                    !isValidLastName ? 'Invalid last name' : undefined
+                  }
                 />
               </OneLineWrap>
               <FullWidthTextField
@@ -266,11 +298,12 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
           )}
           {authorStore.isConfirmed && (
             <EditConfirmedAuthor>
-              {/* dirty hack to show user name and email without possibility to edit any fields except of short bio */}
+              {/* dirty hack to show user name and email without possibility to edit any fields except of short bio. */}
+              {/* Partly fixed by adding AuthorEditorStore as author type */}
               <AuthorElement
                 isReadonly={props.publicationStore.isReadonly}
                 author={authorStore}
-                isConfirmed={false}
+                isConfirmed={true}
               />
               <FullWidthTextField
                 multiline
@@ -302,25 +335,8 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
             <div>
               <Button onClick={handleCloseAddAuthor}>Cancel</Button>
               <Button
-                onClick={async () => {
-                  if (authorStore.isConfirmed) {
-                    props.publicationStore.editConfirmedAuthor(authorStore);
-                    handleCloseAddAuthor();
-                  } else {
-                    await userService
-                      .existsByEmail(authorStore.email)
-                      .then((result) => {
-                        if (result.data) {
-                          authorStore.clean();
-                          setIsUserExistsByEmail(true);
-                        } else {
-                          props.publicationStore.addOrEditUnconfirmedAuthor(
-                            authorStore
-                          );
-                        }
-                        handleCloseAddAuthor();
-                      });
-                  }
+                onClick={() => {
+                  void handleSaveButton();
                 }}>
                 Save
               </Button>

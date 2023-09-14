@@ -6,12 +6,12 @@ interface ParagraphProps {
   cursorPosition: number;
   paragraphToFocus: number;
   isReadonly?: boolean;
-  paragraphPrefixType?: ParagraphPrefixType;
   idx: number;
   value: string;
   onChange: (idx: number, value: string) => void;
   onAddParagraph: (idx: number) => void;
   onMergeParagraph: (idx: number) => void;
+  onSplitParagraph: (idx: number, splitIndex: number) => void;
   placeholder: string;
 }
 
@@ -24,16 +24,9 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
     onChange,
     onAddParagraph,
     onMergeParagraph,
-    placeholder,
-    paragraphPrefixType
+    onSplitParagraph,
+    placeholder
   } = props;
-
-  const prefix =
-    paragraphPrefixType === ParagraphPrefixType.BULLET
-      ? '•'
-      : paragraphPrefixType === ParagraphPrefixType.NUMERATION
-      ? (idx + 1).toString() + '.'
-      : '';
 
   const ref = useRef<HTMLDivElement>();
 
@@ -49,8 +42,7 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
   }, [paragraphToFocus, cursorPosition, ref]);
 
   return (
-    <ParagraphWrap paragraphPrefixType={paragraphPrefixType}>
-      {prefix && <PrefixRowWrap>{prefix}</PrefixRowWrap>}
+    <ParagraphWrap>
       {!props.isReadonly && (
         <TextFieldWrap
           inputRef={ref}
@@ -59,14 +51,17 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
             const selectionStart = event.target.selectionStart;
             // @ts-expect-error wrong types
             const selectionEnd = event.target.selectionEnd;
-            if (
-              selectionStart === value.length &&
-              selectionEnd === value.length &&
-              (event.key === 'Enter' || event.keyCode === 13)
-            ) {
+            if (event.key === 'Enter' || event.keyCode === 13) {
               event.preventDefault();
               event.stopPropagation();
-              onAddParagraph(idx);
+              if (
+                selectionEnd === value.length &&
+                selectionStart === value.length
+              ) {
+                onAddParagraph(idx);
+              } else {
+                onSplitParagraph(idx, selectionEnd);
+              }
             } else if (
               selectionStart === 0 &&
               selectionEnd === 0 &&
@@ -87,30 +82,36 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
           placeholder={placeholder}
           InputProps={{
             disableUnderline: true,
-            autoComplete: 'off'
+            autoComplete: 'off',
+            style: {
+              fontSize: '20px',
+              fontWeight: '400',
+              fontStyle: 'normal',
+              lineHeight: '160%',
+              paddingTop: 0,
+              paddingBottom: 0
+            }
           }}
         />
       )}
-      {props.isReadonly && <div>{value}</div>}
+      {props.isReadonly && <ValueWrap>{value}</ValueWrap>}
     </ParagraphWrap>
   );
 };
 
-const ParagraphWrap = styled.div<{ paragraphPrefixType?: ParagraphPrefixType }>`
+const ParagraphWrap = styled.div`
   display: flex;
-  margin-bottom: ${(props) => (props.paragraphPrefixType ? '0px' : '16px')};
+  margin-bottom: 16px;
 `;
 
 const TextFieldWrap = styled(TextField)`
   width: 100%;
 `;
 
-export const PrefixRowWrap = styled.span`
-  margin: 3.5px 6px 0;
-  text-align: center;
+export const ValueWrap = styled.div`
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 160%; /* 32px */
+  letter-spacing: 0.15px;
 `;
-
-export enum ParagraphPrefixType {
-  NUMERATION = 'NUMERATION',
-  BULLET = 'BULLET'
-}

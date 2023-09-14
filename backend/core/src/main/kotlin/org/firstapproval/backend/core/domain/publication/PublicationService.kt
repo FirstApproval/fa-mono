@@ -1,6 +1,6 @@
 package org.firstapproval.backend.core.domain.publication
 
-import org.firstapproval.api.server.model.Author
+import org.firstapproval.api.server.model.DownloadLinkResponse
 import org.firstapproval.api.server.model.Paragraph
 import org.firstapproval.api.server.model.PublicationEditRequest
 import org.firstapproval.api.server.model.PublicationsResponse
@@ -9,19 +9,21 @@ import org.firstapproval.backend.core.config.Properties.FrontendProperties
 import org.firstapproval.backend.core.domain.auth.TokenService
 import org.firstapproval.backend.core.domain.file.ARCHIVED_PUBLICATION_FILES
 import org.firstapproval.backend.core.domain.file.ARCHIVED_PUBLICATION_SAMPLE_FILES
+import org.firstapproval.backend.core.domain.file.FILES
 import org.firstapproval.backend.core.domain.file.FileStorageService
+import org.firstapproval.backend.core.domain.file.SAMPLE_FILES
 import org.firstapproval.backend.core.domain.ipfs.IpfsClient
-import org.firstapproval.backend.core.domain.ipfs.Job
-import org.firstapproval.backend.core.domain.ipfs.JobKind
 import org.firstapproval.backend.core.domain.ipfs.JobRepository
-import org.firstapproval.backend.core.domain.ipfs.JobStatus
 import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
+import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthorRepository
 import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthor
+import org.firstapproval.backend.core.domain.publication.downloader.Downloader
+import org.firstapproval.backend.core.domain.publication.downloader.DownloaderRepository
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
 import org.firstapproval.backend.core.domain.user.UserService
@@ -33,12 +35,16 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.DESC
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.ZonedDateTime
+import org.springframework.transaction.support.TransactionTemplate
+import java.time.ZonedDateTime.now
 import java.util.UUID
 import java.util.UUID.randomUUID
+import org.firstapproval.api.server.model.AccessType as AccessTypeApiObject
 import org.firstapproval.api.server.model.ConfirmedAuthor as ConfirmedAuthorApiObject
+import org.firstapproval.api.server.model.LicenseType as LicenseTypeApiObject
 import org.firstapproval.api.server.model.Publication as PublicationApiObject
 import org.firstapproval.api.server.model.PublicationStatus as PublicationStatusApiObject
 import org.firstapproval.api.server.model.UnconfirmedAuthor as UnconfirmedAuthorApiObject
@@ -55,7 +61,11 @@ class PublicationService(
     private val tokenService: TokenService,
     private val frontendProperties: FrontendProperties,
     private val fileStorageService: FileStorageService,
-    private val notificationService: NotificationService
+    private val notificationService: NotificationService,
+    private val downloaderRepository: DownloaderRepository,
+    private val publicationFileRepository: PublicationFileRepository,
+    private val sampleFileRepository: PublicationSampleFileRepository,
+    private val transactionTemplate: TransactionTemplate
 ) {
     @Transactional
     fun create(user: User): Publication {
@@ -66,12 +76,12 @@ class PublicationService(
     }
 
     @Transactional(readOnly = true)
-    fun findAllByIdIn(ids: List<UUID>) = publicationRepository.findAllByIdIn(ids)
+    fun findAllByIdIn(ids: List<UUID>) = publicationRepository.findAllByIdInAndStatus(ids, PUBLISHED)
 
     @Transactional
     fun edit(user: User, id: UUID, request: PublicationEditRequest) {
         val publication = get(user, id)
-        checkAccessToPublication(user, publication)
+        checkPublicationCreator(user, publication)
         with(request) {
             val unconfirmedAuthorsEmails = unconfirmedAuthors?.let { unconfirmedAuthors.values.map { it.email }.toSet() } ?: setOf()
             if (unconfirmedAuthorsEmails.isNotEmpty() && userRepository.findByEmailIn(unconfirmedAuthorsEmails).isNotEmpty()) {
@@ -87,11 +97,12 @@ class PublicationService(
                 throw RecordConflictException("Author with this email already added to publication as confirmed user")
             }
 
+            publication.editingTime = now()
             if (title?.edited == true) publication.title = title.value
             if (negativeData?.edited == true) publication.negativeData = negativeData.value
             if (isNegative != null) publication.isNegative = isNegative
             if (description?.edited == true) publication.description = description.values.map { it.text }
-            if (researchArea?.edited == true) publication.researchArea = researchArea.value
+            if (researchAreas?.edited == true) publication.researchAreas = researchAreas.values.map { it.text }
             if (grantOrganizations?.edited == true) publication.grantOrganizations = grantOrganizations.values.map { it.text }
             if (primaryArticles?.edited == true) publication.primaryArticles = primaryArticles.values.map { it.text }
             if (relatedArticles?.edited == true) publication.relatedArticles = relatedArticles.values.map { it.text }
@@ -104,6 +115,7 @@ class PublicationService(
             if (methodTitle?.edited == true) publication.methodTitle = methodTitle.value
             if (methodDescription?.edited == true) publication.methodDescription = methodDescription.values.map { it.text }
             if (predictedGoals?.edited == true) publication.predictedGoals = predictedGoals.values.map { it.text }
+            if (licenseType?.edited == true) publication.licenseType = LicenseType.valueOf(licenseType.value.name)
             if (confirmedAuthors?.edited == true) {
                 if (confirmedAuthors.values.none { it.userId == publication.creator.id }) {
                     throw RecordConflictException("Creator cannot be deleted from authors list")
@@ -143,18 +155,30 @@ class PublicationService(
         val claims = tokenService.parseDownloadPublicationArchiveToken(token)
         val publicationId = claims.subject.toString()
         val publication = publicationRepository.getReferenceById(UUID.fromString(publicationId))
-        publication.downloadsCount += 1
         val title = if (publication.title != null) {
             publication.title
         } else {
             publicationId
         }
         val user = userService.get(UUID.fromString(claims["userId"].toString()))
-        notificationService.sendArchivePassword(user.email!!, publication.title, publication.archivePassword!!)
+        publication.downloadsCount += 1
+        addDownloadHistory(user, publication)
+        if (user.email != null) {
+            notificationService.sendArchivePassword(user.email!!, publication.title, publication.archivePassword!!)
+        }
         return FileResponse(
             name = title!! + ".zip",
             fileStorageService.get(ARCHIVED_PUBLICATION_FILES, publicationId)
         )
+    }
+
+    private fun addDownloadHistory(user: User, publication: Publication) {
+        val prevTry = downloaderRepository.getByUserAndPublication(user, publication)
+        if (prevTry != null) {
+            prevTry.history.add(now())
+        } else {
+            downloaderRepository.save(Downloader(publication = publication, user = user, history = mutableListOf(now())))
+        }
     }
 
     @Transactional
@@ -181,7 +205,7 @@ class PublicationService(
     @Transactional
     fun submitPublication(user: User, id: UUID, accessType: AccessType) {
         val publication = publicationRepository.getReferenceById(id)
-        checkAccessToPublication(user, publication)
+        checkPublicationCreator(user, publication)
         if (publication.status == PUBLISHED) {
             throw IllegalArgumentException()
         }
@@ -195,48 +219,48 @@ class PublicationService(
         return elasticRepository.searchByFields(text, PageRequest.of(pageNum, limit, sort))
     }
 
-    @Transactional
-    fun requestDownload(id: UUID) {
-        val pub = getPublicationAndCheckStatus(id, PUBLISHED)
-        jobRepository.findByPublicationId(pub.id) ?: run {
-            val createdJob = ipfsClient.createJob(pub.contentId!!, IpfsClient.IpfsJobKind.RESTORE)
-            jobRepository.save(
-                Job(
-                    id = createdJob.id,
-                    publication = pub,
-                    status = JobStatus.valueOf(createdJob.status.name),
-                    kind = JobKind.valueOf(createdJob.kind.name),
-                    creationTime = ZonedDateTime.now(),
-                    completionTime = null
-                )
-            )
-        }
-    }
+//    @Transactional
+//    fun requestDownload(id: UUID) {
+//        val pub = getPublicationAndCheckStatus(id)
+//        jobRepository.findByPublicationId(pub.id) ?: run {
+//            val createdJob = ipfsClient.createJob(pub.contentId!!, IpfsClient.IpfsJobKind.RESTORE)
+//            jobRepository.save(
+//                Job(
+//                    id = createdJob.id,
+//                    publication = pub,
+//                    status = JobStatus.valueOf(createdJob.status.name),
+//                    kind = JobKind.valueOf(createdJob.kind.name),
+//                    creationTime = now(),
+//                    completionTime = null
+//                )
+//            )
+//        }
+//    }
 
-    fun getDownloadLink(user: User, publicationId: UUID): String {
+    fun getDownloadLink(user: User, publicationId: UUID): DownloadLinkResponse {
         val publication = publicationRepository.getReferenceById(publicationId)
         if (publication.status != PUBLISHED && publication.accessType != OPEN) {
             throw IllegalArgumentException()
         }
         val downloadToken = tokenService.generateDownloadPublicationArchiveToken(user.id.toString(), publicationId.toString())
-        return "${frontendProperties.url}/api/publication/files/download?downloadToken=$downloadToken"
+        val link = "${frontendProperties.url}/api/publication/files/download?downloadToken=$downloadToken"
+        val passcode = publication.archivePassword
+        return DownloadLinkResponse(link, passcode)
     }
 
-    private fun getPublicationAndCheckStatus(id: UUID, status: PublicationStatus): Publication {
-        return publicationRepository.getReferenceById(id).let {
-            if (it.status != status) {
-                throw IllegalStateException("This publication is not published yet.")
-            }
-            it
-        }
-    }
+//    private fun getPublicationAndCheckStatus(id: UUID): Publication {
+//        return publicationRepository.getReferenceById(id).let {
+//            if (it.status != PUBLISHED && it.accessType != OPEN) {
+//                throw IllegalStateException("This publication is not published yet.")
+//            }
+//            it
+//        }
+//    }
 
     @Transactional
     fun get(user: User?, id: UUID): Publication {
         val publication = publicationRepository.getReferenceById(id)
-        if (publication.accessType != OPEN) {
-            checkAccessToPublication(user!!, publication)
-        }
+        checkAccessToPublication(user, publication)
         return publication
     }
 
@@ -254,8 +278,9 @@ class PublicationService(
 
     @Transactional(readOnly = true)
     fun getAllFeaturedPublications(page: Int, pageSize: Int): PublicationsResponse {
-        val publicationsPage = publicationRepository.findAllByAccessTypeAndIsFeatured(
-            AccessType.OPEN,
+        val publicationsPage = publicationRepository.findAllByStatusAndAccessTypeAndIsFeatured(
+            PUBLISHED,
+            OPEN,
             true,
             PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime"))
         )
@@ -271,8 +296,9 @@ class PublicationService(
         page: Int,
         pageSize: Int,
     ): PublicationsResponse {
-        val publicationsPage = publicationRepository.findAllByStatusAndCreatorId(
+        val publicationsPage = publicationRepository.findAllByStatusAndAccessTypeAndCreatorId(
             PublicationStatus.valueOf(status.name),
+            OPEN,
             user.id,
             PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime"))
         )
@@ -280,6 +306,29 @@ class PublicationService(
         return PublicationsResponse()
             .publications(publicationsPage.map { it.toApiObject(userService) }.toList())
             .isLastPage(publicationsPage.isLast)
+    }
+
+    fun delete(id: UUID, user: User) {
+        val publicationFilesIds = mutableListOf<UUID>()
+        val publicationSampleFilesIds = mutableListOf<UUID>()
+        transactionTemplate.execute { _ ->
+            val publication = publicationRepository.getReferenceById(id)
+            checkPublicationCreator(user, publication)
+            if (publication.status != PENDING) {
+                throw AccessDeniedException("Forbidden delete published publications. Only draft publications can be deleted")
+            }
+            publicationFilesIds.addAll(publicationFileRepository.findIdsByPublicationId(publication.id))
+            publicationSampleFilesIds.addAll(sampleFileRepository.findIdsByPublicationId(publication.id))
+            publicationFileRepository.deleteAllById(publicationFilesIds)
+            sampleFileRepository.deleteAllById(publicationSampleFilesIds)
+            publicationRepository.deleteById(id)
+        }
+        if (publicationFilesIds.isNotEmpty()) {
+            fileStorageService.deleteByIds(FILES, publicationFilesIds)
+        }
+        if (publicationSampleFilesIds.isNotEmpty()) {
+            fileStorageService.deleteByIds(SAMPLE_FILES, publicationSampleFilesIds)
+        }
     }
 }
 
@@ -296,7 +345,7 @@ fun Publication.toApiObject(userService: UserService) = PublicationApiObject().a
         .profileImage(userService.getProfileImage(creator.profileImage))
     publicationApiModel.title = title
     publicationApiModel.description = description?.map { Paragraph(it) }
-    publicationApiModel.researchArea = researchArea
+    publicationApiModel.researchAreas = researchAreas?.map { Paragraph(it) }
     publicationApiModel.grantOrganizations = grantOrganizations?.map { Paragraph(it) }
     publicationApiModel.primaryArticles = primaryArticles?.map { Paragraph(it) }
     publicationApiModel.relatedArticles = relatedArticles?.map { Paragraph(it) }
@@ -312,10 +361,14 @@ fun Publication.toApiObject(userService: UserService) = PublicationApiObject().a
     publicationApiModel.unconfirmedAuthors = unconfirmedAuthors.map { it.toApiObject() }
     publicationApiModel.viewsCount = viewsCount
     publicationApiModel.downloadsCount = downloadsCount
-    publicationApiModel.status = org.firstapproval.api.server.model.PublicationStatus.valueOf(status.name)
-    publicationApiModel.accessType = org.firstapproval.api.server.model.AccessType.valueOf(accessType.name)
+    publicationApiModel.status = PublicationStatusApiObject.valueOf(status.name)
+    publicationApiModel.accessType = AccessTypeApiObject.valueOf(accessType.name)
+    publicationApiModel.licenseType = licenseType?.let { LicenseTypeApiObject.valueOf(it.name) }
     publicationApiModel.creationTime = creationTime.toOffsetDateTime()
+    publicationApiModel.editingTime = editingTime.toOffsetDateTime()
     publicationApiModel.negativeData = negativeData
+    publicationApiModel.archiveSize = archiveSize
+    publicationApiModel.sampleArchiveSize = archiveSampleSize
     publicationApiModel.isNegative = isNegative
 }
 
@@ -340,21 +393,24 @@ fun Publication.toPublicationElastic() =
         creationTime = creationTime,
         publicationTime = publicationTime,
         negativeData = negativeData,
-        isNegative = isNegative
+        isNegative = isNegative,
+        archiveSampleSize = archiveSampleSize,
+        archiveSize = archiveSize
     )
 
 fun ConfirmedAuthor.toApiObject(profileImage: ByteArray?) = ConfirmedAuthorApiObject().also {
     it.id = id
     it.shortBio = shortBio
-    it.user = Author(
+    it.user = UserInfo(
         user.id,
         user.firstName,
-        user.middleName,
         user.lastName,
         user.email,
         user.username,
         user.selfInfo,
-    ).profileImage(profileImage)
+    )
+        .middleName(user.middleName)
+        .profileImage(profileImage)
 }
 
 fun UnconfirmedAuthor.toApiObject() = UnconfirmedAuthorApiObject().also {

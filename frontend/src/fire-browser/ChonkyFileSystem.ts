@@ -6,8 +6,8 @@ import {
   reaction,
   runInAction
 } from 'mobx';
-import { fileService } from '../core/service';
 import {
+  FileApi,
   type PublicationFile,
   type UploadType
 } from '../apis/first-approval-api';
@@ -40,7 +40,10 @@ export class ChonkyFileSystem {
     uploadType: UploadType
   ) => {};
 
-  constructor(readonly publicationId: string) {
+  constructor(
+    readonly publicationId: string,
+    readonly fileService: Omit<FileApi, 'configuration'>
+  ) {
     makeObservable<
       ChonkyFileSystem,
       'backEndFiles' | 'localFiles' | 'allLocalFiles'
@@ -109,7 +112,7 @@ export class ChonkyFileSystem {
       const fullPath = this.fullPath('/' + e.name);
 
       const uploadFile = async (): Promise<void> => {
-        await fileService
+        await this.fileService
           .uploadFile(
             this.publicationId,
             fullPath,
@@ -154,7 +157,7 @@ export class ChonkyFileSystem {
         const uploadFile = async (): Promise<void> => {
           await new Promise<void>((resolve) => {
             (e as FileSystemFileEntry).file((file) => {
-              void fileService
+              void this.fileService
                 .uploadFile(
                   this.publicationId,
                   fullPath,
@@ -177,7 +180,7 @@ export class ChonkyFileSystem {
         uploadQueue.push(uploadFile);
       } else {
         const uploadFolder = async (): Promise<void> => {
-          await fileService
+          await this.fileService
             .uploadFile(this.publicationId, fullPath, true, uploadType)
             .then((response) => {
               this.cleanUploading(response.data);
@@ -257,7 +260,7 @@ export class ChonkyFileSystem {
   createFolder = (name: string): void => {
     const fullPath = `${this.currentPath}${name}`;
 
-    void fileService
+    void this.fileService
       .createFolder(this.publicationId, {
         name,
         dirPath: this.currentPath
@@ -280,7 +283,7 @@ export class ChonkyFileSystem {
   };
 
   updateFile = (id: string, name: string, note: string): void => {
-    void fileService.editFile(id, { name, description: note });
+    void this.fileService.editFile(id, { name, description: note });
     const filter = (f: FileEntry): FileEntry => {
       if (f.id === id) {
         return { ...f, name, note };
@@ -294,7 +297,7 @@ export class ChonkyFileSystem {
   };
 
   deleteFile = (ids: string[]): void => {
-    void fileService.deleteFiles({ ids });
+    void this.fileService.deleteFiles({ ids });
     const filter = (f: FileEntry): boolean => !ids.includes(f.id);
     this.backEndFiles = this.backEndFiles.filter(filter);
     this.allLocalFiles = this.allLocalFiles.filter(filter);
@@ -310,7 +313,7 @@ export class ChonkyFileSystem {
     }
     const ids = files.map((f) => f.id);
     for (const id of ids) {
-      void fileService.moveFile(id, { newDirPath: destination });
+      void this.fileService.moveFile(id, { newDirPath: destination });
     }
     const filter = (f: FileEntry): boolean => !ids.includes(f.id);
     this.backEndFiles = this.backEndFiles.filter(filter);
@@ -322,7 +325,7 @@ export class ChonkyFileSystem {
     fullPaths: string[],
     isFirstElemRootFolder: boolean
   ): Promise<DuplicateCheckResult> => {
-    const res = await fileService.checkFileDuplicates(this.publicationId, {
+    const res = await this.fileService.checkFileDuplicates(this.publicationId, {
       fullPathList: fullPaths.map((i) => this.fullPath('/' + i))
     });
     const firstPropertyValue = res.data[this.fullPath('/' + fullPaths[0])];
@@ -340,7 +343,7 @@ export class ChonkyFileSystem {
   hasDuplicates = async (
     fullPaths: string[]
   ): Promise<DuplicateCheckResult> => {
-    const res = await fileService.checkFileDuplicates(this.publicationId, {
+    const res = await this.fileService.checkFileDuplicates(this.publicationId, {
       fullPathList: fullPaths
     });
     for (const i in res.data) {
@@ -432,7 +435,7 @@ export class ChonkyFileSystem {
   ): Promise<FileEntry[]> => {
     this.isLoading = true;
     try {
-      const response = await fileService.getPublicationFiles(
+      const response = await this.fileService.getPublicationFiles(
         this.publicationId,
         dirPath
       );

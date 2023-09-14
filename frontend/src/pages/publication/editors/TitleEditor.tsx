@@ -18,6 +18,12 @@ export const TitleEditor = observer((props: EditorProps) => {
       onChange={(e) => {
         publicationStore.updateTitle(e.currentTarget.value);
       }}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.keyCode === 13) {
+          event.preventDefault();
+        }
+      }}
+      multiline
       autoComplete={'off'}
       variant={'standard'}
       placeholder={'Title'}
@@ -38,6 +44,7 @@ export const TitleEditor = observer((props: EditorProps) => {
 const TextFieldWrap = styled(TextField)`
   width: 100%;
   margin-bottom: 48px;
+  word-break: break-word;
 `;
 
 const ContentWrap = styled.div`

@@ -16,15 +16,11 @@ import {
   CustomTab,
   FlexBody,
   FlexBodyCenter,
-  FlexHeader,
-  FlexHeaderRight,
   HeightElement,
-  Logo,
-  Parent
+  Parent,
+  SpaceBetween
 } from '../common.styled';
 import { routerStore } from '../../core/router';
-import { UserMenu } from '../../components/UserMenu';
-import logo from '../../assets/logo-black.svg';
 import styled from '@emotion/styled';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -42,8 +38,9 @@ import {
 import { validateEmail } from 'src/util/emailUtil';
 import { userStore } from '../../core/user';
 import { getInitials } from 'src/util/userUtil';
-import { cloneDeep } from 'lodash';
+import _, { cloneDeep } from 'lodash';
 import { Footer } from '../home/Footer';
+import { HeaderComponent } from '../../components/HeaderComponent';
 
 const tabs: string[] = ['general', 'profile', 'password'];
 
@@ -201,14 +198,7 @@ export const AccountPage: FunctionComponent = observer(() => {
   return (
     <>
       <Parent>
-        <FlexHeader>
-          <Logo onClick={routerStore.goHome}>
-            <img src={logo} />
-          </Logo>
-          <FlexHeaderRight>
-            <UserMenu />
-          </FlexHeaderRight>
-        </FlexHeader>
+        <HeaderComponent showPublishButton={true} />
         <FlexBodyCenter>
           <FlexBody>
             <ColumnElement>
@@ -258,9 +248,13 @@ export const AccountPage: FunctionComponent = observer(() => {
                 value={tabNumber}
                 onChange={handleChangeTabNumber}
                 aria-label="basic tabs example">
-                <CustomTab sx={{ textTransform: 'none' }} label="General" />
-                <CustomTab sx={{ textTransform: 'none' }} label="Profile" />
-                <CustomTab sx={{ textTransform: 'none' }} label="Password" />
+                {tabs.map((tab) => (
+                  <CustomTab
+                    key={tab}
+                    sx={{ textTransform: 'none' }}
+                    label={_.capitalize(tab.toLowerCase())}
+                  />
+                ))}
               </Tabs>
               <Divider style={{ marginTop: '-1.3px' }} />
               <HeightElement value={'32px'}></HeightElement>
@@ -482,7 +476,7 @@ export const AccountPage: FunctionComponent = observer(() => {
             {'If you’d like to change your username or bio, you can do that here. ' +
               'We value every member of our community. ' +
               "If you've made up your mind to leave, we understand and respect your decision.\n" +
-              'To proceed with account deletion, please email us at support@firstapproval.io. ' +
+              'To proceed with account deletion, please email us at info@firstapproval.io. ' +
               'Our team will assist you promptly.\n' +
               "We'd also appreciate any feedback or reasons for your decision, " +
               'so we can continuously improve and serve our community better.'}
@@ -493,7 +487,7 @@ export const AccountPage: FunctionComponent = observer(() => {
             <Button
               color="error"
               variant={'outlined'}
-              href={'mailto:hello@firstapproval.io'}
+              href={'mailto:info@firstapproval.io'}
               onClick={handleCloseDeleteDialog}>
               Write email
             </Button>
@@ -519,13 +513,6 @@ const TabContainer = styled.div`
 export const RowElement = styled.div`
   width: 100%;
   display: flex;
-  align-items: center;
-`;
-
-export const SpaceBetween = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
   align-items: center;
 `;
 

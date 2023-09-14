@@ -4,20 +4,26 @@ import React, { type ReactElement } from 'react';
 import styled from '@emotion/styled';
 import {
   type ConfirmedAuthor,
-  type UnconfirmedAuthor
+  type UnconfirmedAuthor,
+  UserInfo
 } from '../../../../apis/first-approval-api';
 import { getInitials } from '../../../../util/userUtil';
-import { renderProfileImage } from '../../../../fire-browser/utils';
+import {
+  getRelativeProfileLink,
+  renderProfileImage
+} from '../../../../fire-browser/utils';
 import { type AuthorEditorStore } from '../../store/AuthorEditorStore';
+import { routerStore } from '../../../../core/router';
+import { Page } from '../../../../core/RouterStore';
 
 interface AuthorElementProps {
   isReadonly: boolean;
-  author: ConfirmedAuthor | UnconfirmedAuthor;
-  isConfirmed: boolean;
+  author: ConfirmedAuthor | UnconfirmedAuthor | UserInfo | AuthorEditorStore;
+  isConfirmed?: boolean;
   index?: number;
   setEditAuthorVisible?: (
     author: ConfirmedAuthor | UnconfirmedAuthor,
-    isUnconfirmed: boolean,
+    isConfirmed?: boolean,
     index?: number
   ) => void;
 }
@@ -25,28 +31,59 @@ interface AuthorElementProps {
 export const AuthorElement = (props: AuthorElementProps): ReactElement => {
   const { isReadonly, author, isConfirmed, index, setEditAuthorVisible } =
     props;
-  const shortBio = author.shortBio;
+  let shortBio;
   let firstName;
   let lastName;
   let email;
+  let username: string;
+  let profileImage: string | undefined;
+
+  debugger;
   if (isConfirmed) {
     const confirmedAuthor = author as ConfirmedAuthor;
-    firstName = confirmedAuthor.user.firstName;
-    lastName = confirmedAuthor.user.lastName;
-    email = confirmedAuthor.user.email;
-  } else {
+    // check that it is really confirmed user
+    if (confirmedAuthor.user?.username) {
+      const authorUser = confirmedAuthor.user;
+      firstName = authorUser.firstName;
+      lastName = authorUser.lastName;
+      email = authorUser.email;
+      username = authorUser.username;
+      shortBio = confirmedAuthor.shortBio;
+      profileImage = authorUser.profileImage;
+    } else {
+      const authorEditorStore = author as AuthorEditorStore;
+      firstName = authorEditorStore.firstName;
+      lastName = authorEditorStore.lastName;
+      email = authorEditorStore.email;
+      shortBio = authorEditorStore.shortBio;
+      profileImage = authorEditorStore.profileImage;
+    }
+  } else if (isConfirmed === false) {
     const unconfirmedAuthor = author as UnconfirmedAuthor;
     firstName = unconfirmedAuthor.firstName;
     lastName = unconfirmedAuthor.lastName;
     email = unconfirmedAuthor.email;
+    shortBio = unconfirmedAuthor.shortBio;
+  } else {
+    const userInfo = author as UserInfo;
+    firstName = userInfo.firstName;
+    lastName = userInfo.lastName;
+    email = userInfo.email;
+    username = userInfo.username;
+    profileImage = userInfo.profileImage;
   }
 
-  const profileImage =
-    (author as ConfirmedAuthor).user?.profileImage ??
-    (author as AuthorEditorStore).profileImage;
   return (
-    <AuthorRowWrap>
-      <AuthorElementWrap>
+    <AuthorRowWrap useMarginBottom={!isReadonly}>
+      <AuthorElementWrap
+        onClick={() => {
+          if (username) {
+            routerStore.navigatePage(
+              Page.PROFILE,
+              getRelativeProfileLink(username)
+            );
+          }
+        }}>
         <Avatar src={renderProfileImage(profileImage)}>
           {getInitials(firstName, lastName)}
         </Avatar>
@@ -57,9 +94,9 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
                 {firstName} {lastName}
               </span>
             )}
-            {!isConfirmed && (
+            {isConfirmed === false && (
               <span>
-                {firstName} {lastName}
+                {firstName} {lastName} (not registered)
               </span>
             )}
           </AuthorName>
@@ -84,16 +121,19 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
   );
 };
 
-const AuthorRowWrap = styled.div`
+const AuthorRowWrap = styled.div<{
+  useMarginBottom: boolean;
+}>`
   display: flex;
   width: 100%;
   justify-content: space-between;
+  margin-bottom: ${(props) => (props.useMarginBottom ? '28px' : 0)};
 `;
 
 const AuthorElementWrap = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 28px;
+  cursor: pointer;
 `;
 
 const AuthorWrap = styled.div`

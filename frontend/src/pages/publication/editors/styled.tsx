@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 
 export const ContentEditorWrap = styled.div`
-  margin-top: 32px;
+  margin-top: 48px;
   margin-bottom: 32px;
 `;
 

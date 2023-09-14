@@ -3,6 +3,7 @@ import React, {
   type ReactElement,
   useState
 } from 'react';
+import _ from 'lodash';
 import {
   Avatar,
   Button,
@@ -14,17 +15,14 @@ import {
 import { ContentCopy, EmailOutlined } from '@mui/icons-material';
 import { observer } from 'mobx-react-lite';
 import {
+  ColumnElement,
   CustomTab,
   FlexBodyCenter,
-  FlexHeader,
-  FlexHeaderRight,
   HeightElement,
-  Logo,
   Parent
 } from '../common.styled';
 import { routerStore } from '../../core/router';
-import { UserMenu } from '../../components/UserMenu';
-import logo from '../../assets/logo-black.svg';
+import noPublications from '../../assets/no-publications.svg';
 import upload_your_first_dataset_from from '../../assets/upload-your-first-dataset.svg';
 import styled from '@emotion/styled';
 import { ProfilePageStore } from './ProfilePageStore';
@@ -39,22 +37,40 @@ import {
   renderProfileImage
 } from 'src/fire-browser/utils';
 import { userStore } from 'src/core/user';
+import { downloadersStore } from '../publication/store/downloadsStore';
 import { Page } from '../../core/RouterStore';
 import { Footer } from '../home/Footer';
+import { HeaderComponent } from '../../components/HeaderComponent';
+import { DownloadersDialog } from '../publication/DownloadersDialog';
+
+const tabs: string[] = ['published', 'drafts'];
 
 export const ProfilePage: FunctionComponent = observer(() => {
   const [username] = useState(() => routerStore.profileUsername);
+  const [profileTab] = useState(() => routerStore.profileTab);
+  const [tabNumber, setTabNumber] = React.useState(
+    (profileTab && tabs.findIndex((element) => element === profileTab)) ?? 0
+  );
   const [store] = useState(() => new ProfilePageStore(username));
   const user = (username ? store : userStore).user!;
-  const [tabNumber, setTabNumber] = React.useState(0);
 
   const handleChange = (_: React.SyntheticEvent, newValue: number): void => {
     setTabNumber(newValue);
   };
 
   const mapPublications = (publications: Publication[]): ReactElement[] =>
-    publications.map((publication, index) => (
-      <PublicationSection publication={publication} key={publication.id} />
+    (publications ?? []).map((publication, index) => (
+      <PublicationSection
+        publication={publication}
+        profilePageStore={store}
+        key={publication.id}
+        openDownloadersDialog={() => {
+          downloadersStore.clearAndOpen(
+            publication.id,
+            publication.downloadsCount
+          );
+        }}
+      />
     ));
   const loadMoreButton = (status: PublicationStatus): ReactElement => (
     <LoadMorePublicationsButton
@@ -71,7 +87,7 @@ export const ProfilePage: FunctionComponent = observer(() => {
   }
 
   if (username && user.id === userStore.user?.id) {
-    routerStore.navigatePage(Page.PROFILE, '/profile');
+    routerStore.navigatePage(Page.PROFILE, '/profile', true);
   }
 
   const lastNameAndFirstName = `${user.lastName ?? ''} ${user.firstName ?? ''}`;
@@ -89,14 +105,11 @@ export const ProfilePage: FunctionComponent = observer(() => {
   return (
     <>
       <Parent>
-        <FlexHeader>
-          <Logo onClick={routerStore.goHome}>
-            <img src={logo} />
-          </Logo>
-          <FlexHeaderRight>
-            <UserMenu />
-          </FlexHeaderRight>
-        </FlexHeader>
+        <HeaderComponent
+          showPublishButton={true}
+          showLoginButton={true}
+          showSignUpContainedButton={true}
+        />
         <FlexBodyCenter>
           <FlexBody>
             <ColumnElement>
@@ -142,16 +155,25 @@ export const ProfilePage: FunctionComponent = observer(() => {
                   </RowElement>
                 </UserInfoElement>
               </RowElement>
-              <HeightElement value={'40px'}></HeightElement>
-              <Tabs
-                value={tabNumber}
-                onChange={handleChange}
-                aria-label="basic tabs example">
-                <CustomTab sx={{ textTransform: 'none' }} label="Published" />
-                <CustomTab sx={{ textTransform: 'none' }} label="Drafts" />
-              </Tabs>
-              <Divider style={{ marginTop: '-1.3px' }} />
-              <HeightElement value={'40px'}></HeightElement>
+              {!username && (
+                <>
+                  <HeightElement value={'40px'}></HeightElement>
+                  <Tabs
+                    value={tabNumber}
+                    onChange={handleChange}
+                    aria-label="basic tabs example">
+                    {tabs.map((tab) => (
+                      <CustomTab
+                        key={tab}
+                        sx={{ textTransform: 'none' }}
+                        label={_.capitalize(tab.toLowerCase())}
+                      />
+                    ))}
+                  </Tabs>
+                  <Divider style={{ marginTop: '-1.3px' }} />
+                  <HeightElement value={'40px'}></HeightElement>
+                </>
+              )}
               {store.isLoadingPublications && <LinearProgress />}
               {!store.isLoadingPublications && (
                 <>
@@ -161,6 +183,24 @@ export const ProfilePage: FunctionComponent = observer(() => {
                         {mapPublications(
                           store.publications.get(PublicationStatus.PUBLISHED) ??
                             []
+                        )}
+                        {!notEmptyPublished && username && (
+                          <div
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'column',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              marginTop: '11.5px'
+                            }}>
+                            <img src={noPublications} />
+                            <NoPublicationsText>
+                              No publications :(
+                            </NoPublicationsText>
+                            <ItLooksLikeUserHasntUploaded>
+                              {`It looks like ${user.firstName} hasn’t uploaded any datasets yet.\nCheck back soon!`}
+                            </ItLooksLikeUserHasntUploaded>
+                          </div>
                         )}
                       </PublicationsContainer>
                       {notEmptyPublished &&
@@ -172,21 +212,27 @@ export const ProfilePage: FunctionComponent = observer(() => {
                         <Banner>
                           <BannerLeftPart>
                             <UploadYourFirstDatasetHeader>
-                              Upload you first dataset
+                              Upload your first dataset
                             </UploadYourFirstDatasetHeader>
-                            <HeightElement value={'8px'} />
+                            <HeightElement value={'24px'} />
                             <SelfInfo>
                               Show off your work. Get recognition and be a part
                               of a growing community.
                             </SelfInfo>
-                            <HeightElement value={'10px'} />
+                            <HeightElement value={'24px'} />
                             <StartPublishingButton
                               color={'primary'}
                               variant={'contained'}
                               onClick={async () => {
                                 await store.createPublication();
                               }}>
-                              Start publishing
+                              <span
+                                style={{
+                                  fontSize: 18,
+                                  fontWeight: 500
+                                }}>
+                                Start publishing
+                              </span>
                             </StartPublishingButton>
                           </BannerLeftPart>
                           <img src={upload_your_first_dataset_from} />
@@ -231,6 +277,10 @@ export const ProfilePage: FunctionComponent = observer(() => {
         </FlexBodyCenter>
       </Parent>
       <Footer />
+      <DownloadersDialog
+        isOpen={downloadersStore.open}
+        downloaders={downloadersStore.downloaders}
+      />
     </>
   );
 });
@@ -241,12 +291,6 @@ export const RowElement = styled('div')<{
   width: 100%;
   display: flex;
   visibility: ${(props) => props.visibility ?? 'visible'};
-`;
-
-export const ColumnElement = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
 `;
 
 export const CenterColumnElement = styled.div`
@@ -368,8 +412,8 @@ const UploadYourFirstDatasetHeader = styled.span`
 const Banner = styled.div`
   display: flex;
   width: 100%;
-  border-style: dashed;
-  border-color: gray;
+  border-radius: 4px;
+  border: 1px dashed var(--divider, #d2d2d6);
 `;
 
 const BannerLeftPart = styled.div`
@@ -407,4 +451,35 @@ const PublicationsContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: start;
+`;
+
+const NoPublicationsText = styled.span`
+  color: var(--text-primary, #040036);
+  text-align: center;
+  font-feature-settings: 'clig' off, 'liga' off;
+
+  /* typography/h5 */
+  font-family: Roboto;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 133.4%; /* 32.016px */
+
+  margin-top: 16px;
+  margin-bottom: 16px;
+`;
+
+const ItLooksLikeUserHasntUploaded = styled.span`
+  color: var(--text-secondary, #68676e);
+  text-align: center;
+  font-feature-settings: 'clig' off, 'liga' off;
+
+  /* typography/body1 */
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%; /* 24px */
+  letter-spacing: 0.15px;
+  white-space: pre-line;
 `;

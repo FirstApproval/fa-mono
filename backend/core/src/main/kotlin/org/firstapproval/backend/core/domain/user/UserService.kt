@@ -28,6 +28,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation.REPEATABLE_READ
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.support.TransactionTemplate
 import java.io.ByteArrayInputStream
 import java.time.ZonedDateTime.now
 import java.util.UUID
@@ -52,7 +53,8 @@ class UserService(
     private val emailSender: JavaMailSender,
     private val unconfirmedAuthorRepository: UnconfirmedAuthorRepository,
     private val confirmedAuthorRepository: ConfirmedAuthorRepository,
-    private val fileStorageService: FileStorageService
+    private val fileStorageService: FileStorageService,
+    private val transactionTemplate: TransactionTemplate
 ) {
 
     val log = logger {}
@@ -287,7 +289,6 @@ class UserService(
         }
     }
 
-    @Transactional
     fun update(
         id: UUID,
         firstName: String,
@@ -298,21 +299,30 @@ class UserService(
         profileImage: ByteArray?,
         deleteProfileImage: Boolean?
     ) {
-        val userFromDb = userRepository.findByUsername(username)
-        if (userFromDb != null && userFromDb.id != id) throw RecordConflictException("username already taken")
-        val user = userRepository.findById(id).orElseThrow()
-        user.firstName = firstName
-        user.middleName = middleName
-        user.lastName = lastName
-        user.username = username
-        user.selfInfo = selfInfo
-        if (deleteProfileImage != null && deleteProfileImage && user.profileImage != null) {
-            fileStorageService.delete(PROFILE_IMAGES, fromString(user.profileImage))
-            user.profileImage = null
-        } else if (profileImage != null) {
-            user.profileImage = saveOrUpdateImage(profileImage, user.profileImage, profileImage.size.toLong())
+        var profileImageIdToDelete: UUID? = null
+        transactionTemplate.execute { _ ->
+            val userFromDb = userRepository.findByUsername(username)
+            if (userFromDb != null && userFromDb.id != id) throw RecordConflictException("username already taken")
+            val user = userRepository.findById(id).orElseThrow()
+            user.firstName = firstName
+            user.middleName = middleName
+            user.lastName = lastName
+            user.username = username
+            user.selfInfo = selfInfo
+            if (deleteProfileImage == true && user.profileImage != null) {
+                profileImageIdToDelete = fromString(user.profileImage)
+                user.profileImage = null
+            } else if (profileImage != null) {
+                if (user.profileImage != null) {
+                    profileImageIdToDelete = fromString(user.profileImage)
+                }
+                user.profileImage = randomUUID().toString().also {
+                    fileStorageService.save(PROFILE_IMAGES, it, ByteArrayInputStream(profileImage), profileImage.size.toLong())
+                }
+            }
+            userRepository.save(user)
         }
-        userRepository.save(user)
+        profileImageIdToDelete?.let { fileStorageService.delete(PROFILE_IMAGES, it) }
     }
 
     @Transactional
@@ -326,15 +336,6 @@ class UserService(
         val confirmedAuthors = unconfirmedUsers.map { ConfirmedAuthor(randomUUID(), user, it.publication, it.shortBio) }
         confirmedAuthorRepository.saveAll(confirmedAuthors)
         unconfirmedAuthorRepository.deleteAll(unconfirmedUsers)
-    }
-
-    private fun saveOrUpdateImage(image: ByteArray, previousImageId: String? = null, contentLength: Long): String {
-        if (previousImageId != null) {
-            fileStorageService.delete(PROFILE_IMAGES, fromString(previousImageId))
-        }
-        return randomUUID().toString().also {
-            fileStorageService.save(PROFILE_IMAGES, it, ByteArrayInputStream(image), contentLength)
-        }
     }
 }
 

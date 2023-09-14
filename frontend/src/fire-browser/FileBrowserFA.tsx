@@ -2,12 +2,13 @@ import {
   ChonkyActions,
   type FileActionHandler,
   type FileArray,
-  FileBrowser as ChonkySampleFileBrowser,
+  FileBrowser,
   FileContextMenu,
   type FileData,
   FileList,
   FileNavbar,
-  setChonkyDefaults
+  setChonkyDefaults,
+  FileAction
 } from '@first-approval/chonky';
 import React, {
   type MutableRefObject,
@@ -16,7 +17,12 @@ import React, {
   useState
 } from 'react';
 import { ChonkyIconFA } from '@first-approval/chonky-icon-fontawesome';
+import {
+  type ChonkyFileSystem,
+  DuplicateCheckResult
+} from './ChonkyFileSystem';
 import { observer } from 'mobx-react-lite';
+import { FileToolbar } from './FileToolbar';
 import styled from '@emotion/styled';
 import {
   CircularProgress,
@@ -31,28 +37,30 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { type ChonkySampleFileSystem } from './ChonkySampleFileSystem';
-import { UploadType } from '../../apis/first-approval-api';
-import { calculatePathChain } from '../utils';
-import { DuplicateCheckResult } from './ChonkySampleFileSystem';
-import { SampleFileToolbar } from './SampleFileToolbar';
+import { calculatePathChain } from './utils';
+import { UploadType } from '../apis/first-approval-api';
 
 setChonkyDefaults({
   iconComponent: ChonkyIconFA,
   defaultFileViewActionId: ChonkyActions.EnableListView.id
 });
 
-interface SampleFilePayload {
+interface FilePayload {
   file?: FileData;
 }
 
-interface SampleFileBrowserProps {
-  sfs: ChonkySampleFileSystem;
+interface FileBrowserProps {
+  instanceId: string;
+  rootFolderName: string;
+  fileDownloadUrlPrefix: string;
+  isReadonly: boolean;
+  onArchiveDownload: (files: FileData[]) => void;
+  fs: ChonkyFileSystem;
   isChonkyDragRef: MutableRefObject<boolean>;
 }
 
-export const SampleFileBrowser = observer(
-  (props: SampleFileBrowserProps): ReactElement => {
+export const FileBrowserFA = observer(
+  (props: FileBrowserProps): ReactElement => {
     const [newFolderDialogOpen, setNewFolderDialogOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [noteDialogOpen, setNoteDialogOpen] = useState(false);
@@ -80,12 +88,12 @@ export const SampleFileBrowser = observer(
       setFilesToDelete([]);
     };
 
-    const { currentPath: currPath, setCurrentPath: setCurrPath } = props.sfs;
+    const { currentPath: currPath, setCurrentPath: setCurrPath } = props.fs;
     const folderChain = [
       {
         id: '/',
         fullPath: '',
-        name: 'Sample Files',
+        name: props.rootFolderName,
         isDir: true
       },
       ...calculatePathChain(currPath).map((f) => ({
@@ -104,11 +112,16 @@ export const SampleFileBrowser = observer(
         const fullPath: string = targetFile.fullPath ?? '';
         const newPath = `${fullPath}/`;
         setCurrPath(newPath);
+      } else if (data.id === ChonkyActions.CreateFolder.id) {
+        setNewFolderDialogOpen(true);
       } else if (data.id === ChonkyActions.DeleteFiles.id) {
         setFilesToDelete(data.state.selectedFiles.map((f) => f.id));
         setDeleteDialogOpen(true);
+      } else if (data.id === ChonkyActions.MoveFiles.id) {
+        const fullPath: string = data.payload.destination.fullPath;
+        void props.fs.moveFiles(data.payload.files, fullPath + '/');
       } else if (data.id === ChonkyActions.AddNote.id) {
-        const payload = data.payload as SampleFilePayload | undefined;
+        const payload = data.payload as FilePayload | undefined;
         let file: FileData | null = null;
         if (payload?.file) {
           file = payload.file;
@@ -121,9 +134,11 @@ export const SampleFileBrowser = observer(
           setNoteDialogOpen(true);
         }
       } else if (data.id === ChonkyActions.UploadFiles.id) {
-        const sampleFileInput = document.getElementById('sample-file-input');
+        const fileInput = document.getElementById(
+          `${props.instanceId}-file-input`
+        );
 
-        if (!sampleFileInput) return;
+        if (!fileInput) return;
 
         const handleFileSelect = async (event: any): Promise<void> => {
           const files = event.target.files;
@@ -133,51 +148,50 @@ export const SampleFileBrowser = observer(
             filesArray.push(files[i]);
           }
 
-          void props.sfs
+          void props.fs
             .hasDuplicatesInCurrentFolder(
               filesArray.map((f) => f.name),
               false
             )
             .then((result) => {
               if (result === DuplicateCheckResult.ROOT_NAME_ALREADY_EXISTS) {
-                props.sfs.addDirectoryImpossibleDialogOpen = true;
+                props.fs.addDirectoryImpossibleDialogOpen = true;
               } else if (
                 result === DuplicateCheckResult.ONE_OR_MORE_FILE_ALREADY_EXISTS
               ) {
-                props.sfs.renameOrReplaceDialogOpen = true;
-                props.sfs.renameOrReplaceDialogCallback = (
+                props.fs.renameOrReplaceDialogOpen = true;
+                props.fs.renameOrReplaceDialogCallback = (
                   uploadType: UploadType
                 ) => {
-                  props.sfs.addFilesInput(filesArray, uploadType);
-                  sampleFileInput.removeEventListener(
-                    'change',
-                    handleFileSelect
-                  );
+                  props.fs.addFilesInput(filesArray, uploadType);
+                  fileInput.removeEventListener('change', handleFileSelect);
                   event.target.value = null;
-                  props.sfs.renameOrReplaceDialogOpen = false;
+                  props.fs.renameOrReplaceDialogOpen = false;
                 };
               } else {
-                props.sfs.addFilesInput(filesArray, UploadType.REPLACE);
-                sampleFileInput.removeEventListener('change', handleFileSelect);
+                props.fs.addFilesInput(filesArray, UploadType.REPLACE);
+                fileInput.removeEventListener('change', handleFileSelect);
                 event.target.value = null;
               }
             });
         };
 
-        sampleFileInput.addEventListener('change', handleFileSelect, false);
+        fileInput.addEventListener('change', handleFileSelect, false);
 
-        sampleFileInput.click();
+        fileInput.click();
       } else if (data.id === ChonkyActions.DownloadFiles.id) {
         const files = data.state.selectedFiles.filter((f) => !f.isDir);
         for (const file of files) {
           const downloadLink = document.createElement('a');
-          downloadLink.href = `/api/sample-files/download/${file.id}`;
+          downloadLink.href = `${props.fileDownloadUrlPrefix}/${file.id}`;
           downloadLink.download = file.name;
           downloadLink.style.display = 'none';
           document.body.appendChild(downloadLink);
           downloadLink.click();
           document.body.removeChild(downloadLink);
         }
+      } else if (data.id === ChonkyActions.DownloadFilesArchive.id) {
+        props.onArchiveDownload(data.state.selectedFiles);
       } else if (data.id === ChonkyActions.StartDragNDrop.id) {
         props.isChonkyDragRef.current = true;
       } else if (data.id === ChonkyActions.EndDragNDrop.id) {
@@ -185,22 +199,32 @@ export const SampleFileBrowser = observer(
       }
     };
 
-    const myFileActions = [
+    const myFileActions: FileAction[] = [
       ChonkyActions.EnableListView,
       ChonkyActions.EnableGridView,
       ChonkyActions.ToggleShowFoldersFirst,
-      ChonkyActions.SortFilesByName,
-      ChonkyActions.UploadFiles,
-      ChonkyActions.DeleteFiles,
-      ChonkyActions.DownloadFiles,
-      ChonkyActions.AddNote
+      ChonkyActions.SortFilesByName
     ];
+
+    if (!props.isReadonly) {
+      myFileActions.push(
+        ChonkyActions.CreateFolder,
+        ChonkyActions.UploadFiles,
+        ChonkyActions.DeleteFiles,
+        ChonkyActions.DownloadFiles,
+        ChonkyActions.AddNote
+      );
+    }
+
+    if (props.isReadonly) {
+      myFileActions.push(ChonkyActions.DownloadFilesArchive);
+    }
 
     const [files, setFiles] = useState<FileArray>([]);
 
     useEffect(() => {
       setFiles(
-        props.sfs.files.map((f) => ({
+        props.fs.files.map((f) => ({
           id: f.id,
           fullPath: f.fullPath,
           name: f.name,
@@ -209,12 +233,13 @@ export const SampleFileBrowser = observer(
           note: f.note
         }))
       );
-    }, [props.sfs.files]);
+    }, [props.fs.files]);
 
     return (
       <>
         <Wrap>
-          <ChonkySampleFileBrowser
+          <FileBrowser
+            disableDragAndDrop={props.isReadonly}
             disableDragAndDropProvider={true}
             files={files}
             folderChain={folderChain}
@@ -222,15 +247,15 @@ export const SampleFileBrowser = observer(
             fileActions={myFileActions}
             disableDefaultFileActions={true}>
             <FileNavbar />
-            <SampleFileToolbar />
-            {!props.sfs.isLoading && (
+            <FileToolbar instanceId={props.instanceId} />
+            {!props.fs.isLoading && (
               <>
                 <FileList />
                 <FileContextMenu />
               </>
             )}
-            {props.sfs.isLoading && <CircularProgress />}
-          </ChonkySampleFileBrowser>
+            {props.fs.isLoading && <CircularProgress />}
+          </FileBrowser>
         </Wrap>
         <Dialog
           open={newFolderDialogOpen}
@@ -262,7 +287,7 @@ export const SampleFileBrowser = observer(
             <Button onClick={handleCloseNewFolderDialog}>Cancel</Button>
             <Button
               onClick={() => {
-                void props.sfs
+                void props.fs
                   .hasDuplicatesInCurrentFolder([newFolderName], true)
                   .then((result) => {
                     if (
@@ -271,7 +296,7 @@ export const SampleFileBrowser = observer(
                       setCreateNewFolderError(true);
                     } else {
                       handleCloseNewFolderDialog();
-                      props.sfs.createFolder(newFolderName);
+                      props.fs.createFolder(newFolderName);
                     }
                   });
               }}>
@@ -280,8 +305,8 @@ export const SampleFileBrowser = observer(
           </DialogActions>
         </Dialog>
         <Dialog
-          open={props.sfs.renameOrReplaceDialogOpen}
-          onClose={props.sfs.closeReplaceOrRenameDialog}
+          open={props.fs.renameOrReplaceDialogOpen}
+          onClose={props.fs.closeReplaceOrRenameDialog}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description">
           <DialogContentWrap>
@@ -314,13 +339,13 @@ export const SampleFileBrowser = observer(
               </ContentWrap>
             </DialogContent>
             <DialogActions>
-              <Button onClick={props.sfs.closeReplaceOrRenameDialog}>
+              <Button onClick={props.fs.closeReplaceOrRenameDialog}>
                 Cancel
               </Button>
               <Button
                 variant="contained"
                 onClick={() => {
-                  props.sfs.renameOrReplaceDialogCallback(
+                  props.fs.renameOrReplaceDialogCallback(
                     dialogRadioButtonValue
                   );
                 }}>
@@ -330,8 +355,8 @@ export const SampleFileBrowser = observer(
           </DialogContentWrap>
         </Dialog>
         <Dialog
-          open={props.sfs.addDirectoryImpossibleDialogOpen}
-          onClose={props.sfs.closeAddDirectoryImpossibleDialog}
+          open={props.fs.addDirectoryImpossibleDialogOpen}
+          onClose={props.fs.closeAddDirectoryImpossibleDialog}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description">
           <DialogContentWrap>
@@ -348,7 +373,7 @@ export const SampleFileBrowser = observer(
               <Button
                 variant="contained"
                 onClick={() => {
-                  props.sfs.closeAddDirectoryImpossibleDialog();
+                  props.fs.closeAddDirectoryImpossibleDialog();
                 }}>
                 Ok
               </Button>
@@ -372,7 +397,7 @@ export const SampleFileBrowser = observer(
             <Button
               onClick={() => {
                 handleCloseDeleteDialog();
-                props.sfs.deleteFile(filesToDelete);
+                props.fs.deleteFile(filesToDelete);
               }}
               variant="contained"
               color="error">
@@ -411,7 +436,7 @@ export const SampleFileBrowser = observer(
               onClick={() => {
                 handleCloseNoteDialog();
                 if (!fileToNote) return;
-                props.sfs.updateFile(fileToNote.id, fileToNote.name, note);
+                props.fs.updateFile(fileToNote.id, fileToNote.name, note);
               }}>
               Add note
             </Button>

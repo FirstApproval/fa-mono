@@ -1,25 +1,12 @@
 import React, { type FunctionComponent } from 'react';
 import { LinearProgress } from '@mui/material';
-import {
-  FlexBody,
-  FlexBodyCenter,
-  FlexHeader,
-  FlexHeaderRight,
-  Logo,
-  Parent
-} from './common.styled';
-import { routerStore } from '../core/router';
-import logo from '../assets/logo-black.svg';
+import { FlexBody, FlexBodyCenter, Parent } from './common.styled';
+import { HeaderComponent } from '../components/HeaderComponent';
 
 export const LoadingPage: FunctionComponent = () => {
   return (
     <Parent>
-      <FlexHeader>
-        <Logo onClick={routerStore.goHome}>
-          <img src={logo} />
-        </Logo>
-        <FlexHeaderRight></FlexHeaderRight>
-      </FlexHeader>
+      <HeaderComponent />
       <FlexBodyCenter>
         <FlexBody>
           <LinearProgress />

@@ -1,48 +1,47 @@
 import React, { type ReactElement, useState } from 'react';
 import { type ParagraphWithId } from '../store/PublicationStore';
 import { observer } from 'mobx-react-lite';
-import {
-  ParagraphElement,
-  ParagraphPrefixType
-} from './element/ParagraphElement';
+import { ParagraphElement } from './element/ParagraphElement';
 import { ContentEditorWrap, LabelWrap } from './styled';
 import { PrimaryArticleData } from './PrimaryArticleData';
 import WarningIcon from '@mui/icons-material/Warning';
 import { Input, Switch, TextField } from '@mui/material';
 import { type EditorProps } from './types';
 import styled from '@emotion/styled';
+import { ListElement, ParagraphPrefixType } from './element/ListElement';
 
 interface ParagraphEditorProps {
   isReadonly?: boolean;
   text?: string;
-  paragraphPrefixType?: ParagraphPrefixType;
   placeholder: string;
   value: ParagraphWithId[];
   onChange: (idx: number, value: string) => void;
   onAddParagraph: (idx: number) => void;
   onMergeParagraph: (idx: number) => void;
+  onSplitParagraph: (idx: number, splitIndex: number) => void;
 }
 
-export const DescriptionEditor = observer(
-  (props: EditorProps): ReactElement => {
-    return (
-      <ParagraphContentEditor
-        isReadonly={props.publicationStore.isReadonly}
-        value={props.publicationStore.summary}
-        onChange={(idx, value) => {
-          props.publicationStore.updateSummaryParagraph(idx, value);
-        }}
-        onAddParagraph={(idx) => {
-          props.publicationStore.addDescriptionParagraph(idx);
-        }}
-        onMergeParagraph={(idx) => {
-          props.publicationStore.mergeSummaryParagraph(idx);
-        }}
-        placeholder={'Publication summary'}
-      />
-    );
-  }
-);
+export const SummaryEditor = observer((props: EditorProps): ReactElement => {
+  return (
+    <ParagraphContentEditor
+      isReadonly={props.publicationStore.isReadonly}
+      value={props.publicationStore.summary}
+      onChange={(idx, value) => {
+        props.publicationStore.updateSummaryParagraph(idx, value);
+      }}
+      onAddParagraph={(idx) => {
+        props.publicationStore.addSummaryParagraph(idx);
+      }}
+      onMergeParagraph={(idx) => {
+        props.publicationStore.mergeSummaryParagraph(idx);
+      }}
+      onSplitParagraph={(idx, splitIndex) => {
+        props.publicationStore.splitSummaryParagraph(idx, splitIndex);
+      }}
+      placeholder={'Publication summary'}
+    />
+  );
+});
 
 export const ExperimentGoalsEditor = observer(
   (props: EditorProps): ReactElement => {
@@ -61,62 +60,97 @@ export const ExperimentGoalsEditor = observer(
           onMergeParagraph={(idx) => {
             publicationStore.mergeExperimentGoalsParagraph(idx);
           }}
+          onSplitParagraph={(idx, splitIndex) => {
+            publicationStore.splitExperimentGoalsParagraph(idx, splitIndex);
+          }}
           text={'Experiment goals'}
           placeholder={
             'Describe the experiment goals and preliminary results...'
           }
         />
-        <NegativeData publicationStore={props.publicationStore} />
+        {!publicationStore.isReadonly && (
+          <NegativeDataEditMode publicationStore={props.publicationStore} />
+        )}
+        {publicationStore.isReadonly && publicationStore.isNegative && (
+          <NegativeDataViewMode publicationStore={props.publicationStore} />
+        )}
       </>
     );
   }
 );
 
-export const NegativeData = observer((props: EditorProps): ReactElement => {
-  const { publicationStore } = props;
-  return (
-    <NegativeDataAllWrapper>
-      <NegativeDataWrapper>
-        <NegativeDataHeaderWrapper>
-          {!publicationStore.isNegative && (
-            <>
-              <WarningIcon
-                htmlColor={'#a8a8b4'}
-                style={{ marginRight: '5px' }}
-              />
-              <NegativeDataHeaderDisabled>
+export const NegativeDataEditMode = observer(
+  (props: EditorProps): ReactElement => {
+    const { publicationStore } = props;
+    return (
+      <NegativeDataAllWrapper>
+        <NegativeDataWrapper>
+          <NegativeDataHeaderWrapper>
+            {!publicationStore.isNegative && (
+              <>
+                <WarningIcon
+                  htmlColor={'#a8a8b4'}
+                  style={{ marginRight: '5px' }}
+                />
+                <NegativeDataHeaderDisabled>
+                  My data is negative
+                </NegativeDataHeaderDisabled>
+              </>
+            )}
+            {publicationStore.isNegative && (
+              <NegativeDataHeaderEnabled>
                 My data is negative
-              </NegativeDataHeaderDisabled>
-            </>
-          )}
-          {publicationStore.isNegative && (
-            <NegativeDataHeaderEnabled>
-              My data is negative
-            </NegativeDataHeaderEnabled>
-          )}
-        </NegativeDataHeaderWrapper>
-        <Switch
-          checked={publicationStore.isNegative}
-          onClick={publicationStore.invertNegativeData}
-        />
-      </NegativeDataWrapper>
-      {publicationStore.isNegative && (
-        <FullWidthInput
-          autoFocus
-          value={publicationStore.negativeData}
-          onChange={(e) => {
-            publicationStore.updateNegativeData(e.currentTarget.value);
-          }}
-          disableUnderline={true}
-          multiline={true}
-          placeholder="Why your data didn't confirm the initial hypothesis or expectations"
-          minRows={1}
-          maxRows={4}
-        />
-      )}
-    </NegativeDataAllWrapper>
-  );
-});
+              </NegativeDataHeaderEnabled>
+            )}
+          </NegativeDataHeaderWrapper>
+          <Switch
+            checked={publicationStore.isNegative}
+            onClick={publicationStore.invertNegativeData}
+          />
+        </NegativeDataWrapper>
+        {publicationStore.isNegative && (
+          <FullWidthInput
+            autoFocus
+            value={publicationStore.negativeData}
+            onChange={(e) => {
+              publicationStore.updateNegativeData(e.currentTarget.value);
+            }}
+            disableUnderline={true}
+            multiline={true}
+            placeholder="Why your data didn't confirm the initial hypothesis or expectations"
+            minRows={1}
+            maxRows={4}
+            inputProps={{
+              disableUnderline: true,
+              autoComplete: 'off',
+              style: {
+                fontSize: '20px',
+                fontWeight: '400',
+                fontStyle: 'normal',
+                lineHeight: '160%'
+              }
+            }}
+          />
+        )}
+      </NegativeDataAllWrapper>
+    );
+  }
+);
+export const NegativeDataViewMode = observer(
+  (props: EditorProps): ReactElement => {
+    const { publicationStore } = props;
+    return (
+      <NegativeDataViewWrapper>
+        <NegativeDataHeaderEnabled>
+          The data is negative
+        </NegativeDataHeaderEnabled>
+        <NegativeDataTextViewMode>
+          {publicationStore.negativeData}
+        </NegativeDataTextViewMode>
+      </NegativeDataViewWrapper>
+    );
+  }
+);
 
 export const MethodEditor = observer((props: EditorProps): ReactElement => {
   return (
@@ -148,6 +182,9 @@ export const MethodEditor = observer((props: EditorProps): ReactElement => {
         }}
         onMergeParagraph={(idx) => {
           props.publicationStore.mergeMethodParagraph(idx);
+        }}
+        onSplitParagraph={(idx, splitIndex) => {
+          props.publicationStore.splitMethodParagraph(idx, splitIndex);
         }}
         placeholder={
           'Detail the steps of your method, helping others to reproduce it...'
@@ -192,6 +229,9 @@ export const ObjectOfStudyEditor = observer(
           onMergeParagraph={(idx) => {
             props.publicationStore.mergeObjectOfStudyParagraph(idx);
           }}
+          onSplitParagraph={(idx, splitIndex) => {
+            props.publicationStore.splitObjectOfStudyParagraph(idx, splitIndex);
+          }}
           placeholder={
             'Describe the specific conditions or features of your object of study...'
           }
@@ -216,6 +256,9 @@ export const SoftwareEditor = observer((props: EditorProps): ReactElement => {
       onMergeParagraph={(idx) => {
         props.publicationStore.mergeSoftwareParagraph(idx);
       }}
+      onSplitParagraph={(idx, splitIndex) => {
+        props.publicationStore.splitSoftwareParagraph(idx, splitIndex);
+      }}
       text={'Software'}
       placeholder={
         'Provide the software you used, with configuration options...'
@@ -227,7 +270,7 @@ export const SoftwareEditor = observer((props: EditorProps): ReactElement => {
 export const GrantingOrganizationsEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
-      <ParagraphContentEditor
+      <ListContentEditor
         isReadonly={props.publicationStore.isReadonly}
         value={props.publicationStore.grantingOrganizations}
         onChange={(idx, value) => {
@@ -238,6 +281,12 @@ export const GrantingOrganizationsEditor = observer(
         }}
         onMergeParagraph={(idx) => {
           props.publicationStore.mergeGrantingOrganizationsParagraph(idx);
+        }}
+        onSplitParagraph={(idx, splitIndex) => {
+          props.publicationStore.splitGrantingOrganizationsParagraph(
+            idx,
+            splitIndex
+          );
         }}
         paragraphPrefixType={ParagraphPrefixType.BULLET}
         text={'Granting organizations'}
@@ -253,7 +302,7 @@ export const RelatedArticlesEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <>
-        <ParagraphContentEditor
+        <OrderedListContentEditor
           isReadonly={props.publicationStore.isReadonly}
           value={props.publicationStore.relatedArticles}
           onChange={(idx, value) => {
@@ -264,6 +313,12 @@ export const RelatedArticlesEditor = observer(
           }}
           onMergeParagraph={(idx) => {
             props.publicationStore.mergeRelatedArticlesParagraph(idx);
+          }}
+          onSplitParagraph={(idx, splitIndex) => {
+            props.publicationStore.splitRelatedArticlesParagraph(
+              idx,
+              splitIndex
+            );
           }}
           paragraphPrefixType={ParagraphPrefixType.NUMERATION}
           text={'Related articles'}
@@ -291,6 +346,32 @@ export const ParagraphContentEditor = (
     <ContentEditorWrap>
       {props.text && <LabelWrap>{props.text}</LabelWrap>}
       <ParagraphElementWrap {...props} />
+    </ContentEditorWrap>
+  );
+};
+
+export const ListContentEditor = (
+  props: ParagraphEditorProps & { paragraphPrefixType?: ParagraphPrefixType }
+): ReactElement => {
+  return (
+    <ContentEditorWrap>
+      {props.text && <LabelWrap>{props.text}</LabelWrap>}
+      <UlWrap>
+        <ListElementWrap {...props} />
+      </UlWrap>
+    </ContentEditorWrap>
+  );
+};
+
+export const OrderedListContentEditor = (
+  props: ParagraphEditorProps & { paragraphPrefixType?: ParagraphPrefixType }
+): ReactElement => {
+  return (
+    <ContentEditorWrap>
+      {props.text && <LabelWrap>{props.text}</LabelWrap>}
+      <OlWrap>
+        <ListElementWrap {...props} />
+      </OlWrap>
     </ContentEditorWrap>
   );
 };
@@ -323,6 +404,56 @@ const ParagraphElementWrap = (
               setParagraphToFocus(idx - 1);
               props.onMergeParagraph(idx);
             }}
+            onSplitParagraph={(idx, splitIndex) => {
+              setParagraphToFocus(idx + 1);
+              setCursorPosition(0);
+              props.onSplitParagraph(idx, splitIndex);
+            }}
+            onChange={props.onChange}
+            placeholder={idx === 0 ? props.placeholder : ''}
+          />
+        );
+      })}
+    </>
+  );
+};
+
+const ListElementWrap = (
+  props: Omit<ParagraphEditorProps, 'text'> & {
+    disableInitFocus?: boolean;
+    paragraphPrefixType?: ParagraphPrefixType;
+  }
+): ReactElement => {
+  const [paragraphToFocus, setParagraphToFocus] = useState<number>(
+    props.disableInitFocus ? -1 : 0
+  );
+  const [cursorPosition, setCursorPosition] = useState<number>(0);
+
+  return (
+    <>
+      {props.value.map((p, idx) => {
+        return (
+          <ListElement
+            cursorPosition={cursorPosition}
+            paragraphToFocus={paragraphToFocus}
+            isReadonly={props.isReadonly}
+            key={p.id}
+            idx={idx}
+            value={p.text}
+            onAddParagraph={(idx) => {
+              setParagraphToFocus(idx + 1);
+              props.onAddParagraph(idx);
+            }}
+            onMergeParagraph={(idx) => {
+              setCursorPosition(props.value[idx - 1]?.text.length);
+              setParagraphToFocus(idx - 1);
+              props.onMergeParagraph(idx);
+            }}
+            onSplitParagraph={(idx, splitIndex) => {
+              setParagraphToFocus(idx + 1);
+              setCursorPosition(0);
+              props.onSplitParagraph(idx, splitIndex);
+            }}
             onChange={props.onChange}
             placeholder={idx === 0 ? props.placeholder : ''}
             paragraphPrefixType={props.paragraphPrefixType}
@@ -332,6 +463,32 @@ const ParagraphElementWrap = (
     </>
   );
 };
+
+const UlWrap = styled.ul`
+  list-style-type: disc;
+  list-style-position: outside;
+
+  margin-left: -20px;
+
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%; /* 24px */
+  letter-spacing: 0.15px;
+`;
+
+const OlWrap = styled.ol`
+  list-style-type: decimal;
+  list-style-position: outside;
+
+  margin-left: -20px;
+
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%; /* 24px */
+  letter-spacing: 0.15px;
+`;
 
 const NegativeDataHeaderEnabled = styled.span`
   color: var(--text-primary, #040036);
@@ -367,7 +524,7 @@ const NegativeDataWrapper = styled.div`
 
 const NegativeDataAllWrapper = styled.div`
   border: 1px solid #d2d2d6;
-  padding: 4px 0px 4px 8px;
+  padding: 4px 0 4px 8px;
   border-radius: 4px;
   gap: 8px;
   align-self: stretch;
@@ -392,11 +549,42 @@ const ReadonlyContentPlaceholderWrap = styled.div`
   border-radius: 4px;
   background: var(--grey-50, #f8f7fa);
 
-  font-size: 16px;
+  font-size: 20px;
   font-style: normal;
   font-weight: 400;
+  line-height: 160%; /* 32px */
+  letter-spacing: 0.15px;
 
   width: 100%;
 
   margin-bottom: 32px;
+`;
+
+const NegativeDataViewWrapper = styled.div`
+  display: flex;
+  width: var(--stringLength, 680px);
+  flex-direction: column;
+  padding: 16px;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 8px;
+
+  border-radius: 4px;
+  background: var(--grey-50, #f8f7fa);
+
+  margin-bottom: 15px;
+`;
+
+const NegativeDataTextViewMode = styled.div`
+  color: var(--text-primary, #040036);
+  font-feature-settings: 'clig' off, 'liga' off;
+
+  /* typography/body */
+  font-family: Roboto;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 160%; /* 32px */
+  letter-spacing: 0.15px;
+  word-break: break-word;
 `;

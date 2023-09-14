@@ -1,7 +1,9 @@
 import styled from '@emotion/styled';
 import { type Publication } from '../../apis/first-approval-api';
-import { type ReactElement } from 'react';
+import React, { type ReactElement } from 'react';
 import { RecommendedPublication } from './RecommendedPublication';
+import { DownloadersDialog } from '../publication/DownloadersDialog';
+import { downloadersStore } from '../publication/store/downloadsStore';
 
 const GridContainer = styled.div`
   display: flex;
@@ -18,17 +20,34 @@ const RecommendedPublicationsSection = (props: {
   publications: Publication[];
 }): ReactElement => {
   const { publications } = props;
+
   return (
-    <Wrap>
-      <NameWrap>Recommended datasets</NameWrap>
-      <GridContainer>
-        {publications.map((publication, idx) => (
-          <PublicationCard key={idx}>
-            <RecommendedPublication publication={publication} />
-          </PublicationCard>
-        ))}
-      </GridContainer>
-    </Wrap>
+    <>
+      {publications.length > 0 && (
+        <Wrap>
+          <NameWrap>Recommended datasets</NameWrap>
+          <GridContainer>
+            {publications.map((publication, idx) => (
+              <PublicationCard key={idx}>
+                <RecommendedPublication
+                  publication={publication}
+                  openDownloadersDialog={() => {
+                    downloadersStore.clearAndOpen(
+                      publication.id,
+                      publication.downloadsCount
+                    );
+                  }}
+                />
+              </PublicationCard>
+            ))}
+          </GridContainer>
+        </Wrap>
+      )}
+      <DownloadersDialog
+        isOpen={downloadersStore.open}
+        downloaders={downloadersStore.downloaders}
+      />
+    </>
   );
 };
 

@@ -11,6 +11,10 @@ private const val SEARCH_NESTED_SAMPLE_FILES_QUERY = """
     SELECT * FROM publication_sample_files WHERE publication_id = :publicationId AND full_path LIKE CONCAT(:path, '/%')
 """
 
+private const val FIND_IDS_QUERY = """
+    SELECT id FROM publication_sample_files WHERE publication_id = :publicationId
+"""
+
 interface PublicationSampleFileRepository : JpaRepository<PublicationSampleFile, UUID> {
 
     @Query(value = SEARCH_NESTED_SAMPLE_FILES_QUERY, nativeQuery = true)
@@ -25,4 +29,7 @@ interface PublicationSampleFileRepository : JpaRepository<PublicationSampleFile,
     fun findByIdIn(ids: List<UUID>): List<PublicationSampleFile>
 
     fun findByPublicationIdOrderByCreationTimeAsc(publicationId: UUID, pageable: Pageable): Page<PublicationSampleFile>
+
+    @Query(value = FIND_IDS_QUERY, nativeQuery = true)
+    fun findIdsByPublicationId(publicationId: UUID): List<UUID>
 }

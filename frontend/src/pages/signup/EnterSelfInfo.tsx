@@ -1,22 +1,19 @@
 import React, { type FunctionComponent, useState } from 'react';
-import { Button, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 import styled from '@emotion/styled';
 import { type SignUpStore } from './SignUpStore';
 import { observer } from 'mobx-react-lite';
 import {
   FlexBody,
   FlexBodyCenter,
-  FlexHeader,
-  FlexHeaderRight,
   FullWidthButton,
-  Logo,
-  Parent,
-  Header
+  Header,
+  Parent
 } from '../common.styled';
 import { routerStore } from '../../core/router';
 import { userService } from '../../core/service';
 import { Page } from '../../core/RouterStore';
-import logo from '../../assets/logo-black.svg';
+import { HeaderComponent } from '../../components/HeaderComponent';
 
 interface EnterSelfInfoPageProps {
   store: SignUpStore;
@@ -46,19 +43,7 @@ export const EnterSelfInfoPage: FunctionComponent<EnterSelfInfoPageProps> =
 
     return (
       <Parent>
-        <FlexHeader>
-          <Logo onClick={routerStore.goHome}>
-            <img src={logo} />
-          </Logo>
-          <FlexHeaderRight>
-            <Button
-              variant="outlined"
-              size={'large'}
-              onClick={props.onSignInClick}>
-              Sign in
-            </Button>
-          </FlexHeaderRight>
-        </FlexHeader>
+        <HeaderComponent />
         <FlexBodyCenter>
           <FlexBody>
             <Header>Almost there! Tell us about yourself:</Header>

@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 import { authorService, publicationService } from '../../core/service';
-import { type Author, type Publication } from '../../apis/first-approval-api';
+import { type UserInfo, type Publication } from '../../apis/first-approval-api';
 import { routerStore } from '../../core/router';
 import { Page } from '../../core/RouterStore';
 
@@ -9,7 +9,7 @@ export class HomePageStore {
   publications: Publication[] = [];
 
   isLoadingPopularAuthors = false;
-  popularAuthors: Author[] = [];
+  popularAuthors: UserInfo[] = [];
 
   isLoadingRecommendedPublications = false;
   recommendedPublications: Publication[] = [];

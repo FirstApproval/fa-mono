@@ -7,6 +7,7 @@ import { Add } from '@mui/icons-material';
 import { ContentEditorWrap, LabelWrap } from './styled';
 
 import { type EditorProps } from './types';
+import { TagsWrap } from '../ContentPlaceholder';
 
 export const TagsEditor = observer((props: EditorProps): ReactElement => {
   const [newTag, setNewTag] = useState('');
@@ -15,66 +16,68 @@ export const TagsEditor = observer((props: EditorProps): ReactElement => {
   );
 
   return (
-    <ContentEditorWrap>
-      <LabelWrap>Tags</LabelWrap>
-      <div>
-        {Array.from(props.publicationStore.tags).map((tag, index) => (
-          <ChipWrap
-            key={index}
-            label={tag}
-            onDelete={
-              props.publicationStore.isReadonly
-                ? undefined
-                : () => {
-                    props.publicationStore.deleteTag(tag);
-                  }
-            }></ChipWrap>
-        ))}
-        {!props.publicationStore.isReadonly && !enableAddingNewTag && (
-          <a>
-            <AddNewTagButtonWrap
-              onClick={() => {
-                setEnableAddingNewTag(true);
+    <TagsWrap>
+      <ContentEditorWrap>
+        <LabelWrap>Tags</LabelWrap>
+        <div>
+          {Array.from(props.publicationStore.tags).map((tag, index) => (
+            <ChipWrap
+              key={index}
+              label={tag}
+              onDelete={
+                props.publicationStore.isReadonly
+                  ? undefined
+                  : () => {
+                      props.publicationStore.deleteTag(tag);
+                    }
+              }></ChipWrap>
+          ))}
+          {!props.publicationStore.isReadonly && !enableAddingNewTag && (
+            <a>
+              <AddNewTagButtonWrap
+                onClick={() => {
+                  setEnableAddingNewTag(true);
+                }}
+                startIcon={<AddIconWrap />}>
+                Add tag
+              </AddNewTagButtonWrap>
+            </a>
+          )}
+        </div>
+        {enableAddingNewTag && !props.publicationStore.isReadonly && (
+          <TagTextInputWrap>
+            <FullWidthTextField
+              size={'medium'}
+              placeholder={
+                'Enter tag, help others discover your work (e.g., “genomics”, “climate change”)'
+              }
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.keyCode === 13) {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  props.publicationStore.addTag(newTag);
+                  setNewTag('');
+                }
               }}
-              startIcon={<AddIconWrap />}>
-              Add tag
-            </AddNewTagButtonWrap>
-          </a>
+              onChange={(e) => {
+                setNewTag(e.currentTarget.value);
+              }}
+              value={newTag}
+              variant="outlined"></FullWidthTextField>
+            <IconButtonWrap
+              onClick={() => {
+                if (newTag) {
+                  props.publicationStore.addTag(newTag);
+                  setNewTag('');
+                  setEnableAddingNewTag(false);
+                }
+              }}>
+              <img src={keyboardEnter}></img>
+            </IconButtonWrap>
+          </TagTextInputWrap>
         )}
-      </div>
-      {enableAddingNewTag && !props.publicationStore.isReadonly && (
-        <TagTextInputWrap>
-          <FullWidthTextField
-            size={'medium'}
-            placeholder={
-              'Enter tag, help others discover your work (e.g., “genomics”, “climate change”)'
-            }
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' || event.keyCode === 13) {
-                event.preventDefault();
-                event.stopPropagation();
-                props.publicationStore.addTag(newTag);
-                setNewTag('');
-              }
-            }}
-            onChange={(e) => {
-              setNewTag(e.currentTarget.value);
-            }}
-            value={newTag}
-            variant="outlined"></FullWidthTextField>
-          <IconButtonWrap
-            onClick={() => {
-              if (newTag) {
-                props.publicationStore.addTag(newTag);
-                setNewTag('');
-                setEnableAddingNewTag(false);
-              }
-            }}>
-            <img src={keyboardEnter}></img>
-          </IconButtonWrap>
-        </TagTextInputWrap>
-      )}
-    </ContentEditorWrap>
+      </ContentEditorWrap>
+    </TagsWrap>
   );
 });
 

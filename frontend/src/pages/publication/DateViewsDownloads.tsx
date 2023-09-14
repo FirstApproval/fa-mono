@@ -6,7 +6,10 @@ import downloads from './asset/downloads.svg';
 import { type PublicationStore } from './store/PublicationStore';
 
 export const DateViewsDownloads = observer(
-  (props: { publicationStore: PublicationStore }): ReactElement => {
+  (props: {
+    publicationStore: PublicationStore;
+    openDownloadersDialog: () => void;
+  }): ReactElement => {
     return (
       <div
         style={{
@@ -33,10 +36,12 @@ export const DateViewsDownloads = observer(
           </div>
         </div>
         <div
+          onClick={props.openDownloadersDialog}
           style={{
             marginLeft: '24px',
             display: 'flex',
-            alignItems: 'center'
+            alignItems: 'center',
+            cursor: 'pointer'
           }}>
           <img src={downloads} width={20} height={20} />
           <div style={{ marginLeft: '4px' }}>

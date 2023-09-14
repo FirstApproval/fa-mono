@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { type Author } from '../../apis/first-approval-api';
+import { type UserInfo } from '../../apis/first-approval-api';
 import { PopularAuthor } from './PopularAuthor';
 import { type ReactElement } from 'react';
 
@@ -15,7 +15,9 @@ const AuthorCard = styled.div`
   margin-bottom: 32px;
 `;
 
-const PopularAuthorsSection = (props: { authors: Author[] }): ReactElement => {
+const PopularAuthorsSection = (props: {
+  authors: UserInfo[];
+}): ReactElement => {
   const { authors } = props;
   return (
     <>

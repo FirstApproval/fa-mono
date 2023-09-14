@@ -32,6 +32,7 @@ class PublicationFileController(
                 .creationTime(it.creationTime.toOffsetDateTime())
                 .description(it.description)
                 .dirPath(it.dirPath)
+                .size(it.size)
                 .fullPath(it.fullPath)
                 .isDir(it.isDir)
                 .hash(it.hash)
@@ -76,6 +77,7 @@ class PublicationFileController(
                 .dirPath(file.dirPath)
                 .fullPath(file.fullPath)
                 .isDir(file.isDir)
+                .size(file.size)
                 .hash(file.hash), OK
         )
     }
@@ -98,8 +100,8 @@ class PublicationFileController(
         return ok(DownloadTokenResponse(publicationFileService.getTokenToRetrieveDownloadLink(authHolderService.user, fileId)))
     }
 
-    override fun getDownloadLinkForPublicationFile(downloadLinkRequest: DownloadLinkRequest): ResponseEntity<DownloadLinkResponse> {
-        return ok(DownloadLinkResponse(publicationFileService.getDownloadLink(downloadLinkRequest.token)))
+    override fun getDownloadLinkForPublicationFile(downloadLinkRequest: DownloadLinkRequest): ResponseEntity<String> {
+        return ok(publicationFileService.getDownloadLink(downloadLinkRequest.token))
     }
 
     override fun deleteFiles(deleteByIdsRequest: DeleteByIdsRequest): ResponseEntity<Void> {
@@ -131,6 +133,7 @@ class PublicationFileController(
                 .creationTime(file.creationTime.toOffsetDateTime())
                 .dirPath(file.dirPath)
                 .fullPath(file.fullPath)
+                .size(file.size)
                 .isDir(file.isDir), OK
         )
     }

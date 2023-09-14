@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import { LoadingButton } from '@mui/lab';
 import { Tab } from '@mui/material';
+import MenuItem from '@mui/material/MenuItem';
 
 export const Parent = styled.div`
   width: 100%;
@@ -72,4 +73,30 @@ export const CustomTab = styled(Tab)`
   font-weight: 500;
   line-height: 26px; /* 144.444% */
   letter-spacing: 0.46px;
+`;
+
+export const ColumnElement = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
+export const TitleRowWrap = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const SpaceBetween = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const StyledMenuItem = styled(MenuItem)`
+  &:hover {
+    background-color: transparent;
+  }
 `;

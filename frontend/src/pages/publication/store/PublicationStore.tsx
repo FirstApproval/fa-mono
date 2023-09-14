@@ -2,9 +2,9 @@ import { action, makeAutoObservable, reaction } from 'mobx';
 import { publicationService } from '../../../core/service';
 import _, { some } from 'lodash';
 import {
-  type Author,
   type ConfirmedAuthor,
   type Paragraph,
+  LicenseType,
   PublicationStatus,
   type UnconfirmedAuthor,
   type UserInfo
@@ -12,7 +12,9 @@ import {
 import { type ChonkyFileSystem } from '../../../fire-browser/ChonkyFileSystem';
 import { v4 as uuidv4 } from 'uuid';
 import { type AuthorEditorStore } from './AuthorEditorStore';
-import { type ChonkySampleFileSystem } from '../../../fire-browser/sample-files/ChonkySampleFileSystem';
+import { FileData } from '@first-approval/chonky/dist/types/file.types';
+import { routerStore } from '../../../core/router';
+import { Page } from '../../../core/RouterStore';
 
 const EDIT_THROTTLE_MS = 1000;
 
@@ -39,7 +41,7 @@ export class PublicationStore {
   isLoading = true;
 
   title = '';
-  researchArea = '';
+  researchAreas: Paragraph[] = [];
 
   creator: UserInfo | undefined;
   experimentGoalsEnabled = false;
@@ -48,6 +50,7 @@ export class PublicationStore {
   softwareEnabled = false;
   filesEnabled = false;
   sampleFilesEnabled = false;
+  sampleFilesHidden = true;
   authorsEnabled = false;
   grantingOrganizationsEnabled = false;
   relatedArticlesEnabled = false;
@@ -56,7 +59,6 @@ export class PublicationStore {
   summary: ParagraphWithId[] = [];
   savingStatus: SavingStatusState = SavingStatusState.PREVIEW;
 
-  description: ParagraphWithId[] = [];
   experimentGoals: ParagraphWithId[] = [];
   methodTitle: string = '';
   method: ParagraphWithId[] = [];
@@ -73,23 +75,42 @@ export class PublicationStore {
   isNegative = false;
   negativeData = '';
 
+  passcode = '';
+  isPasscodeDialogOpen = false;
+  isCitateDialogOpen = false;
+
   publicationTime: Date = new Date();
   viewsCount: number = 0;
   downloadsCount: number = 0;
 
+  licenseType: LicenseType | null = null;
+  publicationStatus: PublicationStatus | null = null;
+
+  archiveSize: number | null = null;
+  sampleArchiveSize: number | null = null;
+
+  viewCounterUpdated: boolean = false;
+
   constructor(
     readonly publicationId: string,
     readonly fs: ChonkyFileSystem,
-    readonly sfs: ChonkySampleFileSystem
+    readonly sfs: ChonkyFileSystem
   ) {
     makeAutoObservable(this);
-    this.addDescriptionParagraph(0);
+    this.addSummaryParagraph(0);
     reaction(
       () => this.fs.initialized,
       (initialized) => {
         if (initialized) {
           this.loadInitialState();
         }
+      },
+      { fireImmediately: true }
+    );
+    reaction(
+      () => this.fs.files,
+      () => {
+        this.sampleFilesHidden = this.fs.files.length === 0;
       },
       { fireImmediately: true }
     );
@@ -109,7 +130,7 @@ export class PublicationStore {
     return this.viewMode === ViewMode.VIEW;
   }
 
-  addDescriptionParagraph(idx: number): void {
+  addSummaryParagraph(idx: number): void {
     const newValue = [...this.summary];
     newValue.splice(idx + 1, 0, {
       text: '',
@@ -199,7 +220,7 @@ export class PublicationStore {
     }
   }
 
-  addConfirmedAuthor(author: Author): void {
+  addConfirmedAuthor(author: UserInfo): void {
     const newValue = [...this.confirmedAuthors];
     newValue.push({
       user: author,
@@ -287,6 +308,18 @@ export class PublicationStore {
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
+  editLicenseType(): void {
+    this.savingStatus = SavingStatusState.SAVING;
+    debugger;
+    void publicationService.editPublication(this.publicationId, {
+      licenseType: {
+        value: this.licenseType ?? undefined,
+        edited: true
+      }
+    });
+    this.savingStatus = SavingStatusState.SAVED;
+  }
+
   updateTitle(title: string): void {
     this.title = title;
     this.savingStatus = SavingStatusState.SAVING;
@@ -304,18 +337,22 @@ export class PublicationStore {
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
-  updateResearchArea(researchArea: string): void {
-    this.researchArea = researchArea;
+  updateResearchArea(newResearchAreas: any[]): void {
+    this.researchAreas = newResearchAreas.map((ra) => {
+      return {
+        text: ra.subcategory
+      };
+    });
     this.savingStatus = SavingStatusState.SAVING;
     void this.updateResearchAreaRequest();
   }
 
   updateResearchAreaRequest = _.throttle(async () => {
-    const researchArea = this.researchArea;
+    const researchAreas = this.researchAreas;
     await publicationService.editPublication(this.publicationId, {
-      researchArea: {
-        value: researchArea,
-        edited: true
+      researchAreas: {
+        edited: true,
+        values: researchAreas
       }
     });
     this.savingStatus = SavingStatusState.SAVED;
@@ -342,13 +379,11 @@ export class PublicationStore {
   }
 
   updateSummary = _.throttle(async () => {
-    const description: Paragraph[] = this.summary.filter(
-      (p) => p.text.length > 0
-    );
+    const summary: Paragraph[] = this.summary.filter((p) => p.text.length > 0);
 
     await publicationService.editPublication(this.publicationId, {
       description: {
-        values: description,
+        values: summary,
         edited: true
       }
     });
@@ -575,10 +610,29 @@ export class PublicationStore {
     void this.doDownloadSampleFiles();
   }
 
+  downloadSampleMultiFiles(files: FileData[]): void {
+    if (files.length === 0) {
+      void this.doDownloadSampleFiles();
+    } else {
+      files.forEach((fileData) => {
+        const downloadLink = document.createElement('a');
+        downloadLink.href = `/api/sample-files/download/${fileData.id}`;
+        downloadLink.download = fileData.name;
+        downloadLink.style.display = 'none';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      });
+    }
+  }
+
   doDownloadFiles = _.throttle(async () => {
-    const link = await publicationService.getDownloadLink(this.publicationId);
+    const response = await publicationService.getDownloadLink(
+      this.publicationId
+    );
+    this.passcode = response.data.passcode;
     const downloadLink = document.createElement('a');
-    downloadLink.href = link.data;
+    downloadLink.href = response.data.link;
     downloadLink.download = this.title + '_files.zip';
     downloadLink.style.display = 'none';
     document.body.appendChild(downloadLink);
@@ -627,6 +681,22 @@ export class PublicationStore {
     void this.updateSummary();
   };
 
+  splitSummaryParagraph = (idx: number, splitIndex: number): void => {
+    if (idx < 0) return;
+    const newValue = [...this.summary];
+    const newElement = {
+      text: newValue[idx].text.substring(splitIndex),
+      id: uuidv4()
+    };
+    newValue.splice(idx + 1, 0, newElement);
+    newValue[idx] = {
+      text: newValue[idx].text.substring(0, splitIndex),
+      id: newValue[idx].id
+    };
+    this.summary = newValue;
+    void this.updateSummary();
+  };
+
   mergeExperimentGoalsParagraph = (idx: number): void => {
     if (idx <= 0) return;
     const newValue = [...this.experimentGoals];
@@ -635,6 +705,22 @@ export class PublicationStore {
       id: newValue[idx - 1].id
     };
     newValue.splice(idx, 1);
+    this.experimentGoals = newValue;
+    void this.updateExperimentGoals();
+  };
+
+  splitExperimentGoalsParagraph = (idx: number, splitIndex: number): void => {
+    if (idx < 0) return;
+    const newValue = [...this.experimentGoals];
+    const newElement = {
+      text: newValue[idx].text.substring(splitIndex),
+      id: uuidv4()
+    };
+    newValue.splice(idx + 1, 0, newElement);
+    newValue[idx] = {
+      text: newValue[idx].text.substring(0, splitIndex),
+      id: newValue[idx].id
+    };
     this.experimentGoals = newValue;
     void this.updateExperimentGoals();
   };
@@ -651,6 +737,22 @@ export class PublicationStore {
     void this.updateMethod();
   };
 
+  splitMethodParagraph = (idx: number, splitIndex: number): void => {
+    if (idx < 0) return;
+    const newValue = [...this.method];
+    const newElement = {
+      text: newValue[idx].text.substring(splitIndex),
+      id: uuidv4()
+    };
+    newValue.splice(idx + 1, 0, newElement);
+    newValue[idx] = {
+      text: newValue[idx].text.substring(0, splitIndex),
+      id: newValue[idx].id
+    };
+    this.method = newValue;
+    void this.updateMethod();
+  };
+
   mergeObjectOfStudyParagraph = (idx: number): void => {
     if (idx <= 0) return;
     const newValue = [...this.objectOfStudy];
@@ -659,6 +761,22 @@ export class PublicationStore {
       id: newValue[idx - 1].id
     };
     newValue.splice(idx, 1);
+    this.objectOfStudy = newValue;
+    void this.updateObjectOfStudy();
+  };
+
+  splitObjectOfStudyParagraph = (idx: number, splitIndex: number): void => {
+    if (idx < 0) return;
+    const newValue = [...this.objectOfStudy];
+    const newElement = {
+      text: newValue[idx].text.substring(splitIndex),
+      id: uuidv4()
+    };
+    newValue.splice(idx + 1, 0, newElement);
+    newValue[idx] = {
+      text: newValue[idx].text.substring(0, splitIndex),
+      id: newValue[idx].id
+    };
     this.objectOfStudy = newValue;
     void this.updateObjectOfStudy();
   };
@@ -675,6 +793,22 @@ export class PublicationStore {
     void this.updateSoftware();
   };
 
+  splitSoftwareParagraph = (idx: number, splitIndex: number): void => {
+    if (idx < 0) return;
+    const newValue = [...this.software];
+    const newElement = {
+      text: newValue[idx].text.substring(splitIndex),
+      id: uuidv4()
+    };
+    newValue.splice(idx + 1, 0, newElement);
+    newValue[idx] = {
+      text: newValue[idx].text.substring(0, splitIndex),
+      id: newValue[idx].id
+    };
+    this.software = newValue;
+    void this.updateSoftware();
+  };
+
   mergeGrantingOrganizationsParagraph = (idx: number): void => {
     if (idx <= 0) return;
     const newValue = [...this.grantingOrganizations];
@@ -687,6 +821,25 @@ export class PublicationStore {
     void this.updateGrantingOrganizations();
   };
 
+  splitGrantingOrganizationsParagraph = (
+    idx: number,
+    splitIndex: number
+  ): void => {
+    if (idx < 0) return;
+    const newValue = [...this.grantingOrganizations];
+    const newElement = {
+      text: newValue[idx].text.substring(splitIndex),
+      id: uuidv4()
+    };
+    newValue.splice(idx + 1, 0, newElement);
+    newValue[idx] = {
+      text: newValue[idx].text.substring(0, splitIndex),
+      id: newValue[idx].id
+    };
+    this.grantingOrganizations = newValue;
+    void this.updateGrantingOrganizations();
+  };
+
   mergeRelatedArticlesParagraph = (idx: number): void => {
     if (idx <= 0) return;
     const newValue = [...this.relatedArticles];
@@ -695,6 +848,22 @@ export class PublicationStore {
       id: newValue[idx - 1].id
     };
     newValue.splice(idx, 1);
+    this.relatedArticles = newValue;
+    void this.updateRelatedArticles();
+  };
+
+  splitRelatedArticlesParagraph = (idx: number, splitIndex: number): void => {
+    if (idx < 0) return;
+    const newValue = [...this.relatedArticles];
+    const newElement = {
+      text: newValue[idx].text.substring(splitIndex),
+      id: uuidv4()
+    };
+    newValue.splice(idx + 1, 0, newElement);
+    newValue[idx] = {
+      text: newValue[idx].text.substring(0, splitIndex),
+      id: newValue[idx].id
+    };
     this.relatedArticles = newValue;
     void this.updateRelatedArticles();
   };
@@ -793,7 +962,7 @@ export class PublicationStore {
   setAuthorNames = (): void => {
     const confirmedAuthorNames =
       this.confirmedAuthors.map<PublicationAuthorName>((author) => ({
-        userName: author.user.username,
+        username: author.user.username,
         firstName: author.user.firstName,
         lastName: author.user.lastName
       }));
@@ -803,6 +972,13 @@ export class PublicationStore {
         lastName: author.lastName
       }));
     this.authorNames = [...confirmedAuthorNames, ...unconfirmedAuthorNames];
+  };
+
+  deletePublication = async (publicationId: string): Promise<void> => {
+    const response = await publicationService._delete(publicationId);
+    if (response.status === 200) {
+      routerStore.navigatePage(Page.PROFILE, '/profile/drafts');
+    }
   };
 
   private loadInitialState(): void {
@@ -815,11 +991,17 @@ export class PublicationStore {
             text: p.text,
             id: uuidv4()
           });
+          if (publication.archiveSize) {
+            this.archiveSize = publication.archiveSize;
+          }
+          if (publication.sampleArchiveSize) {
+            this.sampleArchiveSize = publication.sampleArchiveSize;
+          }
           if (publication.title) {
             this.title = publication.title;
           }
-          if (publication.researchArea) {
-            this.researchArea = publication.researchArea;
+          if (publication.researchAreas) {
+            this.researchAreas = publication.researchAreas;
           }
           if (publication.description?.length) {
             this.summary = publication.description.map(mapParagraph);
@@ -889,7 +1071,12 @@ export class PublicationStore {
           if (publication.downloadsCount) {
             this.downloadsCount = publication.downloadsCount;
           }
-
+          if (publication.status) {
+            this.publicationStatus = publication.status;
+          }
+          if (publication.licenseType) {
+            this.licenseType = publication.licenseType;
+          }
           this.setAuthorNames();
 
           if (this.fs.files.length > 0) {
@@ -940,7 +1127,7 @@ export enum SavingStatusState {
 }
 
 export interface PublicationAuthorName {
-  userName?: string;
+  username?: string;
   firstName: string;
   lastName: string;
 }

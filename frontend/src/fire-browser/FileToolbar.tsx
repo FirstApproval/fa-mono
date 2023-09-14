@@ -8,11 +8,12 @@ import {
   useLocalizedFileActionStrings,
   useParamSelector
 } from '@first-approval/chonky';
-import { Button, Divider, IconButton } from '@mui/material';
+import { Button, Divider, IconButton, Stack } from '@mui/material';
 import {
   DeleteOutlined,
   DownloadOutlined,
   EditNote,
+  FileDownload,
   FileUploadOutlined,
   FolderOpen
 } from '@mui/icons-material';
@@ -20,60 +21,70 @@ import styled from '@emotion/styled';
 import { useSelector } from 'react-redux';
 
 // eslint-disable-next-line react/display-name
-export const FileToolbar: React.FC = React.memo(() => {
-  const selectionSize = useSelector(selectSelectionSize);
-  const selectedFiles = useSelector(selectSelectedFiles);
-  const hasFolderSelection = !!selectedFiles.find((f) => f.isDir);
+export const FileToolbar: React.FC<{ instanceId: string }> = React.memo(
+  (props) => {
+    const selectionSize = useSelector(selectSelectionSize);
+    const selectedFiles = useSelector(selectSelectedFiles);
+    const hasFolderSelection = !!selectedFiles.find((f) => f.isDir);
 
-  return (
-    <>
-      <ToolbarWrap>
-        <input
-          type="file"
-          id="file-input"
-          multiple
-          style={{ display: 'none' }}
-        />
-        <MainAction
-          item={ChonkyActions.UploadFiles.id}
-          icon={<FileUploadOutlined />}
-        />
-        <ButtonWrap>
-          <MainAction
-            item={ChonkyActions.CreateFolder.id}
-            icon={<FolderOpen />}
+    return (
+      <>
+        <ToolbarWrap>
+          <input
+            type="file"
+            id={`${props.instanceId}-file-input`}
+            multiple
+            style={{ display: 'none' }}
           />
-        </ButtonWrap>
-        {selectionSize !== 0 && (
-          <>
-            <DividerWrap variant={'middle'} orientation={'vertical'} />
-            <SelectedCountWrap>{selectionSize} selected:</SelectedCountWrap>
-          </>
-        )}
-        {selectionSize === 1 && (
-          <FileAction item={ChonkyActions.AddNote.id} icon={<EditNote />} />
-        )}
-        {selectionSize !== 0 && (
-          <>
-            {!hasFolderSelection && (
-              <FileAction
-                item={ChonkyActions.DownloadFiles.id}
-                icon={<DownloadOutlined />}
-              />
-            )}
 
-            <FileAction
-              item={ChonkyActions.DeleteFiles.id}
-              icon={<DeleteOutlined />}
+          <Stack direction="row" alignItems="center" spacing={2}>
+            <MainAction
+              item={ChonkyActions.DownloadFilesArchive.id}
+              icon={<FileDownload />}
             />
-          </>
-        )}
-        <ToolbarLeft></ToolbarLeft>
-      </ToolbarWrap>
-      <Divider />
-    </>
-  );
-});
+
+            <MainAction
+              item={ChonkyActions.UploadFiles.id}
+              icon={<FileUploadOutlined />}
+            />
+
+            <MainAction
+              item={ChonkyActions.CreateFolder.id}
+              icon={<FolderOpen />}
+            />
+          </Stack>
+
+          {selectionSize !== 0 && (
+            <>
+              <DividerWrap variant={'middle'} orientation={'vertical'} />
+              <SelectedCountWrap>{selectionSize} selected:</SelectedCountWrap>
+            </>
+          )}
+          {selectionSize === 1 && (
+            <FileAction item={ChonkyActions.AddNote.id} icon={<EditNote />} />
+          )}
+          {selectionSize !== 0 && (
+            <>
+              {!hasFolderSelection && (
+                <FileAction
+                  item={ChonkyActions.DownloadFiles.id}
+                  icon={<DownloadOutlined />}
+                />
+              )}
+
+              <FileAction
+                item={ChonkyActions.DeleteFiles.id}
+                icon={<DeleteOutlined />}
+              />
+            </>
+          )}
+          <ToolbarLeft></ToolbarLeft>
+        </ToolbarWrap>
+        <Divider />
+      </>
+    );
+  }
+);
 
 interface ToolbarButtonProps {
   item: string;
@@ -88,6 +99,9 @@ const MainAction: React.FC<ToolbarButtonProps> = (
   const triggerAction = useFileActionTrigger(item);
   const { buttonName } = useLocalizedFileActionStrings(action);
   const key = `toolbar-item-${item}`;
+  if (!action) {
+    return null;
+  }
   return (
     <Button
       key={key}
@@ -103,8 +117,13 @@ const FileAction: React.FC<ToolbarButtonProps> = (
   props: ToolbarButtonProps
 ) => {
   const { item } = props;
-
+  const action = useParamSelector(selectFileActionData, item);
   const triggerAction = useFileActionTrigger(item);
+
+  if (!action) {
+    return null;
+  }
+
   return <IconButton onClick={triggerAction}>{props.icon}</IconButton>;
 };
 
@@ -119,10 +138,6 @@ const ToolbarWrap = styled.div`
 const ToolbarLeft = styled.div`
   display: flex;
   margin-left: auto;
-`;
-
-const ButtonWrap = styled.div`
-  margin-left: 24px;
 `;
 
 const SelectedCountWrap = styled.div`

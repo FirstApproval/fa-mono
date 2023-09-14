@@ -1,6 +1,5 @@
 import React, { type FunctionComponent, useState } from 'react';
 import {
-  Button,
   CircularProgress,
   InputAdornment,
   Link,
@@ -12,18 +11,14 @@ import { observer } from 'mobx-react-lite';
 import {
   FlexBody,
   FlexBodyCenter,
-  FlexHeader,
-  FlexHeaderRight,
   FullWidthButton,
-  Logo,
-  Parent,
-  Header
+  Header,
+  Parent
 } from '../../common.styled';
 import { type RestorePasswordStore } from './RestorePasswordStore';
 import { validateEmail } from 'src/util/emailUtil';
-import { routerStore } from '../../../core/router';
 import { LoadingButton } from '@mui/lab';
-import logo from '../../../assets/logo-black.svg';
+import { HeaderComponent } from '../../../components/HeaderComponent';
 
 interface RestorePasswordEmailProps {
   store: RestorePasswordStore;
@@ -46,19 +41,7 @@ export const RestorePasswordEmailPage: FunctionComponent<RestorePasswordEmailPro
 
     return (
       <Parent>
-        <FlexHeader>
-          <Logo onClick={routerStore.goHome}>
-            <img src={logo} />
-          </Logo>
-          <FlexHeaderRight>
-            <Button
-              variant="outlined"
-              size={'large'}
-              onClick={props.onSignUpClick}>
-              Sign up
-            </Button>
-          </FlexHeaderRight>
-        </FlexHeader>
+        <HeaderComponent showSignUpOutlinedButton={true} />
         <FlexBodyCenter>
           {!props.store.isSubmitted && (
             <FlexBody>

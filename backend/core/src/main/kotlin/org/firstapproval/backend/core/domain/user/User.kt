@@ -3,7 +3,12 @@ package org.firstapproval.backend.core.domain.user
 import jakarta.persistence.*
 import jakarta.persistence.EnumType.STRING
 import jakarta.persistence.FetchType.EAGER
+import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.backend.core.config.encryption.StringEncryptionConverter
+import org.firstapproval.backend.core.domain.organizations.Organization
+import org.firstapproval.backend.core.domain.organizations.OrganizationDepartment
+import org.hibernate.annotations.Fetch
+import org.hibernate.annotations.FetchMode.SELECT
 import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
 import java.util.*
@@ -18,6 +23,7 @@ class User(
     var middleName: String? = null,
     var lastName: String? = null,
     var fullName: String? = null,
+    @Fetch(SELECT)
     @ElementCollection(fetch = EAGER)
     @CollectionTable(name = "external_ids")
     @MapKeyEnumerated(STRING)
@@ -32,4 +38,31 @@ class User(
     var profileImage: String? = null,
     var creationTime: ZonedDateTime = now(),
     var viewsCount: Long = 0,
+    @Fetch(SELECT)
+    @ManyToMany(fetch = EAGER)
+    @JoinTable(
+        name = "users_organizations",
+        joinColumns = [JoinColumn(name = "user_id")],
+        inverseJoinColumns = [JoinColumn(name = "organization_id")]
+    )
+    var organization: Set<Organization> = setOf(),
+    @Fetch(SELECT)
+    @ManyToMany(fetch = EAGER)
+    @JoinTable(
+        name = "users_organizations_departments",
+        joinColumns = [JoinColumn(name = "user_id")],
+        inverseJoinColumns = [JoinColumn(name = "organization_department_id")]
+    )
+    var organizationDepartment: Set<OrganizationDepartment> = setOf(),
 )
+
+fun User.toApiObject(userService: UserService) = UserInfo().also { author ->
+    author.id = id
+    author.firstName = firstName
+    author.middleName = middleName
+    author.lastName = lastName
+    author.email = email
+    author.selfInfo = selfInfo
+    author.username = username
+    author.profileImage = userService.getProfileImage(profileImage)
+}

@@ -513,6 +513,23 @@ paths:
         - PublicAuth: [ ]
       operationId: getPublication
       tags: [ publication ]
+    delete:
+      summary: Delete draft publication
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: delete
+      tags: [ publication ]
     patch:
       summary: Edit publication
       parameters:
@@ -535,6 +552,41 @@ paths:
       security:
         - TokenAuth: [ ]
       operationId: editPublication
+      tags: [ publication ]
+
+  /api/publication/downloaders/{id}:
+    get:
+      summary: Get publication
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: true
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          required: true
+          description: Page size
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDownloadersResponse'
+      security:
+        - PublicAuth: [ ]
+      operationId: getPublicationDownloaders
       tags: [ publication ]
 
   /api/publication/search:
@@ -646,9 +698,9 @@ paths:
         200:
           description: Success
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/DownloadLinkResponse'
       security:
         - TokenAuth: [ ]
       operationId: getDownloadLink
@@ -853,12 +905,12 @@ paths:
             schema:
               $ref: '#/components/schemas/DownloadLinkRequest'
       responses:
-        '200':
+        200:
           description: Success
           content:
-            application/json:
+            text/plain:
               schema:
-                $ref: '#/components/schemas/DownloadLinkResponse'
+                type: string
       security:
         - PublicToken: [ ]
       operationId: getDownloadLinkForPublicationFile
@@ -882,7 +934,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Author'
+                  $ref: '#/components/schemas/UserInfo'
       security:
         - TokenAuth: [ ]
       operationId: getAuthors
@@ -1282,6 +1334,9 @@ components:
           type: boolean
         hash:
           type: string
+        size:
+          type: integer
+          format: int64
         creationTime:
           type: string
           format: date-time
@@ -1566,6 +1621,7 @@ components:
         - email
         - canSetPassword
         - canChangePassword
+        - selfInfo
 
     UserInfo:
       type: object
@@ -1579,9 +1635,9 @@ components:
           type: string
         lastName:
           type: string
-        username:
-          type: string
         email:
+          type: string
+        username:
           type: string
         selfInfo:
           type: string
@@ -1594,6 +1650,7 @@ components:
         - lastName
         - email
         - username
+        - selfInfo
 
     UploadType:
       type: string
@@ -1633,6 +1690,13 @@ components:
         - ON_REQUEST
         - MONETIZE_OR_CO_AUTHORSHIP
 
+    LicenseType:
+      type: string
+      enum:
+        - ATTRIBUTION_NO_DERIVATIVES
+        - ATTRIBUTION_NO_DERIVATIVES_NON_COMMERCIAL
+        - DUMMY
+
     UserUpdateRequest:
       type: object
       properties:
@@ -1667,8 +1731,8 @@ components:
           $ref: '#/components/schemas/UnconfirmedAuthors'
         title:
           $ref: '#/components/schemas/PublicationStringValue'
-        researchArea:
-          $ref: '#/components/schemas/PublicationStringValue'
+        researchAreas:
+          $ref: '#/components/schemas/PublicationStringArrayValue'
         description:
           $ref: '#/components/schemas/PublicationStringArrayValue'
         grantOrganizations:
@@ -1695,6 +1759,8 @@ components:
           $ref: '#/components/schemas/PublicationStringValue'
         isNegative:
           type: boolean
+        licenseType:
+          $ref: '#/components/schemas/PublicationLicenseTypeValue'
 
     PublicationStringValue:
       type: object
@@ -1704,6 +1770,14 @@ components:
         value:
           type: string
           maxLength: 32768
+
+    PublicationLicenseTypeValue:
+      type: object
+      properties:
+        edited:
+          type: boolean
+        value:
+          $ref: '#/components/schemas/LicenseType'
 
     PublicationStringArrayValue:
       type: object
@@ -1741,7 +1815,7 @@ components:
           type: string
           format: uuid
         user:
-          $ref: '#/components/schemas/Author'
+          $ref: '#/components/schemas/UserInfo'
         shortBio:
           type: string
       required:
@@ -1792,6 +1866,17 @@ components:
         - firstName
         - lastName
 
+    Downloader:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      required:
+        - email
+        - firstName
+        - lastName
+
     SearchPublicationsResponse:
       type: object
       properties:
@@ -1819,9 +1904,14 @@ components:
           $ref: '#/components/schemas/PublicationStatus'
         accessType:
           $ref: '#/components/schemas/AccessType'
+        licenseType:
+          $ref: '#/components/schemas/LicenseType'
         contentStatus:
           $ref: '#/components/schemas/PublicationContentStatus'
         creationTime:
+          type: string
+          format: date-time
+        editingTime:
           type: string
           format: date-time
         publicationTime:
@@ -1832,9 +1922,8 @@ components:
           maxLength: 32768
         description:
           $ref: '#/components/schemas/StringArray'
-        researchArea:
-          type: string
-          maxLength: 40
+        researchAreas:
+          $ref: '#/components/schemas/StringArray'
         grantOrganizations:
           $ref: '#/components/schemas/StringArray'
         primaryArticles:
@@ -1876,12 +1965,23 @@ components:
         downloadsCount:
           type: integer
           format: int64
+        total:
+          type: number
+          format: integer
+        archiveSize:
+          type: integer
+          format: int64
+        sampleArchiveSize:
+          type: integer
+          format: int64
       required:
         - id
         - status
         - creator
         - isNegative
         - creationTime
+        - editingTime
+        - total
 
     PublicationsResponse:
       type: object
@@ -1903,38 +2003,20 @@ components:
         authors:
           type: array
           items:
-            $ref: '#/components/schemas/Author'
+            $ref: '#/components/schemas/UserInfo'
 
-    Author:
+    GetDownloadersResponse:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
-        firstName:
-          type: string
-        middleName:
-          type: string
-        lastName:
-          type: string
-        email:
-          type: string
-        username:
-          type: string
-        selfInfo:
-          type: string
-          maxLength: 4096
-        profileImage:
-          type: string
-          format: byte
+        isLastPage:
+          type: boolean
+        downloaders:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserInfo'
       required:
-        - id
-        - firstName
-        - middleName
-        - lastName
-        - email
-        - username
-        - selfInfo
+        - downloaders
+        - isLastPage
 
     StringArray:
       type: array
@@ -1961,8 +2043,11 @@ components:
       properties:
         link:
           type: string
+        passcode:
+          type: string
       required:
         - link
+        - passcode
 
   securitySchemes:
     PublicAuth:

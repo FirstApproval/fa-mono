@@ -19,8 +19,10 @@ import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthorRepository
 import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthor
 import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthorRepository
+import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.email.UserEmailService
+import org.firstapproval.backend.core.domain.user.toApiObject
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.transaction.annotation.Transactional
@@ -40,17 +42,7 @@ class UserController(
 
     override fun getUserInfo(id: UUID): ResponseEntity<UserInfo> {
         val user = userService.getPublicUserProfile(id)
-        return ok().body(
-            UserInfo()
-                .id(user.id)
-                .firstName(user.firstName)
-                .lastName(user.lastName)
-                .middleName(user.middleName)
-                .email(user.email)
-                .username(user.username)
-                .selfInfo(user.selfInfo)
-                .profileImage(userService.getProfileImage(user.profileImage))
-        )
+        return ok().body(user.toApiObject(userService))
     }
 
     override fun getUserInfoByUsername(username: String): ResponseEntity<UserInfo> {

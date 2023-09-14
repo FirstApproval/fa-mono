@@ -12,6 +12,8 @@ import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
 import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthor
 import org.firstapproval.backend.core.domain.user.User
 import org.hibernate.annotations.ColumnTransformer
+import org.hibernate.annotations.Fetch
+import org.hibernate.annotations.FetchMode.SELECT
 import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
 import java.util.*
@@ -30,8 +32,9 @@ class Publication(
     var accessType: AccessType = OPEN,
     @Convert(converter = StringEncryptionConverter::class)
     var title: String? = null,
-    @Convert(converter = StringEncryptionConverter::class)
-    var researchArea: String? = null,
+    @ColumnTransformer(write = "?::text")
+    @Convert(converter = StringListEncryptionConverter::class)
+    var researchAreas: List<String>? = null,
     @ColumnTransformer(write = "?::text")
     @Convert(converter = StringListEncryptionConverter::class)
     var description: List<String>? = null,
@@ -63,20 +66,27 @@ class Publication(
     @ColumnTransformer(write = "?::text")
     @Convert(converter = StringListEncryptionConverter::class)
     var predictedGoals: List<String>? = null,
+    @Fetch(value = SELECT)
     @OneToMany(fetch = EAGER, cascade = [ALL], orphanRemoval = true, mappedBy = "publication")
     var confirmedAuthors: MutableList<ConfirmedAuthor> = mutableListOf(),
+    @Fetch(value = SELECT)
     @OneToMany(fetch = EAGER, cascade = [ALL], orphanRemoval = true, mappedBy = "publication")
     var unconfirmedAuthors: MutableList<UnconfirmedAuthor> = mutableListOf(),
     var downloadsCount: Long = 0,
     var viewsCount: Long = 0,
     var creationTime: ZonedDateTime = now(),
+    var editingTime: ZonedDateTime = now(),
     var publicationTime: ZonedDateTime? = null,
     @Convert(converter = StringEncryptionConverter::class)
     var archivePassword: String? = null,
+    var archiveSize: Long? = null,
+    var archiveSampleSize: Long? = null,
     var contentId: Long? = null,
     var isFeatured: Boolean = false,
     var isNegative: Boolean = false,
     var negativeData: String? = null,
+    @Enumerated(STRING)
+    var licenseType: LicenseType? = null,
 )
 
 enum class PublicationStatus {
@@ -86,8 +96,10 @@ enum class PublicationStatus {
 }
 
 enum class AccessType {
-    CLOSED,
     OPEN,
-    ON_REQUEST,
-    MONETIZE_OR_CO_AUTHORSHIP
+}
+
+enum class LicenseType {
+    ATTRIBUTION_NO_DERIVATIVES,
+    ATTRIBUTION_NO_DERIVATIVES_NON_COMMERCIAL,
 }

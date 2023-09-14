@@ -1,8 +1,7 @@
-import React, { type FunctionComponent, useState, useEffect } from 'react';
+import React, { type FunctionComponent, useEffect, useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import {
   Alert,
-  Button,
   CircularProgress,
   InputAdornment,
   Snackbar,
@@ -15,15 +14,11 @@ import { type SignUpStore } from './SignUpStore';
 import {
   FlexBody,
   FlexBodyCenter,
-  FlexHeader,
-  FlexHeaderRight,
   FullWidthButton,
-  Logo,
-  Parent,
-  Header
+  Header,
+  Parent
 } from '../common.styled';
-import { routerStore } from '../../core/router';
-import logo from '../../assets/logo-black.svg';
+import { HeaderComponent } from '../../components/HeaderComponent';
 
 interface PasswordValidationProps {
   password: string;
@@ -120,19 +115,7 @@ export const SetPasswordPage: FunctionComponent<SetPasswordPageProps> =
 
     return (
       <Parent>
-        <FlexHeader>
-          <Logo onClick={routerStore.goHome}>
-            <img src={logo} />
-          </Logo>
-          <FlexHeaderRight>
-            <Button
-              variant="outlined"
-              size={'large'}
-              onClick={props.onSignInClick}>
-              Sign in
-            </Button>
-          </FlexHeaderRight>
-        </FlexHeader>
+        <HeaderComponent showLoginOutlinedButton={false} />
         <FlexBodyCenter>
           <FlexBody>
             <Header>Welcome, {props.store.firstName}</Header>

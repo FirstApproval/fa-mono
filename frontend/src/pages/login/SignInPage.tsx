@@ -1,28 +1,18 @@
 import React, { type FunctionComponent } from 'react';
-import {
-  Alert,
-  Button,
-  Divider,
-  Link,
-  Snackbar,
-  TextField
-} from '@mui/material';
+import { Alert, Divider, Link, Snackbar, TextField } from '@mui/material';
 import styled from '@emotion/styled';
 import { LoginOauth } from './LoginOauth';
 import {
   FlexBody,
   FlexBodyCenter,
-  FlexHeader,
-  FlexHeaderRight,
   FullWidthButton,
-  Logo,
-  Parent,
-  Header
+  Header,
+  Parent
 } from '../common.styled';
 import { routerStore } from '../../core/router';
 import { type SignInStore } from './SignInStore';
 import { observer } from 'mobx-react-lite';
-import logo from '../../assets/logo-black.svg';
+import { HeaderComponent } from '../../components/HeaderComponent';
 
 interface SignInPageProps {
   store: SignInStore;
@@ -36,16 +26,7 @@ export const SignInPage: FunctionComponent<SignInPageProps> = observer(
 
     return (
       <Parent>
-        <FlexHeader>
-          <Logo onClick={routerStore.goHome}>
-            <img src={logo} />
-          </Logo>
-          <FlexHeaderRight>
-            <Button variant="outlined" onClick={props.onSignUpClick}>
-              Sign up
-            </Button>
-          </FlexHeaderRight>
-        </FlexHeader>
+        <HeaderComponent showSignUpOutlinedButton={true} />
         <FlexBodyCenter>
           <FlexBody>
             <Header>Sign in</Header>

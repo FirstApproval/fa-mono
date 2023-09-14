@@ -11,29 +11,27 @@ import citate from './asset/citate.svg';
 import { Button, Tooltip } from '@mui/material';
 import { PublicationStore } from './store/PublicationStore';
 import { ContentCopy } from '@mui/icons-material';
+import { ArchiveDownloader } from './ArchiveDownloader';
+import { CitateDialog } from './CitateDialog';
+import { PublicationStatus } from '../../apis/first-approval-api';
 
 export const ActionBar = observer(
   (props: { publicationStore: PublicationStore }): ReactElement => {
-    const DownloadFilesButtonWrap = styled(Button)`
-      margin-right: 16px;
-      height: 36px;
-      border-color: #3b4eff;
-      color: #3b4eff;
-    `;
+    const { publicationStore } = props;
 
-    const DownloadSampleFilesButtonWrap = styled(Button)`
-      height: 36px;
-    `;
-
-    const PdfButtonWrap = styled(Button)`
-      height: 36px;
-      margin-right: 12px;
-    `;
-
-    const ActionButtonWrap = styled(Button)`
-      height: 36px;
-      border: none;
-    `;
+    const getArchiveSizeTitle = (sizeBytes: number | null): string => {
+      if (sizeBytes) {
+        const megabytes = sizeBytes / (1024 * 1024);
+        if (megabytes > 1000) {
+          return (
+            '(' + (sizeBytes / (1024 * 1024 * 1024)).toFixed(1) + 'GB' + ')'
+          );
+        } else {
+          return '(' + megabytes.toFixed(0) + 'MB' + ')';
+        }
+      }
+      return '';
+    };
 
     return (
       <div
@@ -61,46 +59,72 @@ export const ActionBar = observer(
               display: 'flex',
               alignItems: 'center'
             }}>
-            <DownloadFilesButtonWrap
-              variant="outlined"
-              onClick={() => {
-                if (authStore.token) {
-                  props.publicationStore.downloadFiles();
-                } else {
-                  routerStore.navigatePage(Page.SIGN_UP);
-                }
-              }}
-              size={'medium'}>
-              <img src={download} style={{ marginRight: '8px' }} /> Download
-            </DownloadFilesButtonWrap>
-            {props.publicationStore.sampleFilesEnabled && (
-              <DownloadSampleFilesButtonWrap
-                hidden={true}
-                variant="outlined"
-                onClick={props.publicationStore.downloadSampleFiles}
-                size={'medium'}>
-                <img src={downloadSample} style={{ marginRight: '8px' }} />{' '}
-                Download sample
-              </DownloadSampleFilesButtonWrap>
+            {publicationStore.publicationStatus ===
+              PublicationStatus.PUBLISHED && (
+              <Tooltip title="Download publication files">
+                <DownloadFilesButtonWrap
+                  variant="outlined"
+                  onClick={() => {
+                    if (authStore.token) {
+                      publicationStore.downloadFiles();
+                      publicationStore.isPasscodeDialogOpen = true;
+                    } else {
+                      routerStore.navigatePage(Page.SIGN_UP);
+                    }
+                  }}
+                  size={'medium'}>
+                  <img src={download} style={{ marginRight: '8px' }} />
+                  <span>Download</span>
+                  <div style={{ marginRight: 4 }}></div>
+                  <span style={{ fontWeight: '400' }}>
+                    {getArchiveSizeTitle(publicationStore.archiveSize)}
+                  </span>
+                </DownloadFilesButtonWrap>
+              </Tooltip>
             )}
+            {publicationStore.sampleFilesEnabled &&
+              publicationStore.publicationStatus ===
+                PublicationStatus.PUBLISHED && (
+                <Tooltip title="Download publication sample files">
+                  <DownloadSampleFilesButtonWrap
+                    hidden={true}
+                    variant="outlined"
+                    onClick={() => publicationStore.downloadSampleFiles()}
+                    size={'medium'}>
+                    <img src={downloadSample} style={{ marginRight: '8px' }} />{' '}
+                    <span>Download sample</span>
+                    <div style={{ marginRight: 4 }}></div>
+                    <span style={{ fontWeight: '400' }}>
+                      {getArchiveSizeTitle(publicationStore.sampleArchiveSize)}
+                    </span>
+                  </DownloadSampleFilesButtonWrap>
+                </Tooltip>
+              )}
           </div>
           <div
             style={{
               display: 'flex',
               alignItems: 'center'
             }}>
-            <PdfButtonWrap variant="outlined" size={'medium'}>
-              <img src={pdf} style={{ marginRight: '8px' }} /> PDF
-            </PdfButtonWrap>
-            <ActionButtonWrap variant="outlined" size={'medium'}>
+            <Tooltip title="Download publication PDF">
+              <PdfButtonWrap variant="outlined" size={'medium'}>
+                <img src={pdf} style={{ marginRight: '8px' }} /> PDF
+              </PdfButtonWrap>
+            </Tooltip>
+            <ActionButtonWrap
+              variant="outlined"
+              size={'medium'}
+              onClick={() => {
+                publicationStore.isCitateDialogOpen = true;
+              }}>
               <img src={citate} />
             </ActionButtonWrap>
-            <Tooltip title="Copy link to publication">
+            <Tooltip title="Copy publication link">
               <ActionButtonWrap
                 variant="outlined"
-                onClick={props.publicationStore.copyPublicationLinkToClipboard}
+                onClick={publicationStore.copyPublicationLinkToClipboard}
                 size={'medium'}>
-                <ContentCopy style={{ marginRight: '8px' }} />
+                <ContentCopy />
               </ActionButtonWrap>
             </Tooltip>
           </div>
@@ -114,7 +138,40 @@ export const ActionBar = observer(
             marginTop: '16px'
           }}
         />
+        <ArchiveDownloader
+          isPasscodeOpen={publicationStore.isPasscodeDialogOpen}
+          setIsPasscodeOpen={(value) =>
+            (publicationStore.isPasscodeDialogOpen = value)
+          }
+          publicationStore={publicationStore}
+        />
+        <CitateDialog
+          isOpen={publicationStore.isCitateDialogOpen}
+          setIsOpen={(value) => (publicationStore.isCitateDialogOpen = value)}
+          publicationStore={publicationStore}
+        />
       </div>
     );
   }
 );
+
+const DownloadFilesButtonWrap = styled(Button)`
+  margin-right: 16px;
+  height: 36px;
+  border-color: #3b4eff;
+  color: #3b4eff;
+`;
+
+const DownloadSampleFilesButtonWrap = styled(Button)`
+  height: 36px;
+`;
+
+const PdfButtonWrap = styled(Button)`
+  height: 36px;
+  margin-right: 12px;
+`;
+
+const ActionButtonWrap = styled(Button)`
+  height: 36px;
+  border: none;
+`;

@@ -1,7 +1,6 @@
 import React, { type FunctionComponent, useState } from 'react';
 import {
   Alert,
-  Button,
   CircularProgress,
   InputAdornment,
   Snackbar,
@@ -13,17 +12,14 @@ import { observer } from 'mobx-react-lite';
 import {
   FlexBody,
   FlexBodyCenter,
-  FlexHeader,
-  FlexHeaderRight,
   FullWidthButton,
-  Logo,
-  Parent,
-  Header
+  Header,
+  Parent
 } from '../../common.styled';
 import { routerStore } from '../../../core/router';
 import { userService } from '../../../core/service';
 import { LoadingButton } from '@mui/lab';
-import logo from '../../../assets/logo-black.svg';
+import { HeaderComponent } from '../../../components/HeaderComponent';
 
 interface SetPasswordPageProps {
   onSignUpClick: () => void;
@@ -58,19 +54,7 @@ export const ResetPasswordPage: FunctionComponent<SetPasswordPageProps> =
 
     return (
       <Parent>
-        <FlexHeader>
-          <Logo onClick={routerStore.goHome}>
-            <img src={logo} />
-          </Logo>
-          <FlexHeaderRight>
-            <Button
-              variant="outlined"
-              size={'large'}
-              onClick={props.onSignUpClick}>
-              Sign up
-            </Button>
-          </FlexHeaderRight>
-        </FlexHeader>
+        <HeaderComponent showSignUpOutlinedButton={true} />
         <FlexBodyCenter>
           {!changed && (
             <FlexBody>

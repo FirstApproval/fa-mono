@@ -1,21 +1,26 @@
 import styled from '@emotion/styled';
 import React, { type ReactElement } from 'react';
-import { type Author } from '../../apis/first-approval-api';
+import { type UserInfo } from '../../apis/first-approval-api';
 import { Avatar, Tooltip } from '@mui/material';
 import { getInitials } from '../../util/userUtil';
-import { renderProfileImage } from '../../fire-browser/utils';
+import {
+  getRelativeProfileLink,
+  renderProfileImage
+} from '../../fire-browser/utils';
 import { Page } from '../../core/RouterStore';
 import { routerStore } from '../../core/router';
 
 const MAX_SELF_BIO_LENGTH = 116;
 
-export const PopularAuthor = (props: { author: Author }): ReactElement => {
+export const PopularAuthor = (props: { author: UserInfo }): ReactElement => {
   const { author } = props;
   return (
     <FlexWrap
       onClick={() => {
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        routerStore.navigatePage(Page.PROFILE, `/p/${author.username}`);
+        routerStore.navigatePage(
+          Page.PROFILE,
+          getRelativeProfileLink(author.username)
+        );
       }}>
       <MarginWrap>
         <Avatar

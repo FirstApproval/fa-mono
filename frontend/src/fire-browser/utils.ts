@@ -42,7 +42,11 @@ export const copyTextToClipboard = async (text: string): Promise<void> => {
 };
 
 export const getProfileLink = (username = ''): string => {
-  return window.location.host + '/p/' + username;
+  return window.location.host + getRelativeProfileLink(username);
+};
+
+export const getRelativeProfileLink = (username = ''): string => {
+  return '/p/' + username;
 };
 
 export const renderProfileImage = (profileImage: string | undefined): string =>

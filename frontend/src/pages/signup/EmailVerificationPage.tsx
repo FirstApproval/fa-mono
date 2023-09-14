@@ -1,23 +1,15 @@
 import React, { type FunctionComponent, useEffect } from 'react';
-import { Alert, Button, Link, Snackbar, TextField } from '@mui/material';
+import { Alert, Link, Snackbar, TextField } from '@mui/material';
 import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
 import {
   REGISTRATION_CONFIRMATION_TOKEN_STORAGE_KEY,
   type SignUpStore
 } from './SignUpStore';
-import {
-  FlexBody,
-  FlexBodyCenter,
-  FlexHeader,
-  FlexHeaderRight,
-  Logo,
-  Parent,
-  Header
-} from '../common.styled';
+import { FlexBody, FlexBodyCenter, Header, Parent } from '../common.styled';
 import { routerStore } from '../../core/router';
 import { authStore } from '../../core/auth';
-import logo from '../../assets/logo-black.svg';
+import { HeaderComponent } from '../../components/HeaderComponent';
 
 interface EmailVerificationPageProps {
   store: SignUpStore;
@@ -48,19 +40,7 @@ export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps
 
     return (
       <Parent>
-        <FlexHeader>
-          <Logo onClick={routerStore.goHome}>
-            <img src={logo} />
-          </Logo>
-          <FlexHeaderRight>
-            <Button
-              variant="outlined"
-              size={'large'}
-              onClick={props.onSignInClick}>
-              Sign in
-            </Button>
-          </FlexHeaderRight>
-        </FlexHeader>
+        <HeaderComponent showLoginOutlinedButton={false} />
         <FlexBodyCenter>
           <FlexBody>
             <Header>Check your email</Header>

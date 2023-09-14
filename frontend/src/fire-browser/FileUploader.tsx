@@ -18,9 +18,15 @@ import { FormControlLabel, Radio, RadioGroup } from '@mui/material';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import { FileBrowser } from './FileBrowser';
+import { FileBrowserFA } from './FileBrowserFA';
+import { FileData } from '@first-approval/chonky';
 
 interface FileUploaderProps {
+  instanceId: string;
+  rootFolderName: string;
+  fileDownloadUrlPrefix: string;
+  isReadonly: boolean;
+  onArchiveDownload: (files: FileData[]) => void;
   fs: ChonkyFileSystem;
 }
 
@@ -94,7 +100,15 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
         {isDropZoneVisible && (
           <DropZone onDrop={onDrop}>Drag files here for upload</DropZone>
         )}
-        <FileBrowser fs={fs} isChonkyDragRef={isChonkyDragRef} />
+        <FileBrowserFA
+          instanceId={props.instanceId}
+          rootFolderName={props.rootFolderName}
+          fileDownloadUrlPrefix={props.fileDownloadUrlPrefix}
+          fs={fs}
+          isChonkyDragRef={isChonkyDragRef}
+          isReadonly={props.isReadonly}
+          onArchiveDownload={props.onArchiveDownload}
+        />
         <Dialog
           open={props.fs.renameOrReplaceDialogOpen}
           onClose={props.fs.closeReplaceOrRenameDialog}

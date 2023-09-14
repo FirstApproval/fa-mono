@@ -37,6 +37,7 @@ const pathToOauthType: Record<string, OauthType> = {
 };
 
 const profilePath = '/p/';
+const myProfilePath = '/profile/';
 const accountPath = '/account/';
 
 const history = createBrowserHistory();
@@ -211,5 +212,17 @@ export class RouterStore {
           this._path.lastIndexOf(accountPath) + accountPath.length
         )
       : null;
+  }
+
+  get profileTab(): string | null {
+    return this._path.includes(myProfilePath)
+      ? this._path.substring(
+          this._path.lastIndexOf(myProfilePath) + myProfilePath.length
+        )
+      : null;
+  }
+
+  openInNewTab(url: string): void {
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 }
