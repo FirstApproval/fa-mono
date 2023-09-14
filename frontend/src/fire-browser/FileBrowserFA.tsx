@@ -50,7 +50,9 @@ interface FilePayload {
 }
 
 interface FileBrowserProps {
+  instanceId: string;
   rootFolderName: string;
+  fileDownloadUrlPrefix: string;
   isReadonly: boolean;
   onArchiveDownload: (files: FileData[]) => void;
   fs: ChonkyFileSystem;
@@ -132,7 +134,9 @@ export const FileBrowserFA = observer(
           setNoteDialogOpen(true);
         }
       } else if (data.id === ChonkyActions.UploadFiles.id) {
-        const fileInput = document.getElementById('file-input');
+        const fileInput = document.getElementById(
+          `${props.instanceId}-file-input`
+        );
 
         if (!fileInput) return;
 
@@ -179,7 +183,7 @@ export const FileBrowserFA = observer(
         const files = data.state.selectedFiles.filter((f) => !f.isDir);
         for (const file of files) {
           const downloadLink = document.createElement('a');
-          downloadLink.href = `/api/files/download/${file.id}`;
+          downloadLink.href = `${props.fileDownloadUrlPrefix}/${file.id}`;
           downloadLink.download = file.name;
           downloadLink.style.display = 'none';
           document.body.appendChild(downloadLink);
@@ -243,7 +247,7 @@ export const FileBrowserFA = observer(
             fileActions={myFileActions}
             disableDefaultFileActions={true}>
             <FileNavbar />
-            <FileToolbar />
+            <FileToolbar instanceId={props.instanceId} />
             {!props.fs.isLoading && (
               <>
                 <FileList />

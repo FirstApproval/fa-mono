@@ -401,7 +401,9 @@ const PublicationBody = observer(
         {!filesEnabled && <FilesPlaceholder onClick={openFiles} />}
         {filesEnabled && (
           <FileUploader
+            instanceId={'main'}
             rootFolderName={'Files'}
+            fileDownloadUrlPrefix={'/api/files/download'}
             fs={fs}
             isReadonly={publicationStore.isReadonly}
             onArchiveDownload={() => {
@@ -421,7 +423,9 @@ const PublicationBody = observer(
           )}
         {sampleFilesEnabled && !publicationStore.isReadonly && (
           <FileUploader
+            instanceId={'sample'}
             rootFolderName={'Sample files'}
+            fileDownloadUrlPrefix={'/api/sample-files/download'}
             onArchiveDownload={(files) => {
               props.publicationStore.downloadSampleMultiFiles(files);
             }}

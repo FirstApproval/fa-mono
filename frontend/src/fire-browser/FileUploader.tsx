@@ -22,7 +22,9 @@ import { FileBrowserFA } from './FileBrowserFA';
 import { FileData } from '@first-approval/chonky';
 
 interface FileUploaderProps {
+  instanceId: string;
   rootFolderName: string;
+  fileDownloadUrlPrefix: string;
   isReadonly: boolean;
   onArchiveDownload: (files: FileData[]) => void;
   fs: ChonkyFileSystem;
@@ -99,7 +101,9 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
           <DropZone onDrop={onDrop}>Drag files here for upload</DropZone>
         )}
         <FileBrowserFA
+          instanceId={props.instanceId}
           rootFolderName={props.rootFolderName}
+          fileDownloadUrlPrefix={props.fileDownloadUrlPrefix}
           fs={fs}
           isChonkyDragRef={isChonkyDragRef}
           isReadonly={props.isReadonly}
