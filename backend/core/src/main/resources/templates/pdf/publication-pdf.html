@@ -296,7 +296,7 @@
         </div>
         <div class="block-content-name" th:text="${methodName}">
         </div>
-        <div class="block-content" th:text="${method}">
+        <div class="block-content" th:utext="${method}">
         </div>
 
         <div class="block-title">
@@ -304,13 +304,13 @@
         </div>
         <div class="block-content-name" th:text="${objectOfStudyName}">
         </div>
-        <div class="block-content" th:text="${objectOfStudy}">
+        <div class="block-content" th:utext="${objectOfStudy}">
         </div>
 
         <div th:if="${software}" class="block-title">
             Software
         </div>
-        <div th:if="${software}" class="block-content" th:text="${software}">
+        <div th:if="${software}" class="block-content" th:utext="${software}">
         </div>
 
         <div class="block-title">
