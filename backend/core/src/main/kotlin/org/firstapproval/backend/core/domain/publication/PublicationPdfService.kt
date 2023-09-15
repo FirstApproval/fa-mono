@@ -191,6 +191,6 @@ class PublicationPdfService(
     }
 
     private fun toParagraphs(strings: List<String>): String {
-        return strings.joinToString(separator = "<br/>")
+        return strings.joinToString(separator = "<br/><br/>")
     }
 }
