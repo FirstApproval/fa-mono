@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.thymeleaf.context.Context
 import java.util.UUID
+import java.util.UUID.randomUUID
 
 @Service
 class PublicationPdfService(
@@ -19,22 +20,15 @@ class PublicationPdfService(
     @Transactional(readOnly = true)
     fun generate(publicationId: UUID): ByteArray {
         val publication = publicationRepository.getReferenceById(publicationId)
-        val templateName = "pdf/publication-pdf-negative"
+        val templateName = "pdf/publication-pdf"
         return pdfService.generate(templateName, generateThymeleafContext(publication))
     }
 
     private fun generateThymeleafContext(publication: Publication): Context {
-        // publication hash
-
-        // формат списка грантинг организаций
-        // формат списка примари статей
-        // формат списка релейтед статей
-
-        // template for positive data
-        // template for preview mode
-
         val context = Context()
         val model: MutableMap<String, Any> = HashMap()
+        model["isPreview"] = publication.status != PUBLISHED
+        model["isNegative"] = publication.isNegative
         model["url"] = url(publication)
         model["title"] = title(publication)
         model["authors"] = authorNames(publication)
@@ -51,7 +45,9 @@ class PublicationPdfService(
         model["software"] = software(publication)
         model["authorsDescription"] = authorsDescriptions(publication)
         model["grantingOrganizations"] = grantingOrganizations(publication)
-        model["primaryArticles"] = primaryArticles(publication)
+        if (publication.primaryArticles != null && publication.primaryArticles!!.isNotEmpty()) {
+            model["primaryArticles"] = primaryArticles(publication)
+        }
         model["relatedArticles"] = relatedArticles(publication)
         context.setVariables(model)
         return context
@@ -83,7 +79,7 @@ class PublicationPdfService(
 
     private fun hash(publication: Publication): String {
         return if (publication.status == PUBLISHED) {
-            "Unique archive cryptographic hash: SHA-256: ${sha256Hex("change-me-with-publication-archive-hash-and-drop-sha-256-hex")}"
+            "Unique archive cryptographic hash: SHA-256: ${sha256Hex(randomUUID().toString())}"
         } else {
             "Dataset is not published yet, information about dataset unique archive cryptographic hash will be available after publication."
         }
@@ -140,18 +136,11 @@ class PublicationPdfService(
     }
 
     private fun primaryArticles(publication: Publication): String {
-        return "T. Glinin, M. Petrova, E. Daev, Introgression, admixture, and selection facilitate genetic adaptation to high-altitude environments in cattle, Genomics, Volume 113, Issue 3, 2021, Pages 1491-1503, ISSN 0888-7543, https://doi.org/10.1016/j.ygeno.2021.03.0 23."
+        return toParagraphs(publication.primaryArticles!!)
     }
 
     private fun relatedArticles(publication: Publication): String {
-        return listOf(
-            "A. B. Tóthet al., Reorganization of surviving mammalcommunities after the end-Pleistocene megafaunal extinction.Science365, 1305–1308 (2019). doi:10.1126/science.aaw1605; pmid:316042402.",
-            "J. L. Gill, J. W. Williams, S. T. Jackson, K. B. Lininger,G. S. Robinson, Pleistocene megafaunal collapse, novel plantcommunities, and enhanced fire regimes in North America.Science326, 1100–1103 (2009). doi:10.1126/science.1179504;pmid:199654263.",
-            "F.A.Smith,R.E.ElliottSmith,S.K.Lyons,J.L.Payne,Bodysizedowngrading of mammals over the late Quaternary.Science360,310–313 (2018). doi:10.1126/science.aao5987;pmid:296745914.",
-            "A. D. Barnoskyet al., Has the Earth’s sixth mass extinctionalready arrived?Nature471,51–57 (2011). doi:101038/nature09678; pmid:213688235.",
-            "P. L. Koch, A. D. Barnosky, Late Quaternary extinctions: Stateof the debate.Annu. Rev. Ecol. Evol. Syst.37, 215–25.",
-            "A. D. Barnosky, E. L. Lindsey, Timing of Quaternary megafaunalextinction in South America in relation to human arrivaland climate change.Quat. Int.217,10–29 (2010). doi:10.1016/j.quaint.2009.11.0177.",
-        ).joinToString(
+        return publication.relatedArticles!!.joinToString(
             separator = "",
             prefix = "<ol style=\"padding-left: 14px; margin-bottom: 4px\">",
             postfix = "</ol>"
