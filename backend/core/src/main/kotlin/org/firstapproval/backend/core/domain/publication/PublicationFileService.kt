@@ -2,10 +2,9 @@ package org.firstapproval.backend.core.domain.publication
 
 import com.amazonaws.services.s3.model.S3Object
 import org.apache.commons.io.FilenameUtils
+import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.external.s3.FILES
 import org.firstapproval.backend.core.external.s3.FileStorageService
-import org.firstapproval.backend.core.domain.user.User
-import org.firstapproval.backend.core.utils.calculateSHA256
 import org.firstapproval.backend.core.utils.require
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -59,9 +58,7 @@ class PublicationFileService(
                 dropDuplicate(publicationId, actualFullPath)?.let { filesToDelete.add(it) }
             }
             val hash = if (!isDir) {
-                fileStorageService.save(FILES, fileId.toString(), data!!, contentLength!!)
-                data.reset()
-                data.use { calculateSHA256(it) }
+                fileStorageService.save(FILES, fileId.toString(), data!!, contentLength!!).eTag
             } else null
             file = publicationFileRepository.save(
                 PublicationFile(

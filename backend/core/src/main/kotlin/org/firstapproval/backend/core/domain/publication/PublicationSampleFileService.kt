@@ -1,16 +1,15 @@
 package org.firstapproval.backend.core.domain.publication
 
 import org.apache.commons.io.FilenameUtils
+import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.external.s3.FileStorageService
 import org.firstapproval.backend.core.external.s3.SAMPLE_FILES
-import org.firstapproval.backend.core.domain.user.User
-import org.firstapproval.backend.core.utils.calculateSHA256
 import org.firstapproval.backend.core.utils.require
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
 import java.io.InputStream
-import java.util.*
+import java.util.UUID
 import java.util.UUID.randomUUID
 
 @Service
@@ -49,9 +48,7 @@ class PublicationSampleFileService(
                 dropDuplicate(publicationId, actualFullPath)?.let { filesToDelete.add(it) }
             }
             val hash = if (!isDir) {
-                fileStorageService.save(SAMPLE_FILES, fileId.toString(), data!!, contentLength!!)
-                data.reset()
-                data.use { calculateSHA256(it) }
+                fileStorageService.save(SAMPLE_FILES, fileId.toString(), data!!, contentLength!!).eTag
             } else null
             file = publicationSampleFileRepository.save(
                 PublicationSampleFile(

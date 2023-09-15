@@ -66,7 +66,7 @@ class PublicationPdfService(
     }
 
     private fun title(publication: Publication): String {
-        return if (publication.status != PUBLISHED) {
+        return if (publication.title.isNullOrEmpty()) {
             "Draft. No title yet."
         } else {
             publication.title!!
