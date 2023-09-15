@@ -221,6 +221,16 @@ export const PublicationPage: FunctionComponent = observer(() => {
                     }}>
                     {nextViewMode}
                   </ButtonWrap>
+                  <PdfButtonWrap
+                    variant="outlined"
+                    size={'medium'}
+                    onClick={async () => {
+                      if (validateSections()) {
+                        await publicationPageStore.downloadPdf();
+                      }
+                    }}>
+                    Preview PDF
+                  </PdfButtonWrap>
                   <ButtonWrap
                     marginright="0px"
                     variant="outlined"
@@ -228,7 +238,11 @@ export const PublicationPage: FunctionComponent = observer(() => {
                     onClick={handleClick}>
                     More
                     <ExpandMore
-                      sx={{ width: 20, height: 20, marginLeft: '8px' }}
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        marginLeft: '8px'
+                      }}
                     />
                   </ButtonWrap>
                 </>
@@ -517,6 +531,12 @@ const PublicationBodyWrap = styled('div')`
 const ButtonWrap = styled(Button)<{ marginright?: string }>`
   margin-right: ${(props) => props.marginright ?? '24px'};
   width: 90px;
+  height: 36px;
+`;
+
+const PdfButtonWrap = styled(Button)`
+  margin-right: 24px;
+  width: 120px;
   height: 36px;
 `;
 

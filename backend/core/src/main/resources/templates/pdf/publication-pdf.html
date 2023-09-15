@@ -307,10 +307,10 @@
         <div class="block-content" th:text="${objectOfStudy}">
         </div>
 
-        <div class="block-title">
+        <div th:if="${software}" class="block-title">
             Software
         </div>
-        <div class="block-content" th:text="${software}">
+        <div th:if="${software}" class="block-content" th:text="${software}">
         </div>
 
         <div class="block-title">
@@ -320,13 +320,13 @@
         <div class="authors-description-content" th:utext="${authorsDescription}">
         </div>
 
-        <div class="block-title">
+        <div th:if="${grantingOrganizations}" class="block-title">
             Granting organizations
         </div>
-        <div class="block-content" th:utext="${grantingOrganizations}">
+        <div th:if="${grantingOrganizations}" class="block-content" th:utext="${grantingOrganizations}">
         </div>
 
-        <div class="block-title">
+        <div th:if="${relatedArticles}" class="block-title">
             Related articles
         </div>
 
@@ -337,7 +337,7 @@
             <div th:text="${primaryArticles}">
             </div>
         </div>
-        <div class="block-content" th:utext="${relatedArticles}">
+        <div th:if="${relatedArticles}" class="block-content" th:utext="${relatedArticles}">
         </div>
 
     </div>

@@ -37,20 +37,26 @@ class PublicationPdfService(
         model["hash"] = hash(publication)
         model["files"] = files(publication)
         model["experimentGoals"] = experimentGoals(publication)
-        if (publication.isNegative) {
+        if (publication.isNegative && !publication.negativeData.isNullOrEmpty()) {
             model["negativeData"] = negativeData(publication)
         }
         model["methodName"] = methodName(publication)
         model["method"] = method(publication)
         model["objectOfStudyName"] = objectOfStudyName(publication)
         model["objectOfStudy"] = objectOfStudy(publication)
-        model["software"] = software(publication)
+        if (!publication.software.isNullOrEmpty()) {
+            model["software"] = software(publication)
+        }
         model["authorsDescription"] = authorsDescriptions(publication)
-        model["grantingOrganizations"] = grantingOrganizations(publication)
-        if (publication.primaryArticles != null && publication.primaryArticles!!.isNotEmpty()) {
+        if (!publication.grantOrganizations.isNullOrEmpty()) {
+            model["grantingOrganizations"] = grantingOrganizations(publication)
+        }
+        if (!publication.primaryArticles.isNullOrEmpty()) {
             model["primaryArticles"] = primaryArticles(publication)
         }
-        model["relatedArticles"] = relatedArticles(publication)
+        if (!publication.relatedArticles.isNullOrEmpty()) {
+            model["relatedArticles"] = relatedArticles(publication)
+        }
         context.setVariables(model)
         return context
     }
@@ -60,10 +66,17 @@ class PublicationPdfService(
     }
 
     private fun title(publication: Publication): String {
-        return publication.title!!
+        return if (publication.status != PUBLISHED) {
+            "Draft. No title yet."
+        } else {
+            publication.title!!
+        }
     }
 
     private fun authorNames(publication: Publication): String {
+        if (publication.confirmedAuthors.isEmpty() && publication.unconfirmedAuthors.isEmpty()) {
+            return "Draft. No authors yet."
+        }
         val confirmedAuthorNames = publication.confirmedAuthors
             .map { it.user.lastName + " " + it.user.firstName }
         val unconfirmedAuthorNames = publication.unconfirmedAuthors
@@ -72,11 +85,19 @@ class PublicationPdfService(
     }
 
     private fun publishDate(publication: Publication): String {
-        return publication.publicationTime!!.toLocalDate().toString()
+        return if (publication.status != PUBLISHED) {
+            "Dataset is not published yet."
+        } else {
+            publication.publicationTime!!.toLocalDate().toString()
+        }
     }
 
     private fun description(publication: Publication): String {
-        return toParagraphs(publication.description!!)
+        return if (publication.description.isNullOrEmpty()) {
+            return "Draft. No description yet."
+        } else {
+            toParagraphs(publication.description!!)
+        }
     }
 
     private fun hash(publication: Publication): String {
@@ -89,14 +110,18 @@ class PublicationPdfService(
 
     private fun files(publication: Publication): String {
         return if (publication.status == PUBLISHED) {
-            "${publication.foldersCount} folders & ${publication.filesCount} files – ${publication.archiveSize!! / 1024 / 1024 } MB"
+            "${publication.foldersCount} folders & ${publication.filesCount} files – ${publication.archiveSize!! / 1024 / 1024} MB"
         } else {
             "Dataset is not published yet, information about dataset files will be available after publication."
         }
     }
 
     private fun experimentGoals(publication: Publication): String {
-        return toParagraphs(publication.predictedGoals!!)
+        return if (publication.predictedGoals.isNullOrEmpty()) {
+            "Draft. No predicted goals yet."
+        } else {
+            toParagraphs(publication.description!!)
+        }
     }
 
     private fun negativeData(publication: Publication): String {
@@ -104,19 +129,35 @@ class PublicationPdfService(
     }
 
     private fun methodName(publication: Publication): String {
-        return publication.methodTitle!!
+        return if (publication.methodTitle.isNullOrEmpty()) {
+            "Draft. No method title yet."
+        } else {
+            publication.methodTitle!!
+        }
     }
 
     private fun method(publication: Publication): String {
-        return toParagraphs(publication.methodDescription!!)
+        return if (publication.methodDescription.isNullOrEmpty()) {
+            "Draft. No method description yet."
+        } else {
+            toParagraphs(publication.methodDescription!!)
+        }
     }
 
     private fun objectOfStudyName(publication: Publication): String {
-        return publication.objectOfStudyTitle!!
+        return if (publication.objectOfStudyTitle.isNullOrEmpty()) {
+            "Draft. No object of study yet."
+        } else {
+            publication.objectOfStudyTitle!!
+        }
     }
 
     private fun objectOfStudy(publication: Publication): String {
-        return toParagraphs(publication.objectOfStudyDescription!!)
+        return if (publication.objectOfStudyDescription.isNullOrEmpty()) {
+            "Draft. No object of study description yet."
+        } else {
+            toParagraphs(publication.objectOfStudyDescription!!)
+        }
     }
 
     private fun software(publication: Publication): String {
