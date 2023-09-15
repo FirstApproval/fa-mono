@@ -732,7 +732,7 @@ paths:
       operationId: downloadPublicationFiles
       tags: [ publication ]
 
-  /api/publication/pdf/download:
+  /api/publication/{id}/pdf/download:
     get:
       parameters:
         - in: path
@@ -750,9 +750,9 @@ paths:
                 type: string
                 format: byte
       security:
-        - PublicAuth: [ ]
+        - TokenAuth: [ ]
       operationId: downloadPdf
-      tags: [ pdf ]
+      tags: [ publication ]
 
   /api/publication/{id}/files/sample/download:
     parameters:

@@ -11,8 +11,8 @@ class PdfService(
     private val templateEngine: SpringTemplateEngine,
 ) {
 
-    fun generate(): ByteArray {
-        val htmlContent = templateEngine.process("publication-pdf", generateThymeleafContext())
+    fun generate(templateName: String, templateContext: Context): ByteArray {
+        val htmlContent = templateEngine.process(templateName, templateContext)
         ByteArrayOutputStream().use { os ->
             val builder = PdfRendererBuilder()
             builder.useFastMode()
@@ -21,13 +21,5 @@ class PdfService(
             builder.run()
             return os.toByteArray()
         }
-    }
-
-    private fun generateThymeleafContext(): Context {
-        val context = Context()
-        val model: MutableMap<String, Any> = HashMap()
-        model["test123"] = "test123123123"
-        context.setVariables(model)
-        return context
     }
 }
