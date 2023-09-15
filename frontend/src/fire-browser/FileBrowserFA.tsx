@@ -260,7 +260,7 @@ export const FileBrowserFA = observer(
             {!props.disableToolbar && (
               <FileToolbar instanceId={props.instanceId} />
             )}
-            <Divider />
+            <DividerWrap />
             {!props.fs.isLoading && (
               <>
                 <FileList />
@@ -489,4 +489,9 @@ const TextWrap = styled.div`
 
 const DialogContentWrap = styled.div`
   padding: 16px 32px 32px 16px !important;
+`;
+
+const DividerWrap = styled(Divider)`
+  margin-left: -8px;
+  margin-right: -8px;
 `;
