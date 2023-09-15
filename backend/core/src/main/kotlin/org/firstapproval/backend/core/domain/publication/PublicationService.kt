@@ -6,6 +6,7 @@ import org.firstapproval.api.server.model.PublicationEditRequest
 import org.firstapproval.api.server.model.PublicationsResponse
 import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.backend.core.config.Properties.FrontendProperties
+import org.firstapproval.backend.core.config.Properties.S3Properties
 import org.firstapproval.backend.core.domain.auth.TokenService
 import org.firstapproval.backend.core.domain.file.ARCHIVED_PUBLICATION_FILES
 import org.firstapproval.backend.core.domain.file.ARCHIVED_PUBLICATION_SAMPLE_FILES
@@ -65,7 +66,8 @@ class PublicationService(
     private val downloaderRepository: DownloaderRepository,
     private val publicationFileRepository: PublicationFileRepository,
     private val sampleFileRepository: PublicationSampleFileRepository,
-    private val transactionTemplate: TransactionTemplate
+    private val transactionTemplate: TransactionTemplate,
+    private val s3Properties: S3Properties
 ) {
     @Transactional
     fun create(user: User): Publication {
@@ -150,28 +152,6 @@ class PublicationService(
         publicationRepository.saveAndFlush(publication)
     }
 
-    @Transactional
-    fun getPublicationArchive(token: String): FileResponse {
-        val claims = tokenService.parseDownloadPublicationArchiveToken(token)
-        val publicationId = claims.subject.toString()
-        val publication = publicationRepository.getReferenceById(UUID.fromString(publicationId))
-        val title = if (publication.title != null) {
-            publication.title
-        } else {
-            publicationId
-        }
-        val user = userService.get(UUID.fromString(claims["userId"].toString()))
-        publication.downloadsCount += 1
-        addDownloadHistory(user, publication)
-        if (user.email != null) {
-            notificationService.sendArchivePassword(user.email!!, publication.title, publication.archivePassword!!)
-        }
-        return FileResponse(
-            name = title!! + ".zip",
-            fileStorageService.get(ARCHIVED_PUBLICATION_FILES, publicationId)
-        )
-    }
-
     private fun addDownloadHistory(user: User, publication: Publication) {
         val prevTry = downloaderRepository.getByUserAndPublication(user, publication)
         if (prevTry != null) {
@@ -219,43 +199,49 @@ class PublicationService(
         return elasticRepository.searchByFields(text, PageRequest.of(pageNum, limit, sort))
     }
 
-//    @Transactional
-//    fun requestDownload(id: UUID) {
-//        val pub = getPublicationAndCheckStatus(id)
-//        jobRepository.findByPublicationId(pub.id) ?: run {
-//            val createdJob = ipfsClient.createJob(pub.contentId!!, IpfsClient.IpfsJobKind.RESTORE)
-//            jobRepository.save(
-//                Job(
-//                    id = createdJob.id,
-//                    publication = pub,
-//                    status = JobStatus.valueOf(createdJob.status.name),
-//                    kind = JobKind.valueOf(createdJob.kind.name),
-//                    creationTime = now(),
-//                    completionTime = null
-//                )
-//            )
-//        }
-//    }
-
-    fun getDownloadLink(user: User, publicationId: UUID): DownloadLinkResponse {
+    @Transactional
+    fun getDownloadLinkForArchive(user: User, publicationId: UUID): DownloadLinkResponse {
         val publication = publicationRepository.getReferenceById(publicationId)
         if (publication.status != PUBLISHED && publication.accessType != OPEN) {
             throw IllegalArgumentException()
         }
-        val downloadToken = tokenService.generateDownloadPublicationArchiveToken(user.id.toString(), publicationId.toString())
-        val link = "${frontendProperties.url}/api/publication/files/download?downloadToken=$downloadToken"
+        val title = if (publication.title != null) {
+            publication.title
+        } else {
+            publicationId.toString()
+        }
+        publication.downloadsCount += 1
+        addDownloadHistory(user, publication)
+        if (user.email != null) {
+            notificationService.sendArchivePassword(user.email!!, title, publication.archivePassword!!)
+        }
+        val link = fileStorageService.generateTemporaryDownloadLink(
+            ARCHIVED_PUBLICATION_FILES, publicationId.toString(), title!! + "_files.zip"
+        )
         val passcode = publication.archivePassword
         return DownloadLinkResponse(link, passcode)
     }
 
-//    private fun getPublicationAndCheckStatus(id: UUID): Publication {
-//        return publicationRepository.getReferenceById(id).let {
-//            if (it.status != PUBLISHED && it.accessType != OPEN) {
-//                throw IllegalStateException("This publication is not published yet.")
-//            }
-//            it
-//        }
-//    }
+    @Transactional
+    fun getDownloadLinkForSampleArchive(publicationId: UUID): DownloadLinkResponse {
+        val publication = publicationRepository.getReferenceById(publicationId)
+        if (publication.status != PUBLISHED && publication.accessType != OPEN) {
+            throw IllegalArgumentException()
+        }
+        val title = if (publication.title != null) {
+            publication.title
+        } else {
+            publicationId.toString()
+        }
+        val link =
+            fileStorageService.generateTemporaryDownloadLink(
+                ARCHIVED_PUBLICATION_SAMPLE_FILES,
+                publicationId.toString(),
+                title!! + "_sample_files.zip"
+            )
+        val passcode = publication.archivePassword
+        return DownloadLinkResponse(link, passcode)
+    }
 
     @Transactional
     fun get(user: User?, id: UUID): Publication {

@@ -39,6 +39,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { calculatePathChain } from './utils';
 import { UploadType } from '../apis/first-approval-api';
+import { fileService } from '../core/service';
 
 setChonkyDefaults({
   iconComponent: ChonkyIconFA,
@@ -176,13 +177,17 @@ export const FileBrowser = observer((props: FileBrowserProps): ReactElement => {
     } else if (data.id === ChonkyActions.DownloadFiles.id) {
       const files = data.state.selectedFiles.filter((f) => !f.isDir);
       for (const file of files) {
-        const downloadLink = document.createElement('a');
-        downloadLink.href = `/api/files/download/${file.id}`;
-        downloadLink.download = file.name;
-        downloadLink.style.display = 'none';
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
+        void fileService
+          .getDownloadLinkForPublicationFile(file.id)
+          .then((response) => {
+            const downloadLink = document.createElement('a');
+            downloadLink.href = response.data;
+            downloadLink.download = file.name;
+            downloadLink.style.display = 'none';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+          });
       }
     } else if (data.id === ChonkyActions.DownloadFilesArchive.id) {
       props.onArchiveDownload();

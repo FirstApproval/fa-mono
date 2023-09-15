@@ -71,18 +71,9 @@ class PublicationSampleFileController(
         )
     }
 
-    override fun downloadPublicationSampleFile(fileId: UUID): ResponseEntity<Resource> {
-        val file = publicationSampleFileService.getPublicationSampleFileWithContent(fileId)
-        val contentType: MediaType = try {
-            MediaType.parseMediaType(guessContentTypeFromName(file.name))
-        } catch (ex: Exception) {
-            MediaType.APPLICATION_OCTET_STREAM
-        }
-        return ok()
-            .contentType(contentType)
-            .header("Content-disposition", "attachment; filename=\"${file.name}\"")
-            .contentLength(file.s3Object.objectMetadata.contentLength)
-            .body(InputStreamResource(file.s3Object.objectContent))
+    override fun getPublicationSampleFileDownloadLink(fileId: UUID): ResponseEntity<String> {
+        val link = publicationSampleFileService.getDownloadLink(authHolderService.user, fileId)
+        return ok().body(link)
     }
 
     override fun deleteSampleFiles(deleteByIdsRequest: DeleteByIdsRequest): ResponseEntity<Void> {

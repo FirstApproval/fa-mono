@@ -108,42 +108,14 @@ class PublicationController(
         return ok().body(publicationResponse)
     }
 
-//    override fun requestDownload(id: UUID): ResponseEntity<Void> {
-//        publicationService.requestDownload(id)
-//        return ok().build()
-//    }
-
     override fun getDownloadLink(id: UUID): ResponseEntity<DownloadLinkResponse> {
-        val downloadLink = publicationService.getDownloadLink(authHolderService.user, id)
+        val downloadLink = publicationService.getDownloadLinkForArchive(authHolderService.user, id)
         return ok(downloadLink)
     }
 
-    override fun downloadPublicationFiles(downloadToken: String): ResponseEntity<Resource> {
-        val file = publicationService.getPublicationArchive(downloadToken)
-        val contentType: MediaType = try {
-            MediaType.parseMediaType(URLConnection.guessContentTypeFromName(file.name))
-        } catch (ex: Exception) {
-            MediaType.APPLICATION_OCTET_STREAM
-        }
-        return ok()
-            .contentType(contentType)
-            .header("Content-disposition", "attachment; filename=\"${file.name}\"")
-            .contentLength(file.s3Object.objectMetadata.contentLength)
-            .body(InputStreamResource(file.s3Object.objectContent))
-    }
-
-    override fun downloadPublicationSampleFiles(id: UUID): ResponseEntity<Resource> {
-        val file = publicationService.getPublicationSamplesArchive(id)
-        val contentType: MediaType = try {
-            MediaType.parseMediaType(URLConnection.guessContentTypeFromName(file.name))
-        } catch (ex: Exception) {
-            MediaType.APPLICATION_OCTET_STREAM
-        }
-        return ok()
-            .contentType(contentType)
-            .header("Content-disposition", "attachment; filename=\"${file.name}\"")
-            .contentLength(file.s3Object.objectMetadata.contentLength)
-            .body(InputStreamResource(file.s3Object.objectContent))
+    override fun getPublicationSampleFilesDownloadLink(id: UUID): ResponseEntity<DownloadLinkResponse> {
+        val downloadLink = publicationService.getDownloadLinkForSampleArchive(id)
+        return ok(downloadLink)
     }
 
     override fun incrementPublicationViewCount(id: UUID): ResponseEntity<Void> {

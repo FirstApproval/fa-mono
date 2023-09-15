@@ -32,11 +32,14 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { type ChonkySampleFileSystem } from './ChonkySampleFileSystem';
+import {
+  type ChonkySampleFileSystem,
+  DuplicateCheckResult
+} from './ChonkySampleFileSystem';
 import { UploadType } from '../../apis/first-approval-api';
 import { calculatePathChain } from '../utils';
-import { DuplicateCheckResult } from './ChonkySampleFileSystem';
 import { SampleFileToolbar } from './SampleFileToolbar';
+import { sampleFileService } from '../../core/service';
 
 setChonkyDefaults({
   iconComponent: ChonkyIconFA,
@@ -172,21 +175,27 @@ export const SampleFileBrowser = observer(
         sampleFileInput.click();
       } else if (data.id === ChonkyActions.DownloadFiles.id) {
         const files = data.state.selectedFiles.filter((f) => !f.isDir);
-        for (const file of files) {
-          const downloadLink = document.createElement('a');
-          downloadLink.href = `/api/sample-files/download/${file.id}`;
-          downloadLink.download = file.name;
-          downloadLink.style.display = 'none';
-          document.body.appendChild(downloadLink);
-          downloadLink.click();
-          document.body.removeChild(downloadLink);
-        }
+        void downloadSampleFiles(files);
       } else if (data.id === ChonkyActions.StartDragNDrop.id) {
         props.isChonkyDragRef.current = true;
       } else if (data.id === ChonkyActions.EndDragNDrop.id) {
         props.isChonkyDragRef.current = false;
       } else if (data.id === ChonkyActions.DownloadFilesArchive.id) {
         props.onArchiveDownload(data.state.selectedFiles);
+      }
+    };
+
+    const downloadSampleFiles = async (files: FileData[]): Promise<void> => {
+      for (const file of files) {
+        const response =
+          await sampleFileService.getPublicationSampleFileDownloadLink(file.id);
+        const downloadLink = document.createElement('a');
+        downloadLink.href = response.data;
+        downloadLink.download = file.name;
+        downloadLink.style.display = 'none';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
       }
     };
 

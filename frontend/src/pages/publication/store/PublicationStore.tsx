@@ -642,9 +642,13 @@ export class PublicationStore {
   }, EDIT_THROTTLE_MS);
 
   doDownloadSampleFiles = _.throttle(async () => {
+    const response =
+      await publicationService.getPublicationSampleFilesDownloadLink(
+        this.publicationId
+      );
     const downloadLink = document.createElement('a');
-    downloadLink.href = `/api/publication/${this.publicationId}/files/sample/download`;
-    downloadLink.download = this.title + '_files.zip';
+    downloadLink.href = response.data.link;
+    downloadLink.download = this.title + '_sample_files.zip';
     downloadLink.style.display = 'none';
     document.body.appendChild(downloadLink);
     downloadLink.click();
