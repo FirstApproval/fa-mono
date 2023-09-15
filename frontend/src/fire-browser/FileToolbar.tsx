@@ -37,7 +37,7 @@ export const FileToolbar: React.FC<{ instanceId: string }> = React.memo(
             style={{ display: 'none' }}
           />
 
-          <Stack direction="row" alignItems="center" spacing={2}>
+          <StackWrap direction="row" alignItems="center" spacing={2}>
             <MainAction
               item={ChonkyActions.DownloadFilesArchive.id}
               icon={<FileDownload />}
@@ -52,7 +52,7 @@ export const FileToolbar: React.FC<{ instanceId: string }> = React.memo(
               item={ChonkyActions.CreateFolder.id}
               icon={<FolderOpen />}
             />
-          </Stack>
+          </StackWrap>
 
           {selectionSize !== 0 && (
             <>
@@ -80,7 +80,6 @@ export const FileToolbar: React.FC<{ instanceId: string }> = React.memo(
           )}
           <ToolbarLeft></ToolbarLeft>
         </ToolbarWrap>
-        <Divider />
       </>
     );
   }
@@ -129,15 +128,16 @@ const FileAction: React.FC<ToolbarButtonProps> = (
 
 const ToolbarWrap = styled.div`
   display: flex;
-  margin-bottom: 16px;
   align-items: center;
-  height: 40px;
-  min-height: 40px;
 `;
 
 const ToolbarLeft = styled.div`
   display: flex;
   margin-left: auto;
+`;
+
+const StackWrap = styled(Stack)`
+  margin-bottom: 16px;
 `;
 
 const SelectedCountWrap = styled.div`

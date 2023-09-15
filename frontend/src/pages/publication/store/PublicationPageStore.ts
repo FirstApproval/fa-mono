@@ -30,6 +30,7 @@ export class PublicationPageStore {
   filesEnabled = false;
 
   sampleFilesEnabled = false;
+  sampleFilesModalOpen = false;
 
   get sampleFilesHidden(): boolean {
     return this.fs.rootPathFiles === 0;
@@ -183,6 +184,14 @@ export class PublicationPageStore {
 
   openSampleFiles = (): void => {
     this.sampleFilesEnabled = true;
+  };
+
+  openSampleFilesModal = (): void => {
+    this.sampleFilesModalOpen = true;
+  };
+
+  closeSampleFilesModal = (): void => {
+    this.sampleFilesModalOpen = false;
   };
 
   openAuthors = (): void => {

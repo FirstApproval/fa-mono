@@ -23,6 +23,7 @@ import { FileToolbar } from './FileToolbar';
 import styled from '@emotion/styled';
 import {
   CircularProgress,
+  Divider,
   FormControlLabel,
   FormHelperText,
   Radio,
@@ -51,9 +52,11 @@ interface FileBrowserProps {
   rootFolderName: string;
   fileDownloadUrlPrefix: string;
   isReadonly: boolean;
-  onArchiveDownload: (files: FileData[]) => void;
+  onArchiveDownload?: (files: FileData[]) => void;
+  onEditFilesModalOpen?: () => void;
   fs: FileSystemFA;
   isChonkyDragRef: MutableRefObject<boolean>;
+  disableToolbar?: boolean;
 }
 
 export const FileBrowserFA = observer(
@@ -188,11 +191,13 @@ export const FileBrowserFA = observer(
           document.body.removeChild(downloadLink);
         }
       } else if (data.id === ChonkyActions.DownloadFilesArchive.id) {
-        props.onArchiveDownload(data.state.selectedFiles);
+        props.onArchiveDownload?.(data.state.selectedFiles);
       } else if (data.id === ChonkyActions.StartDragNDrop.id) {
         props.isChonkyDragRef.current = true;
       } else if (data.id === ChonkyActions.EndDragNDrop.id) {
         props.isChonkyDragRef.current = false;
+      } else if (data.id === ChonkyActions.EditFilesModal.id) {
+        props.onEditFilesModalOpen?.();
       }
     };
 
@@ -213,8 +218,12 @@ export const FileBrowserFA = observer(
       );
     }
 
-    if (props.isReadonly) {
+    if (props.isReadonly && props.onArchiveDownload) {
       myFileActions.push(ChonkyActions.DownloadFilesArchive);
+    }
+
+    if (props.isReadonly && props.onEditFilesModalOpen) {
+      myFileActions.push(ChonkyActions.EditFilesModal);
     }
 
     const [files, setFiles] = useState<FileArray>([]);
@@ -244,7 +253,10 @@ export const FileBrowserFA = observer(
             fileActions={myFileActions}
             disableDefaultFileActions={true}>
             <FileNavbar />
-            <FileToolbar instanceId={props.instanceId} />
+            {!props.disableToolbar && (
+              <FileToolbar instanceId={props.instanceId} />
+            )}
+            <Divider />
             {!props.fs.isLoading && (
               <>
                 <FileList />
@@ -447,7 +459,7 @@ export const FileBrowserFA = observer(
 const Wrap = styled.div`
   border-radius: 4px;
   border: 1px solid var(--divider, #d2d2d6);
-  height: 450px;
+  height: 100%;
 `;
 
 const FullWidthTextField = styled(TextField)`

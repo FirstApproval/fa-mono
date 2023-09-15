@@ -3,15 +3,17 @@ import React, {
   type ReactElement,
   useEffect,
   useMemo,
+  useRef,
   useState
 } from 'react';
-import { Button, LinearProgress } from '@mui/material';
+import { Button, DialogContent, LinearProgress } from '@mui/material';
 import {
   FlexBodyCenter,
   FlexHeader,
   Logo,
   Parent,
-  StyledMenuItem
+  StyledMenuItem,
+  TitleRowWrap
 } from '../common.styled';
 import { FileUploader } from '../../fire-browser/FileUploader';
 import { routerStore } from '../../core/router';
@@ -77,6 +79,10 @@ import Menu from '@mui/material/Menu';
 import { ConfirmationDialog } from '../../components/ConfirmationDialog';
 import { ContentLicensingDialog } from '../../components/ContentLicensingDialog';
 import { PublicationPageStore } from './store/PublicationPageStore';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import { Close } from '@mui/icons-material';
+import { FileBrowserFA } from '../../fire-browser/FileBrowserFA';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -348,7 +354,8 @@ const PublicationBody = observer(
       openObjectOfStudy,
       openSoftware,
       openFiles,
-      openSampleFiles,
+      openSampleFilesModal,
+      closeSampleFilesModal,
       openAuthors,
       openGrantingOrganizations,
       openRelatedArticles,
@@ -360,11 +367,14 @@ const PublicationBody = observer(
       filesEnabled,
       sampleFilesEnabled,
       sampleFilesHidden,
+      sampleFilesModalOpen,
       authorsEnabled,
       grantingOrganizationsEnabled,
       relatedArticlesEnabled,
       tagsEnabled
     } = publicationPageStore;
+
+    const isChonkyDragRef = useRef(false);
 
     return (
       <>
@@ -431,41 +441,76 @@ const PublicationBody = observer(
           <FilesPlaceholder onClick={openFiles} />
         )}
         {filesEnabled && (
-          <FileUploader
-            instanceId={'main'}
-            rootFolderName={'Files'}
-            fileDownloadUrlPrefix={'/api/files/download'}
-            fs={fs}
-            isReadonly={publicationStore.isReadonly}
-            onArchiveDownload={() => {
-              if (authStore.token) {
-                publicationPageStore.downloadFiles();
-                publicationPageStore.isPasscodeDialogOpen = true;
-              } else {
-                routerStore.navigatePage(Page.SIGN_UP);
-              }
-            }}
-          />
+          <FilesWrap>
+            <FileUploader
+              instanceId={'main'}
+              rootFolderName={'Files'}
+              fileDownloadUrlPrefix={'/api/files/download'}
+              fs={fs}
+              isReadonly={publicationStore.isReadonly}
+              onArchiveDownload={() => {
+                if (authStore.token) {
+                  publicationPageStore.downloadFiles();
+                  publicationPageStore.isPasscodeDialogOpen = true;
+                } else {
+                  routerStore.navigatePage(Page.SIGN_UP);
+                }
+              }}
+            />
+          </FilesWrap>
         )}
 
         {/* Sample files */}
         {!sampleFilesEnabled &&
           !publicationStore.isReadonly &&
           !sampleFilesHidden && (
-            <SampleFilesPlaceholder onClick={openSampleFiles} />
+            <SampleFilesPlaceholder onClick={openSampleFilesModal} />
           )}
         {sampleFilesEnabled && !publicationStore.isReadonly && (
-          <FileUploader
-            instanceId={'sample'}
-            rootFolderName={'Sample files'}
-            fileDownloadUrlPrefix={'/api/sample-files/download'}
-            onArchiveDownload={(files) => {
-              props.publicationPageStore.downloadSampleMultiFiles(files);
-            }}
-            fs={sfs}
-            isReadonly={publicationStore.isReadonly}
-          />
+          <SampleFilesPreviewWrap>
+            <FileBrowserFA
+              instanceId={'sample'}
+              rootFolderName={'Sample files'}
+              fileDownloadUrlPrefix={'/api/sample-files/download'}
+              fs={sfs}
+              isReadonly={true}
+              isChonkyDragRef={isChonkyDragRef}
+              disableToolbar={true}
+              onEditFilesModalOpen={() => {
+                publicationPageStore.openSampleFilesModal();
+              }}
+            />
+          </SampleFilesPreviewWrap>
         )}
+        <Dialog
+          maxWidth={'xl'}
+          open={sampleFilesModalOpen}
+          onClose={closeSampleFilesModal}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description">
+          <DialogContentWrap>
+            <TitleRowWrap>
+              <DialogTitle style={{ padding: 0 }}></DialogTitle>
+              <Close
+                style={{ cursor: 'pointer' }}
+                htmlColor={'gray'}
+                onClick={closeSampleFilesModal}
+              />
+            </TitleRowWrap>
+            <SampleFilesWrap>
+              <FileUploader
+                instanceId={'sample'}
+                rootFolderName={'Sample files'}
+                fileDownloadUrlPrefix={'/api/sample-files/download'}
+                onArchiveDownload={(files) => {
+                  props.publicationPageStore.downloadSampleMultiFiles(files);
+                }}
+                fs={sfs}
+                isReadonly={publicationStore.isReadonly}
+              />
+            </SampleFilesWrap>
+          </DialogContentWrap>
+        </Dialog>
 
         {/* Authors */}
         {!authorsEnabled && !publicationStore.isReadonly && (
@@ -507,6 +552,32 @@ const PublicationBody = observer(
     );
   }
 );
+
+const FilesWrap = styled.div`
+  height: 450px;
+
+  margin-top: 48px;
+  margin-bottom: 40px;
+`;
+
+const SampleFilesPreviewWrap = styled.div`
+  height: 192px;
+
+  margin-top: 48px;
+  margin-bottom: 40px;
+
+  overflow: hidden;
+`;
+
+const SampleFilesWrap = styled.div`
+  height: 450px;
+
+  margin-top: 16px;
+`;
+
+const DialogContentWrap = styled(DialogContent)`
+  min-width: 728px;
+`;
 
 const PublicationBodyWrap = styled('div')`
   width: 728px;
