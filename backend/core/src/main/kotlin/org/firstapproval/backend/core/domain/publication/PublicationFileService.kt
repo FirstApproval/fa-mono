@@ -61,7 +61,7 @@ class PublicationFileService(
             val hash = if (!isDir) {
                 fileStorageService.save(FILES, fileId.toString(), data!!, contentLength!!)
                 data.reset()
-                calculateSHA256(data)
+                data.use { calculateSHA256(it) }
             } else null
             file = publicationFileRepository.save(
                 PublicationFile(
