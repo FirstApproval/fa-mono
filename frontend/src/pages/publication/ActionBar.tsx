@@ -14,10 +14,14 @@ import { ContentCopy } from '@mui/icons-material';
 import { ArchiveDownloader } from './ArchiveDownloader';
 import { CitateDialog } from './CitateDialog';
 import { PublicationStatus } from '../../apis/first-approval-api';
+import { PublicationPageStore } from './store/PublicationPageStore';
 
 export const ActionBar = observer(
-  (props: { publicationStore: PublicationStore }): ReactElement => {
-    const { publicationStore } = props;
+  (props: {
+    publicationStore: PublicationStore;
+    publicationPageStore: PublicationPageStore;
+  }): ReactElement => {
+    const { publicationStore, publicationPageStore } = props;
 
     const getArchiveSizeTitle = (sizeBytes: number | null): string => {
       if (sizeBytes) {
@@ -66,8 +70,8 @@ export const ActionBar = observer(
                   variant="outlined"
                   onClick={() => {
                     if (authStore.token) {
-                      publicationStore.downloadFiles();
-                      publicationStore.isPasscodeDialogOpen = true;
+                      publicationPageStore.downloadFiles();
+                      publicationPageStore.isPasscodeDialogOpen = true;
                     } else {
                       routerStore.navigatePage(Page.SIGN_UP);
                     }
@@ -82,14 +86,14 @@ export const ActionBar = observer(
                 </DownloadFilesButtonWrap>
               </Tooltip>
             )}
-            {publicationStore.sampleFilesEnabled &&
+            {publicationPageStore.sampleFilesEnabled &&
               publicationStore.publicationStatus ===
                 PublicationStatus.PUBLISHED && (
                 <Tooltip title="Download publication sample files">
                   <DownloadSampleFilesButtonWrap
                     hidden={true}
                     variant="outlined"
-                    onClick={() => publicationStore.downloadSampleFiles()}
+                    onClick={() => publicationPageStore.downloadSampleFiles()}
                     size={'medium'}>
                     <img src={downloadSample} style={{ marginRight: '8px' }} />{' '}
                     <span>Download sample</span>
@@ -115,7 +119,7 @@ export const ActionBar = observer(
               variant="outlined"
               size={'medium'}
               onClick={() => {
-                publicationStore.isCitateDialogOpen = true;
+                publicationPageStore.isCitateDialogOpen = true;
               }}>
               <img src={citate} />
             </ActionButtonWrap>
@@ -139,16 +143,19 @@ export const ActionBar = observer(
           }}
         />
         <ArchiveDownloader
-          isPasscodeOpen={publicationStore.isPasscodeDialogOpen}
+          isPasscodeOpen={publicationPageStore.isPasscodeDialogOpen}
           setIsPasscodeOpen={(value) =>
-            (publicationStore.isPasscodeDialogOpen = value)
+            (publicationPageStore.isPasscodeDialogOpen = value)
           }
-          publicationStore={publicationStore}
+          publicationPageStore={publicationPageStore}
         />
         <CitateDialog
-          isOpen={publicationStore.isCitateDialogOpen}
-          setIsOpen={(value) => (publicationStore.isCitateDialogOpen = value)}
+          isOpen={publicationPageStore.isCitateDialogOpen}
+          setIsOpen={(value) =>
+            (publicationPageStore.isCitateDialogOpen = value)
+          }
           publicationStore={publicationStore}
+          publicationPageStore={publicationPageStore}
         />
       </div>
     );

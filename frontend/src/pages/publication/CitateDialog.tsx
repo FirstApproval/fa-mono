@@ -8,18 +8,20 @@ import styled from '@emotion/styled';
 import { PublicationStore } from './store/PublicationStore';
 import { observer } from 'mobx-react-lite';
 import { Button } from '@mui/material';
+import { PublicationPageStore } from './store/PublicationPageStore';
 
 export const CitateDialog = observer(
   (props: {
     isOpen: boolean;
     setIsOpen: (value: boolean) => void;
     publicationStore: PublicationStore;
+    publicationPageStore: PublicationPageStore;
   }): ReactElement => {
-    const { isOpen, setIsOpen, publicationStore } = props;
+    const { isOpen, setIsOpen, publicationStore, publicationPageStore } = props;
 
     const onClose = (): void => {
       setIsOpen(false);
-      console.log(publicationStore.isCitateDialogOpen);
+      console.log(publicationPageStore.isCitateDialogOpen);
     };
 
     const copyPublicationLinkToClipboard = async (): Promise<void> => {

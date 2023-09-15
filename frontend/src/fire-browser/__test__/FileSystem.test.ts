@@ -1,4 +1,4 @@
-import { ChonkyFileSystem } from '../ChonkyFileSystem';
+import { FileSystemFA } from '../FileSystemFA';
 import { fileService } from '../../core/service';
 import { waitFor } from '@testing-library/react';
 import { runInAction } from 'mobx';
@@ -96,7 +96,7 @@ test('should upload files and directories', async () => {
     }
   ];
   const publicationId = 'aaaa-bbbb-cccc-dddd-eeee';
-  const fs = new ChonkyFileSystem(publicationId);
+  const fs = new FileSystemFA(publicationId, fileService);
   fs.addFilesDnd(files, UploadType.REPLACE);
 
   await waitFor(() => {

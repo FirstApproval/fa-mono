@@ -706,6 +706,28 @@ paths:
       operationId: getDownloadLink
       tags: [ publication ]
 
+  /api/publication/{id}/pdf/download:
+    get:
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: byte
+      security:
+        - TokenAuth: [ ]
+      operationId: downloadPdf
+      tags: [ publication ]
+
   /api/publication/{id}/files/sample/download-link:
     parameters:
       - in: path

@@ -5,7 +5,7 @@ import org.firstapproval.backend.core.config.Properties.FrontendProperties
 import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
-import org.firstapproval.backend.core.exception.RecordConflictException
+import org.firstapproval.backend.core.web.errors.RecordConflictException
 import org.firstapproval.backend.core.utils.EMAIL_CONFIRMATION_CODE_LENGTH
 import org.firstapproval.backend.core.utils.generateCode
 import org.springframework.security.access.AccessDeniedException
