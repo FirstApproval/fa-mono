@@ -94,6 +94,8 @@ class ArchiveService(
         val filesIds = mutableListOf<UUID>()
         var page = PageRequest.of(0, BATCH_SIZE)
         var files = publicationFileRepository.findByPublicationIdOrderByCreationTimeAsc(publication.id, page)
+        val filesCount = files.totalElements
+        var foldersCount = 1
         val folder = getOrCreateTmpFolder()
         val tempArchive = createTempFile(publication.id.toString(), ".zip", folder)
         val fileOutputStream = FileOutputStream(tempArchive)
@@ -105,6 +107,9 @@ class ArchiveService(
             while (!files.isEmpty) {
                 filesIds.addAll(files.map { it.id })
                 files.forEach {
+                    if (it.isDir) {
+                        foldersCount++
+                    }
                     if (!it.isDir) {
                         val inputStream = fileStorageService.get(FILES, it.id.toString()).objectContent
                         val zipParms = ZipParameters()
@@ -155,12 +160,14 @@ class ArchiveService(
                 tempArchive.delete()
             }
         }
-        return ArchiveResult(filesIds, archiveSize, files.count(), files.filter { it.isDir }.count())
+        return ArchiveResult(filesIds, archiveSize, filesCount.toInt(), foldersCount)
     }
 
     private fun archiveSampleFilesProcess(publication: Publication): ArchiveResult {
         var page = PageRequest.of(0, BATCH_SIZE)
         var files = publicationSampleFileRepository.findByPublicationIdOrderByCreationTimeAsc(publication.id, page)
+        val filesCount = files.totalElements
+        var foldersCount = 1
         val filesIds = mutableListOf<UUID>()
         val folder = getOrCreateTmpFolder()
         val tempArchive = createTempFile(publication.id.toString() + " samples", ".zip", folder)
@@ -173,6 +180,9 @@ class ArchiveService(
             while (!files.isEmpty) {
                 filesIds.addAll(files.map { it.id })
                 files.forEach {
+                    if (it.isDir) {
+                        foldersCount++
+                    }
                     if (!it.isDir) {
                         val inputStream = fileStorageService.get(SAMPLE_FILES, it.id.toString()).objectContent
                         val zipParms = ZipParameters()
@@ -221,7 +231,7 @@ class ArchiveService(
                 tempArchive.delete()
             }
         }
-        return ArchiveResult(filesIds, archiveSize, files.count(), files.filter { it.isDir }.count())
+        return ArchiveResult(filesIds, archiveSize, filesCount.toInt(), foldersCount)
     }
 
     private fun saveArchiveToS3(bucket: String, id: String, file: File) {
