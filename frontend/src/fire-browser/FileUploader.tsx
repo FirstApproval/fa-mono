@@ -6,10 +6,7 @@ import React, {
 } from 'react';
 import { getAllFileEntries } from 'src/util/fileUtil';
 import styled from '@emotion/styled';
-import {
-  type ChonkyFileSystem,
-  DuplicateCheckResult
-} from './ChonkyFileSystem';
+import { type FileSystemFA, DuplicateCheckResult } from './FileSystemFA';
 import { observer } from 'mobx-react-lite';
 import { UploadType } from '../apis/first-approval-api';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -18,12 +15,16 @@ import { FormControlLabel, Radio, RadioGroup } from '@mui/material';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import { FileBrowser } from './FileBrowser';
+import { FileBrowserFA } from './FileBrowserFA';
+import { FileData } from '@first-approval/chonky';
 
 interface FileUploaderProps {
+  instanceId: string;
+  rootFolderName: string;
+  fileDownloadUrlPrefix: string;
   isReadonly: boolean;
-  onArchiveDownload: () => void;
-  fs: ChonkyFileSystem;
+  onArchiveDownload: (files: FileData[]) => void;
+  fs: FileSystemFA;
 }
 
 export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
@@ -96,7 +97,10 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
         {isDropZoneVisible && (
           <DropZone onDrop={onDrop}>Drag files here for upload</DropZone>
         )}
-        <FileBrowser
+        <FileBrowserFA
+          instanceId={props.instanceId}
+          rootFolderName={props.rootFolderName}
+          fileDownloadUrlPrefix={props.fileDownloadUrlPrefix}
           fs={fs}
           isChonkyDragRef={isChonkyDragRef}
           isReadonly={props.isReadonly}

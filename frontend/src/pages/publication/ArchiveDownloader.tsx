@@ -6,20 +6,20 @@ import { ColumnElement, TitleRowWrap } from '../common.styled';
 import { copyTextToClipboard } from '../../fire-browser/utils';
 import Dialog from '@mui/material/Dialog';
 import styled from '@emotion/styled';
-import { PublicationStore } from './store/PublicationStore';
 import { observer } from 'mobx-react-lite';
+import { PublicationPageStore } from './store/PublicationPageStore';
 
 export const ArchiveDownloader = observer(
   (props: {
     isPasscodeOpen: boolean;
     setIsPasscodeOpen: (value: boolean) => void;
-    publicationStore: PublicationStore;
+    publicationPageStore: PublicationPageStore;
   }): ReactElement => {
-    const { isPasscodeOpen, setIsPasscodeOpen, publicationStore } = props;
+    const { isPasscodeOpen, setIsPasscodeOpen, publicationPageStore } = props;
 
     const onClosePasscodePopup = (): void => {
       setIsPasscodeOpen(false);
-      publicationStore.passcode = '';
+      publicationPageStore.passcode = '';
     };
 
     return (
@@ -49,12 +49,12 @@ export const ArchiveDownloader = observer(
               </TextWrap>
               <PasscodeRowWrap>
                 <PasscodeContainer>
-                  <Passcode>{publicationStore.passcode}</Passcode>
+                  <Passcode>{publicationPageStore.passcode}</Passcode>
                 </PasscodeContainer>
                 <CopyAll
                   onClick={() => {
                     void copyTextToClipboard(
-                      publicationStore.passcode
+                      publicationPageStore.passcode
                     ).finally();
                   }}
                   style={{ cursor: 'pointer' }}

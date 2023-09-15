@@ -1,4 +1,4 @@
-package org.firstapproval.backend.core.elastic
+package org.firstapproval.backend.core.infra.elastic
 
 import jakarta.persistence.Id
 import jakarta.persistence.Transient

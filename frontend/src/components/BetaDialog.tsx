@@ -40,9 +40,9 @@ export const BetaDialog = (props: {
         <div style={{ width: '100%' }}>
           <FullWidthButton
             variant={'contained'}
-            href={'mailto:hello@firstapproval.io'}
+            href={'mailto:info@firstapproval.io'}
             onClick={props.onClose}>
-            Email us to support@fa.io
+            Email us to info@firstapproval.io
           </FullWidthButton>
           <TitleRowWrap style={{ paddingTop: '6px', paddingBottom: '6px' }}>
             <Divider

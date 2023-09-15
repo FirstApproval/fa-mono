@@ -8,7 +8,7 @@ import java.util.TimeZone
 import java.util.TimeZone.setDefault
 
 @SpringBootApplication
-@EnableJpaRepositories("org.firstapproval.backend.core.domain")
+@EnableJpaRepositories("org.firstapproval.backend.core")
 @EnableElasticsearchRepositories("org.firstapproval.backend.core.elastic")
 class FirstApprovalApplication
 

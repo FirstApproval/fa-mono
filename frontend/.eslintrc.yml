@@ -16,6 +16,7 @@ plugins:
 rules: {
   "react/react-in-jsx-scope": "off",
   "react/jsx-uses-react": "off",
+  "react/prop-types": "off",
   "@typescript-eslint/restrict-plus-operands": "off",
   "prettier/prettier": "error",
   "@typescript-eslint/semi": "off",
@@ -29,6 +30,7 @@ rules: {
   "@typescript-eslint/consistent-type-imports": "off",
   "@typescript-eslint/indent": "off",
   "@typescript-eslint/no-non-null-assertion": "off",
+  "@typescript-eslint/brace-style": "off",
   "no-debugger": "off",
   "@typescript-eslint/no-confusing-void-expression": "off",
   "max-len": [

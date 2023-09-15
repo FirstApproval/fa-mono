@@ -1,8 +1,8 @@
-package org.firstapproval.backend.core.domain.ipfs
+package org.firstapproval.backend.core.external.ipfs
 
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
-import org.firstapproval.backend.core.domain.ipfs.IpfsClient.IpfsJobKind.RESTORE
-import org.firstapproval.backend.core.domain.ipfs.IpfsClient.IpfsJobStatus.COMPLETE
+import org.firstapproval.backend.core.external.ipfs.IpfsClient.IpfsJobKind.RESTORE
+import org.firstapproval.backend.core.external.ipfs.IpfsClient.IpfsJobStatus.COMPLETE
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime.now

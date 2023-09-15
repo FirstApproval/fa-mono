@@ -9,11 +9,9 @@ import {
   type UnconfirmedAuthor,
   type UserInfo
 } from '../../../apis/first-approval-api';
-import { type ChonkyFileSystem } from '../../../fire-browser/ChonkyFileSystem';
+import { type FileSystemFA } from '../../../fire-browser/FileSystemFA';
 import { v4 as uuidv4 } from 'uuid';
 import { type AuthorEditorStore } from './AuthorEditorStore';
-import { type ChonkySampleFileSystem } from '../../../fire-browser/sample-files/ChonkySampleFileSystem';
-import { FileData } from '@first-approval/chonky/dist/types/file.types';
 import { routerStore } from '../../../core/router';
 import { Page } from '../../../core/RouterStore';
 
@@ -45,17 +43,6 @@ export class PublicationStore {
   researchAreas: Paragraph[] = [];
 
   creator: UserInfo | undefined;
-  experimentGoalsEnabled = false;
-  methodEnabled = false;
-  objectOfStudyEnabled = false;
-  softwareEnabled = false;
-  filesEnabled = false;
-  sampleFilesEnabled = false;
-  sampleFilesHidden = true;
-  authorsEnabled = false;
-  grantingOrganizationsEnabled = false;
-  relatedArticlesEnabled = false;
-  tagsEnabled = false;
 
   summary: ParagraphWithId[] = [];
   savingStatus: SavingStatusState = SavingStatusState.PREVIEW;
@@ -76,10 +63,6 @@ export class PublicationStore {
   isNegative = false;
   negativeData = '';
 
-  passcode = '';
-  isPasscodeDialogOpen = false;
-  isCitateDialogOpen = false;
-
   publicationTime: Date = new Date();
   viewsCount: number = 0;
   downloadsCount: number = 0;
@@ -94,8 +77,7 @@ export class PublicationStore {
 
   constructor(
     readonly publicationId: string,
-    readonly fs: ChonkyFileSystem,
-    readonly sfs: ChonkySampleFileSystem
+    private readonly fs: FileSystemFA
   ) {
     makeAutoObservable(this);
     this.addSummaryParagraph(0);
@@ -105,13 +87,6 @@ export class PublicationStore {
         if (initialized) {
           this.loadInitialState();
         }
-      },
-      { fireImmediately: true }
-    );
-    reaction(
-      () => this.fs.files,
-      () => {
-        this.sampleFilesHidden = this.fs.files.length === 0;
       },
       { fireImmediately: true }
     );
@@ -873,52 +848,6 @@ export class PublicationStore {
     void this.updateRelatedArticles();
   };
 
-  openExperimentGoals = (): void => {
-    this.experimentGoalsEnabled = true;
-    this.addExperimentGoalsParagraph(0);
-  };
-
-  openMethod = (): void => {
-    this.methodEnabled = true;
-    this.addMethodParagraph(0);
-  };
-
-  openObjectOfStudy = (): void => {
-    this.objectOfStudyEnabled = true;
-    this.addObjectOfStudyParagraph(0);
-  };
-
-  openSoftware = (): void => {
-    this.softwareEnabled = true;
-    this.addSoftwareParagraph(0);
-  };
-
-  openFiles = (): void => {
-    this.filesEnabled = true;
-  };
-
-  openSampleFiles = (): void => {
-    this.sampleFilesEnabled = true;
-  };
-
-  openAuthors = (): void => {
-    this.authorsEnabled = true;
-  };
-
-  openGrantingOrganizations = (): void => {
-    this.grantingOrganizationsEnabled = true;
-    this.addGrantingOrganization(0);
-  };
-
-  openRelatedArticles = (): void => {
-    this.relatedArticlesEnabled = true;
-    this.addRelatedArticle(0);
-  };
-
-  openTags = (): void => {
-    this.tagsEnabled = true;
-  };
-
   invertNegativeData = (): void => {
     this.isNegative = !this.isNegative;
     this.savingStatus = SavingStatusState.SAVING;
@@ -953,8 +882,7 @@ export class PublicationStore {
     if (!hasContent(this.objectOfStudy)) {
       result.push('object_of_study');
     }
-    // TODO buggy check, fix (checks files in current dir, not in root)
-    if (this.fs.files.length === 0) {
+    if (this.fs.rootPathFiles === 0) {
       result.push('files');
     }
     if (this.tags.size === 0) {
@@ -1013,43 +941,40 @@ export class PublicationStore {
           }
           if (publication.predictedGoals?.length) {
             this.experimentGoals = publication.predictedGoals.map(mapParagraph);
-            this.experimentGoalsEnabled = true;
           }
           if (publication.methodTitle?.length) {
             this.methodTitle = publication.methodTitle;
-            this.methodEnabled = true;
+            if (!publication.methodDescription?.length) {
+              this.addMethodParagraph(0);
+            }
           }
           if (publication.methodDescription?.length) {
             this.method = publication.methodDescription.map(mapParagraph);
-            this.methodEnabled = true;
           }
           if (publication.software?.length) {
             this.software = publication.software.map(mapParagraph);
-            this.softwareEnabled = true;
           }
           if (publication.grantOrganizations?.length) {
             this.grantingOrganizations =
               publication.grantOrganizations.map(mapParagraph);
-            this.grantingOrganizationsEnabled = true;
           }
           if (publication.objectOfStudyTitle?.length) {
             this.objectOfStudyTitle = publication.objectOfStudyTitle;
-            this.objectOfStudyEnabled = true;
+            if (!publication.objectOfStudyDescription?.length) {
+              this.addObjectOfStudyParagraph(0);
+            }
           }
           if (publication.objectOfStudyDescription?.length) {
             this.objectOfStudy =
               publication.objectOfStudyDescription.map(mapParagraph);
-            this.objectOfStudyEnabled = true;
           }
           if (publication.relatedArticles?.length) {
             this.relatedArticles =
               publication.relatedArticles.map(mapParagraph);
-            this.relatedArticlesEnabled = true;
           }
           if (publication.primaryArticles?.length) {
             this.primaryArticles =
               publication.primaryArticles.map(mapParagraph);
-            this.relatedArticlesEnabled = true;
             if (
               publication.relatedArticles == null ||
               publication.relatedArticles?.length === 0
@@ -1059,7 +984,6 @@ export class PublicationStore {
           }
           if (publication.tags?.length) {
             this.tags = new Set(publication.tags.map((p) => p.text));
-            this.tagsEnabled = true;
           }
           if (publication.confirmedAuthors?.length) {
             this.confirmedAuthors = publication.confirmedAuthors || [];
@@ -1084,12 +1008,6 @@ export class PublicationStore {
           }
           this.setAuthorNames();
 
-          if (this.fs.files.length > 0) {
-            this.filesEnabled = true;
-          }
-          if (this.sfs.files.length > 0) {
-            this.sampleFilesEnabled = true;
-          }
           if (publication.negativeData?.length) {
             this.negativeData = publication.negativeData ?? '';
           }
@@ -1099,22 +1017,6 @@ export class PublicationStore {
             this.savingStatus = SavingStatusState.SAVED;
           }
           this.creator = publication.creator;
-          this.authorsEnabled =
-            this.confirmedAuthors.length + this.unconfirmedAuthors.length > 1;
-          if (
-            publication.status === PublicationStatus.READY_FOR_PUBLICATION ||
-            publication.status === PublicationStatus.PUBLISHED
-          ) {
-            this.experimentGoalsEnabled = true;
-            this.methodEnabled = true;
-            this.objectOfStudyEnabled = true;
-            this.softwareEnabled = true;
-            this.filesEnabled = true;
-            this.authorsEnabled = true;
-            this.grantingOrganizationsEnabled = true;
-            this.relatedArticlesEnabled = true;
-            this.tagsEnabled = true;
-          }
         })
       )
       .finally(

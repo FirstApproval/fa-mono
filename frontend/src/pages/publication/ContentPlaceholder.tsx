@@ -175,6 +175,8 @@ export const ContentPlaceholder = (
   );
 };
 
+export const TagsWrap = styled.div``;
+
 const FlexWrap = styled.div`
   display: flex;
   mix-blend-mode: luminosity;

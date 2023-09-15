@@ -14,12 +14,13 @@ import org.firstapproval.api.server.model.SearchPublicationsResponse
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.config.security.userOrNull
-import org.firstapproval.backend.core.domain.ipfs.IpfsClient
+import org.firstapproval.backend.core.domain.publication.PublicationPdfService
 import org.firstapproval.backend.core.domain.publication.PublicationService
 import org.firstapproval.backend.core.domain.publication.downloader.DownloaderRepository
 import org.firstapproval.backend.core.domain.publication.toApiObject
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.toApiObject
+import org.firstapproval.backend.core.external.ipfs.IpfsClient
 import org.springframework.core.io.InputStreamResource
 import org.springframework.core.io.Resource
 import org.springframework.data.domain.PageRequest
@@ -39,7 +40,8 @@ class PublicationController(
     private val userService: UserService,
     private val downloaderRepository: DownloaderRepository,
     private val ipfsClient: IpfsClient,
-    private val authHolderService: AuthHolderService
+    private val authHolderService: AuthHolderService,
+    private val publicationPdfService: PublicationPdfService
 ) : PublicationApi {
 
     override fun getAllPublications(page: Int, pageSize: Int): ResponseEntity<PublicationsResponse> {
@@ -137,5 +139,9 @@ class PublicationController(
     override fun delete(id: UUID): ResponseEntity<Void> {
         publicationService.delete(id, authHolderService.user)
         return ok().build()
+    }
+
+    override fun downloadPdf(id: UUID): ResponseEntity<ByteArray> {
+        return ok(publicationPdfService.generate(id))
     }
 }

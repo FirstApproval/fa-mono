@@ -7,11 +7,12 @@ import {
   runInAction
 } from 'mobx';
 import {
-  type UploadType,
-  type PublicationFile
-} from 'src/apis/first-approval-api';
-import { sampleFileService } from '../../core/service';
-import { fullPathToName } from '../utils';
+  FileApi,
+  type PublicationFile,
+  type UploadType
+} from '../apis/first-approval-api';
+import { fullPathToName } from './utils';
+import { type FileData } from '@first-approval/chonky/dist/types/file.types';
 
 interface FileEntry {
   id: string;
@@ -24,31 +25,42 @@ interface FileEntry {
 
 type UploadFilesAfterDialogFunction = (value: UploadType) => void;
 
-export class ChonkySampleFileSystem {
+export class FileSystemFA {
+  rootPathFiles: number = 0;
   currentPath: string = '/';
+  private backEndFiles: FileEntry[] = [];
+  private localFiles: FileEntry[] = [];
+  private allLocalFiles: FileEntry[] = [];
   isLoading = false;
   initialized = false;
+
   renameOrReplaceDialogOpen = false;
   addDirectoryImpossibleDialogOpen = false;
-  private backEndSampleFiles: FileEntry[] = [];
-  private localSampleFiles: FileEntry[] = [];
-  private allLocalSampleFiles: FileEntry[] = [];
+  moveFilesImpossibleDialogOpen = false;
+  renameOrReplaceDialogCallback: UploadFilesAfterDialogFunction = (
+    uploadType: UploadType
+  ) => {};
 
-  constructor(readonly publicationId: string) {
+  constructor(
+    readonly publicationId: string,
+    readonly fileService: Omit<FileApi, 'configuration'>
+  ) {
     makeObservable<
-      ChonkySampleFileSystem,
-      'backEndSampleFiles' | 'localSampleFiles' | 'allLocalSampleFiles'
+      FileSystemFA,
+      'backEndFiles' | 'localFiles' | 'allLocalFiles'
     >(this, {
+      rootPathFiles: observable,
       currentPath: observable,
       files: computed,
-      backEndSampleFiles: observable,
-      localSampleFiles: observable,
-      allLocalSampleFiles: observable,
+      backEndFiles: observable,
+      localFiles: observable,
+      allLocalFiles: observable,
       isLoading: observable,
       initialized: observable,
       renameOrReplaceDialogOpen: observable,
       renameOrReplaceDialogCallback: observable,
       addDirectoryImpossibleDialogOpen: observable,
+      moveFilesImpossibleDialogOpen: observable,
       setCurrentPath: action
     });
 
@@ -56,7 +68,7 @@ export class ChonkySampleFileSystem {
       () => this.currentPath,
       async () => {
         const files = await this.listDirectory(this.currentPath);
-        this.backEndSampleFiles = [...files];
+        this.backEndFiles = [...files];
       },
       {
         fireImmediately: true
@@ -66,24 +78,17 @@ export class ChonkySampleFileSystem {
     reaction(() => this.currentPath, this.updateLocalFiles, {
       fireImmediately: true
     });
-  }
 
-  get files(): FileEntry[] {
-    const unuqiePath: Record<string, boolean> = {}; // Keeps track of seen property values
-    return [...this.backEndSampleFiles, ...this.localSampleFiles].filter(
-      (entry) => {
-        if (unuqiePath[entry.fullPath]) {
-          return false; // Duplicate, remove entry
+    reaction(
+      () => this.files,
+      (files) => {
+        if (this.currentPath === '/') {
+          this.rootPathFiles = files.length;
         }
-        unuqiePath[entry.fullPath] = true;
-        return true;
-      }
+      },
+      { fireImmediately: true }
     );
   }
-
-  renameOrReplaceDialogCallback: UploadFilesAfterDialogFunction = (
-    uploadType: UploadType
-  ) => {};
 
   closeReplaceOrRenameDialog = (): void => {
     this.renameOrReplaceDialogOpen = false;
@@ -92,6 +97,21 @@ export class ChonkySampleFileSystem {
   closeAddDirectoryImpossibleDialog = (): void => {
     this.addDirectoryImpossibleDialogOpen = false;
   };
+
+  closeMoveFilesImpossibleDialog = (): void => {
+    this.moveFilesImpossibleDialogOpen = false;
+  };
+
+  get files(): FileEntry[] {
+    const unuqiePath: Record<string, boolean> = {}; // Keeps track of seen property values
+    return [...this.backEndFiles, ...this.localFiles].filter((entry) => {
+      if (unuqiePath[entry.fullPath]) {
+        return false; // Duplicate, remove entry
+      }
+      unuqiePath[entry.fullPath] = true;
+      return true;
+    });
+  }
 
   setCurrentPath = (path: string): void => {
     this.currentPath = path;
@@ -104,8 +124,8 @@ export class ChonkySampleFileSystem {
       const fullPath = this.fullPath('/' + e.name);
 
       const uploadFile = async (): Promise<void> => {
-        await sampleFileService
-          .uploadSampleFile(
+        await this.fileService
+          .uploadFile(
             this.publicationId,
             fullPath,
             false,
@@ -123,8 +143,8 @@ export class ChonkySampleFileSystem {
     });
 
     void this.uploadQueue(uploadQueue);
-    this.allLocalSampleFiles = [
-      ...this.allLocalSampleFiles,
+    this.allLocalFiles = [
+      ...this.allLocalFiles,
       ...files.map((f) => {
         const fullPath = this.fullPath('/' + f.name);
         return {
@@ -149,8 +169,8 @@ export class ChonkySampleFileSystem {
         const uploadFile = async (): Promise<void> => {
           await new Promise<void>((resolve) => {
             (e as FileSystemFileEntry).file((file) => {
-              void sampleFileService
-                .uploadSampleFile(
+              void this.fileService
+                .uploadFile(
                   this.publicationId,
                   fullPath,
                   false,
@@ -172,8 +192,8 @@ export class ChonkySampleFileSystem {
         uploadQueue.push(uploadFile);
       } else {
         const uploadFolder = async (): Promise<void> => {
-          await sampleFileService
-            .uploadSampleFile(this.publicationId, fullPath, true, uploadType)
+          await this.fileService
+            .uploadFile(this.publicationId, fullPath, true, uploadType)
             .then((response) => {
               this.cleanUploading(response.data);
             });
@@ -184,8 +204,8 @@ export class ChonkySampleFileSystem {
     });
 
     void this.uploadQueue(uploadQueue);
-    this.allLocalSampleFiles = [
-      ...this.allLocalSampleFiles,
+    this.allLocalFiles = [
+      ...this.allLocalFiles,
       ...files.map((f) => {
         const fullPath = this.fullPath(f.fullPath);
         return {
@@ -209,7 +229,7 @@ export class ChonkySampleFileSystem {
 
   actualizeAllLocalFiles = (pf: PublicationFile): void => {
     const unuqiePath: Record<string, boolean> = {}; // Keeps track of seen property values
-    this.allLocalSampleFiles = [
+    this.allLocalFiles = [
       {
         id: pf.id ?? '',
         fullPath: pf.fullPath ?? '',
@@ -218,7 +238,7 @@ export class ChonkySampleFileSystem {
         isUploading: false,
         note: pf.description
       },
-      ...this.allLocalSampleFiles
+      ...this.allLocalFiles
     ].filter((entry) => {
       if (unuqiePath[entry.fullPath]) {
         return false; // Duplicate, remove entry
@@ -230,7 +250,7 @@ export class ChonkySampleFileSystem {
 
   actualizeLocalFiles = (pf: PublicationFile): void => {
     const unuqiePath: Record<string, boolean> = {}; // Keeps track of seen property values
-    this.localSampleFiles = [
+    this.localFiles = [
       {
         id: pf.id ?? '',
         fullPath: pf.fullPath ?? '',
@@ -239,7 +259,7 @@ export class ChonkySampleFileSystem {
         isUploading: false,
         note: pf.description
       },
-      ...this.localSampleFiles
+      ...this.localFiles
     ].filter((entry) => {
       if (unuqiePath[entry.fullPath]) {
         return false; // Duplicate, remove entry
@@ -252,8 +272,8 @@ export class ChonkySampleFileSystem {
   createFolder = (name: string): void => {
     const fullPath = `${this.currentPath}${name}`;
 
-    void sampleFileService
-      .createFolderForSampleFile(this.publicationId, {
+    void this.fileService
+      .createFolder(this.publicationId, {
         name,
         dirPath: this.currentPath
       })
@@ -261,8 +281,8 @@ export class ChonkySampleFileSystem {
         this.cleanUploading(response.data);
       });
 
-    this.allLocalSampleFiles = [
-      ...this.allLocalSampleFiles,
+    this.allLocalFiles = [
+      ...this.allLocalFiles,
       {
         id: fullPath,
         name,
@@ -275,7 +295,7 @@ export class ChonkySampleFileSystem {
   };
 
   updateFile = (id: string, name: string, note: string): void => {
-    void sampleFileService.editSampleFile(id, { name, description: note });
+    void this.fileService.editFile(id, { name, description: note });
     const filter = (f: FileEntry): FileEntry => {
       if (f.id === id) {
         return { ...f, name, note };
@@ -283,16 +303,33 @@ export class ChonkySampleFileSystem {
         return f;
       }
     };
-    this.backEndSampleFiles = this.backEndSampleFiles.map(filter);
-    this.allLocalSampleFiles = this.allLocalSampleFiles.map(filter);
+    this.backEndFiles = this.backEndFiles.map(filter);
+    this.allLocalFiles = this.allLocalFiles.map(filter);
     this.updateLocalFiles();
   };
 
   deleteFile = (ids: string[]): void => {
-    void sampleFileService.deleteSampleFiles({ ids });
+    void this.fileService.deleteFiles({ ids });
     const filter = (f: FileEntry): boolean => !ids.includes(f.id);
-    this.backEndSampleFiles = this.backEndSampleFiles.filter(filter);
-    this.allLocalSampleFiles = this.allLocalSampleFiles.filter(filter);
+    this.backEndFiles = this.backEndFiles.filter(filter);
+    this.allLocalFiles = this.allLocalFiles.filter(filter);
+    this.updateLocalFiles();
+  };
+
+  moveFiles = async (files: FileData[], destination: string): Promise<void> => {
+    const newFileFullPaths = files.map((f) => destination + f.name);
+    const checkResult = await this.hasDuplicates(newFileFullPaths);
+    if (checkResult !== DuplicateCheckResult.DUPLICATES_NOT_FOUND) {
+      this.moveFilesImpossibleDialogOpen = true;
+      return;
+    }
+    const ids = files.map((f) => f.id);
+    for (const id of ids) {
+      void this.fileService.moveFile(id, { newDirPath: destination });
+    }
+    const filter = (f: FileEntry): boolean => !ids.includes(f.id);
+    this.backEndFiles = this.backEndFiles.filter(filter);
+    this.allLocalFiles = this.allLocalFiles.filter(filter);
     this.updateLocalFiles();
   };
 
@@ -300,12 +337,9 @@ export class ChonkySampleFileSystem {
     fullPaths: string[],
     isFirstElemRootFolder: boolean
   ): Promise<DuplicateCheckResult> => {
-    const res = await sampleFileService.checkSampleFileDuplicates(
-      this.publicationId,
-      {
-        fullPathList: fullPaths.map((i) => this.fullPath('/' + i))
-      }
-    );
+    const res = await this.fileService.checkFileDuplicates(this.publicationId, {
+      fullPathList: fullPaths.map((i) => this.fullPath('/' + i))
+    });
     const firstPropertyValue = res.data[this.fullPath('/' + fullPaths[0])];
     if (isFirstElemRootFolder && firstPropertyValue) {
       return DuplicateCheckResult.ROOT_NAME_ALREADY_EXISTS;
@@ -321,12 +355,9 @@ export class ChonkySampleFileSystem {
   hasDuplicates = async (
     fullPaths: string[]
   ): Promise<DuplicateCheckResult> => {
-    const res = await sampleFileService.checkSampleFileDuplicates(
-      this.publicationId,
-      {
-        fullPathList: fullPaths
-      }
-    );
+    const res = await this.fileService.checkFileDuplicates(this.publicationId, {
+      fullPathList: fullPaths
+    });
     for (const i in res.data) {
       if (res.data[i]) {
         return DuplicateCheckResult.ONE_OR_MORE_FILE_ALREADY_EXISTS;
@@ -336,7 +367,7 @@ export class ChonkySampleFileSystem {
   };
 
   private readonly updateLocalFiles = (): void => {
-    this.localSampleFiles = this.allLocalSampleFiles.filter((file) => {
+    this.localFiles = this.allLocalFiles.filter((file) => {
       const filePath = file.fullPath;
       return (
         filePath.startsWith(this.currentPath) &&
@@ -349,7 +380,7 @@ export class ChonkySampleFileSystem {
     if (!file.fullPath || !file.id) return;
     const id = file.id;
     if (this.inCurrentDirectory(file)) {
-      this.allLocalSampleFiles = this.allLocalSampleFiles.map((f) => {
+      this.allLocalFiles = this.allLocalFiles.map((f) => {
         if (f.fullPath === file.fullPath) {
           return { ...f, id, isUploading: false };
         } else {
@@ -358,7 +389,7 @@ export class ChonkySampleFileSystem {
       });
       this.updateLocalFiles();
     } else {
-      this.allLocalSampleFiles = this.allLocalSampleFiles.filter(
+      this.allLocalFiles = this.allLocalFiles.filter(
         (f) => f.fullPath !== file.fullPath
       );
     }
@@ -416,7 +447,7 @@ export class ChonkySampleFileSystem {
   ): Promise<FileEntry[]> => {
     this.isLoading = true;
     try {
-      const response = await sampleFileService.getPublicationSampleFiles(
+      const response = await this.fileService.getPublicationFiles(
         this.publicationId,
         dirPath
       );
