@@ -102,7 +102,7 @@ class PublicationPdfService(
 
     private fun hash(publication: Publication): String {
         return if (publication.status == PUBLISHED) {
-            "Unique archive cryptographic hash: SHA-256: ${sha256Hex(randomUUID().toString())}"
+            "Unique archive cryptographic hash: SHA-256: ${publication.hash}"
         } else {
             "Dataset is not published yet, information about dataset unique archive cryptographic hash will be available after publication."
         }

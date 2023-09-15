@@ -4,6 +4,7 @@ import org.apache.commons.io.FilenameUtils
 import org.firstapproval.backend.core.external.s3.FileStorageService
 import org.firstapproval.backend.core.external.s3.SAMPLE_FILES
 import org.firstapproval.backend.core.domain.user.User
+import org.firstapproval.backend.core.utils.calculateSHA256
 import org.firstapproval.backend.core.utils.require
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -48,7 +49,9 @@ class PublicationSampleFileService(
                 dropDuplicate(publicationId, actualFullPath)?.let { filesToDelete.add(it) }
             }
             val hash = if (!isDir) {
-                fileStorageService.save(SAMPLE_FILES, fileId.toString(), data!!, contentLength!!).eTag
+                fileStorageService.save(SAMPLE_FILES, fileId.toString(), data!!, contentLength!!)
+                data.reset()
+                calculateSHA256(data)
             } else null
             file = publicationSampleFileRepository.save(
                 PublicationSampleFile(

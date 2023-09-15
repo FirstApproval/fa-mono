@@ -12,6 +12,7 @@ import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY
 import org.firstapproval.backend.core.external.ipfs.IpfsClient
 import org.firstapproval.backend.core.external.s3.*
 import org.firstapproval.backend.core.infra.elastic.PublicationElasticRepository
+import org.firstapproval.backend.core.utils.calculateSHA256
 import org.springframework.data.domain.PageRequest
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -83,6 +84,7 @@ class ArchiveService(
         publication.archivePassword = password
         publication.archiveSize = mainArchiveResult.size
         publication.archiveSampleSize = sampleArchiveResult.size
+        publication.hash = mainArchiveResult.hash
         publication.filesCount = mainArchiveResult.filesCount.toLong()
         publication.foldersCount = mainArchiveResult.foldersCount.toLong()
         publicationRepository.save(publication)
@@ -102,7 +104,8 @@ class ArchiveService(
         val zipOutputStream = ZipOutputStream(fileOutputStream, password.toCharArray())
         var err: Exception? = null
         val descriptions = StringBuilder()
-        var archiveSize: Long = 0;
+        var archiveSize: Long = 0
+        var hash: String? = null
         try {
             while (!files.isEmpty) {
                 filesIds.addAll(files.map { it.id })
@@ -154,13 +157,14 @@ class ArchiveService(
             zipOutputStream.close()
             fileOutputStream.close()
             if (err == null) {
+                hash = calculateSHA256(tempArchive)
                 archiveSize = tempArchive.length()
                 saveArchiveToS3(ARCHIVED_PUBLICATION_FILES, publication.id.toString(), tempArchive)
             } else {
                 tempArchive.delete()
             }
         }
-        return ArchiveResult(filesIds, archiveSize, filesCount.toInt(), foldersCount)
+        return ArchiveResult(filesIds, archiveSize, filesCount.toInt(), foldersCount, hash!!)
     }
 
     private fun archiveSampleFilesProcess(publication: Publication): ArchiveResult {
@@ -176,6 +180,7 @@ class ArchiveService(
         var err: Exception? = null
         val descriptions = StringBuilder()
         var archiveSize: Long = 0;
+        var hash: String? = null
         try {
             while (!files.isEmpty) {
                 filesIds.addAll(files.map { it.id })
@@ -225,13 +230,14 @@ class ArchiveService(
             zipOutputStream.close()
             fileOutputStream.close()
             if (err == null) {
+                hash = calculateSHA256(tempArchive)
                 archiveSize = tempArchive.length()
                 saveArchiveToS3(ARCHIVED_PUBLICATION_SAMPLE_FILES, publication.id.toString(), tempArchive)
             } else {
                 tempArchive.delete()
             }
         }
-        return ArchiveResult(filesIds, archiveSize, filesCount.toInt(), foldersCount)
+        return ArchiveResult(filesIds, archiveSize, filesCount.toInt(), foldersCount, hash!!)
     }
 
     private fun saveArchiveToS3(bucket: String, id: String, file: File) {
@@ -267,5 +273,6 @@ data class ArchiveResult(
     val fileIds: MutableList<UUID>,
     val size: Long,
     val filesCount: Int,
-    val foldersCount: Int
+    val foldersCount: Int,
+    val hash: String
 )

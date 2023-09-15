@@ -87,6 +87,7 @@ class Publication(
     var negativeData: String? = null,
     var filesCount: Long? = null,
     var foldersCount: Long? = null,
+    var hash: String? = null,
     @Enumerated(STRING)
     var licenseType: LicenseType? = null,
 )
