@@ -144,8 +144,11 @@ export class PublicationPageStore {
   }
 
   doDownloadSampleFiles = async (): Promise<void> => {
+    const res = await publicationService.getPublicationSampleFilesDownloadLink(
+      this.publicationStore.publicationId
+    );
     const downloadLink = document.createElement('a');
-    downloadLink.href = `/api/publication/${this.publicationStore.publicationId}/files/sample/download`;
+    downloadLink.href = res.data.link;
     downloadLink.download = this.publicationStore.title + '_files.zip';
     downloadLink.style.display = 'none';
     document.body.appendChild(downloadLink);

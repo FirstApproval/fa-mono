@@ -1,5 +1,6 @@
 import {
   ChonkyActions,
+  FileAction,
   type FileActionHandler,
   type FileArray,
   FileBrowser,
@@ -7,8 +8,7 @@ import {
   type FileData,
   FileList,
   FileNavbar,
-  setChonkyDefaults,
-  FileAction
+  setChonkyDefaults
 } from '@first-approval/chonky';
 import React, {
   type MutableRefObject,
@@ -17,7 +17,7 @@ import React, {
   useState
 } from 'react';
 import { ChonkyIconFA } from '@first-approval/chonky-icon-fontawesome';
-import { type FileSystemFA, DuplicateCheckResult } from './FileSystemFA';
+import { DuplicateCheckResult, type FileSystemFA } from './FileSystemFA';
 import { observer } from 'mobx-react-lite';
 import { FileToolbar } from './FileToolbar';
 import styled from '@emotion/styled';
@@ -179,13 +179,17 @@ export const FileBrowserFA = observer(
       } else if (data.id === ChonkyActions.DownloadFiles.id) {
         const files = data.state.selectedFiles.filter((f) => !f.isDir);
         for (const file of files) {
-          const downloadLink = document.createElement('a');
-          downloadLink.href = `${props.fileDownloadUrlPrefix}/${file.id}`;
-          downloadLink.download = file.name;
-          downloadLink.style.display = 'none';
-          document.body.appendChild(downloadLink);
-          downloadLink.click();
-          document.body.removeChild(downloadLink);
+          void props.fs.fileService
+            .getDownloadLinkForPublicationFile(file.id)
+            .then((response) => {
+              const downloadLink = document.createElement('a');
+              downloadLink.href = response.data;
+              downloadLink.download = file.name;
+              downloadLink.style.display = 'none';
+              document.body.appendChild(downloadLink);
+              downloadLink.click();
+              document.body.removeChild(downloadLink);
+            });
         }
       } else if (data.id === ChonkyActions.DownloadFilesArchive.id) {
         props.onArchiveDownload(data.state.selectedFiles);
