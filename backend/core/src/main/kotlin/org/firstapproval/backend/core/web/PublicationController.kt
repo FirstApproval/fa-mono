@@ -21,16 +21,14 @@ import org.firstapproval.backend.core.domain.publication.toApiObject
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.toApiObject
 import org.firstapproval.backend.core.external.ipfs.IpfsClient
-import org.springframework.core.io.InputStreamResource
-import org.springframework.core.io.Resource
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.annotation.RestController
-import java.net.URLConnection
+import java.util.Base64
+import java.util.Base64.getEncoder
 import java.util.UUID
 import org.firstapproval.backend.core.domain.publication.AccessType as AccessTypeEntity
 
@@ -141,7 +139,7 @@ class PublicationController(
         return ok().build()
     }
 
-    override fun downloadPdf(id: UUID): ResponseEntity<ByteArray> {
-        return ok(publicationPdfService.generate(id))
+    override fun downloadPdf(id: UUID): ResponseEntity<String> {
+        return ok(getEncoder().encodeToString(publicationPdfService.generate(id)))
     }
 }

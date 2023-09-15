@@ -123,6 +123,18 @@ export class PublicationPageStore {
     document.body.removeChild(downloadLink);
   };
 
+  downloadPdf = async (): Promise<void> => {
+    const pdf = await publicationService.downloadPdf(
+      this.publicationStore.publicationId
+    );
+    const linkSource = `data:application/pdf;base64,${pdf.data}`;
+    const downloadLink = document.createElement('a');
+    const fileName = this.publicationStore.title + '.pdf';
+    downloadLink.href = linkSource;
+    downloadLink.download = fileName;
+    downloadLink.click();
+  };
+
   downloadSampleFiles(): void {
     void this.doDownloadSampleFiles();
   }

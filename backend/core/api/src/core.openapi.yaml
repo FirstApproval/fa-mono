@@ -722,7 +722,7 @@ paths:
             application/pdf:
               schema:
                 type: string
-                format: byte
+                format: base64
       security:
         - TokenAuth: [ ]
       operationId: downloadPdf

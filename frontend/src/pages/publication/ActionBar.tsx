@@ -111,7 +111,10 @@ export const ActionBar = observer(
               alignItems: 'center'
             }}>
             <Tooltip title="Download publication PDF">
-              <PdfButtonWrap variant="outlined" size={'medium'}>
+              <PdfButtonWrap
+                variant="outlined"
+                size={'medium'}
+                onClick={publicationPageStore.downloadPdf}>
                 <img src={pdf} style={{ marginRight: '8px' }} /> PDF
               </PdfButtonWrap>
             </Tooltip>

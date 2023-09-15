@@ -37,7 +37,9 @@ class PublicationPdfService(
         model["hash"] = hash(publication)
         model["files"] = files(publication)
         model["experimentGoals"] = experimentGoals(publication)
-        model["negativeData"] = negativeData(publication)
+        if (publication.isNegative) {
+            model["negativeData"] = negativeData(publication)
+        }
         model["methodName"] = methodName(publication)
         model["method"] = method(publication)
         model["objectOfStudyName"] = objectOfStudyName(publication)
@@ -87,7 +89,7 @@ class PublicationPdfService(
 
     private fun files(publication: Publication): String {
         return if (publication.status == PUBLISHED) {
-            "${publication.foldersCount} folders & ${publication.filesCount} files – ${publication.archiveSize!! / 1024 / 1024 / 1024} GB"
+            "${publication.foldersCount} folders & ${publication.filesCount} files – ${publication.archiveSize!! / 1024 / 1024 } MB"
         } else {
             "Dataset is not published yet, information about dataset files will be available after publication."
         }
