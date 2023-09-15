@@ -20,8 +20,6 @@ class PublicationFileService(
     private val publicationFileRepository: PublicationFileRepository,
     private val fileStorageService: FileStorageService,
     private val publicationRepository: PublicationRepository,
-    private val s3Properties: S3Properties,
-    private val jwtService: JwtService,
     private val transactionalTemplate: TransactionTemplate
 ) {
 
@@ -195,21 +193,10 @@ class PublicationFileService(
         return file
     }
 
-    fun getTokenToRetrieveDownloadLink(user: User, fileId: UUID): String {
-        val publication = publicationFileRepository.findById(fileId).get().publication
-        checkPublicationCreator(user, publication)
-        return jwtService.generate(
-            mapOf(
-                "creator" to user.id,
-                "fileId" to fileId
-            )
-        )
-    }
-
-    fun getDownloadLink(token: String): String {
-        val claims = jwtService.parse(token)
-        val fileId = claims["fileId"].toString()
-        return fileStorageService.generateTemporaryDownloadLink(FILES, fileId, s3Properties.downloadLinkTtl)
+    fun getDownloadLink(user: User, fileId: UUID): String {
+        val file = publicationFileRepository.getReferenceById(fileId)
+        checkAccessToPublication(user, file.publication)
+        return fileStorageService.generateTemporaryDownloadLink(FILES, fileId.toString(), file.name)
     }
 
     private fun extractDirPath(fullPath: String) = fullPath.substring(0, fullPath.lastIndexOf('/') + 1)

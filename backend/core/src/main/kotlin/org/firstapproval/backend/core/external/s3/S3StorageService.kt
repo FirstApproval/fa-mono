@@ -6,8 +6,11 @@ import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest
 import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.services.s3.model.PutObjectResult
+import com.amazonaws.services.s3.model.ResponseHeaderOverrides
 import com.amazonaws.services.s3.model.S3Object
+import com.amazonaws.services.s3.model.StorageClass
 import mu.KotlinLogging.logger
+import org.firstapproval.backend.core.config.Properties.S3Properties
 import java.io.InputStream
 import java.time.Duration
 import java.util.Date
@@ -19,7 +22,7 @@ const val ARCHIVED_PUBLICATION_FILES = "archived-publication-files"
 const val ARCHIVED_PUBLICATION_SAMPLE_FILES = "archived-publication-sample-files"
 const val PROFILE_IMAGES = "profile-images"
 
-class FileStorageService(private val amazonS3: AmazonS3) {
+class FileStorageService(private val amazonS3: AmazonS3, private val s3Properties: S3Properties) {
 
     private val log = logger {}
 
@@ -30,30 +33,32 @@ class FileStorageService(private val amazonS3: AmazonS3) {
                 this.contentLength = contentLength
             }
         }
-        return amazonS3.putObject(bucketName, id, data, metadata)
+        metadata.setHeader("x-amz-storage-class", s3Properties.bucketStorageClass)
+        return amazonS3.putObject(bucketName + s3Properties.bucketPostfix, id, data, metadata)
     }
 
-    fun delete(bucketName: String, id: UUID) = amazonS3.deleteObject(bucketName, id.toString())
+    fun delete(bucketName: String, id: UUID) = amazonS3.deleteObject(bucketName + s3Properties.bucketPostfix, id.toString())
 
     fun deleteByIds(bucketName: String, ids: List<UUID>) {
-        val request = DeleteObjectsRequest(bucketName)
+        val request = DeleteObjectsRequest(bucketName + s3Properties.bucketPostfix)
         request.keys = ids.map { KeyVersion(it.toString()) }
         amazonS3.deleteObjects(request)
     }
 
-    fun get(bucketName: String, id: String): S3Object = amazonS3.getObject(bucketName, id)
+    fun get(bucketName: String, id: String): S3Object = amazonS3.getObject(bucketName + s3Properties.bucketPostfix, id)
 
     fun createBucketIfNotExist(bucketName: String) {
-        if (!amazonS3.doesBucketExistV2(bucketName)) {
-            amazonS3.createBucket(bucketName)
+        if (!amazonS3.doesBucketExistV2(bucketName + s3Properties.bucketPostfix)) {
+            amazonS3.createBucket(bucketName + s3Properties.bucketPostfix)
             log.info { "bucket $bucketName created" }
         }
     }
 
-    fun generateTemporaryDownloadLink(bucketName: String, id: String, ttl: Duration): String {
-        val expiration = Date(System.currentTimeMillis() + ttl.toMillis())
-        val generatePresignedUrlRequest = GeneratePresignedUrlRequest(bucketName, id)
+    fun generateTemporaryDownloadLink(bucketName: String, id: String, contentDisposition: String): String {
+        val expiration = Date(System.currentTimeMillis() + s3Properties.downloadLinkTtl.toMillis())
+        val generatePresignedUrlRequest = GeneratePresignedUrlRequest(bucketName + s3Properties.bucketPostfix, id)
             .withExpiration(expiration)
+            .withResponseHeaders(ResponseHeaderOverrides().withContentDisposition("attachment; filename=\"$contentDisposition\""))
         val url = amazonS3.generatePresignedUrl(generatePresignedUrlRequest)
         return url.toString()
     }

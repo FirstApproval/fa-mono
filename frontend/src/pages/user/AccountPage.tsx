@@ -60,6 +60,9 @@ export const AccountPage: FunctionComponent = observer(() => {
   const [isUsedUsername, setUsedUsername] = useState(false);
   const [isValidPassword, setIsValidPassword] = useState(true);
   const [anchor, setAnchor] = useState<null | HTMLElement>(null);
+  const [isValidFirstName, setIsValidFirstName] = useState(true);
+  const [isValidLastName, setIsValidLastName] = useState(true);
+  const [isValidUsername, setIsValidUsername] = useState(true);
 
   const hiddenFileInput = useRef(null);
 
@@ -125,6 +128,16 @@ export const AccountPage: FunctionComponent = observer(() => {
       editableUser.email.length > 0 && validateEmail(editableUser.email);
     setIsValidEmail(isVE);
     return isVE;
+  };
+
+  const profileFieldsValidation = (): void => {
+    const isVFN = editableUser.firstName.length > 0;
+    setIsValidFirstName(isVFN);
+    const isVLN = editableUser.lastName.length > 0;
+    setIsValidLastName(isVLN);
+    const isVUN = editableUser.username.length > 0;
+    setIsValidUsername(isVUN);
+    setSaveDisabled(!isVFN || !isVLN || !isVUN);
   };
 
   const updateUserInfo = async (): Promise<void> => {
@@ -291,10 +304,14 @@ export const AccountPage: FunctionComponent = observer(() => {
                     value={editableUser.username}
                     onChange={(e) => {
                       editableUser.username = e.currentTarget.value;
-                      setSaveDisabled(false);
+                      profileFieldsValidation();
                     }}
                     label="Username"
                     variant="outlined"
+                    error={!isValidUsername}
+                    helperText={
+                      !isValidUsername ? 'Invalid username' : undefined
+                    }
                   />
                   {editableUser.username && (
                     <UsernameTip
@@ -357,19 +374,27 @@ export const AccountPage: FunctionComponent = observer(() => {
                     value={editableUser.firstName}
                     onChange={(e) => {
                       editableUser.firstName = e.currentTarget.value;
-                      setSaveDisabled(false);
+                      profileFieldsValidation();
                     }}
                     label="First name"
                     variant="outlined"
+                    error={!isValidFirstName}
+                    helperText={
+                      !isValidFirstName ? 'Invalid first name' : undefined
+                    }
                   />
                   <FullWidthTextField
                     value={editableUser.lastName}
                     onChange={(e) => {
                       editableUser.lastName = e.currentTarget.value;
-                      setSaveDisabled(false);
+                      profileFieldsValidation();
                     }}
                     label="Last name"
                     variant="outlined"
+                    error={!isValidLastName}
+                    helperText={
+                      !isValidLastName ? 'Invalid last name' : undefined
+                    }
                   />
                   <NameElement>Self info</NameElement>
                   <FullWidthTextField

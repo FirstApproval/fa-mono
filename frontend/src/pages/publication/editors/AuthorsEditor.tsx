@@ -143,6 +143,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                   isConfirmed={true}
                   index={index}
                   setEditAuthorVisible={setEditAuthorVisible}
+                  shouldOpenInNewTab={true}
                 />
               </div>
             );

@@ -5,20 +5,12 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import net.lingala.zip4j.io.outputstream.ZipOutputStream
 import net.lingala.zip4j.model.ZipParameters
 import net.lingala.zip4j.model.enums.EncryptionMethod.ZIP_STANDARD
-import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_FILES
-import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_SAMPLE_FILES
-import org.firstapproval.backend.core.external.s3.FILES
-import org.firstapproval.backend.core.external.s3.FileStorageService
-import org.firstapproval.backend.core.external.s3.SAMPLE_FILES
-import org.firstapproval.backend.core.external.ipfs.IpfsClient
 import org.firstapproval.backend.core.domain.notification.NotificationService
-import org.firstapproval.backend.core.domain.publication.Publication
-import org.firstapproval.backend.core.domain.publication.PublicationFileRepository
-import org.firstapproval.backend.core.domain.publication.PublicationRepository
-import org.firstapproval.backend.core.domain.publication.PublicationSampleFileRepository
+import org.firstapproval.backend.core.domain.publication.*
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
-import org.firstapproval.backend.core.domain.publication.toPublicationElastic
+import org.firstapproval.backend.core.external.ipfs.IpfsClient
+import org.firstapproval.backend.core.external.s3.*
 import org.firstapproval.backend.core.infra.elastic.PublicationElasticRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.scheduling.annotation.Scheduled
@@ -29,7 +21,7 @@ import java.io.File.createTempFile
 import java.io.FileOutputStream
 import java.nio.file.Files
 import java.time.ZonedDateTime.now
-import java.util.UUID
+import java.util.*
 import kotlin.io.path.Path
 import kotlin.io.path.exists
 
@@ -91,6 +83,8 @@ class ArchiveService(
         publication.archivePassword = password
         publication.archiveSize = mainArchiveResult.size
         publication.archiveSampleSize = sampleArchiveResult.size
+        publication.filesCount = mainArchiveResult.filesCount.toLong()
+        publication.foldersCount = mainArchiveResult.foldersCount.toLong()
         publicationRepository.save(publication)
         elasticRepository.save(publication.toPublicationElastic())
         return mainArchiveResult.fileIds
@@ -100,6 +94,8 @@ class ArchiveService(
         val filesIds = mutableListOf<UUID>()
         var page = PageRequest.of(0, BATCH_SIZE)
         var files = publicationFileRepository.findByPublicationIdOrderByCreationTimeAsc(publication.id, page)
+        val filesCount = files.totalElements
+        var foldersCount = 1
         val folder = getOrCreateTmpFolder()
         val tempArchive = createTempFile(publication.id.toString(), ".zip", folder)
         val fileOutputStream = FileOutputStream(tempArchive)
@@ -111,6 +107,9 @@ class ArchiveService(
             while (!files.isEmpty) {
                 filesIds.addAll(files.map { it.id })
                 files.forEach {
+                    if (it.isDir) {
+                        foldersCount++
+                    }
                     if (!it.isDir) {
                         val inputStream = fileStorageService.get(FILES, it.id.toString()).objectContent
                         val zipParms = ZipParameters()
@@ -161,12 +160,14 @@ class ArchiveService(
                 tempArchive.delete()
             }
         }
-        return ArchiveResult(filesIds, archiveSize)
+        return ArchiveResult(filesIds, archiveSize, filesCount.toInt(), foldersCount)
     }
 
     private fun archiveSampleFilesProcess(publication: Publication): ArchiveResult {
         var page = PageRequest.of(0, BATCH_SIZE)
         var files = publicationSampleFileRepository.findByPublicationIdOrderByCreationTimeAsc(publication.id, page)
+        val filesCount = files.totalElements
+        var foldersCount = 1
         val filesIds = mutableListOf<UUID>()
         val folder = getOrCreateTmpFolder()
         val tempArchive = createTempFile(publication.id.toString() + " samples", ".zip", folder)
@@ -179,6 +180,9 @@ class ArchiveService(
             while (!files.isEmpty) {
                 filesIds.addAll(files.map { it.id })
                 files.forEach {
+                    if (it.isDir) {
+                        foldersCount++
+                    }
                     if (!it.isDir) {
                         val inputStream = fileStorageService.get(SAMPLE_FILES, it.id.toString()).objectContent
                         val zipParms = ZipParameters()
@@ -227,7 +231,7 @@ class ArchiveService(
                 tempArchive.delete()
             }
         }
-        return ArchiveResult(filesIds, archiveSize)
+        return ArchiveResult(filesIds, archiveSize, filesCount.toInt(), foldersCount)
     }
 
     private fun saveArchiveToS3(bucket: String, id: String, file: File) {
@@ -262,4 +266,6 @@ class ArchiveService(
 data class ArchiveResult(
     val fileIds: MutableList<UUID>,
     val size: Long,
+    val filesCount: Int,
+    val foldersCount: Int
 )

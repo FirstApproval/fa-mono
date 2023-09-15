@@ -706,33 +706,7 @@ paths:
       operationId: getDownloadLink
       tags: [ publication ]
 
-  /api/publication/files/download:
-    get:
-      parameters:
-        - name: downloadToken
-          in: query
-          required: true
-          schema:
-            type: string
-            maxLength: 2048
-      responses:
-        '200':
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: string
-                format: binary
-        '404':
-          description: File not found
-        '500':
-          description: Server error
-      security:
-        - PublicAuth: [ ]
-      operationId: downloadPublicationFiles
-      tags: [ publication ]
-
-  /api/publication/pdf/download:
+  /api/publication/{id}/pdf/download:
     get:
       parameters:
         - in: path
@@ -748,13 +722,13 @@ paths:
             application/pdf:
               schema:
                 type: string
-                format: byte
+                format: base64
       security:
-        - PublicAuth: [ ]
+        - TokenAuth: [ ]
       operationId: downloadPdf
-      tags: [ pdf ]
+      tags: [ publication ]
 
-  /api/publication/{id}/files/sample/download:
+  /api/publication/{id}/files/sample/download-link:
     parameters:
       - in: path
         name: id
@@ -764,20 +738,15 @@ paths:
         required: true
     get:
       responses:
-        '200':
-          description: OK
+        200:
+          description: Success
           content:
-            '*/*':
+            application/json:
               schema:
-                type: string
-                format: binary
-        '404':
-          description: File not found
-        '500':
-          description: Server error
+                $ref: '#/components/schemas/DownloadLinkResponse'
       security:
         - PublicAuth: [ ]
-      operationId: downloadPublicationSampleFiles
+      operationId: getPublicationSampleFilesDownloadLink
       tags: [ publication ]
 
   /api/files/check-duplicates/{publicationId}:
@@ -862,70 +831,16 @@ paths:
       operationId: uploadFile
       tags: [ file ]
 
-  /api/files/download/{file_id}:
-    get:
-      summary: Download a file
-      description: Retrieves a file for download based on the provided file ID.
-      parameters:
-        - name: file_id
-          in: path
-          description: ID of the file to download
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: string
-                format: binary
-        '404':
-          description: File not found
-        '500':
-          description: Server error
-      security:
-        - PublicAuth: [ ]
-      operationId: downloadPublicationFile
-      tags: [ file ]
-
-  /api/files/token/{file_id}:
-    get:
-      summary: Get token to retrieve download link
-      parameters:
-        - name: file_id
-          in: path
-          description: ID of the file to download
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DownloadTokenResponse'
-        '404':
-          description: File not found
-        '500':
-          description: Server error
-      security:
-        - TokenAuth: [ ]
-      operationId: getTokenToRetrieveDownloadLink
-      tags: [ file ]
-
-  /api/files/download-link:
+  /api/files/download-link/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
     get:
       summary: Get download link for publication file
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DownloadLinkRequest'
       responses:
         200:
           description: Success
@@ -934,7 +849,7 @@ paths:
               schema:
                 type: string
       security:
-        - PublicToken: [ ]
+        - TokenAuth: [ ]
       operationId: getDownloadLinkForPublicationFile
       tags: [ file ]
 
@@ -1240,10 +1155,10 @@ paths:
       operationId: uploadSampleFile
       tags: [ sampleFile ]
 
-  /api/sample-files/download/{file_id}:
+  /api/sample-files/download-link/{file_id}:
     get:
       summary: Download a sample file
-      description: Retrieves a sample file for download based on the provided file ID.
+      description: Retrieves a sample file for download link
       parameters:
         - name: file_id
           in: path
@@ -1253,20 +1168,15 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
-          description: OK
+        200:
+          description: Success
           content:
-            '*/*':
+            text/plain:
               schema:
                 type: string
-                format: binary
-        '404':
-          description: File not found
-        '500':
-          description: Server error
       security:
-        - PublicAuth: [ ]
-      operationId: downloadPublicationSampleFile
+        - TokenAuth: [ ]
+      operationId: getPublicationSampleFileDownloadLink
       tags: [ sampleFile ]
 
   /api/sample-files/{id}:
@@ -2056,9 +1966,9 @@ components:
     DownloadLinkRequest:
       type: object
       properties:
-        token:
+        fileId:
           type: string
-          maxLength: 2048
+          format: uuid
 
     DownloadLinkResponse:
       type: object

@@ -35,7 +35,11 @@ services:
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xmx126m -Xms126m
     volumes:
-      - ./volumes/elastic-data:/data
+      - esdata:/usr/share/elasticsearch/data
     ports:
       - "9200:9200"
       - "9300:9300"
+
+volumes:
+  esdata:
+    driver: local
