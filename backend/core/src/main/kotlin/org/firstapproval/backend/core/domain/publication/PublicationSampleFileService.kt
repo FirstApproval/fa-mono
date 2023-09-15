@@ -92,13 +92,10 @@ class PublicationSampleFileService(
         return fullPathList.associateWith { publicationSampleFileRepository.existsByPublicationIdAndFullPath(publicationId, it) }
     }
 
-    @Transactional(readOnly = true)
-    fun getPublicationSampleFileWithContent(fileId: UUID): FileResponse {
+    fun getDownloadLink(user: User, fileId: UUID): String {
         val file = publicationSampleFileRepository.getReferenceById(fileId)
-        return FileResponse(
-            name = file.name,
-            s3Object = fileStorageService.get(SAMPLE_FILES, fileId.toString())
-        )
+        checkAccessToPublication(user, file.publication)
+        return fileStorageService.generateTemporaryDownloadLink(SAMPLE_FILES, fileId.toString(), file.name)
     }
 
     @Transactional

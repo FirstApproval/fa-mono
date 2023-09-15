@@ -82,26 +82,8 @@ class PublicationFileController(
         )
     }
 
-    override fun downloadPublicationFile(fileId: UUID): ResponseEntity<Resource> {
-        val file = publicationFileService.getPublicationFileWithContent(authHolderService.user, fileId)
-        val contentType: MediaType = try {
-            MediaType.parseMediaType(guessContentTypeFromName(file.name))
-        } catch (ex: Exception) {
-            MediaType.APPLICATION_OCTET_STREAM
-        }
-        return ok()
-            .contentType(contentType)
-            .header("Content-disposition", "attachment; filename=\"${file.name}\"")
-            .contentLength(file.s3Object.objectMetadata.contentLength)
-            .body(InputStreamResource(file.s3Object.objectContent))
-    }
-
-    override fun getTokenToRetrieveDownloadLink(fileId: UUID): ResponseEntity<DownloadTokenResponse> {
-        return ok(DownloadTokenResponse(publicationFileService.getTokenToRetrieveDownloadLink(authHolderService.user, fileId)))
-    }
-
-    override fun getDownloadLinkForPublicationFile(downloadLinkRequest: DownloadLinkRequest): ResponseEntity<String> {
-        return ok(publicationFileService.getDownloadLink(downloadLinkRequest.token))
+    override fun getDownloadLinkForPublicationFile(fileId: UUID): ResponseEntity<String> {
+        return ok(publicationFileService.getDownloadLink(authHolderService.user, fileId))
     }
 
     override fun deleteFiles(deleteByIdsRequest: DeleteByIdsRequest): ResponseEntity<Void> {

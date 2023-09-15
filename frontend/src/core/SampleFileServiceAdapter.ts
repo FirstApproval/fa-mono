@@ -2,7 +2,6 @@ import {
   CheckFileDuplicatesRequest,
   CreateFolderRequest,
   DeleteByIdsRequest,
-  DownloadLinkRequest,
   DownloadTokenResponse,
   EditFileRequest,
   FileApi,
@@ -52,8 +51,11 @@ export class SampleFileServiceAdapter
   async downloadPublicationFile(
     fileId: string,
     options?: AxiosRequestConfig
-  ): Promise<AxiosResponse<File>> {
-    return await this.service.downloadPublicationSampleFile(fileId, options);
+  ): Promise<AxiosResponse<string>> {
+    return await this.service.getPublicationSampleFileDownloadLink(
+      fileId,
+      options
+    );
   }
 
   async editFile(
@@ -65,10 +67,10 @@ export class SampleFileServiceAdapter
   }
 
   async getDownloadLinkForPublicationFile(
-    downloadLinkRequest?: DownloadLinkRequest,
+    id: string,
     options?: AxiosRequestConfig
   ): Promise<AxiosResponse<string>> {
-    throw new Error('Not implemented');
+    return await this.service.getPublicationSampleFileDownloadLink(id, options);
   }
 
   async getPublicationFiles(

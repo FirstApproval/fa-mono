@@ -14,7 +14,10 @@ class Properties {
         lateinit var secretKey: String
         lateinit var url: URL
         lateinit var buckets: Set<String>
+        var localMode by notNull<Boolean>()
         lateinit var downloadLinkTtl: Duration
+        lateinit var bucketPostfix: String
+        lateinit var bucketStorageClass: String
     }
 
     @Component
