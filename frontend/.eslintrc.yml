@@ -33,6 +33,7 @@ rules: {
   "@typescript-eslint/brace-style": "off",
   "no-debugger": "off",
   "@typescript-eslint/no-confusing-void-expression": "off",
+  "@typescript-eslint/return-await": "off",
   "max-len": [
     "error",
     {
