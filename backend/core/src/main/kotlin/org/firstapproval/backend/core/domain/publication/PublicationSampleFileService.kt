@@ -51,7 +51,7 @@ class PublicationSampleFileService(
             val hash = if (!isDir) {
                 fileStorageService.save(SAMPLE_FILES, fileId.toString(), data!!, contentLength!!)
                 data.reset()
-                calculateSHA256(data)
+                data.use { calculateSHA256(it) }
             } else null
             file = publicationSampleFileRepository.save(
                 PublicationSampleFile(
