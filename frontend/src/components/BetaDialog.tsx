@@ -70,7 +70,7 @@ export const BetaDialog = (props: {
             <FullWidthButton
               variant={'outlined'}
               onClick={() => {
-                routerStore.openInNewTab('https://t.me/iteleshov');
+                routerStore.openInNewTab('https://t.me/First_Approval');
                 props.onClose();
               }}>
               <Telegram sx={{ width: 20, height: 20, marginRight: '8px' }} />
