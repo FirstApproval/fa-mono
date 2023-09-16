@@ -17,6 +17,12 @@ class ElasticsearchConfig(
 
     @Bean
     fun elasticSearchRestClient(): RestHighLevelClient {
+        println(properties.host)
+        println(properties.port)
+        println(properties.scheme)
+        println(properties.mode)
+        println(properties.username)
+        println(properties.password)
         val builder = RestClient
             .builder(HttpHost(properties.host, properties.port, properties.scheme))
             .setHttpClientConfigCallback { httpClientBuilder ->
