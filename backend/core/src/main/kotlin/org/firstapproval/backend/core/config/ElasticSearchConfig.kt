@@ -6,7 +6,7 @@ import org.springframework.data.elasticsearch.client.ClientConfiguration
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfiguration
 
 @Configuration
-class ElasticSearchConfig2(private val properties: ElasticSearchProperties) : ElasticsearchConfiguration() {
+class ElasticSearchConfig(private val properties: ElasticSearchProperties) : ElasticsearchConfiguration() {
     override fun clientConfiguration(): ClientConfiguration {
         return if (properties.mode == "prod") {
             ClientConfiguration
