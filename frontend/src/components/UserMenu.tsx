@@ -109,6 +109,8 @@ export const UserMenu = observer((): ReactElement => {
             authStore.token = undefined;
             userStore.user = undefined;
             userStore.editableUser = undefined;
+            userStore.workplaces = [];
+            userStore.workplacesProps = [];
             handleClose();
           }}>
           <Logout

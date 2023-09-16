@@ -170,7 +170,7 @@ export const AccountPage: FunctionComponent = observer(() => {
           middleName: editableUser.middleName,
           profileImage: editableUser.profileImage,
           deleteProfileImage: userStore.deleteProfileImage,
-          workplaces: []
+          workplaces: user.workplaces ?? []
         })
         .then(() => {
           setSaveDisabled(true);
@@ -426,11 +426,7 @@ export const AccountPage: FunctionComponent = observer(() => {
               {tabNumber === 2 && (
                 <TabContainer>
                   <HeightElement value={'32px'}></HeightElement>
-                  <WorkplacesEditor
-                    workplaces={userStore.workplaces}
-                    workplacesProps={userStore.workplacesProps}
-                    showSaveButton={true}
-                  />
+                  <WorkplacesEditor showSaveButton={true} />
                 </TabContainer>
               )}
               {tabNumber === 3 && (

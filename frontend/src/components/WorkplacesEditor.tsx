@@ -18,38 +18,23 @@ import {
   Workplace
 } from '../apis/first-approval-api';
 import { organizationService } from '../core/service';
-import { WorkplaceProps } from '../core/IWorkplacesStore';
+import { WorkplaceProps } from '../core/WorkplaceProps';
 import { observer } from 'mobx-react-lite';
 import { LoadingButton } from '@mui/lab';
 import { Clear } from '@mui/icons-material';
 import { userStore } from '../core/user';
 
 interface WorkplacesEditorProps {
-  workplaces: Workplace[];
-  workplacesProps: WorkplaceProps[];
   showSaveButton: boolean;
 }
 
 export const WorkplacesEditor = observer(
   (props: WorkplacesEditorProps): ReactElement => {
     const [savingInProgress, setSavingInProgress] = useState(false);
-    const { workplaces, workplacesProps } = props;
+    const { workplaces, workplacesProps } = userStore;
     const [workplaceOrgQueryIndex, setWorkplaceOrgQueryIndex] = useState('0-');
 
     useEffect(() => {
-      if (!workplaces || workplaces.length === 0) {
-        workplaces.push({ isFormer: false });
-        workplaces.forEach((w) => {
-          userStore.workplacesProps.push({
-            orgQuery: w.organization?.name ?? '',
-            departmentQuery: w.department?.name ?? '',
-            departmentQueryKey: '',
-            organizationOptions: [],
-            departmentOptions: w.organization?.departments ?? []
-          });
-        });
-        return;
-      }
       const index = +workplaceOrgQueryIndex.substring(
         0,
         workplaceOrgQueryIndex.indexOf('-')
@@ -285,8 +270,13 @@ export const WorkplacesEditor = observer(
       );
     };
 
-    if (!workplaces || !workplacesProps) {
-      return <CircularProgress />;
+    if (workplaces.length === 0 || workplacesProps.length === 0) {
+      return (
+        <FlexWrapColumnCenter>
+          <CircularProgress />
+          <HeightElement value={'24px'} />
+        </FlexWrapColumnCenter>
+      );
     }
 
     return (
@@ -456,4 +446,11 @@ export const SaveButton = styled(LoadingButton)`
   font-weight: 500;
   line-height: 26px; /* 144.444% */
   letter-spacing: 0.46px;
+`;
+
+export const FlexWrapColumnCenter = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 `;

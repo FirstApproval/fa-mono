@@ -135,17 +135,7 @@ const App: FunctionComponent = observer(() => {
                   }}
                 />
               )}
-              {page === Page.SELF_INFO && (
-                <EnterSelfInfoPage
-                  store={signUpStore}
-                  onSignInClick={() => {
-                    navigatePage(Page.SIGN_IN);
-                  }}
-                  onContinueClick={() => {
-                    navigatePage(Page.SIGN_UP_PASSWORD);
-                  }}
-                />
-              )}
+              {page === Page.SELF_INFO && <EnterSelfInfoPage />}
               {page === Page.RESET_PASSWORD && (
                 <ResetPasswordPage
                   onSignInClick={() => {

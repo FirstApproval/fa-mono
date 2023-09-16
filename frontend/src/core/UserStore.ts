@@ -4,18 +4,16 @@ import { type GetMeResponse, Workplace } from '../apis/first-approval-api';
 import { authStore } from './auth';
 import { routerStore } from './router';
 import { ACCOUNT_AFFILIATIONS_PATH, Page } from './RouterStore';
-import { IWorkplacesStore, WorkplaceProps } from './IWorkplacesStore';
+import { WorkplaceProps } from './WorkplaceProps';
 import { userStore } from './user';
 import { cloneDeep } from 'lodash';
 
-export class UserStore implements IWorkplacesStore {
+export class UserStore {
   user: GetMeResponse | undefined = undefined;
   editableUser: GetMeResponse | undefined = undefined;
   deleteProfileImage = false;
+  workplaces: Workplace[] = [];
   workplacesProps: WorkplaceProps[] = [];
-  get workplaces(): Workplace[] {
-    return this.editableUser?.workplaces ?? [];
-  }
 
   constructor() {
     makeAutoObservable(this);
@@ -27,6 +25,8 @@ export class UserStore implements IWorkplacesStore {
         } else {
           this.user = undefined;
           this.editableUser = undefined;
+          this.workplaces = [];
+          this.workplacesProps = [];
         }
       },
       { fireImmediately: true }
@@ -38,7 +38,13 @@ export class UserStore implements IWorkplacesStore {
       runInAction(() => {
         this.user = response.data;
         this.editableUser = cloneDeep(response.data);
-        this.editableUser.workplaces!.forEach((w, index) => {
+        this.workplaces = cloneDeep(response.data.workplaces ?? []);
+        if (!this.workplaces || this.workplaces.length === 0) {
+          this.workplaces.push({ isFormer: false });
+        }
+
+        this.workplacesProps = [];
+        this.workplaces?.forEach((w, index) => {
           this.workplacesProps.push({
             orgQuery: w.organization?.name ?? '',
             departmentQuery: w.department?.name ?? '',

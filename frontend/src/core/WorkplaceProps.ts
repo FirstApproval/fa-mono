@@ -1,13 +1,7 @@
 import {
-  OrganizationDepartment,
   Organization,
-  Workplace
+  OrganizationDepartment
 } from '../apis/first-approval-api';
-
-export interface IWorkplacesStore {
-  workplaces: Workplace[];
-  workplacesProps: WorkplaceProps[];
-}
 
 export interface WorkplaceProps {
   orgQuery: string;

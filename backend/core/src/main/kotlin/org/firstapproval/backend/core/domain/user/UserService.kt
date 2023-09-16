@@ -306,7 +306,7 @@ class UserService(
                 user.username = username
                 user.selfInfo = selfInfo
 
-                if (workplaces != null) {
+                if (workplaces != null && workplaces.size > 0) {
                     val userWorkplaces = workplaces.map { workplace ->
                         val organization = organizationService.getOrSave(workplace.organization)
                         val organizationDepartment = organizationService.getOrSave(workplace.department, organization)
