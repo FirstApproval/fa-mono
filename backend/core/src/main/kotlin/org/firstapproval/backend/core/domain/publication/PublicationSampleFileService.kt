@@ -50,7 +50,7 @@ class PublicationSampleFileService(
                 dropDuplicate(publicationId, actualFullPath)?.let { filesToDelete.add(it) }
             }
             if (!isDir) {
-                fileStorageService.save(SAMPLE_FILES, fileId.toString(), data!!, contentLength!!, sha256HashBase64)
+                fileStorageService.save(SAMPLE_FILES, fileId.toString(), data!!, contentLength!!, sha256HashBase64!!)
             }
             file = publicationSampleFileRepository.save(
                 PublicationSampleFile(
