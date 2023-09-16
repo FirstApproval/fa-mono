@@ -1,36 +1,25 @@
 package org.firstapproval.backend.core.config
 
-import org.apache.http.HttpHost
-import org.apache.http.auth.AuthScope.ANY
-import org.apache.http.auth.UsernamePasswordCredentials
-import org.apache.http.impl.client.BasicCredentialsProvider
-import org.elasticsearch.client.RestClient
-import org.elasticsearch.client.RestHighLevelClient
 import org.firstapproval.backend.core.config.Properties.ElasticSearchProperties
-import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.data.elasticsearch.client.ClientConfiguration
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfiguration
 
 @Configuration
-class ElasticsearchConfig(
-    private val properties: ElasticSearchProperties
-) {
-
-    @Bean
-    fun elasticSearchRestClient(): RestHighLevelClient {
-        val builder = RestClient
-            .builder(HttpHost(properties.host, properties.port, properties.scheme))
-            .setHttpClientConfigCallback { httpClientBuilder ->
-                if (properties.mode == "prod") {
-                    val credentialsProvider = BasicCredentialsProvider()
-                    credentialsProvider.setCredentials(
-                        ANY,
-                        UsernamePasswordCredentials(properties.username, properties.password)
-                    )
-                    httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider)
-                }
-                httpClientBuilder
-            }
-
-        return RestHighLevelClient(builder)
+class ElasticSearchConfig(private val properties: ElasticSearchProperties) : ElasticsearchConfiguration() {
+    override fun clientConfiguration(): ClientConfiguration {
+        return if (properties.mode == "prod") {
+            ClientConfiguration
+                .builder()
+                .connectedTo("${properties.host}:${properties.port}")
+                .usingSsl()
+                .withBasicAuth(properties.username, properties.password)
+                .build()
+        } else {
+            ClientConfiguration
+                .builder()
+                .connectedTo("${properties.host}:${properties.port}")
+                .build()
+        }
     }
 }
