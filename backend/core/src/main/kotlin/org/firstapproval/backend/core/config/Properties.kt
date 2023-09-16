@@ -82,8 +82,13 @@ class Properties {
     }
 
     @Component
-    @ConfigurationProperties("elastic")
-    class ElasticProperties {
-        lateinit var url: URL
+    @ConfigurationProperties("elasticsearch")
+    class ElasticSearchProperties {
+        lateinit var mode: String
+        lateinit var scheme: String
+        lateinit var host: String
+        var port by notNull<Int>()
+        lateinit var username: String
+        lateinit var password: String
     }
 }

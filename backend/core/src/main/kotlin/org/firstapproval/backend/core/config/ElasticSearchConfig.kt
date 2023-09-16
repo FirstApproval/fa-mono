@@ -1,16 +1,36 @@
 package org.firstapproval.backend.core.config
 
-import org.firstapproval.backend.core.config.Properties.ElasticProperties
+import org.apache.http.HttpHost
+import org.apache.http.auth.AuthScope.ANY
+import org.apache.http.auth.UsernamePasswordCredentials
+import org.apache.http.impl.client.BasicCredentialsProvider
+import org.elasticsearch.client.RestClient
+import org.elasticsearch.client.RestHighLevelClient
+import org.firstapproval.backend.core.config.Properties.ElasticSearchProperties
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.data.elasticsearch.client.ClientConfiguration
-import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfiguration
-import java.net.InetSocketAddress
-
 
 @Configuration
-class ElasticSearchConfig(private val properties: ElasticProperties): ElasticsearchConfiguration() {
+class ElasticsearchConfig(
+    private val properties: ElasticSearchProperties
+) {
 
-    override fun clientConfiguration(): ClientConfiguration {
-        return ClientConfiguration.create(InetSocketAddress.createUnresolved(properties.url.host, properties.url.port))
+    @Bean
+    fun elasticSearchRestClient(): RestHighLevelClient {
+        val builder = RestClient
+            .builder(HttpHost(properties.host, properties.port, properties.scheme))
+            .setHttpClientConfigCallback { httpClientBuilder ->
+                if (properties.mode == "prod") {
+                    val credentialsProvider = BasicCredentialsProvider()
+                    credentialsProvider.setCredentials(
+                        ANY,
+                        UsernamePasswordCredentials(properties.username, properties.password)
+                    )
+                    httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider)
+                }
+                httpClientBuilder
+            }
+
+        return RestHighLevelClient(builder)
     }
 }

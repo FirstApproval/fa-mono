@@ -46,7 +46,7 @@ class ArchiveService(
 
     val log = logger {}
 
-    @Scheduled(cron = "\${archive-publication-files-to-ipfs.cron}")
+    @Scheduled(cron = "\${archive-publication-files.cron}")
     @SchedulerLock(name = "ArchiveService.archivePublicationFiles")
     fun archivePublicationFiles() {
         val publications = publicationRepository.findAllByStatusOrderByCreationTimeDesc(READY_FOR_PUBLICATION)

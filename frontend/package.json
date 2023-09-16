@@ -35,7 +35,9 @@
     "api-local": "node build-scripts.js api http://localhost:3000",
     "build-local": "node build-scripts.js build http://localhost:3000",
     "api-dev": "node build-scripts.js api https://app.dev.firstapproval.io",
-    "build-dev": "node build-scripts.js build https://app.dev.firstapproval.io"
+    "build-dev": "node build-scripts.js build https://app.dev.firstapproval.io",
+    "api-prod": "node build-scripts.js api https://firstapproval.io",
+    "build-prod": "node build-scripts.js build https://firstapproval.io"
   },
   "eslintConfig": {
     "extends": [
