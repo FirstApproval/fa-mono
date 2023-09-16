@@ -60,6 +60,7 @@ class PublicationFileController(
         fullPath: String,
         isDir: Boolean,
         type: UploadType,
+        sha256HashBase64: String,
         contentLength: Long?,
         file: MultipartFile?
     ): ResponseEntity<PublicationFile> {
@@ -69,6 +70,7 @@ class PublicationFileController(
                 publicationId,
                 fullPath,
                 isDir,
+                sha256HashBase64,
                 file?.inputStream,
                 type == RENAME,
                 contentLength

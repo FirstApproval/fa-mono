@@ -807,6 +807,11 @@ paths:
           required: true
           description: In case of file duplication replace or rename
         - in: query
+          name: sha256HashBase64
+          schema:
+            type: string
+          required: false
+        - in: query
           name: contentLength
           schema:
             type: integer
@@ -1132,6 +1137,11 @@ paths:
             $ref: '#/components/schemas/UploadType'
           required: true
           description: In case of file duplication replace or rename
+        - in: query
+          name: sha256HashBase64
+          schema:
+            type: string
+          required: false
         - in: query
           name: contentLength
           schema:

@@ -105,6 +105,7 @@ export class SampleFileServiceAdapter
     fullPath: string,
     isDir: boolean,
     type: UploadType,
+    sha256HexBase64?: string,
     contentLength?: number,
     body?: File,
     options?: AxiosRequestConfig
@@ -114,6 +115,7 @@ export class SampleFileServiceAdapter
       fullPath,
       isDir,
       type,
+      sha256HexBase64,
       contentLength,
       body,
       options

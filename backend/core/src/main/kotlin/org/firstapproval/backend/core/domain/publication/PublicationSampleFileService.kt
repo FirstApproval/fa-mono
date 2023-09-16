@@ -5,6 +5,7 @@ import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.external.s3.FileStorageService
 import org.firstapproval.backend.core.external.s3.SAMPLE_FILES
 import org.firstapproval.backend.core.utils.require
+import org.firstapproval.backend.core.utils.sha256HashFromBase64
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
@@ -30,6 +31,7 @@ class PublicationSampleFileService(
         publicationId: UUID,
         fullPath: String,
         isDir: Boolean,
+        sha256HashBase64: String?,
         data: InputStream?,
         onCollisionRename: Boolean,
         contentLength: Long?
@@ -47,9 +49,9 @@ class PublicationSampleFileService(
                 actualFullPath = fullPath
                 dropDuplicate(publicationId, actualFullPath)?.let { filesToDelete.add(it) }
             }
-            val hash = if (!isDir) {
-                fileStorageService.save(SAMPLE_FILES, fileId.toString(), data!!, contentLength!!).eTag
-            } else null
+            if (!isDir) {
+                fileStorageService.save(SAMPLE_FILES, fileId.toString(), data!!, contentLength!!, sha256HashBase64)
+            }
             file = publicationSampleFileRepository.save(
                 PublicationSampleFile(
                     id = fileId,
@@ -57,7 +59,7 @@ class PublicationSampleFileService(
                     fullPath = actualFullPath,
                     dirPath = extractDirPath(actualFullPath),
                     isDir = isDir,
-                    hash = hash,
+                    hash = sha256HashBase64?.let { sha256HashFromBase64(it) },
                     size = contentLength
                 )
             )
