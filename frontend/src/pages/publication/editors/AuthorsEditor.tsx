@@ -272,7 +272,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                 // error={!isValidEmail}
                 // helperText={!isValidEmail ? 'Invalid address' : undefined}
               />
-              <OneLineWrap>
+              <FlexWrapRow>
                 <MarginTextField
                   value={authorStore.firstName}
                   onChange={(e) => {
@@ -299,12 +299,12 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                   //   !isValidLastName ? 'Invalid last name' : undefined
                   // }
                 />
-              </OneLineWrap>
+              </FlexWrapRow>
               <FlexWrapColumn>
                 <WorkplacesTitle>
                   Current workplaces (affiliations)
                 </WorkplacesTitle>
-                <WorkplacesEditor store={authorStore} />
+                <WorkplacesEditor store={authorStore} isModalWindow={true} />
               </FlexWrapColumn>
             </AddAuthorWrap>
           )}
@@ -431,10 +431,6 @@ const EditConfirmedAuthor = styled.div`
   margin-top: 8px;
   display: flex;
   flex-direction: column;
-`;
-
-const OneLineWrap = styled.div`
-  display: flex;
 `;
 
 const AuthorSelectOption = styled.li`

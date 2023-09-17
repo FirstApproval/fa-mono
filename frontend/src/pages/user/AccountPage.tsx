@@ -416,6 +416,7 @@ export const AccountPage: FunctionComponent = observer(() => {
                 <TabContainer>
                   <HeightElement value={'32px'}></HeightElement>
                   <WorkplacesEditor
+                    isModalWindow={false}
                     store={userStore}
                     buttonType={ActionButtonType.FULL_WIDTH_CONFIRM}
                     saveButtonText={'Save affiliations'}

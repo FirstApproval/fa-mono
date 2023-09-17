@@ -32,12 +32,14 @@ interface WorkplacesEditorProps {
   store: IWorkplaceStore;
   buttonType?: ActionButtonType;
   saveButtonText?: string;
+  isModalWindow: boolean;
   saveCallback?: (workplaces: Workplace[]) => Promise<void>;
 }
 
 export const WorkplacesEditor = observer(
   (props: WorkplacesEditorProps): ReactElement => {
-    const { saveCallback, buttonType, store, saveButtonText } = props;
+    const { isModalWindow, saveCallback, buttonType, store, saveButtonText } =
+      props;
     const [savingInProgress, setSavingInProgress] = useState(false);
     const [showSuccessSavingAlter, setShowSuccessSavingAlter] = useState(false);
     const { workplaces, workplacesProps } = store;
@@ -81,7 +83,7 @@ export const WorkplacesEditor = observer(
       return (
         <FullWidth key={index}>
           <DividerWrap hidden={index === 0} />
-          <FlexWrapOrganization>
+          <FlexWrapOrganization extendWidth={!isModalWindow}>
             <Autocomplete
               key={`orgKey-${index}`}
               filterOptions={(options, params) => {
@@ -145,9 +147,13 @@ export const WorkplacesEditor = observer(
             />
             {workplaces.length > 1 ? (
               <IconButtonWrap
+                useMarginRight={!isModalWindow}
                 onClick={() => {
                   workplaces.splice(index, 1);
                   workplacesProps.splice(index, 1);
+                  if (workplaces.length === 1) {
+                    workplaces[0].isFormer = false;
+                  }
                 }}>
                 <Clear
                   sx={{
@@ -158,7 +164,7 @@ export const WorkplacesEditor = observer(
                 />
               </IconButtonWrap>
             ) : (
-              <WidthElement value={'62px'} />
+              !isModalWindow && <WidthElement value={'62px'} />
             )}
           </FlexWrapOrganization>
           <HeightElement value={'32px'} />
@@ -239,7 +245,7 @@ export const WorkplacesEditor = observer(
             <AddressField
               multiline={true}
               maxRows={1}
-              value={workplace.address}
+              value={workplace.address ?? ''}
               onChange={(e) => {
                 workplaces[index].address = e.currentTarget.value;
               }}
@@ -251,7 +257,7 @@ export const WorkplacesEditor = observer(
             <PostalCodeField
               multiline={true}
               maxRows={1}
-              value={workplace.postalCode}
+              value={workplace.postalCode ?? ''}
               onChange={(e) => {
                 workplaces[index].postalCode = e.currentTarget.value;
               }}
@@ -400,13 +406,17 @@ export const FlexWrapRowFullWidth = styled.div`
   width: 100%;
 `;
 
-export const FlexWrapOrganization = styled.div`
+export const FlexWrapOrganization = styled.div<{
+  extendWidth: boolean;
+}>`
+  ${(props) => (props.extendWidth ? 'width: calc(100% + 56px);' : '100%;')}
   display: flex;
-  width: calc(100% + 56px);
   align-items: center;
 `;
 
-const IconButtonWrap = styled(IconButton)`
+const IconButtonWrap = styled(IconButton)<{
+  useMarginRight: boolean;
+}>`
   margin-left: 8px;
   padding: 12px;
   cursor: pointer;

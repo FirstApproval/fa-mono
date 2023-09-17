@@ -19,6 +19,7 @@ export const EnterSelfInfoPage: FunctionComponent = observer(() => {
         <FlexBody>
           <Header>{'Almost there!\nList your current workplaces:'}</Header>
           <WorkplacesEditor
+            isModalWindow={false}
             store={userStore}
             buttonType={ActionButtonType.FULL_WIDTH_CONFIRM}
             saveButtonText={'Finish registration'}
