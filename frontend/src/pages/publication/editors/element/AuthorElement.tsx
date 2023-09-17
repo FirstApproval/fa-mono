@@ -112,11 +112,11 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
               </span>
             )}
           </AuthorName>
-          <AuthorShortBio>
+          <AuthorWorkplace>
             {setEditAuthorVisible
               ? workplaces.find((w) => !w.isFormer)?.organization?.name
               : email}
-          </AuthorShortBio>
+          </AuthorWorkplace>
         </AuthorWrap>
       </AuthorElementWrap>
       {!isReadonly && (
@@ -162,7 +162,7 @@ const AuthorName = styled.div`
   font-weight: 400;
 `;
 
-const AuthorShortBio = styled.div`
+const AuthorWorkplace = styled.div`
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
