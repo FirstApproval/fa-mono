@@ -37,7 +37,6 @@ class PublicationController(
     private val publicationService: PublicationService,
     private val userService: UserService,
     private val downloaderRepository: DownloaderRepository,
-    private val ipfsClient: IpfsClient,
     private val authHolderService: AuthHolderService,
     private val publicationPdfService: PublicationPdfService
 ) : PublicationApi {
@@ -99,12 +98,14 @@ class PublicationController(
     }
 
     override fun getPublication(id: UUID): ResponseEntity<Publication> {
-        val pub = publicationService.get(authHolderService.userOrNull(), id)
-//        val contentStatus = pub.contentId?.let { contentId ->
-//            val publicationArchiveInfo = ipfsClient.getInfo(contentId)
-//            publicationArchiveInfo.availability.let { PublicationContentStatus.valueOf(it.name) }
-//        }
-        val publicationResponse = pub.toApiObject(userService)//.contentStatus(contentStatus)
+        val pub = publicationService.get(authHolderService.user, id)
+        val publicationResponse = pub.toApiObject(userService)
+        return ok().body(publicationResponse)
+    }
+
+    override fun getPublicationPublic(id: UUID): ResponseEntity<Publication> {
+        val pub = publicationService.get(null, id)
+        val publicationResponse = pub.toApiObject(userService)
         return ok().body(publicationResponse)
     }
 

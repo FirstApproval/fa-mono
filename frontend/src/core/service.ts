@@ -8,8 +8,8 @@ import {
   SampleFileApi,
   UserApi
 } from '../apis/first-approval-api';
-import { authStore } from './auth';
 import { SampleFileServiceAdapter } from './SampleFileServiceAdapter';
+import { authStore } from './auth';
 
 const configuration: Configuration = new Configuration({
   accessToken: async () => {

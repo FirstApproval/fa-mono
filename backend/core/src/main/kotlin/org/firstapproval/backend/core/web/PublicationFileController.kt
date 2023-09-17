@@ -27,7 +27,23 @@ class PublicationFileController(
 ) : FileApi {
 
     override fun getPublicationFiles(publicationId: UUID, dirPath: String): ResponseEntity<List<PublicationFile>> {
-        val files = publicationFileService.getPublicationFiles(authHolderService.userOrNull(), publicationId, dirPath)
+        val files = publicationFileService.getPublicationFiles(authHolderService.user, publicationId, dirPath)
+        return ok(files.map {
+            PublicationFile()
+                .id(it.id)
+                .publicationId(it.publication.id)
+                .creationTime(it.creationTime.toOffsetDateTime())
+                .description(it.description)
+                .dirPath(it.dirPath)
+                .size(it.size)
+                .fullPath(it.fullPath)
+                .isDir(it.isDir)
+                .hash(it.hash)
+        })
+    }
+
+    override fun getPublicationFilesPublic(publicationId: UUID, dirPath: String): ResponseEntity<List<PublicationFile>> {
+        val files = publicationFileService.getPublicationFiles(null, publicationId, dirPath)
         return ok(files.map {
             PublicationFile()
                 .id(it.id)

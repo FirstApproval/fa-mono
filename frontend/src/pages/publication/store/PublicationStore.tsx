@@ -3,8 +3,8 @@ import { publicationService } from '../../../core/service';
 import _, { some } from 'lodash';
 import {
   type ConfirmedAuthor,
-  type Paragraph,
   LicenseType,
+  type Paragraph,
   PublicationStatus,
   type UnconfirmedAuthor,
   type UserInfo
@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { type AuthorEditorStore } from './AuthorEditorStore';
 import { routerStore } from '../../../core/router';
 import { Page } from '../../../core/RouterStore';
+import { authStore } from '../../../core/auth';
 
 const EDIT_THROTTLE_MS = 1000;
 
@@ -863,8 +864,13 @@ export class PublicationStore {
   };
 
   private loadInitialState(): void {
-    void publicationService
-      .getPublication(this.publicationId)
+    let method;
+    if (authStore.token) {
+      method = publicationService.getPublication(this.publicationId);
+    } else {
+      method = publicationService.getPublicationPublic(this.publicationId);
+    }
+    method
       .then(
         action((response) => {
           const publication = response.data;

@@ -21,7 +21,9 @@ class PublicationSampleFileService(
     private val transactionalTemplate: TransactionTemplate
 ) {
 
-    fun getPublicationSampleFiles(publicationId: UUID, dirPath: String): List<PublicationSampleFile> {
+    fun getPublicationSampleFiles(user: User?, publicationId: UUID, dirPath: String): List<PublicationSampleFile> {
+        val publication = publicationRepository.getReferenceById(publicationId)
+        checkAccessToPublication(user, publication)
         return publicationSampleFileRepository.findAllByPublicationIdAndDirPath(publicationId, dirPath)
     }
 

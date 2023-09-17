@@ -14,6 +14,7 @@ import {
 import { fullPathToName } from './utils';
 import { type FileData } from '@first-approval/chonky/dist/types/file.types';
 import { calculateSHA256 } from '../util/sha256Util';
+import { authStore } from '../core/auth';
 
 interface FileEntry {
   id: string;
@@ -462,10 +463,19 @@ export class FileSystemFA {
   ): Promise<FileEntry[]> => {
     this.isLoading = true;
     try {
-      const response = await this.fileService.getPublicationFiles(
-        this.publicationId,
-        dirPath
-      );
+      let method;
+      if (authStore.token) {
+        method = this.fileService.getPublicationFiles(
+          this.publicationId,
+          dirPath
+        );
+      } else {
+        method = this.fileService.getPublicationFilesPublic(
+          this.publicationId,
+          dirPath
+        );
+      }
+      const response = await method;
       return response.data.map((pf) => {
         return {
           id: pf.id ?? '',

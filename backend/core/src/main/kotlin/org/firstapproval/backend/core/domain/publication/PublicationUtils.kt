@@ -6,7 +6,7 @@ import org.firstapproval.backend.core.domain.user.User
 import org.springframework.security.access.AccessDeniedException
 
 fun checkAccessToPublication(user: User?, publication: Publication) {
-    if (publication.accessType != OPEN && publication.status != PUBLISHED) {
+    if (publication.accessType != OPEN || publication.status != PUBLISHED) {
         checkPublicationCreator(user!!, publication)
     }
 }

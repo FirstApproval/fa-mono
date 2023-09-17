@@ -491,7 +491,7 @@ paths:
       operationId: getAllFeaturedPublications
       tags: [ publication ]
 
-  /api/publication/{id}:
+  /api/public/publication/{id}:
     get:
       summary: Get publication
       parameters:
@@ -511,6 +511,93 @@ paths:
                 $ref: '#/components/schemas/Publication'
       security:
         - PublicAuth: [ ]
+      operationId: getPublicationPublic
+      tags: [ publication ]
+
+  /api/public/files:
+    parameters:
+      - in: query
+        name: publicationId
+        schema:
+          type: string
+          format: uuid
+        required: true
+        description: Publication id
+    get:
+      summary: Get files by publication id
+      parameters:
+        - in: query
+          name: dirPath
+          schema:
+            type: string
+          required: true
+          description: Directory path
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PublicationFile'
+      security:
+        - PublicAuth: [ ]
+      operationId: getPublicationFilesPublic
+      tags: [ file ]
+
+  /api/public/sample-files:
+    parameters:
+      - in: query
+        name: publicationId
+        schema:
+          type: string
+          format: uuid
+        required: true
+        description: Publication id
+    get:
+      summary: Get sample files by publication id
+      parameters:
+        - in: query
+          name: dirPath
+          schema:
+            type: string
+          required: true
+          description: Directory path
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PublicationFile'
+      security:
+        - PublicAuth: [ ]
+      operationId: getPublicationSampleFilesPublic
+      tags: [ sampleFile ]
+
+  /api/publication/{id}:
+    get:
+      summary: Get publication
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Publication id
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Publication'
+      security:
+        - TokenAuth: [ ]
       operationId: getPublication
       tags: [ publication ]
     delete:
@@ -941,7 +1028,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/PublicationFile'
       security:
-        - PublicAuth: [ ]
+        - TokenAuth: [ ]
       operationId: getPublicationFiles
       tags: [ file ]
     post:
@@ -1057,7 +1144,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/PublicationFile'
       security:
-        - PublicAuth: [ ]
+        - TokenAuth: [ ]
       operationId: getPublicationSampleFiles
       tags: [ sampleFile ]
     post:

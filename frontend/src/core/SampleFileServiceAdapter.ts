@@ -29,6 +29,18 @@ export class SampleFileServiceAdapter
     );
   }
 
+  async getPublicationFilesPublic(
+    publicationId: string,
+    dirPath: string,
+    options?: AxiosRequestConfig<any> | undefined
+  ): Promise<AxiosResponse<PublicationFile[], any>> {
+    return await this.service.getPublicationSampleFilesPublic(
+      publicationId,
+      dirPath,
+      options
+    );
+  }
+
   async createFolder(
     publicationId: string,
     createFolderRequest: CreateFolderRequest,

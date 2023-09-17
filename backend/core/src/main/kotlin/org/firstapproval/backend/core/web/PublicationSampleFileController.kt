@@ -25,7 +25,23 @@ class PublicationSampleFileController(
 ) : SampleFileApi {
 
     override fun getPublicationSampleFiles(publicationId: UUID, dirPath: String): ResponseEntity<List<PublicationFile>> {
-        val files = publicationSampleFileService.getPublicationSampleFiles(publicationId, dirPath)
+        val files = publicationSampleFileService.getPublicationSampleFiles(authHolderService.user, publicationId, dirPath)
+        return ok(files.map {
+            PublicationFile()
+                .id(it.id)
+                .publicationId(it.publication.id)
+                .creationTime(it.creationTime.toOffsetDateTime())
+                .description(it.description)
+                .dirPath(it.dirPath)
+                .size(it.size)
+                .fullPath(it.fullPath)
+                .isDir(it.isDir)
+                .hash(it.hash)
+        })
+    }
+
+    override fun getPublicationSampleFilesPublic(publicationId: UUID, dirPath: String): ResponseEntity<List<PublicationFile>> {
+        val files = publicationSampleFileService.getPublicationSampleFiles(null, publicationId, dirPath)
         return ok(files.map {
             PublicationFile()
                 .id(it.id)

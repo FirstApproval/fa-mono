@@ -243,7 +243,7 @@ class PublicationService(
         return DownloadLinkResponse(link, passcode)
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     fun get(user: User?, id: UUID): Publication {
         val publication = publicationRepository.getReferenceById(id)
         checkAccessToPublication(user, publication)
