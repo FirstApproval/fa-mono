@@ -1,6 +1,5 @@
 #!/bin/sh
 
-# Waiting for Elasticsearch to be ready
 until $(curl --output /dev/null --silent --get --fail "http://elasticsearch:9200/_cluster/health?wait_for_status=yellow"); do
     echo "Waiting for Elasticsearch..."
     sleep 5
