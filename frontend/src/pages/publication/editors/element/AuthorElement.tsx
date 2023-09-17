@@ -5,7 +5,8 @@ import styled from '@emotion/styled';
 import {
   type ConfirmedAuthor,
   type UnconfirmedAuthor,
-  UserInfo
+  UserInfo,
+  Workplace
 } from '../../../../apis/first-approval-api';
 import { getInitials } from '../../../../util/userUtil';
 import {
@@ -38,7 +39,7 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
     setEditAuthorVisible,
     shouldOpenInNewTab
   } = props;
-  let shortBio;
+  let workplaces: Workplace[];
   let firstName;
   let lastName;
   let email;
@@ -54,22 +55,22 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
       lastName = authorUser.lastName;
       email = authorUser.email;
       username = authorUser.username;
-      shortBio = confirmedAuthor.shortBio;
       profileImage = authorUser.profileImage;
+      workplaces = authorUser.workplaces ?? [];
     } else {
       const authorEditorStore = author as AuthorEditorStore;
       firstName = authorEditorStore.firstName;
       lastName = authorEditorStore.lastName;
       email = authorEditorStore.email;
-      shortBio = authorEditorStore.shortBio;
       profileImage = authorEditorStore.profileImage;
+      workplaces = authorEditorStore.workplaces;
     }
   } else if (isConfirmed === false) {
     const unconfirmedAuthor = author as UnconfirmedAuthor;
     firstName = unconfirmedAuthor.firstName;
     lastName = unconfirmedAuthor.lastName;
     email = unconfirmedAuthor.email;
-    shortBio = unconfirmedAuthor.shortBio;
+    workplaces = unconfirmedAuthor.workplaces ?? [];
   } else {
     const userInfo = author as UserInfo;
     firstName = userInfo.firstName;
@@ -77,6 +78,7 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
     email = userInfo.email;
     username = userInfo.username;
     profileImage = userInfo.profileImage;
+    workplaces = userInfo.workplaces ?? [];
   }
 
   return (
@@ -111,7 +113,9 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
             )}
           </AuthorName>
           <AuthorShortBio>
-            {setEditAuthorVisible ? shortBio : email}
+            {setEditAuthorVisible
+              ? workplaces.find((w) => !w.isFormer)?.organization?.name
+              : email}
           </AuthorShortBio>
         </AuthorWrap>
       </AuthorElementWrap>

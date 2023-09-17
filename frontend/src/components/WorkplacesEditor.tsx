@@ -2,12 +2,14 @@ import React, { type ReactElement, useEffect, useState } from 'react';
 import ErrorOutline from '@mui/icons-material/ErrorOutline';
 import styled from '@emotion/styled';
 import {
+  Alert,
   Autocomplete,
   Button,
   CircularProgress,
   Divider,
   FormControlLabel,
   IconButton,
+  Snackbar,
   Switch,
   TextField
 } from '@mui/material';
@@ -18,20 +20,27 @@ import {
   Workplace
 } from '../apis/first-approval-api';
 import { organizationService } from '../core/service';
-import { WorkplaceProps } from '../core/WorkplaceProps';
+import { IWorkplaceStore, WorkplaceProps } from '../core/WorkplaceProps';
 import { observer } from 'mobx-react-lite';
 import { LoadingButton } from '@mui/lab';
 import { Clear } from '@mui/icons-material';
-import { userStore } from '../core/user';
 
+export enum ActionButtonType {
+  FULL_WIDTH_CONFIRM = 'FULL_WIDTH_CONFIRM'
+}
 interface WorkplacesEditorProps {
-  showSaveButton: boolean;
+  store: IWorkplaceStore;
+  buttonType?: ActionButtonType;
+  saveButtonText?: string;
+  saveCallback?: (workplaces: Workplace[]) => Promise<void>;
 }
 
 export const WorkplacesEditor = observer(
   (props: WorkplacesEditorProps): ReactElement => {
+    const { saveCallback, buttonType, store, saveButtonText } = props;
     const [savingInProgress, setSavingInProgress] = useState(false);
-    const { workplaces, workplacesProps } = userStore;
+    const [showSuccessSavingAlter, setShowSuccessSavingAlter] = useState(false);
+    const { workplaces, workplacesProps } = store;
     const [workplaceOrgQueryIndex, setWorkplaceOrgQueryIndex] = useState('0-');
 
     useEffect(() => {
@@ -95,7 +104,6 @@ export const WorkplacesEditor = observer(
                 workplaceProps.departmentQuery = '';
                 workplaceProps.orgQuery = newValue?.name ?? '';
                 workplaceProps.departmentQueryKey = newValue?.name ?? ''; // for re-rendering
-                // }
               }}
               onInputChange={(event, newInputValue, reason) => {
                 if (reason === 'reset' && newInputValue) {
@@ -227,7 +235,7 @@ export const WorkplacesEditor = observer(
             )}
           />
           <HeightElement value={'32px'} />
-          <FlexWrapRow>
+          <FlexWrapRowFullWidth>
             <AddressField
               multiline={true}
               maxRows={1}
@@ -250,16 +258,13 @@ export const WorkplacesEditor = observer(
               label="Postal code (opt.)"
               variant="outlined"
             />
-          </FlexWrapRow>
+          </FlexWrapRowFullWidth>
           <FormerWorkplace
             labelPlacement={'start'}
             control={
               <Switch
                 checked={workplace.isFormer}
                 onChange={(event) => {
-                  if (!event.currentTarget.checked) {
-                    workplaces.forEach((w) => (w.isFormer = true));
-                  }
                   workplaces[index].isFormer = event.currentTarget.checked;
                 }}
               />
@@ -333,7 +338,7 @@ export const WorkplacesEditor = observer(
           + Add workplace
         </Button>
         <HeightElement value="32px" />
-        {props.showSaveButton && (
+        {buttonType === ActionButtonType.FULL_WIDTH_CONFIRM && saveCallback && (
           <SaveButton
             loading={savingInProgress}
             disabled={notValid || currentWorkplaceAbsent}
@@ -341,12 +346,27 @@ export const WorkplacesEditor = observer(
             variant={'contained'}
             onClick={() => {
               setSavingInProgress(true);
-              void userStore.saveWorkplaces(workplaces).then(() => {
-                setSavingInProgress(false);
+              void saveCallback(workplaces).then(() => {
+                setTimeout(() => {
+                  setSavingInProgress(false);
+                  setShowSuccessSavingAlter(true);
+                }, 1000);
               });
             }}>
-            Save affiliations
+            {saveButtonText}
           </SaveButton>
+        )}
+        {showSuccessSavingAlter && (
+          <Snackbar
+            open={showSuccessSavingAlter}
+            autoHideDuration={4000}
+            onClose={() => {
+              setShowSuccessSavingAlter(false);
+            }}>
+            <Alert severity="success" sx={{ width: '100%' }}>
+              Affiliations successfully saved!
+            </Alert>
+          </Snackbar>
         )}
       </EditorWrap>
     );
@@ -375,7 +395,7 @@ const EditorWrap = styled.div`
   justify-content: start;
 `;
 
-export const FlexWrapRow = styled.div`
+export const FlexWrapRowFullWidth = styled.div`
   display: flex;
   width: 100%;
 `;

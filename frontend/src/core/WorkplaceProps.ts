@@ -1,6 +1,7 @@
 import {
   Organization,
-  OrganizationDepartment
+  OrganizationDepartment,
+  Workplace
 } from '../apis/first-approval-api';
 
 export interface WorkplaceProps {
@@ -9,4 +10,9 @@ export interface WorkplaceProps {
   departmentQueryKey: string;
   organizationOptions: Organization[];
   departmentOptions: OrganizationDepartment[];
+}
+
+export interface IWorkplaceStore {
+  workplaces: Workplace[];
+  workplacesProps: WorkplaceProps[];
 }

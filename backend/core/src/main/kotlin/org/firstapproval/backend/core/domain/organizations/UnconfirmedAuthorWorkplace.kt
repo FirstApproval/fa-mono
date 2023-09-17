@@ -3,7 +3,7 @@ package org.firstapproval.backend.core.domain.organizations
 import jakarta.persistence.*
 import jakarta.persistence.FetchType.EAGER
 import jakarta.persistence.FetchType.LAZY
-import org.firstapproval.backend.core.domain.user.User
+import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthor
 import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode.SELECT
 import java.time.ZonedDateTime
@@ -12,8 +12,8 @@ import java.util.*
 import org.firstapproval.api.server.model.Workplace as WorkplaceApiObject
 
 @Entity
-@Table(name = "users_workplaces")
-class Workplace(
+@Table(name = "publication_unconfirmed_authors_workplaces")
+class UnconfirmedAuthorWorkplace (
     @Id
     var id: UUID,
     @Fetch(SELECT)
@@ -24,7 +24,7 @@ class Workplace(
     var organizationDepartment: OrganizationDepartment? = null,
     @ManyToOne(fetch = LAZY, cascade = [CascadeType.REFRESH])
     @JoinColumn(nullable = false, updatable = false)
-    var user: User,
+    var unconfirmedAuthor: UnconfirmedAuthor? = null,
     var address: String,
     var postalCode: String? = null,
     var isFormer: Boolean,
@@ -32,7 +32,7 @@ class Workplace(
     var editingTime: ZonedDateTime = now(),
 )
 
-fun Workplace.toApiObject() = WorkplaceApiObject().also {
+fun UnconfirmedAuthorWorkplace.toApiObject() = WorkplaceApiObject().also {
     it.id = id
     it.organization = organization.toApiObject()
     it.department = organizationDepartment?.toApiObject()

@@ -200,8 +200,7 @@ export class PublicationStore {
   addConfirmedAuthor(author: UserInfo): void {
     const newValue = [...this.confirmedAuthors];
     newValue.push({
-      user: author,
-      shortBio: author.selfInfo
+      user: author
     });
     this.confirmedAuthors = newValue;
     this.savingStatus = SavingStatusState.SAVING;
@@ -214,7 +213,6 @@ export class PublicationStore {
       if (confirmedAuthor.id !== store.id) {
         throw Error('Confirmed author found by index have different id');
       }
-      confirmedAuthor.shortBio = store.shortBio;
     }
     this.savingStatus = SavingStatusState.SAVING;
     void this.updateConfirmedAuthors();
@@ -228,8 +226,7 @@ export class PublicationStore {
           .map((t) => {
             return {
               id: t.id,
-              userId: t.user.id,
-              shortBio: t.shortBio
+              userId: t.user.id
             };
           }),
         edited: true
@@ -248,7 +245,7 @@ export class PublicationStore {
       unconfirmedAuthor.email = store.email;
       unconfirmedAuthor.firstName = store.firstName;
       unconfirmedAuthor.lastName = store.lastName;
-      unconfirmedAuthor.shortBio = store.shortBio;
+      unconfirmedAuthor.workplaces = store.workplaces;
     } else {
       const newValue = [...this.unconfirmedAuthors];
       newValue.push({
@@ -256,7 +253,7 @@ export class PublicationStore {
         firstName: store.firstName,
         middleName: '',
         lastName: store.lastName,
-        shortBio: store.shortBio
+        workplaces: store.workplaces
       });
       this.unconfirmedAuthors = newValue;
     }

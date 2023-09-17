@@ -8,14 +8,10 @@ import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.backend.core.config.Properties.FrontendProperties
 import org.firstapproval.backend.core.config.Properties.S3Properties
 import org.firstapproval.backend.core.domain.auth.TokenService
-import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_FILES
-import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_SAMPLE_FILES
-import org.firstapproval.backend.core.external.s3.FILES
-import org.firstapproval.backend.core.external.s3.FileStorageService
-import org.firstapproval.backend.core.external.s3.SAMPLE_FILES
-import org.firstapproval.backend.core.external.ipfs.IpfsClient
-import org.firstapproval.backend.core.external.ipfs.JobRepository
 import org.firstapproval.backend.core.domain.notification.NotificationService
+import org.firstapproval.backend.core.domain.organizations.OrganizationService
+import org.firstapproval.backend.core.domain.organizations.UnconfirmedAuthorWorkplace
+import org.firstapproval.backend.core.domain.organizations.toApiObject
 import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
@@ -28,10 +24,17 @@ import org.firstapproval.backend.core.domain.publication.downloader.DownloaderRe
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
 import org.firstapproval.backend.core.domain.user.UserService
+import org.firstapproval.backend.core.external.ipfs.IpfsClient
+import org.firstapproval.backend.core.external.ipfs.JobRepository
+import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_FILES
+import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_SAMPLE_FILES
+import org.firstapproval.backend.core.external.s3.FILES
+import org.firstapproval.backend.core.external.s3.FileStorageService
+import org.firstapproval.backend.core.external.s3.SAMPLE_FILES
 import org.firstapproval.backend.core.infra.elastic.PublicationElastic
 import org.firstapproval.backend.core.infra.elastic.PublicationElasticRepository
-import org.firstapproval.backend.core.web.errors.RecordConflictException
 import org.firstapproval.backend.core.utils.require
+import org.firstapproval.backend.core.web.errors.RecordConflictException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -56,6 +59,7 @@ class PublicationService(
     private val confirmedAuthorRepository: ConfirmedAuthorRepository,
     private val userRepository: UserRepository,
     private val userService: UserService,
+    private val organizationService: OrganizationService,
     private val jobRepository: JobRepository,
     private val ipfsClient: IpfsClient,
     private val elasticRepository: PublicationElasticRepository,
@@ -127,25 +131,41 @@ class PublicationService(
                         id = confirmedAuthor.id ?: randomUUID(),
                         user = confirmedAuthorsById[confirmedAuthor.userId].require(),
                         publication = publication,
-                        shortBio = confirmedAuthor.shortBio
                     )
                 }
                 publication.confirmedAuthors.clear()
                 publication.confirmedAuthors.addAll(confirmedPublicationAuthors)
             }
             if (unconfirmedAuthors?.edited == true) {
-                val unconfirmedPublicationAuthors = unconfirmedAuthors.values.map { unconfirmedAuthor ->
-                    UnconfirmedAuthor(
-                        id = unconfirmedAuthor.id ?: randomUUID(),
-                        email = unconfirmedAuthor.email,
-                        firstName = unconfirmedAuthor.firstName,
-                        middleName = unconfirmedAuthor.middleName,
-                        lastName = unconfirmedAuthor.lastName,
-                        shortBio = unconfirmedAuthor.shortBio,
+                val unconfirmedPublicationAuthors = unconfirmedAuthors.values.map { unconfirmedAuthorApiObject ->
+                    val unconfirmedAuthor = UnconfirmedAuthor(
+                        id = unconfirmedAuthorApiObject.id ?: randomUUID(),
+                        email = unconfirmedAuthorApiObject.email,
+                        firstName = unconfirmedAuthorApiObject.firstName,
+                        middleName = unconfirmedAuthorApiObject.middleName,
+                        lastName = unconfirmedAuthorApiObject.lastName,
                         publication = publication
                     )
+
+                    unconfirmedAuthor.workplaces = unconfirmedAuthorApiObject.workplaces.map { unconfirmedWorkplace ->
+                        val organization = organizationService.getOrSave(unconfirmedWorkplace.organization)
+                        val organizationDepartment = organizationService.getOrSave(unconfirmedWorkplace.department, organization)
+                        UnconfirmedAuthorWorkplace(
+                            id = unconfirmedWorkplace.id ?: randomUUID(),
+                            organization = organization,
+                            organizationDepartment = organizationDepartment,
+                            unconfirmedAuthor = unconfirmedAuthor,
+                            address = unconfirmedWorkplace.address,
+                            postalCode = unconfirmedWorkplace.postalCode,
+                            isFormer = unconfirmedWorkplace.isFormer,
+                            creationTime = unconfirmedWorkplace.creationTime?.toZonedDateTime() ?: now(),
+                            editingTime = now()
+                        )
+                    }.toMutableList()
+                    unconfirmedAuthor
                 }
                 publication.unconfirmedAuthors.clear()
+                publicationRepository.saveAndFlush(publication)
                 publication.unconfirmedAuthors.addAll(unconfirmedPublicationAuthors)
             }
         }
@@ -327,7 +347,7 @@ fun Publication.toApiObject(userService: UserService) = PublicationApiObject().a
         .middleName(creator.middleName)
         .email(creator.email)
         .username(creator.username)
-        .selfInfo(creator.selfInfo)
+        .workplaces(creator.workplaces.map { it.toApiObject() })
         .profileImage(userService.getProfileImage(creator.profileImage))
     publicationApiModel.title = title
     publicationApiModel.description = description?.map { Paragraph(it) }
@@ -386,14 +406,13 @@ fun Publication.toPublicationElastic() =
 
 fun ConfirmedAuthor.toApiObject(profileImage: ByteArray?) = ConfirmedAuthorApiObject().also {
     it.id = id
-    it.shortBio = shortBio
     it.user = UserInfo(
         user.id,
         user.firstName,
         user.lastName,
         user.email,
         user.username,
-        user.selfInfo,
+        user.workplaces.map { workplace -> workplace.toApiObject() }
     )
         .middleName(user.middleName)
         .profileImage(profileImage)
@@ -405,5 +424,5 @@ fun UnconfirmedAuthor.toApiObject() = UnconfirmedAuthorApiObject().also {
     it.lastName = lastName
     it.middleName = middleName
     it.email = email
-    it.shortBio = shortBio
+    it.workplaces = workplaces.map { workplace -> workplace.toApiObject() }
 }

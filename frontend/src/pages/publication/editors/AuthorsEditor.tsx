@@ -29,6 +29,8 @@ import { getInitials } from '../../../util/userUtil';
 import { renderProfileImage } from '../../../fire-browser/utils';
 import { type EditorProps } from './types';
 import { validateEmail } from '../../../util/emailUtil';
+import { WorkplacesEditor } from '../../../components/WorkplacesEditor';
+import { FlexWrapColumn, FlexWrapRow, WidthElement } from '../../common.styled';
 
 export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
   const [addAuthorVisible, setAddAuthorVisible] = useState(false);
@@ -62,10 +64,10 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
       authorStore.firstName = unconfirmedAuthor.firstName;
       authorStore.lastName = unconfirmedAuthor.lastName;
       authorStore.email = unconfirmedAuthor.email;
+      authorStore.workplaces = unconfirmedAuthor.workplaces ?? [];
     }
     authorStore.isConfirmed = isConfirmed;
     authorStore.id = author.id;
-    authorStore.shortBio = author.shortBio ?? '';
     authorStore.isNew = false;
     authorStore.index = index;
     setAddAuthorVisible(true);
@@ -121,7 +123,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
           authorStore.clean();
           setIsUserExistsByEmail(true);
         } else {
-          if (validateFields()) return;
+          if (!validateFields()) return;
           props.publicationStore.addOrEditUnconfirmedAuthor(authorStore);
         }
         handleCloseAddAuthor();
@@ -238,10 +240,10 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
         onClose={handleCloseAddAuthor}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">
+        <DialogTitleWrap id="alert-dialog-title">
           {authorStore.isNew ? 'Add author' : 'Edit author'}
-        </DialogTitle>
-        <DialogContent>
+        </DialogTitleWrap>
+        <DialogContentWrap>
           {!authorStore.isConfirmed && (
             <AddAuthorWrap>
               <FullWidthTextField
@@ -284,17 +286,12 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                   }
                 />
               </OneLineWrap>
-              <FullWidthTextField
-                multiline
-                minRows={4}
-                maxRows={4}
-                value={authorStore.shortBio}
-                onChange={(e) => {
-                  authorStore.shortBio = e.currentTarget.value;
-                }}
-                label="Short bio"
-                variant="outlined"
-              />
+              <FlexWrapColumn>
+                <WorkplacesTitle>
+                  Current workplaces (affiliations)
+                </WorkplacesTitle>
+                <WorkplacesEditor store={authorStore} />
+              </FlexWrapColumn>
             </AddAuthorWrap>
           )}
           {authorStore.isConfirmed && (
@@ -319,8 +316,8 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
               />
             </EditConfirmedAuthor>
           )}
-        </DialogContent>
-        <DialogActions>
+        </DialogContentWrap>
+        <DialogActionsWrap>
           <SpaceBetweenWrap>
             {((authorStore.isNew ||
               authorStore.userId === props.publicationStore.creator?.id) && (
@@ -333,32 +330,34 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                 <DeleteOutlined htmlColor={'gray'} />
               </IconButton>
             )}
-            <div>
+            <FlexWrapRow>
               <Button onClick={handleCloseAddAuthor}>Cancel</Button>
+              <WidthElement value={'15px'} />
               <Button
+                variant={'contained'}
                 onClick={() => {
                   void handleSaveButton();
                 }}>
-                Save
+                Add author
               </Button>
-            </div>
+            </FlexWrapRow>
           </SpaceBetweenWrap>
-        </DialogActions>
+        </DialogActionsWrap>
       </Dialog>
       <Dialog
         open={deleteDialogOpen}
         onClose={handleCloseDeleteDialog}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description">
-        <DeleteDialogTitle id="alert-dialog-title">Delete?</DeleteDialogTitle>
-        <DeleteDialogContent>
+        <DialogTitleWrap id="alert-dialog-title">Delete?</DialogTitleWrap>
+        <DialogContentWrap>
           <DeleteDialogWidthWrap>
             {
               "Everything will be deleted and you won't be able to undo this action."
             }
           </DeleteDialogWidthWrap>
-        </DeleteDialogContent>
-        <DeleteDialogActions>
+        </DialogContentWrap>
+        <DialogActionsWrap>
           <div>
             <Button
               style={{ marginRight: '24px' }}
@@ -377,7 +376,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
               Delete
             </Button>
           </div>
-        </DeleteDialogActions>
+        </DialogActionsWrap>
       </Dialog>
       {isUserExistsByEmail && (
         <Snackbar
@@ -472,17 +471,32 @@ const DeleteDialogWidthWrap = styled.div`
   max-width: 336px;
 `;
 
-const DeleteDialogActions = styled(DialogActions)`
+const DialogActionsWrap = styled(DialogActions)`
   padding-bottom: 32px !important;
   padding-right: 32px !important;
 `;
 
-const DeleteDialogTitle = styled(DialogTitle)`
+const DialogTitleWrap = styled(DialogTitle)`
   padding-top: 32px !important;
   padding-left: 32px !important;
 `;
 
-const DeleteDialogContent = styled(DialogContent)`
+const DialogContentWrap = styled(DialogContent)`
   padding-left: 32px !important;
   padding-right: 32px !important;
+`;
+
+const WorkplacesTitle = styled.span`
+  margin-bottom: 32px;
+
+  color: var(--text-primary, #040036);
+  font-feature-settings: 'clig' off, 'liga' off;
+
+  /* typography/h6 */
+  font-family: Roboto;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 160%; /* 32px */
+  letter-spacing: 0.15px;
 `;

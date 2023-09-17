@@ -304,7 +304,6 @@ class UserService(
                 user.middleName = middleName
                 user.lastName = lastName
                 user.username = username
-                user.selfInfo = selfInfo
 
                 if (workplaces != null && workplaces.size > 0) {
                     val userWorkplaces = workplaces.map { workplace ->
@@ -357,7 +356,7 @@ class UserService(
     @Transactional
     fun migratePublicationOfUnconfirmedUser(user: User) {
         val unconfirmedUsers = unconfirmedAuthorRepository.findByEmail(user.email)
-        val confirmedAuthors = unconfirmedUsers.map { ConfirmedAuthor(randomUUID(), user, it.publication, it.shortBio) }
+        val confirmedAuthors = unconfirmedUsers.map { ConfirmedAuthor(randomUUID(), user, it.publication) }
         confirmedAuthorRepository.saveAll(confirmedAuthors)
         unconfirmedAuthorRepository.deleteAll(unconfirmedUsers)
     }

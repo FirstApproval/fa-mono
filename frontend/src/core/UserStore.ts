@@ -4,11 +4,11 @@ import { type GetMeResponse, Workplace } from '../apis/first-approval-api';
 import { authStore } from './auth';
 import { routerStore } from './router';
 import { ACCOUNT_AFFILIATIONS_PATH, Page } from './RouterStore';
-import { WorkplaceProps } from './WorkplaceProps';
+import { IWorkplaceStore, WorkplaceProps } from './WorkplaceProps';
 import { userStore } from './user';
 import { cloneDeep } from 'lodash';
 
-export class UserStore {
+export class UserStore implements IWorkplaceStore {
   user: GetMeResponse | undefined = undefined;
   editableUser: GetMeResponse | undefined = undefined;
   deleteProfileImage = false;
@@ -77,7 +77,6 @@ export class UserStore {
           middleName: user.middleName,
           lastName: user.lastName,
           username: user.username,
-          selfInfo: user.selfInfo,
           workplaces
         })
         .then(() => {

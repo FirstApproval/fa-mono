@@ -1706,8 +1706,6 @@ components:
           type: boolean
         canChangePassword:
           type: boolean
-        selfInfo:
-          type: string
         profileImage:
           type: string
           format: byte
@@ -1727,7 +1725,7 @@ components:
         - email
         - canSetPassword
         - canChangePassword
-        - selfInfo
+        - workplaces
 
     UserInfo:
       type: object
@@ -1745,8 +1743,6 @@ components:
           type: string
         username:
           type: string
-        selfInfo:
-          type: string
         profileImage:
           type: string
           format: byte
@@ -1760,7 +1756,7 @@ components:
         - lastName
         - email
         - username
-        - selfInfo
+        - workplaces
 
     UploadType:
       type: string
@@ -1818,9 +1814,6 @@ components:
           type: string
         username:
           type: string
-        selfInfo:
-          type: string
-          maxLength: 4096
         profileImage:
           type: string
           format: byte
@@ -1951,8 +1944,6 @@ components:
           format: uuid
         user:
           $ref: '#/components/schemas/UserInfo'
-        shortBio:
-          type: string
       required:
         - user
 
@@ -1965,8 +1956,6 @@ components:
         userId:
           type: string
           format: uuid
-        shortBio:
-          type: string
       required:
         - userId
 
@@ -1994,8 +1983,10 @@ components:
           type: string
         lastName:
           type: string
-        shortBio:
-          type: string
+        workplaces:
+          type: array
+          items:
+            $ref: '#/components/schemas/Workplace'
       required:
         - email
         - firstName

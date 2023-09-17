@@ -41,7 +41,10 @@ import { getInitials } from 'src/util/userUtil';
 import _, { cloneDeep } from 'lodash';
 import { Footer } from '../home/Footer';
 import { HeaderComponent } from '../../components/HeaderComponent';
-import { WorkplacesEditor } from '../../components/WorkplacesEditor';
+import {
+  ActionButtonType,
+  WorkplacesEditor
+} from '../../components/WorkplacesEditor';
 
 const tabs: string[] = ['general', 'profile', 'affiliations', 'password'];
 
@@ -166,7 +169,6 @@ export const AccountPage: FunctionComponent = observer(() => {
           firstName: editableUser.firstName,
           lastName: editableUser.lastName,
           username,
-          selfInfo: editableUser.selfInfo,
           middleName: editableUser.middleName,
           profileImage: editableUser.profileImage,
           deleteProfileImage: userStore.deleteProfileImage,
@@ -398,19 +400,6 @@ export const AccountPage: FunctionComponent = observer(() => {
                       !isValidLastName ? 'Invalid last name' : undefined
                     }
                   />
-                  <NameElement>Self info</NameElement>
-                  <FullWidthTextField
-                    multiline
-                    minRows={6}
-                    maxRows={6}
-                    value={editableUser.selfInfo}
-                    onChange={(e) => {
-                      editableUser.selfInfo = e.currentTarget.value;
-                      setSaveDisabled(false);
-                    }}
-                    label="Self info"
-                    variant="outlined"
-                  />
                   <HeightElement value={'115px'} />
                   <SaveButton
                     color={'primary'}
@@ -426,7 +415,14 @@ export const AccountPage: FunctionComponent = observer(() => {
               {tabNumber === 2 && (
                 <TabContainer>
                   <HeightElement value={'32px'}></HeightElement>
-                  <WorkplacesEditor showSaveButton={true} />
+                  <WorkplacesEditor
+                    store={userStore}
+                    buttonType={ActionButtonType.FULL_WIDTH_CONFIRM}
+                    saveButtonText={'Save affiliations'}
+                    saveCallback={async (workplaces): Promise<void> =>
+                      userStore.saveWorkplaces(workplaces)
+                    }
+                  />
                 </TabContainer>
               )}
               {tabNumber === 3 && (
