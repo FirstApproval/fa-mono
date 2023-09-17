@@ -224,7 +224,7 @@ export const ProfilePage: FunctionComponent = observer(() => {
                               color={'primary'}
                               variant={'contained'}
                               onClick={async () => {
-                                await store.createPublication();
+                                await userStore.createPublication();
                               }}>
                               <span
                                 style={{
@@ -262,7 +262,7 @@ export const ProfilePage: FunctionComponent = observer(() => {
                           <EditProfileAndCreateDraftButtons
                             variant={'outlined'}
                             onClick={async () => {
-                              await store.createPublication();
+                              await userStore.createPublication();
                             }}>
                             Create draft
                           </EditProfileAndCreateDraftButtons>

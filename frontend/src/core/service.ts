@@ -3,6 +3,7 @@ import {
   AuthorApi,
   Configuration,
   FileApi,
+  OrganizationApi,
   PublicationApi,
   RegistrationApi,
   SampleFileApi,
@@ -36,3 +37,5 @@ export const sampleFileServiceRaw = new SampleFileApi(configuration);
 export const sampleFileService = new SampleFileServiceAdapter();
 
 export const publicationService = new PublicationApi(configuration);
+
+export const organizationService = new OrganizationApi(configuration);

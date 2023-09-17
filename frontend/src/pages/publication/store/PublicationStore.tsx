@@ -287,7 +287,6 @@ export class PublicationStore {
 
   editLicenseType(): void {
     this.savingStatus = SavingStatusState.SAVING;
-    debugger;
     void publicationService.editPublication(this.publicationId, {
       licenseType: {
         value: this.licenseType ?? undefined,

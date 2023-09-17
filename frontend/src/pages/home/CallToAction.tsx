@@ -6,6 +6,7 @@ import bannerBg from './asset/Main banner.svg';
 import { routerStore } from '../../core/router';
 import { Page } from '../../core/RouterStore';
 import { type HomePageStore } from './HomePageStore';
+import { userStore } from '../../core/user';
 
 export const CallToAction = (props: { store: HomePageStore }): ReactElement => {
   return (
@@ -20,7 +21,7 @@ export const CallToAction = (props: { store: HomePageStore }): ReactElement => {
             variant="contained"
             onClick={() => {
               if (authStore.token) {
-                void props.store.createPublication();
+                void userStore.createPublication();
               } else {
                 routerStore.navigatePage(Page.SIGN_UP);
               }

@@ -8,7 +8,7 @@ import download from './asset/download.svg';
 import downloadSample from './asset/download_sample.svg';
 import pdf from './asset/pdf.svg';
 import citate from './asset/citate.svg';
-import { Button, Tooltip } from '@mui/material';
+import { Button, CircularProgress, Tooltip } from '@mui/material';
 import { PublicationStore } from './store/PublicationStore';
 import { ContentCopy } from '@mui/icons-material';
 import { ArchiveDownloader } from './ArchiveDownloader';
@@ -63,6 +63,15 @@ export const ActionBar = observer(
               display: 'flex',
               alignItems: 'center'
             }}>
+            {publicationStore.publicationStatus ===
+              PublicationStatus.READY_FOR_PUBLICATION && (
+              <FlexWrapRow>
+                <CircularProgressWrap size={24} />
+                <SpanFont14Wrap>
+                  Publishing... This may take some time. Please wait.
+                </SpanFont14Wrap>
+              </FlexWrapRow>
+            )}
             {publicationStore.publicationStatus ===
               PublicationStatus.PUBLISHED && (
               <Tooltip title="Download publication files">
@@ -164,6 +173,23 @@ export const ActionBar = observer(
     );
   }
 );
+
+const FlexWrapRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+
+const CircularProgressWrap = styled(CircularProgress)`
+  margin-left: 12px;
+  margin-right: 12px;
+`;
+
+const SpanFont14Wrap = styled.span`
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-style: normal;
+`;
 
 const DownloadFilesButtonWrap = styled(Button)`
   margin-right: 16px;

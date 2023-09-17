@@ -27,7 +27,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.annotation.RestController
-import java.util.Base64
 import java.util.Base64.getEncoder
 import java.util.UUID
 import org.firstapproval.backend.core.domain.publication.AccessType as AccessTypeEntity
@@ -107,6 +106,11 @@ class PublicationController(
         val pub = publicationService.get(null, id)
         val publicationResponse = pub.toApiObject(userService)
         return ok().body(publicationResponse)
+    }
+
+    override fun getPublicationStatus(id: UUID): ResponseEntity<PublicationStatus> {
+        val publication = publicationService.get(authHolderService.userOrNull(), id)
+        return ok(PublicationStatus.valueOf(publication.status.name))
     }
 
     override fun getDownloadLink(id: UUID): ResponseEntity<DownloadLinkResponse> {

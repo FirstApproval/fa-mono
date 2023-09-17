@@ -11,6 +11,7 @@ import { userStore } from '../core/user';
 import { UserMenu } from './UserMenu';
 
 interface HeaderComponentProps {
+  showAboutUsButton?: boolean;
   showPublishButton?: boolean;
   showLoginButton?: boolean;
   showSignUpContainedButton?: boolean;
@@ -20,6 +21,7 @@ interface HeaderComponentProps {
 
 export const HeaderComponent = (
   props: HeaderComponentProps = {
+    showAboutUsButton: false,
     showPublishButton: false,
     showLoginButton: false,
     showSignUpContainedButton: false,
@@ -33,6 +35,17 @@ export const HeaderComponent = (
         <img src={logo} />
       </Logo>
       <BetaDialogWithButton />
+      {props.showAboutUsButton && (
+        <ButtonWrap
+          width={'320px'}
+          variant="text"
+          onClick={() => {
+            window.location.href = 'https://about.firstapproval.io';
+          }}
+          size={'large'}>
+          About First Approval Platform
+        </ButtonWrap>
+      )}
       <FlexHeaderRight>
         <Stack direction="row" alignItems="center" spacing={2}>
           {props.showPublishButton && (
@@ -98,8 +111,12 @@ export const HeaderComponent = (
   );
 };
 
-const ButtonWrap = styled(Button)`
-  width: 85px;
+const ButtonWrap = styled(Button)<{
+  width?: string;
+  marginLeft?: string;
+}>`
+  width: ${(props) => (props.width ? props.width : '85px')};
+  margin-left: ${(props) => (props.marginLeft ? props.marginLeft : '0')};
   height: 40px;
   border: 0;
 
@@ -113,7 +130,6 @@ const ButtonWrap = styled(Button)`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
   color: var(--inherit-text-primary-main, #040036);
   font-feature-settings: 'clig' off, 'liga' off;
   /* components/button-large */

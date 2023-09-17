@@ -134,6 +134,23 @@ export const PublicationPage: FunctionComponent = observer(() => {
       publicationStore.viewCounterUpdated = true;
       void publicationService.incrementPublicationViewCount(publicationId);
     }
+
+    if (
+      publicationStore.publicationStatus ===
+      PublicationStatus.READY_FOR_PUBLICATION
+    ) {
+      window.setTimeout(() => {
+        window.setInterval(() => {
+          publicationService
+            .getPublicationStatus(publicationStore.publicationId)
+            .then((status) => {
+              if (status.data === PublicationStatus.PUBLISHED) {
+                window.location.reload();
+              }
+            });
+        }, 3000);
+      }, 1000);
+    }
   }, [publicationStore.publicationStatus]);
 
   const emptyResearchArea = researchAreas.length === 0;

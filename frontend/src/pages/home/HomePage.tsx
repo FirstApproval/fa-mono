@@ -71,6 +71,7 @@ export const HomePage: FunctionComponent = observer(() => {
           onClose={() => setIsBetaDialogOpen(false)}
         />
         <HeaderComponent
+          showAboutUsButton={true}
           showPublishButton={true}
           showLoginButton={true}
           showSignUpContainedButton={true}

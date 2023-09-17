@@ -1,80 +1,43 @@
-import React, { type FunctionComponent, useState } from 'react';
-import { TextField } from '@mui/material';
+import React, { type FunctionComponent } from 'react';
 import styled from '@emotion/styled';
-import { type SignUpStore } from './SignUpStore';
-import { observer } from 'mobx-react-lite';
 import {
-  FlexBody,
   FlexBodyCenter,
   FullWidthButton,
   Header,
   Parent
 } from '../common.styled';
 import { routerStore } from '../../core/router';
-import { userService } from '../../core/service';
 import { Page } from '../../core/RouterStore';
 import { HeaderComponent } from '../../components/HeaderComponent';
+import { WorkplacesEditor } from '../../components/WorkplacesEditor';
+import { userStore } from '../../core/user';
+import { observer } from 'mobx-react-lite';
 
-interface EnterSelfInfoPageProps {
-  store: SignUpStore;
-  onSignInClick: () => void;
-  onContinueClick: () => void;
-}
+export const EnterSelfInfoPage: FunctionComponent = observer(() => {
+  const finishRegistration = async (): Promise<void> => {
+    await userStore.saveWorkplaces(userStore.workplaces).then(() => {
+      routerStore.navigatePage(Page.HOME_PAGE);
+    });
+  };
 
-export const EnterSelfInfoPage: FunctionComponent<EnterSelfInfoPageProps> =
-  observer((props: EnterSelfInfoPageProps) => {
-    const [selfInfo, setSelfInfo] = useState('');
-    const finishRegistration = async (event: any): Promise<void> => {
-      if (event.key === 'Enter' || event.keyCode === 13 || event.button === 0) {
-        event.preventDefault();
-        await userService.getMe().then((response) => {
-          const user = response.data;
-          void userService.updateUser({
-            firstName: user.firstName,
-            middleName: user.middleName,
-            lastName: user.lastName,
-            username: user.username,
-            selfInfo
-          });
-          routerStore.navigatePage(Page.HOME_PAGE);
-        });
-      }
-    };
-
-    return (
-      <Parent>
-        <HeaderComponent />
-        <FlexBodyCenter>
-          <FlexBody>
-            <Header>Almost there! Tell us about yourself:</Header>
-            <div>
-              <FullWidthTextField
-                multiline={true}
-                minRows={4}
-                maxRows={20}
-                autoFocus
-                value={selfInfo}
-                onChange={(e) => {
-                  setSelfInfo(e.currentTarget.value);
-                }}
-                onKeyDown={finishRegistration}
-                label="Enter your current professional role and academic background..."
-                variant="outlined"
-              />
-            </div>
-            <FullWidthButton
-              variant="contained"
-              size={'large'}
-              onClick={finishRegistration}>
-              Finish registration
-            </FullWidthButton>
-          </FlexBody>
-        </FlexBodyCenter>
-      </Parent>
-    );
-  });
-
-const FullWidthTextField = styled(TextField)`
-  width: 100%;
-  margin-bottom: 20px;
+  return (
+    <Parent>
+      <HeaderComponent />
+      <FlexBodyCenter>
+        <FlexBody>
+          <Header>{'Almost there!\nList your current workplaces:'}</Header>
+          <WorkplacesEditor showSaveButton={false} />
+          <FullWidthButton
+            variant="contained"
+            size={'large'}
+            onClick={async () => await finishRegistration()}>
+            Finish registration
+          </FullWidthButton>
+        </FlexBody>
+      </FlexBodyCenter>
+    </Parent>
+  );
+});
+export const FlexBody = styled.div`
+  width: 500px !important;
 `;

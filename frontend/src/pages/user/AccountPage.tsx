@@ -41,8 +41,9 @@ import { getInitials } from 'src/util/userUtil';
 import _, { cloneDeep } from 'lodash';
 import { Footer } from '../home/Footer';
 import { HeaderComponent } from '../../components/HeaderComponent';
+import { WorkplacesEditor } from '../../components/WorkplacesEditor';
 
-const tabs: string[] = ['general', 'profile', 'password'];
+const tabs: string[] = ['general', 'profile', 'affiliations', 'password'];
 
 export const AccountPage: FunctionComponent = observer(() => {
   const [saveDisabled, setSaveDisabled] = useState(() => true);
@@ -70,10 +71,10 @@ export const AccountPage: FunctionComponent = observer(() => {
     _: React.SyntheticEvent,
     newValue: number
   ): void => {
-    setTabNumber(newValue);
     userStore.editableUser = cloneDeep(userStore.user);
     setPreviousPassword('');
     setNewPassword('');
+    setTabNumber(newValue);
   };
 
   const validatePassword = (): boolean => {
@@ -168,7 +169,8 @@ export const AccountPage: FunctionComponent = observer(() => {
           selfInfo: editableUser.selfInfo,
           middleName: editableUser.middleName,
           profileImage: editableUser.profileImage,
-          deleteProfileImage: userStore.deleteProfileImage
+          deleteProfileImage: userStore.deleteProfileImage,
+          workplaces: user.workplaces ?? []
         })
         .then(() => {
           setSaveDisabled(true);
@@ -422,6 +424,12 @@ export const AccountPage: FunctionComponent = observer(() => {
                 </TabContainer>
               )}
               {tabNumber === 2 && (
+                <TabContainer>
+                  <HeightElement value={'32px'}></HeightElement>
+                  <WorkplacesEditor showSaveButton={true} />
+                </TabContainer>
+              )}
+              {tabNumber === 3 && (
                 <TabContainer>
                   {editableUser.canChangePassword && (
                     <>

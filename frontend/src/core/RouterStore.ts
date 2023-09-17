@@ -38,6 +38,7 @@ const pathToOauthType: Record<string, OauthType> = {
 const profilePath = '/p/';
 const myProfilePath = '/profile/';
 const accountPath = '/account/';
+export const ACCOUNT_AFFILIATIONS_PATH = '/account/affiliations';
 
 const history = createBrowserHistory();
 
@@ -132,7 +133,7 @@ export class RouterStore {
           })
           .then((response) => {
             authStore.token = response.data.token;
-            this.navigatePage(Page.HOME_PAGE, '/', true);
+            this.navigatePage(Page.ACCOUNT, ACCOUNT_AFFILIATIONS_PATH, true);
           })
           .catch(() => {
             this.setInitialPageError('Authorization failed');
