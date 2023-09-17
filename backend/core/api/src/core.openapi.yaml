@@ -660,7 +660,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/PublicationStatus'
       security:
-        - PublicAuth: [ ]
+        - TokenAuth: [ ]
       operationId: getPublicationStatus
       tags: [ publication ]
 

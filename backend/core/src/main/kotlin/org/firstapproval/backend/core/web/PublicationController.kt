@@ -13,14 +13,12 @@ import org.firstapproval.api.server.model.PublicationsResponse
 import org.firstapproval.api.server.model.SearchPublicationsResponse
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
-import org.firstapproval.backend.core.config.security.userOrNull
 import org.firstapproval.backend.core.domain.publication.PublicationPdfService
 import org.firstapproval.backend.core.domain.publication.PublicationService
 import org.firstapproval.backend.core.domain.publication.downloader.DownloaderRepository
 import org.firstapproval.backend.core.domain.publication.toApiObject
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.toApiObject
-import org.firstapproval.backend.core.external.ipfs.IpfsClient
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
@@ -109,7 +107,7 @@ class PublicationController(
     }
 
     override fun getPublicationStatus(id: UUID): ResponseEntity<PublicationStatus> {
-        val publication = publicationService.get(authHolderService.userOrNull(), id)
+        val publication = publicationService.get(authHolderService.user, id)
         return ok(PublicationStatus.valueOf(publication.status.name))
     }
 
