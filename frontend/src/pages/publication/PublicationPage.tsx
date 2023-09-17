@@ -470,6 +470,10 @@ const PublicationBody = observer(
                   routerStore.navigatePage(Page.SIGN_UP);
                 }
               }}
+              onPreviewFilesModalOpen={() => {
+                publicationPageStore.openSampleFilesModal();
+              }}
+              isPreview={publicationStore.isPreview}
             />
           </FilesWrap>
         )}
@@ -489,7 +493,6 @@ const PublicationBody = observer(
               fs={sfs}
               isReadonly={true}
               isChonkyDragRef={isChonkyDragRef}
-              disableToolbar={true}
               onEditFilesModalOpen={() => {
                 publicationPageStore.openSampleFilesModal();
               }}
@@ -521,6 +524,7 @@ const PublicationBody = observer(
                 }}
                 fs={sfs}
                 isReadonly={publicationStore.isReadonly}
+                isPreview={publicationStore.isPreview}
               />
             </SampleFilesWrap>
           </DialogContentWrap>

@@ -2,7 +2,6 @@ import {
   CheckFileDuplicatesRequest,
   CreateFolderRequest,
   DeleteByIdsRequest,
-  DownloadTokenResponse,
   EditFileRequest,
   FileApi,
   MoveFileRequest,
@@ -25,7 +24,8 @@ export class SampleFileServiceAdapter
   ): Promise<AxiosResponse<Record<string, boolean>>> {
     return await this.service.checkSampleFileDuplicates(
       publicationId,
-      checkFileDuplicatesRequest
+      checkFileDuplicatesRequest,
+      options
     );
   }
 
@@ -83,13 +83,6 @@ export class SampleFileServiceAdapter
       dirPath,
       options
     );
-  }
-
-  async getTokenToRetrieveDownloadLink(
-    fileId: string,
-    options?: AxiosRequestConfig
-  ): Promise<AxiosResponse<DownloadTokenResponse>> {
-    throw new Error('Not implemented');
   }
 
   async moveFile(
