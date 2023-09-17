@@ -41,6 +41,9 @@ services:
       - "9200:9200"
 
   elasticsearch-init:
+    build:
+      context: ./backend/
+      dockerfile: ./elastic/Dockerfile
     image: ghcr.io/firstapproval/fa-elastic-init
     depends_on:
       - elasticsearch
