@@ -35,6 +35,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("com.auth0:jwks-rsa:0.21.1")
     implementation("com.vladmihalcea:hibernate-types-60:2.21.1")
+    implementation("net.logstash.logback:logstash-logback-encoder:7.3")
     implementation("net.javacrumbs.shedlock:shedlock-spring:4.42.0")
     implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.42.0")
     implementation("org.springframework.data:spring-data-elasticsearch:5.1.2")
