@@ -1,6 +1,5 @@
 package org.firstapproval.backend.core.domain.publication
 
-import org.apache.commons.codec.digest.DigestUtils.sha256Hex
 import org.firstapproval.backend.core.config.Properties.FrontendProperties
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.infra.pdf.PdfService
@@ -8,7 +7,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.thymeleaf.context.Context
 import java.util.UUID
-import java.util.UUID.randomUUID
 
 @Service
 class PublicationPdfService(
@@ -66,7 +64,7 @@ class PublicationPdfService(
     }
 
     private fun title(publication: Publication): String {
-        return if (publication.status != PUBLISHED) {
+        return if (publication.title.isNullOrEmpty()) {
             "Draft. No title yet."
         } else {
             publication.title!!
@@ -102,7 +100,7 @@ class PublicationPdfService(
 
     private fun hash(publication: Publication): String {
         return if (publication.status == PUBLISHED) {
-            "Unique archive cryptographic hash: SHA-256: ${sha256Hex(randomUUID().toString())}"
+            "Unique archive cryptographic hash: SHA-256: ${publication.hash}"
         } else {
             "Dataset is not published yet, information about dataset unique archive cryptographic hash will be available after publication."
         }
@@ -166,7 +164,11 @@ class PublicationPdfService(
 
     private fun authorsDescriptions(publication: Publication): String {
         return (publication.confirmedAuthors.associate { it.user.lastName + " " + it.user.firstName to (it.shortBio ?: "") } +
-            publication.unconfirmedAuthors.associate { it.lastName + " " + it.firstName to (it.shortBio ?: "") })
+            publication.unconfirmedAuthors.associate
+            {
+                it.lastName + " " + it.firstName to
+                    (it.workplaces.map { workplace -> "${workplace.organization.name} ${workplace.organizationDepartment?.name ?: ""}" }.joinToString { ", " } ?: "")
+            })
             .map { "<div style=\"margin-bottom: 2px\"><b>${it.key}.</b> ${it.value}</div>" }.joinToString(separator = "")
     }
 

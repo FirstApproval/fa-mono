@@ -29,20 +29,33 @@ import { getInitials } from '../../../util/userUtil';
 import { renderProfileImage } from '../../../fire-browser/utils';
 import { type EditorProps } from './types';
 import { validateEmail } from '../../../util/emailUtil';
+import { WorkplacesEditor } from '../../../components/WorkplacesEditor';
+import { FlexWrapColumn, FlexWrapRow, WidthElement } from '../../common.styled';
+import { LoadingButton } from '@mui/lab';
 
 export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
+  const [savingInProgress, setSavingInProgress] = useState(false);
+  const [showSuccessSavingAlter, setShowSuccessSavingAlter] = useState(false);
   const [addAuthorVisible, setAddAuthorVisible] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [searchVisible, setSearchVisible] = useState(false);
   const [isUserExistsByEmail, setIsUserExistsByEmail] = useState(false);
   const [authorOptions, setAuthorOptions] = useState<UserInfo[]>([]);
-  const [isValidEmail, setIsValidEmail] = useState(true);
-  const [isValidFirstName, setIsValidFirstName] = useState(true);
-  const [isValidLastName, setIsValidLastName] = useState(true);
 
   const [query, setQuery] = useState('');
 
   const [authorStore] = useState(() => new AuthorEditorStore());
+  const isValidEmail =
+    authorStore.email.length > 0 && validateEmail(authorStore.email);
+  const isValidFirstName = authorStore.firstName.length > 0;
+  const isValidLastName = authorStore.lastName.length > 0;
+  const notValid = authorStore.workplaces.some(
+    (workplace) => !workplace.organization || !workplace.address
+  );
+  const currentWorkplaceAbsent = !authorStore.workplaces.some(
+    (workplace) => !workplace.isFormer
+  );
+  const isValidForm = isValidEmail && isValidFirstName && isValidLastName;
 
   const setEditAuthorVisible = (
     author: ConfirmedAuthor | UnconfirmedAuthor,
@@ -62,10 +75,20 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
       authorStore.firstName = unconfirmedAuthor.firstName;
       authorStore.lastName = unconfirmedAuthor.lastName;
       authorStore.email = unconfirmedAuthor.email;
+      authorStore.workplaces = unconfirmedAuthor.workplaces ?? [];
+      authorStore.workplacesProps = [];
+      authorStore.workplaces?.forEach((w, index) => {
+        authorStore.workplacesProps.push({
+          orgQuery: w.organization?.name ?? '',
+          departmentQuery: w.department?.name ?? '',
+          departmentQueryKey: '',
+          organizationOptions: [],
+          departmentOptions: w.organization?.departments ?? []
+        });
+      });
     }
     authorStore.isConfirmed = isConfirmed;
     authorStore.id = author.id;
-    authorStore.shortBio = author.shortBio ?? '';
     authorStore.isNew = false;
     authorStore.index = index;
     setAddAuthorVisible(true);
@@ -95,20 +118,11 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
 
   const handleCloseAddAuthor = (): void => {
     setAddAuthorVisible(false);
-    authorStore.clean();
+    setTimeout(() => authorStore.clean(), 100);
   };
 
   const handleCloseDeleteDialog = (): void => {
     setDeleteDialogOpen(false);
-  };
-
-  const validateFields = (): boolean => {
-    setIsValidEmail(
-      authorStore.email.length > 0 && validateEmail(authorStore.email)
-    );
-    setIsValidFirstName(authorStore.firstName.length > 0);
-    setIsValidLastName(authorStore.lastName.length > 0);
-    return isValidEmail && isValidFirstName && isValidLastName;
   };
 
   const handleSaveButton = async (): Promise<void> => {
@@ -116,15 +130,13 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
       props.publicationStore.editConfirmedAuthor(authorStore);
       handleCloseAddAuthor();
     } else {
-      await userService.existsByEmail(authorStore.email).then((result) => {
+      return userService.existsByEmail(authorStore.email).then((result) => {
         if (result.data) {
           authorStore.clean();
           setIsUserExistsByEmail(true);
         } else {
-          if (validateFields()) return;
           props.publicationStore.addOrEditUnconfirmedAuthor(authorStore);
         }
-        handleCloseAddAuthor();
       });
     }
   };
@@ -235,13 +247,17 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
       </ContentEditorWrap>
       <Dialog
         open={addAuthorVisible}
-        onClose={handleCloseAddAuthor}
+        onClose={() => {
+          if (authorStore.isConfirmed) {
+            handleCloseAddAuthor();
+          }
+        }}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">
+        <DialogTitleWrap id="alert-dialog-title">
           {authorStore.isNew ? 'Add author' : 'Edit author'}
-        </DialogTitle>
-        <DialogContent>
+        </DialogTitleWrap>
+        <DialogContentWrap>
           {!authorStore.isConfirmed && (
             <AddAuthorWrap>
               <FullWidthTextField
@@ -253,8 +269,8 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                 disabled={authorStore.isConfirmed}
                 label="Email"
                 variant="outlined"
-                error={!isValidEmail}
-                helperText={!isValidEmail ? 'Invalid address' : undefined}
+                // error={!isValidEmail}
+                // helperText={!isValidEmail ? 'Invalid address' : undefined}
               />
               <OneLineWrap>
                 <MarginTextField
@@ -265,10 +281,10 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                   disabled={authorStore.isConfirmed}
                   label="First name"
                   variant="outlined"
-                  error={!isValidFirstName}
-                  helperText={
-                    !isValidFirstName ? 'Invalid first name' : undefined
-                  }
+                  // error={!isValidFirstName}
+                  // helperText={
+                  // !isValidFirstName ? 'Invalid first name' : undefined
+                  // }
                 />
                 <FullWidthTextField
                   value={authorStore.lastName}
@@ -278,49 +294,33 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                   disabled={authorStore.isConfirmed}
                   label="Last name"
                   variant="outlined"
-                  error={!isValidLastName}
-                  helperText={
-                    !isValidLastName ? 'Invalid last name' : undefined
-                  }
+                  // error={!isValidLastName}
+                  // helperText={
+                  //   !isValidLastName ? 'Invalid last name' : undefined
+                  // }
                 />
               </OneLineWrap>
-              <FullWidthTextField
-                multiline
-                minRows={4}
-                maxRows={4}
-                value={authorStore.shortBio}
-                onChange={(e) => {
-                  authorStore.shortBio = e.currentTarget.value;
-                }}
-                label="Short bio"
-                variant="outlined"
-              />
+              <FlexWrapColumn>
+                <WorkplacesTitle>
+                  Current workplaces (affiliations)
+                </WorkplacesTitle>
+                <WorkplacesEditor store={authorStore} />
+              </FlexWrapColumn>
             </AddAuthorWrap>
           )}
           {authorStore.isConfirmed && (
             <EditConfirmedAuthor>
-              {/* dirty hack to show user name and email without possibility to edit any fields except of short bio. */}
+              {/* dirty hack to show user name and email without possibility to edit any fields. */}
               {/* Partly fixed by adding AuthorEditorStore as author type */}
               <AuthorElement
                 isReadonly={props.publicationStore.isReadonly}
                 author={authorStore}
                 isConfirmed={true}
               />
-              <FullWidthTextField
-                multiline
-                minRows={4}
-                maxRows={4}
-                value={authorStore.shortBio}
-                onChange={(e) => {
-                  authorStore.shortBio = e.currentTarget.value;
-                }}
-                label="Short bio"
-                variant="outlined"
-              />
             </EditConfirmedAuthor>
           )}
-        </DialogContent>
-        <DialogActions>
+        </DialogContentWrap>
+        <DialogActionsWrap>
           <SpaceBetweenWrap>
             {((authorStore.isNew ||
               authorStore.userId === props.publicationStore.creator?.id) && (
@@ -333,32 +333,45 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                 <DeleteOutlined htmlColor={'gray'} />
               </IconButton>
             )}
-            <div>
+            <FlexWrapRow>
               <Button onClick={handleCloseAddAuthor}>Cancel</Button>
-              <Button
-                onClick={() => {
-                  void handleSaveButton();
-                }}>
-                Save
-              </Button>
-            </div>
+              <WidthElement value={'15px'} />
+              {!authorStore.isConfirmed && (
+                <LoadingButton
+                  loading={savingInProgress}
+                  disabled={!isValidForm || notValid || currentWorkplaceAbsent}
+                  variant={'contained'}
+                  onClick={() => {
+                    setSavingInProgress(true);
+                    void handleSaveButton().then(() => {
+                      setTimeout(() => {
+                        setSavingInProgress(false);
+                        setShowSuccessSavingAlter(true);
+                        handleCloseAddAuthor();
+                      }, 1000);
+                    });
+                  }}>
+                  {authorStore.isNew ? 'Add author' : 'Save'}
+                </LoadingButton>
+              )}
+            </FlexWrapRow>
           </SpaceBetweenWrap>
-        </DialogActions>
+        </DialogActionsWrap>
       </Dialog>
       <Dialog
         open={deleteDialogOpen}
         onClose={handleCloseDeleteDialog}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description">
-        <DeleteDialogTitle id="alert-dialog-title">Delete?</DeleteDialogTitle>
-        <DeleteDialogContent>
+        <DialogTitleWrap id="alert-dialog-title">Delete?</DialogTitleWrap>
+        <DialogContentWrap>
           <DeleteDialogWidthWrap>
             {
               "Everything will be deleted and you won't be able to undo this action."
             }
           </DeleteDialogWidthWrap>
-        </DeleteDialogContent>
-        <DeleteDialogActions>
+        </DialogContentWrap>
+        <DialogActionsWrap>
           <div>
             <Button
               style={{ marginRight: '24px' }}
@@ -377,7 +390,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
               Delete
             </Button>
           </div>
-        </DeleteDialogActions>
+        </DialogActionsWrap>
       </Dialog>
       {isUserExistsByEmail && (
         <Snackbar
@@ -389,6 +402,18 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
           <Alert severity="error" sx={{ width: '100%' }}>
             User with this email already registered and can be added searching
             by email
+          </Alert>
+        </Snackbar>
+      )}
+      {showSuccessSavingAlter && (
+        <Snackbar
+          open={showSuccessSavingAlter}
+          autoHideDuration={4000}
+          onClose={() => {
+            setShowSuccessSavingAlter(false);
+          }}>
+          <Alert severity="success" sx={{ width: '100%' }}>
+            Co-author successfully saved!
           </Alert>
         </Snackbar>
       )}
@@ -472,17 +497,32 @@ const DeleteDialogWidthWrap = styled.div`
   max-width: 336px;
 `;
 
-const DeleteDialogActions = styled(DialogActions)`
+const DialogActionsWrap = styled(DialogActions)`
   padding-bottom: 32px !important;
   padding-right: 32px !important;
 `;
 
-const DeleteDialogTitle = styled(DialogTitle)`
+const DialogTitleWrap = styled(DialogTitle)`
   padding-top: 32px !important;
   padding-left: 32px !important;
 `;
 
-const DeleteDialogContent = styled(DialogContent)`
+const DialogContentWrap = styled(DialogContent)`
   padding-left: 32px !important;
   padding-right: 32px !important;
+`;
+
+const WorkplacesTitle = styled.span`
+  margin-bottom: 32px;
+
+  color: var(--text-primary, #040036);
+  font-feature-settings: 'clig' off, 'liga' off;
+
+  /* typography/h6 */
+  font-family: Roboto;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 160%; /* 32px */
+  letter-spacing: 0.15px;
 `;

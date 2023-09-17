@@ -9,7 +9,7 @@ import java.util.TimeZone.setDefault
 
 @SpringBootApplication
 @EnableJpaRepositories("org.firstapproval.backend.core")
-@EnableElasticsearchRepositories("org.firstapproval.backend.core.elastic")
+@EnableElasticsearchRepositories("org.firstapproval.backend.core")
 class FirstApprovalApplication
 
 fun main(args: Array<String>) {

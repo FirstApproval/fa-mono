@@ -29,6 +29,18 @@ export class SampleFileServiceAdapter
     );
   }
 
+  async getPublicationFilesPublic(
+    publicationId: string,
+    dirPath: string,
+    options?: AxiosRequestConfig<any> | undefined
+  ): Promise<AxiosResponse<PublicationFile[], any>> {
+    return await this.service.getPublicationSampleFilesPublic(
+      publicationId,
+      dirPath,
+      options
+    );
+  }
+
   async createFolder(
     publicationId: string,
     createFolderRequest: CreateFolderRequest,
@@ -98,6 +110,7 @@ export class SampleFileServiceAdapter
     fullPath: string,
     isDir: boolean,
     type: UploadType,
+    sha256HexBase64?: string,
     contentLength?: number,
     body?: File,
     options?: AxiosRequestConfig
@@ -107,6 +120,7 @@ export class SampleFileServiceAdapter
       fullPath,
       isDir,
       type,
+      sha256HexBase64,
       contentLength,
       body,
       options

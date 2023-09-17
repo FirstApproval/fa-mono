@@ -1,4 +1,4 @@
-import { makeObservable, observable } from 'mobx';
+import { makeAutoObservable } from 'mobx';
 import {
   type RegistrationRequest,
   type RegistrationResponse,
@@ -24,16 +24,7 @@ export class SignUpStore {
   isSubmitting = false;
 
   constructor() {
-    makeObservable(this, {
-      email: observable,
-      firstName: observable,
-      lastName: observable,
-      password: observable,
-      code: observable,
-      isError: observable,
-      isCodeError: observable,
-      isSubmitting: observable
-    });
+    makeAutoObservable(this);
   }
 
   getRegistrationRequestData(): RegistrationRequest {
@@ -111,4 +102,22 @@ export class SignUpStore {
       this.isSubmitting = false;
     }
   }
+
+  // saveWorkplaces = async (workplaces: Workplace[]): Promise<void> => {
+  //   await userService.getMe().then(async (response) => {
+  //     const user = response.data;
+  //     await userService
+  //       .updateUser({
+  //         firstName: user.firstName,
+  //         middleName: user.middleName,
+  //         lastName: user.lastName,
+  //         username: user.username,
+  //         selfInfo: user.selfInfo,
+  //         workplaces: workplaces ?? []
+  //       })
+  //       .then(() => {
+  //         userStore.requestUserData();
+  //       });
+  //   });
+  // };
 }

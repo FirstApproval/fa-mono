@@ -11,6 +11,7 @@ import com.amazonaws.services.s3.model.S3Object
 import com.amazonaws.services.s3.model.StorageClass
 import mu.KotlinLogging.logger
 import org.firstapproval.backend.core.config.Properties.S3Properties
+import org.firstapproval.backend.core.utils.calculateSHA256
 import java.io.InputStream
 import java.time.Duration
 import java.util.Date
@@ -26,14 +27,23 @@ class FileStorageService(private val amazonS3: AmazonS3, private val s3Propertie
 
     private val log = logger {}
 
-    fun save(bucketName: String, id: String, data: InputStream, contentLength: Long? = null): PutObjectResult {
+    fun save(
+        bucketName: String,
+        id: String,
+        data: InputStream,
+        contentLength: Long,
+        sha256HexBase64: String? = null
+    ): PutObjectResult {
         val metadata = ObjectMetadata()
-        if (contentLength != null) {
-            metadata.apply {
-                this.contentLength = contentLength
-            }
+        metadata.apply {
+            this.contentLength = contentLength
         }
         metadata.setHeader("x-amz-storage-class", s3Properties.bucketStorageClass)
+
+        if (sha256HexBase64 != null) {
+            metadata.setHeader("x-amz-sdk-checksum-algorithm", "SHA256")
+            metadata.setHeader("x-amz-checksum-sha256", sha256HexBase64)
+        }
         return amazonS3.putObject(bucketName + s3Properties.bucketPostfix, id, data, metadata)
     }
 

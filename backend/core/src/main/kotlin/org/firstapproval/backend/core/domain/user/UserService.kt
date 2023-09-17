@@ -2,25 +2,28 @@ package org.firstapproval.backend.core.domain.user
 
 import mu.KotlinLogging.logger
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
+import org.firstapproval.api.server.model.UserUpdateRequest
 import org.firstapproval.backend.core.config.Properties.FrontendProperties
 import org.firstapproval.backend.core.domain.auth.OauthUser
-import org.firstapproval.backend.core.external.s3.FileStorageService
-import org.firstapproval.backend.core.external.s3.PROFILE_IMAGES
 import org.firstapproval.backend.core.domain.notification.NotificationService
+import org.firstapproval.backend.core.domain.organizations.OrganizationService
+import org.firstapproval.backend.core.domain.organizations.Workplace
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthorRepository
 import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthorRepository
-import org.firstapproval.backend.core.domain.user.registration.EmailRegistrationConfirmation
-import org.firstapproval.backend.core.domain.user.registration.EmailRegistrationConfirmationRepository
 import org.firstapproval.backend.core.domain.user.email.EmailChangeConfirmationRepository
 import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimit
 import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimitRepository
 import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmation
 import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmationRepository
-import org.firstapproval.backend.core.web.errors.RecordConflictException
+import org.firstapproval.backend.core.domain.user.registration.EmailRegistrationConfirmation
+import org.firstapproval.backend.core.domain.user.registration.EmailRegistrationConfirmationRepository
+import org.firstapproval.backend.core.external.s3.FileStorageService
+import org.firstapproval.backend.core.external.s3.PROFILE_IMAGES
 import org.firstapproval.backend.core.utils.EMAIL_CONFIRMATION_CODE_LENGTH
 import org.firstapproval.backend.core.utils.generateCode
 import org.firstapproval.backend.core.utils.require
+import org.firstapproval.backend.core.web.errors.RecordConflictException
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.access.AccessDeniedException
@@ -54,7 +57,8 @@ class UserService(
     private val unconfirmedAuthorRepository: UnconfirmedAuthorRepository,
     private val confirmedAuthorRepository: ConfirmedAuthorRepository,
     private val fileStorageService: FileStorageService,
-    private val transactionTemplate: TransactionTemplate
+    private val transactionTemplate: TransactionTemplate,
+    private val organizationService: OrganizationService,
 ) {
 
     val log = logger {}
@@ -289,38 +293,57 @@ class UserService(
         }
     }
 
-    fun update(
-        id: UUID,
-        firstName: String,
-        middleName: String?,
-        lastName: String,
-        username: String,
-        selfInfo: String?,
-        profileImage: ByteArray?,
-        deleteProfileImage: Boolean?
-    ) {
+    fun update(id: UUID, request: UserUpdateRequest) {
         var profileImageIdToDelete: UUID? = null
-        transactionTemplate.execute { _ ->
-            val userFromDb = userRepository.findByUsername(username)
-            if (userFromDb != null && userFromDb.id != id) throw RecordConflictException("username already taken")
-            val user = userRepository.findById(id).orElseThrow()
-            user.firstName = firstName
-            user.middleName = middleName
-            user.lastName = lastName
-            user.username = username
-            user.selfInfo = selfInfo
-            if (deleteProfileImage == true && user.profileImage != null) {
-                profileImageIdToDelete = fromString(user.profileImage)
-                user.profileImage = null
-            } else if (profileImage != null) {
-                if (user.profileImage != null) {
-                    profileImageIdToDelete = fromString(user.profileImage)
+        with(request) {
+            transactionTemplate.execute { _ ->
+                val userFromDb = userRepository.findByUsername(username)
+                if (userFromDb != null && userFromDb.id != id) throw RecordConflictException("username already taken")
+                val user = userRepository.findById(id).orElseThrow()
+                user.firstName = firstName
+                user.middleName = middleName
+                user.lastName = lastName
+                user.username = username
+
+                if (workplaces != null && workplaces.size > 0) {
+                    val userWorkplaces = workplaces.map { workplace ->
+                        val organization = organizationService.getOrSave(workplace.organization)
+                        val organizationDepartment = organizationService.getOrSave(workplace.department, organization)
+
+                        Workplace(
+                            id = workplace.id ?: randomUUID(),
+                            organization,
+                            organizationDepartment,
+                            address = workplace.address,
+                            postalCode = workplace.postalCode,
+                            isFormer = workplace.isFormer,
+                            creationTime = workplace.creationTime?.toZonedDateTime() ?: now(),
+                            editingTime = now(),
+                            user = user
+                        )
+                    }
+                    user.workplaces.clear()
+                    userRepository.saveAndFlush(user)
+                    user.workplaces.addAll(userWorkplaces)
                 }
-                user.profileImage = randomUUID().toString().also {
-                    fileStorageService.save(PROFILE_IMAGES, it, ByteArrayInputStream(profileImage), profileImage.size.toLong())
+
+                if (deleteProfileImage == true && user.profileImage != null) {
+                    profileImageIdToDelete = fromString(user.profileImage)
+                    user.profileImage = null
+                } else if (profileImage != null) {
+                    if (user.profileImage != null) {
+                        profileImageIdToDelete = fromString(user.profileImage)
+                    }
+                    user.profileImage = randomUUID().toString().also {
+                        fileStorageService.save(
+                            PROFILE_IMAGES,
+                            it,
+                            ByteArrayInputStream(profileImage),
+                            profileImage.size.toLong()
+                        )
+                    }
                 }
             }
-            userRepository.save(user)
         }
         profileImageIdToDelete?.let { fileStorageService.delete(PROFILE_IMAGES, it) }
     }
@@ -333,7 +356,27 @@ class UserService(
     @Transactional
     fun migratePublicationOfUnconfirmedUser(user: User) {
         val unconfirmedUsers = unconfirmedAuthorRepository.findByEmail(user.email)
-        val confirmedAuthors = unconfirmedUsers.map { ConfirmedAuthor(randomUUID(), user, it.publication, it.shortBio) }
+        val workplaces = unconfirmedUsers.flatMap { it.workplaces }.distinctBy {
+            it.organization.id
+        }
+        val formerWorkplaces = workplaces.filter { it.isFormer }.toMutableList()
+        val currentWorkplace = workplaces.find { !it.isFormer }
+        (formerWorkplaces + listOf(currentWorkplace))
+            .filterNotNull()
+            .map {
+                Workplace(
+                    id = randomUUID(),
+                    organization = it.organization,
+                    organizationDepartment = it.organizationDepartment,
+                    address = it.address,
+                    postalCode = it.postalCode,
+                    isFormer = it.isFormer,
+                    creationTime = now(),
+                    editingTime = now(),
+                    user = user
+                )
+            }.let { user.workplaces.addAll(it) }
+        val confirmedAuthors = unconfirmedUsers.map { ConfirmedAuthor(randomUUID(), user, it.publication) }
         confirmedAuthorRepository.saveAll(confirmedAuthors)
         unconfirmedAuthorRepository.deleteAll(unconfirmedUsers)
     }

@@ -10,6 +10,7 @@ import org.springframework.context.event.EventListener
 class OnAppStarted(private val archiveService: ArchiveService) {
 
     val log = logger {}
+
     @EventListener(ApplicationStartedEvent::class)
     fun createSandboxProvider() {
         archiveService.refreshTmpFolder()

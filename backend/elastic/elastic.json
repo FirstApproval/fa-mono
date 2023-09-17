@@ -1,0 +1,87 @@
+{
+    "settings": {
+        "analysis": {
+            "tokenizer": {
+                "edge_ngram_tokenizer": {
+                    "type": "edge_ngram",
+                    "min_gram": 1,
+                    "max_gram": 25,
+                    "token_chars": [
+                        "letter"
+                    ]
+                }
+            },
+            "analyzer": {
+                "edge_ngram_analyzer": {
+                    "type": "custom",
+                    "tokenizer": "edge_ngram_tokenizer",
+                    "filter": [
+                        "lowercase"
+                    ]
+                }
+            }
+        }
+    },
+    "mappings": {
+        "properties": {
+            "title": {
+                "type": "text",
+                "analyzer": "edge_ngram_analyzer"
+            },
+            "description": {
+                "type": "text",
+                "analyzer": "edge_ngram_analyzer"
+            },
+            "grantOrganizations": {
+                "type": "text",
+                "analyzer": "edge_ngram_analyzer"
+            },
+            "primaryArticles": {
+                "type": "text",
+                "analyzer": "edge_ngram_analyzer"
+            },
+            "relatedArticles": {
+                "type": "text",
+                "analyzer": "edge_ngram_analyzer"
+            },
+            "tags": {
+                "type": "text",
+                "analyzer": "edge_ngram_analyzer"
+            },
+            "objectOfStudyTitle": {
+                "type": "text",
+                "analyzer": "edge_ngram_analyzer"
+            },
+            "objectOfStudyDescription": {
+                "type": "text",
+                "analyzer": "edge_ngram_analyzer"
+            },
+            "software": {
+                "type": "text",
+                "analyzer": "edge_ngram_analyzer"
+            },
+            "methodTitle": {
+                "type": "text",
+                "analyzer": "edge_ngram_analyzer"
+            },
+            "methodDescription": {
+                "type": "text",
+                "analyzer": "edge_ngram_analyzer"
+            },
+            "predictedGoals": {
+                "type": "text",
+                "analyzer": "edge_ngram_analyzer"
+            },
+            "negativeData": {
+                "type": "text",
+                "analyzer": "edge_ngram_analyzer"
+            },
+            "creationTime": {
+                "type": "date"
+            },
+            "publicationTime": {
+                "type": "date"
+            }
+        }
+    }
+}

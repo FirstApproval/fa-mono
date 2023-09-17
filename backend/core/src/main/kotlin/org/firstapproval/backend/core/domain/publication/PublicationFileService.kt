@@ -2,12 +2,11 @@ package org.firstapproval.backend.core.domain.publication
 
 import com.amazonaws.services.s3.model.S3Object
 import org.apache.commons.io.FilenameUtils
-import org.firstapproval.backend.core.config.Properties.S3Properties
-import org.firstapproval.backend.core.config.security.JwtService
+import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.external.s3.FILES
 import org.firstapproval.backend.core.external.s3.FileStorageService
-import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.utils.require
+import org.firstapproval.backend.core.utils.sha256HashFromBase64
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
@@ -25,7 +24,7 @@ class PublicationFileService(
 
     fun getPublicationFiles(user: User?, publicationId: UUID, dirPath: String): List<PublicationFile> {
         val publication = publicationRepository.getReferenceById(publicationId)
-        checkAccessToPublication(user!!, publication)
+        checkAccessToPublication(user, publication)
         return publicationFileRepository.findAllByPublicationIdAndDirPath(publicationId, dirPath)
     }
 
@@ -42,6 +41,7 @@ class PublicationFileService(
         publicationId: UUID,
         fullPath: String,
         isDir: Boolean,
+        sha256HashBase64: String?,
         data: InputStream?,
         onCollisionRename: Boolean,
         contentLength: Long?
@@ -59,9 +59,9 @@ class PublicationFileService(
                 actualFullPath = fullPath
                 dropDuplicate(publicationId, actualFullPath)?.let { filesToDelete.add(it) }
             }
-            val hash = if (!isDir) {
-                fileStorageService.save(FILES, fileId.toString(), data!!, contentLength!!).eTag
-            } else null
+            if (!isDir) {
+                fileStorageService.save(FILES, fileId.toString(), data!!, contentLength!!, sha256HashBase64!!)
+            }
             file = publicationFileRepository.save(
                 PublicationFile(
                     id = fileId,
@@ -70,7 +70,7 @@ class PublicationFileService(
                     dirPath = extractDirPath(actualFullPath),
                     isDir = isDir,
                     size = contentLength,
-                    hash = hash
+                    hash = sha256HashBase64?.let { sha256HashFromBase64(it) }
                 )
             )
         }

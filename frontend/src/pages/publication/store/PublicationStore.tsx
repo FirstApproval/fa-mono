@@ -3,8 +3,8 @@ import { publicationService } from '../../../core/service';
 import _, { some } from 'lodash';
 import {
   type ConfirmedAuthor,
-  type Paragraph,
   LicenseType,
+  type Paragraph,
   PublicationStatus,
   type UnconfirmedAuthor,
   type UserInfo
@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { type AuthorEditorStore } from './AuthorEditorStore';
 import { routerStore } from '../../../core/router';
 import { Page } from '../../../core/RouterStore';
+import { authStore } from '../../../core/auth';
 
 const EDIT_THROTTLE_MS = 1000;
 
@@ -199,8 +200,7 @@ export class PublicationStore {
   addConfirmedAuthor(author: UserInfo): void {
     const newValue = [...this.confirmedAuthors];
     newValue.push({
-      user: author,
-      shortBio: author.selfInfo
+      user: author
     });
     this.confirmedAuthors = newValue;
     this.savingStatus = SavingStatusState.SAVING;
@@ -213,7 +213,6 @@ export class PublicationStore {
       if (confirmedAuthor.id !== store.id) {
         throw Error('Confirmed author found by index have different id');
       }
-      confirmedAuthor.shortBio = store.shortBio;
     }
     this.savingStatus = SavingStatusState.SAVING;
     void this.updateConfirmedAuthors();
@@ -227,8 +226,7 @@ export class PublicationStore {
           .map((t) => {
             return {
               id: t.id,
-              userId: t.user.id,
-              shortBio: t.shortBio
+              userId: t.user.id
             };
           }),
         edited: true
@@ -247,7 +245,7 @@ export class PublicationStore {
       unconfirmedAuthor.email = store.email;
       unconfirmedAuthor.firstName = store.firstName;
       unconfirmedAuthor.lastName = store.lastName;
-      unconfirmedAuthor.shortBio = store.shortBio;
+      unconfirmedAuthor.workplaces = store.workplaces;
     } else {
       const newValue = [...this.unconfirmedAuthors];
       newValue.push({
@@ -255,7 +253,7 @@ export class PublicationStore {
         firstName: store.firstName,
         middleName: '',
         lastName: store.lastName,
-        shortBio: store.shortBio
+        workplaces: store.workplaces
       });
       this.unconfirmedAuthors = newValue;
     }
@@ -286,7 +284,6 @@ export class PublicationStore {
 
   editLicenseType(): void {
     this.savingStatus = SavingStatusState.SAVING;
-    debugger;
     void publicationService.editPublication(this.publicationId, {
       licenseType: {
         value: this.licenseType ?? undefined,
@@ -863,8 +860,13 @@ export class PublicationStore {
   };
 
   private loadInitialState(): void {
-    void publicationService
-      .getPublication(this.publicationId)
+    let method;
+    if (authStore.token) {
+      method = publicationService.getPublication(this.publicationId);
+    } else {
+      method = publicationService.getPublicationPublic(this.publicationId);
+    }
+    method
       .then(
         action((response) => {
           const publication = response.data;

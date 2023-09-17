@@ -19,6 +19,7 @@ test('should upload files and directories', async () => {
       fullPath: string,
       isDir: boolean,
       uploadType: UploadType,
+      hex: string,
       contentLength: number,
       body?: File
     ) => {

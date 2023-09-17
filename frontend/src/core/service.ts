@@ -3,13 +3,14 @@ import {
   AuthorApi,
   Configuration,
   FileApi,
+  OrganizationApi,
   PublicationApi,
   RegistrationApi,
   SampleFileApi,
   UserApi
 } from '../apis/first-approval-api';
-import { authStore } from './auth';
 import { SampleFileServiceAdapter } from './SampleFileServiceAdapter';
+import { authStore } from './auth';
 
 const configuration: Configuration = new Configuration({
   accessToken: async () => {
@@ -36,3 +37,5 @@ export const sampleFileServiceRaw = new SampleFileApi(configuration);
 export const sampleFileService = new SampleFileServiceAdapter();
 
 export const publicationService = new PublicationApi(configuration);
+
+export const organizationService = new OrganizationApi(configuration);

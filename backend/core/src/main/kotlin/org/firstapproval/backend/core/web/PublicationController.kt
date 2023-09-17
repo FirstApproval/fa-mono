@@ -13,21 +13,18 @@ import org.firstapproval.api.server.model.PublicationsResponse
 import org.firstapproval.api.server.model.SearchPublicationsResponse
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
-import org.firstapproval.backend.core.config.security.userOrNull
 import org.firstapproval.backend.core.domain.publication.PublicationPdfService
 import org.firstapproval.backend.core.domain.publication.PublicationService
 import org.firstapproval.backend.core.domain.publication.downloader.DownloaderRepository
 import org.firstapproval.backend.core.domain.publication.toApiObject
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.toApiObject
-import org.firstapproval.backend.core.external.ipfs.IpfsClient
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.annotation.RestController
-import java.util.Base64
 import java.util.Base64.getEncoder
 import java.util.UUID
 import org.firstapproval.backend.core.domain.publication.AccessType as AccessTypeEntity
@@ -37,7 +34,6 @@ class PublicationController(
     private val publicationService: PublicationService,
     private val userService: UserService,
     private val downloaderRepository: DownloaderRepository,
-    private val ipfsClient: IpfsClient,
     private val authHolderService: AuthHolderService,
     private val publicationPdfService: PublicationPdfService
 ) : PublicationApi {
@@ -99,13 +95,20 @@ class PublicationController(
     }
 
     override fun getPublication(id: UUID): ResponseEntity<Publication> {
-        val pub = publicationService.get(authHolderService.userOrNull(), id)
-//        val contentStatus = pub.contentId?.let { contentId ->
-//            val publicationArchiveInfo = ipfsClient.getInfo(contentId)
-//            publicationArchiveInfo.availability.let { PublicationContentStatus.valueOf(it.name) }
-//        }
-        val publicationResponse = pub.toApiObject(userService)//.contentStatus(contentStatus)
+        val pub = publicationService.get(authHolderService.user, id)
+        val publicationResponse = pub.toApiObject(userService)
         return ok().body(publicationResponse)
+    }
+
+    override fun getPublicationPublic(id: UUID): ResponseEntity<Publication> {
+        val pub = publicationService.get(null, id)
+        val publicationResponse = pub.toApiObject(userService)
+        return ok().body(publicationResponse)
+    }
+
+    override fun getPublicationStatus(id: UUID): ResponseEntity<PublicationStatus> {
+        val publication = publicationService.get(authHolderService.user, id)
+        return ok(PublicationStatus.valueOf(publication.status.name))
     }
 
     override fun getDownloadLink(id: UUID): ResponseEntity<DownloadLinkResponse> {

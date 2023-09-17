@@ -1,18 +1,21 @@
 package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.SampleFileApi
-import org.firstapproval.api.server.model.*
+import org.firstapproval.api.server.model.CheckFileDuplicatesRequest
+import org.firstapproval.api.server.model.CreateFolderRequest
+import org.firstapproval.api.server.model.DeleteByIdsRequest
+import org.firstapproval.api.server.model.EditFileRequest
+import org.firstapproval.api.server.model.MoveFileRequest
+import org.firstapproval.api.server.model.PublicationFile
+import org.firstapproval.api.server.model.UploadType
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.PublicationSampleFileService
-import org.springframework.core.io.InputStreamResource
-import org.springframework.core.io.Resource
 import org.springframework.http.HttpStatus.OK
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
-import java.net.URLConnection.guessContentTypeFromName
+import org.springframework.web.multipart.MultipartFile
 import java.util.UUID
 
 @RestController
@@ -22,7 +25,23 @@ class PublicationSampleFileController(
 ) : SampleFileApi {
 
     override fun getPublicationSampleFiles(publicationId: UUID, dirPath: String): ResponseEntity<List<PublicationFile>> {
-        val files = publicationSampleFileService.getPublicationSampleFiles(publicationId, dirPath)
+        val files = publicationSampleFileService.getPublicationSampleFiles(authHolderService.user, publicationId, dirPath)
+        return ok(files.map {
+            PublicationFile()
+                .id(it.id)
+                .publicationId(it.publication.id)
+                .creationTime(it.creationTime.toOffsetDateTime())
+                .description(it.description)
+                .dirPath(it.dirPath)
+                .size(it.size)
+                .fullPath(it.fullPath)
+                .isDir(it.isDir)
+                .hash(it.hash)
+        })
+    }
+
+    override fun getPublicationSampleFilesPublic(publicationId: UUID, dirPath: String): ResponseEntity<List<PublicationFile>> {
+        val files = publicationSampleFileService.getPublicationSampleFiles(null, publicationId, dirPath)
         return ok(files.map {
             PublicationFile()
                 .id(it.id)
@@ -54,20 +73,30 @@ class PublicationSampleFileController(
         publicationId: UUID,
         fullPath: String,
         isDir: Boolean,
-        type: UploadType?,
+        type: UploadType,
+        sha256HashBase64: String,
         contentLength: Long?,
-        body: Resource?,
+        file: MultipartFile?
     ): ResponseEntity<PublicationFile> {
-        val file = publicationSampleFileService.uploadFile(authHolderService.user, publicationId, fullPath, isDir, body?.inputStream, type == UploadType.RENAME, contentLength)
+        val fileTmp = publicationSampleFileService.uploadFile(
+            authHolderService.user,
+            publicationId,
+            fullPath,
+            isDir,
+            sha256HashBase64,
+            file?.inputStream,
+            type == UploadType.RENAME,
+            contentLength
+        )
         return ResponseEntity(
-            PublicationFile().id(file.id)
-                .publicationId(file.publication.id)
-                .creationTime(file.creationTime.toOffsetDateTime())
-                .dirPath(file.dirPath)
-                .fullPath(file.fullPath)
-                .isDir(file.isDir)
-                .size(file.size)
-            .hash(file.hash), OK
+            PublicationFile().id(fileTmp.id)
+                .publicationId(fileTmp.publication.id)
+                .creationTime(fileTmp.creationTime.toOffsetDateTime())
+                .dirPath(fileTmp.dirPath)
+                .fullPath(fileTmp.fullPath)
+                .isDir(fileTmp.isDir)
+                .size(fileTmp.size)
+                .hash(fileTmp.hash), OK
         )
     }
 

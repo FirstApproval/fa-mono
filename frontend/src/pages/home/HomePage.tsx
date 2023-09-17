@@ -71,6 +71,7 @@ export const HomePage: FunctionComponent = observer(() => {
           onClose={() => setIsBetaDialogOpen(false)}
         />
         <HeaderComponent
+          showAboutUsButton={true}
           showPublishButton={true}
           showLoginButton={true}
           showSignUpContainedButton={true}
@@ -128,8 +129,16 @@ export const HomePage: FunctionComponent = observer(() => {
                 <Wrap>
                   <ResultsLabel>Results for {store.searchQuery}</ResultsLabel>
                   {store.isSearching && <LinearProgress />}
-                  {!store.isSearching && (
+                  {!store.isSearching && store.searchResults.length !== 0 && (
                     <>{mapPublications(store.searchResults)}</>
+                  )}
+                  {!store.isSearching && store.searchResults.length === 0 && (
+                    <ContentWrap>
+                      <SearchHintText>
+                        Make sure all words are spelled correctly or try more
+                        general keywords.
+                      </SearchHintText>
+                    </ContentWrap>
                   )}
                 </Wrap>
               </>
@@ -210,4 +219,20 @@ const BetaHeaderText = styled.span`
   letter-spacing: 0.1px;
   margin-left: 12px;
   margin-right: 12px;
+`;
+
+const SearchHintText = styled.div`
+  color: var(--text-disabled, rgba(4, 0, 54, 0.38));
+  text-align: center;
+  font-feature-settings: 'clig' off, 'liga' off;
+  word-wrap: break-word;
+  width: 380px;
+
+  /* typography/body */
+  font-family: Roboto;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 160%; /* 32px */
+  letter-spacing: 0.15px;
 `;

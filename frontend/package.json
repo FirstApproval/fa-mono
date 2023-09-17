@@ -12,6 +12,7 @@
     "@mui/lab": "5.0.0-alpha.136",
     "@mui/material": "5.13.5",
     "axios": "1.4.0",
+    "buffer": "^6.0.3",
     "history": "5.3.0",
     "http-proxy-middleware": "2.0.6",
     "lodash": "4.17.21",
@@ -35,7 +36,9 @@
     "api-local": "node build-scripts.js api http://localhost:3000",
     "build-local": "node build-scripts.js build http://localhost:3000",
     "api-dev": "node build-scripts.js api https://app.dev.firstapproval.io",
-    "build-dev": "node build-scripts.js build https://app.dev.firstapproval.io"
+    "build-dev": "node build-scripts.js build https://app.dev.firstapproval.io",
+    "api-prod": "node build-scripts.js api https://firstapproval.io",
+    "build-prod": "node build-scripts.js build https://firstapproval.io"
   },
   "eslintConfig": {
     "extends": [

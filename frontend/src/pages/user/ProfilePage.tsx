@@ -120,15 +120,23 @@ export const ProfilePage: FunctionComponent = observer(() => {
                 />
                 <UserInfoElement>
                   <NameElement>{lastNameAndFirstName}</NameElement>
-                  <SelfInfo style={{ marginTop: '10px', marginBottom: '10px' }}>
-                    {user.selfInfo}
-                  </SelfInfo>
+                  <WorkPlaces
+                    style={{ marginTop: '10px', marginBottom: '10px' }}>
+                    {user.workplaces
+                      ?.filter((workplace) => !workplace.isFormer)
+                      .map(
+                        (workplace) =>
+                          `${workplace.organization?.name ?? ''} ${
+                            workplace.department?.name ?? ''
+                          }`.trim() ?? ''
+                      )}
+                  </WorkPlaces>
                   <EmailElement>
                     <EmailOutlined
                       style={{ marginRight: '12px', marginTop: '2.5px' }}
                       htmlColor={'#68676e'}
                     />
-                    <SelfInfo>{user.email}</SelfInfo>
+                    <WorkPlaces>{user.email}</WorkPlaces>
                   </EmailElement>
                   <RowElement visibility={username ? 'hidden' : 'visible'}>
                     <EditProfileAndCreateDraftButtons
@@ -215,16 +223,16 @@ export const ProfilePage: FunctionComponent = observer(() => {
                               Upload your first dataset
                             </UploadYourFirstDatasetHeader>
                             <HeightElement value={'24px'} />
-                            <SelfInfo>
+                            <WorkPlaces>
                               Show off your work. Get recognition and be a part
                               of a growing community.
-                            </SelfInfo>
+                            </WorkPlaces>
                             <HeightElement value={'24px'} />
                             <StartPublishingButton
                               color={'primary'}
                               variant={'contained'}
                               onClick={async () => {
-                                await store.createPublication();
+                                await userStore.createPublication();
                               }}>
                               <span
                                 style={{
@@ -262,7 +270,7 @@ export const ProfilePage: FunctionComponent = observer(() => {
                           <EditProfileAndCreateDraftButtons
                             variant={'outlined'}
                             onClick={async () => {
-                              await store.createPublication();
+                              await userStore.createPublication();
                             }}>
                             Create draft
                           </EditProfileAndCreateDraftButtons>
@@ -324,7 +332,7 @@ export const UserInfoElement = styled.div`
   margin-left: 32px;
 `;
 
-export const SelfInfo = styled.div`
+export const WorkPlaces = styled.div`
   color: var(--text-secondary, #68676e);
   font-feature-settings: 'clig' off, 'liga' off;
   /* typography/body1 */

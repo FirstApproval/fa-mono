@@ -53,6 +53,7 @@ export const Header = styled.div`
   font-weight: 700;
   font-size: 48px;
   margin-bottom: 24px;
+  white-space: pre-line;
 `;
 
 export const HeightElement = styled('div')<{ value?: string }>`
@@ -99,4 +100,19 @@ export const StyledMenuItem = styled(MenuItem)`
   &:hover {
     background-color: transparent;
   }
+`;
+
+export const FullWidth = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
+export const FlexWrapColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+export const FlexWrapRow = styled.div`
+  display: flex;
 `;

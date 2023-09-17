@@ -13,6 +13,8 @@ import {
 } from '../apis/first-approval-api';
 import { fullPathToName } from './utils';
 import { type FileData } from '@first-approval/chonky/dist/types/file.types';
+import { calculateSHA256 } from '../util/sha256Util';
+import { authStore } from '../core/auth';
 
 interface FileEntry {
   id: string;
@@ -120,16 +122,17 @@ export class FileSystemFA {
   addFilesInput = (files: File[], uploadType: UploadType): void => {
     const uploadQueue: Array<() => Promise<void>> = [];
 
-    files.forEach((e) => {
+    files.forEach(async (e) => {
       const fullPath = this.fullPath('/' + e.name);
-
       const uploadFile = async (): Promise<void> => {
+        const hex = await calculateSHA256(e);
         await this.fileService
           .uploadFile(
             this.publicationId,
             fullPath,
             false,
             uploadType,
+            hex,
             e.size,
             e
           )
@@ -168,13 +171,15 @@ export class FileSystemFA {
       if (e.isFile) {
         const uploadFile = async (): Promise<void> => {
           await new Promise<void>((resolve) => {
-            (e as FileSystemFileEntry).file((file) => {
+            (e as FileSystemFileEntry).file(async (file) => {
+              const hex = await calculateSHA256(file);
               void this.fileService
                 .uploadFile(
                   this.publicationId,
                   fullPath,
                   false,
                   uploadType,
+                  hex,
                   file.size,
                   file
                 )
@@ -295,10 +300,17 @@ export class FileSystemFA {
   };
 
   updateFile = (id: string, name: string, note: string): void => {
-    void this.fileService.editFile(id, { name, description: note });
+    void this.fileService.editFile(id, {
+      name,
+      description: note
+    });
     const filter = (f: FileEntry): FileEntry => {
       if (f.id === id) {
-        return { ...f, name, note };
+        return {
+          ...f,
+          name,
+          note
+        };
       } else {
         return f;
       }
@@ -382,7 +394,11 @@ export class FileSystemFA {
     if (this.inCurrentDirectory(file)) {
       this.allLocalFiles = this.allLocalFiles.map((f) => {
         if (f.fullPath === file.fullPath) {
-          return { ...f, id, isUploading: false };
+          return {
+            ...f,
+            id,
+            isUploading: false
+          };
         } else {
           return f;
         }
@@ -447,10 +463,19 @@ export class FileSystemFA {
   ): Promise<FileEntry[]> => {
     this.isLoading = true;
     try {
-      const response = await this.fileService.getPublicationFiles(
-        this.publicationId,
-        dirPath
-      );
+      let method;
+      if (authStore.token) {
+        method = this.fileService.getPublicationFiles(
+          this.publicationId,
+          dirPath
+        );
+      } else {
+        method = this.fileService.getPublicationFilesPublic(
+          this.publicationId,
+          dirPath
+        );
+      }
+      const response = await method;
       return response.data.map((pf) => {
         return {
           id: pf.id ?? '',

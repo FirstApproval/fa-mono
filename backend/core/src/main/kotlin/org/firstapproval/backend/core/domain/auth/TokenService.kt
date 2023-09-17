@@ -43,17 +43,17 @@ class TokenService(
         return AuthToken(fromString(claims.subject.toString()))
     }
 
-    fun generateDownloadPublicationArchiveToken(userId: String, publicationId: String): String {
-        return jwtService.generate(
-            mapOf(
-                "sub" to publicationId,
-                "userId" to userId
-            ),
-            jwtProperties.publicationArchiveTokenTtl
-        )
-    }
-
-    fun parseDownloadPublicationArchiveToken(token: String): Claims {
-        return jwtService.parse(token)
-    }
+//    fun generateDownloadPublicationArchiveToken(userId: String, publicationId: String): String {
+//        return jwtService.generate(
+//            mapOf(
+//                "sub" to publicationId,
+//                "userId" to userId
+//            ),
+//            jwtProperties.publicationArchiveTokenTtl
+//        )
+//    }
+//
+//    fun parseDownloadPublicationArchiveToken(token: String): Claims {
+//        return jwtService.parse(token)
+//    }
 }

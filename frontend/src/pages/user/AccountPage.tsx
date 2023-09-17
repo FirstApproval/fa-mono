@@ -41,8 +41,12 @@ import { getInitials } from 'src/util/userUtil';
 import _, { cloneDeep } from 'lodash';
 import { Footer } from '../home/Footer';
 import { HeaderComponent } from '../../components/HeaderComponent';
+import {
+  ActionButtonType,
+  WorkplacesEditor
+} from '../../components/WorkplacesEditor';
 
-const tabs: string[] = ['general', 'profile', 'password'];
+const tabs: string[] = ['general', 'profile', 'affiliations', 'password'];
 
 export const AccountPage: FunctionComponent = observer(() => {
   const [saveDisabled, setSaveDisabled] = useState(() => true);
@@ -70,10 +74,10 @@ export const AccountPage: FunctionComponent = observer(() => {
     _: React.SyntheticEvent,
     newValue: number
   ): void => {
-    setTabNumber(newValue);
     userStore.editableUser = cloneDeep(userStore.user);
     setPreviousPassword('');
     setNewPassword('');
+    setTabNumber(newValue);
   };
 
   const validatePassword = (): boolean => {
@@ -165,10 +169,10 @@ export const AccountPage: FunctionComponent = observer(() => {
           firstName: editableUser.firstName,
           lastName: editableUser.lastName,
           username,
-          selfInfo: editableUser.selfInfo,
           middleName: editableUser.middleName,
           profileImage: editableUser.profileImage,
-          deleteProfileImage: userStore.deleteProfileImage
+          deleteProfileImage: userStore.deleteProfileImage,
+          workplaces: user.workplaces ?? []
         })
         .then(() => {
           setSaveDisabled(true);
@@ -396,19 +400,6 @@ export const AccountPage: FunctionComponent = observer(() => {
                       !isValidLastName ? 'Invalid last name' : undefined
                     }
                   />
-                  <NameElement>Self info</NameElement>
-                  <FullWidthTextField
-                    multiline
-                    minRows={6}
-                    maxRows={6}
-                    value={editableUser.selfInfo}
-                    onChange={(e) => {
-                      editableUser.selfInfo = e.currentTarget.value;
-                      setSaveDisabled(false);
-                    }}
-                    label="Self info"
-                    variant="outlined"
-                  />
                   <HeightElement value={'115px'} />
                   <SaveButton
                     color={'primary'}
@@ -422,6 +413,19 @@ export const AccountPage: FunctionComponent = observer(() => {
                 </TabContainer>
               )}
               {tabNumber === 2 && (
+                <TabContainer>
+                  <HeightElement value={'32px'}></HeightElement>
+                  <WorkplacesEditor
+                    store={userStore}
+                    buttonType={ActionButtonType.FULL_WIDTH_CONFIRM}
+                    saveButtonText={'Save affiliations'}
+                    saveCallback={async (workplaces): Promise<void> =>
+                      userStore.saveWorkplaces(workplaces)
+                    }
+                  />
+                </TabContainer>
+              )}
+              {tabNumber === 3 && (
                 <TabContainer>
                   {editableUser.canChangePassword && (
                     <>

@@ -1,11 +1,11 @@
 import { Button, Dialog, FormControlLabel, Radio } from '@mui/material';
 import React, { ReactElement } from 'react';
 import {
+  FlexWrapRow,
   HeightElement,
   SpaceBetween,
   WidthElement
 } from '../pages/common.styled';
-import { FlexWrapRow } from '../pages/home/CallToAction';
 import { PublicationStore } from '../pages/publication/store/PublicationStore';
 import { LicenseType } from '../apis/first-approval-api';
 import Launch from '@mui/icons-material/Launch';
@@ -130,9 +130,7 @@ export const ContentLicensingDialog = (props: {
             color="primary"
             variant={'contained'}
             onClick={() => {
-              debugger;
               publicationStore.editLicenseType();
-              debugger;
               onClose();
             }}>
             {'Save'}
