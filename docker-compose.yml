@@ -33,14 +33,15 @@ services:
     environment:
       - xpack.security.enabled=false
       - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xmx128m -Xms128m
+      - ES_JAVA_OPTS=-Xmx512m -Xms512m
       - network.host=0.0.0.0
     volumes:
-      - esdata:/usr/share/elasticsearch/data
+      - ./volumes/elastic/publications:/usr/share/elasticsearch/data
     ports:
       - "9200:9200"
-      - "9300:9300"
 
-volumes:
-  esdata:
-    driver: local
+  elasticsearch-init:
+    image: ghcr.io/firstapproval/fa-elastic-init
+    depends_on:
+      - elasticsearch
+

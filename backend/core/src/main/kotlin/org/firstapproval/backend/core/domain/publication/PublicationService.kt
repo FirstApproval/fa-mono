@@ -381,9 +381,6 @@ fun Publication.toApiObject(userService: UserService) = PublicationApiObject().a
 fun Publication.toPublicationElastic() =
     PublicationElastic(
         id = id,
-        creatorId = creator.id,
-        status = status,
-        accessType = accessType,
         title = title,
         description = description,
         grantOrganizations = grantOrganizations,
@@ -399,9 +396,6 @@ fun Publication.toPublicationElastic() =
         creationTime = creationTime,
         publicationTime = publicationTime,
         negativeData = negativeData,
-        isNegative = isNegative,
-        archiveSampleSize = archiveSampleSize,
-        archiveSize = archiveSize
     )
 
 fun ConfirmedAuthor.toApiObject(profileImage: ByteArray?) = ConfirmedAuthorApiObject().also {
