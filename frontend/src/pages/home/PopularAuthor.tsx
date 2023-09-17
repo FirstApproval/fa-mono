@@ -29,16 +29,14 @@ export const PopularAuthor = (props: { author: UserInfo }): ReactElement => {
           {getInitials(author.firstName, author.lastName)}
         </Avatar>
       </MarginWrap>
-      <div>
-        <NameWrap>
-          {author.firstName} {author.lastName}
-        </NameWrap>
-        <Tooltip
-          disableHoverListener={author.selfInfo?.length < MAX_SELF_BIO_LENGTH}
-          title={author.selfInfo}>
-          <BioWrap>{author.selfInfo}</BioWrap>
-        </Tooltip>
-      </div>
+      <NameWrap>
+        {author.firstName} {author.lastName}
+      </NameWrap>
+      <Tooltip
+        disableHoverListener={author.selfInfo?.length < MAX_SELF_BIO_LENGTH}
+        title={author.selfInfo}>
+        <BioWrap>{author.selfInfo}</BioWrap>
+      </Tooltip>
     </FlexWrap>
   );
 };
@@ -59,6 +57,10 @@ const NameWrap = styled.div`
   font-weight: 500;
   line-height: 160%; /* 32px */
   letter-spacing: 0.15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 260px;
 `;
 
 const BioWrap = styled.div`

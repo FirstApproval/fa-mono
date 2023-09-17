@@ -156,6 +156,10 @@ const AuthorName = styled.div`
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 260px;
 `;
 
 const AuthorShortBio = styled.div`
