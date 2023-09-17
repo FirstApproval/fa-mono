@@ -5,25 +5,25 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import org.firstapproval.api.server.model.UserUpdateRequest
 import org.firstapproval.backend.core.config.Properties.FrontendProperties
 import org.firstapproval.backend.core.domain.auth.OauthUser
-import org.firstapproval.backend.core.external.s3.FileStorageService
-import org.firstapproval.backend.core.external.s3.PROFILE_IMAGES
 import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.domain.organizations.OrganizationService
 import org.firstapproval.backend.core.domain.organizations.Workplace
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthorRepository
 import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthorRepository
-import org.firstapproval.backend.core.domain.user.registration.EmailRegistrationConfirmation
-import org.firstapproval.backend.core.domain.user.registration.EmailRegistrationConfirmationRepository
 import org.firstapproval.backend.core.domain.user.email.EmailChangeConfirmationRepository
 import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimit
 import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimitRepository
 import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmation
 import org.firstapproval.backend.core.domain.user.password.PasswordResetConfirmationRepository
-import org.firstapproval.backend.core.web.errors.RecordConflictException
+import org.firstapproval.backend.core.domain.user.registration.EmailRegistrationConfirmation
+import org.firstapproval.backend.core.domain.user.registration.EmailRegistrationConfirmationRepository
+import org.firstapproval.backend.core.external.s3.FileStorageService
+import org.firstapproval.backend.core.external.s3.PROFILE_IMAGES
 import org.firstapproval.backend.core.utils.EMAIL_CONFIRMATION_CODE_LENGTH
 import org.firstapproval.backend.core.utils.generateCode
 import org.firstapproval.backend.core.utils.require
+import org.firstapproval.backend.core.web.errors.RecordConflictException
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.access.AccessDeniedException
@@ -356,6 +356,26 @@ class UserService(
     @Transactional
     fun migratePublicationOfUnconfirmedUser(user: User) {
         val unconfirmedUsers = unconfirmedAuthorRepository.findByEmail(user.email)
+        val workplaces = unconfirmedUsers.flatMap { it.workplaces }.distinctBy {
+            it.organization.id
+        }
+        val formerWorkplaces = workplaces.filter { it.isFormer }.toMutableList()
+        val currentWorkplace = workplaces.find { !it.isFormer }
+        (formerWorkplaces + listOf(currentWorkplace))
+            .filterNotNull()
+            .map {
+                Workplace(
+                    id = randomUUID(),
+                    organization = it.organization,
+                    organizationDepartment = it.organizationDepartment,
+                    address = it.address,
+                    postalCode = it.postalCode,
+                    isFormer = it.isFormer,
+                    creationTime = now(),
+                    editingTime = now(),
+                    user = user
+                )
+            }.let { user.workplaces.addAll(it) }
         val confirmedAuthors = unconfirmedUsers.map { ConfirmedAuthor(randomUUID(), user, it.publication) }
         confirmedAuthorRepository.saveAll(confirmedAuthors)
         unconfirmedAuthorRepository.deleteAll(unconfirmedUsers)
