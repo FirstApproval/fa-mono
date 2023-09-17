@@ -19,19 +19,7 @@ export class AuthorEditorStore implements IWorkplaceStore {
 
   constructor() {
     makeAutoObservable(this);
-    if (!this.workplaces || this.workplaces.length === 0) {
-      this.workplaces.push({ isFormer: false });
-    }
-    this.workplacesProps = [];
-    this.workplaces?.forEach((w, index) => {
-      this.workplacesProps.push({
-        orgQuery: w.organization?.name ?? '',
-        departmentQuery: w.department?.name ?? '',
-        departmentQueryKey: '',
-        organizationOptions: [],
-        departmentOptions: w.organization?.departments ?? []
-      });
-    });
+    this.clean();
   }
 
   async searchAuthors(query: string): Promise<UserInfo[]> {
@@ -48,5 +36,15 @@ export class AuthorEditorStore implements IWorkplaceStore {
     this.shortBio = '';
     this.profileImage = '';
     this.index = undefined;
+    this.workplaces = [{ isFormer: false }];
+    this.workplacesProps = [
+      {
+        orgQuery: '',
+        departmentQuery: '',
+        departmentQueryKey: '',
+        organizationOptions: [],
+        departmentOptions: []
+      }
+    ];
   }
 }
