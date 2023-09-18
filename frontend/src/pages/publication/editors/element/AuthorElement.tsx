@@ -113,9 +113,9 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
             )}
           </AuthorName>
           <AuthorWorkplace>
-            {setEditAuthorVisible
-              ? workplaces.find((w) => !w.isFormer)?.organization?.name
-              : email}
+            {(setEditAuthorVisible &&
+              workplaces.find((w) => !w.isFormer)?.organization?.name) ??
+              ''}
           </AuthorWorkplace>
         </AuthorWrap>
       </AuthorElementWrap>
