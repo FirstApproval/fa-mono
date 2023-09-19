@@ -7,11 +7,16 @@ export function getInitials(firstName?: string, lastName?: string): string {
   return `${firstNameInitial}${lastNameInitial}`;
 }
 
-export function getCurrentWorkplaceString(workplaces: Workplace[]): string {
-  const workplace = workplaces?.find((workplace) => !workplace.isFormer);
+export function getCurrentWorkplacesString(workplaces: Workplace[]): string {
   return (
-    `${workplace?.organization?.name ?? ''} ${
-      workplace?.department?.name ?? ''
-    }`.trim() ?? ''
+    workplaces
+      ?.filter((workplace) => !workplace.isFormer)
+      .map(
+        (workplace) =>
+          `${workplace.department?.name ?? ''} ${
+            workplace.organization?.name ?? ''
+          }  ${workplace.address ?? ''}`.trim() ?? ''
+      )
+      .join(', ') ?? ''
   );
 }

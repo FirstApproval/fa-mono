@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import React, { type ReactElement } from 'react';
 import { type UserInfo } from '../../apis/first-approval-api';
 import { Avatar, Tooltip } from '@mui/material';
-import { getCurrentWorkplaceString, getInitials } from '../../util/userUtil';
+import { getCurrentWorkplacesString, getInitials } from '../../util/userUtil';
 import {
   getRelativeProfileLink,
   renderProfileImage
@@ -35,11 +35,11 @@ export const PopularAuthor = (props: { author: UserInfo }): ReactElement => {
         </NameWrap>
         <Tooltip
           disableHoverListener={
-            getCurrentWorkplaceString(author.workplaces)?.length <
+            getCurrentWorkplacesString(author.workplaces)?.length <
             MAX_SELF_BIO_LENGTH
           }
-          title={getCurrentWorkplaceString(author.workplaces)}>
-          <BioWrap>{getCurrentWorkplaceString(author.workplaces)}</BioWrap>
+          title={getCurrentWorkplacesString(author.workplaces)}>
+          <BioWrap>{getCurrentWorkplacesString(author.workplaces)}</BioWrap>
         </Tooltip>
       </div>
     </FlexWrap>

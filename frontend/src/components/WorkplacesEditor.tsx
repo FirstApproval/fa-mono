@@ -265,18 +265,20 @@ export const WorkplacesEditor = observer(
               variant="outlined"
             />
           </FlexWrapRowFullWidth>
-          <FormerWorkplace
-            labelPlacement={'start'}
-            control={
-              <Switch
-                checked={workplace.isFormer}
-                onChange={(event) => {
-                  workplaces[index].isFormer = event.currentTarget.checked;
-                }}
-              />
-            }
-            label="Former workplace"
-          />
+          {!isModalWindow && (
+            <FormerWorkplace
+              labelPlacement={'start'}
+              control={
+                <Switch
+                  checked={workplace.isFormer}
+                  onChange={(event) => {
+                    workplaces[index].isFormer = event.currentTarget.checked;
+                  }}
+                />
+              }
+              label="Former workplace"
+            />
+          )}
         </FullWidth>
       );
     };
@@ -339,7 +341,7 @@ export const WorkplacesEditor = observer(
               organizationOptions: [],
               departmentOptions: []
             };
-            workplaces.push({ isFormer: workplaces.length > 0 });
+            workplaces.push({ isFormer: false });
           }}>
           + Add workplace
         </Button>

@@ -42,6 +42,7 @@ import { Page } from '../../core/RouterStore';
 import { Footer } from '../home/Footer';
 import { HeaderComponent } from '../../components/HeaderComponent';
 import { DownloadersDialog } from '../publication/DownloadersDialog';
+import { getCurrentWorkplacesString } from '../../util/userUtil';
 
 const tabs: string[] = ['published', 'drafts'];
 
@@ -122,14 +123,7 @@ export const ProfilePage: FunctionComponent = observer(() => {
                   <NameElement>{lastNameAndFirstName}</NameElement>
                   <WorkPlaces
                     style={{ marginTop: '10px', marginBottom: '10px' }}>
-                    {user.workplaces
-                      ?.filter((workplace) => !workplace.isFormer)
-                      .map(
-                        (workplace) =>
-                          `${workplace.organization?.name ?? ''} ${
-                            workplace.department?.name ?? ''
-                          }`.trim() ?? ''
-                      )}
+                    {getCurrentWorkplacesString(user.workplaces)}
                   </WorkPlaces>
                   <EmailElement>
                     <EmailOutlined

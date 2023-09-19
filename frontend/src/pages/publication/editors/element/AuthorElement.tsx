@@ -8,7 +8,10 @@ import {
   UserInfo,
   Workplace
 } from '../../../../apis/first-approval-api';
-import { getInitials } from '../../../../util/userUtil';
+import {
+  getCurrentWorkplacesString,
+  getInitials
+} from '../../../../util/userUtil';
 import {
   getRelativeProfileLink,
   renderProfileImage
@@ -42,7 +45,6 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
   let workplaces: Workplace[];
   let firstName;
   let lastName;
-  let email;
   let username: string;
   let profileImage: string | undefined;
 
@@ -53,7 +55,6 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
       const authorUser = confirmedAuthor.user;
       firstName = authorUser.firstName;
       lastName = authorUser.lastName;
-      email = authorUser.email;
       username = authorUser.username;
       profileImage = authorUser.profileImage;
       workplaces = authorUser.workplaces ?? [];
@@ -61,7 +62,6 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
       const authorEditorStore = author as AuthorEditorStore;
       firstName = authorEditorStore.firstName;
       lastName = authorEditorStore.lastName;
-      email = authorEditorStore.email;
       profileImage = authorEditorStore.profileImage;
       workplaces = authorEditorStore.workplaces;
     }
@@ -69,13 +69,11 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
     const unconfirmedAuthor = author as UnconfirmedAuthor;
     firstName = unconfirmedAuthor.firstName;
     lastName = unconfirmedAuthor.lastName;
-    email = unconfirmedAuthor.email;
     workplaces = unconfirmedAuthor.workplaces ?? [];
   } else {
     const userInfo = author as UserInfo;
     firstName = userInfo.firstName;
     lastName = userInfo.lastName;
-    email = userInfo.email;
     username = userInfo.username;
     profileImage = userInfo.profileImage;
     workplaces = userInfo.workplaces ?? [];
@@ -113,9 +111,7 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
             )}
           </AuthorName>
           <AuthorWorkplace>
-            {(setEditAuthorVisible &&
-              workplaces.find((w) => !w.isFormer)?.organization?.name) ??
-              ''}
+            {setEditAuthorVisible && getCurrentWorkplacesString(workplaces)}
           </AuthorWorkplace>
         </AuthorWrap>
       </AuthorElementWrap>

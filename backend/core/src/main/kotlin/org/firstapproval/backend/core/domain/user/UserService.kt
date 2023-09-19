@@ -356,26 +356,21 @@ class UserService(
     @Transactional
     fun migratePublicationOfUnconfirmedUser(user: User) {
         val unconfirmedUsers = unconfirmedAuthorRepository.findByEmail(user.email)
-        val workplaces = unconfirmedUsers.flatMap { it.workplaces }.distinctBy {
-            it.organization.id
-        }
-        val formerWorkplaces = workplaces.filter { it.isFormer }.toMutableList()
-        val currentWorkplace = workplaces.find { !it.isFormer }
-        (formerWorkplaces + listOf(currentWorkplace))
-            .filterNotNull()
+        unconfirmedUsers.flatMap { it.workplaces }
+            .distinctBy { it.organization.id }
             .map {
-                Workplace(
-                    id = randomUUID(),
-                    organization = it.organization,
-                    organizationDepartment = it.organizationDepartment,
-                    address = it.address,
-                    postalCode = it.postalCode,
-                    isFormer = it.isFormer,
-                    creationTime = now(),
-                    editingTime = now(),
-                    user = user
-                )
-            }.let { user.workplaces.addAll(it) }
+            Workplace(
+                id = randomUUID(),
+                organization = it.organization,
+                organizationDepartment = it.organizationDepartment,
+                address = it.address,
+                postalCode = it.postalCode,
+                isFormer = it.isFormer,
+                creationTime = now(),
+                editingTime = now(),
+                user = user
+            )
+        }.let { user.workplaces.addAll(it) }
         val confirmedAuthors = unconfirmedUsers.map { ConfirmedAuthor(randomUUID(), user, it.publication) }
         confirmedAuthorRepository.saveAll(confirmedAuthors)
         unconfirmedAuthorRepository.deleteAll(unconfirmedUsers)
