@@ -32,9 +32,3 @@ export const getShortAuthorLink = (username = ''): string => {
 export const getAuthorLink = (username = ''): string => {
   return '/author/' + username;
 };
-
-export const renderProfileImage = (profileImage: string | undefined): string =>
-  profileImage
-    ? 'data:image/png;base64,' +
-      profileImage.substring(profileImage.indexOf(',') + 1)
-    : '';

@@ -3,10 +3,9 @@ import React, { type ReactElement } from 'react';
 import { type Publication } from '../../apis/first-approval-api';
 import { Avatar, Link, Tooltip } from '@mui/material';
 import { Download, RemoveRedEyeOutlined } from '@mui/icons-material';
-import { getInitials } from '../../util/userUtil';
+import { getInitials, renderProfileImage } from '../../util/userUtil';
 import { routerStore } from '../../core/router';
 import { Page } from '../../core/router/constants';
-import { renderProfileImage } from 'src/core/router/utils';
 
 export const RecommendedPublication = (props: {
   publication: Publication;

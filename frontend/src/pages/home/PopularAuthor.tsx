@@ -2,10 +2,14 @@ import styled from '@emotion/styled';
 import React, { type ReactElement } from 'react';
 import { type UserInfo } from '../../apis/first-approval-api';
 import { Avatar, Tooltip } from '@mui/material';
-import { getCurrentWorkplacesString, getInitials } from '../../util/userUtil';
+import {
+  getCurrentWorkplacesString,
+  getInitials,
+  renderProfileImage
+} from '../../util/userUtil';
 import { routerStore } from '../../core/router';
 import { Page } from '../../core/router/constants';
-import { getAuthorLink, renderProfileImage } from '../../core/router/utils';
+import { getAuthorLink } from '../../core/router/utils';
 
 const MAX_SELF_BIO_LENGTH = 116;
 

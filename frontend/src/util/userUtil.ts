@@ -20,3 +20,9 @@ export function getCurrentWorkplacesString(workplaces: Workplace[]): string {
       .join(', ') ?? ''
   );
 }
+
+export const renderProfileImage = (profileImage: string | undefined): string =>
+  profileImage
+    ? 'data:image/png;base64,' +
+      profileImage.substring(profileImage.indexOf(',') + 1)
+    : '';

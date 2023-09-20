@@ -32,7 +32,7 @@ import { userService } from '../../core/service';
 import { copyTextToClipboard } from '../../fire-browser/utils';
 import { validateEmail } from 'src/util/emailUtil';
 import { userStore } from '../../core/user';
-import { getInitials } from 'src/util/userUtil';
+import { getInitials, renderProfileImage } from 'src/util/userUtil';
 import _, { cloneDeep } from 'lodash';
 import { Footer } from '../home/Footer';
 import { HeaderComponent } from '../../components/HeaderComponent';
@@ -40,11 +40,7 @@ import {
   ActionButtonType,
   WorkplacesEditor
 } from '../../components/WorkplacesEditor';
-import {
-  accountTab,
-  getShortAuthorLink,
-  renderProfileImage
-} from '../../core/router/utils';
+import { accountTab, getShortAuthorLink } from '../../core/router/utils';
 
 const tabs: string[] = ['general', 'profile', 'affiliations', 'password'];
 

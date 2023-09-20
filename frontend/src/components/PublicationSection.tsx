@@ -14,7 +14,8 @@ import { getTimeElapsedString } from '../util/dateUtil';
 import MenuItem from '@mui/material/MenuItem';
 import { ConfirmationDialog } from './ConfirmationDialog';
 import { ProfilePageStore } from '../pages/user/ProfilePageStore';
-import { renderProfileImage } from 'src/core/router/utils';
+
+import { renderProfileImage } from '../util/userUtil';
 
 export const PublicationSection = (props: {
   publication: Publication;

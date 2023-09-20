@@ -85,20 +85,20 @@ export class RouterStore {
         );
         return;
       }
-      if (path.startsWith('/account')) {
-        this.navigatePage(Page.ACCOUNT, path, true);
-        return;
-      }
-      if (path.startsWith('/profile')) {
-        this.navigatePage(Page.PROFILE, path, true);
-        return;
-      }
       if (path.startsWith('/author')) {
         this.navigatePage(Page.PROFILE, path, true);
         return;
       }
       if (path.startsWith('/a/')) {
         this.navigatePage(Page.PROFILE, path.replace('/a/', '/author/'), true);
+        return;
+      }
+      if (path.startsWith('/account')) {
+        this.navigatePage(Page.ACCOUNT, path, true);
+        return;
+      }
+      if (path.startsWith('/profile')) {
+        this.navigatePage(Page.PROFILE, path, true);
         return;
       }
 

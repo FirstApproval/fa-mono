@@ -10,16 +10,14 @@ import {
 } from '../../../../apis/first-approval-api';
 import {
   getCurrentWorkplacesString,
-  getInitials
+  getInitials,
+  renderProfileImage
 } from '../../../../util/userUtil';
 import { type AuthorEditorStore } from '../../store/AuthorEditorStore';
 import { routerStore } from '../../../../core/router';
 
 import { Page } from '../../../../core/router/constants';
-import {
-  getAuthorLink,
-  renderProfileImage
-} from '../../../../core/router/utils';
+import { getAuthorLink } from '../../../../core/router/utils';
 
 interface AuthorElementProps {
   isReadonly: boolean;

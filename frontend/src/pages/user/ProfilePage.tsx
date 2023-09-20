@@ -37,12 +37,14 @@ import { downloadersStore } from '../publication/store/downloadsStore';
 import { Footer } from '../home/Footer';
 import { HeaderComponent } from '../../components/HeaderComponent';
 import { DownloadersDialog } from '../publication/DownloadersDialog';
-import { getCurrentWorkplacesString } from '../../util/userUtil';
+import {
+  getCurrentWorkplacesString,
+  renderProfileImage
+} from '../../util/userUtil';
 import { Page } from '../../core/router/constants';
 import {
   profileUsername,
   profileTab,
-  renderProfileImage,
   getShortAuthorLink
 } from 'src/core/router/utils';
 
