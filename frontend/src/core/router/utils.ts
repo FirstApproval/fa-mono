@@ -1,10 +1,5 @@
 import { routerStore } from '../router';
-import {
-  accountPath,
-  authorPath,
-  profilePath,
-  shortAuthorPath
-} from './constants';
+import { accountPath, authorPath, profilePath } from './constants';
 
 export function profileUsername(): string | null {
   return routerStore.path.includes(authorPath)
