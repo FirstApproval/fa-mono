@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { type AuthorEditorStore } from './AuthorEditorStore';
 import { routerStore } from '../../../core/router';
 import { authStore } from '../../../core/auth';
-import { Page } from '../../../core/router/constants';
+import { Page, shortPublicationPath } from '../../../core/router/constants';
 
 const EDIT_THROTTLE_MS = 1000;
 
@@ -576,7 +576,8 @@ export class PublicationStore {
   }
 
   copyPublicationLinkToClipboard = async (): Promise<void> => {
-    const text = window.location.host + '/p/' + this.publicationId;
+    const text =
+      window.location.host + shortPublicationPath + this.publicationId;
     if ('clipboard' in navigator) {
       await navigator.clipboard.writeText(text);
     } else {

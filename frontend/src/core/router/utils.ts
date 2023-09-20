@@ -1,5 +1,10 @@
 import { routerStore } from '../router';
-import { accountPath, authorPath, profilePath } from './constants';
+import {
+  accountPath,
+  authorPath,
+  profilePath,
+  shortAuthorPath
+} from './constants';
 
 export function profileUsername(): string | null {
   return routerStore.path.includes(authorPath)
@@ -26,9 +31,9 @@ export function profileTab(): string | null {
 }
 
 export const getShortAuthorLink = (username = ''): string => {
-  return window.location.host + '/a/' + username;
+  return window.location.host + shortAuthorPath + username;
 };
 
 export const getAuthorLink = (username = ''): string => {
-  return '/author/' + username;
+  return authorPath + username;
 };

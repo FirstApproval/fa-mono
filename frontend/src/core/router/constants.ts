@@ -29,7 +29,8 @@ export const pathToOauthType: Record<string, OauthType> = {
   '/linkedin-callback': OauthType.LINKEDIN,
   '/orcid-callback': OauthType.ORCID
 };
-
+export const shortPublicationPath = '/p/';
+export const publicationPath = '/publication/';
 export const shortAuthorPath = '/a/';
 export const authorPath = '/author/';
 export const profilePath = '/profile/';

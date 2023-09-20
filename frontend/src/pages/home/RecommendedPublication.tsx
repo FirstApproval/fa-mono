@@ -5,7 +5,7 @@ import { Avatar, Link, Tooltip } from '@mui/material';
 import { Download, RemoveRedEyeOutlined } from '@mui/icons-material';
 import { getInitials, renderProfileImage } from '../../util/userUtil';
 import { routerStore } from '../../core/router';
-import { Page } from '../../core/router/constants';
+import { authorPath, Page, publicationPath } from '../../core/router/constants';
 
 export const RecommendedPublication = (props: {
   publication: Publication;
@@ -50,8 +50,10 @@ const RecommendedPublicationContent = (props: {
     <Wrap>
       <AuthorFlexWrap
         onClick={() => {
-          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-          routerStore.navigatePage(Page.PROFILE, `/author/${creator.username}`);
+          routerStore.navigatePage(
+            Page.PROFILE,
+            `${authorPath}${creator.username}`
+          );
         }}>
         <AvatarWrap>
           <Avatar
@@ -65,7 +67,7 @@ const RecommendedPublicationContent = (props: {
         </div>
       </AuthorFlexWrap>
       <NameWrap
-        href={`/publication/${publication.id}`}
+        href={`${publicationPath}${publication.id}`}
         underline={'none'}
         color={'#040036'}>
         {title?.slice(0, 120)}

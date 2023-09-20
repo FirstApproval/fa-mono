@@ -3,7 +3,15 @@ import { action, computed, makeObservable, observable, reaction } from 'mobx';
 import { createBrowserHistory } from 'history';
 import { authService } from '../service';
 import { v4 as uuidv4 } from 'uuid';
-import { ACCOUNT_AFFILIATIONS_PATH, Page, pathToOauthType } from './constants';
+import {
+  ACCOUNT_AFFILIATIONS_PATH,
+  authorPath,
+  Page,
+  pathToOauthType,
+  publicationPath,
+  shortAuthorPath,
+  shortPublicationPath
+} from './constants';
 
 const history = createBrowserHistory();
 
@@ -73,24 +81,28 @@ export class RouterStore {
         return;
       }
 
-      if (path.startsWith('/publication')) {
+      if (path.startsWith(publicationPath)) {
         this.navigatePage(Page.PUBLICATION, path, true);
         return;
       }
-      if (path.startsWith('/p/')) {
+      if (path.startsWith(shortPublicationPath)) {
         this.navigatePage(
           Page.PUBLICATION,
-          path.replace('/p/', '/publication/'),
+          path.replace(shortPublicationPath, publicationPath),
           true
         );
         return;
       }
-      if (path.startsWith('/author')) {
+      if (path.startsWith(authorPath)) {
         this.navigatePage(Page.PROFILE, path, true);
         return;
       }
-      if (path.startsWith('/a/')) {
-        this.navigatePage(Page.PROFILE, path.replace('/a/', '/author/'), true);
+      if (path.startsWith(shortAuthorPath)) {
+        this.navigatePage(
+          Page.PROFILE,
+          path.replace(authorPath, shortAuthorPath),
+          true
+        );
         return;
       }
       if (path.startsWith('/account')) {

@@ -6,7 +6,11 @@ import { routerStore } from './router';
 import { IWorkplaceStore, WorkplaceProps } from './WorkplaceProps';
 import { userStore } from './user';
 import { cloneDeep } from 'lodash';
-import { ACCOUNT_AFFILIATIONS_PATH, Page } from './router/constants';
+import {
+  ACCOUNT_AFFILIATIONS_PATH,
+  Page,
+  publicationPath
+} from './router/constants';
 
 export class UserStore implements IWorkplaceStore {
   user: GetMeResponse | undefined = undefined;
@@ -64,7 +68,7 @@ export class UserStore implements IWorkplaceStore {
     } else {
       const response = await publicationService.createPublication();
       const pubId: string = response.data.id;
-      routerStore.navigatePage(Page.PUBLICATION, `/publication/${pubId}`);
+      routerStore.navigatePage(Page.PUBLICATION, `${publicationPath}${pubId}`);
     }
   };
 

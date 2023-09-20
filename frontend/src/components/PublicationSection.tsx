@@ -16,6 +16,7 @@ import { ConfirmationDialog } from './ConfirmationDialog';
 import { ProfilePageStore } from '../pages/user/ProfilePageStore';
 
 import { renderProfileImage } from '../util/userUtil';
+import { publicationPath } from '../core/router/constants';
 
 export const PublicationSection = (props: {
   publication: Publication;
@@ -45,7 +46,7 @@ export const PublicationSection = (props: {
   return (
     <>
       <Link
-        href={`/publication/${publication.id}`}
+        href={`${publicationPath}${publication.id}`}
         underline={'none'}
         color={'#040036'}>
         <AuthorsWrap>
