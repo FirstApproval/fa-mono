@@ -8,10 +8,10 @@ import { userStore } from '../core/user';
 import { authStore } from '../core/auth';
 import { routerStore } from '../core/router';
 import styled from '@emotion/styled';
-import { AuthorElement } from '../pages/publication/editors/element/AuthorElement';
 import { Edit, Logout, SettingsOutlined } from '@mui/icons-material';
 import { HeightElement, StyledMenuItem } from '../pages/common.styled';
 import { Page } from '../core/router/constants';
+import { UserElement } from './UserElement';
 
 export const UserMenu = observer((): ReactElement => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -72,11 +72,7 @@ export const UserMenu = observer((): ReactElement => {
             routerStore.navigatePage(Page.PROFILE, '/profile');
             handleClose();
           }}>
-          <AuthorElement
-            author={{ user }}
-            isReadonly={true}
-            isConfirmed={true}
-          />
+          <UserElement author={user} />
         </StyledMenuItem>
         <HeightElement value={'12px'} />
         <StyledMenuItem

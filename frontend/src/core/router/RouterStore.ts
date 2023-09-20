@@ -100,7 +100,7 @@ export class RouterStore {
       if (path.startsWith(shortAuthorPath)) {
         this.navigatePage(
           Page.PROFILE,
-          path.replace(authorPath, shortAuthorPath),
+          path.replace(shortAuthorPath, authorPath),
           true
         );
         return;
