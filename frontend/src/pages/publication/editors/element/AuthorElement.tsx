@@ -12,13 +12,14 @@ import {
   getCurrentWorkplacesString,
   getInitials
 } from '../../../../util/userUtil';
-import {
-  getRelativeProfileLink,
-  renderProfileImage
-} from '../../../../fire-browser/utils';
 import { type AuthorEditorStore } from '../../store/AuthorEditorStore';
 import { routerStore } from '../../../../core/router';
-import { Page } from '../../../../core/RouterStore';
+
+import { Page } from '../../../../core/router/constants';
+import {
+  getAuthorLink,
+  renderProfileImage
+} from '../../../../core/router/utils';
 
 interface AuthorElementProps {
   isReadonly: boolean;
@@ -85,12 +86,9 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
         onClick={() => {
           if (username) {
             if (shouldOpenInNewTab) {
-              routerStore.openInNewTab(getRelativeProfileLink(username));
+              routerStore.openInNewTab(getAuthorLink(username));
             } else {
-              routerStore.navigatePage(
-                Page.PROFILE,
-                getRelativeProfileLink(username)
-              );
+              routerStore.navigatePage(Page.PROFILE, getAuthorLink(username));
             }
           }
         }}>

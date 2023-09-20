@@ -13,8 +13,8 @@ import { type FileSystemFA } from '../../../fire-browser/FileSystemFA';
 import { v4 as uuidv4 } from 'uuid';
 import { type AuthorEditorStore } from './AuthorEditorStore';
 import { routerStore } from '../../../core/router';
-import { Page } from '../../../core/RouterStore';
 import { authStore } from '../../../core/auth';
+import { Page } from '../../../core/router/constants';
 
 const EDIT_THROTTLE_MS = 1000;
 
@@ -576,7 +576,7 @@ export class PublicationStore {
   }
 
   copyPublicationLinkToClipboard = async (): Promise<void> => {
-    const text = window.location.host + '/publication/' + this.publicationId;
+    const text = window.location.host + '/p/' + this.publicationId;
     if ('clipboard' in navigator) {
       await navigator.clipboard.writeText(text);
     } else {

@@ -3,10 +3,10 @@ import { publicationService, userService } from './service';
 import { type GetMeResponse, Workplace } from '../apis/first-approval-api';
 import { authStore } from './auth';
 import { routerStore } from './router';
-import { ACCOUNT_AFFILIATIONS_PATH, Page } from './RouterStore';
 import { IWorkplaceStore, WorkplaceProps } from './WorkplaceProps';
 import { userStore } from './user';
 import { cloneDeep } from 'lodash';
+import { ACCOUNT_AFFILIATIONS_PATH, Page } from './router/constants';
 
 export class UserStore implements IWorkplaceStore {
   user: GetMeResponse | undefined = undefined;

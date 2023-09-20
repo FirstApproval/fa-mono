@@ -3,7 +3,6 @@ import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
 import { authStore } from '../../core/auth';
 import { routerStore } from '../../core/router';
-import { Page } from '../../core/RouterStore';
 import download from './asset/download.svg';
 import downloadSample from './asset/download_sample.svg';
 import pdf from './asset/pdf.svg';
@@ -15,6 +14,7 @@ import { ArchiveDownloader } from './ArchiveDownloader';
 import { CitateDialog } from './CitateDialog';
 import { PublicationStatus } from '../../apis/first-approval-api';
 import { PublicationPageStore } from './store/PublicationPageStore';
+import { Page } from '../../core/router/constants';
 
 export const ActionBar = observer(
   (props: {

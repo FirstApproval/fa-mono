@@ -2,8 +2,8 @@ import React, { ReactElement } from 'react';
 import { observer } from 'mobx-react-lite';
 import { type PublicationStore } from './store/PublicationStore';
 import { routerStore } from '../../core/router';
-import { Page } from '../../core/RouterStore';
-import { getRelativeProfileLink } from '../../fire-browser/utils';
+import { Page } from '../../core/router/constants';
+import { getAuthorLink } from '../../core/router/utils';
 
 export const Authors = observer(
   (props: { publicationStore: PublicationStore }): ReactElement => {
@@ -28,7 +28,7 @@ export const Authors = observer(
               onClick={() => {
                 routerStore.navigatePage(
                   Page.PROFILE,
-                  getRelativeProfileLink(author.username)
+                  getAuthorLink(author.username)
                 );
               }}>
               <span

@@ -11,7 +11,6 @@ import { LoadingPage } from './pages/LoadingPage';
 import { HomePage } from './pages/home/HomePage';
 import { observer } from 'mobx-react-lite';
 import { SignUpStore } from './pages/signup/SignUpStore';
-import { Page } from './core/RouterStore';
 import { EmailVerificationPage } from './pages/signup/EmailVerificationPage';
 import { routerStore } from './core/router';
 import { SignInStore } from './pages/login/SignInStore';
@@ -30,6 +29,7 @@ import developing from '../src/assets/developing.svg';
 import { Button } from '@mui/material';
 import DesktopMacOutlinedIcon from '@mui/icons-material/DesktopMacOutlined';
 import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
+import { Page } from './core/router/constants';
 
 const MOBILE_VERSION_NOT_SUPPORT_STORAGE_KEY = 'mobileVersionNotSupportShown';
 

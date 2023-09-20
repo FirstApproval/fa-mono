@@ -5,8 +5,8 @@ import { Avatar, Link, Tooltip } from '@mui/material';
 import { Download, RemoveRedEyeOutlined } from '@mui/icons-material';
 import { getInitials } from '../../util/userUtil';
 import { routerStore } from '../../core/router';
-import { Page } from '../../core/RouterStore';
-import { renderProfileImage } from '../../fire-browser/utils';
+import { Page } from '../../core/router/constants';
+import { renderProfileImage } from 'src/core/router/utils';
 
 export const RecommendedPublication = (props: {
   publication: Publication;
@@ -52,7 +52,7 @@ const RecommendedPublicationContent = (props: {
       <AuthorFlexWrap
         onClick={() => {
           // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-          routerStore.navigatePage(Page.PROFILE, `/p/${creator.username}`);
+          routerStore.navigatePage(Page.PROFILE, `/author/${creator.username}`);
         }}>
         <AvatarWrap>
           <Avatar

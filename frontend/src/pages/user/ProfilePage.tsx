@@ -31,26 +31,27 @@ import {
   PublicationStatus
 } from '../../apis/first-approval-api';
 import { PublicationSection } from '../../components/PublicationSection';
-import {
-  copyTextToClipboard,
-  getProfileLink,
-  renderProfileImage
-} from 'src/fire-browser/utils';
+import { copyTextToClipboard } from 'src/fire-browser/utils';
 import { userStore } from 'src/core/user';
 import { downloadersStore } from '../publication/store/downloadsStore';
-import { Page } from '../../core/RouterStore';
 import { Footer } from '../home/Footer';
 import { HeaderComponent } from '../../components/HeaderComponent';
 import { DownloadersDialog } from '../publication/DownloadersDialog';
 import { getCurrentWorkplacesString } from '../../util/userUtil';
+import { Page } from '../../core/router/constants';
+import {
+  profileUsername,
+  profileTab,
+  renderProfileImage
+} from 'src/core/router/utils';
 
 const tabs: string[] = ['published', 'drafts'];
 
 export const ProfilePage: FunctionComponent = observer(() => {
-  const [username] = useState(() => routerStore.profileUsername);
-  const [profileTab] = useState(() => routerStore.profileTab);
+  const [username] = useState(() => profileUsername());
+  const [tab] = useState(() => profileTab());
   const [tabNumber, setTabNumber] = React.useState(
-    (profileTab && tabs.findIndex((element) => element === profileTab)) ?? 0
+    (tab && tabs.findIndex((element) => element === tab)) ?? 0
   );
   const [store] = useState(() => new ProfilePageStore(username));
   const user = (username ? store : userStore).user!;
@@ -103,6 +104,10 @@ export const ProfilePage: FunctionComponent = observer(() => {
     store.publications.get(PublicationStatus.PENDING) ?? []
   );
 
+  function getShortAuthorLink(username: string): string {
+    throw new Error('Function not implemented.');
+  }
+
   return (
     <>
       <Parent>
@@ -148,7 +153,7 @@ export const ProfilePage: FunctionComponent = observer(() => {
                       size={'large'}
                       onClick={() => {
                         void copyTextToClipboard(
-                          getProfileLink(user.username)
+                          getShortAuthorLink(user.username)
                         ).finally();
                       }}>
                       <ContentCopy style={{ marginRight: '8px' }} />

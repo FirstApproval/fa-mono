@@ -2,7 +2,6 @@ import React, { type FunctionComponent } from 'react';
 import styled from '@emotion/styled';
 import { FlexBodyCenter, Header, Parent } from '../common.styled';
 import { routerStore } from '../../core/router';
-import { Page } from '../../core/RouterStore';
 import { HeaderComponent } from '../../components/HeaderComponent';
 import {
   ActionButtonType,
@@ -10,6 +9,7 @@ import {
 } from '../../components/WorkplacesEditor';
 import { userStore } from '../../core/user';
 import { observer } from 'mobx-react-lite';
+import { Page } from '../../core/router/constants';
 
 export const EnterSelfInfoPage: FunctionComponent = observer(() => {
   return (

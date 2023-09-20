@@ -7,12 +7,12 @@ import { observer } from 'mobx-react-lite';
 import { userStore } from '../core/user';
 import { authStore } from '../core/auth';
 import { routerStore } from '../core/router';
-import { Page } from '../core/RouterStore';
-import { renderProfileImage } from '../fire-browser/utils';
 import styled from '@emotion/styled';
 import { AuthorElement } from '../pages/publication/editors/element/AuthorElement';
 import { Edit, Logout, SettingsOutlined } from '@mui/icons-material';
 import { HeightElement, StyledMenuItem } from '../pages/common.styled';
+import { Page } from '../core/router/constants';
+import { renderProfileImage } from '../core/router/utils';
 
 export const UserMenu = observer((): ReactElement => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);

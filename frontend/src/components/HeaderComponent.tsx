@@ -2,13 +2,13 @@ import React, { type ReactElement } from 'react';
 import styled from '@emotion/styled';
 import { Button, Stack } from '@mui/material';
 import { routerStore } from '../core/router';
-import { Page } from '../core/RouterStore';
 import { FlexHeader, FlexHeaderRight, Logo } from '../pages/common.styled';
 import logo from '../assets/logo-black.svg';
 import { BetaDialogWithButton } from './BetaDialogWithButton';
 import { authStore } from '../core/auth';
 import { userStore } from '../core/user';
 import { UserMenu } from './UserMenu';
+import { Page } from '../core/router/constants';
 
 interface HeaderComponentProps {
   showAboutUsButton?: boolean;

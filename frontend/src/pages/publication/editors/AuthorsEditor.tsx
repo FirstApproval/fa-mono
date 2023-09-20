@@ -26,12 +26,12 @@ import DialogActions from '@mui/material/DialogActions';
 import styled from '@emotion/styled';
 import { ContentEditorWrap, LabelWrap } from './styled';
 import { getInitials } from '../../../util/userUtil';
-import { renderProfileImage } from '../../../fire-browser/utils';
 import { type EditorProps } from './types';
 import { validateEmail } from '../../../util/emailUtil';
 import { WorkplacesEditor } from '../../../components/WorkplacesEditor';
 import { FlexWrapColumn, FlexWrapRow, WidthElement } from '../../common.styled';
 import { LoadingButton } from '@mui/lab';
+import { renderProfileImage } from 'src/core/router/utils';
 
 export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
   const [savingInProgress, setSavingInProgress] = useState(false);

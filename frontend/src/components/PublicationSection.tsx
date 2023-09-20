@@ -6,7 +6,6 @@ import {
   PublicationStatus
 } from '../apis/first-approval-api';
 import { Download, RemoveRedEyeOutlined } from '@mui/icons-material';
-import { renderProfileImage } from '../fire-browser/utils';
 import { findResearchAreaIcon } from '../pages/publication/store/ResearchAreas';
 import MoreHoriz from '@mui/icons-material/MoreHoriz';
 import Menu from '@mui/material/Menu';
@@ -15,6 +14,7 @@ import { getTimeElapsedString } from '../util/dateUtil';
 import MenuItem from '@mui/material/MenuItem';
 import { ConfirmationDialog } from './ConfirmationDialog';
 import { ProfilePageStore } from '../pages/user/ProfilePageStore';
+import { renderProfileImage } from 'src/core/router/utils';
 
 export const PublicationSection = (props: {
   publication: Publication;

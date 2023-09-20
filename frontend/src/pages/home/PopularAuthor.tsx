@@ -3,12 +3,9 @@ import React, { type ReactElement } from 'react';
 import { type UserInfo } from '../../apis/first-approval-api';
 import { Avatar, Tooltip } from '@mui/material';
 import { getCurrentWorkplacesString, getInitials } from '../../util/userUtil';
-import {
-  getRelativeProfileLink,
-  renderProfileImage
-} from '../../fire-browser/utils';
-import { Page } from '../../core/RouterStore';
 import { routerStore } from '../../core/router';
+import { Page } from '../../core/router/constants';
+import { getAuthorLink, renderProfileImage } from '../../core/router/utils';
 
 const MAX_SELF_BIO_LENGTH = 116;
 
@@ -17,10 +14,7 @@ export const PopularAuthor = (props: { author: UserInfo }): ReactElement => {
   return (
     <FlexWrap
       onClick={() => {
-        routerStore.navigatePage(
-          Page.PROFILE,
-          getRelativeProfileLink(author.username)
-        );
+        routerStore.navigatePage(Page.PROFILE, getAuthorLink(author.username));
       }}>
       <MarginWrap>
         <Avatar

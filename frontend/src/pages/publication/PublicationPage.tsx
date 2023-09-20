@@ -55,7 +55,6 @@ import { ResearchAreaEditor } from './editors/ResearchAreaEditor';
 import { ResearchAreaPage } from './ResearchAreaPage';
 import logo from '../../assets/logo-black.svg';
 import { UserMenu } from '../../components/UserMenu';
-import { Page } from '../../core/RouterStore';
 import { ValidationDialog } from './ValidationDialog';
 import {
   fileService,
@@ -83,6 +82,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Close } from '@mui/icons-material';
 import { FileBrowserFA } from '../../fire-browser/FileBrowserFA';
+import { Page } from '../../core/router/constants';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);

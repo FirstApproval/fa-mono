@@ -30,11 +30,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import { userService } from '../../core/service';
-import {
-  copyTextToClipboard,
-  getProfileLink,
-  renderProfileImage
-} from '../../fire-browser/utils';
+import { copyTextToClipboard } from '../../fire-browser/utils';
 import { validateEmail } from 'src/util/emailUtil';
 import { userStore } from '../../core/user';
 import { getInitials } from 'src/util/userUtil';
@@ -45,15 +41,20 @@ import {
   ActionButtonType,
   WorkplacesEditor
 } from '../../components/WorkplacesEditor';
+import {
+  accountTab,
+  getShortAuthorLink,
+  renderProfileImage
+} from '../../core/router/utils';
 
 const tabs: string[] = ['general', 'profile', 'affiliations', 'password'];
 
 export const AccountPage: FunctionComponent = observer(() => {
   const [saveDisabled, setSaveDisabled] = useState(() => true);
   const { editableUser, user } = userStore;
-  const [accountTab] = useState(() => routerStore.accountTab);
+  const [tab] = useState(() => accountTab());
   const [tabNumber, setTabNumber] = React.useState(
-    (accountTab && tabs.findIndex((element) => element === accountTab)) ?? 0
+    (tab && tabs.findIndex((element) => element === tab)) ?? 0
   );
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [previousPassword, setPreviousPassword] = useState('');
@@ -321,7 +322,7 @@ export const AccountPage: FunctionComponent = observer(() => {
                     <UsernameTip
                       onClick={() => {
                         void copyTextToClipboard(
-                          getProfileLink(editableUser.username)
+                          getShortAuthorLink(editableUser.username)
                         ).finally();
                       }}>
                       {'Your FA URL: https://firstapproval.com/profile/' +
