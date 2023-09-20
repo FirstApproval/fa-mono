@@ -251,7 +251,7 @@ class ArchiveService(
         }
     }
 
-    fun getFileNameForDescriptionsFile(publicationId: UUID): String {
+    fun getFileNameForDescriptionsFile(publicationId: String): String {
         var fileName = DESCRIPTIONS_FILE_DEFAULT_NAME
         while (publicationFileRepository.existsByPublicationIdAndFullPath(publicationId, "/$fileName.txt")) {
             fileName += "_1"

@@ -18,18 +18,18 @@ private const val FIND_IDS_QUERY = """
 interface PublicationFileRepository : JpaRepository<PublicationFile, UUID> {
 
     @Query(value = SEARCH_NESTED_FILES_QUERY, nativeQuery = true)
-    fun getNestedFiles(publicationId: UUID, path: String): MutableList<PublicationFile>
+    fun getNestedFiles(publicationId: String, path: String): MutableList<PublicationFile>
 
-    fun existsByPublicationIdAndFullPath(publicationId: UUID, fullPath: String): Boolean
+    fun existsByPublicationIdAndFullPath(publicationId: String, fullPath: String): Boolean
 
-    fun findByPublicationIdAndFullPath(publicationId: UUID, fullPath: String): PublicationFile?
+    fun findByPublicationIdAndFullPath(publicationId: String, fullPath: String): PublicationFile?
 
-    fun findAllByPublicationIdAndDirPath(publicationId: UUID, dirPath: String): List<PublicationFile>
+    fun findAllByPublicationIdAndDirPath(publicationId: String, dirPath: String): List<PublicationFile>
 
     fun findByIdIn(ids: List<UUID>): List<PublicationFile>
 
-    fun findByPublicationIdOrderByCreationTimeAsc(publicationId: UUID, pageable: Pageable): Page<PublicationFile>
+    fun findByPublicationIdOrderByCreationTimeAsc(publicationId: String, pageable: Pageable): Page<PublicationFile>
 
     @Query(value = FIND_IDS_QUERY, nativeQuery = true)
-    fun findIdsByPublicationId(publicationId: UUID): List<UUID>
+    fun findIdsByPublicationId(publicationId: String): List<UUID>
 }

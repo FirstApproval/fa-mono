@@ -499,7 +499,7 @@ paths:
           name: id
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
       responses:
@@ -520,7 +520,7 @@ paths:
         name: publicationId
         schema:
           type: string
-          format: uuid
+          maxLength: 7
         required: true
         description: Publication id
     get:
@@ -552,7 +552,7 @@ paths:
         name: publicationId
         schema:
           type: string
-          format: uuid
+          maxLength: 7
         required: true
         description: Publication id
     get:
@@ -586,7 +586,7 @@ paths:
           name: id
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
       responses:
@@ -607,7 +607,7 @@ paths:
           name: id
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
       responses:
@@ -624,7 +624,7 @@ paths:
           name: id
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
       requestBody:
@@ -649,7 +649,7 @@ paths:
           name: id
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
       responses:
@@ -672,7 +672,7 @@ paths:
           name: id
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
         - in: query
@@ -738,7 +738,7 @@ paths:
           name: id
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
         - in: query
@@ -763,7 +763,7 @@ paths:
           name: id
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
       responses:
@@ -782,7 +782,7 @@ paths:
           name: id
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
       responses:
@@ -801,7 +801,7 @@ paths:
           name: id
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
       responses:
@@ -823,7 +823,7 @@ paths:
           name: id
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
       responses:
         '200':
@@ -844,7 +844,7 @@ paths:
         name: id
         schema:
           type: string
-          format: uuid
+          maxLength: 7
         required: true
     get:
       responses:
@@ -867,7 +867,7 @@ paths:
           name: publicationId
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
       requestBody:
@@ -895,7 +895,7 @@ paths:
           name: publicationId
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
         - in: query
@@ -1029,11 +1029,11 @@ paths:
         name: publicationId
         schema:
           type: string
-          format: uuid
+          maxLength: 7
         required: true
         description: Publication id
     get:
-      summary: Get files by publication id
+      summary: Get files by Publication id
       parameters:
         - in: query
           name: dirPath
@@ -1145,7 +1145,7 @@ paths:
         name: publicationId
         schema:
           type: string
-          format: uuid
+          maxLength: 7
         required: true
         description: Publication id
     get:
@@ -1198,7 +1198,7 @@ paths:
           name: publicationId
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
       requestBody:
@@ -1226,7 +1226,7 @@ paths:
           name: publicationId
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
         - in: query
@@ -1425,7 +1425,6 @@ components:
           format: uuid
         publicationId:
           type: string
-          format: uuid
         fullPath:
           type: string
         description:
@@ -1670,7 +1669,7 @@ components:
       properties:
         id:
           type: string
-          format: uuid
+          maxLength: 7
         status:
           $ref: '#/components/schemas/PublicationStatus'
         contentStatus:
@@ -2057,7 +2056,6 @@ components:
       properties:
         id:
           type: string
-          format: uuid
         creator:
           $ref: '#/components/schemas/UserInfo'
         status:

@@ -8,7 +8,7 @@ import java.util.UUID
 interface JobRepository : JpaRepository<Job, Long> {
     fun findAllByStatusNot(status: JobStatus): List<Job>
 
-    fun findByPublicationId(publicationId: UUID): Job?
+    fun findByPublicationId(publicationId: String): Job?
 
     @Query(
         """update Job j set j.completionTime = :completionTime, j.status = 'COMPLETE'

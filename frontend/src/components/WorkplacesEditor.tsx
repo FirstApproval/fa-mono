@@ -85,7 +85,7 @@ export const WorkplacesEditor = observer(
           <DividerWrap hidden={index === 0} />
           <FlexWrapOrganization extendWidth={!isModalWindow}>
             <Autocomplete
-              key={`orgKey-${index}`}
+              key={`orgKey-${index}-${workplaceProps.departmentQueryKey}`}
               filterOptions={(options, params) => {
                 if (!options) {
                   return options;
@@ -134,7 +134,7 @@ export const WorkplacesEditor = observer(
               sx={{ width: '100%' }}
               renderInput={(params) => (
                 <TextField
-                  autoFocus={!workplaceProps.orgQuery}
+                  autoFocus={!workplaceProps.orgQuery && !isModalWindow}
                   {...params}
                   variant="outlined"
                   label={'Organization name'}

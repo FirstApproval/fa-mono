@@ -13,7 +13,7 @@ import java.util.UUID
 @Setting(settingPath = "elastic.json")
 class PublicationElastic(
     @Id
-    var id: UUID,
+    var id: String,
     @Field(type = Text, analyzer = "edge_ngram_analyzer")
     var title: String? = null,
     @Field(type = Text, analyzer = "edge_ngram_analyzer")

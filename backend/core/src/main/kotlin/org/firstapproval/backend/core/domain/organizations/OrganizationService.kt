@@ -12,7 +12,8 @@ class OrganizationService(
 ) {
     fun getOrSave(organization: OrganizationApiObject): Organization {
         return organization.id?.let { organizationRepository.getReferenceById(it) }
-            ?: organizationRepository.save(
+            ?: organizationRepository.findByName(organization.name)
+            ?: organizationRepository.saveAndFlush(
                 Organization(
                     departments = setOf(),
                     name = organization.name,

@@ -1,5 +1,6 @@
 package org.firstapproval.backend.core.domain.publication
 
+import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
 import org.firstapproval.api.server.model.DownloadLinkResponse
 import org.firstapproval.api.server.model.Paragraph
 import org.firstapproval.api.server.model.PublicationEditRequest
@@ -75,17 +76,17 @@ class PublicationService(
 ) {
     @Transactional
     fun create(user: User): Publication {
-        val publication = publicationRepository.save(Publication(id = randomUUID(), creator = user))
+        val publication = publicationRepository.save(Publication(id = generateCode(), creator = user))
         publication.confirmedAuthors =
             confirmedAuthorRepository.saveAll(mutableListOf(ConfirmedAuthor(randomUUID(), user, publication)))
         return publication
     }
 
     @Transactional(readOnly = true)
-    fun findAllByIdIn(ids: List<UUID>) = publicationRepository.findAllByIdInAndStatus(ids, PUBLISHED)
+    fun findAllByIdIn(ids: List<String>) = publicationRepository.findAllByIdInAndStatus(ids, PUBLISHED)
 
     @Transactional
-    fun edit(user: User, id: UUID, request: PublicationEditRequest) {
+    fun edit(user: User, id: String, request: PublicationEditRequest) {
         val publication = get(user, id)
         checkPublicationCreator(user, publication)
         with(request) {
@@ -182,28 +183,28 @@ class PublicationService(
     }
 
     @Transactional
-    fun getPublicationSamplesArchive(id: UUID): FileResponse {
+    fun getPublicationSamplesArchive(id: String): FileResponse {
         val publication = publicationRepository.getReferenceById(id)
         val title = if (publication.title != null) {
             publication.title
         } else {
-            id.toString()
+            publication.id.toString()
         }
         return FileResponse(
             name = title!! + ".zip",
-            s3Object = fileStorageService.get(ARCHIVED_PUBLICATION_SAMPLE_FILES, id.toString())
+            s3Object = fileStorageService.get(ARCHIVED_PUBLICATION_SAMPLE_FILES, publication.id.toString())
         )
     }
 
     @Transactional
-    fun incrementViewCount(id: UUID) {
+    fun incrementViewCount(id: String) {
         val publication = publicationRepository.getReferenceById(id)
         publication.viewsCount += 1
         publication.creator.viewsCount += 1
     }
 
     @Transactional
-    fun submitPublication(user: User, id: UUID, accessType: AccessType) {
+    fun submitPublication(user: User, id: String, accessType: AccessType) {
         val publication = publicationRepository.getReferenceById(id)
         checkPublicationCreator(user, publication)
         if (publication.status == PUBLISHED) {
@@ -220,15 +221,15 @@ class PublicationService(
     }
 
     @Transactional
-    fun getDownloadLinkForArchive(user: User, publicationId: UUID): DownloadLinkResponse {
-        val publication = publicationRepository.getReferenceById(publicationId)
+    fun getDownloadLinkForArchive(user: User, id: String): DownloadLinkResponse {
+        val publication = publicationRepository.getReferenceById(id)
         if (publication.status != PUBLISHED && publication.accessType != OPEN) {
             throw IllegalArgumentException()
         }
         val title = if (publication.title != null) {
             publication.title
         } else {
-            publicationId.toString()
+            id
         }
         publication.downloadsCount += 1
         addDownloadHistory(user, publication)
@@ -236,14 +237,14 @@ class PublicationService(
             notificationService.sendArchivePassword(user.email!!, title, publication.archivePassword!!)
         }
         val link = fileStorageService.generateTemporaryDownloadLink(
-            ARCHIVED_PUBLICATION_FILES, publicationId.toString(), title!! + "_files.zip"
+            ARCHIVED_PUBLICATION_FILES, publication.id.toString(), title!! + "_files.zip"
         )
         val passcode = publication.archivePassword
         return DownloadLinkResponse(link, passcode)
     }
 
     @Transactional
-    fun getDownloadLinkForSampleArchive(publicationId: UUID): DownloadLinkResponse {
+    fun getDownloadLinkForSampleArchive(publicationId: String): DownloadLinkResponse {
         val publication = publicationRepository.getReferenceById(publicationId)
         if (publication.status != PUBLISHED && publication.accessType != OPEN) {
             throw IllegalArgumentException()
@@ -251,12 +252,12 @@ class PublicationService(
         val title = if (publication.title != null) {
             publication.title
         } else {
-            publicationId.toString()
+            publicationId
         }
         val link =
             fileStorageService.generateTemporaryDownloadLink(
                 ARCHIVED_PUBLICATION_SAMPLE_FILES,
-                publicationId.toString(),
+                publication.id.toString(),
                 title!! + "_sample_files.zip"
             )
         val passcode = publication.archivePassword
@@ -264,7 +265,7 @@ class PublicationService(
     }
 
     @Transactional(readOnly = true)
-    fun get(user: User?, id: UUID): Publication {
+    fun get(user: User?, id: String): Publication {
         val publication = publicationRepository.getReferenceById(id)
         checkAccessToPublication(user, publication)
         return publication
@@ -314,7 +315,7 @@ class PublicationService(
             .isLastPage(publicationsPage.isLast)
     }
 
-    fun delete(id: UUID, user: User) {
+    fun delete(id: String, user: User) {
         val publicationFilesIds = mutableListOf<UUID>()
         val publicationSampleFilesIds = mutableListOf<UUID>()
         transactionTemplate.execute { _ ->
@@ -323,8 +324,8 @@ class PublicationService(
             if (publication.status != PENDING) {
                 throw AccessDeniedException("Forbidden delete published publications. Only draft publications can be deleted")
             }
-            publicationFilesIds.addAll(publicationFileRepository.findIdsByPublicationId(publication.id))
-            publicationSampleFilesIds.addAll(sampleFileRepository.findIdsByPublicationId(publication.id))
+            publicationFilesIds.addAll(publicationFileRepository.findIdsByPublicationId(id))
+            publicationSampleFilesIds.addAll(sampleFileRepository.findIdsByPublicationId(id))
             publicationFileRepository.deleteAllById(publicationFilesIds)
             sampleFileRepository.deleteAllById(publicationSampleFilesIds)
             publicationRepository.deleteById(id)
@@ -334,6 +335,15 @@ class PublicationService(
         }
         if (publicationSampleFilesIds.isNotEmpty()) {
             fileStorageService.deleteByIds(SAMPLE_FILES, publicationSampleFilesIds)
+        }
+    }
+
+    private fun generateCode(): String {
+        val id = randomAlphanumeric(7).uppercase();
+        return if (publicationRepository.existsById(id)) {
+            generateCode()
+        } else {
+            id
         }
     }
 }

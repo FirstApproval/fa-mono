@@ -11,7 +11,7 @@ import java.util.UUID
 @Table(name = "download_links")
 class DownloadLink (
     @Id
-    var publicationId: UUID,
+    var publicationId: String,
     var url: String,
     var expirationTime: ZonedDateTime,
     var creationTime: ZonedDateTime = now(),

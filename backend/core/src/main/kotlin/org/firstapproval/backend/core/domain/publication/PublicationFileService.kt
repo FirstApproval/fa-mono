@@ -22,14 +22,14 @@ class PublicationFileService(
     private val transactionalTemplate: TransactionTemplate
 ) {
 
-    fun getPublicationFiles(user: User?, publicationId: UUID, dirPath: String): List<PublicationFile> {
+    fun getPublicationFiles(user: User?, publicationId: String, dirPath: String): List<PublicationFile> {
         val publication = publicationRepository.getReferenceById(publicationId)
         checkAccessToPublication(user, publication)
         return publicationFileRepository.findAllByPublicationIdAndDirPath(publicationId, dirPath)
     }
 
     @Transactional(readOnly = true)
-    fun checkFileNameDuplicates(user: User, publicationId: UUID, fullPathList: List<String>): Map<String, Boolean> {
+    fun checkFileNameDuplicates(user: User, publicationId: String, fullPathList: List<String>): Map<String, Boolean> {
         val publication = publicationRepository.getReferenceById(publicationId)
         checkPublicationCreator(user, publication)
         return fullPathList.associateWith { publicationFileRepository.existsByPublicationIdAndFullPath(publicationId, it) }
@@ -38,7 +38,7 @@ class PublicationFileService(
     @Transactional
     fun uploadFile(
         user: User,
-        publicationId: UUID,
+        publicationId: String,
         fullPath: String,
         isDir: Boolean,
         sha256HashBase64: String?,
@@ -80,7 +80,7 @@ class PublicationFileService(
         return file.require()
     }
 
-    private fun getFileFullPath(publicationId: UUID, fullPath: String): String {
+    private fun getFileFullPath(publicationId: String, fullPath: String): String {
         if (!publicationFileRepository.existsByPublicationIdAndFullPath(publicationId, fullPath)) {
             return fullPath
         }
@@ -90,7 +90,7 @@ class PublicationFileService(
         return getFileFullPath(publicationId, fullPath.replace(fileNameWithoutExtension, "${fileNameWithoutExtension}_copy"))
     }
 
-    private fun dropDuplicate(publicationId: UUID, fullPath: String): UUID? {
+    private fun dropDuplicate(publicationId: String, fullPath: String): UUID? {
         return publicationFileRepository.findByPublicationIdAndFullPath(publicationId, fullPath)?.let {
             publicationFileRepository.delete(it)
             it.id
@@ -175,7 +175,7 @@ class PublicationFileService(
     }
 
     @Transactional
-    fun createFolder(user: User, publicationId: UUID, parentDirPath: String, name: String, description: String?): PublicationFile {
+    fun createFolder(user: User, publicationId: String, parentDirPath: String, name: String, description: String?): PublicationFile {
         val publication = publicationRepository.getReferenceById(publicationId)
         checkDirectoryIsExists(parentDirPath.dropLast(1), publicationId)
         checkPublicationCreator(user, publication)
@@ -201,7 +201,7 @@ class PublicationFileService(
 
     private fun extractDirPath(fullPath: String) = fullPath.substring(0, fullPath.lastIndexOf('/') + 1)
 
-    private fun checkDirectoryIsExists(fullPath: String, publicationId: UUID) {
+    private fun checkDirectoryIsExists(fullPath: String, publicationId: String) {
         if (fullPath != "" && !publicationFileRepository.existsByPublicationIdAndFullPath(publicationId, fullPath)) {
             throw IllegalArgumentException()
         }
@@ -213,7 +213,7 @@ class PublicationFileService(
         }
     }
 
-    private fun checkDuplicateNames(fullPath: String, publicationId: UUID) {
+    private fun checkDuplicateNames(fullPath: String, publicationId: String) {
         if (publicationFileRepository.existsByPublicationIdAndFullPath(publicationId, fullPath)) {
             throw IllegalArgumentException()
         }

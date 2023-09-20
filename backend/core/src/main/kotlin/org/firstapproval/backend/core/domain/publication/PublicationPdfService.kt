@@ -16,7 +16,7 @@ class PublicationPdfService(
 ) {
 
     @Transactional(readOnly = true)
-    fun generate(publicationId: UUID): ByteArray {
+    fun generate(publicationId: String): ByteArray {
         val publication = publicationRepository.getReferenceById(publicationId)
         val templateName = "pdf/publication-pdf"
         return pdfService.generate(templateName, generateThymeleafContext(publication))

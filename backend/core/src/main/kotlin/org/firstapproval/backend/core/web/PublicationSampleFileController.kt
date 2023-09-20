@@ -24,7 +24,7 @@ class PublicationSampleFileController(
     private val authHolderService: AuthHolderService
 ) : SampleFileApi {
 
-    override fun getPublicationSampleFiles(publicationId: UUID, dirPath: String): ResponseEntity<List<PublicationFile>> {
+    override fun getPublicationSampleFiles(publicationId: String, dirPath: String): ResponseEntity<List<PublicationFile>> {
         val files = publicationSampleFileService.getPublicationSampleFiles(authHolderService.user, publicationId, dirPath)
         return ok(files.map {
             PublicationFile()
@@ -40,7 +40,7 @@ class PublicationSampleFileController(
         })
     }
 
-    override fun getPublicationSampleFilesPublic(publicationId: UUID, dirPath: String): ResponseEntity<List<PublicationFile>> {
+    override fun getPublicationSampleFilesPublic(publicationId: String, dirPath: String): ResponseEntity<List<PublicationFile>> {
         val files = publicationSampleFileService.getPublicationSampleFiles(null, publicationId, dirPath)
         return ok(files.map {
             PublicationFile()
@@ -57,7 +57,7 @@ class PublicationSampleFileController(
     }
 
     override fun checkSampleFileDuplicates(
-        publicationId: UUID,
+        publicationId: String,
         checkFileDuplicatesRequest: CheckFileDuplicatesRequest
     ): ResponseEntity<MutableMap<String, Boolean>> {
         return ok(
@@ -70,7 +70,7 @@ class PublicationSampleFileController(
     }
 
     override fun uploadSampleFile(
-        publicationId: UUID,
+        publicationId: String,
         fullPath: String,
         isDir: Boolean,
         type: UploadType,
@@ -120,7 +120,7 @@ class PublicationSampleFileController(
         return ok().build()
     }
 
-    override fun createFolderForSampleFile(publicationId: UUID, createFolderRequest: CreateFolderRequest): ResponseEntity<PublicationFile> {
+    override fun createFolderForSampleFile(publicationId: String, createFolderRequest: CreateFolderRequest): ResponseEntity<PublicationFile> {
         val file = publicationSampleFileService.createFolder(
             authHolderService.user,
             publicationId,
