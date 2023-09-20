@@ -42,7 +42,8 @@ import { Page } from '../../core/router/constants';
 import {
   profileUsername,
   profileTab,
-  renderProfileImage
+  renderProfileImage,
+  getShortAuthorLink
 } from 'src/core/router/utils';
 
 const tabs: string[] = ['published', 'drafts'];
@@ -103,10 +104,6 @@ export const ProfilePage: FunctionComponent = observer(() => {
   const notEmptyPending = notEmpty(
     store.publications.get(PublicationStatus.PENDING) ?? []
   );
-
-  function getShortAuthorLink(username: string): string {
-    throw new Error('Function not implemented.');
-  }
 
   return (
     <>
