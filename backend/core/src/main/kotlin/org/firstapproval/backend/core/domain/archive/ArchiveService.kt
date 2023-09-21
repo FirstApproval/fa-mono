@@ -88,6 +88,7 @@ class ArchiveService(
         publication.filesCount = mainArchiveResult.filesCount.toLong()
         publication.foldersCount = mainArchiveResult.foldersCount.toLong()
         publicationRepository.save(publication)
+        notificationService.sendEmailForCoAuthorsChanged(publication)
         elasticRepository.save(publication.toPublicationElastic())
         return mainArchiveResult.fileIds
     }

@@ -166,8 +166,9 @@ export const ActionBar = observer(
           setIsOpen={(value) =>
             (publicationPageStore.isCitateDialogOpen = value)
           }
-          publicationStore={publicationStore}
-          publicationPageStore={publicationPageStore}
+          authorNames={publicationStore.authorNames}
+          publicationTime={publicationStore.publicationTime}
+          publicationTitle={publicationStore.title}
         />
       </div>
     );

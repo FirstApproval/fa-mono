@@ -4,6 +4,7 @@ import io.jsonwebtoken.lang.Strings
 import mu.KotlinLogging.logger
 import org.firstapproval.backend.core.config.Properties
 import org.firstapproval.backend.core.config.Properties.EmailProperties
+import org.firstapproval.backend.core.domain.publication.Publication
 import org.firstapproval.backend.core.infra.mail.MailService
 import org.firstapproval.backend.core.domain.user.User
 import org.springframework.stereotype.Service
@@ -71,6 +72,30 @@ class NotificationService(
         context.setVariables(model)
         val html = templateEngine.process("password-changed", context)
         mailService.send(email, "[FirstApproval] Password changed", html, true)
+    }
+
+    fun sendEmailForCoAuthorsChanged(publication: Publication) {
+        if (emailProperties.noopMode) {
+            log.info { "emails for co-authors sent" }
+            return
+        }
+        val emails = publication.unconfirmedAuthors.map { it.email } + publication.confirmedAuthors.map { it.user.email }
+        val authors = listOf("${publication.creator.firstName} ${publication.creator.lastName}") +
+            publication.unconfirmedAuthors.map { "${it.firstName} ${it.lastName}" } +
+            publication.confirmedAuthors.map { "${it.user.firstName} ${it.user.lastName}" }
+        emails.map { email ->
+            if (email != null) {
+                val context = Context()
+                val model: MutableMap<String, Any> = HashMap()
+                model["authors"] = authors.joinToString()
+                model["publicationLink"] = "${frontendProperties.url}/publication/${publication.id}"
+                model["title"] = publication.title ?: publication.id
+                model["email"] = email
+                context.setVariables(model)
+                val html = templateEngine.process("you-have-been-added-as-co-author", context)
+                mailService.send(email, "[FirstApproval] You've been credited as a co-author in dataset", html, true)
+            }
+        }
     }
 
     fun sendArchivePassword(email: String, publicationName: String?, password: String) {

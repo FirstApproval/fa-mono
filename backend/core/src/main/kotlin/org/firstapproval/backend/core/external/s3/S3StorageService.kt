@@ -8,12 +8,9 @@ import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.services.s3.model.PutObjectResult
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides
 import com.amazonaws.services.s3.model.S3Object
-import com.amazonaws.services.s3.model.StorageClass
 import mu.KotlinLogging.logger
 import org.firstapproval.backend.core.config.Properties.S3Properties
-import org.firstapproval.backend.core.utils.calculateSHA256
 import java.io.InputStream
-import java.time.Duration
 import java.util.Date
 import java.util.UUID
 
