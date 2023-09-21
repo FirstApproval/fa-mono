@@ -1,5 +1,5 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx';
-import { publicationService, userService } from './service';
+import { userService } from './service';
 import { type GetMeResponse, Workplace } from '../apis/first-approval-api';
 import { authStore } from './auth';
 import { routerStore } from './router';
@@ -66,9 +66,7 @@ export class UserStore implements IWorkplaceStore {
     if (!workplaces?.length) {
       routerStore.navigatePage(Page.ACCOUNT, ACCOUNT_AFFILIATIONS_PATH);
     } else {
-      const response = await publicationService.createPublication();
-      const pubId: string = response.data.id;
-      routerStore.navigatePage(Page.PUBLICATION, `${publicationPath}${pubId}`);
+      routerStore.navigatePage(Page.PUBLICATION, publicationPath);
     }
   };
 
