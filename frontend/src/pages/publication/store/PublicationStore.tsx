@@ -831,9 +831,6 @@ export class PublicationStore {
     if (this.fs.rootPathFiles === 0) {
       result.push('files');
     }
-    if (this.tags.size === 0) {
-      result.push('tags');
-    }
 
     return result;
   };

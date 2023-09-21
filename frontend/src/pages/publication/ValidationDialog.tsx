@@ -8,7 +8,6 @@ import {
   MethodPlaceholder,
   ObjectOfStudyPlaceholder,
   SummaryPlaceholder,
-  TagsPlaceholder,
   TitlePlaceholder
 } from './ContentPlaceholder';
 import { PublicationPageStore } from './store/PublicationPageStore';
@@ -20,13 +19,8 @@ export const ValidationDialog = (props: {
   onClose: () => void;
 }): ReactElement => {
   const { isOpen, onClose, errors, publicationPageStore } = props;
-  const {
-    openExperimentGoals,
-    openMethod,
-    openObjectOfStudy,
-    openFiles,
-    openTags
-  } = publicationPageStore;
+  const { openExperimentGoals, openMethod, openObjectOfStudy, openFiles } =
+    publicationPageStore;
   return (
     <Dialog
       open={isOpen}
@@ -80,14 +74,6 @@ export const ValidationDialog = (props: {
             onClick={() => {
               onClose();
               openFiles();
-            }}
-          />
-        )}
-        {errors.includes('tags') && (
-          <TagsPlaceholder
-            onClick={() => {
-              onClose();
-              openTags();
             }}
           />
         )}

@@ -574,7 +574,7 @@ const PublicationBody = observer(
         )}
 
         {/* Tags */}
-        {!tagsEnabled && (
+        {!tagsEnabled && !publicationStore.isReadonly && (
           <TagsWrap>
             <TagsPlaceholder onClick={openTags} />
           </TagsWrap>
