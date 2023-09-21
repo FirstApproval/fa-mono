@@ -52,7 +52,7 @@ class PublicationController(
             throw AccessDeniedException("Access denied")
         }
         val user = userService.getPublicUserProfile(username)
-        val publications = publicationService.getCreatorPublications(user, status, page, pageSize)
+        val publications = publicationService.getAuthorsPublications(user, status, page, pageSize)
         return ok().body(publications)
     }
 

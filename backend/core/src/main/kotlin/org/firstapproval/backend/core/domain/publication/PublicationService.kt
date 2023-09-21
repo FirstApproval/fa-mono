@@ -37,6 +37,7 @@ import org.firstapproval.backend.core.infra.elastic.PublicationElasticRepository
 import org.firstapproval.backend.core.utils.require
 import org.firstapproval.backend.core.web.errors.RecordConflictException
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.DESC
@@ -303,13 +304,38 @@ class PublicationService(
         page: Int,
         pageSize: Int,
     ): PublicationsResponse {
-        val publicationsPage = publicationRepository.findAllByStatusAndAccessTypeAndCreatorId(
-            PublicationStatus.valueOf(status.name),
-            OPEN,
-            user.id,
-            PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime"))
-        )
+        val publicationsPage = if (PublicationStatus.valueOf(status.name) == PUBLISHED) {
+            publicationRepository.findAllPublishedPublicationsByAuthorId(
+                user.id,
+                PageRequest.of(page, pageSize)
+            )
+        } else {
+            publicationRepository.findAllByStatusAndAccessTypeAndCreatorId(
+                PublicationStatus.valueOf(status.name),
+                OPEN,
+                user.id,
+                PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime"))
+            )
+        }
 
+        return PublicationsResponse()
+            .publications(publicationsPage.map { it.toApiObject(userService) }.toList())
+            .isLastPage(publicationsPage.isLast)
+    }
+
+    @Transactional
+    fun getAuthorsPublications(
+        user: User,
+        status: PublicationStatusApiObject,
+        page: Int,
+        pageSize: Int,
+    ): PublicationsResponse {
+        val publicationsPage = publicationRepository.findAllAuthorPublications(
+            status.name,
+            OPEN.name,
+            user.id,
+            PageRequest.of(page, pageSize)
+        )
         return PublicationsResponse()
             .publications(publicationsPage.map { it.toApiObject(userService) }.toList())
             .isLastPage(publicationsPage.isLast)
