@@ -13,7 +13,13 @@ import {
   Switch,
   TextField
 } from '@mui/material';
-import { FullWidth, HeightElement, WidthElement } from '../pages/common.styled';
+import {
+  FullWidth,
+  HeightElement,
+  ValidationError,
+  ValidationErrorText,
+  WidthElement
+} from '../pages/common.styled';
 import {
   Organization,
   OrganizationDepartment,
@@ -442,29 +448,6 @@ const FormerWorkplace = styled(FormControlLabel)`
   font-weight: 400;
   line-height: 150%; /* 24px */
   letter-spacing: 0.15px;
-`;
-
-const ValidationError = styled.div`
-  width: 100%;
-  height: 48px;
-  display: flex;
-  padding: 6px 16px;
-  align-items: center;
-  border-radius: 4px;
-  background: var(--alert-error-fill, #fdeded);
-`;
-
-const ValidationErrorText = styled.span`
-  color: var(--alert-error-content, #5f2120);
-  font-feature-settings: 'clig' off, 'liga' off;
-
-  /* typography/body2 */
-  font-family: Roboto;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 143%; /* 20.02px */
-  letter-spacing: 0.17px;
 `;
 
 export const SaveButton = styled(LoadingButton)`
