@@ -410,6 +410,17 @@ const PublicationBody = observer(
     return (
       <>
         {publicationStore.isPreview && <DraftText />}
+        {publicationStore.isView && (
+          <DateViewsDownloads
+            openDownloadersDialog={() => {
+              downloadersStore.clearAndOpen(
+                props.publicationId,
+                publicationStore.downloadsCount
+              );
+            }}
+            publicationStore={publicationStore}
+          />
+        )}
         <div style={{ height: '16px' }}></div>
         <TitleEditor publicationStore={publicationStore} />
         {publicationStore.isReadonly && (
@@ -421,17 +432,6 @@ const PublicationBody = observer(
           <ActionBar
             publicationStore={publicationStore}
             publicationPageStore={publicationPageStore}
-          />
-        )}
-        {publicationStore.isView && (
-          <DateViewsDownloads
-            openDownloadersDialog={() => {
-              downloadersStore.clearAndOpen(
-                props.publicationId,
-                publicationStore.downloadsCount
-              );
-            }}
-            publicationStore={publicationStore}
           />
         )}
 
