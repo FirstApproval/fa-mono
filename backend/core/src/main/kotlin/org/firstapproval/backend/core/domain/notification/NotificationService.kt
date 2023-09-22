@@ -79,9 +79,10 @@ class NotificationService(
             log.info { "emails for co-authors sent" }
             return
         }
-        val emails = publication.unconfirmedAuthors.map { it.email } + publication.confirmedAuthors.map { it.user.email }
-        val authors = listOf("${publication.creator.firstName} ${publication.creator.lastName}") +
-            publication.unconfirmedAuthors.map { "${it.firstName} ${it.lastName}" } +
+        val emails =
+            publication.unconfirmedAuthors.map { it.email } + publication.confirmedAuthors.filter { it.user.id != publication.creator.id }
+                .map { it.user.email }
+        val authors = publication.unconfirmedAuthors.map { "${it.firstName} ${it.lastName}" } +
             publication.confirmedAuthors.map { "${it.user.firstName} ${it.user.lastName}" }
         emails.map { email ->
             if (email != null) {

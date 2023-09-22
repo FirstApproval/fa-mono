@@ -77,20 +77,20 @@ class ArchiveService(
     }
 
     private fun archiveProcess(publication: Publication, password: String): List<UUID> {
-        val sampleArchiveResult = archiveSampleFilesProcess(publication)
-        val mainArchiveResult = archivePublicationFilesProcess(publication, password)
+//        val sampleArchiveResult = archiveSampleFilesProcess(publication)
+//        val mainArchiveResult = archivePublicationFilesProcess(publication, password)
         publication.status = PUBLISHED
         publication.publicationTime = now()
         publication.archivePassword = password
-        publication.archiveSize = mainArchiveResult.size
-        publication.archiveSampleSize = sampleArchiveResult.size
-        publication.hash = mainArchiveResult.hash
-        publication.filesCount = mainArchiveResult.filesCount.toLong()
-        publication.foldersCount = mainArchiveResult.foldersCount.toLong()
+//        publication.archiveSize = mainArchiveResult.size
+//        publication.archiveSampleSize = sampleArchiveResult.size
+//        publication.hash = mainArchiveResult.hash
+//        publication.filesCount = mainArchiveResult.filesCount.toLong()
+//        publication.foldersCount = mainArchiveResult.foldersCount.toLong()
         publicationRepository.save(publication)
         notificationService.sendEmailForCoAuthorsChanged(publication)
         elasticRepository.save(publication.toPublicationElastic())
-        return mainArchiveResult.fileIds
+        return listOf()
     }
 
     private fun archivePublicationFilesProcess(publication: Publication, password: String): ArchiveResult {
