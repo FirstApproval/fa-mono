@@ -27,7 +27,6 @@ import styled from '@emotion/styled';
 import { ContentEditorWrap, LabelWrap } from './styled';
 import { getInitials, renderProfileImage } from '../../../util/userUtil';
 import { type EditorProps } from './types';
-import { validateEmail } from '../../../util/emailUtil';
 import { WorkplacesEditor } from '../../../components/WorkplacesEditor';
 import { FlexWrapColumn, FlexWrapRow, WidthElement } from '../../common.styled';
 import { LoadingButton } from '@mui/lab';
