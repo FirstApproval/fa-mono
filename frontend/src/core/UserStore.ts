@@ -3,7 +3,11 @@ import { userService } from './service';
 import { type GetMeResponse, Workplace } from '../apis/first-approval-api';
 import { authStore } from './auth';
 import { routerStore } from './router';
-import { IWorkplaceStore, WorkplaceProps } from './WorkplaceProps';
+import {
+  IWorkplaceStore,
+  WorkplaceProps,
+  WorkplaceValidationState
+} from './WorkplaceProps';
 import { userStore } from './user';
 import { cloneDeep } from 'lodash';
 import {
@@ -18,6 +22,8 @@ export class UserStore implements IWorkplaceStore {
   deleteProfileImage = false;
   workplaces: Workplace[] = [];
   workplacesProps: WorkplaceProps[] = [];
+
+  workplacesValidation: WorkplaceValidationState[] = [];
 
   constructor() {
     makeAutoObservable(this);
