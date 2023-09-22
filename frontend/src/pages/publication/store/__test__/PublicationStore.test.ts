@@ -24,10 +24,17 @@ describe('should correctly split paragraphs', () => {
     mockPublicationPromise = new Promise((resolve) => {
       publicationPromiseResolve = resolve;
     });
-    publicationStore = new PublicationStore('', {
-      initialized: true,
-      files: []
-    } as unknown as FileSystemFA);
+    publicationStore = new PublicationStore(
+      '',
+      {
+        initialized: true,
+        files: []
+      } as unknown as FileSystemFA,
+      {
+        initialized: true,
+        files: []
+      } as unknown as FileSystemFA
+    );
   });
 
   test('summary', async () => {
@@ -155,10 +162,17 @@ describe('should correctly merge paragraphs', () => {
     mockPublicationPromise = new Promise((resolve) => {
       publicationPromiseResolve = resolve;
     });
-    publicationStore = new PublicationStore('', {
-      initialized: true,
-      files: []
-    } as unknown as FileSystemFA);
+    publicationStore = new PublicationStore(
+      '',
+      {
+        initialized: true,
+        files: []
+      } as unknown as FileSystemFA,
+      {
+        initialized: true,
+        files: []
+      } as unknown as FileSystemFA
+    );
   });
 
   test('summary', async () => {

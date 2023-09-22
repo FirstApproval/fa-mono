@@ -1,9 +1,13 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx';
-import { publicationService, userService } from './service';
+import { userService } from './service';
 import { type GetMeResponse, Workplace } from '../apis/first-approval-api';
 import { authStore } from './auth';
 import { routerStore } from './router';
-import { IWorkplaceStore, WorkplaceProps } from './WorkplaceProps';
+import {
+  IWorkplaceStore,
+  WorkplaceProps,
+  WorkplaceValidationState
+} from './WorkplaceProps';
 import { userStore } from './user';
 import { cloneDeep } from 'lodash';
 import {
@@ -18,6 +22,8 @@ export class UserStore implements IWorkplaceStore {
   deleteProfileImage = false;
   workplaces: Workplace[] = [];
   workplacesProps: WorkplaceProps[] = [];
+
+  workplacesValidation: WorkplaceValidationState[] = [];
 
   constructor() {
     makeAutoObservable(this);
@@ -45,6 +51,10 @@ export class UserStore implements IWorkplaceStore {
         this.workplaces = cloneDeep(response.data.workplaces ?? []);
         if (!this.workplaces || this.workplaces.length === 0) {
           this.workplaces.push({ isFormer: false });
+          this.workplacesValidation.push({
+            isValidOrganization: true,
+            isValidAddress: true
+          });
         }
 
         this.workplacesProps = [];
@@ -56,6 +66,10 @@ export class UserStore implements IWorkplaceStore {
             organizationOptions: [],
             departmentOptions: w.organization?.departments ?? []
           });
+          this.workplacesValidation.push({
+            isValidOrganization: true,
+            isValidAddress: true
+          });
         });
       });
     });
@@ -66,9 +80,7 @@ export class UserStore implements IWorkplaceStore {
     if (!workplaces?.length) {
       routerStore.navigatePage(Page.ACCOUNT, ACCOUNT_AFFILIATIONS_PATH);
     } else {
-      const response = await publicationService.createPublication();
-      const pubId: string = response.data.id;
-      routerStore.navigatePage(Page.PUBLICATION, `${publicationPath}${pubId}`);
+      routerStore.navigatePage(Page.PUBLICATION, publicationPath);
     }
   };
 
@@ -88,4 +100,17 @@ export class UserStore implements IWorkplaceStore {
         });
     });
   };
+
+  validate(): boolean {
+    this.workplacesValidation = this.workplaces.map((workplace) => ({
+      isValidOrganization: !!workplace.organization,
+      isValidAddress: !!workplace.address
+    }));
+    // const currentWorkplaceAbsent = !this.workplaces.some(
+    //   (workplace) => !workplace.isFormer
+    // );
+    return this.workplacesValidation.every(
+      (v) => v.isValidOrganization && v.isValidAddress
+    );
+  }
 }

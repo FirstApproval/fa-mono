@@ -1,7 +1,11 @@
 import { makeAutoObservable } from 'mobx';
-import { type UserInfo, Workplace } from '../../../apis/first-approval-api';
-import { authorService } from '../../../core/service';
-import { IWorkplaceStore, WorkplaceProps } from '../../../core/WorkplaceProps';
+import { Workplace } from '../../../apis/first-approval-api';
+import {
+  IWorkplaceStore,
+  WorkplaceProps,
+  WorkplaceValidationState
+} from '../../../core/WorkplaceProps';
+import { validateEmail } from '../../../util/emailUtil';
 
 export class AuthorEditorStore implements IWorkplaceStore {
   id: string | undefined = '';
@@ -10,33 +14,24 @@ export class AuthorEditorStore implements IWorkplaceStore {
   firstName: string = '';
   lastName: string = '';
   shortBio: string = '';
+  profileImage?: string;
   isConfirmed: boolean = false;
   isNew: boolean = false;
   index?: number;
-  profileImage?: string;
   workplaces: Workplace[] = [];
   workplacesProps: WorkplaceProps[] = [];
 
+  isValidEmail = true;
+  isValidFirstName = true;
+  isValidLastName = true;
+  workplacesValidation: WorkplaceValidationState[] = [];
+
   constructor() {
     makeAutoObservable(this);
-    this.clean();
-  }
-
-  async searchAuthors(query: string): Promise<UserInfo[]> {
-    const response = await authorService.getAuthors(query);
-    return response.data;
-  }
-
-  clean(): void {
-    this.id = '';
-    this.userId = '';
-    this.email = '';
-    this.firstName = '';
-    this.lastName = '';
-    this.shortBio = '';
-    this.profileImage = '';
-    this.index = undefined;
     this.workplaces = [{ isFormer: false }];
+    this.workplacesValidation = [
+      { isValidOrganization: true, isValidAddress: true }
+    ];
     this.workplacesProps = [
       {
         orgQuery: '',
@@ -46,5 +41,26 @@ export class AuthorEditorStore implements IWorkplaceStore {
         departmentOptions: []
       }
     ];
+  }
+
+  validate(): boolean {
+    this.isValidEmail = this.email.length > 0 && validateEmail(this.email);
+    this.isValidFirstName = this.firstName.length > 0;
+    this.isValidLastName = this.lastName.length > 0;
+    this.workplacesValidation = this.workplaces.map((workplace) => ({
+      isValidOrganization: !!workplace.organization,
+      isValidAddress: !!workplace.address
+    }));
+    // const currentWorkplaceAbsent = !this.workplaces.some(
+    //   (workplace) => !workplace.isFormer
+    // );
+    return (
+      this.isValidEmail &&
+      this.isValidFirstName &&
+      this.isValidLastName &&
+      this.workplacesValidation.every(
+        (v) => v.isValidOrganization && v.isValidAddress
+      )
+    );
   }
 }

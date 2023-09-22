@@ -15,4 +15,10 @@ export interface WorkplaceProps {
 export interface IWorkplaceStore {
   workplaces: Workplace[];
   workplacesProps: WorkplaceProps[];
+  workplacesValidation: WorkplaceValidationState[];
+}
+
+export interface WorkplaceValidationState {
+  isValidOrganization: boolean;
+  isValidAddress: boolean;
 }

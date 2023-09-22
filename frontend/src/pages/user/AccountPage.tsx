@@ -416,9 +416,15 @@ export const AccountPage: FunctionComponent = observer(() => {
                     store={userStore}
                     buttonType={ActionButtonType.FULL_WIDTH_CONFIRM}
                     saveButtonText={'Save affiliations'}
-                    saveCallback={async (workplaces): Promise<void> =>
-                      userStore.saveWorkplaces(workplaces)
-                    }
+                    saveCallback={async (workplaces): Promise<boolean> => {
+                      const isValid = userStore.validate();
+                      if (isValid) {
+                        return userStore.saveWorkplaces(workplaces).then(() => {
+                          return true;
+                        });
+                      }
+                      return Promise.resolve(isValid);
+                    }}
                   />
                 </TabContainer>
               )}

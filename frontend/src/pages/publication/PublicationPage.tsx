@@ -98,7 +98,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
     useState(false);
   const [validationErrors, setValidationErrors] = useState<Section[]>([]);
 
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget);
@@ -108,7 +108,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
   };
 
   const [publicationStore] = useState(
-    () => new PublicationStore(publicationId, fs)
+    () => new PublicationStore(publicationId, fs, sfs)
   );
 
   const publicationPageStore = useMemo(
