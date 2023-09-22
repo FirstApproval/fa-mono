@@ -290,7 +290,6 @@ const AddAuthorDialog = observer(
       } else {
         return userService.existsByEmail(authorStore.email).then((result) => {
           if (result.data) {
-            authorStore.clean();
             props.setIsUserExistsByEmail(true);
           } else {
             props.publicationStore.addOrEditUnconfirmedAuthor(authorStore);
@@ -301,7 +300,6 @@ const AddAuthorDialog = observer(
 
     const handleCloseAddAuthor = (): void => {
       setAddAuthorVisible(false);
-      setTimeout(() => authorStore.clean(), 100);
     };
 
     const handleCloseDeleteDialog = (): void => {
@@ -470,7 +468,6 @@ const DeleteAuthorDialog = observer(
             <Button
               onClick={() => {
                 props.publicationStore.deleteAuthor(props.authorStore);
-                props.authorStore.clean();
                 handleCloseDeleteDialog();
                 props.setAddAuthorVisible(false);
               }}
