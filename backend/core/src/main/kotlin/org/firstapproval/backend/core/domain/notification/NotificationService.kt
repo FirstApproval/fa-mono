@@ -82,8 +82,8 @@ class NotificationService(
         val emails =
             publication.unconfirmedAuthors.map { it.email } + publication.confirmedAuthors.filter { it.user.id != publication.creator.id }
                 .map { it.user.email }
-        val authors = publication.unconfirmedAuthors.map { "${it.firstName} ${it.lastName}" } +
-            publication.confirmedAuthors.map { "${it.user.firstName} ${it.user.lastName}" }
+        val authors = publication.confirmedAuthors.map { "${it.user.firstName} ${it.user.lastName}" } +
+            publication.unconfirmedAuthors.map { "${it.firstName} ${it.lastName}" }
         emails.map { email ->
             if (email != null) {
                 val context = Context()
