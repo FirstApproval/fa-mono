@@ -887,6 +887,55 @@ paths:
       operationId: checkFileDuplicates
       tags: [ file ]
 
+  /api/report/files/upload:
+    post:
+      summary: Upload file
+      parameters:
+        - in: query
+          name: contentLength
+          schema:
+            type: integer
+            format: int64
+          required: false
+          description: Content length
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportFile'
+      security:
+        - TokenAuth: [ ]
+      operationId: uploadReportFile
+      tags: [ report ]
+
+  /api/report/create:
+    post:
+      summary: Create report
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReportRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: createReport
+      tags: [ report ]
+
   /api/files/upload:
     post:
       summary: Upload file
@@ -1501,6 +1550,23 @@ components:
         - dirPath
         - name
 
+    CreateReportRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        description:
+          type: string
+          maxLength: 4096
+        fileIds:
+          type: array
+          items:
+            type: string
+      required:
+        - email
+        - description
+        - fileIds
+
     SubmitRegistrationRequest:
       type: object
       properties:
@@ -1725,6 +1791,13 @@ components:
         - canSetPassword
         - canChangePassword
         - workplaces
+
+    ReportFile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
 
     UserInfo:
       type: object
