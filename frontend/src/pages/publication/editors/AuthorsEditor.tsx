@@ -241,9 +241,9 @@ const AddAuthorDialog = observer(
       }
       if (isConfirmed) {
         const user = (author as ConfirmedAuthor).user;
-        authorStore.firstName = user.firstName!;
-        authorStore.lastName = user.lastName!;
-        authorStore.email = user.email!;
+        authorStore.firstName = user.firstName;
+        authorStore.lastName = user.lastName;
+        authorStore.email = user.email;
         authorStore.userId = user.id;
         authorStore.profileImage = user.profileImage;
       } else {
@@ -270,18 +270,6 @@ const AddAuthorDialog = observer(
       setAddAuthorVisible(true);
       return authorStore;
     }, [props.editingAuthor]);
-
-    const isValidEmail =
-      authorStore.email.length > 0 && validateEmail(authorStore.email);
-    const isValidFirstName = authorStore.firstName.length > 0;
-    const isValidLastName = authorStore.lastName.length > 0;
-    const notValid = authorStore.workplaces.some(
-      (workplace) => !workplace.organization || !workplace.address
-    );
-    const currentWorkplaceAbsent = !authorStore.workplaces.some(
-      (workplace) => !workplace.isFormer
-    );
-    const isValidForm = isValidEmail && isValidFirstName && isValidLastName;
 
     const handleSaveButton = async (): Promise<void> => {
       if (authorStore.isConfirmed) {
@@ -332,8 +320,10 @@ const AddAuthorDialog = observer(
                   disabled={authorStore.isConfirmed}
                   label="Email"
                   variant="outlined"
-                  // error={!isValidEmail}
-                  // helperText={!isValidEmail ? 'Invalid address' : undefined}
+                  error={!authorStore.isValidEmail}
+                  helperText={
+                    !authorStore.isValidEmail ? 'Invalid address' : undefined
+                  }
                 />
                 <FlexWrapRow>
                   <MarginTextField
@@ -344,10 +334,12 @@ const AddAuthorDialog = observer(
                     disabled={authorStore.isConfirmed}
                     label="First name"
                     variant="outlined"
-                    // error={!isValidFirstName}
-                    // helperText={
-                    // !isValidFirstName ? 'Invalid first name' : undefined
-                    // }
+                    error={!authorStore.isValidFirstName}
+                    helperText={
+                      !authorStore.isValidFirstName
+                        ? 'Invalid first name'
+                        : undefined
+                    }
                   />
                   <FullWidthTextField
                     value={authorStore.lastName}
@@ -357,10 +349,12 @@ const AddAuthorDialog = observer(
                     disabled={authorStore.isConfirmed}
                     label="Last name"
                     variant="outlined"
-                    // error={!isValidLastName}
-                    // helperText={
-                    //   !isValidLastName ? 'Invalid last name' : undefined
-                    // }
+                    error={!authorStore.isValidLastName}
+                    helperText={
+                      !authorStore.isValidLastName
+                        ? 'Invalid last name'
+                        : undefined
+                    }
                   />
                 </FlexWrapRow>
                 <FlexWrapColumn>
@@ -402,19 +396,19 @@ const AddAuthorDialog = observer(
                 {!authorStore.isConfirmed && (
                   <LoadingButton
                     loading={savingInProgress}
-                    disabled={
-                      !isValidForm || notValid || currentWorkplaceAbsent
-                    }
                     variant={'contained'}
                     onClick={() => {
-                      setSavingInProgress(true);
-                      void handleSaveButton().then(() => {
-                        setTimeout(() => {
-                          setSavingInProgress(false);
-                          props.setShowSuccessSavingAlter(true);
-                          handleCloseAddAuthor();
-                        }, 1000);
-                      });
+                      const isValid = authorStore.validate();
+                      if (isValid) {
+                        setSavingInProgress(true);
+                        void handleSaveButton().then(() => {
+                          setTimeout(() => {
+                            setSavingInProgress(false);
+                            props.setShowSuccessSavingAlter(true);
+                            handleCloseAddAuthor();
+                          }, 1000);
+                        });
+                      }
                     }}>
                     {authorStore.isNew ? 'Add author' : 'Save'}
                   </LoadingButton>

@@ -20,7 +20,11 @@ import {
   Workplace
 } from '../apis/first-approval-api';
 import { organizationService } from '../core/service';
-import { IWorkplaceStore, WorkplaceProps } from '../core/WorkplaceProps';
+import {
+  IWorkplaceStore,
+  WorkplaceProps,
+  WorkplaceValidationState
+} from '../core/WorkplaceProps';
 import { observer } from 'mobx-react-lite';
 import { LoadingButton } from '@mui/lab';
 import { Clear } from '@mui/icons-material';
@@ -42,7 +46,7 @@ export const WorkplacesEditor = observer(
       props;
     const [savingInProgress, setSavingInProgress] = useState(false);
     const [showSuccessSavingAlter, setShowSuccessSavingAlter] = useState(false);
-    const { workplaces, workplacesProps } = store;
+    const { workplaces, workplacesProps, workplacesValidation } = store;
     const [workplaceOrgQueryIndex, setWorkplaceOrgQueryIndex] = useState('0-');
 
     useEffect(() => {
@@ -67,10 +71,6 @@ export const WorkplacesEditor = observer(
       }
     }, [workplaceOrgQueryIndex]);
 
-    const notValid = workplaces.some(
-      (workplace) => !workplace.organization || !workplace.address
-    );
-
     const currentWorkplaceAbsent = !workplaces.some(
       (workplace) => !workplace.isFormer
     );
@@ -78,6 +78,7 @@ export const WorkplacesEditor = observer(
     const mapWorkplace = (
       workplace: Workplace,
       workplaceProps: WorkplaceProps,
+      workplaceValidationState: WorkplaceValidationState,
       index: number
     ): ReactElement => {
       return (
@@ -141,6 +142,12 @@ export const WorkplacesEditor = observer(
                   // error={!workplace.organization}
                   placeholder={
                     'Institution, company, or organization you are affiliated with'
+                  }
+                  error={!workplaceValidationState.isValidOrganization}
+                  helperText={
+                    !workplaceValidationState.isValidOrganization
+                      ? 'Organization can not be empty'
+                      : undefined
                   }
                 />
               )}
@@ -249,7 +256,12 @@ export const WorkplacesEditor = observer(
               onChange={(e) => {
                 workplaces[index].address = e.currentTarget.value;
               }}
-              // error={!workplace.address}
+              error={!workplaceValidationState.isValidAddress}
+              helperText={
+                !workplaceValidationState.isValidAddress
+                  ? 'Address can not be empty'
+                  : undefined
+              }
               label="Address"
               variant="outlined"
             />
@@ -296,24 +308,14 @@ export const WorkplacesEditor = observer(
       <EditorWrap>
         <FullWidth key={`workspaces-${'workspacesWrapKey'}`}>
           {workplaces.map((workplace: Workplace, index: number) => {
-            return mapWorkplace(workplace, workplacesProps[index], index);
+            return mapWorkplace(
+              workplace,
+              workplacesProps[index],
+              workplacesValidation[index],
+              index
+            );
           })}
         </FullWidth>
-        {notValid && (
-          <>
-            <HeightElement value={'32px'} />
-            <ValidationError>
-              <ErrorOutline
-                htmlColor={'#D32F2F'}
-                sx={{ width: '22px', height: '22px' }}
-              />
-              <WidthElement value={'12px'} />
-              <ValidationErrorText>
-                Fill in all the required fields
-              </ValidationErrorText>
-            </ValidationError>
-          </>
-        )}
         {currentWorkplaceAbsent && (
           <>
             <HeightElement value={'32px'} />
@@ -349,7 +351,7 @@ export const WorkplacesEditor = observer(
         {buttonType === ActionButtonType.FULL_WIDTH_CONFIRM && saveCallback && (
           <SaveButton
             loading={savingInProgress}
-            disabled={notValid || currentWorkplaceAbsent}
+            disabled={currentWorkplaceAbsent}
             color={'primary'}
             variant={'contained'}
             onClick={() => {
