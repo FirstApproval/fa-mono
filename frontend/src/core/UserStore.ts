@@ -66,6 +66,10 @@ export class UserStore implements IWorkplaceStore {
             organizationOptions: [],
             departmentOptions: w.organization?.departments ?? []
           });
+          this.workplacesValidation.push({
+            isValidOrganization: true,
+            isValidAddress: true
+          });
         });
       });
     });
