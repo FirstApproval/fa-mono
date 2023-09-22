@@ -27,6 +27,7 @@ import pdf from '../pages/publication/asset/pdf.svg';
 import { publicationService } from '../core/service';
 import { CitateDialog } from '../pages/publication/CitateDialog';
 import { PublicationAuthorName } from '../pages/publication/store/PublicationStore';
+import { ReportProblemDialog } from '../pages/publication/ReportProblemDialog';
 
 export const PublicationSection = (props: {
   publication: Publication;
@@ -47,6 +48,8 @@ export const PublicationSection = (props: {
   const openUtilMenu = Boolean(utilAnchor);
 
   const [citeOpened, setCiteOpened] = useState(false);
+
+  const [reportProblemOpened, setReportProblemOpened] = useState(false);
 
   const downloadPdf = async (): Promise<void> => {
     const pdf = await publicationService.downloadPdf(publication.id);
@@ -189,11 +192,19 @@ export const PublicationSection = (props: {
                     Copy publication link
                   </StyledMenuItem>
                   <Divider></Divider>
-                  <StyledMenuItem onClick={() => {}}>
+                  <StyledMenuItem
+                    onClick={() => {
+                      setReportProblemOpened(true);
+                    }}>
                     <WarningAmber style={{ marginRight: 16 }}></WarningAmber>
                     Report problem
                   </StyledMenuItem>
                 </Menu>
+                <ReportProblemDialog
+                  isOpen={reportProblemOpened}
+                  setIsOpen={(value) =>
+                    setReportProblemOpened(value)
+                  }></ReportProblemDialog>
                 <CitateDialog
                   isOpen={citeOpened}
                   setIsOpen={(value) => setCiteOpened(value)}
