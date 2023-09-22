@@ -6,6 +6,7 @@ import {
   OrganizationApi,
   PublicationApi,
   RegistrationApi,
+  ReportApi,
   SampleFileApi,
   UserApi
 } from '../apis/first-approval-api';
@@ -39,3 +40,5 @@ export const sampleFileService = new SampleFileServiceAdapter();
 export const publicationService = new PublicationApi(configuration);
 
 export const organizationService = new OrganizationApi(configuration);
+
+export const reportService = new ReportApi(configuration);

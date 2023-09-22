@@ -19,5 +19,5 @@ class Report(
     val description: String,
     @Type(JsonBinaryType::class)
     var fileIds: List<String> = listOf(),
-    val creationDate: ZonedDateTime = now()
+    val creationTime: ZonedDateTime = now()
 )

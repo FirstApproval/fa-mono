@@ -194,6 +194,7 @@ export const PublicationSection = (props: {
                   <Divider></Divider>
                   <StyledMenuItem
                     onClick={() => {
+                      handleUtilMenuClose();
                       setReportProblemOpened(true);
                     }}>
                     <WarningAmber style={{ marginRight: 16 }}></WarningAmber>
