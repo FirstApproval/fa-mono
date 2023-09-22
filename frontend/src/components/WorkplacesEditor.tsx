@@ -37,7 +37,7 @@ interface WorkplacesEditorProps {
   buttonType?: ActionButtonType;
   saveButtonText?: string;
   isModalWindow: boolean;
-  saveCallback?: (workplaces: Workplace[]) => Promise<void>;
+  saveCallback?: (workplaces: Workplace[]) => Promise<boolean>;
 }
 
 export const WorkplacesEditor = observer(
@@ -361,11 +361,11 @@ export const WorkplacesEditor = observer(
             variant={'contained'}
             onClick={() => {
               setSavingInProgress(true);
-              void saveCallback(workplaces).then(() => {
-                setTimeout(() => {
-                  setSavingInProgress(false);
+              void saveCallback(workplaces).then((saved) => {
+                setSavingInProgress(false);
+                if (saved) {
                   setShowSuccessSavingAlter(true);
-                }, 1000);
+                }
               });
             }}>
             {saveButtonText}

@@ -100,4 +100,17 @@ export class UserStore implements IWorkplaceStore {
         });
     });
   };
+
+  validate(): boolean {
+    this.workplacesValidation = this.workplaces.map((workplace) => ({
+      isValidOrganization: !!workplace.organization,
+      isValidAddress: !!workplace.address
+    }));
+    // const currentWorkplaceAbsent = !this.workplaces.some(
+    //   (workplace) => !workplace.isFormer
+    // );
+    return this.workplacesValidation.every(
+      (v) => v.isValidOrganization && v.isValidAddress
+    );
+  }
 }

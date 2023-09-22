@@ -23,11 +23,16 @@ export const EnterSelfInfoPage: FunctionComponent = observer(() => {
             store={userStore}
             buttonType={ActionButtonType.FULL_WIDTH_CONFIRM}
             saveButtonText={'Finish registration'}
-            saveCallback={async (workplaces): Promise<void> =>
-              userStore.saveWorkplaces(workplaces).then(() => {
-                routerStore.navigatePage(Page.HOME_PAGE);
-              })
-            }
+            saveCallback={async (workplaces): Promise<boolean> => {
+              const isValid = userStore.validate();
+              if (isValid) {
+                return userStore.saveWorkplaces(workplaces).then(() => {
+                  routerStore.navigatePage(Page.HOME_PAGE);
+                  return true;
+                });
+              }
+              return Promise.resolve(isValid);
+            }}
           />
         </FlexBody>
       </FlexBodyCenter>
