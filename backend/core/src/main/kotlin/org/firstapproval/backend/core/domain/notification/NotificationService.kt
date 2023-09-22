@@ -7,6 +7,7 @@ import org.firstapproval.backend.core.config.Properties.EmailProperties
 import org.firstapproval.backend.core.domain.publication.Publication
 import org.firstapproval.backend.core.infra.mail.MailService
 import org.firstapproval.backend.core.domain.user.User
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.thymeleaf.context.Context
 import org.thymeleaf.spring6.SpringTemplateEngine
@@ -16,7 +17,9 @@ class NotificationService(
     private val emailProperties: EmailProperties,
     private val templateEngine: SpringTemplateEngine,
     private val mailService: MailService,
-    private val frontendProperties: Properties.FrontendProperties
+    private val frontendProperties: Properties.FrontendProperties,
+    @Value("\${tech-support-email}")
+    private val techSupportEmail: String,
 ) {
     val log = logger {}
 
@@ -106,6 +109,14 @@ class NotificationService(
         }
         val content = "Your password from archive of publication $publicationName { $password }"
         mailService.send(email, "[FirstApproval] Password of dataset", content)
+    }
+
+    fun sendReportEmail(email: String, content: String) {
+        if (emailProperties.noopMode) {
+            log.info { "new report" }
+            return
+        }
+        mailService.send(techSupportEmail, "[FirstApproval] New report received from $email", content)
     }
 
 }

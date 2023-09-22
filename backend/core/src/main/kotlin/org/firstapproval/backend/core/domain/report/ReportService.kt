@@ -1,5 +1,8 @@
 package org.firstapproval.backend.core.domain.report
 
+import mu.KotlinLogging
+import mu.KotlinLogging.logger
+import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.external.s3.FileStorageService
 import org.firstapproval.backend.core.external.s3.REPORT_FILES
 import org.springframework.stereotype.Service
@@ -9,7 +12,12 @@ import java.util.UUID
 import java.util.UUID.randomUUID
 
 @Service
-class ReportService(private val fileStorageService: FileStorageService, private val reportRepository: ReportRepository) {
+class ReportService(
+    private val fileStorageService: FileStorageService,
+    private val reportRepository: ReportRepository,
+    private val notificationService: NotificationService
+) {
+    val log = logger {}
 
     fun uploadFile(data: InputStream, contentLength: Long): UUID {
         val id = randomUUID()
@@ -18,6 +26,12 @@ class ReportService(private val fileStorageService: FileStorageService, private 
     }
 
     @Transactional
-    fun createReport(email: String, description: String, publicationId: String, fileIds: List<String>) =
+    fun createReport(email: String, description: String, publicationId: String, fileIds: List<String>) {
         reportRepository.save(Report(email = email, description = description, publicationId = publicationId, fileIds = fileIds))
+        try {
+            notificationService.sendReportEmail(email, description)
+        } catch (e: Exception) {
+            log.error(e) { "cant send report email" }
+        }
+    }
 }
