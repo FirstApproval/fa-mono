@@ -22,11 +22,6 @@ export class AuthorEditorStore implements IWorkplaceStore {
     this.clean();
   }
 
-  async searchAuthors(query: string): Promise<UserInfo[]> {
-    const response = await authorService.getAuthors(query);
-    return response.data;
-  }
-
   clean(): void {
     this.id = '';
     this.userId = '';

@@ -23,24 +23,13 @@ interface AuthorElementProps {
   isReadonly: boolean;
   author: ConfirmedAuthor | UnconfirmedAuthor | UserInfo | AuthorEditorStore;
   isConfirmed?: boolean;
-  index?: number;
-  setEditAuthorVisible?: (
-    author: ConfirmedAuthor | UnconfirmedAuthor,
-    isConfirmed?: boolean,
-    index?: number
-  ) => void;
+  onAuthorEdit?: () => void;
   shouldOpenInNewTab?: boolean;
 }
 
 export const AuthorElement = (props: AuthorElementProps): ReactElement => {
-  const {
-    isReadonly,
-    author,
-    isConfirmed,
-    index,
-    setEditAuthorVisible,
-    shouldOpenInNewTab
-  } = props;
+  const { isReadonly, author, isConfirmed, onAuthorEdit, shouldOpenInNewTab } =
+    props;
   let workplaces: Workplace[];
   let firstName;
   let lastName;
@@ -64,7 +53,7 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
       profileImage = authorEditorStore.profileImage;
       workplaces = authorEditorStore.workplaces;
     }
-  } else if (isConfirmed === false) {
+  } else if (!isConfirmed) {
     const unconfirmedAuthor = author as UnconfirmedAuthor;
     firstName = unconfirmedAuthor.firstName;
     lastName = unconfirmedAuthor.lastName;
@@ -100,24 +89,21 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
                 {firstName} {lastName}
               </span>
             )}
-            {isConfirmed === false && (
+            {!isConfirmed && (
               <span>
                 {firstName} {lastName} (not registered)
               </span>
             )}
           </AuthorName>
           <AuthorWorkplace>
-            {setEditAuthorVisible && getCurrentWorkplacesString(workplaces)}
+            {onAuthorEdit && getCurrentWorkplacesString(workplaces)}
           </AuthorWorkplace>
         </AuthorWrap>
       </AuthorElementWrap>
       {!isReadonly && (
         <div>
-          {setEditAuthorVisible && (
-            <IconButton
-              onClick={() => {
-                setEditAuthorVisible(author, isConfirmed, index);
-              }}>
+          {onAuthorEdit && (
+            <IconButton onClick={onAuthorEdit}>
               <Edit htmlColor={'gray'} />
             </IconButton>
           )}
