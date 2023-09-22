@@ -158,6 +158,7 @@ export const WorkplacesEditor = observer(
                 onClick={() => {
                   workplaces.splice(index, 1);
                   workplacesProps.splice(index, 1);
+                  workplacesValidation.splice(index, 1);
                   if (workplaces.length === 1) {
                     workplaces[0].isFormer = false;
                   }
@@ -344,6 +345,10 @@ export const WorkplacesEditor = observer(
               departmentOptions: []
             };
             workplaces.push({ isFormer: false });
+            workplacesValidation.push({
+              isValidOrganization: true,
+              isValidAddress: true
+            });
           }}>
           + Add workplace
         </Button>
