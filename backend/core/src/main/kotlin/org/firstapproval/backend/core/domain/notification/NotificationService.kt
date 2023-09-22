@@ -111,12 +111,12 @@ class NotificationService(
         mailService.send(email, "[FirstApproval] Password of dataset", content)
     }
 
-    fun sendReportEmail(email: String, content: String) {
+    fun sendReportEmailToSupport(reporterEmail: String, content: String) {
         if (emailProperties.noopMode) {
             log.info { "new report" }
             return
         }
-        mailService.send(techSupportEmail, "[FirstApproval] New report received from $email", content)
+        mailService.send(techSupportEmail, "[FirstApproval] New report received from $reporterEmail", content)
     }
 
 }

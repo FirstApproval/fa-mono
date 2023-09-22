@@ -1,6 +1,5 @@
 package org.firstapproval.backend.core.domain.report
 
-import mu.KotlinLogging
 import mu.KotlinLogging.logger
 import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.external.s3.FileStorageService
@@ -29,7 +28,7 @@ class ReportService(
     fun createReport(email: String, description: String, publicationId: String, fileIds: List<String>) {
         reportRepository.save(Report(email = email, description = description, publicationId = publicationId, fileIds = fileIds))
         try {
-            notificationService.sendReportEmail(email, description)
+            notificationService.sendReportEmailToSupport(email, description)
         } catch (e: Exception) {
             log.error(e) { "cant send report email" }
         }
