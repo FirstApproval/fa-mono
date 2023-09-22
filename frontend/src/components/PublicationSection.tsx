@@ -203,6 +203,7 @@ export const PublicationSection = (props: {
                 </Menu>
                 <ReportProblemDialog
                   isOpen={reportProblemOpened}
+                  publicationId={publication.id}
                   setIsOpen={(value) =>
                     setReportProblemOpened(value)
                   }></ReportProblemDialog>

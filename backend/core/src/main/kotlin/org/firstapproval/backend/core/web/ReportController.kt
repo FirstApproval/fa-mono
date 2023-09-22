@@ -17,7 +17,12 @@ class ReportController(private val reportService: ReportService) : ReportApi {
     }
 
     override fun createReport(createReportRequest: CreateReportRequest): ResponseEntity<Void> {
-        reportService.createReport(createReportRequest.email, createReportRequest.description, createReportRequest.fileIds.toList())
+        reportService.createReport(
+            createReportRequest.email,
+            createReportRequest.description,
+            createReportRequest.publicationId,
+            createReportRequest.fileIds.toList()
+        )
         return ok().build()
     }
 }

@@ -15,10 +15,11 @@ export const ReportProblemDialog = observer(
   (props: {
     isOpen: boolean;
     setIsOpen: (value: boolean) => void;
+    publicationId: string;
   }): ReactElement => {
     // const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-    const { isOpen, setIsOpen } = props;
+    const { isOpen, setIsOpen, publicationId } = props;
 
     const [email, setEmail] = useState<string | null>(null);
     const [description, setDescription] = useState<string | null>(null);
@@ -129,6 +130,7 @@ export const ReportProblemDialog = observer(
         await reportService.createReport({
           email,
           description,
+          publicationId,
           fileIds: []
         });
         setLoading(false);

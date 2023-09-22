@@ -47,7 +47,7 @@ export const ActionBar = observer(
           style={{
             height: '1px',
             width: '100%',
-            backgroundColor: '#D2D2D6',
+            // backgroundColor: '#D2D2D6',
             marginBottom: '16px'
           }}
         />
@@ -150,8 +150,8 @@ export const ActionBar = observer(
           style={{
             height: '1px',
             width: '100%',
-            backgroundColor: '#D2D2D6',
-            marginTop: '16px'
+            // backgroundColor: '#D2D2D6',
+            marginTop: '64px'
           }}
         />
         <ArchiveDownloader

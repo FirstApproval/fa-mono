@@ -18,6 +18,6 @@ class ReportService(private val fileStorageService: FileStorageService, private 
     }
 
     @Transactional
-    fun createReport(email: String, description: String, fileIds: List<String>) =
-        reportRepository.save(Report(email = email, description = description, fileIds = fileIds))
+    fun createReport(email: String, description: String, publicationId: String, fileIds: List<String>) =
+        reportRepository.save(Report(email = email, description = description, publicationId = publicationId, fileIds = fileIds))
 }
