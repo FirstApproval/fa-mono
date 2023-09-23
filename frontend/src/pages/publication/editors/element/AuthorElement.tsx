@@ -1,4 +1,4 @@
-import { Avatar, IconButton } from '@mui/material';
+import { Avatar, IconButton, Tooltip } from '@mui/material';
 import { Edit } from '@mui/icons-material';
 import React, { type ReactElement } from 'react';
 import styled from '@emotion/styled';
@@ -18,6 +18,8 @@ import { routerStore } from '../../../../core/router';
 
 import { Page } from '../../../../core/router/constants';
 import { getAuthorLink } from '../../../../core/router/utils';
+import { MutableRefObject } from 'react';
+import { useIsHorizontalOverflow } from '../../../../util/overflowUtil';
 
 interface AuthorElementProps {
   isReadonly: boolean;
@@ -35,6 +37,8 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
   let lastName;
   let username: string;
   let profileImage: string | undefined;
+  const nameRef: MutableRefObject<HTMLDivElement | null> = React.useRef(null);
+  const isOverflow = useIsHorizontalOverflow(nameRef, () => {});
 
   if (isConfirmed) {
     const confirmedAuthor = author as ConfirmedAuthor;
@@ -83,18 +87,20 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
           {getInitials(firstName, lastName)}
         </Avatar>
         <AuthorWrap>
-          <AuthorName>
-            {isConfirmed && (
-              <span style={{ textDecoration: 'underline' }}>
-                {firstName} {lastName}
-              </span>
-            )}
-            {!isConfirmed && (
-              <span>
-                {firstName} {lastName} (not registered)
-              </span>
-            )}
-          </AuthorName>
+          <Tooltip title={isOverflow ? `${firstName} ${lastName}` : undefined}>
+            <AuthorName ref={nameRef}>
+              {isConfirmed && (
+                <span style={{ textDecoration: 'underline' }}>
+                  {firstName} {lastName}
+                </span>
+              )}
+              {!isConfirmed && (
+                <span>
+                  {firstName} {lastName} (not registered)
+                </span>
+              )}
+            </AuthorName>
+          </Tooltip>
           <AuthorWorkplace>
             {onAuthorEdit && getCurrentWorkplacesString(workplaces)}
           </AuthorWorkplace>

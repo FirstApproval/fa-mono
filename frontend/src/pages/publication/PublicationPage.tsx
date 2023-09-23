@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { Button, DialogContent, LinearProgress } from '@mui/material';
+import { Button, DialogContent, LinearProgress, Tooltip } from '@mui/material';
 import {
   FlexBodyCenter,
   FlexHeader,
@@ -80,6 +80,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { Close } from '@mui/icons-material';
 import { FileBrowserFA } from '../../fire-browser/FileBrowserFA';
 import { Page } from '../../core/router/constants';
+import { MutableRefObject } from 'react';
+import { useIsHorizontalOverflow } from '../../util/overflowUtil';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -121,6 +123,8 @@ export const PublicationPage: FunctionComponent = observer(() => {
     setValidationErrors(result);
     return isValid;
   };
+  const nameRef: MutableRefObject<HTMLDivElement | null> = React.useRef(null);
+  const isOverflow = useIsHorizontalOverflow(nameRef, () => {});
 
   useEffect(() => {
     if (
@@ -168,11 +172,18 @@ export const PublicationPage: FunctionComponent = observer(() => {
               <BetaDialogWithButton />
               {!publicationStore.isView && (
                 <>
-                  <DraftedBy>
-                    Draft by
-                    {/* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */}
-                    {` ${publicationStore.creator?.firstName} ${publicationStore.creator?.lastName}`}
-                  </DraftedBy>
+                  <Tooltip
+                    title={
+                      isOverflow
+                        ? `${publicationStore.creator?.firstName} ${publicationStore.creator?.lastName}`
+                        : undefined
+                    }>
+                    <DraftedBy ref={nameRef}>
+                      Draft by
+                      {/* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */}
+                      {` ${publicationStore.creator?.firstName} ${publicationStore.creator?.lastName}`}
+                    </DraftedBy>
+                  </Tooltip>
                   {publicationStore.savingStatus ===
                     SavingStatusState.SAVING && (
                     <SavingStatus>Saving...</SavingStatus>
