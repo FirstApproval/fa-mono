@@ -72,7 +72,7 @@ class PublicationController(
         return ok().body(CreatePublicationResponse(pub.id, PublicationStatus.valueOf(pub.status.name), pub.creationTime.toOffsetDateTime()))
     }
 
-    override fun submitPublication(id: UUID, accessType: AccessType): ResponseEntity<Void> {
+    override fun submitPublication(id: String, accessType: AccessType): ResponseEntity<Void> {
         publicationService.submitPublication(authHolderService.user, id, AccessTypeEntity.valueOf(accessType.name))
         return ok().build()
     }
@@ -94,55 +94,55 @@ class PublicationController(
         )
     }
 
-    override fun getPublication(id: UUID): ResponseEntity<Publication> {
+    override fun getPublication(id: String): ResponseEntity<Publication> {
         val pub = publicationService.get(authHolderService.user, id)
         val publicationResponse = pub.toApiObject(userService)
         return ok().body(publicationResponse)
     }
 
-    override fun getPublicationPublic(id: UUID): ResponseEntity<Publication> {
+    override fun getPublicationPublic(id: String): ResponseEntity<Publication> {
         val pub = publicationService.get(null, id)
         val publicationResponse = pub.toApiObject(userService)
         return ok().body(publicationResponse)
     }
 
-    override fun getPublicationStatus(id: UUID): ResponseEntity<PublicationStatus> {
+    override fun getPublicationStatus(id: String): ResponseEntity<PublicationStatus> {
         val publication = publicationService.get(authHolderService.user, id)
         return ok(PublicationStatus.valueOf(publication.status.name))
     }
 
-    override fun getDownloadLink(id: UUID): ResponseEntity<DownloadLinkResponse> {
+    override fun getDownloadLink(id: String): ResponseEntity<DownloadLinkResponse> {
         val downloadLink = publicationService.getDownloadLinkForArchive(authHolderService.user, id)
         return ok(downloadLink)
     }
 
-    override fun getPublicationSampleFilesDownloadLink(id: UUID): ResponseEntity<DownloadLinkResponse> {
+    override fun getPublicationSampleFilesDownloadLink(id: String): ResponseEntity<DownloadLinkResponse> {
         val downloadLink = publicationService.getDownloadLinkForSampleArchive(id)
         return ok(downloadLink)
     }
 
-    override fun incrementPublicationViewCount(id: UUID): ResponseEntity<Void> {
+    override fun incrementPublicationViewCount(id: String): ResponseEntity<Void> {
         publicationService.incrementViewCount(id)
         return ok().build()
     }
 
-    override fun editPublication(id: UUID, publicationEditRequest: PublicationEditRequest): ResponseEntity<Void> {
+    override fun editPublication(id: String, publicationEditRequest: PublicationEditRequest): ResponseEntity<Void> {
         publicationService.edit(authHolderService.user, id, publicationEditRequest)
         return ok().build()
     }
 
-    override fun getPublicationDownloaders(id: UUID, page: Int, pageSize: Int): ResponseEntity<GetDownloadersResponse> {
+    override fun getPublicationDownloaders(id: String, page: Int, pageSize: Int): ResponseEntity<GetDownloadersResponse> {
         val downloadersPage = downloaderRepository.findAllByPublicationId(id, PageRequest.of(page, pageSize, Sort.by("id").descending()))
         val mappedDownloaders = downloadersPage.map { it.user.toApiObject(userService) }.toList()
         return ok(GetDownloadersResponse(downloadersPage.isLast, mappedDownloaders))
     }
 
-    override fun delete(id: UUID): ResponseEntity<Void> {
+    override fun delete(id: String): ResponseEntity<Void> {
         publicationService.delete(id, authHolderService.user)
         return ok().build()
     }
 
-    override fun downloadPdf(id: UUID): ResponseEntity<String> {
+    override fun downloadPdf(id: String): ResponseEntity<String> {
         return ok(getEncoder().encodeToString(publicationPdfService.generate(id)))
     }
 }

@@ -1,58 +1,47 @@
 package org.firstapproval.backend.core.infra.elastic
 
 import jakarta.persistence.Id
-import jakarta.persistence.Transient
-import org.firstapproval.backend.core.domain.publication.AccessType
-import org.firstapproval.backend.core.domain.publication.PublicationStatus
-import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
 import org.springframework.data.elasticsearch.annotations.Document
 import org.springframework.data.elasticsearch.annotations.Field
-import org.springframework.data.elasticsearch.annotations.FieldType
 import org.springframework.data.elasticsearch.annotations.FieldType.Date_Nanos
-import org.springframework.data.elasticsearch.annotations.FieldType.Keyword
 import org.springframework.data.elasticsearch.annotations.FieldType.Text
+import org.springframework.data.elasticsearch.annotations.Setting
 import java.time.ZonedDateTime
 import java.util.UUID
 
 @Document(indexName = "publications")
+@Setting(settingPath = "elastic.json")
 class PublicationElastic(
     @Id
-    var id: UUID,
-    @Transient
-    val creatorId: UUID,
-    @Field(type = Keyword)
-    var status: PublicationStatus = PENDING,
-    var accessType: AccessType,
-    @Field(type = Text)
+    var id: String,
+    @Field(type = Text, analyzer = "edge_ngram_analyzer")
     var title: String? = null,
+    @Field(type = Text, analyzer = "edge_ngram_analyzer")
     var description: List<String>? = null,
-    @Field(type = Keyword)
+    @Field(type = Text, analyzer = "edge_ngram_analyzer")
     var grantOrganizations: List<String>? = null,
+    @Field(type = Text, analyzer = "edge_ngram_analyzer")
     var primaryArticles: List<String>? = null,
+    @Field(type = Text, analyzer = "edge_ngram_analyzer")
     var relatedArticles: List<String>? = null,
-    @Field(type = Keyword)
+    @Field(type = Text, analyzer = "edge_ngram_analyzer")
     var tags: List<String>? = null,
-    @Field(type = Text)
+    @Field(type = Text, analyzer = "edge_ngram_analyzer")
     var objectOfStudyTitle: String? = null,
-    @Field(type = Keyword)
+    @Field(type = Text, analyzer = "edge_ngram_analyzer")
     var objectOfStudyDescription: List<String>? = null,
-    @Field(type = Text)
+    @Field(type = Text, analyzer = "edge_ngram_analyzer")
     var software: List<String>? = null,
-    @Field(type = Text)
+    @Field(type = Text, analyzer = "edge_ngram_analyzer")
     var methodTitle: String? = null,
-    @Field(type = Text)
+    @Field(type = Text, analyzer = "edge_ngram_analyzer")
     var methodDescription: List<String>? = null,
+    @Field(type = Text, analyzer = "edge_ngram_analyzer")
     var predictedGoals: List<String>? = null,
     @Field(type = Date_Nanos)
     var creationTime: ZonedDateTime = ZonedDateTime.now(),
     @Field(type = Date_Nanos)
     var publicationTime: ZonedDateTime? = null,
-    @Field(type = Text)
+    @Field(type = Text, analyzer = "edge_ngram_analyzer")
     var negativeData: String? = null,
-    @Field(type = FieldType.Long)
-    var archiveSize: Long? = null,
-    @Field(type = FieldType.Long)
-    var archiveSampleSize: Long? = null,
-    @Field(type = FieldType.Boolean)
-    var isNegative: Boolean? = null,
 )

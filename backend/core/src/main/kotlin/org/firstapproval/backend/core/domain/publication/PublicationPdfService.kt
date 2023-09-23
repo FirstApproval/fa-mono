@@ -1,6 +1,5 @@
 package org.firstapproval.backend.core.domain.publication
 
-import org.apache.commons.codec.digest.DigestUtils.sha256Hex
 import org.firstapproval.backend.core.config.Properties.FrontendProperties
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.infra.pdf.PdfService
@@ -8,7 +7,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.thymeleaf.context.Context
 import java.util.UUID
-import java.util.UUID.randomUUID
 
 @Service
 class PublicationPdfService(
@@ -18,7 +16,7 @@ class PublicationPdfService(
 ) {
 
     @Transactional(readOnly = true)
-    fun generate(publicationId: UUID): ByteArray {
+    fun generate(publicationId: String): ByteArray {
         val publication = publicationRepository.getReferenceById(publicationId)
         val templateName = "pdf/publication-pdf"
         return pdfService.generate(templateName, generateThymeleafContext(publication))
@@ -166,7 +164,11 @@ class PublicationPdfService(
 
     private fun authorsDescriptions(publication: Publication): String {
         return (publication.confirmedAuthors.associate { it.user.lastName + " " + it.user.firstName to (it.shortBio ?: "") } +
-            publication.unconfirmedAuthors.associate { it.lastName + " " + it.firstName to (it.shortBio ?: "") })
+            publication.unconfirmedAuthors.associate
+            {
+                it.lastName + " " + it.firstName to
+                    (it.workplaces.map { workplace -> "${workplace.organization.name} ${workplace.organizationDepartment?.name ?: ""}" }.joinToString { ", " } ?: "")
+            })
             .map { "<div style=\"margin-bottom: 2px\"><b>${it.key}.</b> ${it.value}</div>" }.joinToString(separator = "")
     }
 

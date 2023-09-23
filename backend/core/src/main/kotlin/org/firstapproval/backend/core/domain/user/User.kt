@@ -35,7 +35,6 @@ class User(
     @Convert(converter = StringEncryptionConverter::class)
     var email: String? = null,
     var password: String? = null,
-    var selfInfo: String? = null,
     var profileImage: String? = null,
     var creationTime: ZonedDateTime = now(),
     var viewsCount: Long = 0,
@@ -50,7 +49,6 @@ fun User.toApiObject(userService: UserService) = UserInfo().also {
     it.middleName = middleName
     it.lastName = lastName
     it.email = email
-    it.selfInfo = selfInfo
     it.username = username
     it.profileImage = userService.getProfileImage(profileImage)
     it.workplaces = workplaces.map { workplace -> workplace.toApiObject() }

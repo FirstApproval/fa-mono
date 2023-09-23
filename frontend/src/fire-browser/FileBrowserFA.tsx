@@ -19,7 +19,6 @@ import React, {
 import { ChonkyIconFA } from '@first-approval/chonky-icon-fontawesome';
 import { DuplicateCheckResult, type FileSystemFA } from './FileSystemFA';
 import { observer } from 'mobx-react-lite';
-import { FileToolbar } from './FileToolbar';
 import styled from '@emotion/styled';
 import {
   CircularProgress,
@@ -54,9 +53,10 @@ interface FileBrowserProps {
   isReadonly: boolean;
   onArchiveDownload?: (files: FileData[]) => void;
   onEditFilesModalOpen?: () => void;
+  onPreviewFilesModalOpen?: () => void;
   fs: FileSystemFA;
   isChonkyDragRef: MutableRefObject<boolean>;
-  disableToolbar?: boolean;
+  toolbarComponent?: ReactElement;
 }
 
 export const FileBrowserFA = observer(
@@ -202,6 +202,8 @@ export const FileBrowserFA = observer(
         props.isChonkyDragRef.current = false;
       } else if (data.id === ChonkyActions.EditFilesModal.id) {
         props.onEditFilesModalOpen?.();
+      } else if (data.id === ChonkyActions.PreviewFilesModal.id) {
+        props.onPreviewFilesModalOpen?.();
       }
     };
 
@@ -228,6 +230,10 @@ export const FileBrowserFA = observer(
 
     if (props.isReadonly && props.onEditFilesModalOpen) {
       myFileActions.push(ChonkyActions.EditFilesModal);
+    }
+
+    if (props.isReadonly && props.onPreviewFilesModalOpen) {
+      myFileActions.push(ChonkyActions.PreviewFilesModal);
     }
 
     const [files, setFiles] = useState<FileArray>([]);
@@ -257,9 +263,7 @@ export const FileBrowserFA = observer(
             fileActions={myFileActions}
             disableDefaultFileActions={true}>
             <FileNavbar />
-            {!props.disableToolbar && (
-              <FileToolbar instanceId={props.instanceId} />
-            )}
+            {props.toolbarComponent && props.toolbarComponent}
             <DividerWrap />
             {!props.fs.isLoading && (
               <>

@@ -2,13 +2,14 @@ import styled from '@emotion/styled';
 import React, { type ReactElement } from 'react';
 import { type UserInfo } from '../../apis/first-approval-api';
 import { Avatar, Tooltip } from '@mui/material';
-import { getInitials } from '../../util/userUtil';
 import {
-  getRelativeProfileLink,
+  getCurrentWorkplacesString,
+  getInitials,
   renderProfileImage
-} from '../../fire-browser/utils';
-import { Page } from '../../core/RouterStore';
+} from '../../util/userUtil';
 import { routerStore } from '../../core/router';
+import { Page } from '../../core/router/constants';
+import { getAuthorLink } from '../../core/router/utils';
 
 const MAX_SELF_BIO_LENGTH = 116;
 
@@ -17,10 +18,7 @@ export const PopularAuthor = (props: { author: UserInfo }): ReactElement => {
   return (
     <FlexWrap
       onClick={() => {
-        routerStore.navigatePage(
-          Page.PROFILE,
-          getRelativeProfileLink(author.username)
-        );
+        routerStore.navigatePage(Page.PROFILE, getAuthorLink(author.username));
       }}>
       <MarginWrap>
         <Avatar
@@ -29,14 +27,19 @@ export const PopularAuthor = (props: { author: UserInfo }): ReactElement => {
           {getInitials(author.firstName, author.lastName)}
         </Avatar>
       </MarginWrap>
-      <NameWrap>
-        {author.firstName} {author.lastName}
-      </NameWrap>
-      <Tooltip
-        disableHoverListener={author.selfInfo?.length < MAX_SELF_BIO_LENGTH}
-        title={author.selfInfo}>
-        <BioWrap>{author.selfInfo}</BioWrap>
-      </Tooltip>
+      <div>
+        <NameWrap>
+          {author.firstName} {author.lastName}
+        </NameWrap>
+        <Tooltip
+          disableHoverListener={
+            getCurrentWorkplacesString(author.workplaces)?.length <
+            MAX_SELF_BIO_LENGTH
+          }
+          title={getCurrentWorkplacesString(author.workplaces)}>
+          <BioWrap>{getCurrentWorkplacesString(author.workplaces)}</BioWrap>
+        </Tooltip>
+      </div>
     </FlexWrap>
   );
 };

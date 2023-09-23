@@ -7,6 +7,7 @@ import org.firstapproval.backend.core.domain.user.User
 import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode.SELECT
 import java.time.ZonedDateTime
+import java.time.ZonedDateTime.now
 import java.util.*
 import org.firstapproval.api.server.model.Workplace as WorkplaceApiObject
 
@@ -25,10 +26,10 @@ class Workplace(
     @JoinColumn(nullable = false, updatable = false)
     var user: User,
     var address: String,
-    var postalCode: String,
+    var postalCode: String? = null,
     var isFormer: Boolean,
-    var creationTime: ZonedDateTime = ZonedDateTime.now(),
-    var editingTime: ZonedDateTime = ZonedDateTime.now(),
+    var creationTime: ZonedDateTime = now(),
+    var editingTime: ZonedDateTime = now(),
 )
 
 fun Workplace.toApiObject() = WorkplaceApiObject().also {

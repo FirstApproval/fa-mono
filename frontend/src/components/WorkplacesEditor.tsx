@@ -2,12 +2,14 @@ import React, { type ReactElement, useEffect, useState } from 'react';
 import ErrorOutline from '@mui/icons-material/ErrorOutline';
 import styled from '@emotion/styled';
 import {
+  Alert,
   Autocomplete,
   Button,
   CircularProgress,
   Divider,
   FormControlLabel,
   IconButton,
+  Snackbar,
   Switch,
   TextField
 } from '@mui/material';
@@ -18,20 +20,33 @@ import {
   Workplace
 } from '../apis/first-approval-api';
 import { organizationService } from '../core/service';
-import { WorkplaceProps } from '../core/WorkplaceProps';
+import {
+  IWorkplaceStore,
+  WorkplaceProps,
+  WorkplaceValidationState
+} from '../core/WorkplaceProps';
 import { observer } from 'mobx-react-lite';
 import { LoadingButton } from '@mui/lab';
 import { Clear } from '@mui/icons-material';
-import { userStore } from '../core/user';
 
+export enum ActionButtonType {
+  FULL_WIDTH_CONFIRM = 'FULL_WIDTH_CONFIRM'
+}
 interface WorkplacesEditorProps {
-  showSaveButton: boolean;
+  store: IWorkplaceStore;
+  buttonType?: ActionButtonType;
+  saveButtonText?: string;
+  isModalWindow: boolean;
+  saveCallback?: (workplaces: Workplace[]) => Promise<boolean>;
 }
 
 export const WorkplacesEditor = observer(
   (props: WorkplacesEditorProps): ReactElement => {
+    const { isModalWindow, saveCallback, buttonType, store, saveButtonText } =
+      props;
     const [savingInProgress, setSavingInProgress] = useState(false);
-    const { workplaces, workplacesProps } = userStore;
+    const [showSuccessSavingAlter, setShowSuccessSavingAlter] = useState(false);
+    const { workplaces, workplacesProps, workplacesValidation } = store;
     const [workplaceOrgQueryIndex, setWorkplaceOrgQueryIndex] = useState('0-');
 
     useEffect(() => {
@@ -56,10 +71,6 @@ export const WorkplacesEditor = observer(
       }
     }, [workplaceOrgQueryIndex]);
 
-    const notValid = workplaces.some(
-      (workplace) => !workplace.organization || !workplace.address
-    );
-
     const currentWorkplaceAbsent = !workplaces.some(
       (workplace) => !workplace.isFormer
     );
@@ -67,14 +78,15 @@ export const WorkplacesEditor = observer(
     const mapWorkplace = (
       workplace: Workplace,
       workplaceProps: WorkplaceProps,
+      workplaceValidationState: WorkplaceValidationState,
       index: number
     ): ReactElement => {
       return (
         <FullWidth key={index}>
           <DividerWrap hidden={index === 0} />
-          <FlexWrapOrganization>
+          <FlexWrapOrganization extendWidth={!isModalWindow}>
             <Autocomplete
-              key={`orgKey-${index}`}
+              key={`orgKey-${index}-${workplaceProps.departmentQueryKey}`}
               filterOptions={(options, params) => {
                 if (!options) {
                   return options;
@@ -95,7 +107,6 @@ export const WorkplacesEditor = observer(
                 workplaceProps.departmentQuery = '';
                 workplaceProps.orgQuery = newValue?.name ?? '';
                 workplaceProps.departmentQueryKey = newValue?.name ?? ''; // for re-rendering
-                // }
               }}
               onInputChange={(event, newInputValue, reason) => {
                 if (reason === 'reset' && newInputValue) {
@@ -124,7 +135,7 @@ export const WorkplacesEditor = observer(
               sx={{ width: '100%' }}
               renderInput={(params) => (
                 <TextField
-                  autoFocus={!workplaceProps.orgQuery}
+                  autoFocus={!workplaceProps.orgQuery && !isModalWindow}
                   {...params}
                   variant="outlined"
                   label={'Organization name'}
@@ -132,14 +143,25 @@ export const WorkplacesEditor = observer(
                   placeholder={
                     'Institution, company, or organization you are affiliated with'
                   }
+                  error={!workplaceValidationState.isValidOrganization}
+                  helperText={
+                    !workplaceValidationState.isValidOrganization
+                      ? 'Organization can not be empty'
+                      : undefined
+                  }
                 />
               )}
             />
             {workplaces.length > 1 ? (
               <IconButtonWrap
+                useMarginRight={!isModalWindow}
                 onClick={() => {
                   workplaces.splice(index, 1);
                   workplacesProps.splice(index, 1);
+                  workplacesValidation.splice(index, 1);
+                  if (workplaces.length === 1) {
+                    workplaces[0].isFormer = false;
+                  }
                 }}>
                 <Clear
                   sx={{
@@ -150,7 +172,7 @@ export const WorkplacesEditor = observer(
                 />
               </IconButtonWrap>
             ) : (
-              <WidthElement value={'62px'} />
+              !isModalWindow && <WidthElement value={'62px'} />
             )}
           </FlexWrapOrganization>
           <HeightElement value={'32px'} />
@@ -227,15 +249,20 @@ export const WorkplacesEditor = observer(
             )}
           />
           <HeightElement value={'32px'} />
-          <FlexWrapRow>
+          <FlexWrapRowFullWidth>
             <AddressField
               multiline={true}
               maxRows={1}
-              value={workplace.address}
+              value={workplace.address ?? ''}
               onChange={(e) => {
                 workplaces[index].address = e.currentTarget.value;
               }}
-              // error={!workplace.address}
+              error={!workplaceValidationState.isValidAddress}
+              helperText={
+                !workplaceValidationState.isValidAddress
+                  ? 'Address can not be empty'
+                  : undefined
+              }
               label="Address"
               variant="outlined"
             />
@@ -243,29 +270,28 @@ export const WorkplacesEditor = observer(
             <PostalCodeField
               multiline={true}
               maxRows={1}
-              value={workplace.postalCode}
+              value={workplace.postalCode ?? ''}
               onChange={(e) => {
                 workplaces[index].postalCode = e.currentTarget.value;
               }}
               label="Postal code (opt.)"
               variant="outlined"
             />
-          </FlexWrapRow>
-          <FormerWorkplace
-            labelPlacement={'start'}
-            control={
-              <Switch
-                checked={workplace.isFormer}
-                onChange={(event) => {
-                  if (!event.currentTarget.checked) {
-                    workplaces.forEach((w) => (w.isFormer = true));
-                  }
-                  workplaces[index].isFormer = event.currentTarget.checked;
-                }}
-              />
-            }
-            label="Former workplace"
-          />
+          </FlexWrapRowFullWidth>
+          {!isModalWindow && (
+            <FormerWorkplace
+              labelPlacement={'start'}
+              control={
+                <Switch
+                  checked={workplace.isFormer}
+                  onChange={(event) => {
+                    workplaces[index].isFormer = event.currentTarget.checked;
+                  }}
+                />
+              }
+              label="Former workplace"
+            />
+          )}
         </FullWidth>
       );
     };
@@ -283,24 +309,14 @@ export const WorkplacesEditor = observer(
       <EditorWrap>
         <FullWidth key={`workspaces-${'workspacesWrapKey'}`}>
           {workplaces.map((workplace: Workplace, index: number) => {
-            return mapWorkplace(workplace, workplacesProps[index], index);
+            return mapWorkplace(
+              workplace,
+              workplacesProps[index],
+              workplacesValidation[index],
+              index
+            );
           })}
         </FullWidth>
-        {notValid && (
-          <>
-            <HeightElement value={'32px'} />
-            <ValidationError>
-              <ErrorOutline
-                htmlColor={'#D32F2F'}
-                sx={{ width: '22px', height: '22px' }}
-              />
-              <WidthElement value={'12px'} />
-              <ValidationErrorText>
-                Fill in all the required fields
-              </ValidationErrorText>
-            </ValidationError>
-          </>
-        )}
         {currentWorkplaceAbsent && (
           <>
             <HeightElement value={'32px'} />
@@ -328,25 +344,44 @@ export const WorkplacesEditor = observer(
               organizationOptions: [],
               departmentOptions: []
             };
-            workplaces.push({ isFormer: workplaces.length > 0 });
+            workplaces.push({ isFormer: false });
+            workplacesValidation.push({
+              isValidOrganization: true,
+              isValidAddress: true
+            });
           }}>
           + Add workplace
         </Button>
         <HeightElement value="32px" />
-        {props.showSaveButton && (
+        {buttonType === ActionButtonType.FULL_WIDTH_CONFIRM && saveCallback && (
           <SaveButton
             loading={savingInProgress}
-            disabled={notValid || currentWorkplaceAbsent}
+            disabled={currentWorkplaceAbsent}
             color={'primary'}
             variant={'contained'}
             onClick={() => {
               setSavingInProgress(true);
-              void userStore.saveWorkplaces(workplaces).then(() => {
+              void saveCallback(workplaces).then((saved) => {
                 setSavingInProgress(false);
+                if (saved) {
+                  setShowSuccessSavingAlter(true);
+                }
               });
             }}>
-            Save affiliations
+            {saveButtonText}
           </SaveButton>
+        )}
+        {showSuccessSavingAlter && (
+          <Snackbar
+            open={showSuccessSavingAlter}
+            autoHideDuration={4000}
+            onClose={() => {
+              setShowSuccessSavingAlter(false);
+            }}>
+            <Alert severity="success" sx={{ width: '100%' }}>
+              Affiliations successfully saved!
+            </Alert>
+          </Snackbar>
         )}
       </EditorWrap>
     );
@@ -375,18 +410,22 @@ const EditorWrap = styled.div`
   justify-content: start;
 `;
 
-export const FlexWrapRow = styled.div`
+export const FlexWrapRowFullWidth = styled.div`
   display: flex;
   width: 100%;
 `;
 
-export const FlexWrapOrganization = styled.div`
+export const FlexWrapOrganization = styled.div<{
+  extendWidth: boolean;
+}>`
+  ${(props) => (props.extendWidth ? 'width: calc(100% + 56px);' : '100%;')}
   display: flex;
-  width: calc(100% + 56px);
   align-items: center;
 `;
 
-const IconButtonWrap = styled(IconButton)`
+const IconButtonWrap = styled(IconButton)<{
+  useMarginRight: boolean;
+}>`
   margin-left: 8px;
   padding: 12px;
   cursor: pointer;

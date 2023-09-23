@@ -1,44 +1,17 @@
-import { authStore } from './auth';
-import { OauthType } from '../apis/first-approval-api';
+import { authStore } from '../auth';
 import { action, computed, makeObservable, observable, reaction } from 'mobx';
 import { createBrowserHistory } from 'history';
-import { authService } from './service';
+import { authService } from '../service';
 import { v4 as uuidv4 } from 'uuid';
-
-export enum Page {
-  LOADING,
-
-  SIGN_IN,
-  SIGN_UP,
-
-  HOME_PAGE,
-
-  PUBLICATION,
-  SHARING_OPTIONS,
-
-  PROFILE,
-  ACCOUNT,
-
-  SIGN_UP_NAME,
-  SELF_INFO,
-  SIGN_UP_PASSWORD,
-  EMAIL_VERIFICATION,
-
-  RESET_PASSWORD,
-  RESTORE_PASSWORD_EMAIL
-}
-
-const pathToOauthType: Record<string, OauthType> = {
-  '/facebook-callback': OauthType.FACEBOOK,
-  '/google-callback': OauthType.GOOGLE,
-  '/linkedin-callback': OauthType.LINKEDIN,
-  '/orcid-callback': OauthType.ORCID
-};
-
-const profilePath = '/p/';
-const myProfilePath = '/profile/';
-const accountPath = '/account/';
-export const ACCOUNT_AFFILIATIONS_PATH = '/account/affiliations';
+import {
+  ACCOUNT_AFFILIATIONS_PATH,
+  authorPath,
+  Page,
+  pathToOauthType,
+  publicationPath,
+  shortAuthorPath,
+  shortPublicationPath
+} from './constants';
 
 const history = createBrowserHistory();
 
@@ -108,8 +81,28 @@ export class RouterStore {
         return;
       }
 
-      if (path.startsWith('/publication')) {
+      if (path.startsWith(publicationPath)) {
         this.navigatePage(Page.PUBLICATION, path, true);
+        return;
+      }
+      if (path.startsWith(shortPublicationPath)) {
+        this.navigatePage(
+          Page.PUBLICATION,
+          path.replace(shortPublicationPath, publicationPath),
+          true
+        );
+        return;
+      }
+      if (path.startsWith(authorPath)) {
+        this.navigatePage(Page.PROFILE, path, true);
+        return;
+      }
+      if (path.startsWith(shortAuthorPath)) {
+        this.navigatePage(
+          Page.PROFILE,
+          path.replace(shortAuthorPath, authorPath),
+          true
+        );
         return;
       }
       if (path.startsWith('/account')) {
@@ -117,10 +110,6 @@ export class RouterStore {
         return;
       }
       if (path.startsWith('/profile')) {
-        this.navigatePage(Page.PROFILE, path, true);
-        return;
-      }
-      if (path.startsWith('/p/')) {
         this.navigatePage(Page.PROFILE, path, true);
         return;
       }
@@ -192,30 +181,6 @@ export class RouterStore {
 
   get lastPathSegment(): string {
     return this._path.substring(this._path.lastIndexOf('/') + 1);
-  }
-
-  get profileUsername(): string | null {
-    return this._path.includes(profilePath)
-      ? this._path.substring(
-          this._path.lastIndexOf(profilePath) + profilePath.length
-        )
-      : null;
-  }
-
-  get accountTab(): string | null {
-    return this._path.includes(accountPath)
-      ? this._path.substring(
-          this._path.lastIndexOf(accountPath) + accountPath.length
-        )
-      : null;
-  }
-
-  get profileTab(): string | null {
-    return this._path.includes(myProfilePath)
-      ? this._path.substring(
-          this._path.lastIndexOf(myProfilePath) + myProfilePath.length
-        )
-      : null;
   }
 
   openInNewTab(url: string): void {

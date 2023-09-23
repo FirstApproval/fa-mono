@@ -31,25 +31,30 @@ import {
   PublicationStatus
 } from '../../apis/first-approval-api';
 import { PublicationSection } from '../../components/PublicationSection';
-import {
-  copyTextToClipboard,
-  getProfileLink,
-  renderProfileImage
-} from 'src/fire-browser/utils';
+import { copyTextToClipboard } from 'src/fire-browser/utils';
 import { userStore } from 'src/core/user';
 import { downloadersStore } from '../publication/store/downloadsStore';
-import { Page } from '../../core/RouterStore';
 import { Footer } from '../home/Footer';
 import { HeaderComponent } from '../../components/HeaderComponent';
 import { DownloadersDialog } from '../publication/DownloadersDialog';
+import {
+  getCurrentWorkplacesString,
+  renderProfileImage
+} from '../../util/userUtil';
+import { Page } from '../../core/router/constants';
+import {
+  profileUsername,
+  profileTab,
+  getShortAuthorLink
+} from 'src/core/router/utils';
 
 const tabs: string[] = ['published', 'drafts'];
 
 export const ProfilePage: FunctionComponent = observer(() => {
-  const [username] = useState(() => routerStore.profileUsername);
-  const [profileTab] = useState(() => routerStore.profileTab);
+  const [username] = useState(() => profileUsername());
+  const [tab] = useState(() => profileTab());
   const [tabNumber, setTabNumber] = React.useState(
-    (profileTab && tabs.findIndex((element) => element === profileTab)) ?? 0
+    (tab && tabs.findIndex((element) => element === tab)) ?? 0
   );
   const [store] = useState(() => new ProfilePageStore(username));
   const user = (username ? store : userStore).user!;
@@ -120,15 +125,16 @@ export const ProfilePage: FunctionComponent = observer(() => {
                 />
                 <UserInfoElement>
                   <NameElement>{lastNameAndFirstName}</NameElement>
-                  <SelfInfo style={{ marginTop: '10px', marginBottom: '10px' }}>
-                    {user.selfInfo}
-                  </SelfInfo>
+                  <WorkPlaces
+                    style={{ marginTop: '10px', marginBottom: '10px' }}>
+                    {getCurrentWorkplacesString(user.workplaces)}
+                  </WorkPlaces>
                   <EmailElement>
                     <EmailOutlined
                       style={{ marginRight: '12px', marginTop: '2.5px' }}
                       htmlColor={'#68676e'}
                     />
-                    <SelfInfo>{user.email}</SelfInfo>
+                    <WorkPlaces>{user.email}</WorkPlaces>
                   </EmailElement>
                   <RowElement visibility={username ? 'hidden' : 'visible'}>
                     <EditProfileAndCreateDraftButtons
@@ -146,7 +152,7 @@ export const ProfilePage: FunctionComponent = observer(() => {
                       size={'large'}
                       onClick={() => {
                         void copyTextToClipboard(
-                          getProfileLink(user.username)
+                          getShortAuthorLink(user.username)
                         ).finally();
                       }}>
                       <ContentCopy style={{ marginRight: '8px' }} />
@@ -215,10 +221,10 @@ export const ProfilePage: FunctionComponent = observer(() => {
                               Upload your first dataset
                             </UploadYourFirstDatasetHeader>
                             <HeightElement value={'24px'} />
-                            <SelfInfo>
+                            <WorkPlaces>
                               Show off your work. Get recognition and be a part
                               of a growing community.
-                            </SelfInfo>
+                            </WorkPlaces>
                             <HeightElement value={'24px'} />
                             <StartPublishingButton
                               color={'primary'}
@@ -324,7 +330,7 @@ export const UserInfoElement = styled.div`
   margin-left: 32px;
 `;
 
-export const SelfInfo = styled.div`
+export const WorkPlaces = styled.div`
   color: var(--text-secondary, #68676e);
   font-feature-settings: 'clig' off, 'liga' off;
   /* typography/body1 */

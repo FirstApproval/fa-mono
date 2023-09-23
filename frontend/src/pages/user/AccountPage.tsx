@@ -20,7 +20,6 @@ import {
   Parent,
   SpaceBetween
 } from '../common.styled';
-import { routerStore } from '../../core/router';
 import styled from '@emotion/styled';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -30,27 +29,27 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import { userService } from '../../core/service';
-import {
-  copyTextToClipboard,
-  getProfileLink,
-  renderProfileImage
-} from '../../fire-browser/utils';
+import { copyTextToClipboard } from '../../fire-browser/utils';
 import { validateEmail } from 'src/util/emailUtil';
 import { userStore } from '../../core/user';
-import { getInitials } from 'src/util/userUtil';
+import { getInitials, renderProfileImage } from 'src/util/userUtil';
 import _, { cloneDeep } from 'lodash';
 import { Footer } from '../home/Footer';
 import { HeaderComponent } from '../../components/HeaderComponent';
-import { WorkplacesEditor } from '../../components/WorkplacesEditor';
+import {
+  ActionButtonType,
+  WorkplacesEditor
+} from '../../components/WorkplacesEditor';
+import { accountTab, getShortAuthorLink } from '../../core/router/utils';
 
 const tabs: string[] = ['general', 'profile', 'affiliations', 'password'];
 
 export const AccountPage: FunctionComponent = observer(() => {
   const [saveDisabled, setSaveDisabled] = useState(() => true);
   const { editableUser, user } = userStore;
-  const [accountTab] = useState(() => routerStore.accountTab);
+  const [tab] = useState(() => accountTab());
   const [tabNumber, setTabNumber] = React.useState(
-    (accountTab && tabs.findIndex((element) => element === accountTab)) ?? 0
+    (tab && tabs.findIndex((element) => element === tab)) ?? 0
   );
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [previousPassword, setPreviousPassword] = useState('');
@@ -166,7 +165,6 @@ export const AccountPage: FunctionComponent = observer(() => {
           firstName: editableUser.firstName,
           lastName: editableUser.lastName,
           username,
-          selfInfo: editableUser.selfInfo,
           middleName: editableUser.middleName,
           profileImage: editableUser.profileImage,
           deleteProfileImage: userStore.deleteProfileImage,
@@ -319,7 +317,7 @@ export const AccountPage: FunctionComponent = observer(() => {
                     <UsernameTip
                       onClick={() => {
                         void copyTextToClipboard(
-                          getProfileLink(editableUser.username)
+                          getShortAuthorLink(editableUser.username)
                         ).finally();
                       }}>
                       {'Your FA URL: https://firstapproval.com/profile/' +
@@ -398,19 +396,6 @@ export const AccountPage: FunctionComponent = observer(() => {
                       !isValidLastName ? 'Invalid last name' : undefined
                     }
                   />
-                  <NameElement>Self info</NameElement>
-                  <FullWidthTextField
-                    multiline
-                    minRows={6}
-                    maxRows={6}
-                    value={editableUser.selfInfo}
-                    onChange={(e) => {
-                      editableUser.selfInfo = e.currentTarget.value;
-                      setSaveDisabled(false);
-                    }}
-                    label="Self info"
-                    variant="outlined"
-                  />
                   <HeightElement value={'115px'} />
                   <SaveButton
                     color={'primary'}
@@ -426,7 +411,21 @@ export const AccountPage: FunctionComponent = observer(() => {
               {tabNumber === 2 && (
                 <TabContainer>
                   <HeightElement value={'32px'}></HeightElement>
-                  <WorkplacesEditor showSaveButton={true} />
+                  <WorkplacesEditor
+                    isModalWindow={false}
+                    store={userStore}
+                    buttonType={ActionButtonType.FULL_WIDTH_CONFIRM}
+                    saveButtonText={'Save affiliations'}
+                    saveCallback={async (workplaces): Promise<boolean> => {
+                      const isValid = userStore.validate();
+                      if (isValid) {
+                        return userStore.saveWorkplaces(workplaces).then(() => {
+                          return true;
+                        });
+                      }
+                      return Promise.resolve(isValid);
+                    }}
+                  />
                 </TabContainer>
               )}
               {tabNumber === 3 && (

@@ -17,13 +17,18 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import { FileBrowserFA } from './FileBrowserFA';
 import { FileData } from '@first-approval/chonky';
+import { FileToolbar } from './FileToolbar';
+import { FileToolbarView } from './FileToolbarView';
 
 interface FileUploaderProps {
   instanceId: string;
   rootFolderName: string;
   fileDownloadUrlPrefix: string;
   isReadonly: boolean;
+  isPreview: boolean;
   onArchiveDownload: (files: FileData[]) => void;
+  onEditFilesModalOpen?: () => void;
+  onPreviewFilesModalOpen?: () => void;
   fs: FileSystemFA;
 }
 
@@ -105,6 +110,18 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
           isChonkyDragRef={isChonkyDragRef}
           isReadonly={props.isReadonly}
           onArchiveDownload={props.onArchiveDownload}
+          toolbarComponent={
+            props.isReadonly ? (
+              <FileToolbarView
+                instanceId={props.instanceId}
+                downloadDisabled={props.isPreview}
+              />
+            ) : (
+              <FileToolbar instanceId={props.instanceId} />
+            )
+          }
+          onEditFilesModalOpen={props.onEditFilesModalOpen}
+          onPreviewFilesModalOpen={props.onPreviewFilesModalOpen}
         />
         <Dialog
           open={props.fs.renameOrReplaceDialogOpen}

@@ -30,6 +30,7 @@ type UploadFilesAfterDialogFunction = (value: UploadType) => void;
 export class FileSystemFA {
   rootPathFiles: number = 0;
   currentPath: string = '/';
+  private publicationId: string = '';
   private backEndFiles: FileEntry[] = [];
   private localFiles: FileEntry[] = [];
   private allLocalFiles: FileEntry[] = [];
@@ -44,9 +45,10 @@ export class FileSystemFA {
   ) => {};
 
   constructor(
-    readonly publicationId: string,
+    publicationId: string,
     readonly fileService: Omit<FileApi, 'configuration'>
   ) {
+    this.publicationId = publicationId;
     makeObservable<
       FileSystemFA,
       'backEndFiles' | 'localFiles' | 'allLocalFiles'
@@ -69,8 +71,12 @@ export class FileSystemFA {
     reaction(
       () => this.currentPath,
       async () => {
-        const files = await this.listDirectory(this.currentPath);
-        this.backEndFiles = [...files];
+        if (this.publicationId) {
+          const files = await this.listDirectory(this.currentPath);
+          this.backEndFiles = [...files];
+        } else {
+          this.initialized = true;
+        }
       },
       {
         fireImmediately: true
@@ -90,6 +96,12 @@ export class FileSystemFA {
       },
       { fireImmediately: true }
     );
+  }
+
+  async initialize(publicationId: string): Promise<void> {
+    this.publicationId = publicationId;
+    const files = await this.listDirectory(this.currentPath);
+    this.backEndFiles = [...files];
   }
 
   closeReplaceOrRenameDialog = (): void => {

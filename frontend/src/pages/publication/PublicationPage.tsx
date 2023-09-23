@@ -55,7 +55,6 @@ import { ResearchAreaEditor } from './editors/ResearchAreaEditor';
 import { ResearchAreaPage } from './ResearchAreaPage';
 import logo from '../../assets/logo-black-short.svg';
 import { UserMenu } from '../../components/UserMenu';
-import { Page } from '../../core/RouterStore';
 import { ValidationDialog } from './ValidationDialog';
 import {
   fileService,
@@ -80,6 +79,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Close } from '@mui/icons-material';
 import { FileBrowserFA } from '../../fire-browser/FileBrowserFA';
+import { Page } from '../../core/router/constants';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -94,7 +94,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
     useState(false);
   const [validationErrors, setValidationErrors] = useState<Section[]>([]);
 
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget);
@@ -104,7 +104,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
   };
 
   const [publicationStore] = useState(
-    () => new PublicationStore(publicationId, fs)
+    () => new PublicationStore(publicationId, fs, sfs)
   );
 
   const publicationPageStore = useMemo(
@@ -458,6 +458,10 @@ const PublicationBody = observer(
                   routerStore.navigatePage(Page.SIGN_UP);
                 }
               }}
+              onPreviewFilesModalOpen={() => {
+                publicationPageStore.openSampleFilesModal();
+              }}
+              isPreview={publicationStore.isPreview}
             />
           </FilesWrap>
         )}
@@ -477,7 +481,6 @@ const PublicationBody = observer(
               fs={sfs}
               isReadonly={true}
               isChonkyDragRef={isChonkyDragRef}
-              disableToolbar={true}
               onEditFilesModalOpen={() => {
                 publicationPageStore.openSampleFilesModal();
               }}
@@ -509,6 +512,7 @@ const PublicationBody = observer(
                 }}
                 fs={sfs}
                 isReadonly={publicationStore.isReadonly}
+                isPreview={publicationStore.isPreview}
               />
             </SampleFilesWrap>
           </DialogContentWrap>

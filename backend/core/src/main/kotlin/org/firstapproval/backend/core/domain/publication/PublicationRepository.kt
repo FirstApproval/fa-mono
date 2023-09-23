@@ -5,10 +5,10 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
-interface PublicationRepository : JpaRepository<Publication, UUID> {
+interface PublicationRepository : JpaRepository<Publication, String> {
     fun findAllByStatusOrderByCreationTimeDesc(publicationStatus: PublicationStatus): List<Publication>
 
-    fun findAllByIdInAndStatus(ids: List<UUID>, publicationStatus: PublicationStatus): List<Publication>
+    fun findAllByIdInAndStatus(ids: List<String>, publicationStatus: PublicationStatus): List<Publication>
 
     fun findAllByStatusAndAccessTypeAndCreatorId(
         publicationStatus: PublicationStatus,

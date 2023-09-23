@@ -17,9 +17,9 @@ import {
 } from '@mui/icons-material';
 import Button from '@mui/material/Button';
 import { routerStore } from '../../core/router';
-import { Page } from '../../core/RouterStore';
 import { publicationService } from '../../core/service';
 import { AccessType } from '../../apis/first-approval-api';
+import { Page } from '../../core/router/constants';
 
 export const SharingOptionsPage = (props: {
   publicationTitle: string;

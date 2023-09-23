@@ -25,7 +25,7 @@ class PublicationFileController(
     private val authHolderService: AuthHolderService
 ) : FileApi {
 
-    override fun getPublicationFiles(publicationId: UUID, dirPath: String): ResponseEntity<List<PublicationFile>> {
+    override fun getPublicationFiles(publicationId: String, dirPath: String): ResponseEntity<List<PublicationFile>> {
         val files = publicationFileService.getPublicationFiles(authHolderService.user, publicationId, dirPath)
         return ok(files.map {
             PublicationFile()
@@ -41,7 +41,7 @@ class PublicationFileController(
         })
     }
 
-    override fun getPublicationFilesPublic(publicationId: UUID, dirPath: String): ResponseEntity<List<PublicationFile>> {
+    override fun getPublicationFilesPublic(publicationId: String, dirPath: String): ResponseEntity<List<PublicationFile>> {
         val files = publicationFileService.getPublicationFiles(null, publicationId, dirPath)
         return ok(files.map {
             PublicationFile()
@@ -58,7 +58,7 @@ class PublicationFileController(
     }
 
     override fun checkFileDuplicates(
-        publicationId: UUID,
+        publicationId: String,
         checkFileDuplicatesRequest: CheckFileDuplicatesRequest
     ): ResponseEntity<MutableMap<String, Boolean>> {
         return ok(
@@ -71,7 +71,7 @@ class PublicationFileController(
     }
 
     override fun uploadFile(
-        publicationId: UUID,
+        publicationId: String,
         fullPath: String,
         isDir: Boolean,
         type: UploadType,
@@ -121,7 +121,7 @@ class PublicationFileController(
         return ok().build()
     }
 
-    override fun createFolder(publicationId: UUID, createFolderRequest: CreateFolderRequest): ResponseEntity<PublicationFile> {
+    override fun createFolder(publicationId: String, createFolderRequest: CreateFolderRequest): ResponseEntity<PublicationFile> {
         val file = publicationFileService.createFolder(
             authHolderService.user,
             publicationId,

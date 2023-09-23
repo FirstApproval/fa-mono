@@ -88,8 +88,9 @@ class ArchiveService(
         publication.filesCount = mainArchiveResult.filesCount.toLong()
         publication.foldersCount = mainArchiveResult.foldersCount.toLong()
         publicationRepository.save(publication)
+        notificationService.sendEmailForCoAuthorsChanged(publication)
         elasticRepository.save(publication.toPublicationElastic())
-        return mainArchiveResult.fileIds
+        return listOf()
     }
 
     private fun archivePublicationFilesProcess(publication: Publication, password: String): ArchiveResult {
@@ -251,7 +252,7 @@ class ArchiveService(
         }
     }
 
-    fun getFileNameForDescriptionsFile(publicationId: UUID): String {
+    fun getFileNameForDescriptionsFile(publicationId: String): String {
         var fileName = DESCRIPTIONS_FILE_DEFAULT_NAME
         while (publicationFileRepository.existsByPublicationIdAndFullPath(publicationId, "/$fileName.txt")) {
             fileName += "_1"

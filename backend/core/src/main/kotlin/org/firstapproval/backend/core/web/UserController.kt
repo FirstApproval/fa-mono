@@ -5,6 +5,7 @@ import org.firstapproval.api.server.model.*
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.JwtService
 import org.firstapproval.backend.core.config.security.user
+import org.firstapproval.backend.core.domain.organizations.UnconfirmedAuthorWorkplace
 import org.firstapproval.backend.core.domain.organizations.toApiObject
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthorRepository
 import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthor
@@ -44,7 +45,7 @@ class UserController(
                 .middleName(user.middleName)
                 .email(user.email)
                 .username(user.username)
-                .selfInfo(user.selfInfo)
+                .workplaces(user.workplaces.map { it.toApiObject() })
                 .profileImage(userService.getProfileImage(user.profileImage))
         )
     }
@@ -91,7 +92,6 @@ class UserController(
         getMeResponse.email = user.email
         getMeResponse.canSetPassword = user.password.isNullOrEmpty()
         getMeResponse.canChangePassword = !user.password.isNullOrEmpty()
-        getMeResponse.selfInfo = user.selfInfo
         getMeResponse.profileImage = userService.getProfileImage(user.profileImage)
         getMeResponse.signedVia = user.externalIds.keys.map { OauthType.valueOf(it.name) }
         getMeResponse.workplaces = user.workplaces.map { it.toApiObject() }
@@ -102,15 +102,26 @@ class UserController(
     override fun deleteUser(): ResponseEntity<Void> {
         val confirmedAuthors = confirmedAuthorRepository.findAllByUserId(authHolderService.user.id)
         val unconfirmedAuthors = confirmedAuthors.map {
-            UnconfirmedAuthor(
+            val author = UnconfirmedAuthor(
                 randomUUID(),
                 it.publication,
                 it.user.email,
                 it.user.firstName,
                 it.user.middleName,
-                it.user.lastName,
-                it.shortBio
+                it.user.lastName
             )
+            author.workplaces = it.user.workplaces.map { workplace ->
+                UnconfirmedAuthorWorkplace(
+                    id = randomUUID(),
+                    organization = workplace.organization,
+                    organizationDepartment = workplace.organizationDepartment,
+                    unconfirmedAuthor = author,
+                    address = workplace.address,
+                    postalCode = workplace.postalCode,
+                    isFormer = workplace.isFormer
+                )
+            }.toMutableList()
+            author
         }
         unconfirmedAuthorRepository.saveAll(unconfirmedAuthors)
         confirmedAuthorRepository.deleteAll(confirmedAuthors)

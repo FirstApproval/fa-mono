@@ -499,7 +499,7 @@ paths:
           name: id
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
       responses:
@@ -520,7 +520,7 @@ paths:
         name: publicationId
         schema:
           type: string
-          format: uuid
+          maxLength: 7
         required: true
         description: Publication id
     get:
@@ -552,7 +552,7 @@ paths:
         name: publicationId
         schema:
           type: string
-          format: uuid
+          maxLength: 7
         required: true
         description: Publication id
     get:
@@ -586,7 +586,7 @@ paths:
           name: id
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
       responses:
@@ -607,7 +607,7 @@ paths:
           name: id
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
       responses:
@@ -624,7 +624,7 @@ paths:
           name: id
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
       requestBody:
@@ -649,7 +649,7 @@ paths:
           name: id
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
       responses:
@@ -672,7 +672,7 @@ paths:
           name: id
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
         - in: query
@@ -738,7 +738,7 @@ paths:
           name: id
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
         - in: query
@@ -763,7 +763,7 @@ paths:
           name: id
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
       responses:
@@ -782,7 +782,7 @@ paths:
           name: id
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
       responses:
@@ -801,7 +801,7 @@ paths:
           name: id
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
       responses:
@@ -823,7 +823,7 @@ paths:
           name: id
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
       responses:
         '200':
@@ -844,7 +844,7 @@ paths:
         name: id
         schema:
           type: string
-          format: uuid
+          maxLength: 7
         required: true
     get:
       responses:
@@ -867,7 +867,7 @@ paths:
           name: publicationId
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
       requestBody:
@@ -887,6 +887,55 @@ paths:
       operationId: checkFileDuplicates
       tags: [ file ]
 
+  /api/report/files/upload:
+    post:
+      summary: Upload file
+      parameters:
+        - in: query
+          name: contentLength
+          schema:
+            type: integer
+            format: int64
+          required: false
+          description: Content length
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportFile'
+      security:
+        - PublicAuth: [ ]
+      operationId: uploadReportFile
+      tags: [ report ]
+
+  /api/report/create:
+    post:
+      summary: Create report
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReportRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+      security:
+        - PublicAuth: [ ]
+      operationId: createReport
+      tags: [ report ]
+
   /api/files/upload:
     post:
       summary: Upload file
@@ -895,7 +944,7 @@ paths:
           name: publicationId
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
         - in: query
@@ -1029,11 +1078,11 @@ paths:
         name: publicationId
         schema:
           type: string
-          format: uuid
+          maxLength: 7
         required: true
         description: Publication id
     get:
-      summary: Get files by publication id
+      summary: Get files by Publication id
       parameters:
         - in: query
           name: dirPath
@@ -1145,7 +1194,7 @@ paths:
         name: publicationId
         schema:
           type: string
-          format: uuid
+          maxLength: 7
         required: true
         description: Publication id
     get:
@@ -1198,7 +1247,7 @@ paths:
           name: publicationId
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
       requestBody:
@@ -1226,7 +1275,7 @@ paths:
           name: publicationId
           schema:
             type: string
-            format: uuid
+            maxLength: 7
           required: true
           description: Publication id
         - in: query
@@ -1425,7 +1474,6 @@ components:
           format: uuid
         publicationId:
           type: string
-          format: uuid
         fullPath:
           type: string
         description:
@@ -1501,6 +1549,26 @@ components:
       required:
         - dirPath
         - name
+
+    CreateReportRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        description:
+          type: string
+          maxLength: 4096
+        fileIds:
+          type: array
+          items:
+            type: string
+        publicationId:
+          type: string
+      required:
+        - email
+        - description
+        - fileIds
+        - publicationId
 
     SubmitRegistrationRequest:
       type: object
@@ -1670,7 +1738,7 @@ components:
       properties:
         id:
           type: string
-          format: uuid
+          maxLength: 7
         status:
           $ref: '#/components/schemas/PublicationStatus'
         contentStatus:
@@ -1706,8 +1774,6 @@ components:
           type: boolean
         canChangePassword:
           type: boolean
-        selfInfo:
-          type: string
         profileImage:
           type: string
           format: byte
@@ -1727,7 +1793,14 @@ components:
         - email
         - canSetPassword
         - canChangePassword
-        - selfInfo
+        - workplaces
+
+    ReportFile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
 
     UserInfo:
       type: object
@@ -1745,8 +1818,6 @@ components:
           type: string
         username:
           type: string
-        selfInfo:
-          type: string
         profileImage:
           type: string
           format: byte
@@ -1760,7 +1831,7 @@ components:
         - lastName
         - email
         - username
-        - selfInfo
+        - workplaces
 
     UploadType:
       type: string
@@ -1818,9 +1889,6 @@ components:
           type: string
         username:
           type: string
-        selfInfo:
-          type: string
-          maxLength: 4096
         profileImage:
           type: string
           format: byte
@@ -1951,8 +2019,6 @@ components:
           format: uuid
         user:
           $ref: '#/components/schemas/UserInfo'
-        shortBio:
-          type: string
       required:
         - user
 
@@ -1965,8 +2031,6 @@ components:
         userId:
           type: string
           format: uuid
-        shortBio:
-          type: string
       required:
         - userId
 
@@ -1994,8 +2058,10 @@ components:
           type: string
         lastName:
           type: string
-        shortBio:
-          type: string
+        workplaces:
+          type: array
+          items:
+            $ref: '#/components/schemas/Workplace'
       required:
         - email
         - firstName
@@ -2066,7 +2132,6 @@ components:
       properties:
         id:
           type: string
-          format: uuid
         creator:
           $ref: '#/components/schemas/UserInfo'
         status:

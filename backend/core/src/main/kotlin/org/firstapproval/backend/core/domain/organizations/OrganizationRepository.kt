@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.Query
 interface OrganizationRepository : JpaRepository<Organization, Long> {
     @Query("select o from Organization o where o.name ilike %:query%")
     fun findByName(query: String, pageable: Pageable): List<Organization>
+
+    fun findByName(query: String): Organization?
 }

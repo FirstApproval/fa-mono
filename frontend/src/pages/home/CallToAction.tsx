@@ -4,9 +4,10 @@ import { Button } from '@mui/material';
 import { authStore } from '../../core/auth';
 import bannerBg from './asset/Main banner.svg';
 import { routerStore } from '../../core/router';
-import { Page } from '../../core/RouterStore';
 import { type HomePageStore } from './HomePageStore';
 import { userStore } from '../../core/user';
+import { FlexWrapColumn } from '../common.styled';
+import { Page } from '../../core/router/constants';
 
 export const CallToAction = (props: { store: HomePageStore }): ReactElement => {
   return (
@@ -88,13 +89,4 @@ export const ButtonWrap = styled(Button)`
   background-color: var(--primary-white, #ffffff);
   width: 273px;
   height: 40px;
-`;
-
-export const FlexWrapColumn = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-export const FlexWrapRow = styled.div`
-  display: flex;
 `;

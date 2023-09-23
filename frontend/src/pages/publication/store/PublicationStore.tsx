@@ -5,6 +5,7 @@ import {
   type ConfirmedAuthor,
   LicenseType,
   type Paragraph,
+  PublicationEditRequest,
   PublicationStatus,
   type UnconfirmedAuthor,
   type UserInfo
@@ -13,8 +14,12 @@ import { type FileSystemFA } from '../../../fire-browser/FileSystemFA';
 import { v4 as uuidv4 } from 'uuid';
 import { type AuthorEditorStore } from './AuthorEditorStore';
 import { routerStore } from '../../../core/router';
-import { Page } from '../../../core/RouterStore';
 import { authStore } from '../../../core/auth';
+import {
+  Page,
+  publicationPath,
+  shortPublicationPath
+} from '../../../core/router/constants';
 
 const EDIT_THROTTLE_MS = 1000;
 
@@ -38,6 +43,7 @@ export enum ViewMode {
 export class PublicationStore {
   viewMode: ViewMode = ViewMode.VIEW;
 
+  publicationId = '';
   isLoading = true;
 
   title = '';
@@ -77,9 +83,11 @@ export class PublicationStore {
   viewCounterUpdated: boolean = false;
 
   constructor(
-    readonly publicationId: string,
-    private readonly fs: FileSystemFA
+    publicationId: string,
+    private readonly fs: FileSystemFA,
+    private readonly sfs: FileSystemFA
   ) {
+    this.publicationId = publicationId;
     makeAutoObservable(this);
     this.addSummaryParagraph(0);
     reaction(
@@ -200,8 +208,7 @@ export class PublicationStore {
   addConfirmedAuthor(author: UserInfo): void {
     const newValue = [...this.confirmedAuthors];
     newValue.push({
-      user: author,
-      shortBio: author.selfInfo
+      user: author
     });
     this.confirmedAuthors = newValue;
     this.savingStatus = SavingStatusState.SAVING;
@@ -214,22 +221,20 @@ export class PublicationStore {
       if (confirmedAuthor.id !== store.id) {
         throw Error('Confirmed author found by index have different id');
       }
-      confirmedAuthor.shortBio = store.shortBio;
     }
     this.savingStatus = SavingStatusState.SAVING;
     void this.updateConfirmedAuthors();
   }
 
   updateConfirmedAuthors = _.throttle(async () => {
-    await publicationService.editPublication(this.publicationId, {
+    await this.editPublication({
       confirmedAuthors: {
         values: this.confirmedAuthors
           .filter((it) => it.user.id && it.user.id.length > 0)
           .map((t) => {
             return {
               id: t.id,
-              userId: t.user.id,
-              shortBio: t.shortBio
+              userId: t.user.id
             };
           }),
         edited: true
@@ -248,7 +253,7 @@ export class PublicationStore {
       unconfirmedAuthor.email = store.email;
       unconfirmedAuthor.firstName = store.firstName;
       unconfirmedAuthor.lastName = store.lastName;
-      unconfirmedAuthor.shortBio = store.shortBio;
+      unconfirmedAuthor.workplaces = store.workplaces;
     } else {
       const newValue = [...this.unconfirmedAuthors];
       newValue.push({
@@ -256,7 +261,7 @@ export class PublicationStore {
         firstName: store.firstName,
         middleName: '',
         lastName: store.lastName,
-        shortBio: store.shortBio
+        workplaces: store.workplaces
       });
       this.unconfirmedAuthors = newValue;
     }
@@ -265,7 +270,7 @@ export class PublicationStore {
   }
 
   updateUnconfirmedAuthors = _.throttle(async () => {
-    await publicationService.editPublication(this.publicationId, {
+    await this.editPublication({
       unconfirmedAuthors: {
         values: this.unconfirmedAuthors,
         edited: true
@@ -276,7 +281,7 @@ export class PublicationStore {
   }, EDIT_THROTTLE_MS);
 
   updateTags = _.throttle(async () => {
-    await publicationService.editPublication(this.publicationId, {
+    await this.editPublication({
       tags: {
         values: Array.from(this.tags).map((t) => ({ text: t })),
         edited: true
@@ -304,7 +309,7 @@ export class PublicationStore {
 
   updateTitleRequest = _.throttle(async () => {
     const title = this.title;
-    await publicationService.editPublication(this.publicationId, {
+    await this.editPublication({
       title: {
         value: title,
         edited: true
@@ -325,7 +330,7 @@ export class PublicationStore {
 
   updateResearchAreaRequest = _.throttle(async () => {
     const researchAreas = this.researchAreas;
-    await publicationService.editPublication(this.publicationId, {
+    await this.editPublication({
       researchAreas: {
         edited: true,
         values: researchAreas
@@ -357,7 +362,7 @@ export class PublicationStore {
   updateSummary = _.throttle(async () => {
     const summary: Paragraph[] = this.summary.filter((p) => p.text.length > 0);
 
-    await publicationService.editPublication(this.publicationId, {
+    await this.editPublication({
       description: {
         values: summary,
         edited: true
@@ -382,7 +387,7 @@ export class PublicationStore {
       (p) => p.text.length > 0
     );
 
-    await publicationService.editPublication(this.publicationId, {
+    await this.editPublication({
       predictedGoals: {
         values: predictedGoals,
         edited: true
@@ -405,7 +410,7 @@ export class PublicationStore {
   updateMethod = _.throttle(async () => {
     const method: Paragraph[] = this.method.filter((p) => p.text.length > 0);
 
-    await publicationService.editPublication(this.publicationId, {
+    await this.editPublication({
       methodDescription: {
         values: method,
         edited: true
@@ -421,7 +426,7 @@ export class PublicationStore {
   }
 
   doUpdateMethodTitle = _.throttle(async () => {
-    await publicationService.editPublication(this.publicationId, {
+    await this.editPublication({
       methodTitle: {
         value: this.methodTitle,
         edited: true
@@ -437,7 +442,7 @@ export class PublicationStore {
   }
 
   doUpdateObjectOfStudyTitle = _.throttle(async () => {
-    await publicationService.editPublication(this.publicationId, {
+    await this.editPublication({
       objectOfStudyTitle: {
         value: this.objectOfStudyTitle,
         edited: true
@@ -462,7 +467,7 @@ export class PublicationStore {
       (p) => p.text.length > 0
     );
 
-    await publicationService.editPublication(this.publicationId, {
+    await this.editPublication({
       objectOfStudyDescription: {
         values: objectOfStudy,
         edited: true
@@ -487,7 +492,7 @@ export class PublicationStore {
       (p) => p.text.length > 0
     );
 
-    await publicationService.editPublication(this.publicationId, {
+    await this.editPublication({
       software: {
         values: software,
         edited: true
@@ -511,7 +516,7 @@ export class PublicationStore {
     const grantingOrganizations: Paragraph[] =
       this.grantingOrganizations.filter((p) => p.text.length > 0);
 
-    await publicationService.editPublication(this.publicationId, {
+    await this.editPublication({
       grantOrganizations: {
         values: grantingOrganizations,
         edited: true
@@ -531,7 +536,7 @@ export class PublicationStore {
       (p) => p.text.length > 0
     );
 
-    await publicationService.editPublication(this.publicationId, {
+    await this.editPublication({
       primaryArticles: {
         values: primaryArticles,
         edited: true
@@ -556,7 +561,7 @@ export class PublicationStore {
       (p) => p.text.length > 0
     );
 
-    await publicationService.editPublication(this.publicationId, {
+    await this.editPublication({
       relatedArticles: {
         values: relatedArticles,
         edited: true
@@ -566,7 +571,7 @@ export class PublicationStore {
   }, EDIT_THROTTLE_MS);
 
   doUpdateIsNegativeData = _.throttle(async () => {
-    await publicationService.editPublication(this.publicationId, {
+    await this.editPublication({
       isNegative: this.isNegative
     });
     this.savingStatus = SavingStatusState.SAVED;
@@ -579,7 +584,8 @@ export class PublicationStore {
   }
 
   copyPublicationLinkToClipboard = async (): Promise<void> => {
-    const text = window.location.host + '/publication/' + this.publicationId;
+    const text =
+      window.location.host + shortPublicationPath + this.publicationId;
     if ('clipboard' in navigator) {
       await navigator.clipboard.writeText(text);
     } else {
@@ -588,7 +594,7 @@ export class PublicationStore {
   };
 
   doUpdateNegativeData = _.throttle(async () => {
-    await publicationService.editPublication(this.publicationId, {
+    await this.editPublication({
       negativeData: {
         value: this.negativeData,
         edited: true
@@ -862,7 +868,34 @@ export class PublicationStore {
     }
   };
 
+  private async editPublication(
+    publicationEditRequest: PublicationEditRequest
+  ): Promise<void> {
+    if (!this.publicationId) {
+      this.isLoading = true;
+      const response = await publicationService.createPublication();
+      this.publicationId = response.data.id;
+      this.loadInitialState();
+      await this.fs.initialize(this.publicationId);
+      await this.sfs.initialize(this.publicationId);
+      routerStore.navigatePage(
+        Page.PUBLICATION,
+        `${publicationPath}${this.publicationId}`,
+        true
+      );
+    }
+    await publicationService.editPublication(
+      this.publicationId,
+      publicationEditRequest
+    );
+  }
+
   private loadInitialState(): void {
+    if (!this.publicationId) {
+      this.isLoading = false;
+      return;
+    }
+
     let method;
     if (authStore.token) {
       method = publicationService.getPublication(this.publicationId);

@@ -1,0 +1,2 @@
+DROP INDEX publication_unconfirmed_authors_workplaces_idx;
+DROP INDEX users_workplaces_unique_idx;

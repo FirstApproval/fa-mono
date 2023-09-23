@@ -1,10 +1,9 @@
 import { Button, Dialog, DialogContent } from '@mui/material';
 import React, { ReactElement } from 'react';
-import { WidthElement } from '../pages/common.styled';
+import { FlexWrapRow, WidthElement } from '../pages/common.styled';
 import DialogTitle from '@mui/material/DialogTitle';
 import styled from '@emotion/styled';
 import DialogActions from '@mui/material/DialogActions';
-import { FlexWrapRow } from '../pages/home/CallToAction';
 
 export const ConfirmationDialog = (props: {
   isOpen: boolean;

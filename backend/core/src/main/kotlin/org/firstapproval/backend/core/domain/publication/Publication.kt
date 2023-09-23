@@ -22,7 +22,7 @@ import java.util.*
 @Table(name = "publications")
 class Publication(
     @Id
-    var id: UUID,
+    var id: String,
     @ManyToOne(fetch = EAGER)
     @JoinColumn(updatable = false)
     val creator: User,

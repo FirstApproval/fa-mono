@@ -5,43 +5,34 @@ import styled from '@emotion/styled';
 import {
   type ConfirmedAuthor,
   type UnconfirmedAuthor,
-  UserInfo
+  UserInfo,
+  Workplace
 } from '../../../../apis/first-approval-api';
-import { getInitials } from '../../../../util/userUtil';
 import {
-  getRelativeProfileLink,
+  getCurrentWorkplacesString,
+  getInitials,
   renderProfileImage
-} from '../../../../fire-browser/utils';
+} from '../../../../util/userUtil';
 import { type AuthorEditorStore } from '../../store/AuthorEditorStore';
 import { routerStore } from '../../../../core/router';
-import { Page } from '../../../../core/RouterStore';
+
+import { Page } from '../../../../core/router/constants';
+import { getAuthorLink } from '../../../../core/router/utils';
 
 interface AuthorElementProps {
   isReadonly: boolean;
   author: ConfirmedAuthor | UnconfirmedAuthor | UserInfo | AuthorEditorStore;
   isConfirmed?: boolean;
-  index?: number;
-  setEditAuthorVisible?: (
-    author: ConfirmedAuthor | UnconfirmedAuthor,
-    isConfirmed?: boolean,
-    index?: number
-  ) => void;
+  onAuthorEdit?: () => void;
   shouldOpenInNewTab?: boolean;
 }
 
 export const AuthorElement = (props: AuthorElementProps): ReactElement => {
-  const {
-    isReadonly,
-    author,
-    isConfirmed,
-    index,
-    setEditAuthorVisible,
-    shouldOpenInNewTab
-  } = props;
-  let shortBio;
+  const { isReadonly, author, isConfirmed, onAuthorEdit, shouldOpenInNewTab } =
+    props;
+  let workplaces: Workplace[];
   let firstName;
   let lastName;
-  let email;
   let username: string;
   let profileImage: string | undefined;
 
@@ -52,31 +43,28 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
       const authorUser = confirmedAuthor.user;
       firstName = authorUser.firstName;
       lastName = authorUser.lastName;
-      email = authorUser.email;
       username = authorUser.username;
-      shortBio = confirmedAuthor.shortBio;
       profileImage = authorUser.profileImage;
+      workplaces = authorUser.workplaces ?? [];
     } else {
       const authorEditorStore = author as AuthorEditorStore;
       firstName = authorEditorStore.firstName;
       lastName = authorEditorStore.lastName;
-      email = authorEditorStore.email;
-      shortBio = authorEditorStore.shortBio;
       profileImage = authorEditorStore.profileImage;
+      workplaces = authorEditorStore.workplaces;
     }
-  } else if (isConfirmed === false) {
+  } else if (!isConfirmed) {
     const unconfirmedAuthor = author as UnconfirmedAuthor;
     firstName = unconfirmedAuthor.firstName;
     lastName = unconfirmedAuthor.lastName;
-    email = unconfirmedAuthor.email;
-    shortBio = unconfirmedAuthor.shortBio;
+    workplaces = unconfirmedAuthor.workplaces ?? [];
   } else {
     const userInfo = author as UserInfo;
     firstName = userInfo.firstName;
     lastName = userInfo.lastName;
-    email = userInfo.email;
     username = userInfo.username;
     profileImage = userInfo.profileImage;
+    workplaces = userInfo.workplaces ?? [];
   }
 
   return (
@@ -85,12 +73,9 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
         onClick={() => {
           if (username) {
             if (shouldOpenInNewTab) {
-              routerStore.openInNewTab(getRelativeProfileLink(username));
+              routerStore.openInNewTab(getAuthorLink(username));
             } else {
-              routerStore.navigatePage(
-                Page.PROFILE,
-                getRelativeProfileLink(username)
-              );
+              routerStore.navigatePage(Page.PROFILE, getAuthorLink(username));
             }
           }
         }}>
@@ -104,24 +89,21 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
                 {firstName} {lastName}
               </span>
             )}
-            {isConfirmed === false && (
+            {!isConfirmed && (
               <span>
                 {firstName} {lastName} (not registered)
               </span>
             )}
           </AuthorName>
-          <AuthorShortBio>
-            {setEditAuthorVisible ? shortBio : email}
-          </AuthorShortBio>
+          <AuthorWorkplace>
+            {onAuthorEdit && getCurrentWorkplacesString(workplaces)}
+          </AuthorWorkplace>
         </AuthorWrap>
       </AuthorElementWrap>
       {!isReadonly && (
         <div>
-          {setEditAuthorVisible && (
-            <IconButton
-              onClick={() => {
-                setEditAuthorVisible(author, isConfirmed, index);
-              }}>
+          {onAuthorEdit && (
+            <IconButton onClick={onAuthorEdit}>
               <Edit htmlColor={'gray'} />
             </IconButton>
           )}
@@ -162,7 +144,7 @@ const AuthorName = styled.div`
   max-width: 260px;
 `;
 
-const AuthorShortBio = styled.div`
+const AuthorWorkplace = styled.div`
   font-size: 14px;
   font-style: normal;
   font-weight: 400;

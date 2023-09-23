@@ -40,17 +40,3 @@ export const copyTextToClipboard = async (text: string): Promise<void> => {
     document.execCommand('copy', true, text);
   }
 };
-
-export const getProfileLink = (username = ''): string => {
-  return window.location.host + getRelativeProfileLink(username);
-};
-
-export const getRelativeProfileLink = (username = ''): string => {
-  return '/p/' + username;
-};
-
-export const renderProfileImage = (profileImage: string | undefined): string =>
-  profileImage
-    ? 'data:image/png;base64,' +
-      profileImage.substring(profileImage.indexOf(',') + 1)
-    : '';

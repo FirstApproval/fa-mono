@@ -6,15 +6,28 @@ import {
   PublicationStatus
 } from '../apis/first-approval-api';
 import { Download, RemoveRedEyeOutlined } from '@mui/icons-material';
-import { renderProfileImage } from '../fire-browser/utils';
 import { findResearchAreaIcon } from '../pages/publication/store/ResearchAreas';
 import MoreHoriz from '@mui/icons-material/MoreHoriz';
+import WarningAmber from '@mui/icons-material/WarningAmber';
+import FormatQuote from '@mui/icons-material/FormatQuote';
+import ContentCopy from '@mui/icons-material/ContentCopy';
 import Menu from '@mui/material/Menu';
-import { SpaceBetween } from '../pages/common.styled';
+import { SpaceBetween, StyledMenuItem } from '../pages/common.styled';
 import { getTimeElapsedString } from '../util/dateUtil';
 import MenuItem from '@mui/material/MenuItem';
 import { ConfirmationDialog } from './ConfirmationDialog';
 import { ProfilePageStore } from '../pages/user/ProfilePageStore';
+
+import { renderProfileImage } from '../util/userUtil';
+import {
+  publicationPath,
+  shortPublicationPath
+} from '../core/router/constants';
+import pdf from '../pages/publication/asset/pdf.svg';
+import { publicationService } from '../core/service';
+import { CitateDialog } from '../pages/publication/CitateDialog';
+import { PublicationAuthorName } from '../pages/publication/store/PublicationStore';
+import { ReportProblemDialog } from '../pages/publication/ReportProblemDialog';
 
 export const PublicationSection = (props: {
   publication: Publication;
@@ -31,6 +44,32 @@ export const PublicationSection = (props: {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const openMenu = Boolean(anchor);
 
+  const [utilAnchor, setUtilAnchor] = useState<null | HTMLElement>(null);
+  const openUtilMenu = Boolean(utilAnchor);
+
+  const [citeOpened, setCiteOpened] = useState(false);
+
+  const [reportProblemOpened, setReportProblemOpened] = useState(false);
+
+  const downloadPdf = async (): Promise<void> => {
+    const pdf = await publicationService.downloadPdf(publication.id);
+    const linkSource = `data:application/pdf;base64,${pdf.data}`;
+    const downloadLink = document.createElement('a');
+    const fileName = publication.title + '.pdf';
+    downloadLink.href = linkSource;
+    downloadLink.download = fileName;
+    downloadLink.click();
+  };
+
+  const copyPublicationLinkToClipboard = async (): Promise<void> => {
+    const text = window.location.host + shortPublicationPath + publication.id;
+    if ('clipboard' in navigator) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      document.execCommand('copy', true, text);
+    }
+  };
+
   const handleMenuClick = (
     event: React.MouseEvent<HTMLButtonElement>
   ): void => {
@@ -41,10 +80,36 @@ export const PublicationSection = (props: {
     setAnchor(null);
   };
 
+  const handleUtilMenuClick = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ): void => {
+    setUtilAnchor(event.currentTarget);
+  };
+
+  const handleUtilMenuClose = (): void => {
+    setUtilAnchor(null);
+  };
+
+  const confirmedAuthorNames =
+    props.publication.confirmedAuthors?.map<PublicationAuthorName>(
+      (author) => ({
+        username: author.user.username,
+        firstName: author.user.firstName,
+        lastName: author.user.lastName
+      })
+    );
+  const unconfirmedAuthorNames =
+    props.publication.unconfirmedAuthors?.map<PublicationAuthorName>(
+      (author) => ({
+        firstName: author.firstName,
+        lastName: author.lastName
+      })
+    );
+
   return (
     <>
       <Link
-        href={`/publication/${publication.id}`}
+        href={`${publicationPath}${publication.id}`}
         underline={'none'}
         color={'#040036'}>
         <AuthorsWrap>
@@ -81,6 +146,93 @@ export const PublicationSection = (props: {
                 />
                 {publication.downloadsCount}
               </FlexWrap>
+              <div>
+                <Menu
+                  anchorEl={utilAnchor}
+                  id="user-menu"
+                  onClose={handleUtilMenuClose}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right'
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right'
+                  }}
+                  MenuListProps={{
+                    'aria-labelledby': 'user-button'
+                  }}
+                  open={openUtilMenu}>
+                  <StyledMenuItem
+                    onClick={() => {
+                      downloadPdf();
+                    }}>
+                    <img
+                      src={pdf}
+                      style={{
+                        marginRight: 16,
+                        width: 24,
+                        height: 24
+                      }}
+                    />
+                    PDF
+                  </StyledMenuItem>
+                  <StyledMenuItem
+                    onClick={() => {
+                      setCiteOpened(true);
+                    }}>
+                    <FormatQuote style={{ marginRight: 16 }}></FormatQuote>
+                    Cite
+                  </StyledMenuItem>
+                  <StyledMenuItem
+                    onClick={() => {
+                      copyPublicationLinkToClipboard();
+                    }}>
+                    <ContentCopy style={{ marginRight: 16 }}></ContentCopy>
+                    Copy publication link
+                  </StyledMenuItem>
+                  <Divider></Divider>
+                  <StyledMenuItem
+                    onClick={() => {
+                      handleUtilMenuClose();
+                      setReportProblemOpened(true);
+                    }}>
+                    <WarningAmber style={{ marginRight: 16 }}></WarningAmber>
+                    Report problem
+                  </StyledMenuItem>
+                </Menu>
+                <ReportProblemDialog
+                  isOpen={reportProblemOpened}
+                  publicationId={publication.id}
+                  setIsOpen={(value) =>
+                    setReportProblemOpened(value)
+                  }></ReportProblemDialog>
+                <CitateDialog
+                  isOpen={citeOpened}
+                  setIsOpen={(value) => setCiteOpened(value)}
+                  authorNames={[
+                    ...(confirmedAuthorNames ?? []),
+                    ...(unconfirmedAuthorNames ?? [])
+                  ]}
+                  publicationTime={
+                    props.publication.publicationTime
+                      ? new Date(props.publication.publicationTime)
+                      : null
+                  }
+                  publicationTitle={
+                    props.publication.title ? props.publication.title : ''
+                  }
+                />
+                <IconButton
+                  onClick={handleUtilMenuClick}
+                  size="small"
+                  sx={{ ml: 3 }}
+                  aria-controls={openUtilMenu ? 'user-menu' : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={openUtilMenu ? 'true' : undefined}>
+                  <MoreHoriz htmlColor={'#68676E'} />
+                </IconButton>
+              </div>
             </Footer>
           </>
         )}
@@ -269,7 +421,7 @@ const PublicationLabel = styled.div`
 `;
 
 const FlexWrap = styled.div`
-  margin-top: auto;
+  //margin-top: auto;
   display: flex;
   align-items: center;
 `;

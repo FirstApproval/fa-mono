@@ -5,5 +5,5 @@ import java.time.ZonedDateTime
 import java.util.*
 
 interface DownloadLinkRepository : JpaRepository<DownloadLink, UUID> {
-    fun findByPublicationIdAndExpirationTimeLessThan(publicationId: UUID, expirationTime: ZonedDateTime): DownloadLink?
+    fun findByPublicationIdAndExpirationTimeLessThan(publicationId: String, expirationTime: ZonedDateTime): DownloadLink?
 }

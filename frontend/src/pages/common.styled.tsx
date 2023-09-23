@@ -107,3 +107,12 @@ export const FullWidth = styled.div`
   display: flex;
   flex-direction: column;
 `;
+
+export const FlexWrapColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+export const FlexWrapRow = styled.div`
+  display: flex;
+`;

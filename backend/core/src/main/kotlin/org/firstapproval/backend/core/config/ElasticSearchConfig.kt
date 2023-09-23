@@ -8,18 +8,9 @@ import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfigurat
 @Configuration
 class ElasticSearchConfig(private val properties: ElasticSearchProperties) : ElasticsearchConfiguration() {
     override fun clientConfiguration(): ClientConfiguration {
-        return if (properties.mode == "prod") {
-            ClientConfiguration
-                .builder()
-                .connectedTo("${properties.host}:${properties.port}")
-                .usingSsl()
-                .withBasicAuth(properties.username, properties.password)
-                .build()
-        } else {
-            ClientConfiguration
-                .builder()
-                .connectedTo("${properties.host}:${properties.port}")
-                .build()
-        }
+        return ClientConfiguration
+            .builder()
+            .connectedTo("${properties.host}:${properties.port}")
+            .build()
     }
 }

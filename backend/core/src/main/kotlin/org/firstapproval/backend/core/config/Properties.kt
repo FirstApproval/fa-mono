@@ -84,10 +84,7 @@ class Properties {
     @Component
     @ConfigurationProperties("elasticsearch")
     class ElasticSearchProperties {
-        lateinit var mode: String
         lateinit var host: String
         var port by notNull<Int>()
-        lateinit var username: String
-        lateinit var password: String
     }
 }

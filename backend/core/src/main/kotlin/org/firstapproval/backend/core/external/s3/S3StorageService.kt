@@ -8,12 +8,9 @@ import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.services.s3.model.PutObjectResult
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides
 import com.amazonaws.services.s3.model.S3Object
-import com.amazonaws.services.s3.model.StorageClass
 import mu.KotlinLogging.logger
 import org.firstapproval.backend.core.config.Properties.S3Properties
-import org.firstapproval.backend.core.utils.calculateSHA256
 import java.io.InputStream
-import java.time.Duration
 import java.util.Date
 import java.util.UUID
 
@@ -22,6 +19,7 @@ const val SAMPLE_FILES = "sample-files"
 const val ARCHIVED_PUBLICATION_FILES = "archived-publication-files"
 const val ARCHIVED_PUBLICATION_SAMPLE_FILES = "archived-publication-sample-files"
 const val PROFILE_IMAGES = "profile-images"
+const val REPORT_FILES = "report-files"
 
 class FileStorageService(private val amazonS3: AmazonS3, private val s3Properties: S3Properties) {
 

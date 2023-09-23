@@ -5,23 +5,28 @@ import DialogContent from '@mui/material/DialogContent';
 import { HeightElement, TitleRowWrap } from '../common.styled';
 import Dialog from '@mui/material/Dialog';
 import styled from '@emotion/styled';
-import { PublicationStore } from './store/PublicationStore';
+import { PublicationAuthorName } from './store/PublicationStore';
 import { observer } from 'mobx-react-lite';
 import { Button } from '@mui/material';
-import { PublicationPageStore } from './store/PublicationPageStore';
 
 export const CitateDialog = observer(
   (props: {
     isOpen: boolean;
     setIsOpen: (value: boolean) => void;
-    publicationStore: PublicationStore;
-    publicationPageStore: PublicationPageStore;
+    authorNames: PublicationAuthorName[];
+    publicationTime: Date | null;
+    publicationTitle: string;
   }): ReactElement => {
-    const { isOpen, setIsOpen, publicationStore, publicationPageStore } = props;
+    const {
+      isOpen,
+      setIsOpen,
+      authorNames,
+      publicationTime,
+      publicationTitle
+    } = props;
 
     const onClose = (): void => {
       setIsOpen(false);
-      console.log(publicationPageStore.isCitateDialogOpen);
     };
 
     const copyPublicationLinkToClipboard = async (): Promise<void> => {
@@ -34,7 +39,7 @@ export const CitateDialog = observer(
     };
 
     const authors = (): string => {
-      return publicationStore.authorNames
+      return authorNames
         .slice(0, 4)
         .map((author) => {
           return author.lastName + ' ' + author.firstName.slice(0, 1) + '.';
@@ -43,15 +48,18 @@ export const CitateDialog = observer(
     };
 
     const authorsEtAl = (): string => {
-      return publicationStore.authorNames.length > 4 ? ' et al.' : '';
+      return authorNames.length > 4 ? ' et al.' : '';
     };
 
     const year = (): string => {
-      return ` (${publicationStore.publicationTime.getFullYear().toString()}).`;
+      if (!publicationTime) {
+        return '';
+      }
+      return ` (${publicationTime.getFullYear().toString()}).`;
     };
 
     const title = (): string => {
-      return ` ${publicationStore.title} [Dataset]. First Approval.`;
+      return ` ${publicationTitle} [Dataset]. First Approval.`;
     };
 
     const url = (): string => {
