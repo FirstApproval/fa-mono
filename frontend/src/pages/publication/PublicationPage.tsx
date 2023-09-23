@@ -229,7 +229,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
                         );
                       }
                     }}>
-                    Publish
+                    Preview
                   </ButtonWrap>
                   <ButtonWrap
                     variant="outlined"

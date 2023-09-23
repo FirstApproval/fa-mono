@@ -204,7 +204,7 @@ class PublicationService(
     }
 
     @Transactional
-    fun submitPublication(user: User, id: String, accessType: AccessType) {
+    fun submitPublication(user: User, id: String, accessType: AccessType, storageType: StorageType) {
         val publication = publicationRepository.getReferenceById(id)
         checkPublicationCreator(user, publication)
         if (publication.status == PUBLISHED) {
@@ -212,6 +212,7 @@ class PublicationService(
         }
         publication.status = READY_FOR_PUBLICATION
         publication.accessType = accessType
+        publication.storageType = storageType
     }
 
     fun search(text: String, limit: Int, pageNum: Int): Page<PublicationElastic> {

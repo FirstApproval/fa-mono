@@ -6,26 +6,38 @@ import {
   FormControlLabel,
   FormGroup,
   IconButton,
+  Radio,
   Switch,
   Tooltip
 } from '@mui/material';
 import {
   Close,
+  CloudOutlined,
   MessageOutlined,
   MonetizationOnOutlined,
-  Public
+  Public,
+  ViewInArOutlined
 } from '@mui/icons-material';
 import Button from '@mui/material/Button';
 import { routerStore } from '../../core/router';
 import { publicationService } from '../../core/service';
-import { AccessType } from '../../apis/first-approval-api';
+import { AccessType, StorageType } from '../../apis/first-approval-api';
 import { Page } from '../../core/router/constants';
+import { FlexWrapColumn, FlexWrapRow, WidthElement } from '../common.styled';
 
 export const SharingOptionsPage = (props: {
   publicationTitle: string;
 }): ReactElement => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
-  const [checkboxState, setCheckboxState] = useState(false);
+  const [confirmThatAllAuthorsAgree, setConfirmThatAllAuthorsAgree] =
+    useState(false);
+  const [
+    understandAfterPublishingCannotBeEdited,
+    setUnderstandAfterPublishingCannotBeEdited
+  ] = useState(false);
+  const [storageType, setStorageType] = useState(
+    StorageType.CLOUD_SECURE_STORAGE
+  );
 
   return (
     <>
@@ -87,26 +99,106 @@ export const SharingOptionsPage = (props: {
               />
             </Tooltip>
           </SharingOptionsWrap>
+          <StorageOptionsWrap>
+            <StorageOptionsTitle>
+              How would you like to store your dataset?
+            </StorageOptionsTitle>
+            <FormControlLabel
+              value={StorageType.CLOUD_SECURE_STORAGE}
+              label={
+                <FlexWrapColumn>
+                  <FlexWrapRowRadioLabel>
+                    <StorageOptionLabelWrap disabled={false}>
+                      Cloud Secure Storage
+                    </StorageOptionLabelWrap>
+                    <CloudOutlined />
+                  </FlexWrapRowRadioLabel>
+                  <StorageOptionDescription disabled={false}>
+                    Store dataset in our secure, centralized cloud system. Easy
+                    access and high-speed downloads.
+                  </StorageOptionDescription>
+                </FlexWrapColumn>
+              }
+              control={
+                <Radio
+                  checked={storageType === StorageType.CLOUD_SECURE_STORAGE}
+                  onChange={() =>
+                    setStorageType(StorageType.CLOUD_SECURE_STORAGE)
+                  }
+                />
+              }
+            />
+            <FormControlLabel
+              disabled={true}
+              value={StorageType.IPFS}
+              labelPlacement={'end'}
+              label={
+                <FlexWrapColumn>
+                  <FlexWrapRowRadioLabel>
+                    <StorageOptionLabelWrap disabled={true}>
+                      Decentralized Storage (IPFS)
+                    </StorageOptionLabelWrap>
+                    <ViewInArOutlined />
+                    <WidthElement value="8px" />
+                    <SoonChip />
+                  </FlexWrapRowRadioLabel>
+                  <StorageOptionDescription disabled={true}>
+                    Distribute dataset across a decentralized network for added
+                    resilience and permanence.
+                  </StorageOptionDescription>
+                </FlexWrapColumn>
+              }
+              control={
+                <Radio
+                  checked={storageType === StorageType.IPFS}
+                  onChange={() => {
+                    setStorageType(StorageType.IPFS);
+                  }}
+                />
+              }
+            />
+          </StorageOptionsWrap>
           <PeerReviewSection />
           <FormGroup>
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={checkboxState}
+                  checked={confirmThatAllAuthorsAgree}
                   onChange={(e) => {
-                    setCheckboxState(e.currentTarget.checked);
+                    setConfirmThatAllAuthorsAgree(e.currentTarget.checked);
                   }}
                 />
               }
-              label="I confirm that all authors agree to the content, distribution, and comply with the First Approval publishing policy."
+              label={
+                'I confirm that all authors agree to the content, distribution, \n' +
+                '              and comply with the First Approval publishing policy.'
+              }
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={understandAfterPublishingCannotBeEdited}
+                  onChange={(e) => {
+                    setUnderstandAfterPublishingCannotBeEdited(
+                      e.currentTarget.checked
+                    );
+                  }}
+                />
+              }
+              label={
+                "I understand that after publishing, my dataset cannot be edited or deleted. I've double-checked all details for accuracy."
+              }
             />
           </FormGroup>
           <ButtonWrap
             variant="contained"
-            disabled={!checkboxState}
+            disabled={
+              !confirmThatAllAuthorsAgree ||
+              !understandAfterPublishingCannotBeEdited
+            }
             onClick={() => {
               void publicationService
-                .submitPublication(publicationId, AccessType.OPEN)
+                .submitPublication(publicationId, AccessType.OPEN, storageType)
                 .then(() => {
                   routerStore.navigatePage(
                     Page.PUBLICATION,
@@ -142,14 +234,14 @@ const SharingOption = React.forwardRef<HTMLDivElement, SharingOptionsProps>(
         ref={ref}
         isSelected={isSelected}
         noMargin={noMargin}>
-        <SoonWrap>
+        <FlexWrapRow>
           <IconWrap>{props.icon}</IconWrap>
           {isDisabled && (
             <MarginLeftAuto>
               <SoonChip />
             </MarginLeftAuto>
           )}
-        </SoonWrap>
+        </FlexWrapRow>
 
         <SharingOptionLabel isDisabled={isDisabled}>{label}</SharingOptionLabel>
         <SharingOptionDescription isDisabled={isDisabled}>
@@ -237,10 +329,6 @@ const IconWrap = styled.div`
   margin-bottom: 12px;
 `;
 
-const SoonWrap = styled.div`
-  display: flex;
-`;
-
 const SharingOptionLabel = styled.div<{ isDisabled?: boolean }>`
   font-size: 24px;
   font-style: normal;
@@ -289,5 +377,63 @@ const BodyContentWrap = styled.div`
 `;
 
 const SharingOptionsWrap = styled.div`
+  display: flex;
+`;
+
+const StorageOptionsWrap = styled.div`
+  margin-top: 48px;
+  display: flex;
+  flex-direction: column;
+`;
+
+const StorageOptionsTitle = styled.span`
+  color: var(--text-primary, #040036);
+  font-feature-settings: 'clig' off, 'liga' off;
+
+  /* typography/h6 */
+  font-family: Roboto;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 160%; /* 32px */
+  letter-spacing: 0.15px;
+`;
+
+const StorageOptionLabelWrap = styled.div<{
+  disabled: boolean;
+}>`
+  font-feature-settings: 'clig' off, 'liga' off;
+
+  /* components/alert-title */
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 150%; /* 24px */
+  letter-spacing: 0.15px;
+
+  margin-right: 8px;
+  color: ${(props) => (props.disabled ? '#04003661' : '#040036')};
+`;
+
+const StorageOptionDescription = styled.div<{
+  disabled: boolean;
+}>`
+  font-feature-settings: 'clig' off, 'liga' off;
+
+  /* typography/body1 */
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%; /* 24px */
+  letter-spacing: 0.15px;
+
+  margin-top: 4px;
+  color: ${(props) => (props.disabled ? '#04003661' : '#040036')};
+`;
+
+export const FlexWrapRowRadioLabel = styled.span`
+  margin-top: 27.5px;
   display: flex;
 `;

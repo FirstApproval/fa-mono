@@ -11,6 +11,7 @@ import org.firstapproval.api.server.model.PublicationStatus
 import org.firstapproval.api.server.model.PublicationStatus.PUBLISHED
 import org.firstapproval.api.server.model.PublicationsResponse
 import org.firstapproval.api.server.model.SearchPublicationsResponse
+import org.firstapproval.api.server.model.StorageType
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.PublicationPdfService
@@ -26,8 +27,8 @@ import org.springframework.http.ResponseEntity.ok
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.annotation.RestController
 import java.util.Base64.getEncoder
-import java.util.UUID
 import org.firstapproval.backend.core.domain.publication.AccessType as AccessTypeEntity
+import org.firstapproval.backend.core.domain.publication.StorageType as StorageTypeEntity
 
 @RestController
 class PublicationController(
@@ -72,8 +73,13 @@ class PublicationController(
         return ok().body(CreatePublicationResponse(pub.id, PublicationStatus.valueOf(pub.status.name), pub.creationTime.toOffsetDateTime()))
     }
 
-    override fun submitPublication(id: String, accessType: AccessType): ResponseEntity<Void> {
-        publicationService.submitPublication(authHolderService.user, id, AccessTypeEntity.valueOf(accessType.name))
+    override fun submitPublication(id: String, accessType: AccessType, storageType: StorageType): ResponseEntity<Void> {
+        publicationService.submitPublication(
+            authHolderService.user,
+            id,
+            AccessTypeEntity.valueOf(accessType.name),
+            StorageTypeEntity.valueOf(storageType.name)
+        )
         return ok().build()
     }
 

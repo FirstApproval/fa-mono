@@ -746,7 +746,12 @@ paths:
           schema:
             $ref: '#/components/schemas/AccessType'
           required: true
-          description: Access level for publication
+        - in: query
+          name: storageType
+          schema:
+            $ref: '#/components/schemas/StorageType'
+          required: true
+          description: StorageType for publication
       responses:
         200:
           description: Success
@@ -1853,6 +1858,12 @@ components:
         - PENDING
         - READY_FOR_PUBLICATION
         - PUBLISHED
+
+    StorageType:
+      type: string
+      enum:
+        - CLOUD_SECURE_STORAGE
+        - IPFS
 
     PublicationContentStatus:
       type: string

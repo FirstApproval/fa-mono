@@ -30,6 +30,8 @@ class Publication(
     var status: PublicationStatus = PENDING,
     @Enumerated(STRING)
     var accessType: AccessType = OPEN,
+    @Enumerated(STRING)
+    var storageType: StorageType? = null,
     @Convert(converter = StringEncryptionConverter::class)
     var title: String? = null,
     @ColumnTransformer(write = "?::text")
@@ -105,4 +107,9 @@ enum class AccessType {
 enum class LicenseType {
     ATTRIBUTION_NO_DERIVATIVES,
     ATTRIBUTION_NO_DERIVATIVES_NON_COMMERCIAL,
+}
+
+enum class StorageType {
+    CLOUD_SECURE_STORAGE,
+    IPFS,
 }

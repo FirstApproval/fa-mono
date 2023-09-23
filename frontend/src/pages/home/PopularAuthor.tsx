@@ -11,8 +11,6 @@ import { routerStore } from '../../core/router';
 import { Page } from '../../core/router/constants';
 import { getAuthorLink } from '../../core/router/utils';
 
-const MAX_SELF_BIO_LENGTH = 116;
-
 export const PopularAuthor = (props: { author: UserInfo }): ReactElement => {
   const { author } = props;
   return (
@@ -31,12 +29,7 @@ export const PopularAuthor = (props: { author: UserInfo }): ReactElement => {
         <NameWrap>
           {author.firstName} {author.lastName}
         </NameWrap>
-        <Tooltip
-          disableHoverListener={
-            getCurrentWorkplacesString(author.workplaces)?.length <
-            MAX_SELF_BIO_LENGTH
-          }
-          title={getCurrentWorkplacesString(author.workplaces)}>
+        <Tooltip title={getCurrentWorkplacesString(author.workplaces)}>
           <BioWrap>{getCurrentWorkplacesString(author.workplaces)}</BioWrap>
         </Tooltip>
       </div>
