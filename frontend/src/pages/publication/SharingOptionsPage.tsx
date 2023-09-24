@@ -59,6 +59,22 @@ export const SharingOptionsPage = (props: {
   const [contentLicensingDialogOpen, setContentLicensingDialogOpen] =
     useState(false);
 
+  let licenseTypeAbbreviation: string;
+  switch (licenseType) {
+    case LicenseType.ATTRIBUTION_NO_DERIVATIVES: {
+      licenseTypeAbbreviation = ': CC BY-ND';
+      break;
+    }
+    case LicenseType.ATTRIBUTION_NO_DERIVATIVES_NON_COMMERCIAL: {
+      licenseTypeAbbreviation = ': CC BY-NC-ND';
+      break;
+    }
+    default: {
+      licenseTypeAbbreviation = '';
+      break;
+    }
+  }
+
   return (
     <FlexWrapRow>
       <LeftPanel>
@@ -95,7 +111,7 @@ export const SharingOptionsPage = (props: {
           onClick={() => {
             setContentLicensingDialogOpen(true);
           }}>
-          Content licensing
+          {`Content licensing${licenseTypeAbbreviation}`}
         </ContentLicensingButton>
       </LeftPanel>
       <FlexWrapColumn>
