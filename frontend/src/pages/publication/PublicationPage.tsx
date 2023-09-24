@@ -225,7 +225,11 @@ export const PublicationPage: FunctionComponent = observer(() => {
                           Page.SHARING_OPTIONS,
                           routerStore.path,
                           true,
-                          { publicationTitle: publicationStore.title }
+                          {
+                            publicationTitle: publicationStore.title,
+                            publicationSummary:
+                              publicationStore.summary[0].text.substring(0, 200)
+                          }
                         );
                       }
                     }}>

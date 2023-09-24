@@ -33,6 +33,10 @@ class Publication(
     @Enumerated(STRING)
     var storageType: StorageType? = null,
     @Convert(converter = StringEncryptionConverter::class)
+    var previewTitle: String? = null,
+    @Convert(converter = StringEncryptionConverter::class)
+    var previewSubtitle: String? = null,
+    @Convert(converter = StringEncryptionConverter::class)
     var title: String? = null,
     @ColumnTransformer(write = "?::text")
     @Convert(converter = StringListEncryptionConverter::class)

@@ -5,6 +5,7 @@ import org.firstapproval.api.server.model.DownloadLinkResponse
 import org.firstapproval.api.server.model.Paragraph
 import org.firstapproval.api.server.model.PublicationEditRequest
 import org.firstapproval.api.server.model.PublicationsResponse
+import org.firstapproval.api.server.model.SubmitPublicationRequest
 import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.backend.core.config.Properties.FrontendProperties
 import org.firstapproval.backend.core.config.Properties.S3Properties
@@ -204,15 +205,21 @@ class PublicationService(
     }
 
     @Transactional
-    fun submitPublication(user: User, id: String, accessType: AccessType, storageType: StorageType) {
+    fun submitPublication(
+        user: User,
+        id: String,
+        submitPublicationRequest: SubmitPublicationRequest
+    ) {
         val publication = publicationRepository.getReferenceById(id)
         checkPublicationCreator(user, publication)
         if (publication.status == PUBLISHED) {
             throw IllegalArgumentException()
         }
         publication.status = READY_FOR_PUBLICATION
-        publication.accessType = accessType
-        publication.storageType = storageType
+        publication.accessType = AccessType.valueOf(submitPublicationRequest.accessType.name)
+        publication.storageType = StorageType.valueOf(submitPublicationRequest.storageType.name)
+        publication.previewTitle = submitPublicationRequest.previewTitle
+        publication.previewSubtitle = submitPublicationRequest.previewSubtitle
     }
 
     fun search(text: String, limit: Int, pageNum: Int): Page<PublicationElastic> {
@@ -361,6 +368,8 @@ fun Publication.toApiObject(userService: UserService) = PublicationApiObject().a
         .workplaces(creator.workplaces.map { it.toApiObject() })
         .profileImage(userService.getProfileImage(creator.profileImage))
     publicationApiModel.title = title
+    publicationApiModel.previewTitle = previewTitle
+    publicationApiModel.previewSubtitle = previewSubtitle
     publicationApiModel.description = description?.map { Paragraph(it) }
     publicationApiModel.researchAreas = researchAreas?.map { Paragraph(it) }
     publicationApiModel.grantOrganizations = grantOrganizations?.map { Paragraph(it) }

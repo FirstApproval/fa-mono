@@ -42,7 +42,7 @@ const RecommendedPublicationContent = (props: {
   openDownloadersDialog: () => void;
 }): ReactElement | null => {
   const { publication } = props;
-  const { title, creator } = publication;
+  const { previewTitle, creator } = publication;
 
   if (!creator) return null;
 
@@ -70,8 +70,8 @@ const RecommendedPublicationContent = (props: {
         href={`${publicationPath}${publication.id}`}
         underline={'none'}
         color={'#040036'}>
-        {title?.slice(0, 120)}
-        {title!.length > 80 ? '...' : ''}
+        {previewTitle?.slice(0, 120)}
+        {previewTitle && previewTitle.length > 80 ? '...' : ''}
       </NameWrap>
       <Footer>
         <IconWrap>

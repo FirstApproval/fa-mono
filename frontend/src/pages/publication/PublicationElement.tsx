@@ -22,9 +22,9 @@ export const PublicationElement = (
   return (
     <PublicationRowWrap>
       <Authors>{authorsString}</Authors>
-      <PublicationHeader>{publication.title}</PublicationHeader>
+      <PublicationHeader>{publication.previewTitle ?? ''}</PublicationHeader>
       <PublicationDescription>
-        {publication.description?.[0].text}
+        {publication.previewSubtitle ?? ''}
       </PublicationDescription>
     </PublicationRowWrap>
   );
