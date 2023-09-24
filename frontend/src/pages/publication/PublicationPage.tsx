@@ -228,7 +228,11 @@ export const PublicationPage: FunctionComponent = observer(() => {
                           {
                             publicationTitle: publicationStore.title,
                             publicationSummary:
-                              publicationStore.summary[0].text.substring(0, 200)
+                              publicationStore.summary[0].text.substring(
+                                0,
+                                200
+                              ),
+                            licenseType: publicationStore.licenseType
                           }
                         );
                       }
@@ -362,12 +366,16 @@ export const PublicationPage: FunctionComponent = observer(() => {
         yesText={'Delete'}
         noText={'Cancel'}
       />
-      <ContentLicensingDialog
-        publicationStore={publicationStore}
-        licenseType={publicationStore.licenseType}
-        isOpen={contentLicensingDialogOpen}
-        onClose={() => setContentLicensingDialogOpen(false)}
-      />
+      {publicationStore.licenseType && (
+        <ContentLicensingDialog
+          licenseType={publicationStore.licenseType}
+          isOpen={contentLicensingDialogOpen}
+          onConfirm={(licenseType) =>
+            publicationStore.editLicenseType(licenseType)
+          }
+          onClose={() => setContentLicensingDialogOpen(false)}
+        />
+      )}
     </>
   );
 });

@@ -1760,6 +1760,8 @@ components:
           $ref: '#/components/schemas/AccessType'
         storageType:
           $ref: '#/components/schemas/StorageType'
+        licenseType:
+          $ref: '#/components/schemas/LicenseType'
         previewTitle:
           type: string
           maxLength: 100

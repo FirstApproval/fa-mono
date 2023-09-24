@@ -22,7 +22,11 @@ import {
 import Button from '@mui/material/Button';
 import { routerStore } from '../../core/router';
 import { publicationService } from '../../core/service';
-import { AccessType, StorageType } from '../../apis/first-approval-api';
+import {
+  AccessType,
+  LicenseType,
+  StorageType
+} from '../../apis/first-approval-api';
 import { Page } from '../../core/router/constants';
 import {
   FlexWrapColumn,
@@ -30,16 +34,19 @@ import {
   HeightElement,
   WidthElement
 } from '../common.styled';
+import { ContentLicensingDialog } from '../../components/ContentLicensingDialog';
 
 export const SharingOptionsPage = (props: {
   publicationTitle: string;
   publicationSummary: string;
+  licenseType: LicenseType;
 }): ReactElement => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
   const [previewTitle, setPreviewTitle] = useState(props.publicationTitle);
   const [previewSubtitle, setPreviewSubtitle] = useState(
     props.publicationSummary
   );
+  const [licenseType, setLicenseType] = useState(props.licenseType);
   const [confirmThatAllAuthorsAgree, setConfirmThatAllAuthorsAgree] =
     useState(false);
   const [
@@ -49,36 +56,47 @@ export const SharingOptionsPage = (props: {
   const [storageType, setStorageType] = useState(
     StorageType.CLOUD_SECURE_STORAGE
   );
+  const [contentLicensingDialogOpen, setContentLicensingDialogOpen] =
+    useState(false);
 
   return (
     <FlexWrapRow>
       <LeftPanel>
-        <LeftPanelHeader>Preview</LeftPanelHeader>
-        <HeightElement value={'48px'} />
-        <InputPreviewTextField
-          variant={'standard'}
-          multiline={true}
-          error={!previewTitle}
-          value={previewTitle}
-          helperText={`${previewTitle?.length}/100`}
-          onChange={(e) => setPreviewTitle(e.currentTarget.value)}
-          placeholder={'Write a preview title...'}
-        />
-        <HeightElement value={'32px'} />
-        <InputPreviewTextField
-          variant={'standard'}
-          multiline={true}
-          error={!previewSubtitle}
-          value={previewSubtitle}
-          helperText={`${previewSubtitle?.length}/200`}
-          onChange={(e) => setPreviewSubtitle(e.currentTarget.value)}
-          placeholder={'Write a preview subtitle...'}
-        />
-        <HeightElement value={'48px'} />
-        <LeftPanelSubtitle>
-          Changes here will affect how your publication appears in public places
-          like FA homepage — not the contents of the publication itself.
-        </LeftPanelSubtitle>
+        <FlexWrapColumn>
+          <LeftPanelHeader>Preview</LeftPanelHeader>
+          <HeightElement value={'48px'} />
+          <InputPreviewTextField
+            variant={'standard'}
+            multiline={true}
+            error={!previewTitle}
+            value={previewTitle}
+            helperText={`${previewTitle?.length}/100`}
+            onChange={(e) => setPreviewTitle(e.currentTarget.value)}
+            placeholder={'Write a preview title...'}
+          />
+          <HeightElement value={'32px'} />
+          <InputPreviewTextField
+            variant={'standard'}
+            multiline={true}
+            error={!previewSubtitle}
+            value={previewSubtitle}
+            helperText={`${previewSubtitle?.length}/200`}
+            onChange={(e) => setPreviewSubtitle(e.currentTarget.value)}
+            placeholder={'Write a preview subtitle...'}
+          />
+          <HeightElement value={'48px'} />
+          <LeftPanelSubtitle>
+            Changes here will affect how your publication appears in public
+            places like FA homepage — not the contents of the publication
+            itself.
+          </LeftPanelSubtitle>
+        </FlexWrapColumn>
+        <ContentLicensingButton
+          onClick={() => {
+            setContentLicensingDialogOpen(true);
+          }}>
+          Content licensing
+        </ContentLicensingButton>
       </LeftPanel>
       <FlexWrapColumn>
         <BodyWrap>
@@ -236,7 +254,8 @@ export const SharingOptionsPage = (props: {
                     accessType: AccessType.OPEN,
                     storageType,
                     previewTitle,
-                    previewSubtitle
+                    previewSubtitle,
+                    licenseType
                   })
                   .then(() => {
                     routerStore.navigatePage(
@@ -251,6 +270,12 @@ export const SharingOptionsPage = (props: {
           </BodyContentWrap>
         </BodyWrap>
       </FlexWrapColumn>
+      <ContentLicensingDialog
+        licenseType={licenseType}
+        isOpen={contentLicensingDialogOpen}
+        onConfirm={(licenseType) => setLicenseType(licenseType)}
+        onClose={() => setContentLicensingDialogOpen(false)}
+      />
     </FlexWrapRow>
   );
 };
@@ -435,10 +460,11 @@ const LeftPanel = styled.div`
   width: 25%;
   display: flex;
   flex-direction: column;
-  justify-content: start;
   align-items: start;
-  padding: 48px;
   background: var(--grey-50, #f8f7fa);
+
+  justify-content: space-between;
+  padding: 48px 48px 100px;
 `;
 
 const LeftPanelHeader = styled.div`
@@ -531,4 +557,16 @@ const StorageOptionDescription = styled.div<{
 const FlexWrapRowRadioLabel = styled.span`
   margin-top: 27.5px;
   display: flex;
+`;
+
+const ContentLicensingButton = styled.div`
+  cursor: pointer;
+  &:hover {
+    background-color: transparent;
+  }
+
+  margin-bottom: 0;
+  text-decoration: underline;
+  text-decoration-color: lightgray;
+  text-decoration-thickness: 1.5px;
 `;
