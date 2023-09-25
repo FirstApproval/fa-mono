@@ -83,6 +83,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { Close } from '@mui/icons-material';
 import { FileBrowserFA } from '../../fire-browser/FileBrowserFA';
 import { Page } from '../../core/router/constants';
+import { Helmet } from 'react-helmet';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -162,6 +163,9 @@ export const PublicationPage: FunctionComponent = observer(() => {
 
   return (
     <>
+      <Helmet>
+        <meta name="description" content={publicationStore.title} />
+      </Helmet>
       <Parent>
         <div
           onClick={() => {
