@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useState } from 'react';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Close, CopyAllOutlined } from '@mui/icons-material';
 import DialogContent from '@mui/material/DialogContent';
@@ -7,7 +7,7 @@ import Dialog from '@mui/material/Dialog';
 import styled from '@emotion/styled';
 import { PublicationAuthorName } from './store/PublicationStore';
 import { observer } from 'mobx-react-lite';
-import { Button } from '@mui/material';
+import { Alert, Button, Snackbar } from '@mui/material';
 
 export const CitateDialog = observer(
   (props: {
@@ -28,6 +28,7 @@ export const CitateDialog = observer(
     const onClose = (): void => {
       setIsOpen(false);
     };
+    const [displayCiteCopiedAlert, setDisplayCiteCopiedAlert] = useState(false);
 
     const copyPublicationLinkToClipboard = async (): Promise<void> => {
       const text = authors() + authorsEtAl() + year() + title() + url();
@@ -36,6 +37,7 @@ export const CitateDialog = observer(
       } else {
         document.execCommand('copy', true, text);
       }
+      setDisplayCiteCopiedAlert(true);
     };
 
     const authors = (): string => {
@@ -116,6 +118,16 @@ export const CitateDialog = observer(
             </ButtonWrap>
           </DialogContent>
         </DialogContentWrap>
+        <Snackbar
+          open={displayCiteCopiedAlert}
+          autoHideDuration={4000}
+          onClose={() => {
+            setDisplayCiteCopiedAlert(false);
+          }}>
+          <Alert severity="success" sx={{ width: '100%' }}>
+            Citation successfully copied!
+          </Alert>
+        </Snackbar>
       </Dialog>
     );
   }
