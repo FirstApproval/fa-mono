@@ -1,12 +1,7 @@
 package org.firstapproval.backend.core.domain.publication
 
 import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
-import org.firstapproval.api.server.model.DownloadLinkResponse
-import org.firstapproval.api.server.model.Paragraph
-import org.firstapproval.api.server.model.PublicationEditRequest
-import org.firstapproval.api.server.model.PublicationsResponse
-import org.firstapproval.api.server.model.SubmitPublicationRequest
-import org.firstapproval.api.server.model.UserInfo
+import org.firstapproval.api.server.model.*
 import org.firstapproval.backend.core.config.Properties.FrontendProperties
 import org.firstapproval.backend.core.config.Properties.S3Properties
 import org.firstapproval.backend.core.domain.auth.TokenService
@@ -28,11 +23,7 @@ import org.firstapproval.backend.core.domain.user.UserRepository
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.external.ipfs.IpfsClient
 import org.firstapproval.backend.core.external.ipfs.JobRepository
-import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_FILES
-import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_SAMPLE_FILES
-import org.firstapproval.backend.core.external.s3.FILES
-import org.firstapproval.backend.core.external.s3.FileStorageService
-import org.firstapproval.backend.core.external.s3.SAMPLE_FILES
+import org.firstapproval.backend.core.external.s3.*
 import org.firstapproval.backend.core.infra.elastic.PublicationElastic
 import org.firstapproval.backend.core.infra.elastic.PublicationElasticRepository
 import org.firstapproval.backend.core.utils.require
@@ -46,7 +37,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
 import java.time.ZonedDateTime.now
-import java.util.UUID
+import java.util.*
 import java.util.UUID.randomUUID
 import org.firstapproval.api.server.model.AccessType as AccessTypeApiObject
 import org.firstapproval.api.server.model.ConfirmedAuthor as ConfirmedAuthorApiObject
@@ -184,20 +175,6 @@ class PublicationService(
     }
 
     @Transactional
-    fun getPublicationSamplesArchive(id: String): FileResponse {
-        val publication = publicationRepository.getReferenceById(id)
-        val title = if (publication.title != null) {
-            publication.title
-        } else {
-            publication.id.toString()
-        }
-        return FileResponse(
-            name = title!! + ".zip",
-            s3Object = fileStorageService.get(ARCHIVED_PUBLICATION_SAMPLE_FILES, publication.id.toString())
-        )
-    }
-
-    @Transactional
     fun incrementViewCount(id: String) {
         val publication = publicationRepository.getReferenceById(id)
         publication.viewsCount += 1
@@ -232,45 +209,31 @@ class PublicationService(
     @Transactional
     fun getDownloadLinkForArchive(user: User, id: String): DownloadLinkResponse {
         val publication = publicationRepository.getReferenceById(id)
-        if (publication.status != PUBLISHED && publication.accessType != OPEN) {
-            throw IllegalArgumentException()
-        }
-        val title = if (publication.title != null) {
-            publication.title
-        } else {
-            id
-        }
-        publication.downloadsCount += 1
+        checkStatusAndAccessType(publication)
         addDownloadHistory(user, publication)
-        if (user.email != null) {
-            notificationService.sendArchivePassword(user.email!!, title, publication.archivePassword!!)
+        publication.downloadsCount += 1
+        val title = publication.title ?: id
+        user.email?.let {
+            notificationService.sendArchivePassword(it, title, publication.archivePassword.require())
         }
         val link = fileStorageService.generateTemporaryDownloadLink(
-            ARCHIVED_PUBLICATION_FILES, publication.id.toString(), title!! + "_files.zip"
+            ARCHIVED_PUBLICATION_FILES, publication.id, title + "_files.zip"
         )
-        val passcode = publication.archivePassword
-        return DownloadLinkResponse(link, passcode)
+        return DownloadLinkResponse(link, publication.archivePassword)
     }
 
     @Transactional
-    fun getDownloadLinkForSampleArchive(publicationId: String): DownloadLinkResponse {
-        val publication = publicationRepository.getReferenceById(publicationId)
-        if (publication.status != PUBLISHED && publication.accessType != OPEN) {
-            throw IllegalArgumentException()
-        }
-        val title = if (publication.title != null) {
-            publication.title
-        } else {
-            publicationId
-        }
+    fun getDownloadLinkForSampleArchive(id: String): DownloadLinkResponse {
+        val publication = publicationRepository.getReferenceById(id)
+        checkStatusAndAccessType(publication)
+        val title = publication.title ?: id
         val link =
             fileStorageService.generateTemporaryDownloadLink(
                 ARCHIVED_PUBLICATION_SAMPLE_FILES,
-                publication.id.toString(),
-                title!! + "_sample_files.zip"
+                publication.id,
+                title + "_sample_files.zip"
             )
-        val passcode = publication.archivePassword
-        return DownloadLinkResponse(link, passcode)
+        return DownloadLinkResponse(link, publication.archivePassword)
     }
 
     @Transactional(readOnly = true)
