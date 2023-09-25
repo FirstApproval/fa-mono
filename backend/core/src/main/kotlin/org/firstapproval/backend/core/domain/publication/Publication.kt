@@ -7,6 +7,7 @@ import jakarta.persistence.FetchType.EAGER
 import org.firstapproval.backend.core.config.encryption.StringEncryptionConverter
 import org.firstapproval.backend.core.config.encryption.StringListEncryptionConverter
 import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
+import org.firstapproval.backend.core.domain.publication.LicenseType.ATTRIBUTION_NO_DERIVATIVES
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
 import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthor
@@ -95,7 +96,7 @@ class Publication(
     var foldersCount: Long? = null,
     var hash: String? = null,
     @Enumerated(STRING)
-    var licenseType: LicenseType? = null,
+    var licenseType: LicenseType = ATTRIBUTION_NO_DERIVATIVES,
 )
 
 enum class PublicationStatus {
