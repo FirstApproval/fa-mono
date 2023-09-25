@@ -366,7 +366,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
         yesText={'Delete'}
         noText={'Cancel'}
       />
-      {publicationStore.licenseType && (
+      {(publicationStore.licenseType ?? !publicationStore.isLoading) && (
         <ContentLicensingDialog
           licenseType={publicationStore.licenseType}
           isOpen={contentLicensingDialogOpen}
