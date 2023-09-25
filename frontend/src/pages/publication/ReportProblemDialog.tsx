@@ -295,7 +295,7 @@ const FullWidthTextField = styled(TextField)`
 `;
 
 const ConfirmDialogActions = styled(DialogActions)`
-  padding: 0 32px 32px 32px !important;
+  padding: 0;
   display: flex;
   align-items: end;
 `;
