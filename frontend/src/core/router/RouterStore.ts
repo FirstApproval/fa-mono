@@ -12,6 +12,7 @@ import {
   shortAuthorPath,
   shortPublicationPath
 } from './constants';
+import { userStore } from '../user';
 
 const history = createBrowserHistory();
 
@@ -45,9 +46,13 @@ export class RouterStore {
     );
 
     reaction(
-      () => authStore.token,
-      (token) => {
-        this.navigatePage(Page.HOME_PAGE, '/', true);
+      () => userStore.user,
+      (user) => {
+        if (user?.workplaces?.length === 0) {
+          this.navigatePage(Page.ACCOUNT, ACCOUNT_AFFILIATIONS_PATH, true);
+        } else {
+          this.navigatePage(Page.HOME_PAGE, '/', true);
+        }
       }
     );
 
@@ -122,7 +127,6 @@ export class RouterStore {
           })
           .then((response) => {
             authStore.token = response.data.token;
-            this.navigatePage(Page.ACCOUNT, ACCOUNT_AFFILIATIONS_PATH, true);
           })
           .catch(() => {
             this.setInitialPageError('Authorization failed');
@@ -133,6 +137,7 @@ export class RouterStore {
       }
     };
 
+    debugger;
     restoreFromUrl();
   }
 
