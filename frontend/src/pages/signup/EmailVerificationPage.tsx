@@ -107,6 +107,12 @@ export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps
 const FullWidthTextField = styled(TextField)`
   width: 100%;
   margin-bottom: 20px;
+
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 `;
 
 const EmailLabel = styled.div`
