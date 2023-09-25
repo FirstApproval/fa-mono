@@ -153,7 +153,7 @@ export const TagsPlaceholder = (props: PlaceholderProps): ReactElement => {
   return (
     <ContentPlaceholder
       onClick={props.onClick}
-      text={'Tags'}
+      text={'Tags | optional'}
       icon={<TagsIcon />}
     />
   );
