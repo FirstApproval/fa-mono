@@ -15,7 +15,7 @@ export function getCurrentWorkplacesString(workplaces: Workplace[]): string {
         (workplace) =>
           `${workplace.department?.name ?? ''} ${
             workplace.organization?.name ?? ''
-          }  ${workplace.address ?? ''}`.trim() ?? ''
+          } ${workplace.address ?? ''}`.trim() ?? ''
       )
       .join(', ') ?? ''
   );

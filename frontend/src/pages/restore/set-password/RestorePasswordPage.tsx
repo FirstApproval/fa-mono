@@ -20,6 +20,7 @@ import { routerStore } from '../../../core/router';
 import { userService } from '../../../core/service';
 import { LoadingButton } from '@mui/lab';
 import { HeaderComponent } from '../../../components/HeaderComponent';
+import { PasswordValidation } from '../../../components/PasswordValidation';
 
 interface SetPasswordPageProps {
   onSignUpClick: () => void;
@@ -83,6 +84,7 @@ export const ResetPasswordPage: FunctionComponent<SetPasswordPageProps> =
                   }}
                 />
               </div>
+              {password && <PasswordValidation password={password} />}
               {isSubmitting && <CircularProgress />}
               {!isSubmitting && (
                 <FullWidthButton

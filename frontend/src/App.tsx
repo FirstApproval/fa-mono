@@ -73,6 +73,8 @@ const App: FunctionComponent = observer(() => {
               {page === Page.SHARING_OPTIONS && (
                 <SharingOptionsPage
                   publicationTitle={routerStore.payload.publicationTitle}
+                  publicationSummary={routerStore.payload.publicationSummary}
+                  licenseType={routerStore.payload.licenseType}
                 />
               )}
               {page === Page.PROFILE && <ProfilePage key={routerStore.key} />}

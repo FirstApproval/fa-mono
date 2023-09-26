@@ -741,12 +741,11 @@ paths:
             maxLength: 7
           required: true
           description: Publication id
-        - in: query
-          name: accessType
-          schema:
-            $ref: '#/components/schemas/AccessType'
-          required: true
-          description: Access level for publication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitPublicationRequest'
       responses:
         200:
           description: Success
@@ -1753,6 +1752,25 @@ components:
         - id
         - status
         - creationTime
+            
+    SubmitPublicationRequest:
+      type: object
+      properties:
+        accessType:
+          $ref: '#/components/schemas/AccessType'
+        storageType:
+          $ref: '#/components/schemas/StorageType'
+        licenseType:
+          $ref: '#/components/schemas/LicenseType'
+        previewTitle:
+          type: string
+          maxLength: 100
+        previewSubtitle:
+          type: string
+          maxLength: 200
+      required:
+        - accessType
+        - storageType
 
     GetMeResponse:
       type: object
@@ -1853,6 +1871,12 @@ components:
         - PENDING
         - READY_FOR_PUBLICATION
         - PUBLISHED
+
+    StorageType:
+      type: string
+      enum:
+        - CLOUD_SECURE_STORAGE
+        - IPFS
 
     PublicationContentStatus:
       type: string
@@ -2140,6 +2164,8 @@ components:
           $ref: '#/components/schemas/AccessType'
         licenseType:
           $ref: '#/components/schemas/LicenseType'
+        storageType:
+          $ref: '#/components/schemas/StorageType'
         contentStatus:
           $ref: '#/components/schemas/PublicationContentStatus'
         creationTime:
@@ -2154,6 +2180,12 @@ components:
         title:
           type: string
           maxLength: 32768
+        previewTitle:
+          type: string
+          maxLength: 100
+        previewSubtitle:
+          type: string
+          maxLength: 200
         description:
           $ref: '#/components/schemas/StringArray'
         researchAreas:

@@ -1,12 +1,11 @@
 import { Button, Dialog, FormControlLabel, Radio } from '@mui/material';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import {
   FlexWrapRow,
   HeightElement,
   SpaceBetween,
   WidthElement
 } from '../pages/common.styled';
-import { PublicationStore } from '../pages/publication/store/PublicationStore';
 import { LicenseType } from '../apis/first-approval-api';
 import Launch from '@mui/icons-material/Launch';
 import styled from '@emotion/styled';
@@ -19,12 +18,17 @@ import dollarStrikethrough from '../assets/dollar-strikethrough.svg';
 import equalInCircle from '../assets/equal-in-circle.svg';
 
 export const ContentLicensingDialog = (props: {
-  publicationStore: PublicationStore;
   licenseType: LicenseType | null;
   isOpen: boolean;
+  onConfirm: (licenseType: LicenseType) => void;
   onClose: () => void;
 }): ReactElement => {
-  const { isOpen, onClose, publicationStore, licenseType } = props;
+  const { isOpen, onConfirm, onClose, licenseType } = props;
+  const [newLicenseType, setNewLicenseType] = useState(licenseType);
+  useEffect(() => {
+    setNewLicenseType(licenseType);
+  }, []);
+
   return (
     <Dialog
       open={isOpen}
@@ -44,7 +48,7 @@ export const ContentLicensingDialog = (props: {
               they credit you.
             </span>
           </DescriptionElement>
-          {licenseType ===
+          {newLicenseType ===
             LicenseType.ATTRIBUTION_NO_DERIVATIVES_NON_COMMERCIAL && (
             <DescriptionElement>
               <img src={dollarStrikethrough} />
@@ -71,11 +75,10 @@ export const ContentLicensingDialog = (props: {
               control={
                 <Radio
                   checked={
-                    licenseType === LicenseType.ATTRIBUTION_NO_DERIVATIVES
+                    newLicenseType === LicenseType.ATTRIBUTION_NO_DERIVATIVES
                   }
                   onChange={() => {
-                    publicationStore.licenseType =
-                      LicenseType.ATTRIBUTION_NO_DERIVATIVES;
+                    setNewLicenseType(LicenseType.ATTRIBUTION_NO_DERIVATIVES);
                   }}
                 />
               }
@@ -98,12 +101,13 @@ export const ContentLicensingDialog = (props: {
               control={
                 <Radio
                   checked={
-                    licenseType ===
+                    newLicenseType ===
                     LicenseType.ATTRIBUTION_NO_DERIVATIVES_NON_COMMERCIAL
                   }
                   onChange={() => {
-                    publicationStore.licenseType =
-                      LicenseType.ATTRIBUTION_NO_DERIVATIVES_NON_COMMERCIAL;
+                    setNewLicenseType(
+                      LicenseType.ATTRIBUTION_NO_DERIVATIVES_NON_COMMERCIAL
+                    );
                   }}
                 />
               }
@@ -129,8 +133,9 @@ export const ContentLicensingDialog = (props: {
           <ConfirmButton
             color="primary"
             variant={'contained'}
+            disabled={!newLicenseType}
             onClick={() => {
-              publicationStore.editLicenseType();
+              onConfirm(newLicenseType!);
               onClose();
             }}>
             {'Save'}

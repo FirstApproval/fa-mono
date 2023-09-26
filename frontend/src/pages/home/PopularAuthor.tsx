@@ -45,7 +45,9 @@ export const PopularAuthor = (props: { author: UserInfo }): ReactElement => {
             MAX_SELF_BIO_LENGTH
           }
           title={getCurrentWorkplacesString(author.workplaces)}>
-          <BioWrap>{getCurrentWorkplacesString(author.workplaces)}</BioWrap>
+          <WorkplacesWrap>
+            {getCurrentWorkplacesString(author.workplaces)}
+          </WorkplacesWrap>
         </Tooltip>
       </div>
     </FlexWrap>
@@ -74,7 +76,7 @@ const NameWrap = styled.div`
   width: 260px;
 `;
 
-const BioWrap = styled.div`
+const WorkplacesWrap = styled.div`
   font-size: 14px;
   font-style: normal;
   font-weight: 400;

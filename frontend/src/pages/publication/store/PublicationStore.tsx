@@ -290,11 +290,11 @@ export class PublicationStore {
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
-  editLicenseType(): void {
+  editLicenseType(licenseType: LicenseType): void {
     this.savingStatus = SavingStatusState.SAVING;
     void publicationService.editPublication(this.publicationId, {
       licenseType: {
-        value: this.licenseType ?? undefined,
+        value: licenseType ?? undefined,
         edited: true
       }
     });
@@ -838,9 +838,6 @@ export class PublicationStore {
     }
     if (this.fs.rootPathFiles === 0) {
       result.push('files');
-    }
-    if (this.tags.size === 0) {
-      result.push('tags');
     }
 
     return result;

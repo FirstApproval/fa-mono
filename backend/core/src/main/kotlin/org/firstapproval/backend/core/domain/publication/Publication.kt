@@ -7,6 +7,7 @@ import jakarta.persistence.FetchType.EAGER
 import org.firstapproval.backend.core.config.encryption.StringEncryptionConverter
 import org.firstapproval.backend.core.config.encryption.StringListEncryptionConverter
 import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
+import org.firstapproval.backend.core.domain.publication.LicenseType.ATTRIBUTION_NO_DERIVATIVES
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
 import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthor
@@ -30,6 +31,12 @@ class Publication(
     var status: PublicationStatus = PENDING,
     @Enumerated(STRING)
     var accessType: AccessType = OPEN,
+    @Enumerated(STRING)
+    var storageType: StorageType? = null,
+    @Convert(converter = StringEncryptionConverter::class)
+    var previewTitle: String? = null,
+    @Convert(converter = StringEncryptionConverter::class)
+    var previewSubtitle: String? = null,
     @Convert(converter = StringEncryptionConverter::class)
     var title: String? = null,
     @ColumnTransformer(write = "?::text")
@@ -89,7 +96,7 @@ class Publication(
     var foldersCount: Long? = null,
     var hash: String? = null,
     @Enumerated(STRING)
-    var licenseType: LicenseType? = null,
+    var licenseType: LicenseType = ATTRIBUTION_NO_DERIVATIVES,
 )
 
 enum class PublicationStatus {
@@ -105,4 +112,9 @@ enum class AccessType {
 enum class LicenseType {
     ATTRIBUTION_NO_DERIVATIVES,
     ATTRIBUTION_NO_DERIVATIVES_NON_COMMERCIAL,
+}
+
+enum class StorageType {
+    CLOUD_SECURE_STORAGE,
+    IPFS,
 }

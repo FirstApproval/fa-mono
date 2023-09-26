@@ -20,6 +20,7 @@ class Organization(
     @OneToMany(fetch = EAGER, cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "organization")
     var departments: Set<OrganizationDepartment>,
     var name: String,
+    var moderated: Boolean = false,
     var creationTime: ZonedDateTime,
 )
 

@@ -80,6 +80,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { Close } from '@mui/icons-material';
 import { FileBrowserFA } from '../../fire-browser/FileBrowserFA';
 import { Page } from '../../core/router/constants';
+import { Helmet } from 'react-helmet';
 import { MutableRefObject } from 'react';
 import { useIsHorizontalOverflow } from '../../util/overflowUtil';
 
@@ -162,6 +163,9 @@ export const PublicationPage: FunctionComponent = observer(() => {
 
   return (
     <>
+      <Helmet>
+        <meta name="description" content={publicationStore.title} />
+      </Helmet>
       <Parent>
         <FlexHeader>
           <ToolbarContainer>
@@ -208,11 +212,19 @@ export const PublicationPage: FunctionComponent = observer(() => {
                           Page.SHARING_OPTIONS,
                           routerStore.path,
                           true,
-                          { publicationTitle: publicationStore.title }
+                          {
+                            publicationTitle: publicationStore.title,
+                            publicationSummary:
+                              publicationStore.summary[0].text.substring(
+                                0,
+                                200
+                              ),
+                            licenseType: publicationStore.licenseType
+                          }
                         );
                       }
                     }}>
-                    Publish
+                    Preview
                   </ButtonWrap>
                   <ButtonWrap
                     variant="outlined"
@@ -340,12 +352,16 @@ export const PublicationPage: FunctionComponent = observer(() => {
         yesText={'Delete'}
         noText={'Cancel'}
       />
-      <ContentLicensingDialog
-        publicationStore={publicationStore}
-        licenseType={publicationStore.licenseType}
-        isOpen={contentLicensingDialogOpen}
-        onClose={() => setContentLicensingDialogOpen(false)}
-      />
+      {publicationStore.licenseType && (
+        <ContentLicensingDialog
+          licenseType={publicationStore.licenseType}
+          isOpen={contentLicensingDialogOpen}
+          onConfirm={(licenseType) =>
+            publicationStore.editLicenseType(licenseType)
+          }
+          onClose={() => setContentLicensingDialogOpen(false)}
+        />
+      )}
     </>
   );
 });
@@ -556,7 +572,7 @@ const PublicationBody = observer(
         )}
 
         {/* Tags */}
-        {!tagsEnabled && (
+        {!tagsEnabled && !publicationStore.isReadonly && (
           <TagsWrap>
             <TagsPlaceholder onClick={openTags} />
           </TagsWrap>

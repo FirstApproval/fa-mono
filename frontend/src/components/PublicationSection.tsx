@@ -122,10 +122,10 @@ export const PublicationSection = (props: {
           />
           <Authors>{authorsString}</Authors>
         </AuthorsWrap>
-        <PublicationLabel>{publication.title ?? 'Untitled'}</PublicationLabel>
-        <PublicationDescriptionBox
-          title={publication.description?.[0]?.text ?? ''}
-        />
+        <PublicationLabel>
+          {publication.previewTitle ?? 'Untitled'}
+        </PublicationLabel>
+        <PublicationDescriptionBox title={publication.previewSubtitle ?? ''} />
       </Link>
       <FlexWrap>
         {publication.status === PublicationStatus.PUBLISHED && (
@@ -165,7 +165,9 @@ export const PublicationSection = (props: {
                   open={openUtilMenu}>
                   <StyledMenuItem
                     onClick={() => {
-                      downloadPdf();
+                      downloadPdf().then(() => {
+                        handleUtilMenuClose();
+                      });
                     }}>
                     <img
                       src={pdf}
@@ -180,13 +182,16 @@ export const PublicationSection = (props: {
                   <StyledMenuItem
                     onClick={() => {
                       setCiteOpened(true);
+                      handleUtilMenuClose();
                     }}>
                     <FormatQuote style={{ marginRight: 16 }}></FormatQuote>
                     Cite
                   </StyledMenuItem>
                   <StyledMenuItem
                     onClick={() => {
-                      copyPublicationLinkToClipboard();
+                      copyPublicationLinkToClipboard().then(() => {
+                        handleUtilMenuClose();
+                      });
                     }}>
                     <ContentCopy style={{ marginRight: 16 }}></ContentCopy>
                     Copy publication link

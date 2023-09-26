@@ -1,4 +1,4 @@
-import React, { type ReactElement } from 'react';
+import React, { type ReactElement, useState } from 'react';
 import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
 import { authStore } from '../../core/auth';
@@ -7,7 +7,13 @@ import download from './asset/download.svg';
 import downloadSample from './asset/download_sample.svg';
 import pdf from './asset/pdf.svg';
 import citate from './asset/citate.svg';
-import { Button, CircularProgress, Tooltip } from '@mui/material';
+import {
+  Alert,
+  Button,
+  CircularProgress,
+  Snackbar,
+  Tooltip
+} from '@mui/material';
 import { PublicationStore } from './store/PublicationStore';
 import { ContentCopy } from '@mui/icons-material';
 import { ArchiveDownloader } from './ArchiveDownloader';
@@ -22,6 +28,7 @@ export const ActionBar = observer(
     publicationPageStore: PublicationPageStore;
   }): ReactElement => {
     const { publicationStore, publicationPageStore } = props;
+    const [showLinkCopiedAlert, setShowLinkCopiedAlert] = useState(false);
 
     const getArchiveSizeTitle = (sizeBytes: number | null): string => {
       if (sizeBytes) {
@@ -138,7 +145,10 @@ export const ActionBar = observer(
             <Tooltip title="Copy publication link">
               <ActionButtonWrap
                 variant="outlined"
-                onClick={publicationStore.copyPublicationLinkToClipboard}
+                onClick={() => {
+                  publicationStore.copyPublicationLinkToClipboard();
+                  setShowLinkCopiedAlert(true);
+                }}
                 size={'medium'}>
                 <ContentCopy />
               </ActionButtonWrap>
@@ -170,6 +180,16 @@ export const ActionBar = observer(
           publicationTime={publicationStore.publicationTime}
           publicationTitle={publicationStore.title}
         />
+        <Snackbar
+          open={showLinkCopiedAlert}
+          autoHideDuration={4000}
+          onClose={() => {
+            setShowLinkCopiedAlert(false);
+          }}>
+          <Alert severity="success" sx={{ width: '100%' }}>
+            Link copied successfully!
+          </Alert>
+        </Snackbar>
       </div>
     );
   }

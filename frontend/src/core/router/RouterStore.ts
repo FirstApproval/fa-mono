@@ -1,7 +1,7 @@
 import { authStore } from '../auth';
-import { action, computed, makeObservable, observable, reaction } from 'mobx';
+import { action, computed, makeObservable, observable } from 'mobx';
 import { createBrowserHistory } from 'history';
-import { authService } from '../service';
+import { authService, userService } from '../service';
 import { v4 as uuidv4 } from 'uuid';
 import {
   ACCOUNT_AFFILIATIONS_PATH,
@@ -41,13 +41,6 @@ export class RouterStore {
         setInitialPageError: action,
         setPage: action,
         setPayload: action
-      }
-    );
-
-    reaction(
-      () => authStore.token,
-      (token) => {
-        this.navigatePage(Page.HOME_PAGE, '/', true);
       }
     );
 
@@ -120,9 +113,14 @@ export class RouterStore {
             code: authCode,
             type: authType
           })
-          .then((response) => {
+          .then(async (response) => {
             authStore.token = response.data.token;
-            this.navigatePage(Page.ACCOUNT, ACCOUNT_AFFILIATIONS_PATH, true);
+            const userData = (await userService.getMe()).data;
+            if (userData?.workplaces?.length === 0) {
+              this.navigatePage(Page.ACCOUNT, ACCOUNT_AFFILIATIONS_PATH, true);
+            } else {
+              this.navigatePage(Page.HOME_PAGE, '/', true);
+            }
           })
           .catch(() => {
             this.setInitialPageError('Authorization failed');
@@ -133,6 +131,7 @@ export class RouterStore {
       }
     };
 
+    debugger;
     restoreFromUrl();
   }
 
