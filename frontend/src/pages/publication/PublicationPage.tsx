@@ -13,7 +13,8 @@ import {
   Logo,
   Parent,
   StyledMenuItem,
-  TitleRowWrap
+  TitleRowWrap,
+  WidthElement
 } from '../common.styled';
 import { FileUploader } from '../../fire-browser/FileUploader';
 import { routerStore } from '../../core/router';
@@ -80,7 +81,7 @@ import { ContentLicensingDialog } from '../../components/ContentLicensingDialog'
 import { PublicationPageStore } from './store/PublicationPageStore';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Close } from '@mui/icons-material';
+import { Close, Edit } from '@mui/icons-material';
 import { FileBrowserFA } from '../../fire-browser/FileBrowserFA';
 import { Page } from '../../core/router/constants';
 import { Helmet } from 'react-helmet';
@@ -219,32 +220,38 @@ export const PublicationPage: FunctionComponent = observer(() => {
             <FlexDiv>
               {!publicationStore.isView && (
                 <>
+                  {publicationStore.viewMode === ViewMode.PREVIEW && (
+                    <ButtonWrap
+                      variant="contained"
+                      size={'medium'}
+                      onClick={() => {
+                        const isValid = validateSections();
+                        if (isValid) {
+                          routerStore.navigatePage(
+                            Page.SHARING_OPTIONS,
+                            routerStore.path,
+                            true,
+                            {
+                              publicationTitle: publicationStore.title,
+                              publicationSummary:
+                                publicationStore.summary[0].text.substring(
+                                  0,
+                                  200
+                                ),
+                              licenseType: publicationStore.licenseType
+                            }
+                          );
+                        }
+                      }}>
+                      Publish
+                    </ButtonWrap>
+                  )}
                   <ButtonWrap
-                    variant="contained"
-                    size={'medium'}
-                    onClick={() => {
-                      const isValid = validateSections();
-                      if (isValid) {
-                        routerStore.navigatePage(
-                          Page.SHARING_OPTIONS,
-                          routerStore.path,
-                          true,
-                          {
-                            publicationTitle: publicationStore.title,
-                            publicationSummary:
-                              publicationStore.summary[0].text.substring(
-                                0,
-                                200
-                              ),
-                            licenseType: publicationStore.licenseType
-                          }
-                        );
-                      }
-                    }}>
-                    Preview
-                  </ButtonWrap>
-                  <ButtonWrap
-                    variant="outlined"
+                    variant={
+                      publicationStore.viewMode === ViewMode.PREVIEW
+                        ? 'outlined'
+                        : 'contained'
+                    }
                     size={'medium'}
                     onClick={() => {
                       if (
@@ -254,6 +261,12 @@ export const PublicationPage: FunctionComponent = observer(() => {
                         publicationStore.viewMode = nextViewMode;
                       }
                     }}>
+                    {nextViewMode === ViewMode.EDIT ? (
+                      <Edit sx={{ width: '20px', height: '20px' }} />
+                    ) : (
+                      ''
+                    )}
+                    <WidthElement value={'8px'} />
                     {nextViewMode}
                   </ButtonWrap>
                   <PdfButtonWrap
