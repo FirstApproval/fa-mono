@@ -14,11 +14,7 @@ class OrganizationService(
         return organization.id?.let { organizationRepository.getReferenceById(it) }
             ?: organizationRepository.findByName(organization.name)
             ?: organizationRepository.saveAndFlush(
-                Organization(
-                    departments = setOf(),
-                    name = organization.name,
-                    creationTime = ZonedDateTime.now()
-                )
+                Organization(name = organization.name, creationTime = ZonedDateTime.now())
             )
     }
 

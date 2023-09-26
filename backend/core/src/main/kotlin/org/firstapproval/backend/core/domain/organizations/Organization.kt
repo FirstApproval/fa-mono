@@ -18,8 +18,11 @@ class Organization(
     var id: Long = 0,
     @Fetch(SELECT)
     @OneToMany(fetch = EAGER, cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "organization")
-    var departments: Set<OrganizationDepartment>,
+    var departments: Set<OrganizationDepartment> = setOf(),
     var name: String,
+    var countryName: String? = null,
+    var countryCode: String? = null,
+    var city: String? = null,
     var moderated: Boolean = false,
     var creationTime: ZonedDateTime,
 )
