@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { Button, DialogContent, LinearProgress } from '@mui/material';
+import { Button, DialogContent, LinearProgress, Tooltip } from '@mui/material';
 import {
   FlexBodyCenter,
   FlexHeader,
@@ -54,7 +54,7 @@ import { AuthorsEditor } from './editors/AuthorsEditor';
 import { TitleEditor } from './editors/TitleEditor';
 import { ResearchAreaEditor } from './editors/ResearchAreaEditor';
 import { ResearchAreaPage } from './ResearchAreaPage';
-import logo from '../../assets/logo-black.svg';
+import logo from '../../assets/logo-black-short.svg';
 import { UserMenu } from '../../components/UserMenu';
 import { ValidationDialog } from './ValidationDialog';
 import {
@@ -69,9 +69,6 @@ import { ActionBar } from './ActionBar';
 import { authStore } from '../../core/auth';
 import { DownloadersDialog } from './DownloadersDialog';
 import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
-import developer from '../../assets/developer.svg';
-import cloud from '../../assets/cloud.svg';
-import { BetaDialog } from '../../components/BetaDialog';
 import { PublicationStatus } from '../../apis/first-approval-api';
 import { downloadersStore } from './store/downloadsStore';
 import ExpandMore from '@mui/icons-material/ExpandMore';
@@ -85,6 +82,8 @@ import { Close, Edit } from '@mui/icons-material';
 import { FileBrowserFA } from '../../fire-browser/FileBrowserFA';
 import { Page } from '../../core/router/constants';
 import { Helmet } from 'react-helmet';
+import { MutableRefObject } from 'react';
+import { useIsHorizontalOverflow } from '../../util/overflowUtil';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -94,7 +93,6 @@ export const PublicationPage: FunctionComponent = observer(() => {
     () => new FileSystemFA(publicationId, sampleFileService)
   );
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
-  const [isBetaDialogOpen, setIsBetaDialogOpen] = useState(() => false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [contentLicensingDialogOpen, setContentLicensingDialogOpen] =
     useState(false);
@@ -127,6 +125,8 @@ export const PublicationPage: FunctionComponent = observer(() => {
     setValidationErrors(result);
     return isValid;
   };
+  const nameRef: MutableRefObject<HTMLDivElement | null> = React.useRef(null);
+  const isOverflow = useIsHorizontalOverflow(nameRef, () => {});
 
   useEffect(() => {
     if (
@@ -168,30 +168,6 @@ export const PublicationPage: FunctionComponent = observer(() => {
         <meta name="description" content={publicationStore.title} />
       </Helmet>
       <Parent>
-        <div
-          onClick={() => {
-            setIsBetaDialogOpen(true);
-          }}
-          style={{
-            display: 'flex',
-            width: '100%',
-            height: '48px',
-            backgroundColor: 'var(--primary-main, #3B4EFF)',
-            justifyContent: 'center',
-            alignItems: 'center',
-            alignContent: 'center',
-            cursor: 'pointer'
-          }}>
-          <img src={developer} />
-          <BetaHeaderText>
-            We are fine-tuning the platform and would love your feedback
-          </BetaHeaderText>
-          <img src={cloud} />
-        </div>
-        <BetaDialog
-          isOpen={isBetaDialogOpen}
-          onClose={() => setIsBetaDialogOpen(false)}
-        />
         <FlexHeader>
           <ToolbarContainer>
             <div style={{ display: 'flex' }}>
@@ -201,11 +177,18 @@ export const PublicationPage: FunctionComponent = observer(() => {
               <BetaDialogWithButton />
               {!publicationStore.isView && (
                 <>
-                  <DraftedBy>
-                    Draft by
-                    {/* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */}
-                    {` ${publicationStore.creator?.firstName} ${publicationStore.creator?.lastName}`}
-                  </DraftedBy>
+                  <Tooltip
+                    title={
+                      isOverflow
+                        ? `${publicationStore.creator?.firstName} ${publicationStore.creator?.lastName}`
+                        : undefined
+                    }>
+                    <DraftedBy ref={nameRef}>
+                      Draft by
+                      {/* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */}
+                      {` ${publicationStore.creator?.firstName} ${publicationStore.creator?.lastName}`}
+                    </DraftedBy>
+                  </Tooltip>
                   {publicationStore.savingStatus ===
                     SavingStatusState.SAVING && (
                     <SavingStatus>Saving...</SavingStatus>
@@ -269,16 +252,6 @@ export const PublicationPage: FunctionComponent = observer(() => {
                     <WidthElement value={'8px'} />
                     {nextViewMode}
                   </ButtonWrap>
-                  <PdfButtonWrap
-                    variant="outlined"
-                    size={'medium'}
-                    onClick={async () => {
-                      if (validateSections()) {
-                        await publicationPageStore.downloadPdf();
-                      }
-                    }}>
-                    Preview PDF
-                  </PdfButtonWrap>
                   <ButtonWrap
                     marginright="0px"
                     variant="outlined"
@@ -355,6 +328,15 @@ export const PublicationPage: FunctionComponent = observer(() => {
         MenuListProps={{
           'aria-labelledby': 'user-button'
         }}>
+        <StyledMenuItem
+          onClick={async () => {
+            if (validateSections()) {
+              await publicationPageStore.downloadPdf();
+            }
+            handleClose();
+          }}>
+          Preview PDF
+        </StyledMenuItem>
         <StyledMenuItem
           onClick={() => {
             setContentLicensingDialogOpen(true);
@@ -655,12 +637,6 @@ const ButtonWrap = styled(Button)<{ marginright?: string }>`
   height: 36px;
 `;
 
-const PdfButtonWrap = styled(Button)`
-  margin-right: 24px;
-  width: 120px;
-  height: 36px;
-`;
-
 const Space = styled.div`
   margin-bottom: 120px;
 `;
@@ -669,7 +645,7 @@ const ToolbarContainer = styled.div`
   align-items: center;
   justify-content: space-between;
   height: 64px;
-  width: 100%;
+  width: 988px;
   display: flex;
 `;
 
@@ -683,6 +659,10 @@ const DraftedBy = styled.span`
   font-weight: 400;
   line-height: 150%; /* 24px */
   letter-spacing: 0.15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 260px;
 `;
 
 const SavingStatus = styled.span`
@@ -700,20 +680,4 @@ const FlexDiv = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-`;
-
-const BetaHeaderText = styled.span`
-  color: var(--primary-contrast, #fff);
-  text-align: center;
-  font-feature-settings: 'clig' off, 'liga' off;
-
-  /* typography/subtitle2 */
-  font-family: Roboto;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 157%; /* 21.98px */
-  letter-spacing: 0.1px;
-  margin-left: 12px;
-  margin-right: 12px;
 `;

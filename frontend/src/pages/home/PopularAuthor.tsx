@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import React, { type ReactElement } from 'react';
+import React, { MutableRefObject, type ReactElement } from 'react';
 import { type UserInfo } from '../../apis/first-approval-api';
 import { Avatar, Tooltip } from '@mui/material';
 import {
@@ -10,11 +10,14 @@ import {
 import { routerStore } from '../../core/router';
 import { Page } from '../../core/router/constants';
 import { getAuthorLink } from '../../core/router/utils';
+import { useIsHorizontalOverflow } from '../../util/overflowUtil';
 
 const MAX_SELF_BIO_LENGTH = 116;
 
 export const PopularAuthor = (props: { author: UserInfo }): ReactElement => {
   const { author } = props;
+  const nameRef: MutableRefObject<HTMLDivElement | null> = React.useRef(null);
+  const isOverflow = useIsHorizontalOverflow(nameRef, () => {});
   return (
     <FlexWrap
       onClick={() => {
@@ -28,9 +31,14 @@ export const PopularAuthor = (props: { author: UserInfo }): ReactElement => {
         </Avatar>
       </MarginWrap>
       <div>
-        <NameWrap>
-          {author.firstName} {author.lastName}
-        </NameWrap>
+        <Tooltip
+          title={
+            isOverflow ? `${author.firstName} ${author.lastName}` : undefined
+          }>
+          <NameWrap ref={nameRef}>
+            {author.firstName} {author.lastName}
+          </NameWrap>
+        </Tooltip>
         <Tooltip
           disableHoverListener={
             getCurrentWorkplacesString(author.workplaces)?.length <
@@ -62,6 +70,10 @@ const NameWrap = styled.div`
   font-weight: 500;
   line-height: 160%; /* 32px */
   letter-spacing: 0.15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 260px;
 `;
 
 const WorkplacesWrap = styled.div`
