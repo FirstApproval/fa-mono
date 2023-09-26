@@ -131,7 +131,6 @@ export class RouterStore {
       }
     };
 
-    debugger;
     restoreFromUrl();
   }
 

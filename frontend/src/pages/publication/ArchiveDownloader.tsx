@@ -8,6 +8,7 @@ import Dialog from '@mui/material/Dialog';
 import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
 import { PublicationPageStore } from './store/PublicationPageStore';
+import { LinearProgress } from '@mui/material';
 
 export const ArchiveDownloader = observer(
   (props: {
@@ -31,17 +32,28 @@ export const ArchiveDownloader = observer(
         <DialogContentWrap>
           <TitleRowWrap>
             <DialogTitle
-              style={{ paddingLeft: '16px', paddingTop: 0, paddingBottom: 0 }}
+              style={{
+                paddingLeft: '16px',
+                paddingTop: 0,
+                paddingBottom: 0
+              }}
               id="alert-dialog-title">
               Passcode for archive
             </DialogTitle>
             <Close
               onClick={onClosePasscodePopup}
-              style={{ cursor: 'pointer', marginRight: '16px' }}
+              style={{
+                cursor: 'pointer',
+                marginRight: '16px'
+              }}
               htmlColor={'#68676E'}
             />
           </TitleRowWrap>
-          <DialogContent style={{ paddingLeft: '16px', paddingRight: '16px' }}>
+          <DialogContent
+            style={{
+              paddingLeft: '16px',
+              paddingRight: '16px'
+            }}>
             <ColumnElement style={{ maxWidth: '368px' }}>
               <TextWrap>
                 Please use this code to unzip the downloaded archive on your
@@ -49,7 +61,12 @@ export const ArchiveDownloader = observer(
               </TextWrap>
               <PasscodeRowWrap>
                 <PasscodeContainer>
-                  <Passcode>{publicationPageStore.passcode}</Passcode>
+                  {publicationPageStore.passcode && (
+                    <Passcode>{publicationPageStore.passcode}</Passcode>
+                  )}
+                  {!publicationPageStore.passcode && (
+                    <LinearProgress style={{ width: '100%' }} />
+                  )}
                 </PasscodeContainer>
                 <CopyAll
                   onClick={() => {
@@ -100,6 +117,7 @@ const PasscodeContainer = styled.div`
   padding: 16px 32px;
   justify-content: center;
   align-items: center;
+  height: 76px;
   flex: 1 0 0;
 
   border-radius: 4px;

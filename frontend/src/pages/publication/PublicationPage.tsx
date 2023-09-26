@@ -205,6 +205,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
                 <>
                   {publicationStore.viewMode === ViewMode.PREVIEW && (
                     <ButtonWrap
+                      disabled={fs.activeUploads > 0 || sfs.activeUploads > 0}
                       variant="contained"
                       size={'medium'}
                       onClick={() => {

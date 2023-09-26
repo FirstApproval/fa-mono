@@ -36,6 +36,7 @@ export class FileSystemFA {
   private allLocalFiles: FileEntry[] = [];
   isLoading = false;
   initialized = false;
+  activeUploads = 0;
 
   renameOrReplaceDialogOpen = false;
   addDirectoryImpossibleDialogOpen = false;
@@ -65,7 +66,8 @@ export class FileSystemFA {
       renameOrReplaceDialogCallback: observable,
       addDirectoryImpossibleDialogOpen: observable,
       moveFilesImpossibleDialogOpen: observable,
-      setCurrentPath: action
+      setCurrentPath: action,
+      activeUploads: observable
     });
 
     reaction(
@@ -438,11 +440,13 @@ export class FileSystemFA {
     const queueLength = uploadQueue.length;
     const results: Array<Promise<void>> = [];
     let currentIndex = 0;
+    this.activeUploads += uploadQueue.length;
 
     // Helper function to execute a single promise from the queue
     const executePromise = async (index: number): Promise<void> => {
       // Execute the promise at the given index
       await uploadQueue[index]();
+      this.activeUploads -= 1;
     };
 
     // Function to handle the next promise in the queue

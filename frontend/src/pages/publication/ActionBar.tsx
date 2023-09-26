@@ -34,11 +34,13 @@ export const ActionBar = observer(
       if (sizeBytes) {
         const megabytes = sizeBytes / (1024 * 1024);
         if (megabytes > 1000) {
-          return (
-            '(' + (sizeBytes / (1024 * 1024 * 1024)).toFixed(1) + 'GB' + ')'
-          );
-        } else {
+          const gbSize = sizeBytes / (1024 * 1024 * 1024);
+          return '(' + gbSize.toFixed(1) + 'GB' + ')';
+        } else if (megabytes > 1) {
           return '(' + megabytes.toFixed(0) + 'MB' + ')';
+        } else {
+          const kbSize = sizeBytes / 1024;
+          return '(' + kbSize.toFixed(0) + 'KB' + ')';
         }
       }
       return '';
