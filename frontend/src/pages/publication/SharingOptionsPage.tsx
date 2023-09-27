@@ -76,7 +76,7 @@ export const SharingOptionsPage = (props: {
   }
 
   return (
-    <FlexWrapRow>
+    <Container>
       <LeftPanel>
         <FlexWrapColumn>
           <LeftPanelHeader>Preview</LeftPanelHeader>
@@ -112,9 +112,15 @@ export const SharingOptionsPage = (props: {
             setContentLicensingDialogOpen(true);
           }}>
           {`Content licensing${licenseTypeAbbreviation}`}
+          <ContentLicensingDialog
+            licenseType={licenseType}
+            isOpen={contentLicensingDialogOpen}
+            onConfirm={(licenseType) => setLicenseType(licenseType)}
+            onClose={() => setContentLicensingDialogOpen(false)}
+          />
         </ContentLicensingButton>
       </LeftPanel>
-      <FlexWrapColumn>
+      <RightPanel>
         <BodyWrap>
           <BodyContentWrap>
             <HeaderWrap>
@@ -285,14 +291,8 @@ export const SharingOptionsPage = (props: {
             </ButtonWrap>
           </BodyContentWrap>
         </BodyWrap>
-      </FlexWrapColumn>
-      <ContentLicensingDialog
-        licenseType={licenseType}
-        isOpen={contentLicensingDialogOpen}
-        onConfirm={(licenseType) => setLicenseType(licenseType)}
-        onClose={() => setContentLicensingDialogOpen(false)}
-      />
-    </FlexWrapRow>
+      </RightPanel>
+    </Container>
   );
 };
 
@@ -462,25 +462,26 @@ const MarginLeftAuto = styled.div`
 
 const BodyWrap = styled.div`
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
 `;
 
 const BodyContentWrap = styled.div`
+  width: 680px;
   padding: 48px;
-  width: 70%;
+  padding-left: 32px;
+  padding-right: 32px;
 `;
 
 const LeftPanel = styled.div`
-  width: 25%;
+  flex: 22%;
   display: flex;
   flex-direction: column;
   align-items: start;
   background: var(--grey-50, #f8f7fa);
 
   justify-content: space-between;
-  padding: 48px 48px 100px;
+  padding: 48px;
 `;
 
 const LeftPanelHeader = styled.div`
@@ -585,4 +586,17 @@ const ContentLicensingButton = styled.div`
   text-decoration: underline;
   text-decoration-color: lightgray;
   text-decoration-thickness: 1.5px;
+`;
+
+export const RightPanel = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 88%;
+  overflow-y: auto;
+`;
+
+export const Container = styled.div`
+  display: flex;
+  height: 100vh;
+  width: 100%;
 `;
