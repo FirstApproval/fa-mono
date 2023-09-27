@@ -44,7 +44,12 @@ export class SignInStore {
     this.isSubmitting = true;
     try {
       const response = await authService.authorize(request);
-      authStore.token = response.data.token;
+      if (response.data.token === null) {
+        this.isError = true;
+        this.setPassword('');
+      } else {
+        authStore.token = response.data.token;
+      }
     } catch (e) {
       this.isError = true;
     } finally {

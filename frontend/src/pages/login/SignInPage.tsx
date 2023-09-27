@@ -7,12 +7,17 @@ import {
   FlexBodyCenter,
   FullWidthButton,
   Header,
-  Parent
+  HeightElement,
+  Parent,
+  ValidationError,
+  ValidationErrorText,
+  WidthElement
 } from '../common.styled';
 import { routerStore } from '../../core/router';
 import { type SignInStore } from './SignInStore';
 import { observer } from 'mobx-react-lite';
 import { HeaderComponent } from '../../components/HeaderComponent';
+import ErrorOutline from '@mui/icons-material/ErrorOutline';
 
 interface SignInPageProps {
   store: SignInStore;
@@ -43,6 +48,7 @@ export const SignInPage: FunctionComponent<SignInPageProps> = observer(
                 label="Email"
                 variant="outlined"
                 size={'medium'}
+                error={props.store.isError}
               />
             </div>
             <div>
@@ -59,8 +65,24 @@ export const SignInPage: FunctionComponent<SignInPageProps> = observer(
                 }}
                 label="Password"
                 variant="outlined"
+                error={props.store.isError}
               />
             </div>
+            {props.store.isError && (
+              <>
+                <ValidationError>
+                  <ErrorOutline
+                    htmlColor={'#D32F2F'}
+                    sx={{ width: '22px', height: '22px' }}
+                  />
+                  <WidthElement value={'12px'} />
+                  <ValidationErrorText>
+                    Enter a valid email address and password.
+                  </ValidationErrorText>
+                </ValidationError>
+                <HeightElement value={'24px'} />
+              </>
+            )}
             <ForgotPasswordLabel>
               <LinkWrap color="inherit" onClick={props.onRestorePasswordClick}>
                 I forgot my password
@@ -117,7 +139,7 @@ export const SignInPage: FunctionComponent<SignInPageProps> = observer(
 
 const FullWidthTextField = styled(TextField)`
   width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 `;
 
 const EmailLabel = styled('div')`
