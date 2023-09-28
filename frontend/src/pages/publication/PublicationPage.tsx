@@ -84,6 +84,7 @@ import { Page } from '../../core/router/constants';
 import { Helmet } from 'react-helmet';
 import { MutableRefObject } from 'react';
 import { useIsHorizontalOverflow } from '../../util/overflowUtil';
+import { Footer } from '../home/Footer';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -376,6 +377,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
           onClose={() => setContentLicensingDialogOpen(false)}
         />
       )}
+      {publicationStore.isView && <Footer />}
     </>
   );
 });

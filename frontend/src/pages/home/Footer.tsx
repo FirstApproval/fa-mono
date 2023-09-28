@@ -3,8 +3,12 @@ import React, { type ReactElement } from 'react';
 import logo from '../../assets/logo.svg';
 import { Button, Stack } from '@mui/material';
 import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
+import { BetaDialog } from '../../components/BetaDialog';
+import { useState } from 'react';
 
 export const Footer = (): ReactElement => {
+  const [isBetaDialogOpen, setIsBetaDialogOpen] = useState(false);
+  const onClose = (): void => setIsBetaDialogOpen(false);
   return (
     <>
       <FooterWrap>
@@ -15,18 +19,27 @@ export const Footer = (): ReactElement => {
         <MarginLeftWrap>
           <LogoWrap>
             <Stack direction="row" spacing={2}>
+              <ButtonWrap
+                onClick={() => setIsBetaDialogOpen(true)}
+                size={'medium'}>
+                Help
+              </ButtonWrap>
               <ButtonWrap href={'/docs/privacy_policy.pdf'} size={'medium'}>
                 Privacy
-              </ButtonWrap>{' '}
+              </ButtonWrap>
               <ButtonWrap
                 href={'/docs/terms_and_conditions.pdf'}
                 size={'medium'}>
                 Terms
               </ButtonWrap>
+              <ButtonWrap href={'https://firstapproval.io/'} size={'medium'}>
+                About
+              </ButtonWrap>
             </Stack>
           </LogoWrap>
         </MarginLeftWrap>
       </FooterWrap>
+      <BetaDialog isOpen={isBetaDialogOpen} onClose={onClose} />
     </>
   );
 };
