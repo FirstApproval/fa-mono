@@ -10,6 +10,7 @@ import { Button, DialogContent, LinearProgress, Tooltip } from '@mui/material';
 import {
   FlexBodyCenter,
   FlexHeader,
+  HeightElement,
   Logo,
   Parent,
   StyledMenuItem,
@@ -431,9 +432,10 @@ const PublicationBody = observer(
               );
             }}
             publicationStore={publicationStore}
+            displayLicense={false}
           />
         )}
-        <div style={{ height: '24px' }}></div>
+        <HeightElement value={'24px'} />
         <TitleEditor publicationStore={publicationStore} />
         {publicationStore.isReadonly && (
           <Authors publicationStore={publicationStore} />
@@ -444,6 +446,7 @@ const PublicationBody = observer(
           <ActionBar
             publicationStore={publicationStore}
             publicationPageStore={publicationPageStore}
+            displayDivider={true}
           />
         )}
 
@@ -592,7 +595,27 @@ const PublicationBody = observer(
           </TagsWrap>
         )}
         {tagsEnabled && <TagsEditor publicationStore={publicationStore} />}
-
+        {publicationStore.isView && (
+          <>
+            <HeightElement value={'4px'} />
+            <ActionBar
+              publicationStore={publicationStore}
+              publicationPageStore={publicationPageStore}
+              displayDivider={false}
+            />
+            <HeightElement value={'40px'} />
+            <DateViewsDownloads
+              openDownloadersDialog={() => {
+                downloadersStore.clearAndOpen(
+                  props.publicationId,
+                  publicationStore.downloadsCount
+                );
+              }}
+              publicationStore={publicationStore}
+              displayLicense={true}
+            />
+          </>
+        )}
         {publicationStore.isPreview && <DraftText />}
         <Space />
       </>

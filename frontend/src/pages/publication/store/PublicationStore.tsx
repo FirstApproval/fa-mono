@@ -115,6 +115,10 @@ export class PublicationStore {
     return this.viewMode === ViewMode.VIEW;
   }
 
+  get isPublished(): boolean {
+    return this.publicationStatus === PublicationStatus.PUBLISHED;
+  }
+
   addSummaryParagraph(idx: number): void {
     const newValue = [...this.summary];
     newValue.splice(idx + 1, 0, {

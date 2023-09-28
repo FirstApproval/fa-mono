@@ -18,6 +18,7 @@ import { LicenseType } from '../../apis/first-approval-api';
 export const DateViewsDownloads = observer(
   (props: {
     publicationStore: PublicationStore;
+    displayLicense: boolean;
     openDownloadersDialog: () => void;
   }): ReactElement => {
     const [utilAnchor, setUtilAnchor] = useState<null | HTMLElement>(null);
@@ -118,7 +119,7 @@ export const DateViewsDownloads = observer(
                 : 'https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode'
             );
           }}>
-          {`License: ${licenseTypeAbbreviation}`}
+          {props.displayLicense && `License: ${licenseTypeAbbreviation}`}
         </LicensingLinkWrap>
       </FlexWrapRowSpaceBetween>
     );
