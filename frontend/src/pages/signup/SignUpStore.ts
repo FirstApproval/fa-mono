@@ -7,6 +7,7 @@ import {
 import { registrationService, userService } from '../../core/service';
 import { authStore } from '../../core/auth';
 import { type AxiosError } from 'axios';
+import { routerStore } from '../../core/router';
 
 export const REGISTRATION_CONFIRMATION_TOKEN_STORAGE_KEY = 'registration_token';
 
@@ -78,6 +79,7 @@ export class SignUpStore {
       this.lastName = '';
       this.password = '';
       this.code = '';
+      void routerStore.navigateAfterLogin();
     } catch (e) {
       const error = e as AxiosError;
       const code = error.response?.status;

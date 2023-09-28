@@ -22,6 +22,9 @@ import { PublicationStatus } from '../../apis/first-approval-api';
 import { PublicationPageStore } from './store/PublicationPageStore';
 import { Page } from '../../core/router/constants';
 
+export const PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY =
+  'requested_publication_id';
+
 export const ActionBar = observer(
   (props: {
     publicationStore: PublicationStore;
@@ -91,6 +94,10 @@ export const ActionBar = observer(
                       publicationPageStore.downloadFiles();
                       publicationPageStore.isPasscodeDialogOpen = true;
                     } else {
+                      sessionStorage.setItem(
+                        PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY,
+                        publicationStore.publicationId
+                      );
                       routerStore.navigatePage(Page.SIGN_UP);
                     }
                   }}
