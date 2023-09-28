@@ -433,7 +433,7 @@ const PublicationBody = observer(
             publicationStore={publicationStore}
           />
         )}
-        <div style={{ height: '16px' }}></div>
+        <div style={{ height: '24px' }}></div>
         <TitleEditor publicationStore={publicationStore} />
         {publicationStore.isReadonly && (
           <Authors publicationStore={publicationStore} />

@@ -35,6 +35,7 @@ import {
   WidthElement
 } from '../common.styled';
 import { ContentLicensingDialog } from '../../components/ContentLicensingDialog';
+import { getContentLicensingAbbreviation } from '../../util/publicationUtils';
 
 export const SharingOptionsPage = (props: {
   publicationTitle: string;
@@ -59,22 +60,7 @@ export const SharingOptionsPage = (props: {
   const [contentLicensingDialogOpen, setContentLicensingDialogOpen] =
     useState(false);
 
-  let licenseTypeAbbreviation: string;
-  switch (licenseType) {
-    case LicenseType.ATTRIBUTION_NO_DERIVATIVES: {
-      licenseTypeAbbreviation = ': CC BY-ND';
-      break;
-    }
-    case LicenseType.ATTRIBUTION_NO_DERIVATIVES_NON_COMMERCIAL: {
-      licenseTypeAbbreviation = ': CC BY-NC-ND';
-      break;
-    }
-    default: {
-      licenseTypeAbbreviation = '';
-      break;
-    }
-  }
-
+  const licenseTypeAbbreviation = getContentLicensingAbbreviation(licenseType);
   return (
     <Container>
       <LeftPanel>
@@ -111,7 +97,7 @@ export const SharingOptionsPage = (props: {
           onClick={() => {
             setContentLicensingDialogOpen(true);
           }}>
-          {`Content licensing${licenseTypeAbbreviation}`}
+          {`Content licensing: ${licenseTypeAbbreviation}`}
           <ContentLicensingDialog
             licenseType={licenseType}
             isOpen={contentLicensingDialogOpen}
