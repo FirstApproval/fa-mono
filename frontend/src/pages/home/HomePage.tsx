@@ -125,23 +125,21 @@ export const HomePage: FunctionComponent = observer(() => {
               </>
             )}
             {hasSearch && (
-              <>
-                <Wrap>
-                  <ResultsLabel>Results for {store.searchQuery}</ResultsLabel>
-                  {store.isSearching && <LinearProgress />}
-                  {!store.isSearching && store.searchResults.length !== 0 && (
-                    <>{mapPublications(store.searchResults)}</>
-                  )}
-                  {!store.isSearching && store.searchResults.length === 0 && (
-                    <ContentWrap>
-                      <SearchHintText>
-                        Make sure all words are spelled correctly or try more
-                        general keywords.
-                      </SearchHintText>
-                    </ContentWrap>
-                  )}
-                </Wrap>
-              </>
+              <Wrap>
+                <ResultsLabel>Results for {store.searchQuery}</ResultsLabel>
+                {store.isSearching && <LinearProgress />}
+                {!store.isSearching && store.searchResults.length !== 0 && (
+                  <>{mapPublications(store.searchResults)}</>
+                )}
+                {!store.isSearching && store.searchResults.length === 0 && (
+                  <ContentWrap>
+                    <SearchHintText>
+                      Make sure all words are spelled correctly or try more
+                      general keywords.
+                    </SearchHintText>
+                  </ContentWrap>
+                )}
+              </Wrap>
             )}
           </ContentWrapInner>
         </ContentWrap>
@@ -194,7 +192,7 @@ const DividerWrap = styled(Divider)`
 `;
 
 export const Wrap = styled('div')`
-  width: 80%;
+  width: 100%;
   margin-left: auto;
   margin-right: auto;
 

@@ -1,5 +1,6 @@
 import React, {
   type FunctionComponent,
+  MutableRefObject,
   type ReactElement,
   useEffect,
   useMemo,
@@ -14,8 +15,7 @@ import {
   Logo,
   Parent,
   StyledMenuItem,
-  TitleRowWrap,
-  WidthElement
+  TitleRowWrap
 } from '../common.styled';
 import { FileUploader } from '../../fire-browser/FileUploader';
 import { routerStore } from '../../core/router';
@@ -26,10 +26,11 @@ import {
   FilesPlaceholder,
   GrantingOrganisationsPlaceholder,
   MethodPlaceholder,
-  ObjectOfStudyPlaceholder,
   RelatedArticlesPlaceholder,
+  ResearchAreaPlaceholder,
   SampleFilesPlaceholder,
   SoftwarePlaceholder,
+  SummaryPlaceholder,
   TagsPlaceholder,
   TagsWrap
 } from './ContentPlaceholder';
@@ -44,7 +45,6 @@ import {
   ExperimentGoalsEditor,
   GrantingOrganizationsEditor,
   MethodEditor,
-  ObjectOfStudyEditor,
   RelatedArticlesEditor,
   SoftwareEditor,
   SummaryEditor
@@ -54,7 +54,6 @@ import { TagsEditor } from './editors/TagsEditor';
 import { AuthorsEditor } from './editors/AuthorsEditor';
 import { TitleEditor } from './editors/TitleEditor';
 import { ResearchAreaEditor } from './editors/ResearchAreaEditor';
-import { ResearchAreaPage } from './ResearchAreaPage';
 import logo from '../../assets/logo-black-short.svg';
 import { UserMenu } from '../../components/UserMenu';
 import { ValidationDialog } from './ValidationDialog';
@@ -83,7 +82,6 @@ import { Close, Edit } from '@mui/icons-material';
 import { FileBrowserFA } from '../../fire-browser/FileBrowserFA';
 import { Page } from '../../core/router/constants';
 import { Helmet } from 'react-helmet';
-import { MutableRefObject } from 'react';
 import { useIsHorizontalOverflow } from '../../util/overflowUtil';
 
 export const PublicationPage: FunctionComponent = observer(() => {
@@ -117,7 +115,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
     [publicationStore, fs, sfs]
   );
 
-  const { isLoading, researchAreas, validate } = publicationStore;
+  const { isLoading, validate } = publicationStore;
 
   const validateSections = (): boolean => {
     const result = validate();
@@ -130,6 +128,10 @@ export const PublicationPage: FunctionComponent = observer(() => {
   const isOverflow = useIsHorizontalOverflow(nameRef, () => {});
 
   useEffect(() => {
+    if (!publicationStore.publicationId) {
+      publicationStore.createPublication().then();
+    }
+
     if (
       publicationStore.publicationStatus === PublicationStatus.PUBLISHED &&
       !publicationStore.viewCounterUpdated
@@ -155,8 +157,6 @@ export const PublicationPage: FunctionComponent = observer(() => {
       }, 1000);
     }
   }, [publicationStore.publicationStatus]);
-
-  const emptyResearchArea = researchAreas.length === 0;
 
   const nextViewMode =
     publicationStore.viewMode === ViewMode.PREVIEW
@@ -247,11 +247,16 @@ export const PublicationPage: FunctionComponent = observer(() => {
                       }
                     }}>
                     {nextViewMode === ViewMode.EDIT ? (
-                      <Edit sx={{ width: '20px', height: '20px' }} />
+                      <Edit
+                        sx={{
+                          width: '20px',
+                          height: '20px'
+                        }}
+                        style={{ marginRight: '8px' }}
+                      />
                     ) : (
                       ''
                     )}
-                    <WidthElement value={'8px'} />
                     {nextViewMode}
                   </ButtonWrap>
                   <ButtonWrap
@@ -259,7 +264,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
                     variant="outlined"
                     size={'medium'}
                     onClick={handleClick}>
-                    More
+                    <span style={{ marginLeft: 8 }}>More</span>
                     <ExpandMore
                       sx={{
                         width: 20,
@@ -278,26 +283,19 @@ export const PublicationPage: FunctionComponent = observer(() => {
           <PublicationBodyWrap>
             {isLoading && <LinearProgress />}
             {!isLoading && (
-              <>
-                {!emptyResearchArea && (
-                  <PublicationBody
-                    publicationId={publicationId}
-                    publicationStore={publicationStore}
-                    publicationPageStore={publicationPageStore}
-                    openDownloadersDialog={() => {
-                      downloadersStore.clearAndOpen(
-                        publicationId,
-                        publicationStore.downloadsCount
-                      );
-                    }}
-                    fs={fs}
-                    sfs={sfs}
-                  />
-                )}
-                {emptyResearchArea && (
-                  <ResearchAreaPage publicationStore={publicationStore} />
-                )}
-              </>
+              <PublicationBody
+                publicationId={publicationId}
+                publicationStore={publicationStore}
+                publicationPageStore={publicationPageStore}
+                openDownloadersDialog={() => {
+                  downloadersStore.clearAndOpen(
+                    publicationId,
+                    publicationStore.downloadsCount
+                  );
+                }}
+                fs={fs}
+                sfs={sfs}
+              />
             )}
           </PublicationBodyWrap>
         </FlexBodyCenter>
@@ -393,9 +391,9 @@ const PublicationBody = observer(
     const { fs, sfs, publicationStore, publicationPageStore } = props;
 
     const {
+      openSummary,
       openExperimentGoals,
       openMethod,
-      openObjectOfStudy,
       openSoftware,
       openFiles,
       openSampleFilesModal,
@@ -404,9 +402,10 @@ const PublicationBody = observer(
       openGrantingOrganizations,
       openRelatedArticles,
       openTags,
+      summaryEnabled,
+      researchAreasEnabled,
       experimentGoalsEnabled,
       methodEnabled,
-      objectOfStudyEnabled,
       softwareEnabled,
       filesEnabled,
       sampleFilesEnabled,
@@ -437,10 +436,18 @@ const PublicationBody = observer(
         )}
         <HeightElement value={'24px'} />
         <TitleEditor publicationStore={publicationStore} />
+
         {publicationStore.isReadonly && (
           <Authors publicationStore={publicationStore} />
         )}
-        <ResearchAreaEditor publicationStore={publicationStore} />
+
+        {/* Research area */}
+        {!researchAreasEnabled && !publicationStore.isReadonly && (
+          <ResearchAreaPlaceholder onClick={openExperimentGoals} />
+        )}
+        {researchAreasEnabled && (
+          <ResearchAreaEditor publicationStore={publicationStore} />
+        )}
 
         {publicationStore.isView && (
           <ActionBar
@@ -450,7 +457,13 @@ const PublicationBody = observer(
           />
         )}
 
-        <SummaryEditor publicationStore={publicationStore} />
+        {/* Summary */}
+        {!summaryEnabled && !publicationStore.isReadonly && (
+          <SummaryPlaceholder onClick={openSummary} />
+        )}
+        {summaryEnabled && (
+          <SummaryEditor publicationStore={publicationStore} />
+        )}
 
         {/* Experiment goals */}
         {!experimentGoalsEnabled && !publicationStore.isReadonly && (
@@ -465,14 +478,6 @@ const PublicationBody = observer(
           <MethodPlaceholder onClick={openMethod} />
         )}
         {methodEnabled && <MethodEditor publicationStore={publicationStore} />}
-
-        {/* Object of study */}
-        {!objectOfStudyEnabled && !publicationStore.isReadonly && (
-          <ObjectOfStudyPlaceholder onClick={openObjectOfStudy} />
-        )}
-        {objectOfStudyEnabled && (
-          <ObjectOfStudyEditor publicationStore={publicationStore} />
-        )}
 
         {/* Software */}
         {!softwareEnabled && !publicationStore.isReadonly && (

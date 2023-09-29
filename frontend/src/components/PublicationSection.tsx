@@ -123,9 +123,18 @@ export const PublicationSection = (props: {
           <Authors>{authorsString}</Authors>
         </AuthorsWrap>
         <PublicationLabel>
-          {publication.previewTitle ?? 'Untitled'}
+          {publication.previewTitle ?? publication.title ?? 'Untitled'}
         </PublicationLabel>
-        <PublicationDescriptionBox title={publication.previewSubtitle ?? ''} />
+        {publication.previewSubtitle && (
+          <PublicationDescriptionBox
+            title={publication.previewSubtitle ?? ''}
+          />
+        )}
+        {!publication.previewSubtitle && (
+          <PublicationDescriptionBox
+            title={publication.description?.[0]?.text ?? ''}
+          />
+        )}
       </Link>
       <FlexWrap>
         {publication.status === PublicationStatus.PUBLISHED && (

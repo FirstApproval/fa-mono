@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react';
+import React, { type ReactElement } from 'react';
 import styled from '@emotion/styled';
 import {
   AuthorsIcon,
@@ -9,6 +9,7 @@ import {
   PredictedGoalsIcon,
   RelatedArticlesIcon,
   SampleFilesIcon,
+  SearchIcon,
   SoftwareIcon,
   SummaryIcon,
   TagsIcon,
@@ -36,11 +37,23 @@ export const TitlePlaceholder = (props: PlaceholderProps): ReactElement => {
   );
 };
 
+export const ResearchAreaPlaceholder = (
+  props: PlaceholderProps
+): ReactElement => {
+  return (
+    <ContentPlaceholder
+      onClick={props.onClick}
+      text={'Research area'}
+      icon={<SearchIcon />}
+    />
+  );
+};
+
 export const SummaryPlaceholder = (props: PlaceholderProps): ReactElement => {
   return (
     <ContentPlaceholder
       onClick={props.onClick}
-      text={'Publication summary'}
+      text={'Summary'}
       icon={<SummaryIcon />}
     />
   );
@@ -62,7 +75,7 @@ export const MethodPlaceholder = (props: PlaceholderProps): ReactElement => {
   return (
     <ContentPlaceholder
       onClick={props.onClick}
-      text={'Method'}
+      text={'Materials and methods'}
       icon={<MethodIcon />}
     />
   );

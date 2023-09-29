@@ -2,6 +2,8 @@ import predicted_goals from './asset/predicted_goals.svg';
 import method from './asset/method.svg';
 import object_of_study from './asset/object_of_study.svg';
 import software from './asset/software.svg';
+import summary from './asset/summary.svg';
+import research_area from './asset/research_area.svg';
 import files from './asset/files.svg';
 import sample_files from './asset/sample_files.svg';
 import authors from './asset/authors.svg';
@@ -9,14 +11,18 @@ import granting_organizations from './asset/granting_organizations.svg';
 import related_articles from './asset/related_articles.svg';
 import tags from './asset/tags.svg';
 import { type ReactElement } from 'react';
-import { ShortText, Title } from '@mui/icons-material';
+import { Title } from '@mui/icons-material';
 
 export const TitleIcon = (): ReactElement => {
   return <Title fontSize={'small'} />;
 };
 
+export const SearchIcon = (): ReactElement => {
+  return <img src={research_area} />;
+};
+
 export const SummaryIcon = (): ReactElement => {
-  return <ShortText fontSize={'small'} />;
+  return <img src={summary} />;
 };
 
 export const PredictedGoalsIcon = (): ReactElement => {

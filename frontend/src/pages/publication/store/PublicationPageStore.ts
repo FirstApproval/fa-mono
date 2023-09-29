@@ -5,6 +5,14 @@ import { FileSystemFA } from '../../../fire-browser/FileSystemFA';
 import { FileData } from '@first-approval/chonky/dist/types/file.types';
 
 export class PublicationPageStore {
+  get summaryEnabled(): boolean {
+    return this.publicationStore.summary.length > 0;
+  }
+
+  get researchAreasEnabled(): boolean {
+    return this.publicationStore.researchAreas.length > 0;
+  }
+
   get experimentGoalsEnabled(): boolean {
     return this.publicationStore.experimentGoals.length > 0;
   }
@@ -167,6 +175,12 @@ export class PublicationPageStore {
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);
+  };
+
+  openSummary = (): void => {
+    if (!this.summaryEnabled) {
+      this.publicationStore.addSummaryParagraph(0);
+    }
   };
 
   openExperimentGoals = (): void => {

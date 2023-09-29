@@ -37,13 +37,13 @@ export const HeaderComponent = (
       <BetaDialogWithButton />
       {props.showAboutUsButton && (
         <ButtonWrap
-          width={'320px'}
+          style={{ marginLeft: '32px' }}
           variant="text"
           onClick={() => {
             window.location.href = 'https://about.firstapproval.io';
           }}
           size={'large'}>
-          About First Approval Platform
+          About
         </ButtonWrap>
       )}
       <FlexHeaderRight>

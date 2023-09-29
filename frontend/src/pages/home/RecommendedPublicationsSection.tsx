@@ -52,9 +52,9 @@ const RecommendedPublicationsSection = (props: {
 };
 
 export const Wrap = styled('div')`
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
+  margin-left: 80px;
+  margin-right: 80px;
 
   margin-bottom: 40px;
 `;
