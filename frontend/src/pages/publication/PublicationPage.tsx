@@ -462,12 +462,13 @@ const PublicationBody = observer(
           />
         )}
 
+        {!summaryEnabled &&
+          researchAreaStore.isInitialized &&
+          !publicationStore.isReadonly && <HeightElement value={'24px'} />}
+
         {/* Summary */}
         {!summaryEnabled && !publicationStore.isReadonly && (
-          <>
-            <HeightElement value={'24px'} />
-            <SummaryPlaceholder onClick={openSummary} />
-          </>
+          <SummaryPlaceholder onClick={openSummary} />
         )}
         {summaryEnabled && (
           <SummaryEditor publicationStore={publicationStore} />
