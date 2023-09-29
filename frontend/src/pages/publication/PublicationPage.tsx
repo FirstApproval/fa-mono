@@ -448,7 +448,7 @@ const PublicationBody = observer(
           />
         )}
         {(researchAreasEnabled ||
-          publicationPageStore.researchAreasDialogOpen) && (
+          publicationPageStore.isResearchAreasDialogOpen) && (
           <ResearchAreaEditor
             publicationStore={publicationStore}
             publicationPageStore={publicationPageStore}

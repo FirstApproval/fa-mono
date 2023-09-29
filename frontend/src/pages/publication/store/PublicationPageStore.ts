@@ -59,11 +59,7 @@ export class PublicationPageStore {
   passcode = '';
   isPasscodeDialogOpen = false;
   isCitateDialogOpen = false;
-  private isResearchAreasDialogOpen = false;
-
-  get researchAreasDialogOpen(): boolean {
-    return this.isResearchAreasDialogOpen;
-  }
+  isResearchAreasDialogOpen = false;
 
   constructor(
     private readonly publicationStore: PublicationStore,

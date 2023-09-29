@@ -89,11 +89,13 @@ export const ResearchAreaEditor = observer(
           })}
         </ContentPlaceholderWrap>
         <Dialog
-          open={props.publicationPageStore.researchAreasDialogOpen}
+          open={props.publicationPageStore.isResearchAreasDialogOpen}
           onClose={props.publicationPageStore.closeResearchAreasModal}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description">
-          <DialogTitle id="alert-dialog-title">Research area</DialogTitle>
+          <DialogTitle id="alert-dialog-title">
+            Choose 1 or more research areas
+          </DialogTitle>
           <DialogContent style={{ height: 500 }}>
             <AddAuthorWrap>
               <Autocomplete
