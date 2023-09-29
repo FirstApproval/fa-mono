@@ -1,5 +1,5 @@
 import { type PublicationStore } from '../store/PublicationStore';
-import { PublicationPageStore } from "../store/PublicationPageStore"
+import { ResearchAreaStore } from '../researcharea/ResearchAreaStore';
 
 export interface EditorProps {
   publicationStore: PublicationStore;
@@ -7,5 +7,5 @@ export interface EditorProps {
 
 export interface ResearchAreaEditorProps {
   publicationStore: PublicationStore;
-  publicationPageStore: PublicationPageStore;
+  researchAreaStore: ResearchAreaStore;
 }

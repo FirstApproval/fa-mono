@@ -27,7 +27,6 @@ import {
   GrantingOrganisationsPlaceholder,
   MethodPlaceholder,
   RelatedArticlesPlaceholder,
-  ResearchAreaPlaceholder,
   SampleFilesPlaceholder,
   SoftwarePlaceholder,
   SummaryPlaceholder,
@@ -53,7 +52,7 @@ import { FileSystemFA } from '../../fire-browser/FileSystemFA';
 import { TagsEditor } from './editors/TagsEditor';
 import { AuthorsEditor } from './editors/AuthorsEditor';
 import { TitleEditor } from './editors/TitleEditor';
-import { ResearchAreaEditor } from './editors/ResearchAreaEditor';
+import { ResearchAreaEditor } from './researcharea/ResearchAreaEditor';
 import logo from '../../assets/logo-black-short.svg';
 import { UserMenu } from '../../components/UserMenu';
 import { ValidationDialog } from './ValidationDialog';
@@ -83,6 +82,8 @@ import { FileBrowserFA } from '../../fire-browser/FileBrowserFA';
 import { Page } from '../../core/router/constants';
 import { Helmet } from 'react-helmet';
 import { useIsHorizontalOverflow } from '../../util/overflowUtil';
+import { ResearchAreaPlaceholder } from './researcharea/ResearchAreaPlaceholder';
+import { ResearchAreaStore } from './researcharea/ResearchAreaStore';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -109,6 +110,8 @@ export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationStore] = useState(
     () => new PublicationStore(publicationId, fs, sfs)
   );
+
+  const [researchAreaStore] = useState(() => new ResearchAreaStore());
 
   const publicationPageStore = useMemo(
     () => new PublicationPageStore(publicationStore, fs, sfs),
@@ -286,6 +289,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
               <PublicationBody
                 publicationId={publicationId}
                 publicationStore={publicationStore}
+                researchAreaStore={researchAreaStore}
                 publicationPageStore={publicationPageStore}
                 openDownloadersDialog={() => {
                   downloadersStore.clearAndOpen(
@@ -383,12 +387,19 @@ const PublicationBody = observer(
   (props: {
     publicationId: string;
     publicationStore: PublicationStore;
+    researchAreaStore: ResearchAreaStore;
     publicationPageStore: PublicationPageStore;
     openDownloadersDialog: () => void;
     fs: FileSystemFA;
     sfs: FileSystemFA;
   }): ReactElement => {
-    const { fs, sfs, publicationStore, publicationPageStore } = props;
+    const {
+      fs,
+      sfs,
+      publicationStore,
+      researchAreaStore,
+      publicationPageStore
+    } = props;
 
     const {
       openSummary,
@@ -444,14 +455,14 @@ const PublicationBody = observer(
         {/* Research area */}
         {!researchAreasEnabled && !publicationStore.isReadonly && (
           <ResearchAreaPlaceholder
-            onClick={publicationPageStore.openResearchAreasModal}
+            onClick={researchAreaStore.openResearchAreasModal}
           />
         )}
         {(researchAreasEnabled ||
-          publicationPageStore.isResearchAreasDialogOpen) && (
+          researchAreaStore.isResearchAreasDialogOpen) && (
           <ResearchAreaEditor
             publicationStore={publicationStore}
-            publicationPageStore={publicationPageStore}
+            researchAreaStore={researchAreaStore}
           />
         )}
 

@@ -9,14 +9,13 @@ import {
   PredictedGoalsIcon,
   RelatedArticlesIcon,
   SampleFilesIcon,
-  SearchIcon,
   SoftwareIcon,
   SummaryIcon,
   TagsIcon,
   TitleIcon
 } from './SectionIcon';
 
-interface PlaceholderProps {
+export interface PlaceholderProps {
   onClick?: () => void;
 }
 
@@ -33,18 +32,6 @@ export const TitlePlaceholder = (props: PlaceholderProps): ReactElement => {
       onClick={props.onClick}
       text={'Title'}
       icon={<TitleIcon />}
-    />
-  );
-};
-
-export const ResearchAreaPlaceholder = (
-  props: PlaceholderProps
-): ReactElement => {
-  return (
-    <ContentPlaceholder
-      onClick={props.onClick}
-      text={'Research area'}
-      icon={<SearchIcon />}
     />
   );
 };

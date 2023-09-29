@@ -5,7 +5,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import { Autocomplete, Button, Chip, TextField } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
-import { ResearchAreaEditorProps } from './types';
+import { ResearchAreaEditorProps } from '../editors/types';
 import {
   findResearchAreaCategory,
   findResearchAreaIcon,
@@ -55,7 +55,7 @@ export const ResearchAreaEditor = observer(
       const isValid = researchAreas.length > 0;
       if (isValid) {
         props.publicationStore.updateResearchArea(researchAreas);
-        props.publicationPageStore.closeResearchAreasModal();
+        props.researchAreaStore.closeResearchAreasModal();
       }
     };
 
@@ -63,7 +63,7 @@ export const ResearchAreaEditor = observer(
       <>
         <ContentPlaceholderWrap
           tabIndex={0}
-          onClick={props.publicationPageStore.openResearchAreasModal}>
+          onClick={props.researchAreaStore.openResearchAreasModal}>
           {researchAreas?.map((researchArea: any) => {
             return (
               <PublicationAreaWrap
@@ -89,8 +89,8 @@ export const ResearchAreaEditor = observer(
           })}
         </ContentPlaceholderWrap>
         <Dialog
-          open={props.publicationPageStore.isResearchAreasDialogOpen}
-          onClose={props.publicationPageStore.closeResearchAreasModal}
+          open={props.researchAreaStore.isResearchAreasDialogOpen}
+          onClose={props.researchAreaStore.closeResearchAreasModal}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description">
           <DialogTitle id="alert-dialog-title">
@@ -195,8 +195,7 @@ export const ResearchAreaEditor = observer(
             </AddAuthorWrap>
           </DialogContent>
           <DialogActions>
-            <Button
-              onClick={props.publicationPageStore.closeResearchAreasModal}>
+            <Button onClick={props.researchAreaStore.closeResearchAreasModal}>
               Cancel
             </Button>
             <Button
