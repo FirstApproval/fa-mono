@@ -45,6 +45,10 @@ export const Logo = styled.div`
   display: flex;
 `;
 
+export const CursorPointer = styled.div`
+  cursor: pointer;
+`;
+
 export const FullWidthButton = styled(LoadingButton)`
   width: 100%;
 `;
@@ -102,6 +106,10 @@ export const StyledMenuItem = styled(MenuItem)`
   }
 `;
 
+export const Width100Percent = styled.div`
+  width: 100%;
+`;
+
 export const FullWidth = styled.div`
   width: 100%;
   display: flex;
@@ -116,6 +124,40 @@ export const FlexWrapColumn = styled.div`
 export const FlexWrapRow = styled.div`
   display: flex;
 `;
+
+export const FlexWrap = styled('div')<{
+  direction?: FlexDirection;
+  justifyContent?: FlexJustifyContent;
+  alignItems?: FlexAlignItems;
+}>`
+  display: flex;
+  flex-direction: ${(props) => props.direction ?? FlexDirection.row};
+  justify-content: ${(props) =>
+    props.justifyContent ?? FlexJustifyContent.flexStart};
+  align-items: ${(props) => props.alignItems ?? FlexAlignItems.flexStart};
+`;
+
+export enum FlexDirection {
+  row = 'row',
+  column = 'column'
+}
+
+export enum FlexJustifyContent {
+  flexStart = 'flex-start',
+  flexEnd = 'flex-end',
+  center = 'center',
+  spaceBetween = 'space-between',
+  spaceAround = 'space-around',
+  spaceEvenly = 'space-evenly'
+}
+
+export enum FlexAlignItems {
+  flexStart = 'flex-start',
+  flexEnd = 'flex-end',
+  center = 'center',
+  baseline = 'baseline',
+  stretch = 'stretch'
+}
 
 export const ValidationError = styled.div`
   width: 100%;

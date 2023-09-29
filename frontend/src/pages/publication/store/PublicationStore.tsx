@@ -21,7 +21,7 @@ import {
   shortPublicationPath
 } from '../../../core/router/constants';
 
-const EDIT_THROTTLE_MS = 1000;
+export const EDIT_THROTTLE_MS = 1000;
 
 export type ParagraphWithId = Paragraph & { id: string };
 export type Section =
@@ -43,7 +43,7 @@ export enum ViewMode {
 export class PublicationStore {
   viewMode: ViewMode = ViewMode.VIEW;
 
-  publicationId = '';
+  publicationId: string;
   isLoading = true;
 
   title = '';
@@ -89,7 +89,6 @@ export class PublicationStore {
   ) {
     this.publicationId = publicationId;
     makeAutoObservable(this);
-    this.addSummaryParagraph(0);
     reaction(
       () => this.fs.initialized,
       (initialized) => {
@@ -317,27 +316,6 @@ export class PublicationStore {
       title: {
         value: title,
         edited: true
-      }
-    });
-    this.savingStatus = SavingStatusState.SAVED;
-  }, EDIT_THROTTLE_MS);
-
-  updateResearchArea(newResearchAreas: any[]): void {
-    this.researchAreas = newResearchAreas.map((ra) => {
-      return {
-        text: ra.subcategory
-      };
-    });
-    this.savingStatus = SavingStatusState.SAVING;
-    void this.updateResearchAreaRequest();
-  }
-
-  updateResearchAreaRequest = _.throttle(async () => {
-    const researchAreas = this.researchAreas;
-    await this.editPublication({
-      researchAreas: {
-        edited: true,
-        values: researchAreas
       }
     });
     this.savingStatus = SavingStatusState.SAVED;
@@ -828,17 +806,8 @@ export class PublicationStore {
     if (!hasContent(this.experimentGoals)) {
       result.push('goals');
     }
-    if (this.methodTitle.length === 0) {
-      result.push('method');
-    }
     if (!hasContent(this.method)) {
       result.push('method');
-    }
-    if (this.objectOfStudyTitle.length === 0) {
-      result.push('object_of_study');
-    }
-    if (!hasContent(this.objectOfStudy)) {
-      result.push('object_of_study');
     }
     if (this.fs.rootPathFiles === 0) {
       result.push('files');
@@ -869,22 +838,23 @@ export class PublicationStore {
     }
   };
 
-  private async editPublication(
+  async createPublication(): Promise<void> {
+    this.isLoading = true;
+    const response = await publicationService.createPublication();
+    this.publicationId = response.data.id;
+    this.loadInitialState();
+    await this.fs.initialize(this.publicationId);
+    await this.sfs.initialize(this.publicationId);
+    routerStore.navigatePage(
+      Page.PUBLICATION,
+      `${publicationPath}${this.publicationId}`,
+      true
+    );
+  }
+
+  async editPublication(
     publicationEditRequest: PublicationEditRequest
   ): Promise<void> {
-    if (!this.publicationId) {
-      this.isLoading = true;
-      const response = await publicationService.createPublication();
-      this.publicationId = response.data.id;
-      this.loadInitialState();
-      await this.fs.initialize(this.publicationId);
-      await this.sfs.initialize(this.publicationId);
-      routerStore.navigatePage(
-        Page.PUBLICATION,
-        `${publicationPath}${this.publicationId}`,
-        true
-      );
-    }
     await publicationService.editPublication(
       this.publicationId,
       publicationEditRequest
@@ -903,6 +873,7 @@ export class PublicationStore {
     } else {
       method = publicationService.getPublicationPublic(this.publicationId);
     }
+
     method
       .then(
         action((response) => {

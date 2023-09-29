@@ -16,8 +16,6 @@ void (async (): Promise<void> => {
   container.style.minWidth = '960px';
   const root = createRoot(container);
   root.render(React.createElement(module.default));
-
-  console.log('First Approval App started');
 })();
 
 axios.interceptors.response.use(

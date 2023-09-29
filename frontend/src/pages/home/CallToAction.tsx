@@ -42,16 +42,13 @@ export const Wrap = styled('div')`
   align-items: flex-end;
   justify-content: space-between;
 
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
+  margin: 0 80px 80px;
 
   border-radius: 8px;
   background: linear-gradient(90deg, #3b4eff 0%, #3c47e5 36.32%, #030d96 100%);
 
   color: var(--primary-contrast, #fff);
-
-  margin-bottom: 80px;
 `;
 
 export const CallToActionWrap = styled('div')`
