@@ -70,7 +70,7 @@ class PublicationService(
     fun create(user: User): Publication {
         val publication = publicationRepository.save(Publication(id = generateCode(), creator = user))
         publication.confirmedAuthors =
-            confirmedAuthorRepository.saveAll(mutableListOf(ConfirmedAuthor(randomUUID(), user, publication)))
+            confirmedAuthorRepository.saveAll(mutableListOf(ConfirmedAuthor(randomUUID(), user, publication, 0)))
         return publication
     }
 
@@ -123,6 +123,7 @@ class PublicationService(
                     ConfirmedAuthor(
                         id = confirmedAuthor.id ?: randomUUID(),
                         user = confirmedAuthorsById[confirmedAuthor.userId].require(),
+                        ordinal = confirmedAuthor.ordinal,
                         publication = publication,
                     )
                 }
@@ -137,6 +138,7 @@ class PublicationService(
                         firstName = unconfirmedAuthorApiObject.firstName,
                         middleName = unconfirmedAuthorApiObject.middleName,
                         lastName = unconfirmedAuthorApiObject.lastName,
+                        ordinal = unconfirmedAuthorApiObject.ordinal,
                         publication = publication
                     )
 
@@ -384,6 +386,7 @@ fun Publication.toPublicationElastic() =
 
 fun ConfirmedAuthor.toApiObject(profileImage: ByteArray?) = ConfirmedAuthorApiObject().also {
     it.id = id
+    it.ordinal = ordinal
     it.user = UserInfo(
         user.id,
         user.firstName,
@@ -402,5 +405,6 @@ fun UnconfirmedAuthor.toApiObject() = UnconfirmedAuthorApiObject().also {
     it.lastName = lastName
     it.middleName = middleName
     it.email = email
+    it.ordinal = ordinal
     it.workplaces = workplaces.map { workplace -> workplace.toApiObject() }
 }

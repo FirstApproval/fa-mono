@@ -118,6 +118,12 @@ export class PublicationStore {
     return this.publicationStatus === PublicationStatus.PUBLISHED;
   }
 
+  get authors(): Array<ConfirmedAuthor | UnconfirmedAuthor> {
+    return [...this.unconfirmedAuthors, ...this.confirmedAuthors].sort(
+      (author1, author2) => author1.ordinal! - author2.ordinal!
+    );
+  }
+
   addSummaryParagraph(idx: number): void {
     const newValue = [...this.summary];
     newValue.splice(idx + 1, 0, {
@@ -211,7 +217,8 @@ export class PublicationStore {
   addConfirmedAuthor(author: UserInfo): void {
     const newValue = [...this.confirmedAuthors];
     newValue.push({
-      user: author
+      user: author,
+      ordinal: this.authors.length
     });
     this.confirmedAuthors = newValue;
     this.savingStatus = SavingStatusState.SAVING;
@@ -237,6 +244,7 @@ export class PublicationStore {
           .map((t) => {
             return {
               id: t.id,
+              ordinal: t.ordinal,
               userId: t.user.id
             };
           }),
@@ -264,6 +272,7 @@ export class PublicationStore {
         firstName: store.firstName,
         middleName: '',
         lastName: store.lastName,
+        ordinal: this.authors.length,
         workplaces: store.workplaces
       });
       this.unconfirmedAuthors = newValue;
