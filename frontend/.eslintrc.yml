@@ -36,6 +36,7 @@ rules: {
   "@typescript-eslint/return-await": "off",
   "@typescript-eslint/prefer-readonly:": "off",
   "@typescript-eslint/no-floating-promises": "off",
+  "@typescript-eslint/no-unnecessary-type-assertion": "off",
   "max-len": [
     "error",
     {

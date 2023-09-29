@@ -9,10 +9,6 @@ export class PublicationPageStore {
     return this.publicationStore.summary.length > 0;
   }
 
-  get researchAreasEnabled(): boolean {
-    return this.publicationStore.researchAreas.length > 0;
-  }
-
   get experimentGoalsEnabled(): boolean {
     return this.publicationStore.experimentGoals.length > 0;
   }

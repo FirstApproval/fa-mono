@@ -52,7 +52,6 @@ import { FileSystemFA } from '../../fire-browser/FileSystemFA';
 import { TagsEditor } from './editors/TagsEditor';
 import { AuthorsEditor } from './editors/AuthorsEditor';
 import { TitleEditor } from './editors/TitleEditor';
-import { ResearchAreaEditor } from './researcharea/ResearchAreaEditor';
 import logo from '../../assets/logo-black-short.svg';
 import { UserMenu } from '../../components/UserMenu';
 import { ValidationDialog } from './ValidationDialog';
@@ -82,8 +81,8 @@ import { FileBrowserFA } from '../../fire-browser/FileBrowserFA';
 import { Page } from '../../core/router/constants';
 import { Helmet } from 'react-helmet';
 import { useIsHorizontalOverflow } from '../../util/overflowUtil';
-import { ResearchAreaPlaceholder } from './researcharea/ResearchAreaPlaceholder';
-import { ResearchAreaStore } from './researcharea/ResearchAreaStore';
+import { ResearchAreaStore } from './research-area/ResearchAreaStore';
+import { ResearchArea } from './research-area/ResearchArea';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -111,7 +110,9 @@ export const PublicationPage: FunctionComponent = observer(() => {
     () => new PublicationStore(publicationId, fs, sfs)
   );
 
-  const [researchAreaStore] = useState(() => new ResearchAreaStore());
+  const [researchAreaStore] = useState(
+    () => new ResearchAreaStore(publicationStore)
+  );
 
   const publicationPageStore = useMemo(
     () => new PublicationPageStore(publicationStore, fs, sfs),
@@ -414,7 +415,6 @@ const PublicationBody = observer(
       openRelatedArticles,
       openTags,
       summaryEnabled,
-      researchAreasEnabled,
       experimentGoalsEnabled,
       methodEnabled,
       softwareEnabled,
@@ -452,19 +452,7 @@ const PublicationBody = observer(
           <Authors publicationStore={publicationStore} />
         )}
 
-        {/* Research area */}
-        {!researchAreasEnabled && !publicationStore.isReadonly && (
-          <ResearchAreaPlaceholder
-            onClick={researchAreaStore.openResearchAreasModal}
-          />
-        )}
-        {(researchAreasEnabled ||
-          researchAreaStore.isResearchAreasDialogOpen) && (
-          <ResearchAreaEditor
-            publicationStore={publicationStore}
-            researchAreaStore={researchAreaStore}
-          />
-        )}
+        <ResearchArea researchAreaStore={researchAreaStore} />
 
         {publicationStore.isView && (
           <ActionBar
@@ -476,7 +464,10 @@ const PublicationBody = observer(
 
         {/* Summary */}
         {!summaryEnabled && !publicationStore.isReadonly && (
-          <SummaryPlaceholder onClick={openSummary} />
+          <>
+            <HeightElement value={'24px'} />
+            <SummaryPlaceholder onClick={openSummary} />
+          </>
         )}
         {summaryEnabled && (
           <SummaryEditor publicationStore={publicationStore} />

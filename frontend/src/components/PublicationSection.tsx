@@ -1,18 +1,27 @@
 import React, { type ReactElement, useState } from 'react';
 import styled from '@emotion/styled';
-import { Avatar, Divider, IconButton, Link, Tooltip } from '@mui/material';
+import { Avatar, Divider, IconButton, Link } from '@mui/material';
 import {
   type Publication,
   PublicationStatus
 } from '../apis/first-approval-api';
 import { Download, RemoveRedEyeOutlined } from '@mui/icons-material';
-import { findResearchAreaIcon } from '../pages/publication/store/ResearchAreas';
 import MoreHoriz from '@mui/icons-material/MoreHoriz';
 import WarningAmber from '@mui/icons-material/WarningAmber';
 import FormatQuote from '@mui/icons-material/FormatQuote';
 import ContentCopy from '@mui/icons-material/ContentCopy';
 import Menu from '@mui/material/Menu';
-import { SpaceBetween, StyledMenuItem } from '../pages/common.styled';
+import {
+  CursorPointer,
+  FlexAlignItems,
+  FlexDirection,
+  FlexJustifyContent,
+  FlexWrap,
+  HeightElement,
+  SpaceBetween,
+  StyledMenuItem,
+  Width100Percent
+} from '../pages/common.styled';
 import { getTimeElapsedString } from '../util/dateUtil';
 import MenuItem from '@mui/material/MenuItem';
 import { ConfirmationDialog } from './ConfirmationDialog';
@@ -28,6 +37,8 @@ import { publicationService } from '../core/service';
 import { CitateDialog } from '../pages/publication/CitateDialog';
 import { PublicationAuthorName } from '../pages/publication/store/PublicationStore';
 import { ReportProblemDialog } from '../pages/publication/ReportProblemDialog';
+import { ResearchAreaList } from '../pages/publication/research-area/ResearchAreaList';
+import Moment from 'react-moment';
 
 export const PublicationSection = (props: {
   publication: Publication;
@@ -136,123 +147,151 @@ export const PublicationSection = (props: {
           />
         )}
       </Link>
-      <FlexWrap>
+      <FlexWrap alignItems={FlexAlignItems.center}>
         {publication.status === PublicationStatus.PUBLISHED && (
-          <>
-            <ResearchAreas publication={publication} />
-            <Footer>
-              <RemoveRedEyeOutlined
-                style={{ marginRight: '6px' }}
-                fontSize={'small'}
-              />
-              {publication.viewsCount}
-              <FlexWrap
-                style={{ cursor: 'pointer' }}
-                onClick={props.openDownloadersDialog}>
-                <DownloadWrap
-                  style={{ marginRight: '6px' }}
-                  fontSize={'small'}
-                />
-                {publication.downloadsCount}
-              </FlexWrap>
+          <Width100Percent>
+            <FlexWrap direction={FlexDirection.column}>
               <div>
-                <Menu
-                  anchorEl={utilAnchor}
-                  id="user-menu"
-                  onClose={handleUtilMenuClose}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right'
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right'
-                  }}
-                  MenuListProps={{
-                    'aria-labelledby': 'user-button'
-                  }}
-                  open={openUtilMenu}>
-                  <StyledMenuItem
-                    onClick={() => {
-                      downloadPdf().then(() => {
-                        handleUtilMenuClose();
-                      });
-                    }}>
-                    <img
-                      src={pdf}
-                      style={{
-                        marginRight: 16,
-                        width: 24,
-                        height: 24
-                      }}
-                    />
-                    PDF
-                  </StyledMenuItem>
-                  <StyledMenuItem
-                    onClick={() => {
-                      setCiteOpened(true);
-                      handleUtilMenuClose();
-                    }}>
-                    <FormatQuote style={{ marginRight: 16 }}></FormatQuote>
-                    Cite
-                  </StyledMenuItem>
-                  <StyledMenuItem
-                    onClick={() => {
-                      copyPublicationLinkToClipboard().then(() => {
-                        handleUtilMenuClose();
-                      });
-                    }}>
-                    <ContentCopy style={{ marginRight: 16 }}></ContentCopy>
-                    Copy publication link
-                  </StyledMenuItem>
-                  <Divider></Divider>
-                  <StyledMenuItem
-                    onClick={() => {
-                      handleUtilMenuClose();
-                      setReportProblemOpened(true);
-                    }}>
-                    <WarningAmber style={{ marginRight: 16 }}></WarningAmber>
-                    Report problem
-                  </StyledMenuItem>
-                </Menu>
-                <ReportProblemDialog
-                  isOpen={reportProblemOpened}
-                  publicationId={publication.id}
-                  setIsOpen={(value) =>
-                    setReportProblemOpened(value)
-                  }></ReportProblemDialog>
-                <CitateDialog
-                  isOpen={citeOpened}
-                  setIsOpen={(value) => setCiteOpened(value)}
-                  authorNames={[
-                    ...(confirmedAuthorNames ?? []),
-                    ...(unconfirmedAuthorNames ?? [])
-                  ]}
-                  publicationTime={
-                    props.publication.publicationTime
-                      ? new Date(props.publication.publicationTime)
-                      : null
-                  }
-                  publicationTitle={
-                    props.publication.title ? props.publication.title : ''
-                  }
-                />
-                <IconButton
-                  onClick={handleUtilMenuClick}
-                  size="small"
-                  sx={{ ml: 3 }}
-                  aria-controls={openUtilMenu ? 'user-menu' : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={openUtilMenu ? 'true' : undefined}>
-                  <MoreHoriz htmlColor={'#68676E'} />
-                </IconButton>
+                {publication.researchAreas && (
+                  <ResearchAreaList researchAreas={publication.researchAreas} />
+                )}
               </div>
-            </Footer>
-          </>
+              <HeightElement value={'16px'} />
+              <Footer>
+                <FlexWrap
+                  alignItems={FlexAlignItems.center}
+                  justifyContent={FlexJustifyContent.spaceBetween}>
+                  <FlexWrap alignItems={FlexAlignItems.center}>
+                    <FlexWrap alignItems={FlexAlignItems.center}>
+                      <RemoveRedEyeOutlined
+                        style={{ marginRight: '6px' }}
+                        fontSize={'small'}
+                      />
+                      {publication.viewsCount}
+                    </FlexWrap>
+                    <FlexWrap
+                      alignItems={FlexAlignItems.center}
+                      onClick={props.openDownloadersDialog}>
+                      <CursorPointer>
+                        <DownloadWrap
+                          style={{
+                            marginRight: '6px',
+                            marginTop: '6px'
+                          }}
+                          fontSize={'small'}
+                        />
+                      </CursorPointer>
+                      {publication.downloadsCount}
+                    </FlexWrap>
+                    <div>
+                      <Menu
+                        anchorEl={utilAnchor}
+                        id="user-menu"
+                        onClose={handleUtilMenuClose}
+                        anchorOrigin={{
+                          vertical: 'bottom',
+                          horizontal: 'right'
+                        }}
+                        transformOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right'
+                        }}
+                        MenuListProps={{
+                          'aria-labelledby': 'user-button'
+                        }}
+                        open={openUtilMenu}>
+                        <StyledMenuItem
+                          onClick={() => {
+                            downloadPdf().then(() => {
+                              handleUtilMenuClose();
+                            });
+                          }}>
+                          <img
+                            src={pdf}
+                            style={{
+                              marginRight: 16,
+                              width: 24,
+                              height: 24
+                            }}
+                          />
+                          PDF
+                        </StyledMenuItem>
+                        <StyledMenuItem
+                          onClick={() => {
+                            setCiteOpened(true);
+                            handleUtilMenuClose();
+                          }}>
+                          <FormatQuote
+                            style={{ marginRight: 16 }}></FormatQuote>
+                          Cite
+                        </StyledMenuItem>
+                        <StyledMenuItem
+                          onClick={() => {
+                            copyPublicationLinkToClipboard().then(() => {
+                              handleUtilMenuClose();
+                            });
+                          }}>
+                          <ContentCopy
+                            style={{ marginRight: 16 }}></ContentCopy>
+                          Copy publication link
+                        </StyledMenuItem>
+                        <Divider></Divider>
+                        <StyledMenuItem
+                          onClick={() => {
+                            handleUtilMenuClose();
+                            setReportProblemOpened(true);
+                          }}>
+                          <WarningAmber
+                            style={{ marginRight: 16 }}></WarningAmber>
+                          Report problem
+                        </StyledMenuItem>
+                      </Menu>
+                      <ReportProblemDialog
+                        isOpen={reportProblemOpened}
+                        publicationId={publication.id}
+                        setIsOpen={(value) =>
+                          setReportProblemOpened(value)
+                        }></ReportProblemDialog>
+                      <CitateDialog
+                        isOpen={citeOpened}
+                        setIsOpen={(value) => setCiteOpened(value)}
+                        authorNames={[
+                          ...(confirmedAuthorNames ?? []),
+                          ...(unconfirmedAuthorNames ?? [])
+                        ]}
+                        publicationTime={
+                          props.publication.publicationTime
+                            ? new Date(props.publication.publicationTime)
+                            : null
+                        }
+                        publicationTitle={
+                          props.publication.title ? props.publication.title : ''
+                        }
+                      />
+                      <IconButton
+                        onClick={handleUtilMenuClick}
+                        size="small"
+                        sx={{ ml: 3 }}
+                        aria-controls={openUtilMenu ? 'user-menu' : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={openUtilMenu ? 'true' : undefined}>
+                        <MoreHoriz htmlColor={'#68676E'} />
+                      </IconButton>
+                    </div>
+                  </FlexWrap>
+                  <div>
+                    <Moment format={'D MMMM YYYY'}>
+                      {publication.publicationTime}
+                    </Moment>
+                  </div>
+                </FlexWrap>
+              </Footer>
+            </FlexWrap>
+          </Width100Percent>
         )}
         {publication.status !== PublicationStatus.PUBLISHED && (
           <SpaceBetween>
-            <FlexWrap>
+            <FlexWrap alignItems={FlexAlignItems.center}>
               <DraftTag>Draft</DraftTag>
               <LastEdited>
                 {getTimeElapsedString(publication.editingTime)}
@@ -317,57 +356,6 @@ export const PublicationSection = (props: {
   );
 };
 
-const ResearchAreas = (props: { publication: Publication }): ReactElement => {
-  return (
-    <>
-      {props.publication.researchAreas
-        ?.map((researchArea) => {
-          return (
-            <PublicationAreaWrap key={researchArea.text}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center'
-                }}>
-                <div
-                  style={{
-                    paddingTop: 4,
-                    marginRight: 4
-                  }}>
-                  {findResearchAreaIcon(researchArea.text)}
-                </div>
-                {researchArea.text}
-              </div>
-            </PublicationAreaWrap>
-          );
-        })
-        .slice(0, 1)}
-      {props.publication.researchAreas?.length &&
-        props.publication.researchAreas?.length > 1 && (
-          <PublicationAreaWrap>
-            <Tooltip
-              title={props.publication.researchAreas
-                .map((ra) => ra.text)
-                .join(', ')}>
-              <div
-                style={{
-                  cursor: 'pointer',
-                  height: 32,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                {(props.publication.researchAreas?.length &&
-                  props.publication.researchAreas?.length) - 1}{' '}
-                more...
-              </div>
-            </Tooltip>
-          </PublicationAreaWrap>
-        )}
-    </>
-  );
-};
-
 const AuthorsWrap = styled.div`
   display: flex;
   align-items: center;
@@ -405,24 +393,6 @@ const DividerWrap = styled(Divider)`
   margin-bottom: 40px;
 `;
 
-const PublicationAreaWrap = styled.div`
-  display: inline-flex;
-  padding: 2px 8px;
-  align-items: center;
-  margin-right: 8px;
-
-  border-radius: 4px;
-  background: var(--grey-50, #f8f7fa);
-
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 143%; /* 20.02px */
-  letter-spacing: 0.17px;
-
-  word-break: break-word;
-`;
-
 const PublicationLabel = styled.div`
   font-size: 34px;
   font-style: normal;
@@ -434,17 +404,8 @@ const PublicationLabel = styled.div`
   word-break: break-word;
 `;
 
-const FlexWrap = styled.div`
-  //margin-top: auto;
-  display: flex;
-  align-items: center;
-`;
-
 const Footer = styled.div`
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-
+  width: 100%;
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
 `;
 

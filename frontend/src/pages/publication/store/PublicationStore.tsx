@@ -21,7 +21,7 @@ import {
   shortPublicationPath
 } from '../../../core/router/constants';
 
-const EDIT_THROTTLE_MS = 1000;
+export const EDIT_THROTTLE_MS = 1000;
 
 export type ParagraphWithId = Paragraph & { id: string };
 export type Section =
@@ -316,27 +316,6 @@ export class PublicationStore {
       title: {
         value: title,
         edited: true
-      }
-    });
-    this.savingStatus = SavingStatusState.SAVED;
-  }, EDIT_THROTTLE_MS);
-
-  updateResearchArea(newResearchAreas: any[]): void {
-    this.researchAreas = newResearchAreas.map((ra) => {
-      return {
-        text: ra.subcategory
-      };
-    });
-    this.savingStatus = SavingStatusState.SAVING;
-    void this.updateResearchAreaRequest();
-  }
-
-  updateResearchAreaRequest = _.throttle(async () => {
-    const researchAreas = this.researchAreas;
-    await this.editPublication({
-      researchAreas: {
-        edited: true,
-        values: researchAreas
       }
     });
     this.savingStatus = SavingStatusState.SAVED;
@@ -873,7 +852,7 @@ export class PublicationStore {
     );
   }
 
-  private async editPublication(
+  async editPublication(
     publicationEditRequest: PublicationEditRequest
   ): Promise<void> {
     await publicationService.editPublication(

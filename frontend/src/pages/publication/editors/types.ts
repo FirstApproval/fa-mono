@@ -1,11 +1,6 @@
 import { type PublicationStore } from '../store/PublicationStore';
-import { ResearchAreaStore } from '../researcharea/ResearchAreaStore';
+import { ResearchAreaStore } from '../research-area/ResearchAreaStore';
 
 export interface EditorProps {
   publicationStore: PublicationStore;
-}
-
-export interface ResearchAreaEditorProps {
-  publicationStore: PublicationStore;
-  researchAreaStore: ResearchAreaStore;
 }
