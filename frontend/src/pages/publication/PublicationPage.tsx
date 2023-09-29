@@ -443,10 +443,16 @@ const PublicationBody = observer(
 
         {/* Research area */}
         {!researchAreasEnabled && !publicationStore.isReadonly && (
-          <ResearchAreaPlaceholder onClick={openExperimentGoals} />
+          <ResearchAreaPlaceholder
+            onClick={publicationPageStore.openResearchAreasModal}
+          />
         )}
-        {researchAreasEnabled && (
-          <ResearchAreaEditor publicationStore={publicationStore} />
+        {(researchAreasEnabled ||
+          publicationPageStore.researchAreasDialogOpen) && (
+          <ResearchAreaEditor
+            publicationStore={publicationStore}
+            publicationPageStore={publicationPageStore}
+          />
         )}
 
         {publicationStore.isView && (

@@ -59,6 +59,11 @@ export class PublicationPageStore {
   passcode = '';
   isPasscodeDialogOpen = false;
   isCitateDialogOpen = false;
+  private isResearchAreasDialogOpen = false;
+
+  get researchAreasDialogOpen(): boolean {
+    return this.isResearchAreasDialogOpen;
+  }
 
   constructor(
     private readonly publicationStore: PublicationStore,
@@ -213,6 +218,14 @@ export class PublicationPageStore {
 
   openSampleFiles = (): void => {
     this.sampleFilesEnabled = true;
+  };
+
+  openResearchAreasModal = (): void => {
+    this.isResearchAreasDialogOpen = true;
+  };
+
+  closeResearchAreasModal = (): void => {
+    this.isResearchAreasDialogOpen = false;
   };
 
   openSampleFilesModal = (): void => {

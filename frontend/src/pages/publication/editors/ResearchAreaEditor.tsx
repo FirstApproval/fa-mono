@@ -5,207 +5,209 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import { Autocomplete, Button, Chip, TextField } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
-import { type EditorProps } from './types';
+import { ResearchAreaEditorProps } from './types';
 import {
   findResearchAreaCategory,
   findResearchAreaIcon,
   researchAreaCategories
 } from '../store/ResearchAreas';
+import { observer } from 'mobx-react-lite';
 
-export const ResearchAreaEditor = (props: EditorProps): ReactElement => {
-  const [researchAreaVisible, setResearchAreaVisible] = useState(false);
-
-  const [researchAreas, setResearchAreas] = useState(
-    props.publicationStore.researchAreas
-  );
-
-  const researchAreaNonEmpty = researchAreas.length > 0;
-
-  const handleCloseEdit = (): void => {
-    setResearchAreaVisible(false);
-  };
-
-  if (props.publicationStore.isReadonly) {
-    return (
-      <ReadonlyContentPlaceholderWrap>
-        {researchAreas?.map((researchArea: any) => {
-          return (
-            <PublicationAreaWrap
-              key={researchArea.text || researchArea.subcategory}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center'
-                }}>
-                <div
-                  style={{
-                    paddingTop: 4,
-                    marginRight: 4
-                  }}>
-                  {researchArea.text
-                    ? findResearchAreaIcon(researchArea.text)
-                    : findResearchAreaIcon(researchArea.subcategory)}
-                </div>
-                {researchArea.text || researchArea.subcategory}
-              </div>
-            </PublicationAreaWrap>
-          );
-        })}
-      </ReadonlyContentPlaceholderWrap>
+export const ResearchAreaEditor = observer(
+  (props: ResearchAreaEditorProps): ReactElement => {
+    const [researchAreas, setResearchAreas] = useState(
+      props.publicationStore.researchAreas
     );
-  }
 
-  const updateResearchArea = (): void => {
-    const isValid = researchAreas.length > 0;
-    if (isValid) {
-      props.publicationStore.updateResearchArea(researchAreas);
-      handleCloseEdit();
-    }
-  };
+    const researchAreaNonEmpty = researchAreas.length > 0;
 
-  return (
-    <>
-      <ContentPlaceholderWrap
-        tabIndex={0}
-        onClick={() => {
-          setResearchAreaVisible(true);
-        }}>
-        {researchAreas?.map((researchArea: any) => {
-          return (
-            <PublicationAreaWrap
-              key={researchArea.text || researchArea.subcategory}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center'
-                }}>
+    if (props.publicationStore.isReadonly) {
+      return (
+        <ReadonlyContentPlaceholderWrap>
+          {researchAreas?.map((researchArea: any) => {
+            return (
+              <PublicationAreaWrap
+                key={researchArea.text || researchArea.subcategory}>
                 <div
                   style={{
-                    paddingTop: 4,
-                    marginRight: 4
+                    display: 'flex',
+                    alignItems: 'center'
                   }}>
-                  {researchArea.text
-                    ? findResearchAreaIcon(researchArea.text)
-                    : findResearchAreaIcon(researchArea.subcategory)}
+                  <div
+                    style={{
+                      paddingTop: 4,
+                      marginRight: 4
+                    }}>
+                    {researchArea.text
+                      ? findResearchAreaIcon(researchArea.text)
+                      : findResearchAreaIcon(researchArea.subcategory)}
+                  </div>
+                  {researchArea.text || researchArea.subcategory}
                 </div>
-                {researchArea.text || researchArea.subcategory}
-              </div>
-            </PublicationAreaWrap>
-          );
-        })}
-      </ContentPlaceholderWrap>
-      <Dialog
-        open={researchAreaVisible}
-        onClose={handleCloseEdit}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">Research area</DialogTitle>
-        <DialogContent style={{ height: 500 }}>
-          <AddAuthorWrap>
-            <Autocomplete
-              multiple={true}
-              disablePortal
-              freeSolo={true}
-              value={researchAreas.map((researchArea) => {
-                if (researchArea.text) {
-                  return {
-                    subcategory: researchArea.text,
-                    category: findResearchAreaCategory(researchArea.text),
-                    icon: findResearchAreaIcon(researchArea.text)
-                  };
-                } else {
-                  return researchArea as any;
+              </PublicationAreaWrap>
+            );
+          })}
+        </ReadonlyContentPlaceholderWrap>
+      );
+    }
+
+    const updateResearchArea = (): void => {
+      const isValid = researchAreas.length > 0;
+      if (isValid) {
+        props.publicationStore.updateResearchArea(researchAreas);
+        props.publicationPageStore.closeResearchAreasModal();
+      }
+    };
+
+    return (
+      <>
+        <ContentPlaceholderWrap
+          tabIndex={0}
+          onClick={props.publicationPageStore.openResearchAreasModal}>
+          {researchAreas?.map((researchArea: any) => {
+            return (
+              <PublicationAreaWrap
+                key={researchArea.text || researchArea.subcategory}>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}>
+                  <div
+                    style={{
+                      paddingTop: 4,
+                      marginRight: 4
+                    }}>
+                    {researchArea.text
+                      ? findResearchAreaIcon(researchArea.text)
+                      : findResearchAreaIcon(researchArea.subcategory)}
+                  </div>
+                  {researchArea.text || researchArea.subcategory}
+                </div>
+              </PublicationAreaWrap>
+            );
+          })}
+        </ContentPlaceholderWrap>
+        <Dialog
+          open={props.publicationPageStore.researchAreasDialogOpen}
+          onClose={props.publicationPageStore.closeResearchAreasModal}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description">
+          <DialogTitle id="alert-dialog-title">Research area</DialogTitle>
+          <DialogContent style={{ height: 500 }}>
+            <AddAuthorWrap>
+              <Autocomplete
+                multiple={true}
+                disablePortal
+                freeSolo={true}
+                value={researchAreas.map((researchArea) => {
+                  if (researchArea.text) {
+                    return {
+                      subcategory: researchArea.text,
+                      category: findResearchAreaCategory(researchArea.text),
+                      icon: findResearchAreaIcon(researchArea.text)
+                    };
+                  } else {
+                    return researchArea as any;
+                  }
+                })}
+                id="combo-box-demo"
+                options={researchAreaCategories}
+                getOptionLabel={(option: any) =>
+                  option.category + ' ' + option.subcategory
                 }
-              })}
-              id="combo-box-demo"
-              options={researchAreaCategories}
-              getOptionLabel={(option: any) =>
-                option.category + ' ' + option.subcategory
-              }
-              sx={{ width: '100%' }}
-              renderOption={(props, option) => {
-                return (
-                  <li {...props} style={{ padding: '8px 16px' }}>
-                    <div
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'center'
-                      }}>
-                      <div style={{ marginRight: 16 }}>{option.icon}</div>
+                sx={{ width: '100%' }}
+                renderOption={(props, option) => {
+                  return (
+                    <li {...props} style={{ padding: '8px 16px' }}>
                       <div
                         style={{
                           display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'center'
-                        }}>
-                        <div style={{ fontSize: 16 }}>{option.subcategory}</div>
-                        <div
-                          style={{
-                            fontSize: 14,
-                            color: 'var(--text-secondary, #68676E)'
-                          }}>
-                          {option.category}
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                );
-              }}
-              renderTags={(value: readonly any[], getTagProps) =>
-                value.map((option: any, index: number) => (
-                  <Chip
-                    icon={
-                      <div
-                        style={{
-                          marginLeft: 4,
-                          display: 'flex',
-                          justifyContent: 'center',
+                          flexDirection: 'row',
                           alignItems: 'center'
                         }}>
-                        {option.icon}
+                        <div style={{ marginRight: 16 }}>{option.icon}</div>
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center'
+                          }}>
+                          <div style={{ fontSize: 16 }}>
+                            {option.subcategory}
+                          </div>
+                          <div
+                            style={{
+                              fontSize: 14,
+                              color: 'var(--text-secondary, #68676E)'
+                            }}>
+                            {option.category}
+                          </div>
+                        </div>
                       </div>
+                    </li>
+                  );
+                }}
+                renderTags={(value: readonly any[], getTagProps) =>
+                  value.map((option: any, index: number) => (
+                    <Chip
+                      icon={
+                        <div
+                          style={{
+                            marginLeft: 4,
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                          }}>
+                          {option.icon}
+                        </div>
+                      }
+                      // @ts-expect-error(2322)
+                      key={option.category + option.subcategory}
+                      style={{
+                        borderRadius: 2,
+                        border: '1px solid var(--divider, #D2D2D6)',
+                        background: 'var(--grey-50, #F8F7FA)'
+                      }}
+                      label={option.subcategory}
+                      {...getTagProps({ index })}
+                      disabled={researchAreas.length === 1}
+                    />
+                  ))
+                }
+                renderInput={(params) => (
+                  <TextField
+                    autoFocus={true}
+                    {...params}
+                    placeholder={
+                      researchAreas.length === 0
+                        ? 'Start typing the primary field or discipline of your research/experiment...'
+                        : ''
                     }
-                    // @ts-expect-error(2322)
-                    key={option.category + option.subcategory}
-                    style={{
-                      borderRadius: 2,
-                      border: '1px solid var(--divider, #D2D2D6)',
-                      background: 'var(--grey-50, #F8F7FA)'
-                    }}
-                    label={option.subcategory}
-                    {...getTagProps({ index })}
-                    disabled={researchAreas.length === 1}
                   />
-                ))
-              }
-              renderInput={(params) => (
-                <TextField
-                  autoFocus={true}
-                  {...params}
-                  placeholder={
-                    researchAreas.length === 0
-                      ? 'Start typing the primary field or discipline of your research/experiment...'
-                      : ''
-                  }
-                />
-              )}
-              onChange={(event, newValue: any) => {
-                setResearchAreas(newValue);
-              }}
-            />
-          </AddAuthorWrap>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseEdit}>Cancel</Button>
-          <Button disabled={!researchAreaNonEmpty} onClick={updateResearchArea}>
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
-  );
-};
+                )}
+                onChange={(event, newValue: any) => {
+                  setResearchAreas(newValue);
+                }}
+              />
+            </AddAuthorWrap>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={props.publicationPageStore.closeResearchAreasModal}>
+              Cancel
+            </Button>
+            <Button
+              disabled={!researchAreaNonEmpty}
+              onClick={updateResearchArea}>
+              Save
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </>
+    );
+  }
+);
 
 const ContentPlaceholderWrap = styled.div`
   word-break: break-word;
