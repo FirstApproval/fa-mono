@@ -254,7 +254,9 @@ export const SharingOptionsPage = (props: {
                 !confirmThatAllAuthorsAgree ||
                 !understandAfterPublishingCannotBeEdited ||
                 !previewTitle ||
-                !previewSubtitle
+                previewTitle.length > 100 ||
+                !previewSubtitle ||
+                previewSubtitle.length > 200
               }
               onClick={() => {
                 void publicationService
@@ -564,6 +566,7 @@ const FlexWrapRowRadioLabel = styled.span`
 
 const ContentLicensingButton = styled.div`
   cursor: pointer;
+
   &:hover {
     background-color: transparent;
   }
