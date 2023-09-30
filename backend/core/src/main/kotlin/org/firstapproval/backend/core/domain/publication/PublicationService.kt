@@ -81,6 +81,9 @@ class PublicationService(
     fun edit(user: User, id: String, request: PublicationEditRequest) {
         val publication = get(user, id)
         checkPublicationCreator(user, publication)
+        if (publication.status === PUBLISHED) {
+            throw AccessDeniedException("Access denied")
+        }
         with(request) {
             val unconfirmedAuthorsEmails = unconfirmedAuthors?.let { unconfirmedAuthors.values.map { it.email }.toSet() } ?: setOf()
             if (unconfirmedAuthorsEmails.isNotEmpty() && userRepository.findByEmailIn(unconfirmedAuthorsEmails).isNotEmpty()) {
