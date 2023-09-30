@@ -1669,15 +1669,330 @@ const elements: ResearchAreaElement[] = [
     icon: <Mathematics />
   },
   {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Algebra and Number Theory',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Analysis',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Applied Mathematics',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Computational Mathematics',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Control and Optimization',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Discrete Mathematics and Combinatorics',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'General Mathematics',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Geometry and Topology',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Logic',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Mathematical Physics',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Modeling and Simulation',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Numerical Analysis',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Statistics and Probability',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Theoretical Computer Science',
+    icon: <Mathematics />
+  },
+  {
     level: ResearchAreaLevel.L1,
     hasChildren: true,
     text: 'Physics and Astronomy',
     icon: <Physics />
   },
   {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Physics and Astronomy',
+    text: 'Acoustics and Ultrasonics',
+    icon: <Physics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Physics and Astronomy',
+    text: 'Astronomy and Astrophysics',
+    icon: <Physics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Physics and Astronomy',
+    text: 'Atomic and Molecular Physics, and Optics',
+    icon: <Physics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Physics and Astronomy',
+    text: 'Condensed Matter Physics',
+    icon: <Physics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: true,
+    parent: 'Physics and Astronomy',
+    text: 'Earth and Planetary Sciences',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Atmospheric Science',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Computers in Earth Sciences',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Earth-Surface Processes',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Economic Geology',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'General Earth and Planetary Sciences',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Geochemistry and Petrology',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Geology',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Geophysics',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Geotechnical Engineering and Engineering Geology',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Oceanography',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Paleontology',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Space and Planetary Science',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Stratigraphy',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Physics and Astronomy',
+    text: 'General Physics and Astronomy',
+    icon: <Physics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Physics and Astronomy',
+    text: 'Instrumentation',
+    icon: <Physics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Physics and Astronomy',
+    text: 'Nuclear and High Energy Physics',
+    icon: <Physics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Physics and Astronomy',
+    text: 'Radiation',
+    icon: <Physics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Physics and Astronomy',
+    text: 'Statistical and Nonlinear Physics',
+    icon: <Physics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Physics and Astronomy',
+    text: 'Surfaces and Interfaces',
+    icon: <Physics />
+  },
+  {
     level: ResearchAreaLevel.L1,
     hasChildren: true,
     text: 'Psychology',
+    icon: <Psychology />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Psychology',
+    text: 'Applied Psychology',
+    icon: <Psychology />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Psychology',
+    text: 'Clinical Psychology',
+    icon: <Psychology />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Psychology',
+    text: 'Developmental and Educational Psychology',
+    icon: <Psychology />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Psychology',
+    text: 'Experimental and Cognitive Psychology',
+    icon: <Psychology />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Psychology',
+    text: 'General Psychology',
+    icon: <Psychology />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Psychology',
+    text: 'Neuropsychology and Physiological Psychology',
+    icon: <Psychology />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Psychology',
+    text: 'Social Psychology',
     icon: <Psychology />
   }
 ];
