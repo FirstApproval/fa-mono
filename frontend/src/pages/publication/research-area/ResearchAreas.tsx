@@ -840,9 +840,506 @@ const elements: ResearchAreaElement[] = [
     icon: <Medicine />
   },
   {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Anatomy',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Anesthesiology and Pain Medicine',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Biochemistry (medical)',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Cardiology and Cardiovascular Medicine',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Complementary and Alternative Medicine',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Critical Care and Intensive Care Medicine',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Dermatology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: true,
+    parent: 'Medicine',
+    text: 'Dentistry',
+    icon: <Dentistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Dentistry',
+    text: 'Dental Assisting',
+    icon: <Dentistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Dentistry',
+    text: 'Dental Hygiene',
+    icon: <Dentistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Dentistry',
+    text: 'General Dentistry',
+    icon: <Dentistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Dentistry',
+    text: 'Oral Surgery',
+    icon: <Dentistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Dentistry',
+    text: 'Orthodontics',
+    icon: <Dentistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Dentistry',
+    text: 'Periodontics',
+    icon: <Dentistry />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Drug Guides',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Embryology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Emergency Medicine',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Endocrinology, Diabetes and Metabolism',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Epidemiology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Family Practice',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Gastroenterology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'General Medicine',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Genetics (clinical)',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Geriatrics and Gerontology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Health Informatics',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Health Policy',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Hematology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Hepatology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Histology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Immunology and Allergy',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Infectious Diseases',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Internal Medicine',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Microbiology (medical)',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Nephrology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Neurology (clinical)',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Obstetrics and Gynecology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Oncology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Ophthalmology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Orthopedics and Sports Medicine',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Otorhinolaryngology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Pathology and Forensic Medicine',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Pediatrics, Perinatology and Child Health',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Pharmacology (medical)',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Physiology (medical)',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Psychiatry and Mental Health',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Public Health, Environmental and Occupational Health',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Pulmonary and Respiratory Medicine',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Radiology, Nuclear Medicine and Imaging',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Rehabilitation',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Reproductive Medicine',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Reviews and References (medical)',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Rheumatology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Surgery',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Transplantation',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Urology',
+    icon: <Medicine />
+  },
+  {
     level: ResearchAreaLevel.L1,
     hasChildren: true,
     text: 'Chemistry',
+    icon: <Chemistry />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Chemistry',
+    text: 'Analytical Chemistry',
+    icon: <Chemistry />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: true,
+    parent: 'Chemistry',
+    text: 'Chemical Engineering',
+    icon: <ChemicalEngineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Chemical Engineering',
+    text: 'Bioengineering',
+    icon: <ChemicalEngineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Chemical Engineering',
+    text: 'Catalysis',
+    icon: <ChemicalEngineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Chemical Engineering',
+    text: 'Chemical Health and Safety',
+    icon: <ChemicalEngineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Chemical Engineering',
+    text: 'Colloid and Surface Chemistry',
+    icon: <ChemicalEngineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Chemical Engineering',
+    text: 'Filtration and Separation',
+    icon: <ChemicalEngineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Chemical Engineering',
+    text: 'Fluid Flow and Transfer Processes',
+    icon: <ChemicalEngineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Chemical Engineering',
+    text: 'General Chemical Engineering',
+    icon: <ChemicalEngineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Chemical Engineering',
+    text: 'Process Chemistry and Technology',
+    icon: <ChemicalEngineering />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Chemistry',
+    text: 'Electrochemistry',
+    icon: <Chemistry />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Chemistry',
+    text: 'General Chemistry',
+    icon: <Chemistry />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Chemistry',
+    text: 'Inorganic Chemistry',
+    icon: <Chemistry />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Chemistry',
+    text: 'Organic Chemistry',
+    icon: <Chemistry />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Chemistry',
+    text: 'Physical and Theoretical Chemistry',
+    icon: <Chemistry />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Chemistry',
+    text: 'Spectroscopy',
     icon: <Chemistry />
   },
   {
