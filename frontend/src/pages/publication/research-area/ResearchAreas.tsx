@@ -1349,10 +1349,318 @@ const elements: ResearchAreaElement[] = [
     icon: <ComputerScience />
   },
   {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'Artificial Intelligence',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'Computational Theory and Mathematics',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'Computer Graphics and Computer-Aided Design',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'Computer Networks and Communications',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'Computer Science Applications',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'Computer Vision and Pattern Recognition',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'General Computer Science',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'Hardware and Architecture',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'Human-Computer Interaction',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'Information Systems',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'Signal Processing',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'Software',
+    icon: <ComputerScience />
+  },
+  {
     level: ResearchAreaLevel.L1,
     hasChildren: true,
     text: 'Energy, Engineering and Materials Science',
     icon: <EnergyEngineeringAndMaterialsScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: true,
+    parent: 'Energy, Engineering and Materials Science',
+    text: 'Energy',
+    icon: <Energy />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Energy',
+    text: 'Energy Engineering and Power Technology',
+    icon: <Energy />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Energy',
+    text: 'Fuel Technology',
+    icon: <Energy />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Energy',
+    text: 'General Energy',
+    icon: <Energy />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Energy',
+    text: 'Nuclear Energy and Engineering',
+    icon: <Energy />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Energy',
+    text: 'Renewable Energy, Sustainability and the Environment',
+    icon: <Energy />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: true,
+    parent: 'Energy, Engineering and Materials Science',
+    text: 'Engineering',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Aerospace Engineering',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Architecture',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Automotive Engineering',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Biomedical Engineering',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Building and Construction',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Civil and Structural Engineering',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Computational Mechanics',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Control and Systems Engineering',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Electrical and Electronic Engineering',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'General Engineering',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Industrial and Manufacturing Engineering',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Mechanical Engineering',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Mechanics of Materials',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Media Technology',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Ocean Engineering',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Safety, Risk, Reliability and Quality',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: true,
+    parent: 'Energy, Engineering and Materials Science',
+    text: 'Materials Science',
+    icon: <Materials />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Materials Science',
+    text: 'Biomaterials',
+    icon: <Materials />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Materials Science',
+    text: 'Ceramics and Composites',
+    icon: <Materials />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Materials Science',
+    text: 'Electronic, Optical and Magnetic Materials',
+    icon: <Materials />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Materials Science',
+    text: 'General Materials Science',
+    icon: <Materials />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Materials Science',
+    text: 'Materials Chemistry',
+    icon: <Materials />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Materials Science',
+    text: 'Metals and Alloys',
+    icon: <Materials />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Materials Science',
+    text: 'Polymers and Plastics',
+    icon: <Materials />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Materials Science',
+    text: 'Surfaces, Coatings and Films',
+    icon: <Materials />
   },
   {
     level: ResearchAreaLevel.L1,
