@@ -35,8 +35,6 @@ export class ResearchAreaStore {
   };
 
   update(newResearchAreas: any[]): void {
-    console.log('newResearchAreas', newResearchAreas);
-
     this.publicationStore.researchAreas = newResearchAreas.map((ra) => {
       return {
         text: ra.subcategory

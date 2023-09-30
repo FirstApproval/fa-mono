@@ -37,8 +37,8 @@ import { publicationService } from '../core/service';
 import { CitateDialog } from '../pages/publication/CitateDialog';
 import { PublicationAuthorName } from '../pages/publication/store/PublicationStore';
 import { ReportProblemDialog } from '../pages/publication/ReportProblemDialog';
-import { ResearchAreaList } from '../pages/publication/research-area/ResearchAreaList';
 import Moment from 'react-moment';
+import { ResearchAreaShortList } from '../pages/publication/research-area/ResearchAreaShortList';
 
 export const PublicationSection = (props: {
   publication: Publication;
@@ -153,7 +153,9 @@ export const PublicationSection = (props: {
             <FlexWrap direction={FlexDirection.column}>
               <div>
                 {publication.researchAreas && (
-                  <ResearchAreaList researchAreas={publication.researchAreas} />
+                  <ResearchAreaShortList
+                    researchAreas={publication.researchAreas}
+                  />
                 )}
               </div>
               <HeightElement value={'16px'} />
