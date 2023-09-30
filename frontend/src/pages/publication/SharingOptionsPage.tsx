@@ -94,17 +94,15 @@ export const SharingOptionsPage = (props: {
           </LeftPanelSubtitle>
         </FlexWrapColumn>
         <ContentLicensingButton
-          onClick={() => {
-            setContentLicensingDialogOpen(true);
-          }}>
+          onClick={() => setContentLicensingDialogOpen(true)}>
           {`Content licensing: ${licenseTypeAbbreviation}`}
-          <ContentLicensingDialog
-            licenseType={licenseType}
-            isOpen={contentLicensingDialogOpen}
-            onConfirm={(licenseType) => setLicenseType(licenseType)}
-            onClose={() => setContentLicensingDialogOpen(false)}
-          />
         </ContentLicensingButton>
+        <ContentLicensingDialog
+          licenseType={licenseType}
+          isOpen={contentLicensingDialogOpen}
+          onConfirm={(licenseType) => setLicenseType(licenseType)}
+          onClose={() => setContentLicensingDialogOpen(false)}
+        />
       </LeftPanel>
       <RightPanel>
         <BodyWrap>
