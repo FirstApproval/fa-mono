@@ -23,6 +23,7 @@ class ConfirmedAuthor(
     @ManyToOne(fetch = EAGER, cascade = [REFRESH])
     @JoinColumn(nullable = false, updatable = false)
     var publication: Publication,
+    var ordinal: Int = 0,
     var shortBio: String? = null,
     var creationTime: ZonedDateTime = now(),
 )

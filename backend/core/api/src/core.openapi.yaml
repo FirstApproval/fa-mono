@@ -2041,6 +2041,9 @@ components:
         id:
           type: string
           format: uuid
+        ordinal:
+          type: integer
+          format: int32
         user:
           $ref: '#/components/schemas/UserInfo'
       required:
@@ -2055,6 +2058,9 @@ components:
         userId:
           type: string
           format: uuid
+        ordinal:
+          type: integer
+          format: int32
       required:
         - userId
 
@@ -2082,6 +2088,9 @@ components:
           type: string
         lastName:
           type: string
+        ordinal:
+          type: integer
+          format: int32
         workplaces:
           type: array
           items:

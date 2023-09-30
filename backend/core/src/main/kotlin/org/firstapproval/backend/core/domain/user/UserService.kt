@@ -371,7 +371,7 @@ class UserService(
                 user = user
             )
         }.let { user.workplaces.addAll(it) }
-        val confirmedAuthors = unconfirmedUsers.map { ConfirmedAuthor(randomUUID(), user, it.publication) }
+        val confirmedAuthors = unconfirmedUsers.map { ConfirmedAuthor(randomUUID(), user, it.publication, it.ordinal) }
         confirmedAuthorRepository.saveAll(confirmedAuthors)
         unconfirmedAuthorRepository.deleteAll(unconfirmedUsers)
     }

@@ -29,6 +29,7 @@ class UnconfirmedAuthor(
     var firstName: String? = null,
     var middleName: String? = null,
     var lastName: String? = null,
+    var ordinal: Int = 0,
     @Fetch(FetchMode.SELECT)
     @OneToMany(fetch = EAGER, cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "unconfirmedAuthor")
     var workplaces: MutableList<UnconfirmedAuthorWorkplace> = mutableListOf(),
