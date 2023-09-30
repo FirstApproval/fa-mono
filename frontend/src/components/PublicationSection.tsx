@@ -48,10 +48,25 @@ export const PublicationSection = (props: {
   openDownloadersDialog: () => void;
 }): ReactElement => {
   const { publication } = props;
-  const authorsString = publication
-    .confirmedAuthors!.map(
-      (author) => `${author.user.firstName} ${author.user.lastName}`
-    )
+
+  const confirmedAuthorNames =
+    publication.confirmedAuthors!.map<PublicationAuthorName>((author) => ({
+      username: author.user.username,
+      firstName: author.user.firstName,
+      lastName: author.user.lastName,
+      ordinal: author.ordinal!
+    }));
+  const unconfirmedAuthorNames =
+    publication.unconfirmedAuthors!.map<PublicationAuthorName>((author) => ({
+      firstName: author.firstName,
+      lastName: author.lastName,
+      ordinal: author.ordinal!
+    }));
+  const authors = [...confirmedAuthorNames, ...unconfirmedAuthorNames]?.sort(
+    (authorName1, authorName2) => authorName1.ordinal! - authorName2.ordinal!
+  );
+  const authorsString = authors
+    .map((author) => `${author.firstName} ${author.lastName}`)
     .join(', ');
   const [anchor, setAnchor] = useState<null | HTMLElement>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -102,22 +117,6 @@ export const PublicationSection = (props: {
   const handleUtilMenuClose = (): void => {
     setUtilAnchor(null);
   };
-
-  const confirmedAuthorNames =
-    props.publication.confirmedAuthors?.map<PublicationAuthorName>(
-      (author) => ({
-        username: author.user.username,
-        firstName: author.user.firstName,
-        lastName: author.user.lastName
-      })
-    );
-  const unconfirmedAuthorNames =
-    props.publication.unconfirmedAuthors?.map<PublicationAuthorName>(
-      (author) => ({
-        firstName: author.firstName,
-        lastName: author.lastName
-      })
-    );
 
   return (
     <>
@@ -259,10 +258,7 @@ export const PublicationSection = (props: {
                       <CitateDialog
                         isOpen={citeOpened}
                         setIsOpen={(value) => setCiteOpened(value)}
-                        authorNames={[
-                          ...(confirmedAuthorNames ?? []),
-                          ...(unconfirmedAuthorNames ?? [])
-                        ]}
+                        authorNames={authors}
                         publicationTime={
                           props.publication.publicationTime
                             ? new Date(props.publication.publicationTime)

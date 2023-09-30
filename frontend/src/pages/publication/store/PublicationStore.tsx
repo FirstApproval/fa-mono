@@ -830,14 +830,19 @@ export class PublicationStore {
       this.confirmedAuthors.map<PublicationAuthorName>((author) => ({
         username: author.user.username,
         firstName: author.user.firstName,
-        lastName: author.user.lastName
+        lastName: author.user.lastName,
+        ordinal: author.ordinal!
       }));
     const unconfirmedAuthorNames =
       this.unconfirmedAuthors.map<PublicationAuthorName>((author) => ({
         firstName: author.firstName,
-        lastName: author.lastName
+        lastName: author.lastName,
+        ordinal: author.ordinal!
       }));
-    this.authorNames = [...confirmedAuthorNames, ...unconfirmedAuthorNames];
+    this.authorNames = [
+      ...confirmedAuthorNames,
+      ...unconfirmedAuthorNames
+    ].sort((author1, author2) => author1.ordinal! - author2.ordinal!);
   };
 
   deletePublication = async (publicationId: string): Promise<void> => {
@@ -1004,4 +1009,5 @@ export interface PublicationAuthorName {
   username?: string;
   firstName: string;
   lastName: string;
+  ordinal: number;
 }
