@@ -70,7 +70,7 @@ export const SharingOptionsPage = (props: {
           <InputPreviewTextField
             variant={'standard'}
             multiline={true}
-            error={!previewTitle}
+            error={!previewTitle || previewTitle.length > 100}
             value={previewTitle}
             helperText={`${previewTitle?.length}/100`}
             onChange={(e) => setPreviewTitle(e.currentTarget.value)}
@@ -80,7 +80,7 @@ export const SharingOptionsPage = (props: {
           <InputPreviewTextField
             variant={'standard'}
             multiline={true}
-            error={!previewSubtitle}
+            error={!previewSubtitle || previewSubtitle.length > 200}
             value={previewSubtitle}
             helperText={`${previewSubtitle?.length}/200`}
             onChange={(e) => setPreviewSubtitle(e.currentTarget.value)}
