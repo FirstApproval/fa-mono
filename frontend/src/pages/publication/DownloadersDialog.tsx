@@ -48,6 +48,7 @@ export const DownloadersDialog = (props: {
               <AuthorElement
                 key={index}
                 isReadonly={true}
+                useMarginBottom={false}
                 author={downloader}
               />
               <HeightElement value={'28px'} />
