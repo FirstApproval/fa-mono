@@ -471,9 +471,366 @@ const elements: ResearchAreaElement[] = [
     icon: <BiomedicalScience />
   },
   {
+    level: ResearchAreaLevel.L2,
+    hasChildren: true,
+    parent: 'Biomedical Science and Neuroscience',
+    text: 'Biochemistry, Genetics and Molecular Biology',
+    icon: <Biochemistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Aging',
+    icon: <Biochemistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Biochemistry',
+    icon: <Biochemistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Biophysics',
+    icon: <Biochemistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Biotechnology',
+    icon: <Biochemistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Cancer Research',
+    icon: <Biochemistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Cell Biology',
+    icon: <Biochemistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Clinical Biochemistry',
+    icon: <Biochemistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Developmental Biology',
+    icon: <Biochemistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Endocrinology',
+    icon: <Biochemistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'General Biochemistry, Genetics and Molecular Biology',
+    icon: <Biochemistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Genetics',
+    icon: <Biochemistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Molecular Biology',
+    icon: <Biochemistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Molecular Medicine',
+    icon: <Biochemistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Physiology',
+    icon: <Biochemistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Structural Biology',
+    icon: <Biochemistry />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: true,
+    parent: 'Biomedical Science and Neuroscience',
+    text: 'Immunology and Microbiology',
+    icon: <Microbiology />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Immunology and Microbiology',
+    text: 'Applied Microbiology and Biotechnology',
+    icon: <Microbiology />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Immunology and Microbiology',
+    text: 'General Immunology and Microbiology',
+    icon: <Microbiology />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Immunology and Microbiology',
+    text: 'Immunology',
+    icon: <Microbiology />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Immunology and Microbiology',
+    text: 'Microbiology',
+    icon: <Microbiology />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Immunology and Microbiology',
+    text: 'Parasitology',
+    icon: <Microbiology />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Immunology and Microbiology',
+    text: 'Virology',
+    icon: <Microbiology />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: true,
+    parent: 'Biomedical Science and Neuroscience',
+    text: 'Neuroscience',
+    icon: <Neuroscience />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Neuroscience',
+    text: 'Behavioral Neuroscience',
+    icon: <Neuroscience />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Neuroscience',
+    text: 'Biological Psychiatry',
+    icon: <Neuroscience />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Neuroscience',
+    text: 'Cellular and Molecular Neuroscience',
+    icon: <Neuroscience />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Neuroscience',
+    text: 'Cognitive Neuroscience',
+    icon: <Neuroscience />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Neuroscience',
+    text: 'Developmental Neuroscience',
+    icon: <Neuroscience />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Neuroscience',
+    text: 'Endocrine and Autonomic Systems',
+    icon: <Neuroscience />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Neuroscience',
+    text: 'General Neuroscience',
+    icon: <Neuroscience />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Neuroscience',
+    text: 'Neurology',
+    icon: <Neuroscience />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Neuroscience',
+    text: 'Sensory Systems',
+    icon: <Neuroscience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: true,
+    parent: 'Biomedical Science and Neuroscience',
+    text: 'Pharmacology, Toxicology and Pharmaceutics',
+    icon: <Pharmacology />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Pharmacology, Toxicology and Pharmaceutics',
+    text: 'Drug Discovery',
+    icon: <Pharmacology />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Pharmacology, Toxicology and Pharmaceutics',
+    text: 'General Pharmacology, Toxicology and Pharmaceutics',
+    icon: <Pharmacology />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Pharmacology, Toxicology and Pharmaceutics',
+    text: 'Pharmaceutical Science',
+    icon: <Pharmacology />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Pharmacology, Toxicology and Pharmaceutics',
+    text: 'Pharmacology',
+    icon: <Pharmacology />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Pharmacology, Toxicology and Pharmaceutics',
+    text: 'Toxicology',
+    icon: <Pharmacology />
+  },
+  {
     level: ResearchAreaLevel.L1,
     hasChildren: true,
     text: 'Environmental Science',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'Ecological Modeling',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'Ecology',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'Environmental Chemistry',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'Environmental Engineering',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'General Environmental Science',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'Global and Planetary Change',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'Health, Toxicology and Mutagenesis',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'Management, Monitoring, Policy and Law',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'Nature and Landscape Conservation',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'Pollution',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'Waste Management and Disposal',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'Water Science and Technology',
     icon: <Environment />
   },
   {
