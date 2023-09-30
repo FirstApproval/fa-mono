@@ -37,6 +37,7 @@ rules: {
   "@typescript-eslint/prefer-readonly:": "off",
   "@typescript-eslint/no-floating-promises": "off",
   "@typescript-eslint/no-unnecessary-type-assertion": "off",
+  "@typescript-eslint/naming-convention": "off",
   "max-len": [
     "error",
     {

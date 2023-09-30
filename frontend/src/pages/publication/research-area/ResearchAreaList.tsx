@@ -1,8 +1,8 @@
 import React, { type ReactElement } from 'react';
-import { findResearchAreaIcon } from './ResearchAreas';
 import { observer } from 'mobx-react-lite';
 import styled from '@emotion/styled';
 import { Paragraph } from '../../../apis/first-approval-api';
+import { researchAreaIcon } from './ResearchAreas';
 
 export interface ResearchAreaListProps {
   researchAreas: Paragraph[];
@@ -14,8 +14,7 @@ export const ResearchAreaList = observer(
       <ReadonlyContentPlaceholderWrap>
         {props.researchAreas?.map((researchArea: any) => {
           return (
-            <PublicationAreaWrap
-              key={researchArea.text || researchArea.subcategory}>
+            <PublicationAreaWrap key={researchArea.text}>
               <div
                 style={{
                   display: 'flex',
@@ -26,11 +25,9 @@ export const ResearchAreaList = observer(
                     paddingTop: 4,
                     marginRight: 4
                   }}>
-                  {researchArea.text
-                    ? findResearchAreaIcon(researchArea.text)
-                    : findResearchAreaIcon(researchArea.subcategory)}
+                  {researchAreaIcon(researchArea.text)}
                 </div>
-                {researchArea.text || researchArea.subcategory}
+                {researchArea.text}
               </div>
             </PublicationAreaWrap>
           );

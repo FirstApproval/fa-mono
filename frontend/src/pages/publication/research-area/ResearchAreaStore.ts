@@ -34,6 +34,21 @@ export class ResearchAreaStore {
     this.dialogOpened = false;
   };
 
+  isElementSelected(name: string): boolean {
+    return this.publicationStore.researchAreas.some((ra) => ra.text === name);
+  }
+
+  select(name: string): void {
+    if (this.isElementSelected(name)) {
+      this.publicationStore.researchAreas =
+        this.publicationStore.researchAreas.filter((ra) => ra.text !== name);
+    } else {
+      this.publicationStore.researchAreas.push({ text: name });
+    }
+    this.publicationStore.savingStatus = SavingStatusState.SAVING;
+    void this.updateRequest();
+  }
+
   update(newResearchAreas: any[]): void {
     this.publicationStore.researchAreas = newResearchAreas.map((ra) => {
       return {

@@ -13,10 +13,6 @@ import ContentCopy from '@mui/icons-material/ContentCopy';
 import Menu from '@mui/material/Menu';
 import {
   CursorPointer,
-  FlexAlignItems,
-  FlexDirection,
-  FlexJustifyContent,
-  FlexWrap,
   HeightElement,
   SpaceBetween,
   StyledMenuItem,
@@ -39,6 +35,12 @@ import { PublicationAuthorName } from '../pages/publication/store/PublicationSto
 import { ReportProblemDialog } from '../pages/publication/ReportProblemDialog';
 import Moment from 'react-moment';
 import { ResearchAreaShortList } from '../pages/publication/research-area/ResearchAreaShortList';
+import {
+  Flex,
+  FlexAlignItems,
+  FlexDirection,
+  FlexJustifyContent
+} from '../ui-kit/flex';
 
 export const PublicationSection = (props: {
   publication: Publication;
@@ -147,10 +149,10 @@ export const PublicationSection = (props: {
           />
         )}
       </Link>
-      <FlexWrap alignItems={FlexAlignItems.center}>
+      <Flex alignItems={FlexAlignItems.center}>
         {publication.status === PublicationStatus.PUBLISHED && (
           <Width100Percent>
-            <FlexWrap direction={FlexDirection.column}>
+            <Flex direction={FlexDirection.column}>
               <div>
                 {publication.researchAreas && (
                   <ResearchAreaShortList
@@ -160,18 +162,18 @@ export const PublicationSection = (props: {
               </div>
               <HeightElement value={'16px'} />
               <Footer>
-                <FlexWrap
+                <Flex
                   alignItems={FlexAlignItems.center}
                   justifyContent={FlexJustifyContent.spaceBetween}>
-                  <FlexWrap alignItems={FlexAlignItems.center}>
-                    <FlexWrap alignItems={FlexAlignItems.center}>
+                  <Flex alignItems={FlexAlignItems.center}>
+                    <Flex alignItems={FlexAlignItems.center}>
                       <RemoveRedEyeOutlined
                         style={{ marginRight: '6px' }}
                         fontSize={'small'}
                       />
                       {publication.viewsCount}
-                    </FlexWrap>
-                    <FlexWrap
+                    </Flex>
+                    <Flex
                       alignItems={FlexAlignItems.center}
                       onClick={props.openDownloadersDialog}>
                       <CursorPointer>
@@ -184,7 +186,7 @@ export const PublicationSection = (props: {
                         />
                       </CursorPointer>
                       {publication.downloadsCount}
-                    </FlexWrap>
+                    </Flex>
                     <div>
                       <Menu
                         anchorEl={utilAnchor}
@@ -280,25 +282,25 @@ export const PublicationSection = (props: {
                         <MoreHoriz htmlColor={'#68676E'} />
                       </IconButton>
                     </div>
-                  </FlexWrap>
+                  </Flex>
                   <div>
                     <Moment format={'D MMMM YYYY'}>
                       {publication.publicationTime}
                     </Moment>
                   </div>
-                </FlexWrap>
+                </Flex>
               </Footer>
-            </FlexWrap>
+            </Flex>
           </Width100Percent>
         )}
         {publication.status !== PublicationStatus.PUBLISHED && (
           <SpaceBetween>
-            <FlexWrap alignItems={FlexAlignItems.center}>
+            <Flex alignItems={FlexAlignItems.center}>
               <DraftTag>Draft</DraftTag>
               <LastEdited>
                 {getTimeElapsedString(publication.editingTime)}
               </LastEdited>
-            </FlexWrap>
+            </Flex>
             <>
               <div>
                 <IconButton
@@ -339,7 +341,7 @@ export const PublicationSection = (props: {
             </>
           </SpaceBetween>
         )}
-      </FlexWrap>
+      </Flex>
       <DividerWrap />
       <ConfirmationDialog
         isOpen={deleteDialogOpen}

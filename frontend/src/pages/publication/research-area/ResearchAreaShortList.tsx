@@ -1,9 +1,9 @@
 import React, { type ReactElement } from 'react';
-import { findResearchAreaIcon } from './ResearchAreas';
 import { observer } from 'mobx-react-lite';
 import styled from '@emotion/styled';
 import { Paragraph } from '../../../apis/first-approval-api';
-import { FlexAlignItems, FlexWrap } from '../../common.styled';
+import { Flex, FlexAlignItems } from '../../../ui-kit/flex';
+import { researchAreaIcon } from './ResearchAreas';
 
 export interface ResearchAreaShortListProps {
   researchAreas: Paragraph[];
@@ -15,8 +15,7 @@ export const ResearchAreaShortList = observer(
       <ReadonlyContentPlaceholderWrap>
         {props.researchAreas?.slice(0, 2).map((researchArea: any) => {
           return (
-            <PublicationAreaWrap
-              key={researchArea.text || researchArea.subcategory}>
+            <PublicationAreaWrap key={researchArea.text}>
               <div
                 style={{
                   display: 'flex',
@@ -27,20 +26,18 @@ export const ResearchAreaShortList = observer(
                     paddingTop: 4,
                     marginRight: 4
                   }}>
-                  {researchArea.text
-                    ? findResearchAreaIcon(researchArea.text)
-                    : findResearchAreaIcon(researchArea.subcategory)}
+                  {researchAreaIcon(researchArea.text)}
                 </div>
-                {researchArea.text || researchArea.subcategory}
+                {researchArea.text}
               </div>
             </PublicationAreaWrap>
           );
         })}
         {props.researchAreas?.length > 2 && (
           <PublicationAreaWrap>
-            <FlexWrap alignItems={FlexAlignItems.center} style={{ height: 32 }}>
+            <Flex alignItems={FlexAlignItems.center} style={{ height: 32 }}>
               {props.researchAreas?.length - 2} more...
-            </FlexWrap>
+            </Flex>
           </PublicationAreaWrap>
         )}
       </ReadonlyContentPlaceholderWrap>
