@@ -2,17 +2,18 @@ import React, { type ReactElement } from 'react';
 import { observer } from 'mobx-react-lite';
 import styled from '@emotion/styled';
 import { Paragraph } from '../../../apis/first-approval-api';
+import { Flex, FlexAlignItems } from '../../../ui-kit/flex';
 import { researchAreaIcon } from './ResearchAreas';
 
-export interface ResearchAreaListProps {
+export interface ResearchAreaShortListProps {
   researchAreas: Paragraph[];
 }
 
-export const ResearchAreaList = observer(
-  (props: ResearchAreaListProps): ReactElement => {
+export const ResearchAreaShortList = observer(
+  (props: ResearchAreaShortListProps): ReactElement => {
     return (
       <ReadonlyContentPlaceholderWrap>
-        {props.researchAreas?.map((researchArea: any) => {
+        {props.researchAreas?.slice(0, 2).map((researchArea: any) => {
           return (
             <PublicationAreaWrap key={researchArea.text}>
               <div
@@ -32,6 +33,13 @@ export const ResearchAreaList = observer(
             </PublicationAreaWrap>
           );
         })}
+        {props.researchAreas?.length > 2 && (
+          <PublicationAreaWrap>
+            <Flex alignItems={FlexAlignItems.center} style={{ height: 32 }}>
+              {props.researchAreas?.length - 2} more...
+            </Flex>
+          </PublicationAreaWrap>
+        )}
       </ReadonlyContentPlaceholderWrap>
     );
   }

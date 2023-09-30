@@ -1,16 +1,34 @@
 import React, { type ReactElement } from 'react';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
-import { Autocomplete, Chip, TextField } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
-import {
-  findResearchAreaCategory,
-  findResearchAreaIcon,
-  researchAreaCategories
-} from './ResearchAreas';
 import { observer } from 'mobx-react-lite';
 import { ResearchAreaProps } from './ResearchArea';
 import styled from '@emotion/styled';
+import { C3B4EFF, C68676E, Color_040036 } from '../../../ui-kit/colors';
+import {
+  Typography_16_400,
+  Typography_24_600
+} from '../../../ui-kit/typography';
+import {
+  Flex,
+  FlexAlignItems,
+  FlexDirection,
+  FlexJustifyContent
+} from '../../../ui-kit/flex';
+import { Check, Close } from '@mui/icons-material';
+import {
+  CursorPointer,
+  HeightElement,
+  WidthElement
+} from '../../common.styled';
+import {
+  ResearchAreaElement,
+  researchAreaElementsWithLevel,
+  researchAreaElementsWithParent,
+  ResearchAreaLevel
+} from './ResearchAreas';
+import { ResearchAreaStore } from './ResearchAreaStore';
 
 export const ResearchAreaDialog = observer(
   (props: ResearchAreaProps): ReactElement => {
@@ -20,115 +38,180 @@ export const ResearchAreaDialog = observer(
         onClose={props.researchAreaStore.closeDialog}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">
-          Choose 1 or more research areas
-        </DialogTitle>
-        <DialogContent style={{ height: 500 }}>
-          <DialogContentWrap>
-            <Autocomplete
-              multiple={true}
-              disablePortal
-              freeSolo={true}
-              value={props.researchAreaStore.researchAreas.map(
-                (researchArea) => {
-                  if (researchArea.text) {
-                    return {
-                      subcategory: researchArea.text,
-                      category: findResearchAreaCategory(researchArea.text),
-                      icon: findResearchAreaIcon(researchArea.text)
-                    };
-                  } else {
-                    return researchArea as any;
-                  }
+        <DialogWrap>
+          <DialogTitle id="alert-dialog-title" style={{ padding: 0 }}>
+            <DialogTitleWrap>
+              <Flex
+                alignItems={FlexAlignItems.center}
+                justifyContent={FlexJustifyContent.spaceBetween}>
+                <Color_040036>
+                  <Typography_24_600>
+                    Choose 1 or more research areas
+                  </Typography_24_600>
+                </Color_040036>
+                <CursorPointer>
+                  <Flex alignItems={FlexAlignItems.center}>
+                    <Close
+                      onClick={props.researchAreaStore.closeDialog}
+                      htmlColor={C68676E}
+                    />
+                  </Flex>
+                </CursorPointer>
+              </Flex>
+            </DialogTitleWrap>
+          </DialogTitle>
+          <DialogContent style={{ padding: 0 }}>
+            <DialogContentWrap>
+              {researchAreaElementsWithLevel(ResearchAreaLevel.L1).map(
+                (element) => {
+                  return (
+                    <Flex key={element.text} direction={FlexDirection.column}>
+                      <ResearchAreaDialogElementContainer
+                        element={element}
+                        researchAreaStore={props.researchAreaStore}
+                      />
+                    </Flex>
+                  );
                 }
               )}
-              id="combo-box-demo"
-              options={researchAreaCategories}
-              getOptionLabel={(option: any) =>
-                option.category + ' ' + option.subcategory
-              }
-              sx={{ width: '100%' }}
-              renderOption={(props, option) => {
-                return (
-                  <li {...props} style={{ padding: '8px 16px' }}>
-                    <div
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'center'
-                      }}>
-                      <div style={{ marginRight: 16 }}>{option.icon}</div>
-                      <div
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'center'
-                        }}>
-                        <div style={{ fontSize: 16 }}>{option.subcategory}</div>
-                        <div
-                          style={{
-                            fontSize: 14,
-                            color: 'var(--text-secondary, #68676E)'
-                          }}>
-                          {option.category}
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                );
-              }}
-              renderTags={(value: readonly any[], getTagProps) =>
-                value.map((option: any, index: number) => (
-                  <Chip
-                    icon={
-                      <div
-                        style={{
-                          marginLeft: 4,
-                          display: 'flex',
-                          justifyContent: 'center',
-                          alignItems: 'center'
-                        }}>
-                        {option.icon}
-                      </div>
-                    }
-                    // @ts-expect-error(2322)
-                    key={option.category + option.subcategory}
-                    style={{
-                      borderRadius: 2,
-                      border: '1px solid var(--divider, #D2D2D6)',
-                      background: 'var(--grey-50, #F8F7FA)'
-                    }}
-                    label={option.subcategory}
-                    {...getTagProps({ index })}
-                    disabled={
-                      props.researchAreaStore.researchAreas.length === 1
-                    }
-                  />
-                ))
-              }
-              renderInput={(params) => (
-                <TextField
-                  autoFocus={true}
-                  {...params}
-                  placeholder={
-                    props.researchAreaStore.researchAreas.length === 0
-                      ? 'Start typing the primary field or discipline of your research/experiment...'
-                      : ''
-                  }
-                />
-              )}
-              onChange={(event, newValue: any) => {
-                props.researchAreaStore.update(newValue);
-              }}
-            />
-          </DialogContentWrap>
-        </DialogContent>
+            </DialogContentWrap>
+          </DialogContent>
+        </DialogWrap>
       </Dialog>
     );
   }
 );
 
+const ResearchAreaDialogElementContainer = observer(
+  (props: ResearchAreaDialogElementProps): ReactElement => {
+    return (
+      <>
+        <ResearchAreaDialogElement
+          element={props.element}
+          researchAreaStore={props.researchAreaStore}
+        />
+        <HeightElement value={'8px'} />
+      </>
+    );
+  }
+);
+
+export interface ResearchAreaDialogElementProps {
+  element: ResearchAreaElement;
+  researchAreaStore: ResearchAreaStore;
+}
+
+const ResearchAreaDialogElement = observer(
+  (props: ResearchAreaDialogElementProps): ReactElement => {
+    return (
+      <>
+        {props.researchAreaStore.isElementSelected(props.element) && (
+          <Flex direction={FlexDirection.column}>
+            <ResearchAreaDialogSelectedElementWrap
+              onClick={() => props.researchAreaStore.check(props.element)}>
+              <ResearchAreaDialogElementContent
+                checked={true}
+                element={props.element}
+              />
+            </ResearchAreaDialogSelectedElementWrap>
+            {props.element.hasChildren && <HeightElement value={'8px'} />}
+            {props.element.hasChildren &&
+              researchAreaElementsWithParent(props.element.text).map(
+                (element) => {
+                  return (
+                    <ResearchAreaDialogElementContainer
+                      key={element.text}
+                      element={element}
+                      researchAreaStore={props.researchAreaStore}
+                    />
+                  );
+                }
+              )}
+          </Flex>
+        )}
+
+        {!props.researchAreaStore.isElementSelected(props.element) && (
+          <Flex onClick={() => props.researchAreaStore.check(props.element)}>
+            <ResearchAreaDialogElementContent
+              checked={false}
+              element={props.element}
+            />
+          </Flex>
+        )}
+      </>
+    );
+  }
+);
+
+export interface ResearchAreaDialogContentProps {
+  checked: boolean;
+  element: ResearchAreaElement;
+}
+
+const ResearchAreaDialogElementContent = observer(
+  (props: ResearchAreaDialogContentProps): ReactElement => {
+    return (
+      <CursorPointer>
+        <ResearchAreaDialogElementWrap level={props.element.level}>
+          <Flex
+            alignItems={FlexAlignItems.center}
+            justifyContent={FlexJustifyContent.spaceBetween}>
+            <Flex alignItems={FlexAlignItems.center}>
+              <Flex alignItems={FlexAlignItems.center}>
+                {props.element.icon}
+                <WidthElement value={'16px'} />
+              </Flex>
+              <Color_040036>
+                <Typography_16_400>{props.element.text}</Typography_16_400>
+              </Color_040036>
+            </Flex>
+            {props.checked && (
+              <Flex alignItems={FlexAlignItems.center}>
+                <Check htmlColor={C3B4EFF} />
+              </Flex>
+            )}
+          </Flex>
+        </ResearchAreaDialogElementWrap>
+      </CursorPointer>
+    );
+  }
+);
+
+const ResearchAreaDialogSelectedElementWrap = styled.div`
+  border-radius: 4px;
+  background: var(--primary-states-selected, rgba(59, 78, 255, 0.08));
+`;
+
+const ResearchAreaDialogElementWrap = styled.div<{ level: ResearchAreaLevel }>`
+  border-radius: 4px;
+  padding: 8px 16px 8px
+    ${(props) =>
+      props.level === ResearchAreaLevel.L1
+        ? 8
+        : props.level === ResearchAreaLevel.L2
+        ? 40
+        : props.level === ResearchAreaLevel.L3
+        ? 72
+        : 72}px;
+  width: 568px;
+
+  &:hover {
+    background: var(--primary-states-selected, rgba(59, 78, 255, 0.08));
+  }
+`;
+
+const DialogWrap = styled.div`
+  width: 600px;
+  height: 600px;
+  padding: 32px 16px;
+`;
+
+const DialogTitleWrap = styled.div`
+  width: 100%;
+  padding: 0 16px;
+  margin-bottom: 32px;
+`;
+
 const DialogContentWrap = styled.div`
-  min-width: 488px;
-  margin-top: 8px;
+  width: 100%;
 `;

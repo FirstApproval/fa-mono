@@ -1,4 +1,7 @@
 import React, { ReactElement } from 'react';
+import biologicalSciences from '../asset/biologicalSciences.svg';
+import biomedicalScience from '../asset/biomedicalScience.svg';
+import energyEngineeringAndMaterialsScience from '../asset/energyEngineeringAndMaterialsScience.svg';
 import agriculture from '../asset/agricultural.svg';
 import biochemistry from '../asset/biochemistry.svg';
 import business from '../asset/business.svg';
@@ -25,6 +28,42 @@ import physics from '../asset/physics.svg';
 import psychology from '../asset/psychology.svg';
 import socialSciences from '../asset/socialSciences.svg';
 import veterinary from '../asset/veterinary.svg';
+
+export const BiologicalScience = (): ReactElement => {
+  return (
+    <img
+      src={biologicalSciences}
+      style={{
+        width: 24,
+        height: 24
+      }}
+    />
+  );
+};
+
+export const BiomedicalScience = (): ReactElement => {
+  return (
+    <img
+      src={biomedicalScience}
+      style={{
+        width: 24,
+        height: 24
+      }}
+    />
+  );
+};
+
+export const EnergyEngineeringAndMaterialsScience = (): ReactElement => {
+  return (
+    <img
+      src={energyEngineeringAndMaterialsScience}
+      style={{
+        width: 24,
+        height: 24
+      }}
+    />
+  );
+};
 
 export const Agriculture = (): ReactElement => {
   return (
@@ -313,1692 +352,1668 @@ export const Veterinary = (): ReactElement => {
   );
 };
 
-export const findResearchAreaIcon = (subcategory: string): ReactElement => {
-  const category = researchAreaCategories.find(
-    (category) => category.subcategory === subcategory
-  );
-  if (category) {
-    return category.icon;
-  } else {
-    throw new Error('Category not found');
-  }
-};
+export interface ResearchAreaElement {
+  level: ResearchAreaLevel;
+  parent?: string;
+  hasChildren: boolean;
+  icon: ReactElement;
+  text: string;
+}
 
-export const findResearchAreaCategory = (subcategory: string): string => {
-  const category = researchAreaCategories.find(
-    (category) => category.subcategory === subcategory
-  );
-  if (category) {
-    return category.category;
-  } else {
-    throw new Error('Category not found');
-  }
-};
+export enum ResearchAreaLevel {
+  L1 = 'Level1',
+  L2 = 'Level2',
+  L3 = 'Level3'
+}
 
-export const researchAreaCategories = [
+const elements: ResearchAreaElement[] = [
   {
-    category: 'Agricultural and Biological Sciences',
-    subcategory: 'Agricultural and Biological Sciences',
+    level: ResearchAreaLevel.L1,
+    hasChildren: true,
+    text: 'Biological sciences',
+    icon: <BiologicalScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Biological sciences',
+    text: 'Animal Science and Zoology',
+    icon: <BiologicalScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Biological sciences',
+    text: 'Aging',
+    icon: <BiologicalScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: true,
+    parent: 'Biological sciences',
+    text: 'Agricultural  Sciences',
     icon: <Agriculture />
   },
   {
-    category: 'Agricultural and Biological Sciences',
-    subcategory: 'Agronomy and Crop Science',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Agricultural  Sciences',
+    text: 'Agronomy and Crop Science',
     icon: <Agriculture />
   },
   {
-    category: 'Agricultural and Biological Sciences',
-    subcategory: 'Animal Science and Zoology',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Agricultural  Sciences',
+    text: 'Food Science',
     icon: <Agriculture />
   },
   {
-    category: 'Agricultural and Biological Sciences',
-    subcategory: 'Aquatic Science',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Agricultural  Sciences',
+    text: 'Forestry',
     icon: <Agriculture />
   },
   {
-    category: 'Agricultural and Biological Sciences',
-    subcategory: 'Ecology, Evolution, Behavior and Systematics',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Agricultural  Sciences',
+    text: 'Horticulture',
     icon: <Agriculture />
   },
   {
-    category: 'Agricultural and Biological Sciences',
-    subcategory: 'Food Science',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Agricultural  Sciences',
+    text: 'Soil Science',
     icon: <Agriculture />
   },
   {
-    category: 'Agricultural and Biological Sciences',
-    subcategory: 'Forestry',
-    icon: <Agriculture />
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Biological sciences',
+    text: 'Aquatic Science',
+    icon: <BiologicalScience />
   },
   {
-    category: 'Agricultural and Biological Sciences',
-    subcategory: 'General Agricultural and Biological Sciences',
-    icon: <Agriculture />
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Biological sciences',
+    text: 'Ecology, Evolution, Behavior and Systematics',
+    icon: <BiologicalScience />
   },
   {
-    category: 'Agricultural and Biological Sciences',
-    subcategory: 'Horticulture',
-    icon: <Agriculture />
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Biological sciences',
+    text: 'General and Biological Sciences',
+    icon: <BiologicalScience />
   },
   {
-    category: 'Agricultural and Biological Sciences',
-    subcategory: 'Insect Science',
-    icon: <Agriculture />
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Biological sciences',
+    text: 'Insect Science',
+    icon: <BiologicalScience />
   },
   {
-    category: 'Agricultural and Biological Sciences',
-    subcategory: 'Plant Science',
-    icon: <Agriculture />
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Biological sciences',
+    text: 'Plant Science',
+    icon: <BiologicalScience />
   },
   {
-    category: 'Agricultural and Biological Sciences',
-    subcategory: 'Soil Science',
-    icon: <Agriculture />
+    level: ResearchAreaLevel.L1,
+    hasChildren: true,
+    text: 'Biomedical Science and Neuroscience',
+    icon: <BiomedicalScience />
   },
   {
-    category: 'Arts and Humanities',
-    subcategory: 'Archeology',
-    icon: <Humanities />
-  },
-  {
-    category: 'Arts and Humanities',
-    subcategory: 'Arts and Humanities',
-    icon: <Humanities />
-  },
-  {
-    category: 'Arts and Humanities',
-    subcategory: 'Classics',
-    icon: <Humanities />
-  },
-  {
-    category: 'Arts and Humanities',
-    subcategory: 'Conservation',
-    icon: <Humanities />
-  },
-  {
-    category: 'Arts and Humanities',
-    subcategory: 'General Arts and Humanities',
-    icon: <Humanities />
-  },
-  {
-    category: 'Arts and Humanities',
-    subcategory: 'History',
-    icon: <Humanities />
-  },
-  {
-    category: 'Arts and Humanities',
-    subcategory: 'History and Philosophy of Science',
-    icon: <Humanities />
-  },
-  {
-    category: 'Arts and Humanities',
-    subcategory: 'Language and Linguistics',
-    icon: <Humanities />
-  },
-  {
-    category: 'Arts and Humanities',
-    subcategory: 'Literature and Literary Theory',
-    icon: <Humanities />
-  },
-  {
-    category: 'Arts and Humanities',
-    subcategory: 'Museology',
-    icon: <Humanities />
-  },
-  {
-    category: 'Arts and Humanities',
-    subcategory: 'Music',
-    icon: <Humanities />
-  },
-  {
-    category: 'Arts and Humanities',
-    subcategory: 'Philosophy',
-    icon: <Humanities />
-  },
-  {
-    category: 'Arts and Humanities',
-    subcategory: 'Religious Studies',
-    icon: <Humanities />
-  },
-  {
-    category: 'Arts and Humanities',
-    subcategory: 'Visual Arts and Performing Arts',
-    icon: <Humanities />
-  },
-  {
-    category: 'Biochemistry, Genetics and Molecular Biology',
-    subcategory: 'Aging',
+    level: ResearchAreaLevel.L2,
+    hasChildren: true,
+    parent: 'Biomedical Science and Neuroscience',
+    text: 'Biochemistry, Genetics and Molecular Biology',
     icon: <Biochemistry />
   },
   {
-    category: 'Biochemistry, Genetics and Molecular Biology',
-    subcategory: 'Biochemistry',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Aging',
     icon: <Biochemistry />
   },
   {
-    category: 'Biochemistry, Genetics and Molecular Biology',
-    subcategory: 'Biochemistry, Genetics and Molecular Biology',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Biochemistry',
     icon: <Biochemistry />
   },
   {
-    category: 'Biochemistry, Genetics and Molecular Biology',
-    subcategory: 'Biophysics',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Biophysics',
     icon: <Biochemistry />
   },
   {
-    category: 'Biochemistry, Genetics and Molecular Biology',
-    subcategory: 'Biotechnology',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Biotechnology',
     icon: <Biochemistry />
   },
   {
-    category: 'Biochemistry, Genetics and Molecular Biology',
-    subcategory: 'Cancer Research',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Cancer Research',
     icon: <Biochemistry />
   },
   {
-    category: 'Biochemistry, Genetics and Molecular Biology',
-    subcategory: 'Cell Biology',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Cell Biology',
     icon: <Biochemistry />
   },
   {
-    category: 'Biochemistry, Genetics and Molecular Biology',
-    subcategory: 'Clinical Biochemistry',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Clinical Biochemistry',
     icon: <Biochemistry />
   },
   {
-    category: 'Biochemistry, Genetics and Molecular Biology',
-    subcategory: 'Developmental Biology',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Developmental Biology',
     icon: <Biochemistry />
   },
   {
-    category: 'Biochemistry, Genetics and Molecular Biology',
-    subcategory: 'Endocrinology',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Endocrinology',
     icon: <Biochemistry />
   },
   {
-    category: 'Biochemistry, Genetics and Molecular Biology',
-    subcategory: 'General Biochemistry, Genetics and Molecular Biology',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'General Biochemistry, Genetics and Molecular Biology',
     icon: <Biochemistry />
   },
   {
-    category: 'Biochemistry, Genetics and Molecular Biology',
-    subcategory: 'Genetics',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Genetics',
     icon: <Biochemistry />
   },
   {
-    category: 'Biochemistry, Genetics and Molecular Biology',
-    subcategory: 'Molecular Biology',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Molecular Biology',
     icon: <Biochemistry />
   },
   {
-    category: 'Biochemistry, Genetics and Molecular Biology',
-    subcategory: 'Molecular Medicine',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Molecular Medicine',
     icon: <Biochemistry />
   },
   {
-    category: 'Biochemistry, Genetics and Molecular Biology',
-    subcategory: 'Physiology',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Physiology',
     icon: <Biochemistry />
   },
   {
-    category: 'Biochemistry, Genetics and Molecular Biology',
-    subcategory: 'Structural Biology',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Biochemistry, Genetics and Molecular Biology',
+    text: 'Structural Biology',
     icon: <Biochemistry />
   },
   {
-    category: 'Business, Management and Accounting',
-    subcategory: 'Accounting',
-    icon: <Business />
-  },
-  {
-    category: 'Business, Management and Accounting',
-    subcategory: 'Business and International Management',
-    icon: <Business />
-  },
-  {
-    category: 'Business, Management and Accounting',
-    subcategory: 'Business, Management and Accounting',
-    icon: <Business />
-  },
-  {
-    category: 'Business, Management and Accounting',
-    subcategory: 'General Business, Management and Accounting',
-    icon: <Business />
-  },
-  {
-    category: 'Business, Management and Accounting',
-    subcategory: 'Industrial Relations',
-    icon: <Business />
-  },
-  {
-    category: 'Business, Management and Accounting',
-    subcategory: 'Management Information Systems',
-    icon: <Business />
-  },
-  {
-    category: 'Business, Management and Accounting',
-    subcategory: 'Management of Technology and Innovation',
-    icon: <Business />
-  },
-  {
-    category: 'Business, Management and Accounting',
-    subcategory: 'Marketing',
-    icon: <Business />
-  },
-  {
-    category: 'Business, Management and Accounting',
-    subcategory: 'Organizational Behavior and Human Resource Management',
-    icon: <Business />
-  },
-  {
-    category: 'Business, Management and Accounting',
-    subcategory: 'Strategy and Management',
-    icon: <Business />
-  },
-  {
-    category: 'Business, Management and Accounting',
-    subcategory: 'Tourism, Leisure and Hospitality Management',
-    icon: <Business />
-  },
-  {
-    category: 'Chemical Engineering',
-    subcategory: 'Bioengineering',
-    icon: <ChemicalEngineering />
-  },
-  {
-    category: 'Chemical Engineering',
-    subcategory: 'Catalysis',
-    icon: <ChemicalEngineering />
-  },
-  {
-    category: 'Chemical Engineering',
-    subcategory: 'Chemical Engineering',
-    icon: <ChemicalEngineering />
-  },
-  {
-    category: 'Chemical Engineering',
-    subcategory: 'Chemical Health and Safety',
-    icon: <ChemicalEngineering />
-  },
-  {
-    category: 'Chemical Engineering',
-    subcategory: 'Colloid and Surface Chemistry',
-    icon: <ChemicalEngineering />
-  },
-  {
-    category: 'Chemical Engineering',
-    subcategory: 'Filtration and Separation',
-    icon: <ChemicalEngineering />
-  },
-  {
-    category: 'Chemical Engineering',
-    subcategory: 'Fluid Flow and Transfer Processes',
-    icon: <ChemicalEngineering />
-  },
-  {
-    category: 'Chemical Engineering',
-    subcategory: 'General Chemical Engineering',
-    icon: <ChemicalEngineering />
-  },
-  {
-    category: 'Chemical Engineering',
-    subcategory: 'Process Chemistry and Technology',
-    icon: <ChemicalEngineering />
-  },
-  {
-    category: 'Chemistry',
-    subcategory: 'Analytical Chemistry',
-    icon: <Chemistry />
-  },
-  {
-    category: 'Chemistry',
-    subcategory: 'Chemistry',
-    icon: <Chemistry />
-  },
-  {
-    category: 'Chemistry',
-    subcategory: 'Electrochemistry',
-    icon: <Chemistry />
-  },
-  {
-    category: 'Chemistry',
-    subcategory: 'General Chemistry',
-    icon: <Chemistry />
-  },
-  {
-    category: 'Chemistry',
-    subcategory: 'Inorganic Chemistry',
-    icon: <Chemistry />
-  },
-  {
-    category: 'Chemistry',
-    subcategory: 'Organic Chemistry',
-    icon: <Chemistry />
-  },
-  {
-    category: 'Chemistry',
-    subcategory: 'Physical and Theoretical Chemistry',
-    icon: <Chemistry />
-  },
-  {
-    category: 'Chemistry',
-    subcategory: 'Spectroscopy',
-    icon: <Chemistry />
-  },
-  {
-    category: 'Computer Science',
-    subcategory: 'Artificial Intelligence',
-    icon: <ComputerScience />
-  },
-  {
-    category: 'Computer Science',
-    subcategory: 'Computational Theory and Mathematics',
-    icon: <ComputerScience />
-  },
-  {
-    category: 'Computer Science',
-    subcategory: 'Computer Graphics and Computer-Aided Design',
-    icon: <ComputerScience />
-  },
-  {
-    category: 'Computer Science',
-    subcategory: 'Computer Networks and Communications',
-    icon: <ComputerScience />
-  },
-  {
-    category: 'Computer Science',
-    subcategory: 'Computer Science',
-    icon: <ComputerScience />
-  },
-  {
-    category: 'Computer Science',
-    subcategory: 'Computer Science Applications',
-    icon: <ComputerScience />
-  },
-  {
-    category: 'Computer Science',
-    subcategory: 'Computer Vision and Pattern Recognition',
-    icon: <ComputerScience />
-  },
-  {
-    category: 'Computer Science',
-    subcategory: 'General Computer Science',
-    icon: <ComputerScience />
-  },
-  {
-    category: 'Computer Science',
-    subcategory: 'Hardware and Architecture',
-    icon: <ComputerScience />
-  },
-  {
-    category: 'Computer Science',
-    subcategory: 'Human-Computer Interaction',
-    icon: <ComputerScience />
-  },
-  {
-    category: 'Computer Science',
-    subcategory: 'Information Systems',
-    icon: <ComputerScience />
-  },
-  {
-    category: 'Computer Science',
-    subcategory: 'Signal Processing',
-    icon: <ComputerScience />
-  },
-  {
-    category: 'Computer Science',
-    subcategory: 'Software',
-    icon: <ComputerScience />
-  },
-  {
-    category: 'Decision Sciences',
-    subcategory: 'Decision Sciences',
-    icon: <Decision />
-  },
-  {
-    category: 'Decision Sciences',
-    subcategory: 'General Decision Sciences',
-    icon: <Decision />
-  },
-  {
-    category: 'Decision Sciences',
-    subcategory: 'Information Systems and Management',
-    icon: <Decision />
-  },
-  {
-    category: 'Decision Sciences',
-    subcategory: 'Management Science and Operations Research',
-    icon: <Decision />
-  },
-  {
-    category: 'Decision Sciences',
-    subcategory: 'Statistics, Probability and Uncertainty',
-    icon: <Decision />
-  },
-  {
-    category: 'Dentistry',
-    subcategory: 'Dental Assisting',
-    icon: <Dentistry />
-  },
-  {
-    category: 'Dentistry',
-    subcategory: 'Dental Hygiene',
-    icon: <Dentistry />
-  },
-  {
-    category: 'Dentistry',
-    subcategory: 'Dentistry',
-    icon: <Dentistry />
-  },
-  {
-    category: 'Dentistry',
-    subcategory: 'General Dentistry',
-    icon: <Dentistry />
-  },
-  {
-    category: 'Dentistry',
-    subcategory: 'Oral Surgery',
-    icon: <Dentistry />
-  },
-  {
-    category: 'Dentistry',
-    subcategory: 'Orthodontics',
-    icon: <Dentistry />
-  },
-  {
-    category: 'Dentistry',
-    subcategory: 'Periodontics',
-    icon: <Dentistry />
-  },
-  {
-    category: 'Earth and Planetary Sciences',
-    subcategory: 'Atmospheric Science',
-    icon: <Earth />
-  },
-  {
-    category: 'Earth and Planetary Sciences',
-    subcategory: 'Computers in Earth Sciences',
-    icon: <Earth />
-  },
-  {
-    category: 'Earth and Planetary Sciences',
-    subcategory: 'Earth and Planetary Sciences',
-    icon: <Earth />
-  },
-  {
-    category: 'Earth and Planetary Sciences',
-    subcategory: 'Earth-Surface Processes',
-    icon: <Earth />
-  },
-  {
-    category: 'Earth and Planetary Sciences',
-    subcategory: 'Economic Geology',
-    icon: <Earth />
-  },
-  {
-    category: 'Earth and Planetary Sciences',
-    subcategory: 'General Earth and Planetary Sciences',
-    icon: <Earth />
-  },
-  {
-    category: 'Earth and Planetary Sciences',
-    subcategory: 'Geochemistry and Petrology',
-    icon: <Earth />
-  },
-  {
-    category: 'Earth and Planetary Sciences',
-    subcategory: 'Geology',
-    icon: <Earth />
-  },
-  {
-    category: 'Earth and Planetary Sciences',
-    subcategory: 'Geophysics',
-    icon: <Earth />
-  },
-  {
-    category: 'Earth and Planetary Sciences',
-    subcategory: 'Geotechnical Engineering and Engineering Geology',
-    icon: <Earth />
-  },
-  {
-    category: 'Earth and Planetary Sciences',
-    subcategory: 'Oceanography',
-    icon: <Earth />
-  },
-  {
-    category: 'Earth and Planetary Sciences',
-    subcategory: 'Paleontology',
-    icon: <Earth />
-  },
-  {
-    category: 'Earth and Planetary Sciences',
-    subcategory: 'Space and Planetary Science',
-    icon: <Earth />
-  },
-  {
-    category: 'Earth and Planetary Sciences',
-    subcategory: 'Stratigraphy',
-    icon: <Earth />
-  },
-  {
-    category: 'Economics, Econometrics and Finance',
-    subcategory: 'Economics and Econometrics',
-    icon: <Economics />
-  },
-  {
-    category: 'Economics, Econometrics and Finance',
-    subcategory: 'Economics, Econometrics and Finance',
-    icon: <Economics />
-  },
-  {
-    category: 'Economics, Econometrics and Finance',
-    subcategory: 'Finance',
-    icon: <Economics />
-  },
-  {
-    category: 'Economics, Econometrics and Finance',
-    subcategory: 'General Economics, Econometrics and Finance',
-    icon: <Economics />
-  },
-  {
-    category: 'Energy',
-    subcategory: 'Energy',
-    icon: <Energy />
-  },
-  {
-    category: 'Energy',
-    subcategory: 'Energy Engineering and Power Technology',
-    icon: <Energy />
-  },
-  {
-    category: 'Energy',
-    subcategory: 'Fuel Technology',
-    icon: <Energy />
-  },
-  {
-    category: 'Energy',
-    subcategory: 'General Energy',
-    icon: <Energy />
-  },
-  {
-    category: 'Energy',
-    subcategory: 'Nuclear Energy and Engineering',
-    icon: <Energy />
-  },
-  {
-    category: 'Energy',
-    subcategory: 'Renewable Energy, Sustainability and the Environment',
-    icon: <Energy />
-  },
-  {
-    category: 'Engineering',
-    subcategory: 'Aerospace Engineering',
-    icon: <Engineering />
-  },
-  {
-    category: 'Engineering',
-    subcategory: 'Architecture',
-    icon: <Engineering />
-  },
-  {
-    category: 'Engineering',
-    subcategory: 'Automotive Engineering',
-    icon: <Engineering />
-  },
-  {
-    category: 'Engineering',
-    subcategory: 'Biomedical Engineering',
-    icon: <Engineering />
-  },
-  {
-    category: 'Engineering',
-    subcategory: 'Building and Construction',
-    icon: <Engineering />
-  },
-  {
-    category: 'Engineering',
-    subcategory: 'Civil and Structural Engineering',
-    icon: <Engineering />
-  },
-  {
-    category: 'Engineering',
-    subcategory: 'Computational Mechanics',
-    icon: <Engineering />
-  },
-  {
-    category: 'Engineering',
-    subcategory: 'Control and Systems Engineering',
-    icon: <Engineering />
-  },
-  {
-    category: 'Engineering',
-    subcategory: 'Electrical and Electronic Engineering',
-    icon: <Engineering />
-  },
-  {
-    category: 'Engineering',
-    subcategory: 'Engineering',
-    icon: <Engineering />
-  },
-  {
-    category: 'Engineering',
-    subcategory: 'General Engineering',
-    icon: <Engineering />
-  },
-  {
-    category: 'Engineering',
-    subcategory: 'Industrial and Manufacturing Engineering',
-    icon: <Engineering />
-  },
-  {
-    category: 'Engineering',
-    subcategory: 'Mechanical Engineering',
-    icon: <Engineering />
-  },
-  {
-    category: 'Engineering',
-    subcategory: 'Mechanics of Materials',
-    icon: <Engineering />
-  },
-  {
-    category: 'Engineering',
-    subcategory: 'Media Technology',
-    icon: <Engineering />
-  },
-  {
-    category: 'Engineering',
-    subcategory: 'Ocean Engineering',
-    icon: <Engineering />
-  },
-  {
-    category: 'Engineering',
-    subcategory: 'Safety, Risk, Reliability and Quality',
-    icon: <Engineering />
-  },
-  {
-    category: 'Environmental Science',
-    subcategory: 'Ecological Modeling',
-    icon: <Environment />
-  },
-  {
-    category: 'Environmental Science',
-    subcategory: 'Ecology',
-    icon: <Environment />
-  },
-  {
-    category: 'Environmental Science',
-    subcategory: 'Environmental Chemistry',
-    icon: <Environment />
-  },
-  {
-    category: 'Environmental Science',
-    subcategory: 'Environmental Engineering',
-    icon: <Environment />
-  },
-  {
-    category: 'Environmental Science',
-    subcategory: 'Environmental Science',
-    icon: <Environment />
-  },
-  {
-    category: 'Environmental Science',
-    subcategory: 'General Environmental Science',
-    icon: <Environment />
-  },
-  {
-    category: 'Environmental Science',
-    subcategory: 'Global and Planetary Change',
-    icon: <Environment />
-  },
-  {
-    category: 'Environmental Science',
-    subcategory: 'Health, Toxicology and Mutagenesis',
-    icon: <Environment />
-  },
-  {
-    category: 'Environmental Science',
-    subcategory: 'Management, Monitoring, Policy and Law',
-    icon: <Environment />
-  },
-  {
-    category: 'Environmental Science',
-    subcategory: 'Nature and Landscape Conservation',
-    icon: <Environment />
-  },
-  {
-    category: 'Environmental Science',
-    subcategory: 'Pollution',
-    icon: <Environment />
-  },
-  {
-    category: 'Environmental Science',
-    subcategory: 'Waste Management and Disposal',
-    icon: <Environment />
-  },
-  {
-    category: 'Environmental Science',
-    subcategory: 'Water Science and Technology',
-    icon: <Environment />
-  },
-  {
-    category: 'Health Professions',
-    subcategory: 'Chiropractics',
-    icon: <HealthProfessions />
-  },
-  {
-    category: 'Health Professions',
-    subcategory: 'Complementary and Manual Therapy',
-    icon: <HealthProfessions />
-  },
-  {
-    category: 'Health Professions',
-    subcategory: 'Emergency Medical Services',
-    icon: <HealthProfessions />
-  },
-  {
-    category: 'Health Professions',
-    subcategory: 'General Health Professions',
-    icon: <HealthProfessions />
-  },
-  {
-    category: 'Health Professions',
-    subcategory: 'Health Information Management',
-    icon: <HealthProfessions />
-  },
-  {
-    category: 'Health Professions',
-    subcategory: 'Health Professions',
-    icon: <HealthProfessions />
-  },
-  {
-    category: 'Health Professions',
-    subcategory: 'Medical Assisting and Transcription',
-    icon: <HealthProfessions />
-  },
-  {
-    category: 'Health Professions',
-    subcategory: 'Medical Laboratory Technology',
-    icon: <HealthProfessions />
-  },
-  {
-    category: 'Health Professions',
-    subcategory: 'Medical Terminology',
-    icon: <HealthProfessions />
-  },
-  {
-    category: 'Health Professions',
-    subcategory: 'Occupational Therapy',
-    icon: <HealthProfessions />
-  },
-  {
-    category: 'Health Professions',
-    subcategory: 'Optometry',
-    icon: <HealthProfessions />
-  },
-  {
-    category: 'Health Professions',
-    subcategory: 'Pharmacy',
-    icon: <HealthProfessions />
-  },
-  {
-    category: 'Health Professions',
-    subcategory: 'Physical Therapy, Sports Therapy and Rehabilitation',
-    icon: <HealthProfessions />
-  },
-  {
-    category: 'Health Professions',
-    subcategory: 'Podiatry',
-    icon: <HealthProfessions />
-  },
-  {
-    category: 'Health Professions',
-    subcategory: 'Radiological and Ultrasound Technology',
-    icon: <HealthProfessions />
-  },
-  {
-    category: 'Health Professions',
-    subcategory: 'Respiratory Care',
-    icon: <HealthProfessions />
-  },
-  {
-    category: 'Health Professions',
-    subcategory: 'Speech and Hearing',
-    icon: <HealthProfessions />
-  },
-  {
-    category: 'Immunology and Microbiology',
-    subcategory: 'Applied Microbiology and Biotechnology',
+    level: ResearchAreaLevel.L2,
+    hasChildren: true,
+    parent: 'Biomedical Science and Neuroscience',
+    text: 'Immunology and Microbiology',
     icon: <Microbiology />
   },
   {
-    category: 'Immunology and Microbiology',
-    subcategory: 'General Immunology and Microbiology',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Immunology and Microbiology',
+    text: 'Applied Microbiology and Biotechnology',
     icon: <Microbiology />
   },
   {
-    category: 'Immunology and Microbiology',
-    subcategory: 'Immunology',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Immunology and Microbiology',
+    text: 'General Immunology and Microbiology',
     icon: <Microbiology />
   },
   {
-    category: 'Immunology and Microbiology',
-    subcategory: 'Immunology and Microbiology',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Immunology and Microbiology',
+    text: 'Immunology',
     icon: <Microbiology />
   },
   {
-    category: 'Immunology and Microbiology',
-    subcategory: 'Microbiology',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Immunology and Microbiology',
+    text: 'Microbiology',
     icon: <Microbiology />
   },
   {
-    category: 'Immunology and Microbiology',
-    subcategory: 'Parasitology',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Immunology and Microbiology',
+    text: 'Parasitology',
     icon: <Microbiology />
   },
   {
-    category: 'Immunology and Microbiology',
-    subcategory: 'Virology',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Immunology and Microbiology',
+    text: 'Virology',
     icon: <Microbiology />
   },
   {
-    category: 'Materials Science',
-    subcategory: 'Biomaterials',
-    icon: <Materials />
-  },
-  {
-    category: 'Materials Science',
-    subcategory: 'Ceramics and Composites',
-    icon: <Materials />
-  },
-  {
-    category: 'Materials Science',
-    subcategory: 'Electronic, Optical and Magnetic Materials',
-    icon: <Materials />
-  },
-  {
-    category: 'Materials Science',
-    subcategory: 'General Materials Science',
-    icon: <Materials />
-  },
-  {
-    category: 'Materials Science',
-    subcategory: 'Materials Chemistry',
-    icon: <Materials />
-  },
-  {
-    category: 'Materials Science',
-    subcategory: 'Materials Science',
-    icon: <Materials />
-  },
-  {
-    category: 'Materials Science',
-    subcategory: 'Metals and Alloys',
-    icon: <Materials />
-  },
-  {
-    category: 'Materials Science',
-    subcategory: 'Polymers and Plastics',
-    icon: <Materials />
-  },
-  {
-    category: 'Materials Science',
-    subcategory: 'Surfaces, Coatings and Films',
-    icon: <Materials />
-  },
-  {
-    category: 'Mathematics',
-    subcategory: 'Algebra and Number Theory',
-    icon: <Mathematics />
-  },
-  {
-    category: 'Mathematics',
-    subcategory: 'Analysis',
-    icon: <Mathematics />
-  },
-  {
-    category: 'Mathematics',
-    subcategory: 'Applied Mathematics',
-    icon: <Mathematics />
-  },
-  {
-    category: 'Mathematics',
-    subcategory: 'Computational Mathematics',
-    icon: <Mathematics />
-  },
-  {
-    category: 'Mathematics',
-    subcategory: 'Control and Optimization',
-    icon: <Mathematics />
-  },
-  {
-    category: 'Mathematics',
-    subcategory: 'Discrete Mathematics and Combinatorics',
-    icon: <Mathematics />
-  },
-  {
-    category: 'Mathematics',
-    subcategory: 'General Mathematics',
-    icon: <Mathematics />
-  },
-  {
-    category: 'Mathematics',
-    subcategory: 'Geometry and Topology',
-    icon: <Mathematics />
-  },
-  {
-    category: 'Mathematics',
-    subcategory: 'Logic',
-    icon: <Mathematics />
-  },
-  {
-    category: 'Mathematics',
-    subcategory: 'Mathematical Physics',
-    icon: <Mathematics />
-  },
-  {
-    category: 'Mathematics',
-    subcategory: 'Mathematics',
-    icon: <Mathematics />
-  },
-  {
-    category: 'Mathematics',
-    subcategory: 'Modeling and Simulation',
-    icon: <Mathematics />
-  },
-  {
-    category: 'Mathematics',
-    subcategory: 'Numerical Analysis',
-    icon: <Mathematics />
-  },
-  {
-    category: 'Mathematics',
-    subcategory: 'Statistics and Probability',
-    icon: <Mathematics />
-  },
-  {
-    category: 'Mathematics',
-    subcategory: 'Theoretical Computer Science',
-    icon: <Mathematics />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Anatomy',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Anesthesiology and Pain Medicine',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Biochemistry',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Cardiology and Cardiovascular Medicine',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Complementary and Alternative Medicine',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Critical Care and Intensive Care Medicine',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Dermatology',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Drug Guides',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Embryology',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Emergency Medicine',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Endocrinology, Diabetes and Metabolism',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Epidemiology',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Family Practice',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Gastroenterology',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'General Medicine',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Clinical Genetics',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Geriatrics and Gerontology',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Health Informatics',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Health Policy',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Hematology',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Hepatology',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Histology',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Immunology and Allergy',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Infectious Diseases',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Internal Medicine',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Medicine',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Microbiology',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Nephrology',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Clinical Neurology',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Obstetrics and Gynecology',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Oncology',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Ophthalmology',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Orthopedics and Sports Medicine',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Otorhinolaryngology',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Pathology and Forensic Medicine',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Pediatrics, Perinatology and Child Health',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Pharmacology',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Physiology',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Psychiatry and Mental Health',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Public Health, Environmental and Occupational Health',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Pulmonary and Respiratory Medicine',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Radiology, Nuclear Medicine and Imaging',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Rehabilitation',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Reproductive Medicine',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Reviews and References',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Rheumatology',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Surgery',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Transplantation',
-    icon: <Medicine />
-  },
-  {
-    category: 'Medicine',
-    subcategory: 'Urology',
-    icon: <Medicine />
-  },
-  {
-    category: 'Neuroscience',
-    subcategory: 'Behavioral Neuroscience',
+    level: ResearchAreaLevel.L2,
+    hasChildren: true,
+    parent: 'Biomedical Science and Neuroscience',
+    text: 'Neuroscience',
     icon: <Neuroscience />
   },
   {
-    category: 'Neuroscience',
-    subcategory: 'Biological Psychiatry',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Neuroscience',
+    text: 'Behavioral Neuroscience',
     icon: <Neuroscience />
   },
   {
-    category: 'Neuroscience',
-    subcategory: 'Cellular and Molecular Neuroscience',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Neuroscience',
+    text: 'Biological Psychiatry',
     icon: <Neuroscience />
   },
   {
-    category: 'Neuroscience',
-    subcategory: 'Cognitive Neuroscience',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Neuroscience',
+    text: 'Cellular and Molecular Neuroscience',
     icon: <Neuroscience />
   },
   {
-    category: 'Neuroscience',
-    subcategory: 'Developmental Neuroscience',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Neuroscience',
+    text: 'Cognitive Neuroscience',
     icon: <Neuroscience />
   },
   {
-    category: 'Neuroscience',
-    subcategory: 'Endocrine and Autonomic Systems',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Neuroscience',
+    text: 'Developmental Neuroscience',
     icon: <Neuroscience />
   },
   {
-    category: 'Neuroscience',
-    subcategory: 'General Neuroscience',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Neuroscience',
+    text: 'Endocrine and Autonomic Systems',
     icon: <Neuroscience />
   },
   {
-    category: 'Neuroscience',
-    subcategory: 'Neurology',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Neuroscience',
+    text: 'General Neuroscience',
     icon: <Neuroscience />
   },
   {
-    category: 'Neuroscience',
-    subcategory: 'Neuroscience',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Neuroscience',
+    text: 'Neurology',
     icon: <Neuroscience />
   },
   {
-    category: 'Neuroscience',
-    subcategory: 'Sensory Systems',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Neuroscience',
+    text: 'Sensory Systems',
     icon: <Neuroscience />
   },
   {
-    category: 'Nursing',
-    subcategory: 'Advanced and Specialized Nursing',
-    icon: <Nursing />
-  },
-  {
-    category: 'Nursing',
-    subcategory: 'Assessment and Diagnosis',
-    icon: <Nursing />
-  },
-  {
-    category: 'Nursing',
-    subcategory: 'Care Planning',
-    icon: <Nursing />
-  },
-  {
-    category: 'Nursing',
-    subcategory: 'Community and Home Care',
-    icon: <Nursing />
-  },
-  {
-    category: 'Nursing',
-    subcategory: 'Critical Care Nursing',
-    icon: <Nursing />
-  },
-  {
-    category: 'Nursing',
-    subcategory: 'Emergency Nursing',
-    icon: <Nursing />
-  },
-  {
-    category: 'Nursing',
-    subcategory: 'Fundamentals and Skills',
-    icon: <Nursing />
-  },
-  {
-    category: 'Nursing',
-    subcategory: 'General Nursing',
-    icon: <Nursing />
-  },
-  {
-    category: 'Nursing',
-    subcategory: 'Gerontology',
-    icon: <Nursing />
-  },
-  {
-    category: 'Nursing',
-    subcategory: 'Issues, Ethics and Legal Aspects',
-    icon: <Nursing />
-  },
-  {
-    category: 'Nursing',
-    subcategory: 'LPN and LVN',
-    icon: <Nursing />
-  },
-  {
-    category: 'Nursing',
-    subcategory: 'Leadership and Management',
-    icon: <Nursing />
-  },
-  {
-    category: 'Nursing',
-    subcategory: 'Maternity and Midwifery',
-    icon: <Nursing />
-  },
-  {
-    category: 'Nursing',
-    subcategory: 'Medical and Surgical Nursing',
-    icon: <Nursing />
-  },
-  {
-    category: 'Nursing',
-    subcategory: 'Nurse Assisting',
-    icon: <Nursing />
-  },
-  {
-    category: 'Nursing',
-    subcategory: 'Nursing',
-    icon: <Nursing />
-  },
-  {
-    category: 'Nursing',
-    subcategory: 'Nutrition and Dietetics',
-    icon: <Nursing />
-  },
-  {
-    category: 'Nursing',
-    subcategory: 'Oncology',
-    icon: <Nursing />
-  },
-  {
-    category: 'Nursing',
-    subcategory: 'Pathophysiology',
-    icon: <Nursing />
-  },
-  {
-    category: 'Nursing',
-    subcategory: 'Pediatrics',
-    icon: <Nursing />
-  },
-  {
-    category: 'Nursing',
-    subcategory: 'Pharmacology',
-    icon: <Nursing />
-  },
-  {
-    category: 'Nursing',
-    subcategory: 'Psychiatric Mental Health',
-    icon: <Nursing />
-  },
-  {
-    category: 'Nursing',
-    subcategory: 'Research and Theory',
-    icon: <Nursing />
-  },
-  {
-    category: 'Nursing',
-    subcategory: 'Review and Exam Preparation',
-    icon: <Nursing />
-  },
-  {
-    category: 'Pharmacology, Toxicology and Pharmaceutics',
-    subcategory: 'Drug Discovery',
+    level: ResearchAreaLevel.L2,
+    hasChildren: true,
+    parent: 'Biomedical Science and Neuroscience',
+    text: 'Pharmacology, Toxicology and Pharmaceutics',
     icon: <Pharmacology />
   },
   {
-    category: 'Pharmacology, Toxicology and Pharmaceutics',
-    subcategory: 'General Pharmacology, Toxicology and Pharmaceutics',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Pharmacology, Toxicology and Pharmaceutics',
+    text: 'Drug Discovery',
     icon: <Pharmacology />
   },
   {
-    category: 'Pharmacology, Toxicology and Pharmaceutics',
-    subcategory: 'Pharmaceutical Science',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Pharmacology, Toxicology and Pharmaceutics',
+    text: 'General Pharmacology, Toxicology and Pharmaceutics',
     icon: <Pharmacology />
   },
   {
-    category: 'Pharmacology, Toxicology and Pharmaceutics',
-    subcategory: 'Pharmacology',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Pharmacology, Toxicology and Pharmaceutics',
+    text: 'Pharmaceutical Science',
     icon: <Pharmacology />
   },
   {
-    category: 'Pharmacology, Toxicology and Pharmaceutics',
-    subcategory: 'Pharmacology, Toxicology and Pharmaceutics',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Pharmacology, Toxicology and Pharmaceutics',
+    text: 'Pharmacology',
     icon: <Pharmacology />
   },
   {
-    category: 'Pharmacology, Toxicology and Pharmaceutics',
-    subcategory: 'Toxicology',
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Pharmacology, Toxicology and Pharmaceutics',
+    text: 'Toxicology',
     icon: <Pharmacology />
   },
   {
-    category: 'Physics and Astronomy',
-    subcategory: 'Acoustics and Ultrasonics',
+    level: ResearchAreaLevel.L1,
+    hasChildren: true,
+    text: 'Environmental Science',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'Ecological Modeling',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'Ecology',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'Environmental Chemistry',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'Environmental Engineering',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'General Environmental Science',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'Global and Planetary Change',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'Health, Toxicology and Mutagenesis',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'Management, Monitoring, Policy and Law',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'Nature and Landscape Conservation',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'Pollution',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'Waste Management and Disposal',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Environmental Science',
+    text: 'Water Science and Technology',
+    icon: <Environment />
+  },
+  {
+    level: ResearchAreaLevel.L1,
+    hasChildren: true,
+    text: 'Medicine',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Anatomy',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Anesthesiology and Pain Medicine',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Biochemistry (medical)',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Cardiology and Cardiovascular Medicine',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Complementary and Alternative Medicine',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Critical Care and Intensive Care Medicine',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Dermatology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: true,
+    parent: 'Medicine',
+    text: 'Dentistry',
+    icon: <Dentistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Dentistry',
+    text: 'Dental Assisting',
+    icon: <Dentistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Dentistry',
+    text: 'Dental Hygiene',
+    icon: <Dentistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Dentistry',
+    text: 'General Dentistry',
+    icon: <Dentistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Dentistry',
+    text: 'Oral Surgery',
+    icon: <Dentistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Dentistry',
+    text: 'Orthodontics',
+    icon: <Dentistry />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Dentistry',
+    text: 'Periodontics',
+    icon: <Dentistry />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Drug Guides',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Embryology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Emergency Medicine',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Endocrinology, Diabetes and Metabolism',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Epidemiology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Family Practice',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Gastroenterology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'General Medicine',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Genetics (clinical)',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Geriatrics and Gerontology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Health Informatics',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Health Policy',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Hematology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Hepatology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Histology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Immunology and Allergy',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Infectious Diseases',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Internal Medicine',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Microbiology (medical)',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Nephrology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Neurology (clinical)',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Obstetrics and Gynecology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Oncology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Ophthalmology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Orthopedics and Sports Medicine',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Otorhinolaryngology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Pathology and Forensic Medicine',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Pediatrics, Perinatology and Child Health',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Pharmacology (medical)',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Physiology (medical)',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Psychiatry and Mental Health',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Public Health, Environmental and Occupational Health',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Pulmonary and Respiratory Medicine',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Radiology, Nuclear Medicine and Imaging',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Rehabilitation',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Reproductive Medicine',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Reviews and References (medical)',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Rheumatology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Surgery',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Transplantation',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Medicine',
+    text: 'Urology',
+    icon: <Medicine />
+  },
+  {
+    level: ResearchAreaLevel.L1,
+    hasChildren: true,
+    text: 'Chemistry',
+    icon: <Chemistry />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Chemistry',
+    text: 'Analytical Chemistry',
+    icon: <Chemistry />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: true,
+    parent: 'Chemistry',
+    text: 'Chemical Engineering',
+    icon: <ChemicalEngineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Chemical Engineering',
+    text: 'Bioengineering',
+    icon: <ChemicalEngineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Chemical Engineering',
+    text: 'Catalysis',
+    icon: <ChemicalEngineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Chemical Engineering',
+    text: 'Chemical Health and Safety',
+    icon: <ChemicalEngineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Chemical Engineering',
+    text: 'Colloid and Surface Chemistry',
+    icon: <ChemicalEngineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Chemical Engineering',
+    text: 'Filtration and Separation',
+    icon: <ChemicalEngineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Chemical Engineering',
+    text: 'Fluid Flow and Transfer Processes',
+    icon: <ChemicalEngineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Chemical Engineering',
+    text: 'General Chemical Engineering',
+    icon: <ChemicalEngineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Chemical Engineering',
+    text: 'Process Chemistry and Technology',
+    icon: <ChemicalEngineering />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Chemistry',
+    text: 'Electrochemistry',
+    icon: <Chemistry />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Chemistry',
+    text: 'General Chemistry',
+    icon: <Chemistry />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Chemistry',
+    text: 'Inorganic Chemistry',
+    icon: <Chemistry />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Chemistry',
+    text: 'Organic Chemistry',
+    icon: <Chemistry />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Chemistry',
+    text: 'Physical and Theoretical Chemistry',
+    icon: <Chemistry />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Chemistry',
+    text: 'Spectroscopy',
+    icon: <Chemistry />
+  },
+  {
+    level: ResearchAreaLevel.L1,
+    hasChildren: true,
+    text: 'Computer Science',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'Artificial Intelligence',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'Computational Theory and Mathematics',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'Computer Graphics and Computer-Aided Design',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'Computer Networks and Communications',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'Computer Science Applications',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'Computer Vision and Pattern Recognition',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'General Computer Science',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'Hardware and Architecture',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'Human-Computer Interaction',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'Information Systems',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'Signal Processing',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Computer Science',
+    text: 'Software',
+    icon: <ComputerScience />
+  },
+  {
+    level: ResearchAreaLevel.L1,
+    hasChildren: true,
+    text: 'Energy, Engineering and Materials Science',
+    icon: <EnergyEngineeringAndMaterialsScience />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: true,
+    parent: 'Energy, Engineering and Materials Science',
+    text: 'Energy',
+    icon: <Energy />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Energy',
+    text: 'Energy Engineering and Power Technology',
+    icon: <Energy />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Energy',
+    text: 'Fuel Technology',
+    icon: <Energy />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Energy',
+    text: 'General Energy',
+    icon: <Energy />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Energy',
+    text: 'Nuclear Energy and Engineering',
+    icon: <Energy />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Energy',
+    text: 'Renewable Energy, Sustainability and the Environment',
+    icon: <Energy />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: true,
+    parent: 'Energy, Engineering and Materials Science',
+    text: 'Engineering',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Aerospace Engineering',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Architecture',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Automotive Engineering',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Biomedical Engineering',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Building and Construction',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Civil and Structural Engineering',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Computational Mechanics',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Control and Systems Engineering',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Electrical and Electronic Engineering',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'General Engineering',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Industrial and Manufacturing Engineering',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Mechanical Engineering',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Mechanics of Materials',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Media Technology',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Ocean Engineering',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Engineering',
+    text: 'Safety, Risk, Reliability and Quality',
+    icon: <Engineering />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: true,
+    parent: 'Energy, Engineering and Materials Science',
+    text: 'Materials Science',
+    icon: <Materials />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Materials Science',
+    text: 'Biomaterials',
+    icon: <Materials />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Materials Science',
+    text: 'Ceramics and Composites',
+    icon: <Materials />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Materials Science',
+    text: 'Electronic, Optical and Magnetic Materials',
+    icon: <Materials />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Materials Science',
+    text: 'General Materials Science',
+    icon: <Materials />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Materials Science',
+    text: 'Materials Chemistry',
+    icon: <Materials />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Materials Science',
+    text: 'Metals and Alloys',
+    icon: <Materials />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Materials Science',
+    text: 'Polymers and Plastics',
+    icon: <Materials />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Materials Science',
+    text: 'Surfaces, Coatings and Films',
+    icon: <Materials />
+  },
+  {
+    level: ResearchAreaLevel.L1,
+    hasChildren: true,
+    text: 'Mathematics',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Algebra and Number Theory',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Analysis',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Applied Mathematics',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Computational Mathematics',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Control and Optimization',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Discrete Mathematics and Combinatorics',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'General Mathematics',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Geometry and Topology',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Logic',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Mathematical Physics',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Modeling and Simulation',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Numerical Analysis',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Statistics and Probability',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Mathematics',
+    text: 'Theoretical Computer Science',
+    icon: <Mathematics />
+  },
+  {
+    level: ResearchAreaLevel.L1,
+    hasChildren: true,
+    text: 'Physics and Astronomy',
     icon: <Physics />
   },
   {
-    category: 'Physics and Astronomy',
-    subcategory: 'Astronomy and Astrophysics',
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Physics and Astronomy',
+    text: 'Acoustics and Ultrasonics',
     icon: <Physics />
   },
   {
-    category: 'Physics and Astronomy',
-    subcategory: 'Atomic and Molecular Physics, and Optics',
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Physics and Astronomy',
+    text: 'Astronomy and Astrophysics',
     icon: <Physics />
   },
   {
-    category: 'Physics and Astronomy',
-    subcategory: 'Condensed Matter Physics',
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Physics and Astronomy',
+    text: 'Atomic and Molecular Physics, and Optics',
     icon: <Physics />
   },
   {
-    category: 'Physics and Astronomy',
-    subcategory: 'General Physics and Astronomy',
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Physics and Astronomy',
+    text: 'Condensed Matter Physics',
     icon: <Physics />
   },
   {
-    category: 'Physics and Astronomy',
-    subcategory: 'Instrumentation',
+    level: ResearchAreaLevel.L2,
+    hasChildren: true,
+    parent: 'Physics and Astronomy',
+    text: 'Earth and Planetary Sciences',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Atmospheric Science',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Computers in Earth Sciences',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Earth-Surface Processes',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Economic Geology',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'General Earth and Planetary Sciences',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Geochemistry and Petrology',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Geology',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Geophysics',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Geotechnical Engineering and Engineering Geology',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Oceanography',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Paleontology',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Space and Planetary Science',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L3,
+    hasChildren: false,
+    parent: 'Earth and Planetary Sciences',
+    text: 'Stratigraphy',
+    icon: <Earth />
+  },
+  {
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Physics and Astronomy',
+    text: 'General Physics and Astronomy',
     icon: <Physics />
   },
   {
-    category: 'Physics and Astronomy',
-    subcategory: 'Nuclear and High Energy Physics',
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Physics and Astronomy',
+    text: 'Instrumentation',
     icon: <Physics />
   },
   {
-    category: 'Physics and Astronomy',
-    subcategory: 'Physics and Astronomy',
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Physics and Astronomy',
+    text: 'Nuclear and High Energy Physics',
     icon: <Physics />
   },
   {
-    category: 'Physics and Astronomy',
-    subcategory: 'Radiation',
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Physics and Astronomy',
+    text: 'Radiation',
     icon: <Physics />
   },
   {
-    category: 'Physics and Astronomy',
-    subcategory: 'Statistical and Nonlinear Physics',
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Physics and Astronomy',
+    text: 'Statistical and Nonlinear Physics',
     icon: <Physics />
   },
   {
-    category: 'Physics and Astronomy',
-    subcategory: 'Surfaces and Interfaces',
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Physics and Astronomy',
+    text: 'Surfaces and Interfaces',
     icon: <Physics />
   },
   {
-    category: 'Psychology',
-    subcategory: 'Applied Psychology',
+    level: ResearchAreaLevel.L1,
+    hasChildren: true,
+    text: 'Psychology',
     icon: <Psychology />
   },
   {
-    category: 'Psychology',
-    subcategory: 'Clinical Psychology',
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Psychology',
+    text: 'Applied Psychology',
     icon: <Psychology />
   },
   {
-    category: 'Psychology',
-    subcategory: 'Developmental and Educational Psychology',
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Psychology',
+    text: 'Clinical Psychology',
     icon: <Psychology />
   },
   {
-    category: 'Psychology',
-    subcategory: 'Experimental and Cognitive Psychology',
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Psychology',
+    text: 'Developmental and Educational Psychology',
     icon: <Psychology />
   },
   {
-    category: 'Psychology',
-    subcategory: 'General Psychology',
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Psychology',
+    text: 'Experimental and Cognitive Psychology',
     icon: <Psychology />
   },
   {
-    category: 'Psychology',
-    subcategory: 'Neuropsychology and Physiological Psychology',
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Psychology',
+    text: 'General Psychology',
     icon: <Psychology />
   },
   {
-    category: 'Psychology',
-    subcategory: 'Psychology',
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Psychology',
+    text: 'Neuropsychology and Physiological Psychology',
     icon: <Psychology />
   },
   {
-    category: 'Psychology',
-    subcategory: 'Social Psychology',
+    level: ResearchAreaLevel.L2,
+    hasChildren: false,
+    parent: 'Psychology',
+    text: 'Social Psychology',
     icon: <Psychology />
-  },
-  {
-    category: 'Social Sciences',
-    subcategory: 'Anthropology',
-    icon: <SocialSciences />
-  },
-  {
-    category: 'Social Sciences',
-    subcategory: 'Archeology',
-    icon: <SocialSciences />
-  },
-  {
-    category: 'Social Sciences',
-    subcategory: 'Communication',
-    icon: <SocialSciences />
-  },
-  {
-    category: 'Social Sciences',
-    subcategory: 'Cultural Studies',
-    icon: <SocialSciences />
-  },
-  {
-    category: 'Social Sciences',
-    subcategory: 'Demography',
-    icon: <SocialSciences />
-  },
-  {
-    category: 'Social Sciences',
-    subcategory: 'Development',
-    icon: <SocialSciences />
-  },
-  {
-    category: 'Social Sciences',
-    subcategory: 'Education',
-    icon: <SocialSciences />
-  },
-  {
-    category: 'Social Sciences',
-    subcategory: 'Gender Studies',
-    icon: <SocialSciences />
-  },
-  {
-    category: 'Social Sciences',
-    subcategory: 'General Social Sciences',
-    icon: <SocialSciences />
-  },
-  {
-    category: 'Social Sciences',
-    subcategory: 'Geography, Planning and Development',
-    icon: <SocialSciences />
-  },
-  {
-    category: 'Social Sciences',
-    subcategory: 'Health',
-    icon: <SocialSciences />
-  },
-  {
-    category: 'Social Sciences',
-    subcategory: 'Human Factors and Ergonomics',
-    icon: <SocialSciences />
-  },
-  {
-    category: 'Social Sciences',
-    subcategory: 'Law',
-    icon: <SocialSciences />
-  },
-  {
-    category: 'Social Sciences',
-    subcategory: 'Library and Information Sciences',
-    icon: <SocialSciences />
-  },
-  {
-    category: 'Social Sciences',
-    subcategory: 'Life-span and Life-course Studies',
-    icon: <SocialSciences />
-  },
-  {
-    category: 'Social Sciences',
-    subcategory: 'Linguistics and Language',
-    icon: <SocialSciences />
-  },
-  {
-    category: 'Social Sciences',
-    subcategory: 'Political Science and International Relations',
-    icon: <SocialSciences />
-  },
-  {
-    category: 'Social Sciences',
-    subcategory: 'Public Administration',
-    icon: <SocialSciences />
-  },
-  {
-    category: 'Social Sciences',
-    subcategory: 'Safety Research',
-    icon: <SocialSciences />
-  },
-  {
-    category: 'Social Sciences',
-    subcategory: 'Social Sciences',
-    icon: <SocialSciences />
-  },
-  {
-    category: 'Social Sciences',
-    subcategory: 'Sociology and Political Science',
-    icon: <SocialSciences />
-  },
-  {
-    category: 'Social Sciences',
-    subcategory: 'Transportation',
-    icon: <SocialSciences />
-  },
-  {
-    category: 'Social Sciences',
-    subcategory: 'Urban Studies',
-    icon: <SocialSciences />
-  },
-  {
-    category: 'Veterinary',
-    subcategory: 'Equine',
-    icon: <Veterinary />
-  },
-  {
-    category: 'Veterinary',
-    subcategory: 'Food Animals',
-    icon: <Veterinary />
-  },
-  {
-    category: 'Veterinary',
-    subcategory: 'General Veterinary',
-    icon: <Veterinary />
-  },
-  {
-    category: 'Veterinary',
-    subcategory: 'Small Animals',
-    icon: <Veterinary />
-  },
-  {
-    category: 'Veterinary',
-    subcategory: 'Veterinary',
-    icon: <Veterinary />
   }
 ];
+
+export const researchAreaElementsWithLevel = (
+  level: ResearchAreaLevel
+): ResearchAreaElement[] => {
+  return elements.filter((r) => r.level === level);
+};
+
+export const researchAreaElementsWithParent = (
+  parent: string
+): ResearchAreaElement[] => {
+  return elements.filter((r) => r.parent === parent);
+};
+
+export const researchAreaIcon = (text: string): ReactElement => {
+  const element = elements.find((r) => r.text === text);
+  if (element) {
+    return element.icon;
+  } else {
+    throw new Error('Category not found');
+  }
+};

@@ -3,8 +3,8 @@ import { observer } from 'mobx-react-lite';
 import { ResearchAreaStore } from './ResearchAreaStore';
 import { ResearchAreaPlaceholder } from './ResearchAreaPlaceholder';
 import { ResearchAreaList } from './ResearchAreaList';
-import { ResearchAreaDialog } from './ResearchAreaDialog';
 import { CursorPointer } from '../../common.styled';
+import { ResearchAreaDialog } from './ResearchAreaDialog';
 
 export interface ResearchAreaProps {
   researchAreaStore: ResearchAreaStore;
