@@ -23,6 +23,7 @@ import { useIsHorizontalOverflow } from '../../../../util/overflowUtil';
 
 interface AuthorElementProps {
   isReadonly: boolean;
+  useMarginBottom: boolean;
   author: ConfirmedAuthor | UnconfirmedAuthor | UserInfo | AuthorEditorStore;
   isConfirmed?: boolean;
   onAuthorEdit?: () => void;
@@ -72,7 +73,7 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
   }
 
   return (
-    <AuthorRowWrap useMarginBottom={!isReadonly}>
+    <AuthorRowWrap useMarginBottom={props.useMarginBottom}>
       <AuthorElementWrap
         onClick={() => {
           if (username) {

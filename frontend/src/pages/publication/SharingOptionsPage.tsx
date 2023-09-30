@@ -94,17 +94,15 @@ export const SharingOptionsPage = (props: {
           </LeftPanelSubtitle>
         </FlexWrapColumn>
         <ContentLicensingButton
-          onClick={() => {
-            setContentLicensingDialogOpen(true);
-          }}>
+          onClick={() => setContentLicensingDialogOpen(true)}>
           {`Content licensing: ${licenseTypeAbbreviation}`}
-          <ContentLicensingDialog
-            licenseType={licenseType}
-            isOpen={contentLicensingDialogOpen}
-            onConfirm={(licenseType) => setLicenseType(licenseType)}
-            onClose={() => setContentLicensingDialogOpen(false)}
-          />
         </ContentLicensingButton>
+        <ContentLicensingDialog
+          licenseType={licenseType}
+          isOpen={contentLicensingDialogOpen}
+          onConfirm={(licenseType) => setLicenseType(licenseType)}
+          onClose={() => setContentLicensingDialogOpen(false)}
+        />
       </LeftPanel>
       <RightPanel>
         <BodyWrap>
@@ -254,7 +252,9 @@ export const SharingOptionsPage = (props: {
                 !confirmThatAllAuthorsAgree ||
                 !understandAfterPublishingCannotBeEdited ||
                 !previewTitle ||
-                !previewSubtitle
+                previewTitle.length > 100 ||
+                !previewSubtitle ||
+                previewSubtitle.length > 200
               }
               onClick={() => {
                 void publicationService
@@ -564,6 +564,7 @@ const FlexWrapRowRadioLabel = styled.span`
 
 const ContentLicensingButton = styled.div`
   cursor: pointer;
+
   &:hover {
     background-color: transparent;
   }

@@ -124,6 +124,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                             {...provided.dragHandleProps}>
                             <AuthorElement
                               isReadonly={publicationStore.isReadonly}
+                              useMarginBottom={true}
                               key={author.id}
                               author={author}
                               isConfirmed={isConfirmed}
@@ -403,6 +404,7 @@ const AddAuthorDialog = observer(
                   isReadonly={publicationStore.isReadonly}
                   author={authorStore}
                   isConfirmed={true}
+                  useMarginBottom={false}
                 />
               </EditConfirmedAuthor>
             )}
