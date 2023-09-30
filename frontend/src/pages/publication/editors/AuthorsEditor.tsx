@@ -106,7 +106,9 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
             void publicationStore.updateConfirmedAuthors();
             void publicationStore.updateUnconfirmedAuthors();
           }}>
-          <Droppable droppableId="droppable">
+          <Droppable
+            droppableId="droppable"
+            isDropDisabled={publicationStore.isReadonly}>
             {(provided, snapshot) => (
               <div {...provided.droppableProps} ref={provided.innerRef}>
                 {publicationStore.authors.map(
@@ -116,6 +118,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                       <Draggable
                         key={index.toString()}
                         draggableId={index.toString()}
+                        isDragDisabled={publicationStore.isReadonly}
                         index={index}>
                         {(provided, snapshot) => (
                           <div
