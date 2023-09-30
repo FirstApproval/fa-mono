@@ -6,6 +6,10 @@ import {
 } from '../store/PublicationStore';
 import { Paragraph } from '../../../apis/first-approval-api';
 import _ from 'lodash';
+import {
+  ResearchAreaElement,
+  researchAreaElementsWithParent
+} from './ResearchAreas';
 
 export class ResearchAreaStore {
   private dialogOpened = false;
@@ -34,29 +38,44 @@ export class ResearchAreaStore {
     this.dialogOpened = false;
   };
 
-  isElementSelected(name: string): boolean {
-    return this.publicationStore.researchAreas.some((ra) => ra.text === name);
+  isElementSelected(element: ResearchAreaElement): boolean {
+    return this.publicationStore.researchAreas.some(
+      (ra) => ra.text === element.text
+    );
   }
 
-  select(name: string): void {
-    if (this.isElementSelected(name)) {
-      this.publicationStore.researchAreas =
-        this.publicationStore.researchAreas.filter((ra) => ra.text !== name);
-    } else {
-      this.publicationStore.researchAreas.push({ text: name });
-    }
+  check(element: ResearchAreaElement): void {
     this.publicationStore.savingStatus = SavingStatusState.SAVING;
+    this.isElementSelected(element)
+      ? this.unselectElement(element)
+      : this.selectElement(element);
     void this.updateRequest();
   }
 
-  update(newResearchAreas: any[]): void {
-    this.publicationStore.researchAreas = newResearchAreas.map((ra) => {
-      return {
-        text: ra.subcategory
-      };
+  private selectElement(element: ResearchAreaElement): void {
+    this.publicationStore.researchAreas.push({ text: element.text });
+  }
+
+  private unselectElement(element: ResearchAreaElement): void {
+    console.log('start unselecting: ' + element.text);
+    console.log(
+      'research areas: ' +
+        this.publicationStore.researchAreas.map((ra) => ra.text)
+    );
+
+    researchAreaElementsWithParent(element.text).forEach((child) => {
+      this.unselectElement(child);
     });
-    this.publicationStore.savingStatus = SavingStatusState.SAVING;
-    void this.updateRequest();
+    this.publicationStore.researchAreas =
+      this.publicationStore.researchAreas.filter(
+        (ra) => ra.text !== element.text
+      );
+
+    console.log('finish unselecting: ' + element.text);
+    console.log(
+      'research areas: ' +
+        this.publicationStore.researchAreas.map((ra) => ra.text)
+    );
   }
 
   private readonly updateRequest = _.throttle(async () => {

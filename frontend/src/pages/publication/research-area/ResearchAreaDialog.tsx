@@ -22,7 +22,12 @@ import {
   HeightElement,
   WidthElement
 } from '../../common.styled';
-import { ResearchAreaElement, researchAreaElements } from './ResearchAreas';
+import {
+  ResearchAreaElement,
+  researchAreaElementsWithLevel,
+  researchAreaElementsWithParent,
+  ResearchAreaLevel
+} from './ResearchAreas';
 import { ResearchAreaStore } from './ResearchAreaStore';
 
 export const ResearchAreaDialog = observer(
@@ -57,26 +62,36 @@ export const ResearchAreaDialog = observer(
           </DialogTitle>
           <DialogContent style={{ padding: 0 }}>
             <DialogContentWrap>
-              {researchAreaElements().map((element) => {
-                return (
-                  <Flex key={element.text} direction={FlexDirection.column}>
-                    <Flex
-                      onClick={() =>
-                        props.researchAreaStore.select(element.text)
-                      }>
-                      <ResearchAreaDialogElement
+              {researchAreaElementsWithLevel(ResearchAreaLevel.L1).map(
+                (element) => {
+                  return (
+                    <Flex key={element.text} direction={FlexDirection.column}>
+                      <ResearchAreaDialogElementContainer
                         element={element}
                         researchAreaStore={props.researchAreaStore}
                       />
                     </Flex>
-                    <HeightElement value={'8px'} />
-                  </Flex>
-                );
-              })}
+                  );
+                }
+              )}
             </DialogContentWrap>
           </DialogContent>
         </DialogWrap>
       </Dialog>
+    );
+  }
+);
+
+const ResearchAreaDialogElementContainer = observer(
+  (props: ResearchAreaDialogElementProps): ReactElement => {
+    return (
+      <>
+        <ResearchAreaDialogElement
+          element={props.element}
+          researchAreaStore={props.researchAreaStore}
+        />
+        <HeightElement value={'8px'} />
+      </>
     );
   }
 );
@@ -90,20 +105,38 @@ const ResearchAreaDialogElement = observer(
   (props: ResearchAreaDialogElementProps): ReactElement => {
     return (
       <>
-        {props.researchAreaStore.isElementSelected(props.element.text) && (
-          <ResearchAreaDialogSelectedElementWrap>
-            <ResearchAreaDialogElementContent
-              checked={true}
-              element={props.element}
-            />
-          </ResearchAreaDialogSelectedElementWrap>
+        {props.researchAreaStore.isElementSelected(props.element) && (
+          <Flex direction={FlexDirection.column}>
+            <ResearchAreaDialogSelectedElementWrap
+              onClick={() => props.researchAreaStore.check(props.element)}>
+              <ResearchAreaDialogElementContent
+                checked={true}
+                element={props.element}
+              />
+            </ResearchAreaDialogSelectedElementWrap>
+            {props.element.hasChildren && <HeightElement value={'8px'} />}
+            {props.element.hasChildren &&
+              researchAreaElementsWithParent(props.element.text).map(
+                (element) => {
+                  return (
+                    <ResearchAreaDialogElementContainer
+                      key={element.text}
+                      element={element}
+                      researchAreaStore={props.researchAreaStore}
+                    />
+                  );
+                }
+              )}
+          </Flex>
         )}
 
-        {!props.researchAreaStore.isElementSelected(props.element.text) && (
-          <ResearchAreaDialogElementContent
-            checked={false}
-            element={props.element}
-          />
+        {!props.researchAreaStore.isElementSelected(props.element) && (
+          <Flex onClick={() => props.researchAreaStore.check(props.element)}>
+            <ResearchAreaDialogElementContent
+              checked={false}
+              element={props.element}
+            />
+          </Flex>
         )}
       </>
     );
@@ -119,7 +152,7 @@ const ResearchAreaDialogElementContent = observer(
   (props: ResearchAreaDialogContentProps): ReactElement => {
     return (
       <CursorPointer>
-        <ResearchAreaDialogElementWrap>
+        <ResearchAreaDialogElementWrap level={props.element.level}>
           <Flex
             alignItems={FlexAlignItems.center}
             justifyContent={FlexJustifyContent.spaceBetween}>
@@ -149,9 +182,17 @@ const ResearchAreaDialogSelectedElementWrap = styled.div`
   background: var(--primary-states-selected, rgba(59, 78, 255, 0.08));
 `;
 
-const ResearchAreaDialogElementWrap = styled.div`
+const ResearchAreaDialogElementWrap = styled.div<{ level: ResearchAreaLevel }>`
   border-radius: 4px;
-  padding: 8px 16px;
+  padding: 8px 16px 8px
+    ${(props) =>
+      props.level === ResearchAreaLevel.L1
+        ? 8
+        : props.level === ResearchAreaLevel.L2
+        ? 40
+        : props.level === ResearchAreaLevel.L3
+        ? 72
+        : 72}px;
   width: 568px;
 
   &:hover {
@@ -161,7 +202,7 @@ const ResearchAreaDialogElementWrap = styled.div`
 
 const DialogWrap = styled.div`
   width: 600px;
-  height: 620px;
+  height: 600px;
   padding: 32px 16px;
 `;
 

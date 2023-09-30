@@ -1997,14 +1997,16 @@ const elements: ResearchAreaElement[] = [
   }
 ];
 
-export const researchAreaElements = (
-  level: ResearchAreaLevel = ResearchAreaLevel.L1,
-  parent?: string
+export const researchAreaElementsWithLevel = (
+  level: ResearchAreaLevel
 ): ResearchAreaElement[] => {
-  const elementsFilteredByLevel = elements.filter((r) => r.level === level);
-  return parent
-    ? elementsFilteredByLevel.filter((r) => r.parent === parent)
-    : elementsFilteredByLevel;
+  return elements.filter((r) => r.level === level);
+};
+
+export const researchAreaElementsWithParent = (
+  parent: string
+): ResearchAreaElement[] => {
+  return elements.filter((r) => r.parent === parent);
 };
 
 export const researchAreaIcon = (text: string): ReactElement => {
