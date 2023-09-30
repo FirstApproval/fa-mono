@@ -77,7 +77,6 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
       });
   }, [query]);
 
-  debugger;
   return (
     <>
       <ContentEditorWrap>
@@ -88,16 +87,14 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
             const reorderedItems = Array.from(publicationStore.authors);
             const [movedItem] = reorderedItems.splice(result.source.index, 1); // Remove the dragged item
             reorderedItems.splice(result.destination.index, 0, movedItem); // Insert the item at the new position
-            // setAuthors(reorderedItems);
             reorderedItems.forEach((reorderedAuthor, index) => {
               const confirmed = reorderedAuthor as ConfirmedAuthor;
               const unconfirmed = reorderedAuthor as UnconfirmedAuthor;
               const email = confirmed.user?.email ?? unconfirmed.email;
               const author = publicationStore.authors.find(
                 (author) =>
-                  author.id === reorderedAuthor.id ||
-                  (author as ConfirmedAuthor).user?.email === email ||
-                  (author as UnconfirmedAuthor).email === email
+                  ((author as ConfirmedAuthor).user?.email ??
+                    (author as UnconfirmedAuthor).email) === email
               );
               if (author) {
                 author.ordinal = index;
