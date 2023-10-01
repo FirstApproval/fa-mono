@@ -57,12 +57,21 @@ export const DateViewsDownloads = observer(
             </div>
           </div>
           <div
-            onClick={props.openDownloadersDialog}
+            onClick={() => {
+              if (props.publicationStore.downloadsCount) {
+                props.openDownloadersDialog();
+              }
+            }}
             style={{
               marginLeft: '24px',
               display: 'flex',
               alignItems: 'center',
-              cursor: 'pointer'
+              cursor: `${
+                props.publicationStore.downloadsCount &&
+                props.publicationStore.downloadsCount > 0
+                  ? 'pointer'
+                  : 'initial'
+              }`
             }}>
             <img src={downloads} width={20} height={20} />
             <div style={{ marginLeft: '4px' }}>
