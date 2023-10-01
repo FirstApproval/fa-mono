@@ -214,7 +214,6 @@ class PublicationService(
     @Transactional
     fun getDownloadLinkForArchive(user: User, id: String): DownloadLinkResponse {
         val publication = publicationRepository.getReferenceById(id)
-        checkStatusAndAccessType(publication)
         addDownloadHistory(user, publication)
         publication.downloadsCount += 1
         val title = publication.title ?: id
@@ -230,7 +229,6 @@ class PublicationService(
     @Transactional
     fun getDownloadLinkForSampleArchive(id: String): DownloadLinkResponse {
         val publication = publicationRepository.getReferenceById(id)
-        checkStatusAndAccessType(publication)
         val title = publication.title ?: id
         val link =
             fileStorageService.generateTemporaryDownloadLink(

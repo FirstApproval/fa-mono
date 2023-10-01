@@ -83,6 +83,7 @@ import { Helmet } from 'react-helmet';
 import { useIsHorizontalOverflow } from '../../util/overflowUtil';
 import { ResearchAreaStore } from './research-area/ResearchAreaStore';
 import { ResearchArea } from './research-area/ResearchArea';
+import { UploadStatusWindow } from './UploadStatusWindow';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -632,6 +633,8 @@ const PublicationBody = observer(
         )}
         {publicationStore.isPreview && <DraftText />}
         <Space />
+
+        <UploadStatusWindow fs={fs} />
       </>
     );
   }
