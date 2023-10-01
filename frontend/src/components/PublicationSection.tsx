@@ -149,7 +149,8 @@ export const PublicationSection = (props: {
         )}
       </Link>
       <Flex alignItems={FlexAlignItems.center}>
-        {publication.status === PublicationStatus.PUBLISHED && (
+        {(publication.status === PublicationStatus.PUBLISHED ||
+          publication.status === PublicationStatus.READY_FOR_PUBLICATION) && (
           <Width100Percent>
             <Flex direction={FlexDirection.column}>
               <div>
@@ -186,6 +187,12 @@ export const PublicationSection = (props: {
                       </CursorPointer>
                       {publication.downloadsCount}
                     </Flex>
+                    {publication.status ===
+                      PublicationStatus.READY_FOR_PUBLICATION && (
+                      <ReadyForPublicationBadge>
+                        Publishing
+                      </ReadyForPublicationBadge>
+                    )}
                     <div>
                       <Menu
                         anchorEl={utilAnchor}
@@ -289,10 +296,10 @@ export const PublicationSection = (props: {
             </Flex>
           </Width100Percent>
         )}
-        {publication.status !== PublicationStatus.PUBLISHED && (
+        {publication.status === PublicationStatus.PENDING && (
           <SpaceBetween>
             <Flex alignItems={FlexAlignItems.center}>
-              <DraftTag>Draft</DraftTag>
+              <DraftBadge>Draft</DraftBadge>
               <LastEdited>
                 {getTimeElapsedString(publication.editingTime)}
               </LastEdited>
@@ -413,7 +420,7 @@ const DownloadWrap = styled(Download)`
   margin-left: 24px;
 `;
 
-const DraftTag = styled.div`
+const DraftBadge = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -425,6 +432,30 @@ const DraftTag = styled.div`
   background: var(--amber-50, #fff8e1);
 
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
+  font-feature-settings: 'clig' off, 'liga' off;
+  /* typography/body2 */
+  font-family: Roboto;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 143%; /* 20.02px */
+  letter-spacing: 0.17px;
+`;
+
+const ReadyForPublicationBadge = styled.div`
+  margin-left: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24px;
+
+  width: 80px;
+  height: 32px;
+  border-radius: 4px;
+  background: var(--amber-50, #d9facd);
+
+  color: var(--text-disabled, rgba(6, 5, 9, 0.38));
   font-feature-settings: 'clig' off, 'liga' off;
   /* typography/body2 */
   font-family: Roboto;

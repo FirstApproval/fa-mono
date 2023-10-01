@@ -272,14 +272,29 @@ class PublicationService(
     }
 
     @Transactional
-    fun getCreatorPublications(
+    fun getAuthorsPublications(
         user: User,
-        status: PublicationStatusApiObject,
         page: Int,
         pageSize: Int,
     ): PublicationsResponse {
-        val publicationsPage = publicationRepository.findAllByStatusAndAccessTypeAndCreatorId(
-            PublicationStatus.valueOf(status.name),
+        val publicationsPage = publicationRepository.findAllByConfirmedAuthorUsername(
+            setOf(PUBLISHED, READY_FOR_PUBLICATION),
+            user.id,
+            PageRequest.of(page, pageSize)
+        )
+        return PublicationsResponse(publicationsPage.isLast)
+            .publications(publicationsPage.map { it.toApiObject(userService) }.toList())
+    }
+
+    @Transactional
+    fun getCreatorPublications(
+        user: User,
+        statuses: Collection<PublicationStatus>,
+        page: Int,
+        pageSize: Int,
+    ): PublicationsResponse {
+        val publicationsPage = publicationRepository.findAllByStatusInAndAccessTypeAndCreatorId(
+            statuses,
             OPEN,
             user.id,
             PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime"))

@@ -2,63 +2,60 @@ import { makeAutoObservable } from 'mobx';
 import { publicationService, userService } from '../../core/service';
 import {
   type Publication,
-  PublicationStatus,
+  PublicationsResponse,
   type UserInfo
 } from '../../apis/first-approval-api';
-import { userStore } from '../../core/user';
+import { authStore } from '../../core/auth';
 
 export class ProfilePageStore {
   isLoadingPublications = false;
-  publicationsLastPage = new Map<PublicationStatus, boolean>();
-  publicationsPageNum = new Map<PublicationStatus, number>();
-  publications = new Map<PublicationStatus, Publication[]>();
+  publicationsLastPage = new Map<Tab, boolean>();
+  publicationsPageNum = new Map<Tab, number>();
+  publications = new Map<Tab, Publication[]>();
   user?: UserInfo;
 
   constructor(username: string | null) {
     makeAutoObservable(this);
+
+    for (const tab of [Tab.PUBLISHED, Tab.DRAFTS]) {
+      this.publicationsLastPage.set(tab as Tab, false);
+      this.publicationsPageNum.set(tab as Tab, 0);
+    }
+
     void this.loadUser(username);
-    this.isLoadingPublications = true;
-    try {
-      const statuses = username
-        ? [PublicationStatus.PUBLISHED]
-        : [PublicationStatus.PUBLISHED, PublicationStatus.PENDING];
-      for (const status of statuses) {
-        this.publicationsLastPage.set(status, false);
-        this.publicationsPageNum.set(status, 0);
-        void this.load(username, status);
-      }
-    } finally {
-      this.isLoadingPublications = false;
+    if (authStore.token) {
+      void this.load(Tab.DRAFTS);
     }
   }
 
-  public async load(
-    username: string | null,
-    status: PublicationStatus
-  ): Promise<void> {
-    const publicationsResponse = username
-      ? await publicationService.getUserPublications(
-          username,
-          status,
-          this.publicationsPageNum.get(status)!,
+  public async load(tab: Tab, username?: string): Promise<void> {
+    let publicationsData: PublicationsResponse;
+    if (tab === Tab.PUBLISHED) {
+      publicationsData = (
+        await publicationService.getUserPublications(
+          username!,
+          this.publicationsPageNum.get(tab)!,
           20
         )
-      : await publicationService.getMyPublications(
-          status,
-          this.publicationsPageNum.get(status)!,
+      ).data;
+    } else if (tab === Tab.DRAFTS) {
+      publicationsData = (
+        await publicationService.getMyDraftPublications(
+          this.publicationsPageNum.get(tab)!,
           20
-        );
-    const publicationsData = publicationsResponse.data;
+        )
+      ).data;
+    } else {
+      throw Error('Unexpected tab');
+    }
+
     const newPublicationArray = [
-      ...(this.publications.get(status) ?? []),
+      ...(this.publications.get(tab) ?? []),
       ...(publicationsData.publications ?? [])
     ];
-    this.publications.set(status, newPublicationArray);
-    this.publicationsLastPage.set(status, publicationsData.isLastPage);
-    this.publicationsPageNum.set(
-      status,
-      this.publicationsPageNum.get(status)! + 1
-    );
+    this.publications.set(tab, newPublicationArray);
+    this.publicationsLastPage.set(tab, publicationsData.isLastPage);
+    this.publicationsPageNum.set(tab, this.publicationsPageNum.get(tab)! + 1);
   }
 
   private async loadUser(username: string | null): Promise<void> {
@@ -67,8 +64,6 @@ export class ProfilePageStore {
         username
       );
       this.user = userInfoResponse.data;
-    } else {
-      this.user = userStore.user;
     }
   }
 
@@ -76,9 +71,14 @@ export class ProfilePageStore {
     const response = await publicationService._delete(publicationId);
     if (response.status === 200) {
       const newValue = this.publications
-        .get(PublicationStatus.PENDING)!
+        .get(Tab.DRAFTS)!
         .filter((p) => p.id !== publicationId);
-      this.publications.set(PublicationStatus.PENDING, newValue);
+      this.publications.set(Tab.DRAFTS, newValue);
     }
   };
+}
+
+export enum Tab {
+  PUBLISHED = 'PUBLISHED',
+  DRAFTS = 'DRAFTS'
 }

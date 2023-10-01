@@ -366,12 +366,6 @@ paths:
       summary: Get user publications
       parameters:
         - in: query
-          name: status
-          schema:
-            $ref: '#/components/schemas/PublicationStatus'
-          required: true
-          description: Status of publication
-        - in: query
           name: page
           schema:
             type: integer
@@ -392,7 +386,7 @@ paths:
                 $ref: '#/components/schemas/PublicationsResponse'
       security:
         - TokenAuth: [ ]
-      operationId: getMyPublications
+      operationId: getMyDraftPublications
       tags: [ publication ]
 
   /api/user-publications/{username}:
@@ -405,12 +399,6 @@ paths:
             type: string
           required: true
           description: Username
-        - in: query
-          name: status
-          schema:
-            $ref: '#/components/schemas/PublicationStatus'
-          required: true
-          description: Status of publication
         - in: query
           name: page
           schema:
