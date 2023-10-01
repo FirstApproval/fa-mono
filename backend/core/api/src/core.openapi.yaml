@@ -2191,10 +2191,10 @@ components:
           maxLength: 32768
         previewTitle:
           type: string
-          maxLength: 100
+          maxLength: 200
         previewSubtitle:
           type: string
-          maxLength: 200
+          maxLength: 300
         description:
           $ref: '#/components/schemas/StringArray'
         researchAreas:

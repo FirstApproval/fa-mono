@@ -37,6 +37,9 @@ import {
 import { ContentLicensingDialog } from '../../components/ContentLicensingDialog';
 import { getContentLicensingAbbreviation } from '../../util/publicationUtils';
 
+const MAX_PREVIEW_LENGTH = 200;
+const MAX_PREVIEW_SUBTITLE_LENGTH = 300;
+
 export const SharingOptionsPage = (props: {
   publicationTitle: string;
   publicationSummary: string;
@@ -70,9 +73,9 @@ export const SharingOptionsPage = (props: {
           <InputPreviewTextField
             variant={'standard'}
             multiline={true}
-            error={!previewTitle || previewTitle.length > 100}
+            error={!previewTitle || previewTitle.length > MAX_PREVIEW_LENGTH}
             value={previewTitle}
-            helperText={`${previewTitle?.length}/100`}
+            helperText={`${previewTitle?.length}/${MAX_PREVIEW_LENGTH}`}
             onChange={(e) => setPreviewTitle(e.currentTarget.value)}
             placeholder={'Write a preview title...'}
           />
@@ -80,9 +83,12 @@ export const SharingOptionsPage = (props: {
           <InputPreviewTextField
             variant={'standard'}
             multiline={true}
-            error={!previewSubtitle || previewSubtitle.length > 200}
+            error={
+              !previewSubtitle ||
+              previewSubtitle.length > MAX_PREVIEW_SUBTITLE_LENGTH
+            }
             value={previewSubtitle}
-            helperText={`${previewSubtitle?.length}/200`}
+            helperText={`${previewSubtitle?.length}/${MAX_PREVIEW_SUBTITLE_LENGTH}`}
             onChange={(e) => setPreviewSubtitle(e.currentTarget.value)}
             placeholder={'Write a preview subtitle...'}
           />
@@ -252,9 +258,9 @@ export const SharingOptionsPage = (props: {
                 !confirmThatAllAuthorsAgree ||
                 !understandAfterPublishingCannotBeEdited ||
                 !previewTitle ||
-                previewTitle.length > 100 ||
+                previewTitle.length > MAX_PREVIEW_LENGTH ||
                 !previewSubtitle ||
-                previewSubtitle.length > 200
+                previewSubtitle.length > MAX_PREVIEW_SUBTITLE_LENGTH
               }
               onClick={() => {
                 void publicationService
