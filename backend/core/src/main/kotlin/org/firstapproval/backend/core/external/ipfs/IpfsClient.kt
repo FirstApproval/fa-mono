@@ -4,18 +4,18 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonFormat.Feature.ACCEPT_CASE_INSENSITIVE_PROPERTIES
 import org.firstapproval.backend.core.config.Properties.IpfsProperties
 import org.firstapproval.backend.core.utils.require
-import org.springframework.core.ParameterizedTypeReference
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod.*
+import org.springframework.http.HttpMethod.DELETE
+import org.springframework.http.HttpMethod.GET
+import org.springframework.http.HttpMethod.POST
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.http.MediaType.MULTIPART_FORM_DATA
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
 import java.time.LocalDateTime
-
 
 class IpfsClient(
     private val properties: IpfsProperties,
@@ -34,53 +34,6 @@ class IpfsClient(
         fileHeaders.set("Authorization", properties.accessKey)
     }
 
-    fun getContents(): List<File> {
-        val result = restTemplate.exchange(
-            properties.contentsUrl,
-            GET,
-            httpEntity,
-            object : ParameterizedTypeReference<List<File>>() {}
-        )
-
-        return result.body.require()
-    }
-
-    fun getJobs(): List<IpfsJob> {
-        val result = restTemplate.exchange(
-            properties.jobsUrl,
-            GET,
-            httpEntity,
-            object : ParameterizedTypeReference<List<IpfsJob>>() {}
-        )
-
-        return result.body.require()
-    }
-
-    fun createJob(contentId: Long, kind: IpfsJobKind): IpfsJob {
-        val parts: MultiValueMap<String, Any> = LinkedMultiValueMap()
-        parts.add("contentId", contentId)
-        parts.add("kind", kind.name.lowercase())
-        val httpEntity = HttpEntity(parts, headers)
-        val result = restTemplate.exchange(
-            properties.jobsUrl,
-            POST,
-            httpEntity,
-            object : ParameterizedTypeReference<IpfsJob>() {}
-        )
-
-        return result.body.require()
-    }
-    fun getJob(jobId: Long): IpfsJob {
-        val result = restTemplate.exchange(
-            properties.jobsUrl + jobId,
-            GET,
-            httpEntity,
-            object : ParameterizedTypeReference<IpfsJob>() {}
-        )
-
-        return result.body.require()
-    }
-
     fun getInfo(id: Long): File {
         val result = restTemplate.exchange(
             properties.contentsUrl + "/${id}",
@@ -92,9 +45,24 @@ class IpfsClient(
         return result.body.require()
     }
 
+    fun restore(id: Long): String {
+        val parts: MultiValueMap<String, Any> = LinkedMultiValueMap()
+        parts.add("restoreDays", 1)
+        val httpEntity = HttpEntity(parts, headers)
+
+        val result = restTemplate.exchange(
+            properties.contentsUrl + "/${id}/restore",
+            POST,
+            httpEntity,
+            String::class.java
+        )
+
+        return result.body.require()
+    }
+
     fun upload(file: java.io.File): File {
         val parts: MultiValueMap<String, Any> = LinkedMultiValueMap()
-        parts.add("file_in", FileSystemResource(file))
+        parts.add("file_in", FileSystemResource(file)) //TODO think how improve it
         val httpEntity = HttpEntity(parts, fileHeaders)
 
         val result = restTemplate.exchange(
@@ -148,38 +116,8 @@ class IpfsClient(
         val expiresIn: Long,
     )
 
-    data class IpfsJob(
-        val id: Long,
-        val contentId: Long,
-        @JsonFormat(with = [ACCEPT_CASE_INSENSITIVE_PROPERTIES])
-        val kind: IpfsJobKind,
-        val config: String,
-        @JsonFormat(with = [ACCEPT_CASE_INSENSITIVE_PROPERTIES])
-        val status: IpfsJobStatus,
-    )
-
     enum class IpfsContentAvailability {
-        PENDING,
         INSTANT,
-        ENCRYPTED,
         ARCHIVE,
-        ABSENT
-    }
-
-    enum class IpfsJobStatus {
-        CREATED,
-        ACCEPTED,
-        REJECTED,
-        INPROGRESS,
-        CANCELLED,
-        FAILED,
-        COMPLETE
-    }
-
-    enum class IpfsJobKind {
-        ENCRYPT,
-        DECRYPT,
-        REPLICATE,
-        RESTORE
     }
 }
