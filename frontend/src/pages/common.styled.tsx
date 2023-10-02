@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { LoadingButton } from '@mui/lab';
-import { Tab } from '@mui/material';
+import { CircularProgress, Tab } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 
 export const Parent = styled.div`
@@ -146,4 +146,15 @@ export const ValidationErrorText = styled.span`
   font-weight: 400;
   line-height: 143%; /* 20.02px */
   letter-spacing: 0.17px;
+`;
+
+export const CircularProgressWrap = styled(CircularProgress)`
+  margin-left: 12px;
+  margin-right: 12px;
+`;
+
+export const SpanFont14Wrap = styled.span`
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-style: normal;
 `;

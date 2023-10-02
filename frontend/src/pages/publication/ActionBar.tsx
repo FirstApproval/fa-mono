@@ -7,14 +7,7 @@ import download from './asset/download.svg';
 import downloadSample from './asset/download_sample.svg';
 import pdf from './asset/pdf.svg';
 import citate from './asset/citate.svg';
-import {
-  Alert,
-  Button,
-  CircularProgress,
-  Divider,
-  Snackbar,
-  Tooltip
-} from '@mui/material';
+import { Alert, Button, Divider, Snackbar, Tooltip } from '@mui/material';
 import { PublicationStore } from './store/PublicationStore';
 import { ContentCopy } from '@mui/icons-material';
 import { ArchiveDownloader } from './ArchiveDownloader';
@@ -22,6 +15,7 @@ import { CitateDialog } from './CitateDialog';
 import { PublicationStatus } from '../../apis/first-approval-api';
 import { PublicationPageStore } from './store/PublicationPageStore';
 import { Page } from '../../core/router/constants';
+import { CircularProgressWrap, SpanFont14Wrap } from '../common.styled';
 
 export const PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY =
   'requested_publication_id';
@@ -196,17 +190,6 @@ const FlexWrapRow = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-`;
-
-const CircularProgressWrap = styled(CircularProgress)`
-  margin-left: 12px;
-  margin-right: 12px;
-`;
-
-const SpanFont14Wrap = styled.span`
-  font-family: Roboto, sans-serif;
-  font-size: 14px;
-  font-style: normal;
 `;
 
 const DownloadFilesButtonWrap = styled(Button)`
