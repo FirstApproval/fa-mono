@@ -1,4 +1,4 @@
-import { CircularProgress, Dialog, DialogContent, styled } from '@mui/material';
+import { CircularProgress, Dialog, DialogContent } from '@mui/material';
 import React, { ReactElement } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -7,6 +7,7 @@ import { Close } from '@mui/icons-material';
 import { HeightElement, TitleRowWrap } from '../common.styled';
 import { downloadersStore } from './store/downloadsStore';
 import { UserInfo } from '../../apis/first-approval-api';
+import styled from '@emotion/styled';
 
 export const DownloadersDialog = (props: {
   isOpen: boolean;
@@ -24,9 +25,9 @@ export const DownloadersDialog = (props: {
       aria-describedby="alert-dialog-description">
       <DialogContentWrap>
         <TitleRowWrap>
-          <DialogTitle style={{ paddingLeft: 0, paddingTop: 0 }}>
+          <DialogTitleWrap>
             {`${downloadersStore.downloadsCount} downloads`}
-          </DialogTitle>
+          </DialogTitleWrap>
           <Close
             onClick={() => {
               downloadersStore.open = false;
@@ -35,7 +36,7 @@ export const DownloadersDialog = (props: {
             htmlColor={'#68676E'}
           />
         </TitleRowWrap>
-        <HeightElement value={'16px'} />
+        <HeightElement value={'32px'} />
         <InfiniteScroll
           pageStart={-1}
           loadMore={(page) => downloadersStore.loadDownloaders(page)}
@@ -48,6 +49,7 @@ export const DownloadersDialog = (props: {
               <AuthorElement
                 key={index}
                 isReadonly={true}
+                useMarginBottom={false}
                 author={downloader}
               />
               <HeightElement value={'28px'} />
@@ -65,4 +67,10 @@ const DialogContentWrap = styled(DialogContent)`
   max-height: 700px;
   padding: 32px 32px 4px !important;
   overflow-y: scroll;
+`;
+
+const DialogTitleWrap = styled(DialogTitle)`
+  padding-bottom: 0;
+  padding-left: 0;
+  padding-top: 0;
 `;

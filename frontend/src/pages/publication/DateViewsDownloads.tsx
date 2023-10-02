@@ -18,6 +18,7 @@ import { LicenseType } from '../../apis/first-approval-api';
 export const DateViewsDownloads = observer(
   (props: {
     publicationStore: PublicationStore;
+    displayLicense: boolean;
     openDownloadersDialog: () => void;
   }): ReactElement => {
     const [utilAnchor, setUtilAnchor] = useState<null | HTMLElement>(null);
@@ -56,12 +57,21 @@ export const DateViewsDownloads = observer(
             </div>
           </div>
           <div
-            onClick={props.openDownloadersDialog}
+            onClick={() => {
+              if (props.publicationStore.downloadsCount) {
+                props.openDownloadersDialog();
+              }
+            }}
             style={{
               marginLeft: '24px',
               display: 'flex',
               alignItems: 'center',
-              cursor: 'pointer'
+              cursor: `${
+                props.publicationStore.downloadsCount &&
+                props.publicationStore.downloadsCount > 0
+                  ? 'pointer'
+                  : 'initial'
+              }`
             }}>
             <img src={downloads} width={20} height={20} />
             <div style={{ marginLeft: '4px' }}>
@@ -118,7 +128,7 @@ export const DateViewsDownloads = observer(
                 : 'https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode'
             );
           }}>
-          {`License: ${licenseTypeAbbreviation}`}
+          {props.displayLicense && `License: ${licenseTypeAbbreviation}`}
         </LicensingLinkWrap>
       </FlexWrapRowSpaceBetween>
     );

@@ -1,6 +1,13 @@
 import { observer } from 'mobx-react-lite';
 import React, { type ReactElement, useEffect, useMemo, useState } from 'react';
 import {
+  DragDropContext,
+  Draggable,
+  Droppable,
+  DropResult,
+  ResponderProvided
+} from 'react-beautiful-dnd';
+import {
   type ConfirmedAuthor,
   type UnconfirmedAuthor,
   type UserInfo
@@ -39,6 +46,7 @@ interface AuthorEditState {
 }
 
 export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
+  const { publicationStore } = props;
   const [showSuccessSavingAlter, setShowSuccessSavingAlter] = useState(false);
   const [searchVisible, setSearchVisible] = useState(false);
   const [isUserExistsByEmail, setIsUserExistsByEmail] = useState(false);
@@ -58,7 +66,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
         setAuthorOptions(
           result.data.filter(
             (a1) =>
-              !props.publicationStore.confirmedAuthors.find(
+              !publicationStore.confirmedAuthors.find(
                 (a2) => a1.id === a2.user.id
               )
           )
@@ -73,47 +81,70 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
     <>
       <ContentEditorWrap>
         <LabelWrap>Authors</LabelWrap>
-        {props.publicationStore.confirmedAuthors.map(
-          (confirmedAuthor, index) => {
-            return (
-              <div key={confirmedAuthor.id} style={{ cursor: 'pointer' }}>
-                <AuthorElement
-                  isReadonly={props.publicationStore.isReadonly}
-                  author={confirmedAuthor}
-                  isConfirmed={true}
-                  onAuthorEdit={() =>
-                    setEditingAuthor({
-                      author: confirmedAuthor,
-                      isConfirmed: true,
-                      index
-                    })
+        <DragDropContext
+          onDragEnd={(result: DropResult, provided: ResponderProvided) => {
+            if (!result.destination) return; // Nothing to do if dropped outside the list
+            const reorderedItems = Array.from(publicationStore.authors);
+            const [movedItem] = reorderedItems.splice(result.source.index, 1); // Remove the dragged item
+            reorderedItems.splice(result.destination.index, 0, movedItem); // Insert the item at the new position
+            reorderedItems.forEach((reorderedAuthor, index) => {
+              const confirmed = reorderedAuthor as ConfirmedAuthor;
+              const unconfirmed = reorderedAuthor as UnconfirmedAuthor;
+              const email = confirmed.user?.email ?? unconfirmed.email;
+              const author = publicationStore.authors.find(
+                (author) =>
+                  ((author as ConfirmedAuthor).user?.email ??
+                    (author as UnconfirmedAuthor).email) === email
+              );
+              if (author) {
+                author.ordinal = index;
+              }
+            });
+            void publicationStore.updateConfirmedAuthors();
+            void publicationStore.updateUnconfirmedAuthors();
+          }}>
+          <Droppable
+            droppableId="droppable"
+            isDropDisabled={publicationStore.isReadonly}>
+            {(provided, snapshot) => (
+              <div {...provided.droppableProps} ref={provided.innerRef}>
+                {publicationStore.authors.map(
+                  (author: UnconfirmedAuthor | ConfirmedAuthor, index) => {
+                    const isConfirmed = !!(author as ConfirmedAuthor).user;
+                    return (
+                      <Draggable
+                        key={index.toString()}
+                        draggableId={index.toString()}
+                        isDragDisabled={publicationStore.isReadonly}
+                        index={index}>
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}>
+                            <AuthorElement
+                              isReadonly={publicationStore.isReadonly}
+                              useMarginBottom={true}
+                              key={author.id}
+                              author={author}
+                              isConfirmed={isConfirmed}
+                              onAuthorEdit={() =>
+                                setEditingAuthor({ author, isConfirmed, index })
+                              }
+                              shouldOpenInNewTab={true}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+                    );
                   }
-                  shouldOpenInNewTab={true}
-                />
+                )}
+                {provided.placeholder}
               </div>
-            );
-          }
-        )}
-        {props.publicationStore.unconfirmedAuthors.map(
-          (unconfirmedAuthor, index) => {
-            return (
-              <AuthorElement
-                isReadonly={props.publicationStore.isReadonly}
-                key={unconfirmedAuthor.id}
-                author={unconfirmedAuthor}
-                isConfirmed={false}
-                onAuthorEdit={() =>
-                  setEditingAuthor({
-                    author: unconfirmedAuthor,
-                    isConfirmed: false,
-                    index
-                  })
-                }
-              />
-            );
-          }
-        )}
-        {!props.publicationStore.isReadonly && !searchVisible && (
+            )}
+          </Droppable>
+        </DragDropContext>
+        {!publicationStore.isReadonly && !searchVisible && (
           <Button
             variant={'outlined'}
             startIcon={<Add />}
@@ -129,7 +160,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
               <Autocomplete
                 onChange={(event: any, newValue: UserInfo | null) => {
                   if (newValue) {
-                    props.publicationStore.addConfirmedAuthor(newValue);
+                    publicationStore.addConfirmedAuthor(newValue);
                   }
                 }}
                 forcePopupIcon={false}
@@ -181,7 +212,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
       </ContentEditorWrap>
       <AddAuthorDialog
         editingAuthor={editingAuthor}
-        publicationStore={props.publicationStore}
+        publicationStore={publicationStore}
         setIsUserExistsByEmail={setIsUserExistsByEmail}
         setShowSuccessSavingAlter={setShowSuccessSavingAlter}
       />
@@ -221,6 +252,7 @@ const AddAuthorDialog = observer(
     setIsUserExistsByEmail: (value: boolean) => void;
     setShowSuccessSavingAlter: (value: boolean) => void;
   }): ReactElement => {
+    const { publicationStore } = props;
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [savingInProgress, setSavingInProgress] = useState(false);
     const [addAuthorVisible, setAddAuthorVisible] = useState(false);
@@ -272,14 +304,14 @@ const AddAuthorDialog = observer(
 
     const handleSaveButton = async (): Promise<void> => {
       if (authorStore.isConfirmed) {
-        props.publicationStore.editConfirmedAuthor(authorStore);
+        publicationStore.editConfirmedAuthor(authorStore);
         handleCloseAddAuthor();
       } else {
         return userService.existsByEmail(authorStore.email).then((result) => {
           if (result.data) {
             props.setIsUserExistsByEmail(true);
           } else {
-            props.publicationStore.addOrEditUnconfirmedAuthor(authorStore);
+            publicationStore.addOrEditUnconfirmedAuthor(authorStore);
           }
         });
       }
@@ -369,9 +401,10 @@ const AddAuthorDialog = observer(
                 {/* dirty hack to show user name and email without possibility to edit any fields. */}
                 {/* Partly fixed by adding AuthorEditorStore as author type */}
                 <AuthorElement
-                  isReadonly={props.publicationStore.isReadonly}
+                  isReadonly={publicationStore.isReadonly}
                   author={authorStore}
                   isConfirmed={true}
+                  useMarginBottom={false}
                 />
               </EditConfirmedAuthor>
             )}
@@ -379,7 +412,7 @@ const AddAuthorDialog = observer(
           <DialogActionsWrap>
             <SpaceBetweenWrap>
               {((authorStore.isNew ||
-                authorStore.userId === props.publicationStore.creator?.id) && (
+                authorStore.userId === publicationStore.creator?.id) && (
                 <div />
               )) || (
                 <IconButton
@@ -417,7 +450,7 @@ const AddAuthorDialog = observer(
           </DialogActionsWrap>
         </Dialog>
         <DeleteAuthorDialog
-          publicationStore={props.publicationStore}
+          publicationStore={publicationStore}
           authorStore={authorStore}
           setAddAuthorVisible={setAddAuthorVisible}
           deleteDialogOpen={deleteDialogOpen}

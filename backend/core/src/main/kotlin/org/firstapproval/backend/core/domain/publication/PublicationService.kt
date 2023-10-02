@@ -70,7 +70,7 @@ class PublicationService(
     fun create(user: User): Publication {
         val publication = publicationRepository.save(Publication(id = generateCode(), creator = user))
         publication.confirmedAuthors =
-            confirmedAuthorRepository.saveAll(mutableListOf(ConfirmedAuthor(randomUUID(), user, publication)))
+            confirmedAuthorRepository.saveAll(mutableListOf(ConfirmedAuthor(randomUUID(), user, publication, 0)))
         return publication
     }
 
@@ -81,6 +81,9 @@ class PublicationService(
     fun edit(user: User, id: String, request: PublicationEditRequest) {
         val publication = get(user, id)
         checkPublicationCreator(user, publication)
+        if (publication.status === PUBLISHED) {
+            throw AccessDeniedException("Access denied")
+        }
         with(request) {
             val unconfirmedAuthorsEmails = unconfirmedAuthors?.let { unconfirmedAuthors.values.map { it.email }.toSet() } ?: setOf()
             if (unconfirmedAuthorsEmails.isNotEmpty() && userRepository.findByEmailIn(unconfirmedAuthorsEmails).isNotEmpty()) {
@@ -123,6 +126,7 @@ class PublicationService(
                     ConfirmedAuthor(
                         id = confirmedAuthor.id ?: randomUUID(),
                         user = confirmedAuthorsById[confirmedAuthor.userId].require(),
+                        ordinal = confirmedAuthor.ordinal,
                         publication = publication,
                     )
                 }
@@ -137,6 +141,7 @@ class PublicationService(
                         firstName = unconfirmedAuthorApiObject.firstName,
                         middleName = unconfirmedAuthorApiObject.middleName,
                         lastName = unconfirmedAuthorApiObject.lastName,
+                        ordinal = unconfirmedAuthorApiObject.ordinal,
                         publication = publication
                     )
 
@@ -209,7 +214,6 @@ class PublicationService(
     @Transactional
     fun getDownloadLinkForArchive(user: User, id: String): DownloadLinkResponse {
         val publication = publicationRepository.getReferenceById(id)
-        checkStatusAndAccessType(publication)
         addDownloadHistory(user, publication)
         publication.downloadsCount += 1
         val title = publication.title ?: id
@@ -225,7 +229,6 @@ class PublicationService(
     @Transactional
     fun getDownloadLinkForSampleArchive(id: String): DownloadLinkResponse {
         val publication = publicationRepository.getReferenceById(id)
-        checkStatusAndAccessType(publication)
         val title = publication.title ?: id
         val link =
             fileStorageService.generateTemporaryDownloadLink(
@@ -269,14 +272,29 @@ class PublicationService(
     }
 
     @Transactional
-    fun getCreatorPublications(
+    fun getAuthorsPublications(
         user: User,
-        status: PublicationStatusApiObject,
         page: Int,
         pageSize: Int,
     ): PublicationsResponse {
-        val publicationsPage = publicationRepository.findAllByStatusAndAccessTypeAndCreatorId(
-            PublicationStatus.valueOf(status.name),
+        val publicationsPage = publicationRepository.findAllByConfirmedAuthorUsername(
+            setOf(PUBLISHED, READY_FOR_PUBLICATION),
+            user.id,
+            PageRequest.of(page, pageSize)
+        )
+        return PublicationsResponse(publicationsPage.isLast)
+            .publications(publicationsPage.map { it.toApiObject(userService) }.toList())
+    }
+
+    @Transactional
+    fun getCreatorPublications(
+        user: User,
+        statuses: Collection<PublicationStatus>,
+        page: Int,
+        pageSize: Int,
+    ): PublicationsResponse {
+        val publicationsPage = publicationRepository.findAllByStatusInAndAccessTypeAndCreatorId(
+            statuses,
             OPEN,
             user.id,
             PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime"))
@@ -384,6 +402,7 @@ fun Publication.toPublicationElastic() =
 
 fun ConfirmedAuthor.toApiObject(profileImage: ByteArray?) = ConfirmedAuthorApiObject().also {
     it.id = id
+    it.ordinal = ordinal
     it.user = UserInfo(
         user.id,
         user.firstName,
@@ -402,5 +421,6 @@ fun UnconfirmedAuthor.toApiObject() = UnconfirmedAuthorApiObject().also {
     it.lastName = lastName
     it.middleName = middleName
     it.email = email
+    it.ordinal = ordinal
     it.workplaces = workplaces.map { workplace -> workplace.toApiObject() }
 }

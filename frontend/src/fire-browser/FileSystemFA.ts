@@ -15,6 +15,8 @@ import { fullPathToName } from './utils';
 import { type FileData } from '@first-approval/chonky/dist/types/file.types';
 import { calculateSHA256 } from '../util/sha256Util';
 import { authStore } from '../core/auth';
+import { AxiosProgressEvent } from 'axios';
+import { UploadProgressStore } from './UploadProgressStore';
 
 interface FileEntry {
   id: string;
@@ -37,6 +39,8 @@ export class FileSystemFA {
   isLoading = false;
   initialized = false;
   activeUploads = 0;
+
+  uploadProgress = new UploadProgressStore();
 
   renameOrReplaceDialogOpen = false;
   addDirectoryImpossibleDialogOpen = false;
@@ -136,10 +140,25 @@ export class FileSystemFA {
   addFilesInput = (files: File[], uploadType: UploadType): void => {
     const uploadQueue: Array<() => Promise<void>> = [];
 
-    files.forEach(async (e) => {
-      const fullPath = this.fullPath('/' + e.name);
+    files.forEach((file) => {
+      const fullPath = this.fullPath('/' + file.name);
+
+      this.uploadProgress.progressMetadata.set(fullPath, {
+        fileName: file.name,
+        metadata: { loaded: 0, bytes: 0, progress: 0 }
+      });
+
       const uploadFile = async (): Promise<void> => {
-        const hex = await calculateSHA256(e);
+        const hex = await calculateSHA256(file);
+
+        const config = {
+          onUploadProgress: (progressEvent: AxiosProgressEvent) =>
+            this.uploadProgress.progressMetadata.set(fullPath, {
+              fileName: file.name,
+              metadata: progressEvent
+            })
+        };
+
         await this.fileService
           .uploadFile(
             this.publicationId,
@@ -147,8 +166,9 @@ export class FileSystemFA {
             false,
             uploadType,
             hex,
-            e.size,
-            e
+            file.size,
+            file,
+            config
           )
           .then((response) => {
             this.cleanUploading(response.data);
@@ -162,11 +182,11 @@ export class FileSystemFA {
     void this.uploadQueue(uploadQueue);
     this.allLocalFiles = [
       ...this.allLocalFiles,
-      ...files.map((f) => {
-        const fullPath = this.fullPath('/' + f.name);
+      ...files.map((file) => {
+        const fullPath = this.fullPath('/' + file.name);
         return {
           id: fullPath,
-          name: f.name,
+          name: file.name,
           fullPath,
           isDirectory: false,
           isUploading: true

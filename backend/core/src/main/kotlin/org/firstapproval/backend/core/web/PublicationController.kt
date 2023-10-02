@@ -7,7 +7,6 @@ import org.firstapproval.api.server.model.GetDownloadersResponse
 import org.firstapproval.api.server.model.Publication
 import org.firstapproval.api.server.model.PublicationEditRequest
 import org.firstapproval.api.server.model.PublicationStatus
-import org.firstapproval.api.server.model.PublicationStatus.PUBLISHED
 import org.firstapproval.api.server.model.PublicationsResponse
 import org.firstapproval.api.server.model.SearchPublicationsResponse
 import org.firstapproval.api.server.model.SubmitPublicationRequest
@@ -15,6 +14,7 @@ import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.PublicationPdfService
 import org.firstapproval.backend.core.domain.publication.PublicationService
+import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
 import org.firstapproval.backend.core.domain.publication.downloader.DownloaderRepository
 import org.firstapproval.backend.core.domain.publication.toApiObject
 import org.firstapproval.backend.core.domain.user.UserService
@@ -23,7 +23,6 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
-import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.annotation.RestController
 import java.util.Base64.getEncoder
 
@@ -40,28 +39,22 @@ class PublicationController(
         return ok().body(publicationService.getAllPublications(page, pageSize))
     }
 
-    override fun getUserPublications(
-        username: String,
-        status: PublicationStatus,
-        page: Int,
-        pageSize: Int
-    ): ResponseEntity<PublicationsResponse> {
-        if (status != PUBLISHED) {
-            throw AccessDeniedException("Access denied")
-        }
-        val user = userService.getPublicUserProfile(username)
-        val publications = publicationService.getCreatorPublications(user, status, page, pageSize)
-        return ok().body(publications)
-    }
-
     override fun getAllFeaturedPublications(page: Int, pageSize: Int): ResponseEntity<PublicationsResponse> {
         return ok().body(publicationService.getAllFeaturedPublications(page, pageSize))
     }
 
-    override fun getMyPublications(
-        status: PublicationStatus, page: Int, pageSize: Int
+    override fun getUserPublications(
+        username: String,
+        page: Int,
+        pageSize: Int
     ): ResponseEntity<PublicationsResponse> {
-        val publications = publicationService.getCreatorPublications(authHolderService.user, status, page, pageSize)
+        val user = userService.getPublicUserProfile(username)
+        val publications = publicationService.getAuthorsPublications(user, page, pageSize)
+        return ok().body(publications)
+    }
+
+    override fun getMyDraftPublications(page: Int, pageSize: Int): ResponseEntity<PublicationsResponse> {
+        val publications = publicationService.getCreatorPublications(authHolderService.user, setOf(PENDING), page, pageSize)
         return ok().body(publications)
     }
 

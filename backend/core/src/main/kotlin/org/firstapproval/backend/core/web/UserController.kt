@@ -108,7 +108,8 @@ class UserController(
                 it.user.email,
                 it.user.firstName,
                 it.user.middleName,
-                it.user.lastName
+                it.user.lastName,
+                it.ordinal
             )
             author.workplaces = it.user.workplaces.map { workplace ->
                 UnconfirmedAuthorWorkplace(

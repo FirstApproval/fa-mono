@@ -23,23 +23,26 @@ interface ParagraphEditorProps {
 
 export const SummaryEditor = observer((props: EditorProps): ReactElement => {
   return (
-    <ParagraphContentEditor
-      isReadonly={props.publicationStore.isReadonly}
-      value={props.publicationStore.summary}
-      onChange={(idx, value) => {
-        props.publicationStore.updateSummaryParagraph(idx, value);
-      }}
-      onAddParagraph={(idx) => {
-        props.publicationStore.addSummaryParagraph(idx);
-      }}
-      onMergeParagraph={(idx) => {
-        props.publicationStore.mergeSummaryParagraph(idx);
-      }}
-      onSplitParagraph={(idx, splitIndex) => {
-        props.publicationStore.splitSummaryParagraph(idx, splitIndex);
-      }}
-      placeholder={'Publication summary'}
-    />
+    <ContentEditorWrap>
+      <LabelWrap>Summary</LabelWrap>
+      <ParagraphContentEditor
+        isReadonly={props.publicationStore.isReadonly}
+        value={props.publicationStore.summary}
+        onChange={(idx, value) => {
+          props.publicationStore.updateSummaryParagraph(idx, value);
+        }}
+        onAddParagraph={(idx) => {
+          props.publicationStore.addSummaryParagraph(idx);
+        }}
+        onMergeParagraph={(idx) => {
+          props.publicationStore.mergeSummaryParagraph(idx);
+        }}
+        onSplitParagraph={(idx, splitIndex) => {
+          props.publicationStore.splitSummaryParagraph(idx, splitIndex);
+        }}
+        placeholder={'Publication summary'}
+      />
+    </ContentEditorWrap>
   );
 });
 
@@ -155,22 +158,7 @@ export const NegativeDataViewMode = observer(
 export const MethodEditor = observer((props: EditorProps): ReactElement => {
   return (
     <ContentEditorWrap>
-      <LabelWrap>Method</LabelWrap>
-      {!props.publicationStore.isReadonly && (
-        <FullWidthTextField
-          autoFocus
-          value={props.publicationStore.methodTitle}
-          onChange={(event) => {
-            props.publicationStore.updateMethodTitle(event.currentTarget.value);
-          }}
-          placeholder={'Method name'}
-        />
-      )}
-      {props.publicationStore.isReadonly && (
-        <ReadonlyContentPlaceholderWrap>
-          {props.publicationStore.methodTitle}
-        </ReadonlyContentPlaceholderWrap>
-      )}
+      <LabelWrap>Materials and methods</LabelWrap>
       <ParagraphElementWrap
         isReadonly={props.publicationStore.isReadonly}
         value={props.publicationStore.method}

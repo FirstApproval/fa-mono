@@ -37,6 +37,9 @@ import {
 import { ContentLicensingDialog } from '../../components/ContentLicensingDialog';
 import { getContentLicensingAbbreviation } from '../../util/publicationUtils';
 
+const MAX_PREVIEW_LENGTH = 200;
+const MAX_PREVIEW_SUBTITLE_LENGTH = 300;
+
 export const SharingOptionsPage = (props: {
   publicationTitle: string;
   publicationSummary: string;
@@ -70,9 +73,9 @@ export const SharingOptionsPage = (props: {
           <InputPreviewTextField
             variant={'standard'}
             multiline={true}
-            error={!previewTitle}
+            error={!previewTitle || previewTitle.length > MAX_PREVIEW_LENGTH}
             value={previewTitle}
-            helperText={`${previewTitle?.length}/100`}
+            helperText={`${previewTitle?.length}/${MAX_PREVIEW_LENGTH}`}
             onChange={(e) => setPreviewTitle(e.currentTarget.value)}
             placeholder={'Write a preview title...'}
           />
@@ -80,9 +83,12 @@ export const SharingOptionsPage = (props: {
           <InputPreviewTextField
             variant={'standard'}
             multiline={true}
-            error={!previewSubtitle}
+            error={
+              !previewSubtitle ||
+              previewSubtitle.length > MAX_PREVIEW_SUBTITLE_LENGTH
+            }
             value={previewSubtitle}
-            helperText={`${previewSubtitle?.length}/200`}
+            helperText={`${previewSubtitle?.length}/${MAX_PREVIEW_SUBTITLE_LENGTH}`}
             onChange={(e) => setPreviewSubtitle(e.currentTarget.value)}
             placeholder={'Write a preview subtitle...'}
           />
@@ -94,17 +100,15 @@ export const SharingOptionsPage = (props: {
           </LeftPanelSubtitle>
         </FlexWrapColumn>
         <ContentLicensingButton
-          onClick={() => {
-            setContentLicensingDialogOpen(true);
-          }}>
+          onClick={() => setContentLicensingDialogOpen(true)}>
           {`Content licensing: ${licenseTypeAbbreviation}`}
-          <ContentLicensingDialog
-            licenseType={licenseType}
-            isOpen={contentLicensingDialogOpen}
-            onConfirm={(licenseType) => setLicenseType(licenseType)}
-            onClose={() => setContentLicensingDialogOpen(false)}
-          />
         </ContentLicensingButton>
+        <ContentLicensingDialog
+          licenseType={licenseType}
+          isOpen={contentLicensingDialogOpen}
+          onConfirm={(licenseType) => setLicenseType(licenseType)}
+          onClose={() => setContentLicensingDialogOpen(false)}
+        />
       </LeftPanel>
       <RightPanel>
         <BodyWrap>
@@ -254,7 +258,9 @@ export const SharingOptionsPage = (props: {
                 !confirmThatAllAuthorsAgree ||
                 !understandAfterPublishingCannotBeEdited ||
                 !previewTitle ||
-                !previewSubtitle
+                previewTitle.length > MAX_PREVIEW_LENGTH ||
+                !previewSubtitle ||
+                previewSubtitle.length > MAX_PREVIEW_SUBTITLE_LENGTH
               }
               onClick={() => {
                 void publicationService
@@ -564,6 +570,7 @@ const FlexWrapRowRadioLabel = styled.span`
 
 const ContentLicensingButton = styled.div`
   cursor: pointer;
+
   &:hover {
     background-color: transparent;
   }

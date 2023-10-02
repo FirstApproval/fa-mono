@@ -366,12 +366,6 @@ paths:
       summary: Get user publications
       parameters:
         - in: query
-          name: status
-          schema:
-            $ref: '#/components/schemas/PublicationStatus'
-          required: true
-          description: Status of publication
-        - in: query
           name: page
           schema:
             type: integer
@@ -392,7 +386,7 @@ paths:
                 $ref: '#/components/schemas/PublicationsResponse'
       security:
         - TokenAuth: [ ]
-      operationId: getMyPublications
+      operationId: getMyDraftPublications
       tags: [ publication ]
 
   /api/user-publications/{username}:
@@ -405,12 +399,6 @@ paths:
             type: string
           required: true
           description: Username
-        - in: query
-          name: status
-          schema:
-            $ref: '#/components/schemas/PublicationStatus'
-          required: true
-          description: Status of publication
         - in: query
           name: page
           schema:
@@ -2041,6 +2029,9 @@ components:
         id:
           type: string
           format: uuid
+        ordinal:
+          type: integer
+          format: int32
         user:
           $ref: '#/components/schemas/UserInfo'
       required:
@@ -2055,6 +2046,9 @@ components:
         userId:
           type: string
           format: uuid
+        ordinal:
+          type: integer
+          format: int32
       required:
         - userId
 
@@ -2082,6 +2076,9 @@ components:
           type: string
         lastName:
           type: string
+        ordinal:
+          type: integer
+          format: int32
         workplaces:
           type: array
           items:
@@ -2182,10 +2179,10 @@ components:
           maxLength: 32768
         previewTitle:
           type: string
-          maxLength: 100
+          maxLength: 200
         previewSubtitle:
           type: string
-          maxLength: 200
+          maxLength: 300
         description:
           $ref: '#/components/schemas/StringArray'
         researchAreas:

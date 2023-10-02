@@ -45,6 +45,10 @@ export const Logo = styled.div`
   display: flex;
 `;
 
+export const CursorPointer = styled.div`
+  cursor: pointer;
+`;
+
 export const FullWidthButton = styled(LoadingButton)`
   width: 100%;
 `;
@@ -100,6 +104,10 @@ export const StyledMenuItem = styled(MenuItem)`
   &:hover {
     background-color: transparent;
   }
+`;
+
+export const Width100Percent = styled.div`
+  width: 100%;
 `;
 
 export const FullWidth = styled.div`

@@ -1,6 +1,7 @@
 import React, {
   type FunctionComponent,
   type ReactElement,
+  useEffect,
   useState
 } from 'react';
 import _ from 'lodash';
@@ -25,11 +26,8 @@ import { routerStore } from '../../core/router';
 import noPublications from '../../assets/no-publications.svg';
 import upload_your_first_dataset_from from '../../assets/upload-your-first-dataset.svg';
 import styled from '@emotion/styled';
-import { ProfilePageStore } from './ProfilePageStore';
-import {
-  type Publication,
-  PublicationStatus
-} from '../../apis/first-approval-api';
+import { ProfilePageStore, Tab } from './ProfilePageStore';
+import { type Publication } from '../../apis/first-approval-api';
 import { PublicationSection } from '../../components/PublicationSection';
 import { copyTextToClipboard } from 'src/fire-browser/utils';
 import { userStore } from 'src/core/user';
@@ -43,24 +41,39 @@ import {
 } from '../../util/userUtil';
 import { Page } from '../../core/router/constants';
 import {
-  profileUsername,
+  getShortAuthorLink,
   profileTab,
-  getShortAuthorLink
+  profileUsername
 } from 'src/core/router/utils';
 
-const tabs: string[] = ['published', 'drafts'];
+const tabs = [Tab.PUBLISHED, Tab.DRAFTS];
 
 export const ProfilePage: FunctionComponent = observer(() => {
   const [username] = useState(() => profileUsername());
-  const [tab] = useState(() => profileTab());
-  const [tabNumber, setTabNumber] = React.useState(
-    (tab && tabs.findIndex((element) => element === tab)) ?? 0
-  );
+  const [tabFromPath] = useState(() => profileTab()?.toUpperCase() as Tab);
+  const [tab, setTab] = React.useState<Tab>(tabFromPath ?? Tab.PUBLISHED);
   const [store] = useState(() => new ProfilePageStore(username));
   const user = (username ? store : userStore).user!;
 
+  useEffect(() => {
+    if (user) {
+      store.isLoadingPublications = true;
+      void store.load(Tab.PUBLISHED, user.username).then(() => {
+        store.isLoadingPublications = false;
+      });
+    }
+  }, [user?.username]);
+
+  if (!user) {
+    return <CircularProgress />;
+  }
+
+  if (username && user.id === userStore.user?.id) {
+    routerStore.navigatePage(Page.PROFILE, '/profile', true);
+  }
+
   const handleChange = (_: React.SyntheticEvent, newValue: number): void => {
-    setTabNumber(newValue);
+    setTab(tabs[newValue]);
   };
 
   const mapPublications = (publications: Publication[]): ReactElement[] =>
@@ -77,23 +90,15 @@ export const ProfilePage: FunctionComponent = observer(() => {
         }}
       />
     ));
-  const loadMoreButton = (status: PublicationStatus): ReactElement => (
+  const loadMoreButton = (tab: Tab): ReactElement => (
     <LoadMorePublicationsButton
-      disabled={store.publicationsLastPage.get(status)}
+      disabled={store.publicationsLastPage.get(tab)}
       onClick={async () => {
-        await store.load(username, status);
+        await store.load(tab, user.username);
       }}>
       Load more datasets
     </LoadMorePublicationsButton>
   );
-
-  if (!user) {
-    return <CircularProgress />;
-  }
-
-  if (username && user.id === userStore.user?.id) {
-    routerStore.navigatePage(Page.PROFILE, '/profile', true);
-  }
 
   const lastNameAndFirstName = `${user.lastName ?? ''} ${user.firstName ?? ''}`;
   const notEmpty = (publications: Publication[]): boolean => {
@@ -101,11 +106,9 @@ export const ProfilePage: FunctionComponent = observer(() => {
   };
 
   const notEmptyPublished = notEmpty(
-    store.publications.get(PublicationStatus.PUBLISHED) ?? []
+    store.publications.get(Tab.PUBLISHED) ?? []
   );
-  const notEmptyPending = notEmpty(
-    store.publications.get(PublicationStatus.PENDING) ?? []
-  );
+  const notEmptyDrafts = notEmpty(store.publications.get(Tab.DRAFTS) ?? []);
 
   return (
     <>
@@ -164,15 +167,12 @@ export const ProfilePage: FunctionComponent = observer(() => {
               {!username && (
                 <>
                   <HeightElement value={'40px'}></HeightElement>
-                  <Tabs
-                    value={tabNumber}
-                    onChange={handleChange}
-                    aria-label="basic tabs example">
-                    {tabs.map((tab) => (
+                  <Tabs value={tabs.indexOf(tab)} onChange={handleChange}>
+                    {tabs.map((tab: Tab) => (
                       <CustomTab
                         key={tab}
                         sx={{ textTransform: 'none' }}
-                        label={_.capitalize(tab.toLowerCase())}
+                        label={_.capitalize(tab.toString().toLowerCase())}
                       />
                     ))}
                   </Tabs>
@@ -183,12 +183,11 @@ export const ProfilePage: FunctionComponent = observer(() => {
               {store.isLoadingPublications && <LinearProgress />}
               {!store.isLoadingPublications && (
                 <>
-                  {tabNumber === 0 && (
+                  {tab === Tab.PUBLISHED && (
                     <TabContainer>
                       <PublicationsContainer>
                         {mapPublications(
-                          store.publications.get(PublicationStatus.PUBLISHED) ??
-                            []
+                          store.publications.get(Tab.PUBLISHED) ?? []
                         )}
                         {!notEmptyPublished && username && (
                           <div
@@ -210,56 +209,53 @@ export const ProfilePage: FunctionComponent = observer(() => {
                         )}
                       </PublicationsContainer>
                       {notEmptyPublished &&
-                        !store.publicationsLastPage.get(
-                          PublicationStatus.PUBLISHED
-                        ) &&
-                        loadMoreButton(PublicationStatus.PUBLISHED)}
-                      {!notEmptyPublished && !username && (
-                        <Banner>
-                          <BannerLeftPart>
-                            <UploadYourFirstDatasetHeader>
-                              Upload your first dataset
-                            </UploadYourFirstDatasetHeader>
-                            <HeightElement value={'24px'} />
-                            <WorkPlaces>
-                              Show off your work. Get recognition and be a part
-                              of a growing community.
-                            </WorkPlaces>
-                            <HeightElement value={'24px'} />
-                            <StartPublishingButton
-                              color={'primary'}
-                              variant={'contained'}
-                              onClick={async () => {
-                                await userStore.createPublication();
-                              }}>
-                              <span
-                                style={{
-                                  fontSize: 18,
-                                  fontWeight: 500
+                        !store.publicationsLastPage.get(Tab.PUBLISHED) &&
+                        loadMoreButton(Tab.PUBLISHED)}
+                      {!notEmptyPublished &&
+                        !username &&
+                        !store.isLoadingPublications && (
+                          <Banner>
+                            <BannerLeftPart>
+                              <UploadYourFirstDatasetHeader>
+                                Upload your first dataset
+                              </UploadYourFirstDatasetHeader>
+                              <HeightElement value={'24px'} />
+                              <WorkPlaces>
+                                Show off your work. Get recognition and be a
+                                part of a growing community.
+                              </WorkPlaces>
+                              <HeightElement value={'24px'} />
+                              <StartPublishingButton
+                                color={'primary'}
+                                variant={'contained'}
+                                onClick={async () => {
+                                  await userStore.createPublication();
                                 }}>
-                                Start publishing
-                              </span>
-                            </StartPublishingButton>
-                          </BannerLeftPart>
-                          <img src={upload_your_first_dataset_from} />
-                        </Banner>
-                      )}
+                                <span
+                                  style={{
+                                    fontSize: 18,
+                                    fontWeight: 500
+                                  }}>
+                                  Start publishing
+                                </span>
+                              </StartPublishingButton>
+                            </BannerLeftPart>
+                            <img src={upload_your_first_dataset_from} />
+                          </Banner>
+                        )}
                     </TabContainer>
                   )}
-                  {tabNumber === 1 && (
+                  {tab === Tab.DRAFTS && (
                     <TabContainer>
                       <PublicationsContainer>
                         {mapPublications(
-                          store.publications.get(PublicationStatus.PENDING) ??
-                            []
+                          store.publications.get(Tab.DRAFTS) ?? []
                         )}
                       </PublicationsContainer>
-                      {notEmptyPending &&
-                        !store.publicationsLastPage.get(
-                          PublicationStatus.PENDING
-                        ) &&
-                        loadMoreButton(PublicationStatus.PENDING)}
-                      {!notEmptyPending && !username && (
+                      {notEmptyDrafts &&
+                        !store.publicationsLastPage.get(Tab.DRAFTS) &&
+                        loadMoreButton(Tab.DRAFTS)}
+                      {!notEmptyDrafts && !username && (
                         <CenterColumnElement>
                           <YouDontHaveAnyDrafts>
                             {"You don't have any drafts yet 🤷‍"}

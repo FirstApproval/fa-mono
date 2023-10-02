@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react';
+import React, { type ReactElement } from 'react';
 import styled from '@emotion/styled';
 import {
   AuthorsIcon,
@@ -15,7 +15,7 @@ import {
   TitleIcon
 } from './SectionIcon';
 
-interface PlaceholderProps {
+export interface PlaceholderProps {
   onClick?: () => void;
 }
 
@@ -40,7 +40,7 @@ export const SummaryPlaceholder = (props: PlaceholderProps): ReactElement => {
   return (
     <ContentPlaceholder
       onClick={props.onClick}
-      text={'Publication summary'}
+      text={'Summary'}
       icon={<SummaryIcon />}
     />
   );
@@ -62,7 +62,7 @@ export const MethodPlaceholder = (props: PlaceholderProps): ReactElement => {
   return (
     <ContentPlaceholder
       onClick={props.onClick}
-      text={'Method'}
+      text={'Materials and methods'}
       icon={<MethodIcon />}
     />
   );

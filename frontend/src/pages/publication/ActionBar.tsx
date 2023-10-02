@@ -11,6 +11,7 @@ import {
   Alert,
   Button,
   CircularProgress,
+  Divider,
   Snackbar,
   Tooltip
 } from '@mui/material';
@@ -22,10 +23,14 @@ import { PublicationStatus } from '../../apis/first-approval-api';
 import { PublicationPageStore } from './store/PublicationPageStore';
 import { Page } from '../../core/router/constants';
 
+export const PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY =
+  'requested_publication_id';
+
 export const ActionBar = observer(
   (props: {
     publicationStore: PublicationStore;
     publicationPageStore: PublicationPageStore;
+    displayDivider: boolean;
   }): ReactElement => {
     const { publicationStore, publicationPageStore } = props;
     const [showLinkCopiedAlert, setShowLinkCopiedAlert] = useState(false);
@@ -52,20 +57,14 @@ export const ActionBar = observer(
           marginTop: '32px',
           marginBottom: '12px'
         }}>
-        <div
-          style={{
-            height: '1px',
-            width: '100%',
-            backgroundColor: '#D2D2D6',
-            marginBottom: '16px'
-          }}
-        />
-
+        {props.displayDivider && <Divider color={'#D2D2D6'} />}
         <div
           style={{
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'center'
+            alignItems: 'center',
+            marginTop: '16px',
+            marginBottom: '16px'
           }}>
           <div
             style={{
@@ -91,6 +90,10 @@ export const ActionBar = observer(
                       publicationPageStore.downloadFiles();
                       publicationPageStore.isPasscodeDialogOpen = true;
                     } else {
+                      sessionStorage.setItem(
+                        PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY,
+                        publicationStore.publicationId
+                      );
                       routerStore.navigatePage(Page.SIGN_UP);
                     }
                   }}
@@ -105,8 +108,7 @@ export const ActionBar = observer(
               </Tooltip>
             )}
             {publicationPageStore.sampleFilesEnabled &&
-              publicationStore.publicationStatus ===
-                PublicationStatus.PUBLISHED && (
+              publicationStore.isPublished && (
                 <Tooltip title="Download publication sample files">
                   <DownloadSampleFilesButtonWrap
                     hidden={true}
@@ -158,14 +160,7 @@ export const ActionBar = observer(
           </div>
         </div>
 
-        <div
-          style={{
-            height: '1px',
-            width: '100%',
-            backgroundColor: '#D2D2D6',
-            marginTop: '16px'
-          }}
-        />
+        {props.displayDivider && <Divider color={'#D2D2D6'} />}
         <ArchiveDownloader
           isPasscodeOpen={publicationPageStore.isPasscodeDialogOpen}
           setIsPasscodeOpen={(value) =>
@@ -234,3 +229,8 @@ const ActionButtonWrap = styled(Button)`
   height: 36px;
   border: none;
 `;
+
+// const DividerWrap = styled(Divider)<{ value?: string }>`
+//   height: 36px;
+//   border: none;
+// `;

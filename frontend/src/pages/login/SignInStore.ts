@@ -2,6 +2,7 @@ import { action, makeObservable, observable } from 'mobx';
 import { type AuthorizeRequest } from '../../apis/first-approval-api';
 import { authService } from '../../core/service';
 import { authStore } from '../../core/auth';
+import { routerStore } from '../../core/router';
 
 export class SignInStore {
   email: string = '';
@@ -49,6 +50,7 @@ export class SignInStore {
         this.setPassword('');
       } else {
         authStore.token = response.data.token;
+        void routerStore.navigateAfterLogin();
       }
     } catch (e) {
       this.isError = true;

@@ -12,6 +12,8 @@ import {
   shortAuthorPath,
   shortPublicationPath
 } from './constants';
+import { PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY } from '../../pages/publication/ActionBar';
+import { routerStore } from '../router';
 
 const history = createBrowserHistory();
 
@@ -115,12 +117,7 @@ export class RouterStore {
           })
           .then(async (response) => {
             authStore.token = response.data.token;
-            const userData = (await userService.getMe()).data;
-            if (userData?.workplaces?.length === 0) {
-              this.navigatePage(Page.ACCOUNT, ACCOUNT_AFFILIATIONS_PATH, true);
-            } else {
-              this.navigatePage(Page.HOME_PAGE, '/', true);
-            }
+            void this.navigateAfterLogin();
           })
           .catch(() => {
             this.setInitialPageError('Authorization failed');
@@ -132,6 +129,26 @@ export class RouterStore {
     };
 
     restoreFromUrl();
+  }
+
+  async navigateAfterLogin(): Promise<void> {
+    const userData = (await userService.getMe()).data;
+
+    const requestedPublication = sessionStorage.getItem(
+      PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY
+    );
+    if (requestedPublication) {
+      sessionStorage.removeItem(PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY);
+      routerStore.navigatePage(
+        Page.PUBLICATION,
+        `${publicationPath}${requestedPublication}`,
+        true
+      );
+    } else if (userData?.workplaces?.length === 0) {
+      this.navigatePage(Page.ACCOUNT, ACCOUNT_AFFILIATIONS_PATH, true);
+    } else {
+      this.navigatePage(Page.HOME_PAGE, '/', true);
+    }
   }
 
   get path(): string {
@@ -159,7 +176,10 @@ export class RouterStore {
     replace: boolean = false,
     payload: any = {}
   ): void => {
-    const stateObject = { page: value, path };
+    const stateObject = {
+      page: value,
+      path
+    };
     if (replace) {
       window.history.replaceState(stateObject, document.title, path);
     } else {
