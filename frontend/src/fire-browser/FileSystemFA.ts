@@ -9,14 +9,14 @@ import {
 import {
   FileApi,
   type PublicationFile,
-  type UploadType
+  UploadType
 } from '../apis/first-approval-api';
 import { fullPathToName } from './utils';
 import { type FileData } from '@first-approval/chonky/dist/types/file.types';
 import { calculateSHA256 } from '../util/sha256Util';
 import { authStore } from '../core/auth';
 import { AxiosProgressEvent } from 'axios';
-import { UploadProgressStore } from './UploadProgressStore';
+import { isFileSystemEntry, UploadProgressStore } from './UploadProgressStore';
 
 interface FileEntry {
   id: string;
@@ -142,41 +142,8 @@ export class FileSystemFA {
 
     files.forEach((file) => {
       const fullPath = this.fullPath('/' + file.name);
-
-      this.uploadProgress.progressMetadata.set(fullPath, {
-        fileName: file.name,
-        metadata: { loaded: 0, bytes: 0, progress: 0 }
-      });
-
-      const uploadFile = async (): Promise<void> => {
-        const hex = await calculateSHA256(file);
-
-        const config = {
-          onUploadProgress: (progressEvent: AxiosProgressEvent) =>
-            this.uploadProgress.progressMetadata.set(fullPath, {
-              fileName: file.name,
-              metadata: progressEvent
-            })
-        };
-
-        await this.fileService
-          .uploadFile(
-            this.publicationId,
-            fullPath,
-            false,
-            uploadType,
-            hex,
-            file.size,
-            file,
-            config
-          )
-          .then((response) => {
-            this.cleanUploading(response.data);
-            this.actualizeFiles(response.data);
-          });
-      };
-
-      uploadQueue.push(uploadFile);
+      const uf = this.uploadFile(fullPath, file, uploadType);
+      uploadQueue.push(uf);
     });
 
     void this.uploadQueue(uploadQueue);
@@ -196,50 +163,60 @@ export class FileSystemFA {
     this.updateLocalFiles();
   };
 
+  uploadFile = (
+    fullPath: string,
+    file: File,
+    uploadType: UploadType
+  ): (() => Promise<void>) => {
+    const signal = new AbortController().signal;
+    const config = {
+      onUploadProgress: (progressEvent: AxiosProgressEvent) => {
+        this.uploadProgress.updateStatus(fullPath, {
+          progress: progressEvent
+        });
+      },
+      signal
+    };
+    this.uploadProgress.progressStatus.set(fullPath, {
+      fullPath,
+      file,
+      progress: { loaded: 0, bytes: 0, progress: 0 },
+      signal
+    });
+
+    return async (): Promise<void> => {
+      const hex = await calculateSHA256(file);
+
+      await this.fileService
+        .uploadFile(
+          this.publicationId,
+          fullPath,
+          false,
+          uploadType,
+          hex,
+          file.size,
+          file,
+          config
+        )
+        .then((response) => {
+          this.cleanUploading(response.data);
+          this.actualizeFiles(response.data);
+        })
+        .catch(() => {
+          this.uploadProgress.updateStatus(fullPath, {
+            isFailed: true
+          });
+        });
+    };
+  };
+
   addFilesDnd = (files: FileSystemEntry[], uploadType: UploadType): void => {
     const uploadQueue: Array<() => Promise<void>> = [];
 
-    files.forEach((e) => {
-      const fullPath = this.fullPath(e.fullPath);
-
-      if (e.isFile) {
-        const uploadFile = async (): Promise<void> => {
-          await new Promise<void>((resolve) => {
-            (e as FileSystemFileEntry).file(async (file) => {
-              const hex = await calculateSHA256(file);
-              void this.fileService
-                .uploadFile(
-                  this.publicationId,
-                  fullPath,
-                  false,
-                  uploadType,
-                  hex,
-                  file.size,
-                  file
-                )
-                .then((response) => {
-                  this.cleanUploading(response.data);
-                  this.actualizeFiles(response.data);
-                })
-                .finally(() => {
-                  resolve();
-                });
-            });
-          });
-        };
-
-        uploadQueue.push(uploadFile);
-      } else {
-        const uploadFolder = async (): Promise<void> => {
-          await this.fileService
-            .uploadFile(this.publicationId, fullPath, true, uploadType)
-            .then((response) => {
-              this.cleanUploading(response.data);
-            });
-        };
-
-        uploadQueue.push(uploadFolder);
-      }
+    files.forEach((file) => {
+      const fullPath = this.fullPath(file.fullPath);
+      const uf = this.uploadFileSystemEntry(fullPath, file, uploadType);
+      uploadQueue.push(uf);
     });
 
     void this.uploadQueue(uploadQueue);
@@ -252,6 +229,112 @@ export class FileSystemFA {
           name: f.name,
           fullPath,
           isDirectory: f.isDirectory,
+          isUploading: true
+        };
+      })
+    ];
+    this.updateLocalFiles();
+  };
+
+  uploadFileSystemEntry = (
+    fullPath: string,
+    file: FileSystemEntry,
+    uploadType: UploadType
+  ): (() => Promise<void>) => {
+    const signal = new AbortController().signal;
+    const config = {
+      onUploadProgress: (progressEvent: AxiosProgressEvent) => {
+        this.uploadProgress.updateStatus(fullPath, {
+          progress: progressEvent
+        });
+      },
+      signal
+    };
+    this.uploadProgress.progressStatus.set(fullPath, {
+      fullPath,
+      file,
+      progress: { loaded: 0, bytes: 0, progress: 0 },
+      signal
+    });
+
+    if (file.isFile) {
+      return async (): Promise<void> => {
+        (file as FileSystemFileEntry).file(async (file) => {
+          const hex = await calculateSHA256(file);
+          await this.fileService
+            .uploadFile(
+              this.publicationId,
+              fullPath,
+              false,
+              uploadType,
+              hex,
+              file.size,
+              file,
+              config
+            )
+            .then((response) => {
+              this.cleanUploading(response.data);
+              this.actualizeFiles(response.data);
+            })
+            .catch(() => {
+              this.uploadProgress.updateStatus(fullPath, {
+                isFailed: true
+              });
+            });
+        });
+      };
+    } else {
+      return async (): Promise<void> => {
+        await this.fileService
+          .uploadFile(
+            this.publicationId,
+            fullPath,
+            true,
+            uploadType,
+            undefined,
+            undefined,
+            undefined,
+            config
+          )
+          .then((response) => {
+            this.cleanUploading(response.data);
+          })
+          .catch(() => {
+            this.uploadProgress.updateStatus(fullPath, {
+              isFailed: true
+            });
+          });
+      };
+    }
+  };
+
+  retryUploadAll = (): void => {
+    const uploadQueue: Array<() => Promise<void>> = [];
+    const allFailed = this.uploadProgress.allFailed;
+    allFailed.forEach((f) => {
+      if (isFileSystemEntry(f.file)) {
+        const uf = this.uploadFileSystemEntry(
+          f.fullPath,
+          f.file,
+          UploadType.REPLACE
+        );
+        uploadQueue.push(uf);
+      } else {
+        const uf = this.uploadFile(f.fullPath, f.file, UploadType.REPLACE);
+        uploadQueue.push(uf);
+      }
+    });
+
+    void this.uploadQueue(uploadQueue);
+    this.allLocalFiles = [
+      ...this.allLocalFiles,
+      ...allFailed.map((f) => {
+        const fullPath = f.fullPath;
+        return {
+          id: fullPath,
+          name: f.file.name,
+          fullPath,
+          isDirectory: isFileSystemEntry(f.file) ? f.file.isDirectory : false,
           isUploading: true
         };
       })

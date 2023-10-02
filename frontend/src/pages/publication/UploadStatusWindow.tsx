@@ -9,7 +9,9 @@ import {
   Close,
   InsertDriveFile,
   KeyboardArrowDown,
-  KeyboardArrowUp
+  KeyboardArrowUp,
+  Replay,
+  Warning
 } from '@mui/icons-material';
 import { CircularProgress, IconButton, Link, Stack } from '@mui/material';
 
@@ -20,12 +22,14 @@ export const UploadStatusWindow = observer(
     const scrollPosition = useScrollPosition();
 
     const count = fs.uploadProgress.count;
+    const success = fs.uploadProgress.success;
+    const failed = fs.uploadProgress.failed;
     const inProgress = fs.uploadProgress.inProgress;
 
     let overallProgress: number = 0;
-    [...fs.uploadProgress.progressMetadata.keys()].forEach((key) => {
-      const value = fs.uploadProgress.progressMetadata.get(key);
-      overallProgress += value?.metadata.progress ?? 0;
+    [...fs.uploadProgress.progressStatus.keys()].forEach((key) => {
+      const value = fs.uploadProgress.progressStatus.get(key);
+      overallProgress += value?.progress.progress ?? 0;
     });
     overallProgress = Math.floor((overallProgress * 100) / count);
 
@@ -33,7 +37,7 @@ export const UploadStatusWindow = observer(
 
     const hasInProgress = inProgress !== 0;
 
-    if (fs.uploadProgress.count === 0) {
+    if (count === 0) {
       return null;
     }
 
@@ -52,9 +56,19 @@ export const UploadStatusWindow = observer(
         <>
           <UploadStatusHead>
             {hasInProgress && <>Uploading {inProgress} items</>}
-            {!hasInProgress && <>{count} uploads completed </>}
+            {!hasInProgress && (
+              <>
+                <>{failed === 0 && <>{success} uploads completed</>}</>
+                <>{failed !== 0 && <>{failed} uploads failed</>}</>
+              </>
+            )}
             <UploadStatusHeadActions>
               <Stack direction="row" alignItems="center" spacing={1}>
+                {fs.uploadProgress.failed !== 0 && (
+                  <IconButton onClick={fs.retryUploadAll}>
+                    <Replay />
+                  </IconButton>
+                )}
                 <IconButton onClick={() => setIsMinimized((v) => !v)}>
                   {!isMinimized && <KeyboardArrowDown />}
                   {isMinimized && <KeyboardArrowUp />}
@@ -78,28 +92,31 @@ export const UploadStatusWindow = observer(
                 </UploadStatusPercent>
               )}
               <UploadStatusBody>
-                {[...fs.uploadProgress.progressMetadata.keys()].map((key) => {
-                  const value = fs.uploadProgress.progressMetadata.get(key);
+                {[...fs.uploadProgress.progressStatus.keys()].map((key) => {
+                  const value = fs.uploadProgress.progressStatus.get(key);
                   if (!value) {
                     return null;
                   }
                   const progress: number = Math.floor(
-                    (value.metadata.progress ?? 0) * 100
+                    (value.progress.progress ?? 0) * 100
                   );
                   return (
                     <UploadStatusEntry key={key}>
                       <InsertDriveFile />
-                      <UploadStatusName>{value.fileName}</UploadStatusName>
+                      <UploadStatusName>{value.file.name}</UploadStatusName>
                       <UploadStatus>
-                        {progress !== 100 && (
+                        {!value.isFailed && progress !== 100 && (
                           <CircularProgress
                             size={16}
                             variant={'determinate'}
                             value={progress}
                           />
                         )}
-                        {progress === 100 && (
+                        {!value.isFailed && progress === 100 && (
                           <CheckCircle fontSize={'small'} color={'success'} />
+                        )}
+                        {value.isFailed && (
+                          <Warning fontSize={'small'} color={'error'} />
                         )}
                       </UploadStatus>
                     </UploadStatusEntry>
