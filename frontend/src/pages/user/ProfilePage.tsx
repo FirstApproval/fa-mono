@@ -126,18 +126,27 @@ export const ProfilePage: FunctionComponent = observer(() => {
               <RowElement>
                 <Avatar
                   src={renderProfileImage(user.profileImage)}
-                  sx={{ width: 100, height: 100 }}
+                  sx={{
+                    width: 100,
+                    height: 100
+                  }}
                 />
                 <UserInfoElement>
                   <NameElement>{lastNameAndFirstName}</NameElement>
                   <WorkPlaces
                     variant={'body1'}
-                    style={{ marginTop: '10px', marginBottom: '10px' }}>
+                    style={{
+                      marginTop: '10px',
+                      marginBottom: '10px'
+                    }}>
                     {getCurrentWorkplacesString(user.workplaces)}
                   </WorkPlaces>
                   <EmailElement>
                     <EmailOutlined
-                      style={{ marginRight: '12px', marginTop: '2.5px' }}
+                      style={{
+                        marginRight: '12px',
+                        marginTop: '2.5px'
+                      }}
                       htmlColor={'#68676e'}
                     />
                     <WorkPlaces variant={'body1'}>{user.email}</WorkPlaces>

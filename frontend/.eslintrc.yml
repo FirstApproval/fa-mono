@@ -38,6 +38,7 @@ rules: {
   "@typescript-eslint/no-floating-promises": "off",
   "@typescript-eslint/no-unnecessary-type-assertion": "off",
   "@typescript-eslint/naming-convention": "off",
+  "react/no-unescaped-entities": "off",
   "max-len": [
     "error",
     {

@@ -49,7 +49,7 @@ export const TagsEditor = observer((props: EditorProps): ReactElement => {
             <FullWidthTextField
               size={'medium'}
               placeholder={
-                'Enter tag, help others discover your work (e.g., “genomics”, “climate change”)'
+                'Enter tag, help others to discover your research (e.g., “genomics”, “climate change”)'
               }
               onKeyDown={(event) => {
                 if (event.key === 'Enter' || event.keyCode === 13) {

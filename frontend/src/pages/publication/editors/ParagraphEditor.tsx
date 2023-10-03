@@ -66,9 +66,9 @@ export const ExperimentGoalsEditor = observer(
           onSplitParagraph={(idx, splitIndex) => {
             publicationStore.splitExperimentGoalsParagraph(idx, splitIndex);
           }}
-          text={'Experiment goals'}
+          text={'Background & Aims'}
           placeholder={
-            'Describe the experiment goals and preliminary results...'
+            'Describe the context of data collection and the experimental goals'
           }
         />
         {!publicationStore.isReadonly && (
@@ -187,7 +187,7 @@ export const ObjectOfStudyEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <ContentEditorWrap>
-        <LabelWrap>Object of study</LabelWrap>
+        <LabelWrap>Data description</LabelWrap>
         {!props.publicationStore.isReadonly && (
           <FullWidthTextField
             autoFocus
@@ -197,7 +197,7 @@ export const ObjectOfStudyEditor = observer(
                 event.currentTarget.value
               );
             }}
-            placeholder={'Object category'}
+            placeholder={'Data description'}
           />
         )}
         {props.publicationStore.isReadonly && (
@@ -221,7 +221,7 @@ export const ObjectOfStudyEditor = observer(
             props.publicationStore.splitObjectOfStudyParagraph(idx, splitIndex);
           }}
           placeholder={
-            'Describe the specific conditions or features of your object of study...'
+            'Describe the data’s contents, structure and preliminary findings...'
           }
           disableInitFocus
         />
@@ -286,7 +286,7 @@ export const GrantingOrganizationsEditor = observer(
   }
 );
 
-export const RelatedArticlesEditor = observer(
+export const RelatedPublicationsEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <>
@@ -309,9 +309,9 @@ export const RelatedArticlesEditor = observer(
             );
           }}
           paragraphPrefixType={ParagraphPrefixType.NUMERATION}
-          text={'Related articles'}
+          text={'Related publications'}
           placeholder={
-            'Provide citations or references of articles that are closely related to your research...'
+            'Provide references of the articles that are closely related to your research'
           }
         />
         <div style={{ marginBottom: 48 }}>

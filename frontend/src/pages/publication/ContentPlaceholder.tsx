@@ -52,7 +52,7 @@ export const ExperimentGoalsPlaceholder = (
   return (
     <ContentPlaceholder
       onClick={props.onClick}
-      text={'Experiment goals'}
+      text={'Background & Aims'}
       icon={<PredictedGoalsIcon />}
     />
   );
@@ -74,7 +74,7 @@ export const ObjectOfStudyPlaceholder = (
   return (
     <ContentPlaceholder
       onClick={props.onClick}
-      text={'Object of study'}
+      text={'Data description'}
       icon={<ObjectOfStudyIcon />}
     />
   );
@@ -137,13 +137,13 @@ export const GrantingOrganisationsPlaceholder = (
   );
 };
 
-export const RelatedArticlesPlaceholder = (
+export const RelatedPublicationsPlaceholder = (
   props: PlaceholderProps
 ): ReactElement => {
   return (
     <ContentPlaceholder
       onClick={props.onClick}
-      text={'Related articles | optional'}
+      text={'Related publications | optional'}
       icon={<RelatedArticlesIcon />}
     />
   );

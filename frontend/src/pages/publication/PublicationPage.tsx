@@ -32,7 +32,8 @@ import {
   FilesPlaceholder,
   GrantingOrganisationsPlaceholder,
   MethodPlaceholder,
-  RelatedArticlesPlaceholder,
+  ObjectOfStudyPlaceholder,
+  RelatedPublicationsPlaceholder,
   SampleFilesPlaceholder,
   SoftwarePlaceholder,
   SummaryPlaceholder,
@@ -50,7 +51,8 @@ import {
   ExperimentGoalsEditor,
   GrantingOrganizationsEditor,
   MethodEditor,
-  RelatedArticlesEditor,
+  ObjectOfStudyEditor,
+  RelatedPublicationsEditor,
   SoftwareEditor,
   SummaryEditor
 } from './editors/ParagraphEditor';
@@ -415,6 +417,7 @@ const PublicationBody = observer(
       openSummary,
       openExperimentGoals,
       openMethod,
+      openObjectOfStudy,
       openSoftware,
       openFiles,
       openSampleFilesModal,
@@ -426,6 +429,7 @@ const PublicationBody = observer(
       summaryEnabled,
       experimentGoalsEnabled,
       methodEnabled,
+      objectOfStudyEnabled,
       softwareEnabled,
       filesEnabled,
       sampleFilesEnabled,
@@ -496,6 +500,14 @@ const PublicationBody = observer(
           <MethodPlaceholder onClick={openMethod} />
         )}
         {methodEnabled && <MethodEditor publicationStore={publicationStore} />}
+
+        {/* Data description */}
+        {!objectOfStudyEnabled && !publicationStore.isReadonly && (
+          <ObjectOfStudyPlaceholder onClick={openObjectOfStudy} />
+        )}
+        {objectOfStudyEnabled && (
+          <ObjectOfStudyEditor publicationStore={publicationStore} />
+        )}
 
         {/* Software */}
         {!softwareEnabled && !publicationStore.isReadonly && (
@@ -603,12 +615,12 @@ const PublicationBody = observer(
           <GrantingOrganizationsEditor publicationStore={publicationStore} />
         )}
 
-        {/* Related articles */}
+        {/* Related publications */}
         {!relatedArticlesEnabled && !publicationStore.isReadonly && (
-          <RelatedArticlesPlaceholder onClick={openRelatedArticles} />
+          <RelatedPublicationsPlaceholder onClick={openRelatedArticles} />
         )}
         {relatedArticlesEnabled && (
-          <RelatedArticlesEditor publicationStore={publicationStore} />
+          <RelatedPublicationsEditor publicationStore={publicationStore} />
         )}
 
         {/* Tags */}
