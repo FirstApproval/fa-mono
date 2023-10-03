@@ -19,11 +19,18 @@ import org.firstapproval.backend.core.domain.publication.downloader.DownloaderRe
 import org.firstapproval.backend.core.domain.publication.toApiObject
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.toApiObject
+import org.springframework.core.io.ByteArrayResource
+import org.springframework.core.io.InputStreamResource
+import org.springframework.core.io.Resource
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
+import org.springframework.http.MediaType
+import org.springframework.http.MediaType.APPLICATION_OCTET_STREAM
+import org.springframework.http.MediaType.APPLICATION_PDF
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
+import java.net.URLConnection
 import java.util.Base64.getEncoder
 
 @RestController
@@ -133,7 +140,13 @@ class PublicationController(
         return ok().build()
     }
 
-    override fun downloadPdf(id: String): ResponseEntity<String> {
-        return ok(getEncoder().encodeToString(publicationPdfService.generate(id)))
+    override fun downloadPdf(id: String): ResponseEntity<Resource> {
+        val publicationName = publicationService.get(null, id)
+        val pdfContent = publicationPdfService.generate(id)
+        return ok()
+            .contentType(APPLICATION_PDF)
+            .header("Content-disposition", "attachment; filename=\"${publicationName.title ?: publicationName.id}.pdf\"")
+            .contentLength(pdfContent.size.toLong())
+            .body(ByteArrayResource(pdfContent))
     }
 }

@@ -816,10 +816,10 @@ paths:
         '200':
           description: OK
           content:
-            application/pdf:
+            '*/*':
               schema:
                 type: string
-                format: base64
+                format: binary
       security:
         - PublicAuth: [ ]
       operationId: downloadPdf
@@ -1740,7 +1740,7 @@ components:
         - id
         - status
         - creationTime
-            
+
     SubmitPublicationRequest:
       type: object
       properties:

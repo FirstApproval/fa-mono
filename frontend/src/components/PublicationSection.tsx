@@ -31,7 +31,6 @@ import {
   shortPublicationPath
 } from '../core/router/constants';
 import pdf from '../pages/publication/asset/pdf.svg';
-import { publicationService } from '../core/service';
 import { CitateDialog } from '../pages/publication/CitateDialog';
 import { PublicationAuthorName } from '../pages/publication/store/PublicationStore';
 import { ReportProblemDialog } from '../pages/publication/ReportProblemDialog';
@@ -82,13 +81,13 @@ export const PublicationSection = (props: {
   const [reportProblemOpened, setReportProblemOpened] = useState(false);
 
   const downloadPdf = async (): Promise<void> => {
-    const pdf = await publicationService.downloadPdf(publication.id);
-    const linkSource = `data:application/pdf;base64,${pdf.data}`;
     const downloadLink = document.createElement('a');
-    const fileName = publication.title + '.pdf';
-    downloadLink.href = linkSource;
-    downloadLink.download = fileName;
+    downloadLink.href = `${window.origin}/api/publication/${publication.id}/pdf/download`;
+    downloadLink.download = publication.title + '.pdf';
+    downloadLink.style.display = 'none';
+    document.body.appendChild(downloadLink);
     downloadLink.click();
+    document.body.removeChild(downloadLink);
   };
 
   const copyPublicationLinkToClipboard = async (): Promise<void> => {
