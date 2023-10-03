@@ -93,6 +93,7 @@ export const ProfilePage: FunctionComponent = observer(() => {
     ));
   const loadMoreButton = (tab: Tab): ReactElement => (
     <LoadMorePublicationsButton
+      size={'large'}
       disabled={store.publicationsLastPage.get(tab)}
       onClick={async () => {
         await store.load(tab, user.username);
@@ -263,10 +264,11 @@ export const ProfilePage: FunctionComponent = observer(() => {
                       {!notEmptyDrafts && !username && (
                         <CenterColumnElement>
                           <YouDontHaveAnyDrafts>
-                            {"You don't have any drafts yet 🤷‍"}
+                            You don't have any drafts yet 🤷
                           </YouDontHaveAnyDrafts>
                           <HeightElement value="16px" />
                           <EditProfileAndCreateDraftButtons
+                            size={'large'}
                             variant={'outlined'}
                             onClick={async () => {
                               await userStore.createPublication();
@@ -339,27 +341,12 @@ export const WorkPlaces = styled(Typography)`
 export const EditProfileAndCreateDraftButtons = styled(Button)`
   width: 140px;
   color: var(--inherit-text-primary-main, #040036);
-  font-feature-settings: 'clig' off, 'liga' off;
-  /* components/button-large */
-  font-family: Roboto;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 26px; /* 144.444% */
-  letter-spacing: 0.46px;
 `;
 
 export const CopyProfileLinkButton = styled(Button)`
   width: 180px;
   color: var(--inherit-text-primary-main, #040036);
-  font-feature-settings: 'clig' off, 'liga' off;
-  /* components/button-large */
-  font-family: Roboto;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 26px; /* 144.444% */
-  letter-spacing: 0.46px;
+
   padding: 0;
   margin-left: 20px;
   cursor: pointer !important;
@@ -384,14 +371,6 @@ const LoadMorePublicationsButton = styled(Button)`
   border: 1px solid var(--inherit-text-primary-main, #040036);
 
   color: var(--inherit-text-primary-main, #040036);
-  font-feature-settings: 'clig' off, 'liga' off;
-  /* components/button-large */
-  font-family: Roboto;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 26px; /* 144.444% */
-  letter-spacing: 0.46px;
 
   width: 215px;
 `;
@@ -419,7 +398,7 @@ const StartPublishingButton = styled(Button)`
 const YouDontHaveAnyDrafts = styled(Button)`
   color: var(--text-secondary, #68676e);
   text-align: center;
-  font-feature-settings: 'clig' off, 'liga' off;
+
   /* typography/body */
   font-family: Roboto;
   font-size: 20px;

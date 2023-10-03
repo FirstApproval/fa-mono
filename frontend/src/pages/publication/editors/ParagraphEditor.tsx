@@ -565,7 +565,6 @@ const NegativeDataViewWrapper = styled.div`
 
 const NegativeDataTextViewMode = styled.div`
   color: var(--text-primary, #040036);
-  font-feature-settings: 'clig' off, 'liga' off;
 
   /* typography/body */
   font-family: Roboto;

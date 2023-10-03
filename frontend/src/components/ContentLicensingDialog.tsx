@@ -131,11 +131,16 @@ export const ContentLicensingDialog = (props: {
       </DialogContentWrap>
       <ConfirmDialogActions>
         <FlexWrapRow>
-          <CancelButton color={'primary'} variant="text" onClick={onClose}>
+          <CancelButton
+            size={'large'}
+            color={'primary'}
+            variant="text"
+            onClick={onClose}>
             {'Cancel'}
           </CancelButton>
           <WidthElement value={'24px'} />
           <ConfirmButton
+            size={'large'}
             color="primary"
             variant={'contained'}
             disabled={!newLicenseType}
@@ -188,15 +193,6 @@ const CancelButton = styled(Button)`
   align-items: center;
 
   color: var(--primary-main, #3b4eff);
-  font-feature-settings: 'clig' off, 'liga' off;
-
-  /* components/button-large */
-  font-family: Roboto;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 26px; /* 144.444% */
-  letter-spacing: 0.46px;
 `;
 
 const ConfirmButton = styled(Button)`
@@ -208,15 +204,6 @@ const ConfirmButton = styled(Button)`
   align-items: center;
 
   color: var(--error-contrast, #fff);
-  font-feature-settings: 'clig' off, 'liga' off;
-
-  /* components/button-large */
-  font-family: Roboto;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 26px; /* 144.444% */
-  letter-spacing: 0.46px;
 `;
 
 const LinkWrap = styled.div`

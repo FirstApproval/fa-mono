@@ -240,11 +240,13 @@ export const ReportProblemDialog = observer(
                 <CancelButton
                   color={'primary'}
                   variant="text"
+                  size={'large'}
                   onClick={onClose}>
                   Cancel
                 </CancelButton>
                 <WidthElement value={'24px'} />
                 <ConfirmButton
+                  size={'large'}
                   disabled={loading}
                   variant={'contained'}
                   onClick={() => {
@@ -307,14 +309,6 @@ const CancelButton = styled(Button)`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
-  /* components/button-large */
-  font-family: Roboto;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 26px; /* 144.444% */
-  letter-spacing: 0.46px;
 `;
 
 const ConfirmButton = styled(Button)`
@@ -326,13 +320,4 @@ const ConfirmButton = styled(Button)`
   align-items: center;
 
   color: var(--error-contrast, #fff);
-  font-feature-settings: 'clig' off, 'liga' off;
-
-  /* components/button-large */
-  font-family: Roboto;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 26px; /* 144.444% */
-  letter-spacing: 0.46px;
 `;

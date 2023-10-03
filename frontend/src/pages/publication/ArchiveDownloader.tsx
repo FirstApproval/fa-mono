@@ -127,7 +127,6 @@ const PasscodeContainer = styled.div`
 
 const Passcode = styled.div`
   color: var(--text-primary, #040036);
-  font-feature-settings: 'clig' off, 'liga' off;
 
   /* typography/h4 */
   font-family: Roboto;
@@ -140,7 +139,7 @@ const Passcode = styled.div`
 
 const ProtectionInfoText = styled.span`
   color: var(--text-secondary, #68676e);
-  font-feature-settings: 'clig' off, 'liga' off;
+
   font-family: Roboto;
   font-size: 16px;
   font-style: normal;

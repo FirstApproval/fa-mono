@@ -23,6 +23,12 @@ export const theme = createTheme({
         outlined: {
           textTransform: 'none'
         },
+        sizeLarge: {
+          fontSize: '18px',
+          fontWeight: 500,
+          lineHeight: '26px',
+          letterSpacing: '0.46px'
+        },
         outlinedPrimary: {
           color: '#040036',
           borderColor: '#040036'

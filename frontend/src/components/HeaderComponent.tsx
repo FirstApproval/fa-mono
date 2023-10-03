@@ -58,7 +58,7 @@ export const HeaderComponent = (
                   routerStore.navigatePage(Page.SIGN_UP);
                 }
               }}
-              size={'medium'}>
+              size={'large'}>
               Publish
             </ButtonWrap>
           )}
@@ -70,7 +70,7 @@ export const HeaderComponent = (
                   onClick={() => {
                     routerStore.navigatePage(Page.SIGN_IN);
                   }}
-                  size={'medium'}>
+                  size={'large'}>
                   Sign in
                 </ButtonWrap>
               )}
@@ -89,7 +89,7 @@ export const HeaderComponent = (
                   onClick={() => {
                     routerStore.navigatePage(Page.SIGN_UP);
                   }}
-                  size={'medium'}>
+                  size={'large'}>
                   Sign up
                 </SignUpButton>
               )}
@@ -131,14 +131,6 @@ const ButtonWrap = styled(Button)<{
   justify-content: center;
   align-items: center;
   color: var(--inherit-text-primary-main, #040036);
-  font-feature-settings: 'clig' off, 'liga' off;
-  /* components/button-large */
-  font-family: Roboto;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 26px; /* 144.444% */
-  letter-spacing: 0.46px;
 `;
 
 const SignUpButton = styled(Button)`
@@ -150,12 +142,4 @@ const SignUpButton = styled(Button)`
   align-items: flex-end;
 
   color: var(--primary-contrast, #fff);
-  font-feature-settings: 'clig' off, 'liga' off;
-  /* components/button-large */
-  font-family: Roboto;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 26px; /* 144.444% */
-  letter-spacing: 0.46px;
 `;

@@ -39,7 +39,6 @@ const PublicationRowWrap = styled.div`
 
 export const PublicationHeader = styled.span`
   color: var(--text-primary, #040036);
-  font-feature-settings: 'clig' off, 'liga' off;
 
   /* typography/h4 */
   font-family: Roboto;
@@ -54,7 +53,6 @@ export const PublicationHeader = styled.span`
 
 export const PublicationDescription = styled.span`
   color: var(--text-primary, #040036);
-  font-feature-settings: 'clig' off, 'liga' off;
 
   /* typography/body */
   font-family: Roboto;

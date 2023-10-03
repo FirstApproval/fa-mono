@@ -70,14 +70,6 @@ export const WidthElement = styled('div')<{ value?: string }>`
 
 export const CustomTab = styled(Tab)`
   color: var(--text-secondary, #68676e);
-  font-feature-settings: 'clig' off, 'liga' off;
-  /* components/button-large */
-  font-family: Roboto;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 26px; /* 144.444% */
-  letter-spacing: 0.46px;
 `;
 
 export const ColumnElement = styled.div`

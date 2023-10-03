@@ -466,7 +466,6 @@ const LeftPanelHeader = styled(Typography)`
 
 const LeftPanelSubtitle = styled.div`
   color: var(--text-secondary, #68676e);
-  font-feature-settings: 'clig' off, 'liga' off;
 
   /* typography/caption */
   font-family: Roboto;
@@ -495,8 +494,6 @@ const StorageOptionsWrap = styled.div`
 const StorageOptionLabelWrap = styled.div<{
   disabled: boolean;
 }>`
-  font-feature-settings: 'clig' off, 'liga' off;
-
   /* components/alert-title */
   font-family: Roboto;
   font-size: 16px;

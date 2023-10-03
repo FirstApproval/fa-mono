@@ -332,6 +332,7 @@ export const AccountPage: FunctionComponent = observer(() => {
                   )}
                   <HeightElement value={'32px'} />
                   <SaveButton
+                    size={'large'}
                     color={'primary'}
                     variant={'contained'}
                     disabled={saveDisabled}
@@ -355,7 +356,9 @@ export const AccountPage: FunctionComponent = observer(() => {
                       hidden={true}
                       accept={'image/jpeg,image/png'}
                     />
-                    <UploadPictureButton onClick={handleFileInputClick}>
+                    <UploadPictureButton
+                      size={'large'}
+                      onClick={handleFileInputClick}>
                       Upload picture
                     </UploadPictureButton>
                     {editableUser.profileImage && (
@@ -399,6 +402,7 @@ export const AccountPage: FunctionComponent = observer(() => {
                   />
                   <HeightElement value={'115px'} />
                   <SaveButton
+                    size={'large'}
                     color={'primary'}
                     variant={'contained'}
                     disabled={saveDisabled}
@@ -481,6 +485,7 @@ export const AccountPage: FunctionComponent = observer(() => {
                       />
                       <HeightElement value={'32px'} />
                       <SaveButton
+                        size={'large'}
                         color={'primary'}
                         variant={'contained'}
                         disabled={saveDisabled}
@@ -573,14 +578,6 @@ export const UploadPictureButton = styled(Button)`
   width: 150px;
   height: 36px;
   color: var(--inherit-text-primary-main, #040036);
-  font-feature-settings: 'clig' off, 'liga' off;
-  /* components/button-large */
-  font-family: Roboto;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 26px; /* 144.444% */
-  letter-spacing: 0.46px;
 
   border-radius: 4px;
   border: 1px solid var(--inherit-text-primary-main, #040036);
@@ -602,15 +599,6 @@ export const DeletePictureButton = styled(Button)`
 
 export const SaveButton = styled(Button)`
   width: 100%;
-
-  font-feature-settings: 'clig' off, 'liga' off;
-  /* components/button-large */
-  font-family: Roboto;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 26px; /* 144.444% */
-  letter-spacing: 0.46px;
 `;
 
 const FullWidthTextField = styled(TextField)<{
@@ -629,7 +617,6 @@ const UsernameTip = styled.span`
   cursor: pointer;
 
   color: var(--text-secondary, #68676e);
-  font-feature-settings: 'clig' off, 'liga' off;
 
   /* components/helper-text */
   font-family: Roboto;

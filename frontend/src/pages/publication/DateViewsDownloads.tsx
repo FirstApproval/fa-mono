@@ -150,7 +150,6 @@ const LicensingLinkWrap = styled.div`
   cursor: pointer;
 
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
-  font-feature-settings: 'clig' off, 'liga' off;
 
   /* typography/caption */
   font-family: Roboto;

@@ -28,13 +28,18 @@ export const ConfirmationDialog = (props: {
       </DialogContentWrap>
       <ConfirmDialogActions>
         <FlexWrapRow>
-          <CancelButton color={'primary'} variant="text" onClick={onClose}>
+          <CancelButton
+            size={'large'}
+            color={'primary'}
+            variant="text"
+            onClick={onClose}>
             {noText ?? 'No'}
           </CancelButton>
           <WidthElement value={'24px'} />
           <ConfirmButton
             color="error"
             variant={'contained'}
+            size={'large'}
             onClick={onConfirm}>
             {yesText ?? 'Yes'}
           </ConfirmButton>
@@ -47,7 +52,6 @@ export const ConfirmationDialog = (props: {
 const DialogWidthWrap = styled.div`
   max-width: 336px;
   color: var(--text-primary, #040036);
-  font-feature-settings: 'clig' off, 'liga' off;
 
   /* typography/body */
   font-family: Roboto;
@@ -83,15 +87,6 @@ const CancelButton = styled(Button)`
   align-items: center;
 
   color: var(--primary-main, #3b4eff);
-  font-feature-settings: 'clig' off, 'liga' off;
-
-  /* components/button-large */
-  font-family: Roboto;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 26px; /* 144.444% */
-  letter-spacing: 0.46px;
 `;
 
 const ConfirmButton = styled(Button)`
@@ -103,13 +98,4 @@ const ConfirmButton = styled(Button)`
   align-items: center;
 
   color: var(--error-contrast, #fff);
-  font-feature-settings: 'clig' off, 'liga' off;
-
-  /* components/button-large */
-  font-family: Roboto;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 26px; /* 144.444% */
-  letter-spacing: 0.46px;
 `;

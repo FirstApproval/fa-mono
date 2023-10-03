@@ -206,7 +206,6 @@ const FullWidthTextField = styled(TextField)`
 const BetaHeaderText = styled.span`
   color: var(--primary-contrast, #fff);
   text-align: center;
-  font-feature-settings: 'clig' off, 'liga' off;
 
   /* typography/subtitle2 */
   font-family: Roboto;
@@ -222,7 +221,7 @@ const BetaHeaderText = styled.span`
 const SearchHintText = styled.div`
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
   text-align: center;
-  font-feature-settings: 'clig' off, 'liga' off;
+
   word-wrap: break-word;
   width: 380px;
 

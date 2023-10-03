@@ -361,6 +361,7 @@ export const WorkplacesEditor = observer(
         <HeightElement value="32px" />
         {buttonType === ActionButtonType.FULL_WIDTH_CONFIRM && saveCallback && (
           <SaveButton
+            size={'large'}
             loading={savingInProgress}
             disabled={currentWorkplaceAbsent}
             color={'primary'}
@@ -447,7 +448,7 @@ const FormerWorkplace = styled(FormControlLabel)`
   margin-top: 32px;
   align-self: end;
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
-  font-feature-settings: 'clig' off, 'liga' off;
+
   /* typography/body1 */
   font-family: Roboto;
   font-size: 16px;
@@ -459,15 +460,6 @@ const FormerWorkplace = styled(FormControlLabel)`
 
 export const SaveButton = styled(LoadingButton)`
   width: 100%;
-
-  font-feature-settings: 'clig' off, 'liga' off;
-  /* components/button-large */
-  font-family: Roboto;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 26px; /* 144.444% */
-  letter-spacing: 0.46px;
 `;
 
 export const FlexWrapColumnCenter = styled.div`
