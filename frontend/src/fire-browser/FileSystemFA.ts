@@ -168,7 +168,8 @@ export class FileSystemFA {
     file: File,
     uploadType: UploadType
   ): (() => Promise<void>) => {
-    const signal = new AbortController().signal;
+    const abortController = new AbortController();
+    const signal = abortController.signal;
     const config = {
       onUploadProgress: (progressEvent: AxiosProgressEvent) => {
         this.uploadProgress.updateStatus(fullPath, {
@@ -181,7 +182,7 @@ export class FileSystemFA {
       fullPath,
       file,
       progress: { loaded: 0, bytes: 0, progress: 0 },
-      signal
+      abortController
     });
 
     return async (): Promise<void> => {
@@ -201,6 +202,9 @@ export class FileSystemFA {
         .then((response) => {
           this.cleanUploading(response.data);
           this.actualizeFiles(response.data);
+          this.uploadProgress.updateStatus(fullPath, {
+            abortController: undefined
+          });
         })
         .catch(() => {
           this.uploadProgress.updateStatus(fullPath, {
@@ -241,7 +245,8 @@ export class FileSystemFA {
     file: FileSystemEntry,
     uploadType: UploadType
   ): (() => Promise<void>) => {
-    const signal = new AbortController().signal;
+    const abortController = new AbortController();
+    const signal = abortController.signal;
     const config = {
       onUploadProgress: (progressEvent: AxiosProgressEvent) => {
         this.uploadProgress.updateStatus(fullPath, {
@@ -254,7 +259,7 @@ export class FileSystemFA {
       fullPath,
       file,
       progress: { loaded: 0, bytes: 0, progress: 0 },
-      signal
+      abortController
     });
 
     if (file.isFile) {
@@ -275,6 +280,9 @@ export class FileSystemFA {
             .then((response) => {
               this.cleanUploading(response.data);
               this.actualizeFiles(response.data);
+              this.uploadProgress.updateStatus(fullPath, {
+                abortController: undefined
+              });
             })
             .catch(() => {
               this.uploadProgress.updateStatus(fullPath, {
@@ -298,6 +306,9 @@ export class FileSystemFA {
           )
           .then((response) => {
             this.cleanUploading(response.data);
+            this.uploadProgress.updateStatus(fullPath, {
+              abortController: undefined
+            });
           })
           .catch(() => {
             this.uploadProgress.updateStatus(fullPath, {

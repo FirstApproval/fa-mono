@@ -87,7 +87,23 @@ export const UploadStatusWindow = observer(
                 <UploadStatusPercent>
                   {overallProgress}% uploaded...
                   <UploadStatusCancel>
-                    <LinkWrap>Cancel</LinkWrap>
+                    <LinkWrap
+                      onClick={() => {
+                        [...fs.uploadProgress.progressStatus.keys()].forEach(
+                          (key) => {
+                            const value =
+                              fs.uploadProgress.progressStatus.get(key);
+                            if (!value) {
+                              return null;
+                            }
+                            value.abortController?.abort(
+                              'Upload cancelled by the user'
+                            );
+                          }
+                        );
+                      }}>
+                      Cancel
+                    </LinkWrap>
                   </UploadStatusCancel>
                 </UploadStatusPercent>
               )}

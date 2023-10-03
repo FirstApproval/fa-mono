@@ -5,7 +5,7 @@ interface ProgressStatus {
   fullPath: string;
   file: File | FileSystemEntry;
   progress: AxiosProgressEvent;
-  signal?: AbortSignal;
+  abortController?: AbortController;
   isFailed?: boolean;
 }
 
@@ -18,7 +18,7 @@ export class UploadProgressStore {
 
   get inProgress(): number {
     return [...this.progressStatus.values()].filter(
-      (m) => m.progress.progress !== 1
+      (m) => m.progress.progress !== 1 && !m.isFailed
     ).length;
   }
 
