@@ -12,9 +12,11 @@ import FormatQuote from '@mui/icons-material/FormatQuote';
 import ContentCopy from '@mui/icons-material/ContentCopy';
 import Menu from '@mui/material/Menu';
 import {
+  CircularProgressWrap,
   CursorPointer,
   HeightElement,
   SpaceBetween,
+  SpanFont14Wrap,
   StyledMenuItem,
   Width100Percent
 } from '../pages/common.styled';
@@ -187,12 +189,6 @@ export const PublicationSection = (props: {
                       </CursorPointer>
                       {publication.downloadsCount}
                     </Flex>
-                    {publication.status ===
-                      PublicationStatus.READY_FOR_PUBLICATION && (
-                      <ReadyForPublicationBadge>
-                        Publishing
-                      </ReadyForPublicationBadge>
-                    )}
                     <div>
                       <Menu
                         anchorEl={utilAnchor}
@@ -286,11 +282,20 @@ export const PublicationSection = (props: {
                       </IconButton>
                     </div>
                   </Flex>
-                  <div>
-                    <Moment format={'D MMMM YYYY'}>
-                      {publication.publicationTime}
-                    </Moment>
-                  </div>
+                  {publication.status ===
+                    PublicationStatus.READY_FOR_PUBLICATION && (
+                    <Flex alignItems={FlexAlignItems.center}>
+                      <CircularProgressWrap size={32} />
+                      <SpanFont14Wrap>Publishing...</SpanFont14Wrap>
+                    </Flex>
+                  )}
+                  {publication.status === PublicationStatus.PUBLISHED && (
+                    <div>
+                      <Moment format={'D MMMM YYYY'}>
+                        {publication.publicationTime}
+                      </Moment>
+                    </div>
+                  )}
                 </Flex>
               </Footer>
             </Flex>
@@ -432,30 +437,6 @@ const DraftBadge = styled.div`
   background: var(--amber-50, #fff8e1);
 
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
-  font-feature-settings: 'clig' off, 'liga' off;
-  /* typography/body2 */
-  font-family: Roboto;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 143%; /* 20.02px */
-  letter-spacing: 0.17px;
-`;
-
-const ReadyForPublicationBadge = styled.div`
-  margin-left: 20px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 24px;
-
-  width: 80px;
-  height: 32px;
-  border-radius: 4px;
-  background: var(--amber-50, #d9facd);
-
-  color: var(--text-disabled, rgba(6, 5, 9, 0.38));
   font-feature-settings: 'clig' off, 'liga' off;
   /* typography/body2 */
   font-family: Roboto;

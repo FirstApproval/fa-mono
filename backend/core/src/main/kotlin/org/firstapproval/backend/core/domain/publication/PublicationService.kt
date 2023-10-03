@@ -131,6 +131,7 @@ class PublicationService(
                     )
                 }
                 publication.confirmedAuthors.clear()
+                publicationRepository.saveAndFlush(publication)
                 publication.confirmedAuthors.addAll(confirmedPublicationAuthors)
             }
             if (unconfirmedAuthors?.edited == true) {
