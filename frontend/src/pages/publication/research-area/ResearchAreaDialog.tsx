@@ -6,10 +6,7 @@ import { observer } from 'mobx-react-lite';
 import { ResearchAreaProps } from './ResearchArea';
 import styled from '@emotion/styled';
 import { C3B4EFF, C68676E, Color_040036 } from '../../../ui-kit/colors';
-import {
-  Typography_16_400,
-  Typography_24_600
-} from '../../../ui-kit/typography';
+import { Typography_16_400 } from '../../../ui-kit/typography';
 import {
   Flex,
   FlexAlignItems,
@@ -29,6 +26,7 @@ import {
   ResearchAreaLevel
 } from './ResearchAreas';
 import { ResearchAreaStore } from './ResearchAreaStore';
+import { Typography } from '@mui/material';
 
 export const ResearchAreaDialog = observer(
   (props: ResearchAreaProps): ReactElement => {
@@ -45,9 +43,9 @@ export const ResearchAreaDialog = observer(
                 alignItems={FlexAlignItems.center}
                 justifyContent={FlexJustifyContent.spaceBetween}>
                 <Color_040036>
-                  <Typography_24_600>
+                  <Typography variant={'h5'}>
                     Choose 1 or more research areas
-                  </Typography_24_600>
+                  </Typography>
                 </Color_040036>
                 <CursorPointer>
                   <Flex alignItems={FlexAlignItems.center}>
@@ -208,7 +206,7 @@ const DialogWrap = styled.div`
 
 const DialogTitleWrap = styled.div`
   width: 100%;
-  padding: 0 16px;
+  padding: 0 8px;
   margin-bottom: 32px;
 `;
 

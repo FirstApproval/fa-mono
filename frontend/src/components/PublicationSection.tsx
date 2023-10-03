@@ -1,6 +1,6 @@
 import React, { type ReactElement, useState } from 'react';
 import styled from '@emotion/styled';
-import { Avatar, Divider, IconButton, Link } from '@mui/material';
+import { Avatar, Divider, IconButton, Link, Typography } from '@mui/material';
 import {
   type Publication,
   PublicationStatus
@@ -304,8 +304,8 @@ export const PublicationSection = (props: {
         {publication.status === PublicationStatus.PENDING && (
           <SpaceBetween>
             <Flex alignItems={FlexAlignItems.center}>
-              <DraftBadge>Draft</DraftBadge>
-              <LastEdited>
+              <DraftBadge variant={'body2'}>Draft</DraftBadge>
+              <LastEdited variant={'body2'}>
                 {getTimeElapsedString(publication.editingTime)}
               </LastEdited>
             </Flex>
@@ -425,7 +425,7 @@ const DownloadWrap = styled(Download)`
   margin-left: 24px;
 `;
 
-const DraftBadge = styled.div`
+const DraftBadge = styled(Typography)`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -437,27 +437,10 @@ const DraftBadge = styled.div`
   background: var(--amber-50, #fff8e1);
 
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
-  font-feature-settings: 'clig' off, 'liga' off;
-  /* typography/body2 */
-  font-family: Roboto;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 143%; /* 20.02px */
-  letter-spacing: 0.17px;
 `;
 
-const LastEdited = styled.span`
+const LastEdited = styled(Typography)`
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
-  font-feature-settings: 'clig' off, 'liga' off;
-
-  /* typography/body2 */
-  font-family: Roboto;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 143%; /* 20.02px */
-  letter-spacing: 0.17px;
 `;
 
 const CustomMenuItem = styled(MenuItem)`

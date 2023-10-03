@@ -23,7 +23,8 @@ import {
   Divider,
   IconButton,
   Snackbar,
-  TextField
+  TextField,
+  Typography
 } from '@mui/material';
 import { Add, DeleteOutlined, PersonAdd } from '@mui/icons-material';
 import Dialog from '@mui/material/Dialog';
@@ -389,7 +390,7 @@ const AddAuthorDialog = observer(
                   />
                 </FlexWrapRow>
                 <FlexWrapColumn>
-                  <WorkplacesTitle>
+                  <WorkplacesTitle variant={'h6'}>
                     Current workplaces (affiliations)
                   </WorkplacesTitle>
                   <WorkplacesEditor store={authorStore} isModalWindow={true} />
@@ -595,17 +596,6 @@ const DialogContentWrap = styled(DialogContent)`
   padding-right: 32px !important;
 `;
 
-const WorkplacesTitle = styled.span`
+const WorkplacesTitle = styled(Typography)`
   margin-bottom: 32px;
-
-  color: var(--text-primary, #040036);
-  font-feature-settings: 'clig' off, 'liga' off;
-
-  /* typography/h6 */
-  font-family: Roboto;
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 160%; /* 32px */
-  letter-spacing: 0.15px;
 `;

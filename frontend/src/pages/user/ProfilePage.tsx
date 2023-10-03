@@ -11,7 +11,8 @@ import {
   CircularProgress,
   Divider,
   LinearProgress,
-  Tabs
+  Tabs,
+  Typography
 } from '@mui/material';
 import { ContentCopy, EmailOutlined } from '@mui/icons-material';
 import { observer } from 'mobx-react-lite';
@@ -129,6 +130,7 @@ export const ProfilePage: FunctionComponent = observer(() => {
                 <UserInfoElement>
                   <NameElement>{lastNameAndFirstName}</NameElement>
                   <WorkPlaces
+                    variant={'body1'}
                     style={{ marginTop: '10px', marginBottom: '10px' }}>
                     {getCurrentWorkplacesString(user.workplaces)}
                   </WorkPlaces>
@@ -137,7 +139,7 @@ export const ProfilePage: FunctionComponent = observer(() => {
                       style={{ marginRight: '12px', marginTop: '2.5px' }}
                       htmlColor={'#68676e'}
                     />
-                    <WorkPlaces>{user.email}</WorkPlaces>
+                    <WorkPlaces variant={'body1'}>{user.email}</WorkPlaces>
                   </EmailElement>
                   <RowElement visibility={username ? 'hidden' : 'visible'}>
                     <EditProfileAndCreateDraftButtons
@@ -199,11 +201,14 @@ export const ProfilePage: FunctionComponent = observer(() => {
                               marginTop: '11.5px'
                             }}>
                             <img src={noPublications} />
-                            <NoPublicationsText>
+                            <NoPublicationsText variant={'h5'}>
                               No publications :(
                             </NoPublicationsText>
-                            <ItLooksLikeUserHasntUploaded>
-                              {`It looks like ${user.firstName} hasn’t uploaded any datasets yet.\nCheck back soon!`}
+                            <ItLooksLikeUserHasntUploaded variant={'body1'}>
+                              It looks like {user.firstName} hasn&apos;t
+                              uploaded any datasets yet.
+                              <br />
+                              Check back soon!
                             </ItLooksLikeUserHasntUploaded>
                           </div>
                         )}
@@ -216,11 +221,11 @@ export const ProfilePage: FunctionComponent = observer(() => {
                         !store.isLoadingPublications && (
                           <Banner>
                             <BannerLeftPart>
-                              <UploadYourFirstDatasetHeader>
+                              <Typography variant={'h5'}>
                                 Upload your first dataset
-                              </UploadYourFirstDatasetHeader>
+                              </Typography>
                               <HeightElement value={'24px'} />
-                              <WorkPlaces>
+                              <WorkPlaces variant={'body1'}>
                                 Show off your work. Get recognition and be a
                                 part of a growing community.
                               </WorkPlaces>
@@ -326,16 +331,8 @@ export const UserInfoElement = styled.div`
   margin-left: 32px;
 `;
 
-export const WorkPlaces = styled.div`
+export const WorkPlaces = styled(Typography)`
   color: var(--text-secondary, #68676e);
-  font-feature-settings: 'clig' off, 'liga' off;
-  /* typography/body1 */
-  font-family: Roboto;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 150%; /* 24px */
-  letter-spacing: 0.15px;
   word-break: break-word;
 `;
 
@@ -399,18 +396,6 @@ const LoadMorePublicationsButton = styled(Button)`
   width: 215px;
 `;
 
-const UploadYourFirstDatasetHeader = styled.span`
-  color: var(--text-primary, #040036);
-  font-feature-settings: 'clig' off, 'liga' off;
-
-  /* typography/h5 */
-  font-family: Roboto;
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 133.4%; /* 32.016px */
-`;
-
 const Banner = styled.div`
   display: flex;
   width: 100%;
@@ -455,33 +440,15 @@ const PublicationsContainer = styled.div`
   justify-content: start;
 `;
 
-const NoPublicationsText = styled.span`
-  color: var(--text-primary, #040036);
+const NoPublicationsText = styled(Typography)`
   text-align: center;
-  font-feature-settings: 'clig' off, 'liga' off;
-
-  /* typography/h5 */
-  font-family: Roboto;
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 133.4%; /* 32.016px */
 
   margin-top: 16px;
   margin-bottom: 16px;
 `;
 
-const ItLooksLikeUserHasntUploaded = styled.span`
+const ItLooksLikeUserHasntUploaded = styled(Typography)`
   color: var(--text-secondary, #68676e);
   text-align: center;
-  font-feature-settings: 'clig' off, 'liga' off;
-
-  /* typography/body1 */
-  font-family: Roboto;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 150%; /* 24px */
-  letter-spacing: 0.15px;
   white-space: pre-line;
 `;

@@ -7,7 +7,13 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { Button, DialogContent, LinearProgress, Tooltip } from '@mui/material';
+import {
+  Button,
+  DialogContent,
+  LinearProgress,
+  Tooltip,
+  Typography
+} from '@mui/material';
 import {
   FlexBodyCenter,
   FlexHeader,
@@ -189,7 +195,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
                         ? `${publicationStore.creator?.firstName} ${publicationStore.creator?.lastName}`
                         : undefined
                     }>
-                    <DraftedBy ref={nameRef}>
+                    <DraftedBy variant={'body1'} ref={nameRef}>
                       Draft by
                       {/* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */}
                       {` ${publicationStore.creator?.firstName} ${publicationStore.creator?.lastName}`}
@@ -197,11 +203,11 @@ export const PublicationPage: FunctionComponent = observer(() => {
                   </Tooltip>
                   {publicationStore.savingStatus ===
                     SavingStatusState.SAVING && (
-                    <SavingStatus>Saving...</SavingStatus>
+                    <SavingStatus variant={'body1'}>Saving...</SavingStatus>
                   )}
                   {publicationStore.savingStatus ===
                     SavingStatusState.SAVED && (
-                    <SavingStatus>Saved</SavingStatus>
+                    <SavingStatus variant={'body1'}>Saved</SavingStatus>
                   )}
                 </>
               )}
@@ -690,31 +696,16 @@ const ToolbarContainer = styled.div`
   display: flex;
 `;
 
-const DraftedBy = styled.span`
+const DraftedBy = styled(Typography)`
   margin: 0 16px;
-  color: var(--text-primary, #040036);
-  font-feature-settings: 'clig' off, 'liga' off;
-  /* typography/body1 */
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 150%; /* 24px */
-  letter-spacing: 0.15px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 260px;
 `;
 
-const SavingStatus = styled.span`
+const SavingStatus = styled(Typography)`
   color: var(--text-secondary, #68676e);
-  font-feature-settings: 'clig' off, 'liga' off;
-  /* typography/body1 */
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 150%; /* 24px */
-  letter-spacing: 0.15px;
 `;
 
 const FlexDiv = styled.div`

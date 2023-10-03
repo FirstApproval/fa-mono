@@ -9,7 +9,8 @@ import {
   Radio,
   Switch,
   TextField,
-  Tooltip
+  Tooltip,
+  Typography
 } from '@mui/material';
 import {
   Close,
@@ -68,7 +69,7 @@ export const SharingOptionsPage = (props: {
     <Container>
       <LeftPanel>
         <FlexWrapColumn>
-          <LeftPanelHeader>Preview</LeftPanelHeader>
+          <LeftPanelHeader variant={'h5'}>Preview</LeftPanelHeader>
           <HeightElement value={'48px'} />
           <InputPreviewTextField
             variant={'standard'}
@@ -114,7 +115,7 @@ export const SharingOptionsPage = (props: {
         <BodyWrap>
           <BodyContentWrap>
             <HeaderWrap>
-              <HeaderTitle>Publishing</HeaderTitle>
+              <Typography variant={'h5'}>Publishing</Typography>
               <MarginLeftAuto>
                 <IconButton>
                   <Close
@@ -161,9 +162,9 @@ export const SharingOptionsPage = (props: {
               </Tooltip>
             </SharingOptionsWrap>
             <StorageOptionsWrap>
-              <StorageOptionsTitle>
+              <Typography variant={'h6'}>
                 How would you like to store your dataset?
-              </StorageOptionsTitle>
+              </Typography>
               <FormControlLabel
                 value={StorageType.CLOUD_SECURE_STORAGE}
                 label={
@@ -174,7 +175,9 @@ export const SharingOptionsPage = (props: {
                       </StorageOptionLabelWrap>
                       <CloudOutlined />
                     </FlexWrapRowRadioLabel>
-                    <StorageOptionDescription disabled={false}>
+                    <StorageOptionDescription
+                      variant={'body1'}
+                      disabled={false}>
                       Store dataset in our secure, centralized cloud system.
                       Easy access and high-speed downloads.
                     </StorageOptionDescription>
@@ -203,7 +206,7 @@ export const SharingOptionsPage = (props: {
                       <WidthElement value="8px" />
                       <SoonChip />
                     </FlexWrapRowRadioLabel>
-                    <StorageOptionDescription disabled={true}>
+                    <StorageOptionDescription variant={'body1'} disabled={true}>
                       Distribute dataset across a decentralized network for
                       added resilience and permanence.
                     </StorageOptionDescription>
@@ -316,7 +319,9 @@ const SharingOption = React.forwardRef<HTMLDivElement, SharingOptionsProps>(
           )}
         </FlexWrapRow>
 
-        <SharingOptionLabel isDisabled={isDisabled}>{label}</SharingOptionLabel>
+        <SharingOptionLabel variant={'h6'} isDisabled={isDisabled}>
+          {label}
+        </SharingOptionLabel>
         <SharingOptionDescription isDisabled={isDisabled}>
           {description}
         </SharingOptionDescription>
@@ -403,16 +408,7 @@ const IconWrap = styled.div`
   margin-bottom: 12px;
 `;
 
-const SharingOptionLabel = styled.div<{ isDisabled?: boolean }>`
-  font-feature-settings: 'clig' off, 'liga' off;
-
-  /* typography/h6 */
-  font-family: Roboto;
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 160%; /* 32px */
-  letter-spacing: 0.15px;
+const SharingOptionLabel = styled(Typography)<{ isDisabled?: boolean }>`
   ${(props) =>
     props.isDisabled
       ? 'color: var(--text-disabled, rgba(4, 0, 54, 0.38));'
@@ -434,18 +430,6 @@ const HeaderWrap = styled.div`
   margin-bottom: 48px;
   display: flex;
   justify-content: center;
-`;
-
-const HeaderTitle = styled.div`
-  color: var(--text-primary, #040036);
-  font-feature-settings: 'clig' off, 'liga' off;
-
-  /* typography/h5 */
-  font-family: Roboto;
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 133.4%; /* 32.016px */
 `;
 
 const MarginLeftAuto = styled.div`
@@ -476,16 +460,8 @@ const LeftPanel = styled.div`
   padding: 48px;
 `;
 
-const LeftPanelHeader = styled.div`
+const LeftPanelHeader = styled(Typography)`
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
-  font-feature-settings: 'clig' off, 'liga' off;
-
-  /* typography/h5 */
-  font-family: Roboto;
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 133.4%; /* 32.016px */
 `;
 
 const LeftPanelSubtitle = styled.div`
@@ -516,19 +492,6 @@ const StorageOptionsWrap = styled.div`
   flex-direction: column;
 `;
 
-const StorageOptionsTitle = styled.span`
-  color: var(--text-primary, #040036);
-  font-feature-settings: 'clig' off, 'liga' off;
-
-  /* typography/h6 */
-  font-family: Roboto;
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 160%; /* 32px */
-  letter-spacing: 0.15px;
-`;
-
 const StorageOptionLabelWrap = styled.div<{
   disabled: boolean;
 }>`
@@ -546,19 +509,9 @@ const StorageOptionLabelWrap = styled.div<{
   color: ${(props) => (props.disabled ? '#04003661' : '#040036')};
 `;
 
-const StorageOptionDescription = styled.div<{
+const StorageOptionDescription = styled(Typography)<{
   disabled: boolean;
 }>`
-  font-feature-settings: 'clig' off, 'liga' off;
-
-  /* typography/body1 */
-  font-family: Roboto;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 150%; /* 24px */
-  letter-spacing: 0.15px;
-
   margin-top: 4px;
   color: ${(props) => (props.disabled ? '#04003661' : '#040036')};
 `;

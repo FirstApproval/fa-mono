@@ -9,6 +9,11 @@ export const theme = createTheme({
       primary: '#040036'
     }
   },
+  typography: {
+    h5: {
+      fontWeight: 600
+    }
+  },
   components: {
     MuiButton: {
       styleOverrides: {

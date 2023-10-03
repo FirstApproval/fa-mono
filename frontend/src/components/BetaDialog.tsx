@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, Divider } from '@mui/material';
+import { Dialog, DialogContent, Divider, Typography } from '@mui/material';
 import React, { ReactElement } from 'react';
 import {
   FullWidthButton,
@@ -32,11 +32,11 @@ export const BetaDialog = (props: {
             onClick={props.onClose}
           />
         </TitleRowWrap>
-        <WeKeepDataSafeText>
+        <Typography variant={'body2'}>
           We keep data safe but we are still fine-tuning the platform and would
           love your feedback. Please choose how you would like to send us a
           message:
-        </WeKeepDataSafeText>
+        </Typography>
         <div style={{ width: '100%' }}>
           <FullWidthButton
             variant={'contained'}
@@ -98,16 +98,4 @@ const DialogContentWrap = styled(DialogContent)`
   /* elevation/15 */
   box-shadow: 0 8px 9px -5px rgba(0, 0, 0, 0.2),
     0px 15px 22px 2px rgba(0, 0, 0, 0.14), 0px 6px 28px 5px rgba(0, 0, 0, 0.12);
-`;
-
-const WeKeepDataSafeText = styled.span`
-  color: var(--text-primary, #040036);
-  font-feature-settings: 'clig' off, 'liga' off;
-  /* typography/body2 */
-  font-family: Roboto;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 143%; /* 20.02px */
-  letter-spacing: 0.17px;
 `;

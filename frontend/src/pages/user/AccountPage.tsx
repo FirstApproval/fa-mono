@@ -8,7 +8,8 @@ import {
   IconButton,
   InputAdornment,
   Tabs,
-  TextField
+  TextField,
+  Typography
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { observer } from 'mobx-react-lite';
@@ -273,7 +274,7 @@ export const AccountPage: FunctionComponent = observer(() => {
               <HeightElement value={'32px'}></HeightElement>
               {tabNumber === 0 && (
                 <TabContainer>
-                  <NameElement>Email</NameElement>
+                  <NameElement variant={'h6'}>Email</NameElement>
                   <FullWidthTextField
                     disabled={true}
                     value={editableUser.email}
@@ -298,7 +299,7 @@ export const AccountPage: FunctionComponent = observer(() => {
                       Username address already registered by another user
                     </AlertWrap>
                   )}
-                  <NameElement>Username</NameElement>
+                  <NameElement variant={'h6'}>Username</NameElement>
                   <FullWidthTextField
                     marginbottom="0px"
                     value={editableUser.username}
@@ -369,7 +370,7 @@ export const AccountPage: FunctionComponent = observer(() => {
                     )}
                   </RowElement>
                   <HeightElement value={'32px'}></HeightElement>
-                  <NameElement>Name</NameElement>
+                  <NameElement variant={'h6'}>Name</NameElement>
                   <FullWidthTextField
                     value={editableUser.firstName}
                     onChange={(e) => {
@@ -432,7 +433,7 @@ export const AccountPage: FunctionComponent = observer(() => {
                 <TabContainer>
                   {editableUser.canChangePassword && (
                     <>
-                      <NameElement>Old password</NameElement>
+                      <NameElement variant={'h6'}>Old password</NameElement>
                       <FullWidthTextField
                         value={previousPassword}
                         onChange={(e) => {
@@ -455,7 +456,7 @@ export const AccountPage: FunctionComponent = observer(() => {
                   {((editableUser.canSetPassword ?? false) ||
                     (editableUser.canChangePassword ?? false)) && (
                     <>
-                      <NameElement>New password</NameElement>
+                      <NameElement variant={'h6'}>New password</NameElement>
                       <FullWidthTextField
                         marginbottom="0px"
                         value={newPassword}
@@ -563,18 +564,7 @@ export const HeaderElement = styled.span`
   text-align: left;
 `;
 
-export const NameElement = styled.span`
-  color: var(--text-primary, #040036);
-  font-feature-settings: 'clig' off, 'liga' off;
-
-  /* typography/h6 */
-  font-family: Roboto;
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 160%; /* 32px */
-  letter-spacing: 0.15px;
-
+export const NameElement = styled(Typography)`
   margin-bottom: 24px;
 `;
 

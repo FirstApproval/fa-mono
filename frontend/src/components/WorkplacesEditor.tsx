@@ -332,7 +332,7 @@ export const WorkplacesEditor = observer(
                 sx={{ width: '22px', height: '22px' }}
               />
               <WidthElement value={'12px'} />
-              <ValidationErrorText>
+              <ValidationErrorText variant={'body2'}>
                 You must add at least one current workplace.
               </ValidationErrorText>
             </ValidationError>

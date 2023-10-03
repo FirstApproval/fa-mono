@@ -1,4 +1,10 @@
-import { Button, Dialog, FormControlLabel, Radio } from '@mui/material';
+import {
+  Button,
+  Dialog,
+  FormControlLabel,
+  Radio,
+  Typography
+} from '@mui/material';
 import React, { ReactElement, useEffect, useState } from 'react';
 import {
   FlexWrapRow,
@@ -11,7 +17,6 @@ import Launch from '@mui/icons-material/Launch';
 import styled from '@emotion/styled';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
 import { routerStore } from '../core/router';
 import humanInCircle from '../assets/human-in-circle.svg';
 import dollarStrikethrough from '../assets/dollar-strikethrough.svg';
@@ -35,7 +40,7 @@ export const ContentLicensingDialog = (props: {
       onClose={onClose}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description">
-      <DeleteDialogTitle id="alert-dialog-title">
+      <DeleteDialogTitle id="alert-dialog-title" variant={'h5'}>
         Content licensing
       </DeleteDialogTitle>
       <DialogContentWrap>
@@ -158,19 +163,9 @@ const DialogWidthWrap = styled.div`
   background: var(--grey-50, #f8f7fa);
 `;
 
-const DeleteDialogTitle = styled(DialogTitle)`
-  padding-top: 32px !important;
-  padding-left: 32px !important;
-
-  color: var(--text-primary, #040036);
-  font-feature-settings: 'clig' off, 'liga' off;
-
-  /* typography/h5 */
-  font-family: Roboto;
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 133.4%; /* 32.016px */
+const DeleteDialogTitle = styled(Typography)`
+  padding-top: 32px;
+  padding-left: 32px;
 `;
 
 const DialogContentWrap = styled(DialogContent)`

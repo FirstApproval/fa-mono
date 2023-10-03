@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { LoadingButton } from '@mui/lab';
-import { CircularProgress, Tab } from '@mui/material';
+import { CircularProgress, Tab, Typography } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 
 export const Parent = styled.div`
@@ -135,17 +135,8 @@ export const ValidationError = styled.div`
   background: var(--alert-error-fill, #fdeded);
 `;
 
-export const ValidationErrorText = styled.span`
+export const ValidationErrorText = styled(Typography)`
   color: var(--alert-error-content, #5f2120);
-  font-feature-settings: 'clig' off, 'liga' off;
-
-  /* typography/body2 */
-  font-family: Roboto;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 143%; /* 20.02px */
-  letter-spacing: 0.17px;
 `;
 
 export const CircularProgressWrap = styled(CircularProgress)`

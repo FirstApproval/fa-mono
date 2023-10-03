@@ -76,7 +76,7 @@ export const SignInPage: FunctionComponent<SignInPageProps> = observer(
                     sx={{ width: '22px', height: '22px' }}
                   />
                   <WidthElement value={'12px'} />
-                  <ValidationErrorText>
+                  <ValidationErrorText variant={'body2'}>
                     Enter a valid email address and password.
                   </ValidationErrorText>
                 </ValidationError>

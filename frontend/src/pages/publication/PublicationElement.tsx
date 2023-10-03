@@ -1,6 +1,7 @@
 import React, { type ReactElement } from 'react';
 import styled from '@emotion/styled';
 import { type Publication } from '../../apis/first-approval-api';
+import { Typography } from '@mui/material';
 
 interface PublicationElementProps {
   index: number;
@@ -21,7 +22,7 @@ export const PublicationElement = (
     .join(' , ');
   return (
     <PublicationRowWrap>
-      <Authors>{authorsString}</Authors>
+      <Typography variant={'body2'}>{authorsString}</Typography>
       <PublicationHeader>{publication.previewTitle ?? ''}</PublicationHeader>
       <PublicationDescription>
         {publication.previewSubtitle ?? ''}
@@ -34,19 +35,6 @@ const PublicationRowWrap = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-`;
-
-export const Authors = styled.span`
-  color: var(--text-primary, #040036);
-  font-feature-settings: 'clig' off, 'liga' off;
-
-  /* typography/body2 */
-  font-family: Roboto;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 143%; /* 20.02px */
-  letter-spacing: 0.17px;
 `;
 
 export const PublicationHeader = styled.span`
