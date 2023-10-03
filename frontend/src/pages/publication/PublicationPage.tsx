@@ -90,6 +90,7 @@ import { useIsHorizontalOverflow } from '../../util/overflowUtil';
 import { ResearchAreaStore } from './research-area/ResearchAreaStore';
 import { ResearchArea } from './research-area/ResearchArea';
 import { UploadStatusWindow } from './UploadStatusWindow';
+import { Footer } from '../home/Footer';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -387,6 +388,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
           onClose={() => setContentLicensingDialogOpen(false)}
         />
       )}
+      {publicationStore.isView && <Footer />}
     </>
   );
 });
