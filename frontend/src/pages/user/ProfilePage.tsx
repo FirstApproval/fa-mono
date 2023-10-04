@@ -273,7 +273,7 @@ export const ProfilePage: FunctionComponent = observer(() => {
                       {!notEmptyDrafts && !username && (
                         <CenterColumnElement>
                           <YouDontHaveAnyDrafts>
-                            You don't have any drafts yet 🤷
+                            You don&apos;t have any drafts yet 🤷
                           </YouDontHaveAnyDrafts>
                           <HeightElement value="16px" />
                           <EditProfileAndCreateDraftButtons
