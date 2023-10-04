@@ -80,7 +80,7 @@ export class UserStore implements IWorkplaceStore {
     if (!workplaces?.length) {
       routerStore.navigatePage(Page.ACCOUNT, ACCOUNT_AFFILIATIONS_PATH);
     } else {
-      routerStore.navigatePage(Page.PUBLICATION, publicationPath);
+      window.location.href = window.location.origin + publicationPath;
     }
   };
 

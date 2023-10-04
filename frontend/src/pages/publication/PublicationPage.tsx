@@ -93,6 +93,7 @@ import { ResearchAreaStore } from './research-area/ResearchAreaStore';
 import { ResearchArea } from './research-area/ResearchArea';
 import { UploadStatusWindow } from './UploadStatusWindow';
 import { Footer } from '../home/Footer';
+import { HeaderComponent } from 'src/components/HeaderComponent';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -183,116 +184,127 @@ export const PublicationPage: FunctionComponent = observer(() => {
         <meta name="description" content={publicationStore.title} />
       </Helmet>
       <Parent>
-        <FlexHeader>
-          <ToolbarContainer>
-            <div style={{ display: 'flex' }}>
-              <Logo onClick={routerStore.goHome}>
-                <img src={logo} />
-              </Logo>
-              <BetaDialogWithButton />
-              {!publicationStore.isView && (
-                <>
-                  <Tooltip
-                    title={
-                      isOverflow
-                        ? `${publicationStore.creator?.firstName} ${publicationStore.creator?.lastName}`
-                        : undefined
-                    }>
-                    <DraftedBy variant={'body1'} ref={nameRef}>
-                      Draft by
-                      {/* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */}
-                      {` ${publicationStore.creator?.firstName} ${publicationStore.creator?.lastName}`}
-                    </DraftedBy>
-                  </Tooltip>
-                  {publicationStore.savingStatus ===
-                    SavingStatusState.SAVING && (
-                    <SavingStatus variant={'body1'}>Saving...</SavingStatus>
-                  )}
-                  {publicationStore.savingStatus ===
-                    SavingStatusState.SAVED && (
-                    <SavingStatus variant={'body1'}>Saved</SavingStatus>
-                  )}
-                </>
-              )}
-            </div>
-            <FlexDiv>
-              {!publicationStore.isView && (
-                <>
-                  {publicationStore.viewMode === ViewMode.PREVIEW && (
+        {publicationStore.isView &&
+          (publicationStore.isPublished || publicationStore.isPublishing) && (
+            <HeaderComponent
+              showAboutUsButton={true}
+              showPublishButton={true}
+              showLoginButton={true}
+              showSignUpContainedButton={true}
+            />
+          )}
+        {!publicationStore.isPublished && !publicationStore.isPublishing && (
+          <FlexHeader>
+            <ToolbarContainer>
+              <div style={{ display: 'flex' }}>
+                <Logo onClick={routerStore.goHome}>
+                  <img src={logo} />
+                </Logo>
+                <BetaDialogWithButton />
+                {!publicationStore.isView && (
+                  <>
+                    <Tooltip
+                      title={
+                        isOverflow
+                          ? `${publicationStore.creator?.firstName} ${publicationStore.creator?.lastName}`
+                          : undefined
+                      }>
+                      <DraftedBy variant={'body1'} ref={nameRef}>
+                        Draft by
+                        {/* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */}
+                        {` ${publicationStore.creator?.firstName} ${publicationStore.creator?.lastName}`}
+                      </DraftedBy>
+                    </Tooltip>
+                    {publicationStore.savingStatus ===
+                      SavingStatusState.SAVING && (
+                      <SavingStatus variant={'body1'}>Saving...</SavingStatus>
+                    )}
+                    {publicationStore.savingStatus ===
+                      SavingStatusState.SAVED && (
+                      <SavingStatus variant={'body1'}>Saved</SavingStatus>
+                    )}
+                  </>
+                )}
+              </div>
+              <FlexDiv>
+                {!publicationStore.isView && (
+                  <>
+                    {publicationStore.viewMode === ViewMode.PREVIEW && (
+                      <ButtonWrap
+                        disabled={fs.activeUploads > 0 || sfs.activeUploads > 0}
+                        variant="contained"
+                        size={'medium'}
+                        onClick={() => {
+                          const isValid = validateSections();
+                          if (isValid) {
+                            routerStore.navigatePage(
+                              Page.SHARING_OPTIONS,
+                              routerStore.path,
+                              true,
+                              {
+                                publicationTitle: publicationStore.title,
+                                publicationSummary:
+                                  publicationStore.summary[0].text.substring(
+                                    0,
+                                    200
+                                  ),
+                                licenseType: publicationStore.licenseType
+                              }
+                            );
+                          }
+                        }}>
+                        Publish
+                      </ButtonWrap>
+                    )}
                     <ButtonWrap
-                      disabled={fs.activeUploads > 0 || sfs.activeUploads > 0}
-                      variant="contained"
+                      variant={
+                        publicationStore.viewMode === ViewMode.PREVIEW
+                          ? 'outlined'
+                          : 'contained'
+                      }
                       size={'medium'}
                       onClick={() => {
-                        const isValid = validateSections();
-                        if (isValid) {
-                          routerStore.navigatePage(
-                            Page.SHARING_OPTIONS,
-                            routerStore.path,
-                            true,
-                            {
-                              publicationTitle: publicationStore.title,
-                              publicationSummary:
-                                publicationStore.summary[0].text.substring(
-                                  0,
-                                  200
-                                ),
-                              licenseType: publicationStore.licenseType
-                            }
-                          );
+                        if (
+                          nextViewMode !== ViewMode.PREVIEW ||
+                          validateSections()
+                        ) {
+                          publicationStore.viewMode = nextViewMode;
                         }
                       }}>
-                      Publish
+                      {nextViewMode === ViewMode.EDIT ? (
+                        <Edit
+                          sx={{
+                            width: '20px',
+                            height: '20px'
+                          }}
+                          style={{ marginRight: '8px' }}
+                        />
+                      ) : (
+                        ''
+                      )}
+                      {nextViewMode}
                     </ButtonWrap>
-                  )}
-                  <ButtonWrap
-                    variant={
-                      publicationStore.viewMode === ViewMode.PREVIEW
-                        ? 'outlined'
-                        : 'contained'
-                    }
-                    size={'medium'}
-                    onClick={() => {
-                      if (
-                        nextViewMode !== ViewMode.PREVIEW ||
-                        validateSections()
-                      ) {
-                        publicationStore.viewMode = nextViewMode;
-                      }
-                    }}>
-                    {nextViewMode === ViewMode.EDIT ? (
-                      <Edit
+                    <ButtonWrap
+                      marginright="0px"
+                      variant="outlined"
+                      size={'medium'}
+                      onClick={handleClick}>
+                      <span style={{ marginLeft: 8 }}>More</span>
+                      <ExpandMore
                         sx={{
-                          width: '20px',
-                          height: '20px'
+                          width: 20,
+                          height: 20,
+                          marginLeft: '8px'
                         }}
-                        style={{ marginRight: '8px' }}
                       />
-                    ) : (
-                      ''
-                    )}
-                    {nextViewMode}
-                  </ButtonWrap>
-                  <ButtonWrap
-                    marginright="0px"
-                    variant="outlined"
-                    size={'medium'}
-                    onClick={handleClick}>
-                    <span style={{ marginLeft: 8 }}>More</span>
-                    <ExpandMore
-                      sx={{
-                        width: 20,
-                        height: 20,
-                        marginLeft: '8px'
-                      }}
-                    />
-                  </ButtonWrap>
-                </>
-              )}
-              <UserMenu />
-            </FlexDiv>
-          </ToolbarContainer>
-        </FlexHeader>
+                    </ButtonWrap>
+                  </>
+                )}
+                <UserMenu />
+              </FlexDiv>
+            </ToolbarContainer>
+          </FlexHeader>
+        )}
         <FlexBodyCenter>
           <PublicationBodyWrap>
             {isLoading && <LinearProgress />}
