@@ -402,14 +402,14 @@ export const FileBrowserFA = observer(
           onClose={handleCloseDeleteDialog}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description">
-          <DialogTitle id="alert-dialog-title">Delete?</DialogTitle>
-          <DialogContent>
+          <DeleteTitleWrap id="alert-dialog-title">Delete?</DeleteTitleWrap>
+          <DeleteContentWrap>
             <MaxWidthWrap>
               All selected items will be deleted from Files and you won’t be
               able to undo this action.
             </MaxWidthWrap>
-          </DialogContent>
-          <DialogActions>
+          </DeleteContentWrap>
+          <DeleteActionsWrap>
             <Button onClick={handleCloseDeleteDialog}>Cancel</Button>
             <Button
               onClick={() => {
@@ -420,7 +420,7 @@ export const FileBrowserFA = observer(
               color="error">
               Delete
             </Button>
-          </DialogActions>
+          </DeleteActionsWrap>
         </Dialog>
         <Dialog
           open={noteDialogOpen}
@@ -498,4 +498,16 @@ const DialogContentWrap = styled.div`
 const DividerWrap = styled(Divider)`
   margin-left: -8px;
   margin-right: -8px;
+`;
+
+const DeleteTitleWrap = styled(DialogTitle)`
+  padding: 32px;
+`;
+
+const DeleteContentWrap = styled(DialogContent)`
+  padding: 0 32px 32px;
+`;
+
+const DeleteActionsWrap = styled(DialogActions)`
+  padding: 0 32px 32px;
 `;
