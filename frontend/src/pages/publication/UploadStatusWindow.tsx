@@ -121,14 +121,14 @@ export const UploadStatusWindow = observer(
                       <InsertDriveFile />
                       <UploadStatusName>{value.file.name}</UploadStatusName>
                       <UploadStatus>
-                        {!value.isFailed && progress !== 100 && (
+                        {!value.isFailed && !value.isSuccess && (
                           <CircularProgress
                             size={16}
                             variant={'determinate'}
                             value={progress}
                           />
                         )}
-                        {!value.isFailed && progress === 100 && (
+                        {value.isSuccess && (
                           <CheckCircle fontSize={'small'} color={'success'} />
                         )}
                         {value.isFailed && (
