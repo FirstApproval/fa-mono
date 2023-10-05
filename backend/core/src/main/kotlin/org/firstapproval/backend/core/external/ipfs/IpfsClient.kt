@@ -2,9 +2,9 @@ package org.firstapproval.backend.core.external.ipfs
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonFormat.Feature.ACCEPT_CASE_INSENSITIVE_PROPERTIES
+import com.fasterxml.jackson.annotation.JsonProperty
 import org.firstapproval.backend.core.config.Properties.IpfsProperties
 import org.firstapproval.backend.core.utils.require
-import org.springframework.core.ParameterizedTypeReference
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -15,7 +15,6 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
 import java.time.LocalDateTime
-
 
 class IpfsClient(
     private val properties: IpfsProperties,
@@ -34,53 +33,6 @@ class IpfsClient(
         fileHeaders.set("Authorization", properties.accessKey)
     }
 
-    fun getContents(): List<File> {
-        val result = restTemplate.exchange(
-            properties.contentsUrl,
-            GET,
-            httpEntity,
-            object : ParameterizedTypeReference<List<File>>() {}
-        )
-
-        return result.body.require()
-    }
-
-    fun getJobs(): List<IpfsJob> {
-        val result = restTemplate.exchange(
-            properties.jobsUrl,
-            GET,
-            httpEntity,
-            object : ParameterizedTypeReference<List<IpfsJob>>() {}
-        )
-
-        return result.body.require()
-    }
-
-    fun createJob(contentId: Long, kind: IpfsJobKind): IpfsJob {
-        val parts: MultiValueMap<String, Any> = LinkedMultiValueMap()
-        parts.add("contentId", contentId)
-        parts.add("kind", kind.name.lowercase())
-        val httpEntity = HttpEntity(parts, headers)
-        val result = restTemplate.exchange(
-            properties.jobsUrl,
-            POST,
-            httpEntity,
-            object : ParameterizedTypeReference<IpfsJob>() {}
-        )
-
-        return result.body.require()
-    }
-    fun getJob(jobId: Long): IpfsJob {
-        val result = restTemplate.exchange(
-            properties.jobsUrl + jobId,
-            GET,
-            httpEntity,
-            object : ParameterizedTypeReference<IpfsJob>() {}
-        )
-
-        return result.body.require()
-    }
-
     fun getInfo(id: Long): File {
         val result = restTemplate.exchange(
             properties.contentsUrl + "/${id}",
@@ -92,9 +44,22 @@ class IpfsClient(
         return result.body.require()
     }
 
+    fun restore(id: Long): RestoreResponse {
+        val httpEntity = HttpEntity(mapOf("restoreDays" to 1), headers)
+
+        val result = restTemplate.exchange(
+            properties.contentsUrl + "/${id}/restore",
+            POST,
+            httpEntity,
+            RestoreResponse::class.java
+        )
+
+        return result.body.require()
+    }
+
     fun upload(file: java.io.File): File {
         val parts: MultiValueMap<String, Any> = LinkedMultiValueMap()
-        parts.add("file_in", FileSystemResource(file))
+        parts.add("file_in", FileSystemResource(file)) //TODO think how improve it
         val httpEntity = HttpEntity(parts, fileHeaders)
 
         val result = restTemplate.exchange(
@@ -129,7 +94,7 @@ class IpfsClient(
         return result.body.require()
     }
 
-    data class File(
+    class File(
         val id: Long,
         val filename: String,
         val origin: String? = null,
@@ -143,43 +108,39 @@ class IpfsClient(
         val updatedAt: LocalDateTime
     )
 
-    data class DownloadFile(
+    class RestoreResponse(
+        val id: Long,
+        val filename: String,
+        val origin: String? = null,
+        @JsonProperty("ipfs_cid")
+        val ipfsCid: String,
+        @JsonProperty("encrypted_file_cid")
+        val encryptedFileCid: String? = null,
+        @JsonProperty("encrypted_file_size")
+        val encryptedFileSize: Long? = null,
+        @JsonProperty("ipfs_file_size")
+        val ipfsFileSize: Long,
+        @JsonFormat(with = [ACCEPT_CASE_INSENSITIVE_PROPERTIES])
+        var availability: IpfsContentAvailability,
+        @JsonProperty("owner_id")
+        val ownerId: Long,
+        @JsonProperty("instant_till")
+        var instantTill: LocalDateTime,
+        @JsonProperty("created_at")
+        val createdAt: LocalDateTime,
+        @JsonProperty("updated_at")
+        val updatedAt: LocalDateTime,
+        val key: String? = null
+    )
+
+    class DownloadFile(
         val url: String,
+        @JsonProperty("expires_in")
         val expiresIn: Long,
     )
 
-    data class IpfsJob(
-        val id: Long,
-        val contentId: Long,
-        @JsonFormat(with = [ACCEPT_CASE_INSENSITIVE_PROPERTIES])
-        val kind: IpfsJobKind,
-        val config: String,
-        @JsonFormat(with = [ACCEPT_CASE_INSENSITIVE_PROPERTIES])
-        val status: IpfsJobStatus,
-    )
-
     enum class IpfsContentAvailability {
-        PENDING,
         INSTANT,
-        ENCRYPTED,
         ARCHIVE,
-        ABSENT
-    }
-
-    enum class IpfsJobStatus {
-        CREATED,
-        ACCEPTED,
-        REJECTED,
-        INPROGRESS,
-        CANCELLED,
-        FAILED,
-        COMPLETE
-    }
-
-    enum class IpfsJobKind {
-        ENCRYPT,
-        DECRYPT,
-        REPLICATE,
-        RESTORE
     }
 }

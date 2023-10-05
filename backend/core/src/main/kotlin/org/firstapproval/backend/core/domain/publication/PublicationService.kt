@@ -1,10 +1,14 @@
 package org.firstapproval.backend.core.domain.publication
 
 import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
-import org.firstapproval.api.server.model.*
-import org.firstapproval.backend.core.config.Properties.FrontendProperties
-import org.firstapproval.backend.core.config.Properties.S3Properties
-import org.firstapproval.backend.core.domain.auth.TokenService
+import org.firstapproval.api.server.model.DownloadLinkResponse
+import org.firstapproval.api.server.model.Paragraph
+import org.firstapproval.api.server.model.PublicationContentStatus.AVAILABLE
+import org.firstapproval.api.server.model.PublicationContentStatus.PREPARING
+import org.firstapproval.api.server.model.PublicationEditRequest
+import org.firstapproval.api.server.model.PublicationsResponse
+import org.firstapproval.api.server.model.SubmitPublicationRequest
+import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.domain.organizations.OrganizationService
 import org.firstapproval.backend.core.domain.organizations.UnconfirmedAuthorWorkplace
@@ -13,6 +17,8 @@ import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
+import org.firstapproval.backend.core.domain.publication.StorageType.CLOUD_SECURE_STORAGE
+import org.firstapproval.backend.core.domain.publication.StorageType.IPFS
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
 import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthorRepository
 import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthor
@@ -21,9 +27,18 @@ import org.firstapproval.backend.core.domain.publication.downloader.DownloaderRe
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
 import org.firstapproval.backend.core.domain.user.UserService
-import org.firstapproval.backend.core.external.ipfs.IpfsClient
-import org.firstapproval.backend.core.external.ipfs.JobRepository
-import org.firstapproval.backend.core.external.s3.*
+import org.firstapproval.backend.core.external.ipfs.DownloadLink
+import org.firstapproval.backend.core.external.ipfs.DownloadLinkRepository
+import org.firstapproval.backend.core.external.ipfs.IpfsClient.IpfsContentAvailability.ARCHIVE
+import org.firstapproval.backend.core.external.ipfs.IpfsClient.IpfsContentAvailability.INSTANT
+import org.firstapproval.backend.core.external.ipfs.IpfsStorageService
+import org.firstapproval.backend.core.external.ipfs.RestoreRequest
+import org.firstapproval.backend.core.external.ipfs.RestoreRequestRepository
+import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_FILES
+import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_SAMPLE_FILES
+import org.firstapproval.backend.core.external.s3.FILES
+import org.firstapproval.backend.core.external.s3.FileStorageService
+import org.firstapproval.backend.core.external.s3.SAMPLE_FILES
 import org.firstapproval.backend.core.infra.elastic.PublicationElastic
 import org.firstapproval.backend.core.infra.elastic.PublicationElasticRepository
 import org.firstapproval.backend.core.utils.require
@@ -37,7 +52,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
 import java.time.ZonedDateTime.now
-import java.util.*
+import java.util.UUID
 import java.util.UUID.randomUUID
 import org.firstapproval.api.server.model.AccessType as AccessTypeApiObject
 import org.firstapproval.api.server.model.ConfirmedAuthor as ConfirmedAuthorApiObject
@@ -53,18 +68,16 @@ class PublicationService(
     private val userRepository: UserRepository,
     private val userService: UserService,
     private val organizationService: OrganizationService,
-    private val jobRepository: JobRepository,
-    private val ipfsClient: IpfsClient,
+    private val restoreRequestRepository: RestoreRequestRepository,
+    private val downloadLinkRepository: DownloadLinkRepository,
+    private val ipfsStorageService: IpfsStorageService,
     private val elasticRepository: PublicationElasticRepository,
-    private val tokenService: TokenService,
-    private val frontendProperties: FrontendProperties,
     private val fileStorageService: FileStorageService,
     private val notificationService: NotificationService,
     private val downloaderRepository: DownloaderRepository,
     private val publicationFileRepository: PublicationFileRepository,
     private val sampleFileRepository: PublicationSampleFileRepository,
     private val transactionTemplate: TransactionTemplate,
-    private val s3Properties: S3Properties
 ) {
     @Transactional
     fun create(user: User): Publication {
@@ -215,16 +228,59 @@ class PublicationService(
     @Transactional
     fun getDownloadLinkForArchive(user: User, id: String): DownloadLinkResponse {
         val publication = publicationRepository.getReferenceById(id)
+        val title = publication.title ?: id
+        val link: DownloadLinkResponse = when (publication.storageType) {
+            CLOUD_SECURE_STORAGE -> {
+                val link = fileStorageService.generateTemporaryDownloadLink(
+                    ARCHIVED_PUBLICATION_FILES, publication.id, title + "_files.zip"
+                )
+                DownloadLinkResponse(link, publication.archivePassword, AVAILABLE)
+            }
+
+            IPFS -> getIpfsDownloadLink(publication, user)
+
+            else -> throw IllegalArgumentException("Unexpected storage type: ${publication.storageType}")
+        }
+
         addDownloadHistory(user, publication)
         publication.downloadsCount += 1
-        val title = publication.title ?: id
         user.email?.let {
             notificationService.sendArchivePassword(it, title, publication.archivePassword.require())
         }
-        val link = fileStorageService.generateTemporaryDownloadLink(
-            ARCHIVED_PUBLICATION_FILES, publication.id, title + "_files.zip"
-        )
-        return DownloadLinkResponse(link, publication.archivePassword)
+
+        return link
+    }
+
+    @Transactional
+    fun getIpfsDownloadLink(pub: Publication, user: User): DownloadLinkResponse {
+        checkStatusAndAccessType(pub)
+        val contentId = pub.contentId.require()
+        return (downloadLinkRepository.findByPublicationIdAndExpirationTimeGreaterThan(pub.id, now().plusSeconds(30))
+            ?.let { DownloadLinkResponse(it.url, pub.archivePassword, AVAILABLE) }
+            ?: run {
+                downloadLinkRepository.deleteById(pub.id)
+                val contentInfo = ipfsStorageService.getInfo(contentId)
+                return when (contentInfo.availability) {
+                    INSTANT -> {
+                        val downloadLinkInfo = ipfsStorageService.getDownloadLink(contentId)
+                        val expirationTime = now().plusSeconds(downloadLinkInfo.expiresIn)  //3600 seconds - default value
+                        val newDownloadLink =
+                            downloadLinkRepository.save(DownloadLink(pub.id, downloadLinkInfo.url, expirationTime))
+                        DownloadLinkResponse(newDownloadLink.url, pub.archivePassword, AVAILABLE)
+                    }
+
+                    ARCHIVE -> {
+                        restoreRequestRepository.findByPublicationIdAndCompletionTimeIsNull(pub.id)
+                            ?: run {
+                                ipfsStorageService.restore(contentId)
+                                restoreRequestRepository.save(
+                                    RestoreRequest(publicationId = pub.id, contentId = contentId, user = user)
+                                )
+                            }
+                        DownloadLinkResponse(null, null, PREPARING)
+                    }
+                }
+            }) as DownloadLinkResponse
     }
 
     @Transactional
@@ -237,7 +293,7 @@ class PublicationService(
                 publication.id,
                 title + "_sample_files.zip"
             )
-        return DownloadLinkResponse(link, publication.archivePassword)
+        return DownloadLinkResponse(link, publication.archivePassword, AVAILABLE)
     }
 
     @Transactional(readOnly = true)

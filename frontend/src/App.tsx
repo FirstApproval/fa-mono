@@ -69,7 +69,9 @@ const App: FunctionComponent = observer(() => {
             <>
               {page === Page.LOADING && <LoadingPage />}
               {page === Page.HOME_PAGE && <HomePage key={routerStore.key} />}
-              {page === Page.PUBLICATION && <PublicationPage />}
+              {page === Page.PUBLICATION && (
+                <PublicationPage key={routerStore.key} />
+              )}
               {page === Page.SHARING_OPTIONS && (
                 <SharingOptionsPage
                   publicationTitle={routerStore.payload.publicationTitle}

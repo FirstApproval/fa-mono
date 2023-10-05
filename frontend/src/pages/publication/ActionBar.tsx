@@ -3,16 +3,17 @@ import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
 import { authStore } from '../../core/auth';
 import { routerStore } from '../../core/router';
-import download from './asset/download.svg';
-import downloadSample from './asset/download_sample.svg';
 import pdf from './asset/pdf.svg';
 import citate from './asset/citate.svg';
 import { Alert, Button, Divider, Snackbar, Tooltip } from '@mui/material';
 import { PublicationStore } from './store/PublicationStore';
-import { ContentCopy } from '@mui/icons-material';
+import { ContentCopy, FileDownloadOutlined } from '@mui/icons-material';
 import { ArchiveDownloader } from './ArchiveDownloader';
 import { CitateDialog } from './CitateDialog';
-import { PublicationStatus } from '../../apis/first-approval-api';
+import {
+  PublicationContentStatus,
+  PublicationStatus
+} from '../../apis/first-approval-api';
 import { PublicationPageStore } from './store/PublicationPageStore';
 import { Page } from '../../core/router/constants';
 import { CircularProgressWrap, SpanFont14Wrap } from '../common.styled';
@@ -82,7 +83,6 @@ export const ActionBar = observer(
                   onClick={() => {
                     if (authStore.token) {
                       publicationPageStore.downloadFiles();
-                      publicationPageStore.isPasscodeDialogOpen = true;
                     } else {
                       sessionStorage.setItem(
                         PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY,
@@ -92,8 +92,16 @@ export const ActionBar = observer(
                     }
                   }}
                   size={'medium'}>
-                  <img src={download} style={{ marginRight: '8px' }} />
-                  <span>Download</span>
+                  <FileDownloadOutlined
+                    color={'primary'}
+                    style={{ marginRight: '8px' }}
+                  />
+                  <span>
+                    {publicationPageStore.contentStatus ===
+                    PublicationContentStatus.PREPARING
+                      ? 'Preparing...'
+                      : 'Download'}
+                  </span>
                   <div style={{ marginRight: 4 }}></div>
                   <span style={{ fontWeight: '400' }}>
                     {getArchiveSizeTitle(publicationStore.archiveSize)}
@@ -109,7 +117,10 @@ export const ActionBar = observer(
                     variant="outlined"
                     onClick={() => publicationPageStore.downloadSampleFiles()}
                     size={'medium'}>
-                    <img src={downloadSample} style={{ marginRight: '8px' }} />{' '}
+                    <FileDownloadOutlined
+                      color={'inherit'}
+                      style={{ marginRight: '8px' }}
+                    />{' '}
                     <span>Download sample</span>
                     <div style={{ marginRight: 4 }}></div>
                     <span style={{ fontWeight: '400' }}>

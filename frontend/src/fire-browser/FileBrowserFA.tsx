@@ -73,6 +73,51 @@ export const FileBrowserFA = observer(
     );
     const [createNewFolderError, setCreateNewFolderError] = useState(false);
 
+    useEffect(() => {
+      const fileInput = document.getElementById(
+        `${props.instanceId}-file-input`
+      );
+
+      if (!fileInput) return;
+
+      const handleFileSelect = async (event: any): Promise<void> => {
+        const files = event.target.files;
+        const filesArray: File[] = [];
+
+        for (let i = 0; i < files.length; i++) {
+          filesArray.push(files[i]);
+        }
+
+        void props.fs
+          .hasDuplicatesInCurrentFolder(
+            filesArray.map((f) => f.name),
+            false
+          )
+          .then((result) => {
+            if (result === DuplicateCheckResult.ROOT_NAME_ALREADY_EXISTS) {
+              props.fs.addDirectoryImpossibleDialogOpen = true;
+            } else if (
+              result === DuplicateCheckResult.ONE_OR_MORE_FILE_ALREADY_EXISTS
+            ) {
+              props.fs.renameOrReplaceDialogOpen = true;
+              props.fs.renameOrReplaceDialogCallback = (
+                uploadType: UploadType
+              ) => {
+                props.fs.addFilesInput(filesArray, uploadType);
+                props.fs.renameOrReplaceDialogOpen = false;
+              };
+            } else {
+              props.fs.addFilesInput(filesArray, UploadType.REPLACE);
+            }
+          })
+          .finally(() => {
+            event.target.value = null;
+          });
+      };
+
+      fileInput.addEventListener('change', handleFileSelect, false);
+    }, []);
+
     const handleCloseNewFolderDialog = (): void => {
       setNewFolderDialogOpen(false);
       setNewFolderName('');
@@ -139,44 +184,6 @@ export const FileBrowserFA = observer(
         );
 
         if (!fileInput) return;
-
-        const handleFileSelect = async (event: any): Promise<void> => {
-          const files = event.target.files;
-          const filesArray: File[] = [];
-
-          for (let i = 0; i < files.length; i++) {
-            filesArray.push(files[i]);
-          }
-
-          void props.fs
-            .hasDuplicatesInCurrentFolder(
-              filesArray.map((f) => f.name),
-              false
-            )
-            .then((result) => {
-              if (result === DuplicateCheckResult.ROOT_NAME_ALREADY_EXISTS) {
-                props.fs.addDirectoryImpossibleDialogOpen = true;
-              } else if (
-                result === DuplicateCheckResult.ONE_OR_MORE_FILE_ALREADY_EXISTS
-              ) {
-                props.fs.renameOrReplaceDialogOpen = true;
-                props.fs.renameOrReplaceDialogCallback = (
-                  uploadType: UploadType
-                ) => {
-                  props.fs.addFilesInput(filesArray, uploadType);
-                  fileInput.removeEventListener('change', handleFileSelect);
-                  event.target.value = null;
-                  props.fs.renameOrReplaceDialogOpen = false;
-                };
-              } else {
-                props.fs.addFilesInput(filesArray, UploadType.REPLACE);
-                fileInput.removeEventListener('change', handleFileSelect);
-                event.target.value = null;
-              }
-            });
-        };
-
-        fileInput.addEventListener('change', handleFileSelect, false);
 
         fileInput.click();
       } else if (data.id === ChonkyActions.DownloadFiles.id) {
@@ -402,14 +409,14 @@ export const FileBrowserFA = observer(
           onClose={handleCloseDeleteDialog}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description">
-          <DialogTitle id="alert-dialog-title">Delete?</DialogTitle>
-          <DialogContent>
+          <DeleteTitleWrap id="alert-dialog-title">Delete?</DeleteTitleWrap>
+          <DeleteContentWrap>
             <MaxWidthWrap>
               All selected items will be deleted from Files and you won’t be
               able to undo this action.
             </MaxWidthWrap>
-          </DialogContent>
-          <DialogActions>
+          </DeleteContentWrap>
+          <DeleteActionsWrap>
             <Button onClick={handleCloseDeleteDialog}>Cancel</Button>
             <Button
               onClick={() => {
@@ -420,7 +427,7 @@ export const FileBrowserFA = observer(
               color="error">
               Delete
             </Button>
-          </DialogActions>
+          </DeleteActionsWrap>
         </Dialog>
         <Dialog
           open={noteDialogOpen}
@@ -498,4 +505,16 @@ const DialogContentWrap = styled.div`
 const DividerWrap = styled(Divider)`
   margin-left: -8px;
   margin-right: -8px;
+`;
+
+const DeleteTitleWrap = styled(DialogTitle)`
+  padding: 32px;
+`;
+
+const DeleteContentWrap = styled(DialogContent)`
+  padding: 0 32px 32px;
+`;
+
+const DeleteActionsWrap = styled(DialogActions)`
+  padding: 0 32px 32px;
 `;

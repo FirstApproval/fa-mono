@@ -7,6 +7,7 @@ interface ProgressStatus {
   progress: AxiosProgressEvent;
   abortController?: AbortController;
   isFailed?: boolean;
+  isSuccess?: boolean;
 }
 
 export class UploadProgressStore {
@@ -16,18 +17,18 @@ export class UploadProgressStore {
     makeAutoObservable(this);
   }
 
+  get count(): number {
+    return this.progressStatus.size;
+  }
+
   get inProgress(): number {
     return [...this.progressStatus.values()].filter(
-      (m) => m.progress.progress !== 1 && !m.isFailed
+      (m) => !m.isSuccess && !m.isFailed
     ).length;
   }
 
-  get count(): number {
-    return [...this.progressStatus.keys()].length;
-  }
-
   get success(): number {
-    return [...this.progressStatus.values()].filter((m) => !m.isFailed).length;
+    return this.allSuccess.length;
   }
 
   get failed(): number {
@@ -37,6 +38,10 @@ export class UploadProgressStore {
   clear = (): void => {
     this.progressStatus = new Map();
   };
+
+  get allSuccess(): ProgressStatus[] {
+    return [...this.progressStatus.values()].filter((m) => m.isSuccess);
+  }
 
   get allFailed(): ProgressStatus[] {
     return [...this.progressStatus.values()].filter((m) => m.isFailed);

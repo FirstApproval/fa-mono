@@ -203,6 +203,7 @@ export class FileSystemFA {
           this.cleanUploading(response.data);
           this.actualizeFiles(response.data);
           this.uploadProgress.updateStatus(fullPath, {
+            isSuccess: true,
             abortController: undefined
           });
         })
@@ -281,6 +282,7 @@ export class FileSystemFA {
               this.cleanUploading(response.data);
               this.actualizeFiles(response.data);
               this.uploadProgress.updateStatus(fullPath, {
+                isSuccess: true,
                 abortController: undefined
               });
             })
@@ -307,6 +309,7 @@ export class FileSystemFA {
           .then((response) => {
             this.cleanUploading(response.data);
             this.uploadProgress.updateStatus(fullPath, {
+              isSuccess: true,
               abortController: undefined
             });
           })

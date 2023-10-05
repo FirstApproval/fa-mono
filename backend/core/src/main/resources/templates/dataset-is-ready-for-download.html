@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=SF Pro:wght@800&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap" />
+    <style>
+        html,
+        body {
+            margin: 0;
+        }
+
+        .first-approval {
+            position: relative;
+            font-weight: 800;
+        }
+
+        .dataset-is-ready {
+            position: relative;
+            display: inline-block;
+            width: 520px;
+
+            font-size: 34px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: 123.5%; /* 41.99px */
+            letter-spacing: 0.25px;
+        }
+
+        .wrapper {
+            border-radius: 4px;
+            background-color: #f3f2f5;
+            width: 520px;
+            display: flex;
+            justify-content: center;
+            padding: 16px 8px;
+            box-sizing: border-box;
+            font-size: 34px;
+        }
+
+        .dataset-is-ready-email-simply-parent {
+            display: block;
+            align-items: flex-start;
+            justify-content: flex-start;
+            gap: 24px;
+            font-size: 20px;
+        }
+
+        .dataset-is-ready-publication-name {
+            font-size: 20px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 160%; /* 32px */
+            letter-spacing: 0.15px;
+        }
+
+        .dataset-is-ready-there-parent {
+            display: block;
+            align-items: flex-start;
+            justify-content: flex-start;
+            gap: 32px;
+        }
+
+        .button1 {
+            position: relative;
+            letter-spacing: 0.14px;
+            line-height: 20px;
+            font-weight: 400;
+            color: #FFFFFF;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .base {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .button {
+            border-radius: 4px;
+            background-color: #3b4eff;
+            height: 40px;
+            overflow: hidden;
+            flex-shrink: 0;
+            display: block;
+            padding: 8px 22px;
+            box-sizing: border-box;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            width: 250px;
+        }
+
+        .if-you-didnt {
+            position: relative;
+            font-size: 16px;
+            letter-spacing: 0.15px;
+            line-height: 150%;
+            display: inline-block;
+            width: 520px;
+        }
+
+        .frame-parent {
+            display: block;
+            align-items: flex-start;
+            justify-content: flex-start;
+            font-size: 34px;
+            font-family: Roboto;
+        }
+
+        .first-approval-parent {
+            background-color: #fff;
+            display: block;
+            padding: 40px;
+            align-items: flex-start;
+            justify-content: flex-start;
+            gap: 40px;
+        }
+
+        .this-email-was {
+            position: relative;
+            letter-spacing: 0.17px;
+            line-height: 143%;
+        }
+
+        .link {
+            display: block;
+            align-items: flex-start;
+            justify-content: flex-start;
+            color: #3b4eff;
+        }
+
+        .this-email-was-sent-to-parent {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .first-approval-wrapper {
+            border-radius: 4px;
+            background-color: #fff;
+            display: flex;
+            padding: 8px;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-family: "SF Pro";
+        }
+
+        .link2 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: block;
+            align-items: flex-start;
+            justify-content: flex-start;
+        }
+
+        .link4 {
+            position: absolute;
+            top: 0;
+            left: 54px;
+            display: block;
+            align-items: flex-start;
+            justify-content: flex-start;
+        }
+
+        .link-parent {
+            position: relative;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: 143px;
+            height: 20px;
+            color: #3b4eff;
+        }
+
+        .frame-group {
+            display: block;
+            font-size: 14px;
+            font-family: Roboto;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .email {
+            position: relative;
+            background-color: #f3f2f5;
+            width: 100%;
+            display: block;
+            padding: 24px 72px 40px;
+            box-sizing: border-box;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            text-align: left;
+            font-size: 20px;
+            color: #040036;
+            font-family: "SF Pro";
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .mt-40 {
+            margin-top: 40px;
+        }
+
+        .mt-32 {
+            margin-top: 32px;
+        }
+
+        .mt-24 {
+            margin-top: 24px;
+        }
+
+        .d-block {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .d-flex {
+            display: flex;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .div-wrapper {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .concern-block {
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 150%; /* 24px */
+            letter-spacing: 0.15px;
+            background-color: #F8F7FA;
+            padding: 16px 24px;
+            margin-top: 40px;
+        }
+
+        .mr-auto {
+            margin-right: auto;
+        }
+
+        .ml-auto {
+            margin-left: auto;
+        }
+
+
+        .to-confirm-your-email-simply-parent {
+            display: block;
+            align-items: flex-start;
+            justify-content: flex-start;
+            gap: 24px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="d-flex">
+    <div class="d-block">
+        <div class="email">
+            <div class="first-approval-parent">
+                <div class="first-approval">
+                    <img style='height: 24px; width: 160px' src='https://iili.io/HZyCRmx.jpg'>
+                </div>
+                <div class="frame-parent">
+                    <div class="dataset-is-ready-there-parent mt-40">
+                        <div class="dataset-is-ready-email-simply-parent mt-32">
+                            <div class="dataset-is-ready">
+                                Dataset is ready for download
+                            </div>
+                        </div>
+                        <div class="dataset-is-ready-publication-name mt-32">
+                            <div class="dataset-is-ready-publication-name" th:text="${title}" />
+                        </div>
+                    </div>
+                    <div class='to-confirm-your-email-simply-parent'>
+                        <div class='button mt-24'>
+                            <div class='base'>
+                                <a class='button1' style='color: #FFFFFF; cursor: pointer' th:href='${publicationLink}'>Download dataset →</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="frame-group mt-40">
+                <div class="div-wrapper">
+                    <div class="this-email-was-sent-to-parent" style="display: flex; flex-direction: row; justify-content: space-between;">
+                        <div class="this-email-was" style='margin-right: 8px'>This email was sent to </div>
+                        <div class="link">
+                            <div class="this-email-was" th:text="${email}"></div>
+                        </div>
+                    </div>
+                </div>
+                <div style='margin-top: 32px; background-color: white; padding-bottom: 4px; padding-top: 8px; padding-left: 8px; padding-right: 8px; width: fit-content; border-radius: 4px'>
+                    <img style='height: 24px; width: 160px' src='https://iili.io/HZyCRmx.jpg'>
+                </div>
+                <div class="div-wrapper">
+                    <div class="link-parent mt-32" style="display: flex; flex-direction: row; justify-content: space-between;">
+                        <div class="link2" style='margin-right: 12px'>
+                            <a class="this-email-was" href="#">Help</a>
+                        </div>
+                        <div class="link4" style='margin-left: 12px'>
+                            <a class="this-email-was" href="#">Privacy Policy</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

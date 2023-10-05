@@ -5,8 +5,8 @@ import mu.KotlinLogging.logger
 import org.firstapproval.backend.core.config.Properties
 import org.firstapproval.backend.core.config.Properties.EmailProperties
 import org.firstapproval.backend.core.domain.publication.Publication
-import org.firstapproval.backend.core.infra.mail.MailService
 import org.firstapproval.backend.core.domain.user.User
+import org.firstapproval.backend.core.infra.mail.MailService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.thymeleaf.context.Context
@@ -119,4 +119,24 @@ class NotificationService(
         mailService.send(techSupportEmail, "[FirstApproval] New report received from $reporterEmail", content)
     }
 
+    fun sendDatasetIsReadyForDownload(publication: Publication, user: User) {
+        if (emailProperties.noopMode) {
+            log.info { "Dataset is ready for download" }
+            return
+        }
+        if (user.email != null) {
+            val authors = publication.confirmedAuthors.map { "${it.user.firstName} ${it.user.lastName}" } +
+                publication.unconfirmedAuthors.map { "${it.firstName} ${it.lastName}" }
+
+            val context = Context()
+            val model: MutableMap<String, Any> = HashMap()
+            model["authors"] = authors.joinToString()
+            model["publicationLink"] = "${frontendProperties.url}/publication/${publication.id}"
+            model["title"] = publication.title ?: publication.id
+            model["email"] = user.email.toString()
+            context.setVariables(model)
+            val html = templateEngine.process("dataset-is-ready-for-download.html", context)
+            mailService.send(user.email.toString(), "[FirstApproval] Dataset is ready for download: ${publication.title}", html, true)
+        }
+    }
 }

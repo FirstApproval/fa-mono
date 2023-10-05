@@ -118,6 +118,10 @@ export class PublicationStore {
     return this.publicationStatus === PublicationStatus.PUBLISHED;
   }
 
+  get isPublishing(): boolean {
+    return this.publicationStatus === PublicationStatus.READY_FOR_PUBLICATION;
+  }
+
   get authors(): Array<ConfirmedAuthor | UnconfirmedAuthor> {
     return [...this.unconfirmedAuthors, ...this.confirmedAuthors].sort(
       (author1, author2) => author1.ordinal! - author2.ordinal!

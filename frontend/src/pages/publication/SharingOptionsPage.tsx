@@ -29,12 +29,7 @@ import {
   StorageType
 } from '../../apis/first-approval-api';
 import { Page } from '../../core/router/constants';
-import {
-  FlexWrapColumn,
-  FlexWrapRow,
-  HeightElement,
-  WidthElement
-} from '../common.styled';
+import { FlexWrapColumn, FlexWrapRow, HeightElement } from '../common.styled';
 import { ContentLicensingDialog } from '../../components/ContentLicensingDialog';
 import { getContentLicensingAbbreviation } from '../../util/publicationUtils';
 
@@ -193,20 +188,20 @@ export const SharingOptionsPage = (props: {
                 }
               />
               <FormControlLabel
-                disabled={true}
+                disabled={false}
                 value={StorageType.IPFS}
                 labelPlacement={'end'}
                 label={
                   <FlexWrapColumn>
                     <FlexWrapRowRadioLabel>
-                      <StorageOptionLabelWrap disabled={true}>
+                      <StorageOptionLabelWrap disabled={false}>
                         Decentralized Storage (IPFS)
                       </StorageOptionLabelWrap>
                       <ViewInArOutlined />
-                      <WidthElement value="8px" />
-                      <SoonChip />
                     </FlexWrapRowRadioLabel>
-                    <StorageOptionDescription variant={'body1'} disabled={true}>
+                    <StorageOptionDescription
+                      variant={'body1'}
+                      disabled={false}>
                       Distribute dataset across a decentralized network for
                       added resilience and permanence.
                     </StorageOptionDescription>

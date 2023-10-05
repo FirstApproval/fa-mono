@@ -1869,11 +1869,8 @@ components:
     PublicationContentStatus:
       type: string
       enum:
-        - PENDING
-        - INSTANT
-        - ENCRYPTED
-        - ARCHIVE
-        - ABSENT
+        - AVAILABLE
+        - PREPARING
 
     AccessType:
       type: string
@@ -2163,8 +2160,6 @@ components:
           $ref: '#/components/schemas/LicenseType'
         storageType:
           $ref: '#/components/schemas/StorageType'
-        contentStatus:
-          $ref: '#/components/schemas/PublicationContentStatus'
         creationTime:
           type: string
           format: date-time
@@ -2294,13 +2289,6 @@ components:
       required:
         - token
 
-    DownloadLinkRequest:
-      type: object
-      properties:
-        fileId:
-          type: string
-          format: uuid
-
     DownloadLinkResponse:
       type: object
       properties:
@@ -2308,9 +2296,12 @@ components:
           type: string
         passcode:
           type: string
+        contentStatus:
+          $ref: '#/components/schemas/PublicationContentStatus'
       required:
         - link
         - passcode
+        - contentStatus
 
   securitySchemes:
     PublicAuth:
