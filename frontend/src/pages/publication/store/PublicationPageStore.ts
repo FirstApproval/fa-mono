@@ -3,6 +3,7 @@ import { makeAutoObservable, reaction } from 'mobx';
 import { PublicationStore } from './PublicationStore';
 import { FileSystemFA } from '../../../fire-browser/FileSystemFA';
 import { FileData } from '@first-approval/chonky/dist/types/file.types';
+import { PublicationContentStatus } from '../../../apis/first-approval-api';
 
 export class PublicationPageStore {
   get summaryEnabled(): boolean {
@@ -53,6 +54,8 @@ export class PublicationPageStore {
   tagsEnabled = false;
 
   passcode = '';
+  contentStatus: PublicationContentStatus | null = null;
+  isDataPreparingDialogOpen = false;
   isPasscodeDialogOpen = false;
   isCitateDialogOpen = false;
 
@@ -111,13 +114,27 @@ export class PublicationPageStore {
   }
 
   downloadFiles(): void {
-    void this.doDownloadFiles();
+    if (this.contentStatus !== PublicationContentStatus.PREPARING) {
+      void this.doDownloadFiles();
+    }
   }
 
   doDownloadFiles = async (): Promise<void> => {
     const response = await publicationService.getDownloadLink(
       this.publicationStore.publicationId
     );
+    const downloadData = response.data;
+    switch (downloadData.contentStatus) {
+      case PublicationContentStatus.PREPARING:
+        this.contentStatus = PublicationContentStatus.PREPARING;
+        this.isDataPreparingDialogOpen = true;
+        return;
+      case PublicationContentStatus.AVAILABLE:
+        this.isPasscodeDialogOpen = true;
+        break;
+      default:
+        throw Error(`Unexpected content status: ${downloadData.contentStatus}`);
+    }
     this.passcode = response.data.passcode;
     const downloadLink = document.createElement('a');
     downloadLink.href = response.data.link;

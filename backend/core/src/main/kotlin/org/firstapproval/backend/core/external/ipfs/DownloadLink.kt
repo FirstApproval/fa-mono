@@ -5,14 +5,13 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
-import java.util.UUID
 
 @Entity
 @Table(name = "download_links")
-class DownloadLink (
+class DownloadLink(
     @Id
     var publicationId: String,
-    var url: String,
-    var expirationTime: ZonedDateTime,
+    var url: String? = null,
+    var expirationTime: ZonedDateTime? = null,
     var creationTime: ZonedDateTime = now(),
 )

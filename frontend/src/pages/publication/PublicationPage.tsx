@@ -94,6 +94,7 @@ import { ResearchArea } from './research-area/ResearchArea';
 import { UploadStatusWindow } from './UploadStatusWindow';
 import { Footer } from '../home/Footer';
 import { HeaderComponent } from 'src/components/HeaderComponent';
+import { DatasetIsPreparingDialog } from './dialogs/DatasetIsPreparingDialog';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -667,6 +668,12 @@ const PublicationBody = observer(
         <Space />
 
         <UploadStatusWindow fs={fs} />
+        <DatasetIsPreparingDialog
+          isOpen={publicationPageStore.isDataPreparingDialogOpen}
+          onClose={() =>
+            (publicationPageStore.isDataPreparingDialogOpen = false)
+          }
+        />
       </>
     );
   }

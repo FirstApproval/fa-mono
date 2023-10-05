@@ -6,11 +6,25 @@ import net.lingala.zip4j.io.outputstream.ZipOutputStream
 import net.lingala.zip4j.model.ZipParameters
 import net.lingala.zip4j.model.enums.EncryptionMethod.ZIP_STANDARD
 import org.firstapproval.backend.core.domain.notification.NotificationService
-import org.firstapproval.backend.core.domain.publication.*
+import org.firstapproval.backend.core.domain.publication.Publication
+import org.firstapproval.backend.core.domain.publication.PublicationFileRepository
+import org.firstapproval.backend.core.domain.publication.PublicationRepository
+import org.firstapproval.backend.core.domain.publication.PublicationSampleFileRepository
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
-import org.firstapproval.backend.core.external.ipfs.IpfsClient
-import org.firstapproval.backend.core.external.s3.*
+import org.firstapproval.backend.core.domain.publication.StorageType.CLOUD_SECURE_STORAGE
+import org.firstapproval.backend.core.domain.publication.StorageType.IPFS
+import org.firstapproval.backend.core.domain.publication.toPublicationElastic
+import org.firstapproval.backend.core.external.ipfs.DownloadLink
+import org.firstapproval.backend.core.external.ipfs.DownloadLinkRepository
+import org.firstapproval.backend.core.external.ipfs.IpfsClient.IpfsContentAvailability.INSTANT
+import org.firstapproval.backend.core.external.ipfs.IpfsStorageService
+import org.firstapproval.backend.core.external.ipfs.RestoreRequestRepository
+import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_FILES
+import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_SAMPLE_FILES
+import org.firstapproval.backend.core.external.s3.FILES
+import org.firstapproval.backend.core.external.s3.FileStorageService
+import org.firstapproval.backend.core.external.s3.SAMPLE_FILES
 import org.firstapproval.backend.core.infra.elastic.PublicationElasticRepository
 import org.firstapproval.backend.core.utils.calculateSHA256
 import org.springframework.data.domain.PageRequest
@@ -22,7 +36,7 @@ import java.io.File.createTempFile
 import java.io.FileOutputStream
 import java.nio.file.Files
 import java.time.ZonedDateTime.now
-import java.util.*
+import java.util.UUID
 import kotlin.io.path.Path
 import kotlin.io.path.exists
 
@@ -38,10 +52,12 @@ class ArchiveService(
     private val publicationFileRepository: PublicationFileRepository,
     private val publicationSampleFileRepository: PublicationSampleFileRepository,
     private val notificationService: NotificationService,
-    private val ipfsClient: IpfsClient,
+    private val ipfsStorageService: IpfsStorageService,
+    private val downloadLinkRepository: DownloadLinkRepository,
+    private val restoreRequestRepository: RestoreRequestRepository,
     private val fileStorageService: FileStorageService,
     private val transactionTemplate: TransactionTemplate,
-    private val elasticRepository: PublicationElasticRepository
+    private val elasticRepository: PublicationElasticRepository,
 ) {
 
     val log = logger {}
@@ -65,6 +81,36 @@ class ArchiveService(
                 log.debug { "Publication files for id=${publication.id} finished successfully" }
             }.onFailure {
                 log.error { "Publication files for id=${publication.id} failed: $it" }
+            }
+        }
+    }
+
+    @Scheduled(cron = "\${ipfs-restore-requests.cron}")
+    @SchedulerLock(name = "ArchiveService.restoreContentInIpfs")
+    fun restoreContentInIpfs() {
+        val restoreRequests = restoreRequestRepository.findAllByCompletionTimeIsNull()
+        restoreRequests.forEach { restoreRequest ->
+            val contentId = restoreRequest.contentId
+            runCatching {
+                log.debug { "Restoration request for publication id=${restoreRequest.publicationId} started" }
+                val contentInfo = ipfsStorageService.getInfo(contentId)
+                if (contentInfo.availability == INSTANT) {
+                    val downloadLinkInfo = ipfsStorageService.getDownloadLink(contentId)
+                    val expirationTime = now().plusSeconds(downloadLinkInfo.expiresIn)
+                    transactionTemplate.execute {
+                        restoreRequest.completionTime = now()
+                        restoreRequestRepository.save(restoreRequest)
+                        downloadLinkRepository.save(DownloadLink(restoreRequest.publicationId, downloadLinkInfo.url, expirationTime))
+                        notificationService.sendDatasetIsReadyForDownload(
+                            publicationRepository.getReferenceById(restoreRequest.publicationId),
+                            restoreRequest.user
+                        )
+                    }
+                }
+            }.onSuccess {
+                log.debug { "Restoration request for publication id=${restoreRequest.publicationId} sent successfully" }
+            }.onFailure {
+                log.debug { "Restoration request for publication id=${restoreRequest.publicationId} failed" }
             }
         }
     }
@@ -160,7 +206,13 @@ class ArchiveService(
             if (err == null) {
                 hash = calculateSHA256(tempArchive)
                 archiveSize = tempArchive.length()
-                saveArchiveToS3(ARCHIVED_PUBLICATION_FILES, publication.id.toString(), tempArchive)
+
+                when (publication.storageType) {
+                    CLOUD_SECURE_STORAGE -> saveArchiveToS3(ARCHIVED_PUBLICATION_FILES, publication.id, tempArchive)
+                    IPFS -> saveArchiveToIPFS(publication, tempArchive)
+                    null -> throw IllegalStateException("Storage type must be present")
+                }
+
             } else {
                 tempArchive.delete()
             }
@@ -233,7 +285,7 @@ class ArchiveService(
             if (err == null) {
                 hash = calculateSHA256(tempArchive)
                 archiveSize = tempArchive.length()
-                saveArchiveToS3(ARCHIVED_PUBLICATION_SAMPLE_FILES, publication.id.toString(), tempArchive)
+                saveArchiveToS3(ARCHIVED_PUBLICATION_SAMPLE_FILES, publication.id, tempArchive)
             } else {
                 tempArchive.delete()
             }
@@ -249,6 +301,21 @@ class ArchiveService(
             throw ex
         } finally {
             file.delete()
+        }
+    }
+
+    private fun saveArchiveToIPFS(publication: Publication, tempArchive: File) {
+        try {
+            val ipfsFileInfo = ipfsStorageService.upload(tempArchive)
+            publication.contentId = ipfsFileInfo.id
+            publication.status = PUBLISHED
+            publication.publicationTime = now()
+            publicationRepository.save(publication)
+        } catch (ex: Exception) {
+            log.error(ex) { "s3 persistence error" }
+            throw ex
+        } finally {
+            tempArchive.delete()
         }
     }
 
