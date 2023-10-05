@@ -2,14 +2,13 @@ package org.firstapproval.backend.core.external.ipfs
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonFormat.Feature.ACCEPT_CASE_INSENSITIVE_PROPERTIES
+import com.fasterxml.jackson.annotation.JsonProperty
 import org.firstapproval.backend.core.config.Properties.IpfsProperties
 import org.firstapproval.backend.core.utils.require
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod.DELETE
-import org.springframework.http.HttpMethod.GET
-import org.springframework.http.HttpMethod.POST
+import org.springframework.http.HttpMethod.*
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.http.MediaType.MULTIPART_FORM_DATA
 import org.springframework.util.LinkedMultiValueMap
@@ -45,16 +44,14 @@ class IpfsClient(
         return result.body.require()
     }
 
-    fun restore(id: Long): String {
-        val parts: MultiValueMap<String, Any> = LinkedMultiValueMap()
-        parts.add("restoreDays", 1)
-        val httpEntity = HttpEntity(parts, headers)
+    fun restore(id: Long): RestoreResponse {
+        val httpEntity = HttpEntity(mapOf("restoreDays" to 1), headers)
 
         val result = restTemplate.exchange(
             properties.contentsUrl + "/${id}/restore",
             POST,
             httpEntity,
-            String::class.java
+            RestoreResponse::class.java
         )
 
         return result.body.require()
@@ -97,7 +94,7 @@ class IpfsClient(
         return result.body.require()
     }
 
-    data class File(
+    class File(
         val id: Long,
         val filename: String,
         val origin: String? = null,
@@ -111,8 +108,34 @@ class IpfsClient(
         val updatedAt: LocalDateTime
     )
 
-    data class DownloadFile(
+    class RestoreResponse(
+        val id: Long,
+        val filename: String,
+        val origin: String? = null,
+        @JsonProperty("ipfs_cid")
+        val ipfsCid: String,
+        @JsonProperty("encrypted_file_cid")
+        val encryptedFileCid: String? = null,
+        @JsonProperty("encrypted_file_size")
+        val encryptedFileSize: Long? = null,
+        @JsonProperty("ipfs_file_size")
+        val ipfsFileSize: Long,
+        @JsonFormat(with = [ACCEPT_CASE_INSENSITIVE_PROPERTIES])
+        var availability: IpfsContentAvailability,
+        @JsonProperty("owner_id")
+        val ownerId: Long,
+        @JsonProperty("instant_till")
+        var instantTill: LocalDateTime,
+        @JsonProperty("created_at")
+        val createdAt: LocalDateTime,
+        @JsonProperty("updated_at")
+        val updatedAt: LocalDateTime,
+        val key: String? = null
+    )
+
+    class DownloadFile(
         val url: String,
+        @JsonProperty("expires_in")
         val expiresIn: Long,
     )
 

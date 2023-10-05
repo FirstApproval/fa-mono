@@ -6,25 +6,17 @@ import net.lingala.zip4j.io.outputstream.ZipOutputStream
 import net.lingala.zip4j.model.ZipParameters
 import net.lingala.zip4j.model.enums.EncryptionMethod.ZIP_STANDARD
 import org.firstapproval.backend.core.domain.notification.NotificationService
-import org.firstapproval.backend.core.domain.publication.Publication
-import org.firstapproval.backend.core.domain.publication.PublicationFileRepository
-import org.firstapproval.backend.core.domain.publication.PublicationRepository
-import org.firstapproval.backend.core.domain.publication.PublicationSampleFileRepository
+import org.firstapproval.backend.core.domain.publication.*
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
 import org.firstapproval.backend.core.domain.publication.StorageType.CLOUD_SECURE_STORAGE
 import org.firstapproval.backend.core.domain.publication.StorageType.IPFS
-import org.firstapproval.backend.core.domain.publication.toPublicationElastic
 import org.firstapproval.backend.core.external.ipfs.DownloadLink
 import org.firstapproval.backend.core.external.ipfs.DownloadLinkRepository
 import org.firstapproval.backend.core.external.ipfs.IpfsClient.IpfsContentAvailability.INSTANT
 import org.firstapproval.backend.core.external.ipfs.IpfsStorageService
 import org.firstapproval.backend.core.external.ipfs.RestoreRequestRepository
-import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_FILES
-import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_SAMPLE_FILES
-import org.firstapproval.backend.core.external.s3.FILES
-import org.firstapproval.backend.core.external.s3.FileStorageService
-import org.firstapproval.backend.core.external.s3.SAMPLE_FILES
+import org.firstapproval.backend.core.external.s3.*
 import org.firstapproval.backend.core.infra.elastic.PublicationElasticRepository
 import org.firstapproval.backend.core.utils.calculateSHA256
 import org.springframework.data.domain.PageRequest
@@ -36,7 +28,7 @@ import java.io.File.createTempFile
 import java.io.FileOutputStream
 import java.nio.file.Files
 import java.time.ZonedDateTime.now
-import java.util.UUID
+import java.util.*
 import kotlin.io.path.Path
 import kotlin.io.path.exists
 
@@ -98,7 +90,7 @@ class ArchiveService(
                     val downloadLinkInfo = ipfsStorageService.getDownloadLink(contentId)
                     transactionTemplate.execute {
                         val currentTime = now()
-                        val expirationTime = currentTime.plusSeconds(3600)  //3600 seconds - default value
+                        val expirationTime = currentTime.plusSeconds(downloadLinkInfo.expiresIn)  //3600 seconds - default value
                         restoreRequest.completionTime = currentTime
                         restoreRequestRepository.save(restoreRequest)
                         downloadLinkRepository.save(DownloadLink(restoreRequest.publicationId, downloadLinkInfo.url, expirationTime))

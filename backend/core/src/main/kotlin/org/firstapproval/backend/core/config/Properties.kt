@@ -24,7 +24,6 @@ class Properties {
     @ConfigurationProperties("ipfs")
     class IpfsProperties {
         lateinit var contentsUrl: String
-        lateinit var jobsUrl: String
         lateinit var accessKey: String
     }
 

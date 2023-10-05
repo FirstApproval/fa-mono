@@ -263,7 +263,7 @@ class PublicationService(
                 return when (contentInfo.availability) {
                     INSTANT -> {
                         val downloadLinkInfo = ipfsStorageService.getDownloadLink(contentId)
-                        val expirationTime = now().plusSeconds(3600)  //3600 seconds - default value
+                        val expirationTime = now().plusSeconds(downloadLinkInfo.expiresIn)  //3600 seconds - default value
                         val newDownloadLink =
                             downloadLinkRepository.save(DownloadLink(pub.id, downloadLinkInfo.url, expirationTime))
                         DownloadLinkResponse(newDownloadLink.url, pub.archivePassword, AVAILABLE)
