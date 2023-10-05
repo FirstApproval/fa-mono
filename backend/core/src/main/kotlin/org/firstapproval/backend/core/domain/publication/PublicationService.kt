@@ -256,30 +256,31 @@ class PublicationService(
         checkStatusAndAccessType(pub)
         val contentId = pub.contentId.require()
         return (downloadLinkRepository.findByPublicationIdAndExpirationTimeGreaterThan(pub.id, now().plusSeconds(30))
-            ?.let { DownloadLinkResponse(it.url, pub.archivePassword, AVAILABLE) } ?: run {
-            downloadLinkRepository.deleteById(pub.id)
-            val contentInfo = ipfsStorageService.getInfo(contentId)
-            return when (contentInfo.availability) {
-                INSTANT -> {
-                    val downloadLinkInfo = ipfsStorageService.getDownloadLink(contentId)
-                    val expirationTime = now().plusSeconds(3600)  //3600 seconds - default value
-                    val newDownloadLink =
-                        downloadLinkRepository.save(DownloadLink(pub.id, downloadLinkInfo.url, expirationTime))
-                    DownloadLinkResponse(newDownloadLink.url, pub.archivePassword, AVAILABLE)
-                }
+            ?.let { DownloadLinkResponse(it.url, pub.archivePassword, AVAILABLE) }
+            ?: run {
+                downloadLinkRepository.deleteById(pub.id)
+                val contentInfo = ipfsStorageService.getInfo(contentId)
+                return when (contentInfo.availability) {
+                    INSTANT -> {
+                        val downloadLinkInfo = ipfsStorageService.getDownloadLink(contentId)
+                        val expirationTime = now().plusSeconds(3600)  //3600 seconds - default value
+                        val newDownloadLink =
+                            downloadLinkRepository.save(DownloadLink(pub.id, downloadLinkInfo.url, expirationTime))
+                        DownloadLinkResponse(newDownloadLink.url, pub.archivePassword, AVAILABLE)
+                    }
 
-                ARCHIVE -> {
-                    restoreRequestRepository.findByPublicationIdAndCompletionTimeIsNull(pub.id)
-                        ?: run {
-                            ipfsStorageService.restore(contentId)
-                            restoreRequestRepository.save(
-                                RestoreRequest(publicationId = pub.id, contentId = contentId, user = user)
-                            )
-                        }
-                    DownloadLinkResponse(null, null, PREPARING)
+                    ARCHIVE -> {
+                        restoreRequestRepository.findByPublicationIdAndCompletionTimeIsNull(pub.id)
+                            ?: run {
+                                ipfsStorageService.restore(contentId)
+                                restoreRequestRepository.save(
+                                    RestoreRequest(publicationId = pub.id, contentId = contentId, user = user)
+                                )
+                            }
+                        DownloadLinkResponse(null, null, PREPARING)
+                    }
                 }
-            }
-        }) as DownloadLinkResponse
+            }) as DownloadLinkResponse
     }
 
     @Transactional
