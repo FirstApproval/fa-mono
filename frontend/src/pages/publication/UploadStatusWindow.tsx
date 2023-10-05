@@ -116,7 +116,6 @@ export const UploadStatusWindow = observer(
                   const progress: number = Math.floor(
                     (value.progress.progress ?? 0) * 100
                   );
-                  console.log(progress);
                   return (
                     <UploadStatusEntry key={key}>
                       <InsertDriveFile />

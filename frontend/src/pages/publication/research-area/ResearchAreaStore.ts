@@ -57,12 +57,6 @@ export class ResearchAreaStore {
   }
 
   private unselectElement(element: ResearchAreaElement): void {
-    console.log('start unselecting: ' + element.text);
-    console.log(
-      'research areas: ' +
-        this.publicationStore.researchAreas.map((ra) => ra.text)
-    );
-
     researchAreaElementsWithParent(element.text).forEach((child) => {
       this.unselectElement(child);
     });
@@ -70,12 +64,6 @@ export class ResearchAreaStore {
       this.publicationStore.researchAreas.filter(
         (ra) => ra.text !== element.text
       );
-
-    console.log('finish unselecting: ' + element.text);
-    console.log(
-      'research areas: ' +
-        this.publicationStore.researchAreas.map((ra) => ra.text)
-    );
   }
 
   private readonly updateRequest = _.throttle(async () => {
