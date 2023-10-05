@@ -96,9 +96,10 @@ class ArchiveService(
                 val contentInfo = ipfsStorageService.getInfo(contentId)
                 if (contentInfo.availability == INSTANT) {
                     val downloadLinkInfo = ipfsStorageService.getDownloadLink(contentId)
-                    val expirationTime = now().plusSeconds(downloadLinkInfo.expiresIn)
                     transactionTemplate.execute {
-                        restoreRequest.completionTime = now()
+                        val currentTime = now()
+                        val expirationTime = currentTime.plusSeconds(3600)  //3600 seconds - default value
+                        restoreRequest.completionTime = currentTime
                         restoreRequestRepository.save(restoreRequest)
                         downloadLinkRepository.save(DownloadLink(restoreRequest.publicationId, downloadLinkInfo.url, expirationTime))
                         notificationService.sendDatasetIsReadyForDownload(
@@ -210,7 +211,7 @@ class ArchiveService(
                 when (publication.storageType) {
                     CLOUD_SECURE_STORAGE -> saveArchiveToS3(ARCHIVED_PUBLICATION_FILES, publication.id, tempArchive)
                     IPFS -> saveArchiveToIPFS(publication, tempArchive)
-                    null -> throw IllegalStateException("Storage type must be present")
+                    else -> throw IllegalStateException("Storage type must be present")
                 }
 
             } else {
