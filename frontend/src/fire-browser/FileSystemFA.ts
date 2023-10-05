@@ -188,7 +188,11 @@ export class FileSystemFA {
     this.uploadProgress.progressStatus.set(fullPath, {
       fullPath,
       file,
-      progress: { loaded: 0, bytes: 0, progress: 0 },
+      progress: {
+        loaded: 0,
+        bytes: 0,
+        progress: 0
+      },
       abortController
     });
 
@@ -266,7 +270,11 @@ export class FileSystemFA {
     this.uploadProgress.progressStatus.set(fullPath, {
       fullPath,
       file,
-      progress: { loaded: 0, bytes: 0, progress: 0 },
+      progress: {
+        loaded: 0,
+        bytes: 0,
+        progress: 0
+      },
       abortController
     });
 

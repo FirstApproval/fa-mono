@@ -60,7 +60,7 @@ class ArchiveService(
         val publications = publicationRepository.findAllByStatusOrderByCreationTimeDesc(READY_FOR_PUBLICATION)
         publications.forEach { publication ->
             runCatching {
-                log.debug { "Publication files for id=${publication.id} started" }
+                log.info { "Publication files for id=${publication.id} started" }
                 val publicationFilesIds = mutableListOf<UUID>()
                 transactionTemplate.execute { _ ->
                     val password = (100000000..999999999).random().toString()
@@ -70,7 +70,7 @@ class ArchiveService(
                     fileStorageService.deleteByIds(FILES, publicationFilesIds)
                 }
             }.onSuccess {
-                log.debug { "Publication files for id=${publication.id} finished successfully" }
+                log.info { "Publication files for id=${publication.id} finished successfully" }
             }.onFailure {
                 log.error { "Publication files for id=${publication.id} failed: $it" }
             }

@@ -177,7 +177,6 @@ export const MethodEditor = observer((props: EditorProps): ReactElement => {
         placeholder={
           'Detail the steps of your method, helping others to reproduce it...'
         }
-        disableInitFocus
       />
     </ContentEditorWrap>
   );

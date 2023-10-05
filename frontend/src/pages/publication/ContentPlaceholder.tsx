@@ -5,7 +5,7 @@ import {
   FilesIcon,
   GrantingOrganisationsIcon,
   MethodIcon,
-  ObjectOfStudyIcon,
+  DataDescriptionIcon,
   PredictedGoalsIcon,
   RelatedArticlesIcon,
   SampleFilesIcon,
@@ -75,7 +75,7 @@ export const ObjectOfStudyPlaceholder = (
     <ContentPlaceholder
       onClick={props.onClick}
       text={'Data description'}
-      icon={<ObjectOfStudyIcon />}
+      icon={<DataDescriptionIcon />}
     />
   );
 };

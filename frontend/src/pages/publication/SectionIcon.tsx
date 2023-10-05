@@ -1,6 +1,6 @@
 import predicted_goals from './asset/predicted_goals.svg';
 import method from './asset/method.svg';
-import object_of_study from './asset/object_of_study.svg';
+import data_description from './asset/data_description.svg';
 import software from './asset/software.svg';
 import summary from './asset/summary.svg';
 import research_area from './asset/research_area.svg';
@@ -33,8 +33,8 @@ export const MethodIcon = (): ReactElement => {
   return <img src={method} />;
 };
 
-export const ObjectOfStudyIcon = (): ReactElement => {
-  return <img src={object_of_study} />;
+export const DataDescriptionIcon = (): ReactElement => {
+  return <img src={data_description} />;
 };
 
 export const SoftwareIcon = (): ReactElement => {

@@ -206,8 +206,7 @@ export const SharingOptionsPage = (props: {
                       variant={'body1'}
                       disabled={isIpfsDisabled}>
                       Distribute dataset across a decentralized network for
-                      added resilience and permanence. Maximum dataset size 2
-                      gigabytes
+                      added resilience and permanence. Maximum dataset size 2GB
                     </StorageOptionDescription>
                   </FlexWrapColumn>
                 }

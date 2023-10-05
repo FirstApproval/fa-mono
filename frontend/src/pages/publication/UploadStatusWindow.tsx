@@ -31,7 +31,7 @@ export const UploadStatusWindow = observer(
       const value = fs.uploadProgress.progressStatus.get(key);
       overallProgress += value?.progress.progress ?? 0;
     });
-    overallProgress = Math.floor((overallProgress * 100) / count);
+    overallProgress = Math.floor((overallProgress * 99) / count);
 
     const [isMinimized, setIsMinimized] = useState(false);
 
@@ -116,18 +116,29 @@ export const UploadStatusWindow = observer(
                   const progress: number = Math.floor(
                     (value.progress.progress ?? 0) * 100
                   );
+                  console.log(progress);
                   return (
                     <UploadStatusEntry key={key}>
                       <InsertDriveFile />
                       <UploadStatusName>{value.file.name}</UploadStatusName>
                       <UploadStatus>
-                        {!value.isFailed && !value.isSuccess && (
-                          <CircularProgress
-                            size={16}
-                            variant={'determinate'}
-                            value={progress}
-                          />
-                        )}
+                        {!value.isFailed &&
+                          !value.isSuccess &&
+                          progress !== 100 && (
+                            <CircularProgress
+                              size={16}
+                              variant={'determinate'}
+                              value={progress}
+                            />
+                          )}
+                        {!value.isFailed &&
+                          !value.isSuccess &&
+                          progress === 100 && (
+                            <CircularProgress
+                              size={16}
+                              variant={'indeterminate'}
+                            />
+                          )}
                         {value.isSuccess && (
                           <CheckCircle fontSize={'small'} color={'success'} />
                         )}

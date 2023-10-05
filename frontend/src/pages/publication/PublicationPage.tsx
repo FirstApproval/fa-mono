@@ -259,6 +259,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
                       </ButtonWrap>
                     )}
                     <ButtonWrap
+                      disabled={fs.uploadProgress.inProgress > 0}
                       variant={
                         publicationStore.viewMode === ViewMode.PREVIEW
                           ? 'outlined'

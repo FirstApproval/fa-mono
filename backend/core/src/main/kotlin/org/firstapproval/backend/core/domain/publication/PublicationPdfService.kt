@@ -6,7 +6,7 @@ import org.firstapproval.backend.core.infra.pdf.PdfService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.thymeleaf.context.Context
-import java.util.UUID
+import java.text.DecimalFormat
 
 @Service
 class PublicationPdfService(
@@ -14,6 +14,8 @@ class PublicationPdfService(
     private val pdfService: PdfService,
     private val frontendProperties: FrontendProperties
 ) {
+
+    private val formatter = DecimalFormat("#.##")
 
     @Transactional(readOnly = true)
     fun generate(publicationId: String): ByteArray {
@@ -38,7 +40,6 @@ class PublicationPdfService(
         if (publication.isNegative && !publication.negativeData.isNullOrEmpty()) {
             model["negativeData"] = negativeData(publication)
         }
-        model["methodName"] = methodName(publication)
         model["method"] = method(publication)
         model["objectOfStudyName"] = objectOfStudyName(publication)
         model["objectOfStudy"] = objectOfStudy(publication)
@@ -108,7 +109,18 @@ class PublicationPdfService(
 
     private fun files(publication: Publication): String {
         return if (publication.status == PUBLISHED) {
-            "${publication.foldersCount} folders & ${publication.filesCount} files – ${publication.archiveSize!! / 1024 / 1024} MB"
+            val kilobytes = publication.archiveSize!!.toDouble() / 1024
+            val size = if (kilobytes > 1024) {
+                val megabytes = kilobytes / 1024
+                if (megabytes > 1024) {
+                    "${formatter.format(megabytes / 1024)} GB"
+                } else {
+                    "${formatter.format(megabytes)} MB"
+                }
+            } else {
+                "${formatter.format(kilobytes)} KB"
+            }
+            "${publication.foldersCount} folders & ${publication.filesCount} files – $size"
         } else {
             "Dataset is not published yet, information about dataset files will be available after publication."
         }
@@ -124,14 +136,6 @@ class PublicationPdfService(
 
     private fun negativeData(publication: Publication): String {
         return publication.negativeData!!
-    }
-
-    private fun methodName(publication: Publication): String {
-        return if (publication.methodTitle.isNullOrEmpty()) {
-            "Draft. No method title yet."
-        } else {
-            publication.methodTitle!!
-        }
     }
 
     private fun method(publication: Publication): String {
@@ -167,7 +171,8 @@ class PublicationPdfService(
             publication.unconfirmedAuthors.associate
             {
                 it.lastName + " " + it.firstName to
-                    (it.workplaces.map { workplace -> "${workplace.organization.name} ${workplace.organizationDepartment?.name ?: ""}" }.joinToString { ", " } ?: "")
+                    (it.workplaces.map { workplace -> "${workplace.organization.name} ${workplace.organizationDepartment?.name ?: ""}" }
+                        .joinToString { ", " } ?: "")
             })
             .map { "<div style=\"margin-bottom: 2px\"><b>${it.key}.</b> ${it.value}</div>" }.joinToString(separator = "")
     }
