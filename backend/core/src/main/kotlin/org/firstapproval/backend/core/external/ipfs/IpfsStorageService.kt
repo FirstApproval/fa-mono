@@ -3,7 +3,12 @@ package org.firstapproval.backend.core.external.ipfs
 import org.firstapproval.backend.core.config.REQUIRE_NEW_TRANSACTION_TEMPLATE
 import org.firstapproval.backend.core.external.ipfs.IpfsClient.DownloadFile
 import org.firstapproval.backend.core.external.ipfs.IpfsClient.File
-import org.firstapproval.backend.core.external.ipfs.QueryType.*
+import org.firstapproval.backend.core.external.ipfs.QueryType.DELETE
+import org.firstapproval.backend.core.external.ipfs.QueryType.DOWNLOAD_LINK
+import org.firstapproval.backend.core.external.ipfs.QueryType.INFO
+import org.firstapproval.backend.core.external.ipfs.QueryType.RESTORE
+import org.firstapproval.backend.core.external.ipfs.QueryType.UPLOAD
+import org.firstapproval.backend.core.utils.require
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.transaction.support.TransactionTemplate
@@ -55,7 +60,7 @@ class IpfsStorageService(
 
     private fun saveHistory(queryType: QueryType, params: MutableMap<String, Any>): IpfsHistory {
         return transactionTemplate.execute {
-            ipfsHistoryRepository.save(IpfsHistory(queryType = queryType, params = params))!
-        }
+            ipfsHistoryRepository.save(IpfsHistory(queryType = queryType, params = params))
+        }.require()
     }
 }
