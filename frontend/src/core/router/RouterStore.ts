@@ -10,7 +10,8 @@ import {
   pathToOauthType,
   publicationPath,
   shortAuthorPath,
-  shortPublicationPath
+  shortPublicationPath,
+  signUpPath
 } from './constants';
 import { PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY } from '../../pages/publication/ActionBar';
 import { routerStore } from '../router';
@@ -61,6 +62,12 @@ export class RouterStore {
       if (path.startsWith('/sign_in')) {
         authStore.token = undefined;
         this.navigatePage(Page.SIGN_IN, path, true);
+        return;
+      }
+
+      if (path.startsWith(signUpPath)) {
+        authStore.token = undefined;
+        this.navigatePage(Page.SIGN_UP, path, true);
         return;
       }
 

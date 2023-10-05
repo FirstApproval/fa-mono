@@ -1,13 +1,10 @@
 import styled from '@emotion/styled';
 import React, { type ReactElement } from 'react';
 import { Button } from '@mui/material';
-import { authStore } from '../../core/auth';
 import bannerBg from './asset/Main banner.svg';
-import { routerStore } from '../../core/router';
 import { type HomePageStore } from './HomePageStore';
 import { userStore } from '../../core/user';
 import { FlexWrapColumn } from '../common.styled';
-import { Page } from '../../core/router/constants';
 
 export const CallToAction = (props: { store: HomePageStore }): ReactElement => {
   return (
@@ -20,12 +17,10 @@ export const CallToAction = (props: { store: HomePageStore }): ReactElement => {
           </Text>
           <ButtonWrap
             variant="contained"
-            onClick={() => {
-              if (authStore.token) {
-                void userStore.createPublication();
-              } else {
-                routerStore.navigatePage(Page.SIGN_UP);
-              }
+            href={userStore.getCreatePublicationLink()}
+            onClick={(e) => {
+              e.preventDefault();
+              userStore.goToCreatePublication();
             }}>
             <ButtonText>Publish for free</ButtonText>
           </ButtonWrap>

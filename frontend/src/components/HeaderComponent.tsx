@@ -9,6 +9,7 @@ import { authStore } from '../core/auth';
 import { userStore } from '../core/user';
 import { UserMenu } from './UserMenu';
 import { Page } from '../core/router/constants';
+import { FALinkWrap } from './LinkWrap';
 
 interface HeaderComponentProps {
   showAboutUsButton?: boolean;
@@ -31,17 +32,17 @@ export const HeaderComponent = (
 ): ReactElement => {
   return (
     <FlexHeader>
-      <Logo onClick={routerStore.goHome}>
-        <img src={logo} />
-      </Logo>
+      <FALinkWrap link={'/'}>
+        <Logo onClick={routerStore.goHome}>
+          <img src={logo} />
+        </Logo>
+      </FALinkWrap>
       <BetaDialogWithButton />
       {props.showAboutUsButton && (
         <ButtonWrap
+          href={'https://firstapproval.io/'}
           style={{ marginLeft: '32px' }}
           variant="text"
-          onClick={() => {
-            window.location.href = 'https://about.firstapproval.io';
-          }}
           size={'large'}>
           About
         </ButtonWrap>
@@ -50,14 +51,12 @@ export const HeaderComponent = (
         <Stack direction="row" alignItems="center" spacing={2}>
           {props.showPublishButton && (
             <ButtonWrap
-              variant="outlined"
-              onClick={() => {
-                if (authStore.token) {
-                  void userStore.createPublication();
-                } else {
-                  routerStore.navigatePage(Page.SIGN_UP);
-                }
+              href={userStore.getCreatePublicationLink()}
+              onClick={(e) => {
+                e.preventDefault();
+                userStore.goToCreatePublication();
               }}
+              variant="outlined"
               size={'large'}>
               Publish
             </ButtonWrap>

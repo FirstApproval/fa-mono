@@ -1,6 +1,4 @@
 import { computed, makeObservable, observable } from 'mobx';
-import { routerStore } from './router';
-import { Page } from './router/constants';
 
 const ACCESS_TOKEN_KEY = 'access-token';
 
@@ -29,7 +27,6 @@ export class AuthStore {
       localStorage.setItem(ACCESS_TOKEN_KEY, this._token);
     } else {
       localStorage.removeItem(ACCESS_TOKEN_KEY);
-      routerStore.navigatePage(Page.HOME_PAGE, '/', true);
     }
   }
 }

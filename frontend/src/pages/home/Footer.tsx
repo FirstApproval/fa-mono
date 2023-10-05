@@ -1,10 +1,9 @@
 import styled from '@emotion/styled';
-import React, { type ReactElement } from 'react';
+import React, { type ReactElement, useState } from 'react';
 import logo from '../../assets/logo.svg';
 import { Button, Stack } from '@mui/material';
 import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
 import { BetaDialog } from '../../components/BetaDialog';
-import { useState } from 'react';
 
 export const Footer = (): ReactElement => {
   const [isBetaDialogOpen, setIsBetaDialogOpen] = useState(false);

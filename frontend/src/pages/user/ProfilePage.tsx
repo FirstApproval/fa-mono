@@ -243,8 +243,10 @@ export const ProfilePage: FunctionComponent = observer(() => {
                               <StartPublishingButton
                                 color={'primary'}
                                 variant={'contained'}
-                                onClick={async () => {
-                                  await userStore.createPublication();
+                                href={userStore.getCreatePublicationLink()}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  userStore.goToCreatePublication();
                                 }}>
                                 <span
                                   style={{
@@ -279,8 +281,10 @@ export const ProfilePage: FunctionComponent = observer(() => {
                           <EditProfileAndCreateDraftButtons
                             size={'large'}
                             variant={'outlined'}
-                            onClick={async () => {
-                              await userStore.createPublication();
+                            href={userStore.getCreatePublicationLink()}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              userStore.goToCreatePublication();
                             }}>
                             Create draft
                           </EditProfileAndCreateDraftButtons>

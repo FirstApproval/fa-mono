@@ -13,7 +13,8 @@ import { cloneDeep } from 'lodash';
 import {
   ACCOUNT_AFFILIATIONS_PATH,
   Page,
-  publicationPath
+  publicationPath,
+  signUpPath
 } from './router/constants';
 
 export class UserStore implements IWorkplaceStore {
@@ -81,6 +82,27 @@ export class UserStore implements IWorkplaceStore {
       routerStore.navigatePage(Page.ACCOUNT, ACCOUNT_AFFILIATIONS_PATH);
     } else {
       routerStore.navigatePage(Page.PUBLICATION, publicationPath);
+    }
+  };
+
+  getCreatePublicationLink = (): string => {
+    if (authStore.token) {
+      const workplaces = userStore.user?.workplaces;
+      if (!workplaces?.length) {
+        return ACCOUNT_AFFILIATIONS_PATH;
+      } else {
+        return publicationPath;
+      }
+    } else {
+      return signUpPath;
+    }
+  };
+
+  goToCreatePublication = (): void => {
+    if (authStore.token) {
+      void userStore.createPublication();
+    } else {
+      routerStore.navigatePage(Page.SIGN_UP);
     }
   };
 

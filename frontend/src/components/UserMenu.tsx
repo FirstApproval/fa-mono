@@ -106,6 +106,7 @@ export const UserMenu = observer((): ReactElement => {
             userStore.editableUser = undefined;
             userStore.workplaces = [];
             userStore.workplacesProps = [];
+            routerStore.navigatePage(Page.HOME_PAGE, '/', true);
             handleClose();
           }}>
           <Logout
