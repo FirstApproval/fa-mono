@@ -235,7 +235,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
                         disabled={fs.activeUploads > 0 || sfs.activeUploads > 0}
                         variant="contained"
                         size={'medium'}
-                        onClick={() => {
+                        onClick={async () => {
                           const isValid = validateSections();
                           if (isValid) {
                             routerStore.navigatePage(
@@ -249,7 +249,8 @@ export const PublicationPage: FunctionComponent = observer(() => {
                                     0,
                                     200
                                   ),
-                                licenseType: publicationStore.licenseType
+                                licenseType: publicationStore.licenseType,
+                                filesSize: await fs.getPublicationFilesSize()
                               }
                             );
                           }

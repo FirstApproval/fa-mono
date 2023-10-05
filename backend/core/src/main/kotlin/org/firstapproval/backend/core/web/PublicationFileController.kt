@@ -25,6 +25,11 @@ class PublicationFileController(
     private val authHolderService: AuthHolderService
 ) : FileApi {
 
+    override fun getPublicationFilesSize(publicationId: String): ResponseEntity<Long> {
+        val size = publicationFileService.getPublicationFilesSize(authHolderService.user, publicationId)
+        return ok(size)
+    }
+
     override fun getPublicationFiles(publicationId: String, dirPath: String): ResponseEntity<List<PublicationFile>> {
         val files = publicationFileService.getPublicationFiles(authHolderService.user, publicationId, dirPath)
         return ok(files.map {

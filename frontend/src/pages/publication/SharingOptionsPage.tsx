@@ -35,12 +35,15 @@ import { getContentLicensingAbbreviation } from '../../util/publicationUtils';
 
 const MAX_PREVIEW_LENGTH = 200;
 const MAX_PREVIEW_SUBTITLE_LENGTH = 300;
+const MAX_FILES_SIZE = 2_147_483_648;
 
 export const SharingOptionsPage = (props: {
   publicationTitle: string;
   publicationSummary: string;
   licenseType: LicenseType;
+  filesSize: number;
 }): ReactElement => {
+  const [isIpfsDisabled] = useState(props.filesSize > MAX_FILES_SIZE);
   const [publicationId] = useState(() => routerStore.lastPathSegment);
   const [previewTitle, setPreviewTitle] = useState(props.publicationTitle);
   const [previewSubtitle, setPreviewSubtitle] = useState(
@@ -188,22 +191,23 @@ export const SharingOptionsPage = (props: {
                 }
               />
               <FormControlLabel
-                disabled={false}
+                disabled={isIpfsDisabled}
                 value={StorageType.IPFS}
                 labelPlacement={'end'}
                 label={
                   <FlexWrapColumn>
                     <FlexWrapRowRadioLabel>
-                      <StorageOptionLabelWrap disabled={false}>
+                      <StorageOptionLabelWrap disabled={isIpfsDisabled}>
                         Decentralized Storage (IPFS)
                       </StorageOptionLabelWrap>
                       <ViewInArOutlined />
                     </FlexWrapRowRadioLabel>
                     <StorageOptionDescription
                       variant={'body1'}
-                      disabled={false}>
+                      disabled={isIpfsDisabled}>
                       Distribute dataset across a decentralized network for
-                      added resilience and permanence.
+                      added resilience and permanence. Maximum dataset size 2
+                      gigabytes
                     </StorageOptionDescription>
                   </FlexWrapColumn>
                 }

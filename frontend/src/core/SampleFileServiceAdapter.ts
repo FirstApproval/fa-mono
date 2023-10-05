@@ -41,6 +41,16 @@ export class SampleFileServiceAdapter
     );
   }
 
+  async getPublicationFilesSize(
+    publicationId: string,
+    options: AxiosRequestConfig | undefined
+  ): Promise<AxiosResponse<number>> {
+    return await this.service.getPublicationSampleFilesSize(
+      publicationId,
+      options
+    );
+  }
+
   async createFolder(
     publicationId: string,
     createFolderRequest: CreateFolderRequest,

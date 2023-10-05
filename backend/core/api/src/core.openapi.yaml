@@ -1058,6 +1058,29 @@ paths:
       operationId: getTopAuthors
       tags: [ author ]
 
+  /api/files/size:
+    parameters:
+      - in: query
+        name: publicationId
+        schema:
+          type: string
+          maxLength: 7
+        required: true
+        description: Publication id
+    get:
+      summary: Get files size by publication id
+      responses:
+        200:
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: integer
+                format: int64
+      security:
+        - TokenAuth: [ ]
+      operationId: getPublicationFilesSize
+      tags: [ file ]
 
   /api/files:
     parameters:
@@ -1174,6 +1197,30 @@ paths:
         - TokenAuth: [ ]
       operationId: moveFile
       tags: [ file ]
+
+  /api/sample-files/size:
+    parameters:
+      - in: query
+        name: publicationId
+        schema:
+          type: string
+          maxLength: 7
+        required: true
+        description: Publication id
+    get:
+      summary: Get sample files size by publication id
+      responses:
+        200:
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: integer
+                format: int64
+      security:
+        - TokenAuth: [ ]
+      operationId: getPublicationSampleFilesSize
+      tags: [ sampleFile ]
 
   /api/sample-files:
     parameters:

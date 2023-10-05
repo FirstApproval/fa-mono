@@ -77,6 +77,7 @@ const App: FunctionComponent = observer(() => {
                   publicationTitle={routerStore.payload.publicationTitle}
                   publicationSummary={routerStore.payload.publicationSummary}
                   licenseType={routerStore.payload.licenseType}
+                  filesSize={routerStore.payload.filesSize}
                 />
               )}
               {page === Page.PROFILE && <ProfilePage key={routerStore.key} />}

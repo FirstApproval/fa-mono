@@ -21,6 +21,11 @@ class PublicationFileService(
     private val publicationRepository: PublicationRepository,
     private val transactionalTemplate: TransactionTemplate
 ) {
+    fun getPublicationFilesSize(user: User, publicationId: String): Long {
+        val publication = publicationRepository.getReferenceById(publicationId)
+        checkAccessToPublication(user, publication)
+        return publicationFileRepository.getPublicationFilesSize(publicationId)
+    }
 
     fun getPublicationFiles(user: User?, publicationId: String, dirPath: String): List<PublicationFile> {
         val publication = publicationRepository.getReferenceById(publicationId)

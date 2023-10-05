@@ -120,6 +120,11 @@ class PublicationSampleFileController(
         return ok().build()
     }
 
+    // This method made only for support SampleFileServiceAdapter compatibility with FileApi
+    override fun getPublicationSampleFilesSize(publicationId: String?): ResponseEntity<Long> {
+        return ok(-1)
+    }
+
     override fun createFolderForSampleFile(publicationId: String, createFolderRequest: CreateFolderRequest): ResponseEntity<PublicationFile> {
         val file = publicationSampleFileService.createFolder(
             authHolderService.user,

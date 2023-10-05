@@ -110,6 +110,13 @@ export class FileSystemFA {
     this.backEndFiles = [...files];
   }
 
+  getPublicationFilesSize = async (): Promise<number> => {
+    const response = await this.fileService.getPublicationFilesSize(
+      this.publicationId
+    );
+    return response.data;
+  };
+
   closeReplaceOrRenameDialog = (): void => {
     this.renameOrReplaceDialogOpen = false;
   };

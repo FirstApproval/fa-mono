@@ -26,6 +26,9 @@ interface PublicationFileRepository : JpaRepository<PublicationFile, UUID> {
 
     fun findAllByPublicationIdAndDirPath(publicationId: String, dirPath: String): List<PublicationFile>
 
+    @Query("select sum(pf.size) from PublicationFile pf where pf.publication.id = :publicationId and pf.isDir = false")
+    fun getPublicationFilesSize(publicationId: String): Long
+
     fun findByIdIn(ids: List<UUID>): List<PublicationFile>
 
     fun findByPublicationIdOrderByCreationTimeAsc(publicationId: String, pageable: Pageable): Page<PublicationFile>
