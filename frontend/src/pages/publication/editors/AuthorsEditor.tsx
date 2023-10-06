@@ -179,7 +179,9 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                         <AuthorName>
                           {option.firstName} {option.lastName}
                         </AuthorName>
-                        <AuthorEmail>{option.email}</AuthorEmail>
+                        <AuthorEmail variant={'body2'}>
+                          {option.email}
+                        </AuthorEmail>
                       </AuthorWrap>
                     </AuthorSelectOption>
                   );
@@ -539,10 +541,7 @@ const AuthorName = styled.div`
   font-weight: 400;
 `;
 
-const AuthorEmail = styled.div`
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
+const AuthorEmail = styled(Typography)`
   color: var(--text-secondary, #68676e);
 `;
 

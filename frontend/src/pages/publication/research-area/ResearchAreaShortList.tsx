@@ -4,6 +4,7 @@ import styled from '@emotion/styled';
 import { Paragraph } from '../../../apis/first-approval-api';
 import { Flex, FlexAlignItems } from '../../../ui-kit/flex';
 import { researchAreaIcon } from './ResearchAreas';
+import { Typography } from '@mui/material';
 
 export interface ResearchAreaShortListProps {
   researchAreas: Paragraph[];
@@ -15,7 +16,7 @@ export const ResearchAreaShortList = observer(
       <ReadonlyContentPlaceholderWrap>
         {props.researchAreas?.slice(0, 2).map((researchArea: any) => {
           return (
-            <PublicationAreaWrap key={researchArea.text}>
+            <PublicationAreaWrap variant={'body2'} key={researchArea.text}>
               <div
                 style={{
                   display: 'flex',
@@ -34,7 +35,7 @@ export const ResearchAreaShortList = observer(
           );
         })}
         {props.researchAreas?.length > 2 && (
-          <PublicationAreaWrap>
+          <PublicationAreaWrap variant={'body2'}>
             <Flex alignItems={FlexAlignItems.center} style={{ height: 32 }}>
               {props.researchAreas?.length - 2} more...
             </Flex>
@@ -55,7 +56,7 @@ const ReadonlyContentPlaceholderWrap = styled.div`
   font-weight: 400;
 `;
 
-const PublicationAreaWrap = styled.div`
+const PublicationAreaWrap = styled(Typography)`
   display: inline-flex;
   padding: 2px 8px;
   align-items: center;
@@ -64,12 +65,6 @@ const PublicationAreaWrap = styled.div`
 
   border-radius: 4px;
   background: var(--grey-50, #f8f7fa);
-
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 143%; /* 20.02px */
-  letter-spacing: 0.17px;
 
   word-break: break-word;
 `;

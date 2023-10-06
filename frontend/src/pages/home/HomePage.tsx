@@ -62,7 +62,7 @@ export const HomePage: FunctionComponent = observer(() => {
             cursor: 'pointer'
           }}>
           <img src={developer} />
-          <BetaHeaderText>
+          <BetaHeaderText variant={'subtitle2'}>
             We are fine-tuning the platform and would love your feedback
           </BetaHeaderText>
           <img src={cloud} />
@@ -200,17 +200,9 @@ const FullWidthTextField = styled(TextField)`
   width: 100%;
 `;
 
-const BetaHeaderText = styled.span`
+const BetaHeaderText = styled(Typography)`
   color: var(--primary-contrast, #fff);
   text-align: center;
-
-  /* typography/subtitle2 */
-  font-family: Roboto;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 157%; /* 21.98px */
-  letter-spacing: 0.1px;
   margin-left: 12px;
   margin-right: 12px;
 `;

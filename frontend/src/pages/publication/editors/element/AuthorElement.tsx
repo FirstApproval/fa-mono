@@ -1,4 +1,4 @@
-import { Avatar, IconButton, Tooltip } from '@mui/material';
+import { Avatar, IconButton, Tooltip, Typography } from '@mui/material';
 import { Edit } from '@mui/icons-material';
 import React, { type ReactElement } from 'react';
 import styled from '@emotion/styled';
@@ -102,7 +102,7 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
               )}
             </AuthorName>
           </Tooltip>
-          <AuthorWorkplace>
+          <AuthorWorkplace variant={'body2'}>
             {onAuthorEdit && getCurrentWorkplacesString(workplaces)}
           </AuthorWorkplace>
         </AuthorWrap>
@@ -151,9 +151,6 @@ const AuthorName = styled.div`
   max-width: 260px;
 `;
 
-const AuthorWorkplace = styled.div`
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
+const AuthorWorkplace = styled(Typography)`
   color: var(--text-secondary, #68676e);
 `;

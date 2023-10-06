@@ -45,7 +45,7 @@ export const PopularAuthor = (props: { author: UserInfo }): ReactElement => {
             MAX_SELF_BIO_LENGTH
           }
           title={getCurrentWorkplacesString(author.workplaces)}>
-          <WorkplacesWrap>
+          <WorkplacesWrap variant={'body2'} component={'div'}>
             {getCurrentWorkplacesString(author.workplaces)}
           </WorkplacesWrap>
         </Tooltip>
@@ -71,12 +71,7 @@ const NameWrap = styled(Typography)`
   width: 260px;
 ` as typeof Typography;
 
-const WorkplacesWrap = styled.div`
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 143%; /* 20.02px */
-  letter-spacing: 0.17px;
+const WorkplacesWrap = styled(Typography)`
   word-break: break-word;
   overflow: hidden;
   display: -webkit-box;
@@ -84,4 +79,4 @@ const WorkplacesWrap = styled.div`
   -webkit-box-orient: vertical;
 
   color: var(--text-secondary, #68676e);
-`;
+` as typeof Typography;

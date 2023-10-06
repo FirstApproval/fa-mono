@@ -19,7 +19,7 @@ export const TagsEditor = observer((props: EditorProps): ReactElement => {
     <TagsWrap>
       <ContentEditorWrap>
         <LabelWrap>Tags</LabelWrap>
-        <div>
+        <FlexWrap>
           {Array.from(props.publicationStore.tags).map((tag, index) => (
             <ChipWrap
               key={index}
@@ -33,17 +33,16 @@ export const TagsEditor = observer((props: EditorProps): ReactElement => {
               }></ChipWrap>
           ))}
           {!props.publicationStore.isReadonly && !enableAddingNewTag && (
-            <a>
-              <AddNewTagButtonWrap
-                onClick={() => {
-                  setEnableAddingNewTag(true);
-                }}
-                startIcon={<AddIconWrap />}>
-                Add tag
-              </AddNewTagButtonWrap>
-            </a>
+            <AddNewTagButtonWrap
+              size={'small'}
+              onClick={() => {
+                setEnableAddingNewTag(true);
+              }}
+              startIcon={<AddIconWrap />}>
+              Add tag
+            </AddNewTagButtonWrap>
           )}
-        </div>
+        </FlexWrap>
         {enableAddingNewTag && !props.publicationStore.isReadonly && (
           <TagTextInputWrap>
             <FullWidthTextField
@@ -81,6 +80,11 @@ export const TagsEditor = observer((props: EditorProps): ReactElement => {
   );
 });
 
+const FlexWrap = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
 const ChipWrap = styled(Chip)`
   margin-right: 12px;
   margin-bottom: 12px;
@@ -98,12 +102,8 @@ const FullWidthTextField = styled(TextField)`
 `;
 
 const AddNewTagButtonWrap = styled(Button)`
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 22px;
-  margin-bottom: 12px;
   color: var(--inherit-text-primary-main, #040036);
+  margin-bottom: 12px;
 `;
 
 const AddIconWrap = styled(Add)`

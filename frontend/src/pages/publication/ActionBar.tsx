@@ -5,7 +5,14 @@ import { authStore } from '../../core/auth';
 import { routerStore } from '../../core/router';
 import pdf from './asset/pdf.svg';
 import citate from './asset/citate.svg';
-import { Alert, Button, Divider, Snackbar, Tooltip } from '@mui/material';
+import {
+  Alert,
+  Button,
+  Divider,
+  Snackbar,
+  Tooltip,
+  Typography
+} from '@mui/material';
 import { PublicationStore } from './store/PublicationStore';
 import { ContentCopy, FileDownloadOutlined } from '@mui/icons-material';
 import { ArchiveDownloader } from './ArchiveDownloader';
@@ -16,7 +23,7 @@ import {
 } from '../../apis/first-approval-api';
 import { PublicationPageStore } from './store/PublicationPageStore';
 import { Page } from '../../core/router/constants';
-import { CircularProgressWrap, SpanFont14Wrap } from '../common.styled';
+import { CircularProgressWrap } from '../common.styled';
 
 export const PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY =
   'requested_publication_id';
@@ -70,9 +77,9 @@ export const ActionBar = observer(
               PublicationStatus.READY_FOR_PUBLICATION && (
               <FlexWrapRow>
                 <CircularProgressWrap size={24} />
-                <SpanFont14Wrap>
+                <Typography variant={'body2'}>
                   Publishing... This may take some time. Please wait.
-                </SpanFont14Wrap>
+                </Typography>
               </FlexWrapRow>
             )}
             {publicationStore.publicationStatus ===

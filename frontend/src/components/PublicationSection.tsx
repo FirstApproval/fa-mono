@@ -16,7 +16,6 @@ import {
   CursorPointer,
   HeightElement,
   SpaceBetween,
-  SpanFont14Wrap,
   StyledMenuItem,
   Width100Percent
 } from '../pages/common.styled';
@@ -133,7 +132,7 @@ export const PublicationSection = (props: {
               height: 24
             }}
           />
-          <Authors>{authorsString}</Authors>
+          <Authors variant={'body2'}>{authorsString}</Authors>
         </AuthorsWrap>
         <PublicationLabel variant={'h4'} component={'div'}>
           {publication.previewTitle ?? publication.title ?? 'Untitled'}
@@ -285,7 +284,7 @@ export const PublicationSection = (props: {
                     PublicationStatus.READY_FOR_PUBLICATION && (
                     <Flex alignItems={FlexAlignItems.center}>
                       <CircularProgressWrap size={32} />
-                      <SpanFont14Wrap>Publishing...</SpanFont14Wrap>
+                      <Typography variant={'body2'}>Publishing...</Typography>
                     </Flex>
                   )}
                   {publication.status === PublicationStatus.PUBLISHED && (
@@ -372,14 +371,8 @@ const AuthorsWrap = styled.div`
   align-items: center;
 `;
 
-const Authors = styled.span`
+const Authors = styled(Typography)`
   margin-left: 8px;
-
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 143%; /* 20.02px */
-  letter-spacing: 0.17px;
 `;
 
 const PublicationDescriptionBox = (props: { title: string }): ReactElement => {

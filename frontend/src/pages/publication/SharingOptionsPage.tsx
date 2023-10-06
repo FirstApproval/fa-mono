@@ -321,7 +321,7 @@ const SharingOption = React.forwardRef<HTMLDivElement, SharingOptionsProps>(
           {label}
         </SharingOptionLabel>
         <SharingOptionDescription isDisabled={isDisabled}>
-          {description}
+          <Typography variant={'body2'}>{description}</Typography>
         </SharingOptionDescription>
       </SharingOptionWrap>
     );
@@ -412,9 +412,6 @@ const SharingOptionLabel = styled(Typography)<{ isDisabled?: boolean }>`
 
 const SharingOptionDescription = styled.div<{ isDisabled?: boolean }>`
   margin-top: auto;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
   ${(props) =>
     props.isDisabled
       ? 'color: var(--text-disabled, rgba(4, 0, 54, 0.38));'

@@ -135,9 +135,3 @@ export const CircularProgressWrap = styled(CircularProgress)`
   margin-left: 12px;
   margin-right: 12px;
 `;
-
-export const SpanFont14Wrap = styled.span`
-  font-family: Roboto, sans-serif;
-  font-size: 14px;
-  font-style: normal;
-`;

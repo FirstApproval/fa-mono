@@ -6,7 +6,7 @@ import downloads from './asset/downloads.svg';
 import { type PublicationStore } from './store/PublicationStore';
 import Menu from '@mui/material/Menu';
 import { StyledMenuItem } from '../common.styled';
-import { IconButton } from '@mui/material';
+import { IconButton, Typography } from '@mui/material';
 import WarningAmber from '@mui/icons-material/WarningAmber';
 import { ReportProblemDialog } from './ReportProblemDialog';
 import MoreHoriz from '@mui/icons-material/MoreHoriz';
@@ -40,7 +40,7 @@ export const DateViewsDownloads = observer(
     };
 
     return (
-      <FlexWrapRowSpaceBetween>
+      <FlexWrapRowSpaceBetween variant={'body2'} component={'div'}>
         <FlexWrapRow>
           <Moment format={'D MMMM YYYY'}>
             {props.publicationStore.publicationTime}
@@ -135,16 +135,12 @@ export const DateViewsDownloads = observer(
   }
 );
 
-export const FlexWrapRowSpaceBetween = styled.div`
+export const FlexWrapRowSpaceBetween = styled(Typography)`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-  letter-spacing: 0.17000000178813934px;
   color: #68676e;
-`;
+` as typeof Typography;
 
 const LicensingLinkWrap = styled.div`
   cursor: pointer;
