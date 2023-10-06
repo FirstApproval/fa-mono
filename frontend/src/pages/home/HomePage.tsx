@@ -3,7 +3,8 @@ import {
   Divider,
   InputAdornment,
   LinearProgress,
-  TextField
+  TextField,
+  Typography
 } from '@mui/material';
 import { FlexBodyCenter, Parent } from '../common.styled';
 import { HomePageStore } from './HomePageStore';
@@ -133,7 +134,7 @@ export const HomePage: FunctionComponent = observer(() => {
                 )}
                 {!store.isSearching && store.searchResults.length === 0 && (
                   <ContentWrap>
-                    <SearchHintText>
+                    <SearchHintText variant={'body'}>
                       Make sure all words are spelled correctly or try more
                       general keywords.
                     </SearchHintText>
@@ -218,18 +219,10 @@ const BetaHeaderText = styled.span`
   margin-right: 12px;
 `;
 
-const SearchHintText = styled.div`
+const SearchHintText = styled(Typography)`
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
   text-align: center;
 
   word-wrap: break-word;
   width: 380px;
-
-  /* typography/body */
-  font-family: Roboto;
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 160%; /* 32px */
-  letter-spacing: 0.15px;
 `;

@@ -1,5 +1,12 @@
 import React, { type FunctionComponent } from 'react';
-import { Alert, Divider, Link, Snackbar, TextField } from '@mui/material';
+import {
+  Alert,
+  Divider,
+  Link,
+  Snackbar,
+  TextField,
+  Typography
+} from '@mui/material';
 import styled from '@emotion/styled';
 import { LoginOauth } from './LoginOauth';
 import {
@@ -36,7 +43,9 @@ export const SignInPage: FunctionComponent<SignInPageProps> = observer(
           <FlexBody>
             <Header>Sign in</Header>
             <LoginOauth />
-            <EmailLabel>or use your email to sign in:</EmailLabel>
+            <EmailLabel variant={'body'} component={'div'}>
+              or use your email to sign in:
+            </EmailLabel>
             <div>
               <FullWidthTextField
                 autoFocus
@@ -97,10 +106,10 @@ export const SignInPage: FunctionComponent<SignInPageProps> = observer(
               Sign in
             </FullWidthButton>
             <DividerWrap />
-            <CreateAccount>
+            <Typography variant={'body'}>
               No account?{' '}
               <LinkWrap onClick={props.onSignUpClick}>Create one</LinkWrap>
-            </CreateAccount>
+            </Typography>
             <FooterWrap>
               By clicking “Sign in” above, you acknowledge that you have read
               and understood, and agree to{' '}
@@ -142,12 +151,10 @@ const FullWidthTextField = styled(TextField)`
   margin-bottom: 24px;
 `;
 
-const EmailLabel = styled('div')`
+const EmailLabel = styled(Typography)`
   margin-top: 32px;
   margin-bottom: 24px;
-  font-weight: 400;
-  font-size: 20px;
-`;
+` as typeof Typography;
 
 const ForgotPasswordLabel = styled('div')`
   margin-bottom: 36px;
@@ -157,11 +164,6 @@ const DividerWrap = styled(Divider)`
   margin-top: 44px;
   margin-bottom: 48px;
   width: 100%;
-`;
-
-const CreateAccount = styled('div')`
-  font-weight: 400;
-  font-size: 20px;
 `;
 
 const FooterWrap = styled('div')`

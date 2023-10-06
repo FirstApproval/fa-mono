@@ -5,7 +5,7 @@ import { ParagraphElement } from './element/ParagraphElement';
 import { ContentEditorWrap, LabelWrap } from './styled';
 import { PrimaryArticleData } from './PrimaryArticleData';
 import WarningIcon from '@mui/icons-material/Warning';
-import { Input, Switch, TextField } from '@mui/material';
+import { Input, Switch, TextField, Typography } from '@mui/material';
 import { type EditorProps } from './types';
 import styled from '@emotion/styled';
 import { ListElement, ParagraphPrefixType } from './element/ListElement';
@@ -95,13 +95,13 @@ export const NegativeDataEditMode = observer(
                   htmlColor={'#a8a8b4'}
                   style={{ marginRight: '5px' }}
                 />
-                <NegativeDataHeaderDisabled>
+                <NegativeDataHeaderDisabled variant={'h6'}>
                   My data is negative
                 </NegativeDataHeaderDisabled>
               </>
             )}
             {publicationStore.isNegative && (
-              <NegativeDataHeaderEnabled>
+              <NegativeDataHeaderEnabled variant={'h6'}>
                 My data is negative
               </NegativeDataHeaderEnabled>
             )}
@@ -144,10 +144,10 @@ export const NegativeDataViewMode = observer(
     const { publicationStore } = props;
     return (
       <NegativeDataViewWrapper>
-        <NegativeDataHeaderEnabled>
+        <NegativeDataHeaderEnabled variant={'h6'}>
           The data is negative
         </NegativeDataHeaderEnabled>
-        <NegativeDataTextViewMode>
+        <NegativeDataTextViewMode variant={'body'} component={'div'}>
           {publicationStore.negativeData}
         </NegativeDataTextViewMode>
       </NegativeDataViewWrapper>
@@ -200,7 +200,7 @@ export const ObjectOfStudyEditor = observer(
           />
         )}
         {props.publicationStore.isReadonly && (
-          <ReadonlyContentPlaceholderWrap>
+          <ReadonlyContentPlaceholderWrap variant={'h6'} component={'div'}>
             {props.publicationStore.objectOfStudyTitle}
           </ReadonlyContentPlaceholderWrap>
         )}
@@ -477,25 +477,12 @@ const OlWrap = styled.ol`
   letter-spacing: 0.15px;
 `;
 
-const NegativeDataHeaderEnabled = styled.span`
-  color: var(--text-primary, #040036);
-
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 160%; /* 32px */
-  letter-spacing: 0.15px;
+const NegativeDataHeaderEnabled = styled(Typography)`
   padding-top: 4px;
 `;
 
-const NegativeDataHeaderDisabled = styled.span`
+const NegativeDataHeaderDisabled = styled(Typography)`
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
-
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 160%; /* 32px */
-  letter-spacing: 0.15px;
 `;
 
 const NegativeDataHeaderWrapper = styled.div`
@@ -528,7 +515,7 @@ const FullWidthTextField = styled(TextField)`
   margin-bottom: 32px;
 `;
 
-const ReadonlyContentPlaceholderWrap = styled.div`
+const ReadonlyContentPlaceholderWrap = styled(Typography)`
   display: inline-flex;
   padding: 8px 16px;
   align-items: center;
@@ -536,16 +523,10 @@ const ReadonlyContentPlaceholderWrap = styled.div`
   border-radius: 4px;
   background: var(--grey-50, #f8f7fa);
 
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 160%; /* 32px */
-  letter-spacing: 0.15px;
-
   width: 100%;
 
   margin-bottom: 32px;
-`;
+` as typeof Typography;
 
 const NegativeDataViewWrapper = styled.div`
   display: flex;
@@ -562,15 +543,6 @@ const NegativeDataViewWrapper = styled.div`
   margin-bottom: 15px;
 `;
 
-const NegativeDataTextViewMode = styled.div`
-  color: var(--text-primary, #040036);
-
-  /* typography/body */
-  font-family: Roboto;
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 160%; /* 32px */
-  letter-spacing: 0.15px;
+const NegativeDataTextViewMode = styled(Typography)`
   word-break: break-word;
-`;
+` as typeof Typography;

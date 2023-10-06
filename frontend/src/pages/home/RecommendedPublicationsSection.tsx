@@ -4,6 +4,7 @@ import React, { type ReactElement } from 'react';
 import { RecommendedPublication } from './RecommendedPublication';
 import { DownloadersDialog } from '../publication/DownloadersDialog';
 import { downloadersStore } from '../publication/store/downloadsStore';
+import { Typography } from '@mui/material';
 
 const GridContainer = styled.div`
   display: flex;
@@ -25,7 +26,9 @@ const RecommendedPublicationsSection = (props: {
     <>
       {publications.length > 0 && (
         <Wrap>
-          <NameWrap>Recommended datasets</NameWrap>
+          <NameWrap variant={'h6'} component={'div'}>
+            Recommended datasets
+          </NameWrap>
           <GridContainer>
             {publications.map((publication, idx) => (
               <PublicationCard key={idx}>
@@ -59,16 +62,10 @@ export const Wrap = styled('div')`
   margin-bottom: 40px;
 `;
 
-const NameWrap = styled.div`
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 160%; /* 32px */
-  letter-spacing: 0.15px;
-
+const NameWrap = styled(Typography)`
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
 
   margin-bottom: 24px;
-`;
+` as typeof Typography;
 
 export default RecommendedPublicationsSection;

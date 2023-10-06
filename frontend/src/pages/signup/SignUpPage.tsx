@@ -1,5 +1,12 @@
 import React, { type FunctionComponent, useState } from 'react';
-import { Alert, Divider, InputAdornment, Link, TextField } from '@mui/material';
+import {
+  Alert,
+  Divider,
+  InputAdornment,
+  Link,
+  TextField,
+  Typography
+} from '@mui/material';
 import styled from '@emotion/styled';
 import { ArrowForward, MailOutlined } from '@mui/icons-material';
 import { type SignUpStore } from './SignUpStore';
@@ -57,7 +64,7 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
         <FlexBodyCenter>
           <FlexBody>
             <Header>Sign up for free</Header>
-            <EmailLabel>
+            <EmailLabel variant={'body'} component={'div'}>
               Join the future of scientific discovery today
             </EmailLabel>
             <div style={{ marginBottom: '12px' }}>
@@ -100,7 +107,7 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
             <DividerWrap>or</DividerWrap>
             <LoginOauth />
             <DividerWrap2 />
-            <CreateAccount>
+            <CreateAccount variant={'body'}>
               Already have an account?{' '}
               <LinkWrap onClick={props.onSignInClick}>Sign in</LinkWrap>
             </CreateAccount>
@@ -133,12 +140,10 @@ const FullWidthTextField = styled(TextField)`
   margin-bottom: 20px;
 `;
 
-const EmailLabel = styled('div')`
-  font-weight: 400;
-  font-size: 20px;
+const EmailLabel = styled(Typography)`
   margin-top: 28px;
   margin-bottom: 32px;
-`;
+` as typeof Typography;
 
 const DividerWrap = styled(Divider)`
   margin-top: 32px;
@@ -157,10 +162,8 @@ const AlertWrap = styled(Alert)`
   width: 100%;
 `;
 
-const CreateAccount = styled('div')`
+const CreateAccount = styled(Typography)`
   margin-top: 48px;
-  font-weight: 400;
-  font-size: 20px;
 `;
 
 const FooterWrap = styled('div')`

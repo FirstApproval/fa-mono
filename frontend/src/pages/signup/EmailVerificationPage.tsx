@@ -1,5 +1,5 @@
 import React, { type FunctionComponent, useEffect } from 'react';
-import { Alert, Link, Snackbar, TextField } from '@mui/material';
+import { Alert, Link, Snackbar, TextField, Typography } from '@mui/material';
 import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
 import {
@@ -44,7 +44,7 @@ export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps
         <FlexBodyCenter>
           <FlexBody>
             <Header>Check your email</Header>
-            <EmailLabel>
+            <EmailLabel variant={'body'} component={'div'}>
               We&apos;ve sent you a six-digit confirmation code to{' '}
               <b>{props.store.email}</b>. Please enter it below to confirm your
               email address.
@@ -72,7 +72,7 @@ export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps
                 variant="outlined"
               />
             </div>
-            <SendCodeAgain>
+            <SendCodeAgain variant={'body'} component={'div'}>
               <Link
                 color="inherit"
                 onClick={async () => {
@@ -115,15 +115,11 @@ const FullWidthTextField = styled(TextField)`
   }
 `;
 
-const EmailLabel = styled.div`
+const EmailLabel = styled(Typography)`
   margin-top: 24px;
   margin-bottom: 32px;
-  font-weight: 400;
-  font-size: 20px;
-`;
+` as typeof Typography;
 
-const SendCodeAgain = styled.div`
+const SendCodeAgain = styled(Typography)`
   margin-top: 16px;
-  font-weight: 400;
-  font-size: 20px;
-`;
+` as typeof Typography;

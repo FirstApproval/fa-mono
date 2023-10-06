@@ -126,8 +126,6 @@ const PasscodeContainer = styled.div`
 `;
 
 const Passcode = styled.div`
-  color: var(--text-primary, #040036);
-
   /* typography/h4 */
   font-family: Roboto;
   font-size: 34px;

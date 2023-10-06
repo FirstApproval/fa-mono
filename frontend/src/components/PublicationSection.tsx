@@ -374,7 +374,6 @@ const AuthorsWrap = styled.div`
 
 const Authors = styled.span`
   margin-left: 8px;
-  color: var(--text-primary, #040036);
 
   font-size: 14px;
   font-style: normal;
@@ -384,20 +383,18 @@ const Authors = styled.span`
 `;
 
 const PublicationDescriptionBox = (props: { title: string }): ReactElement => {
-  return <PublicationDescriptionWrap>{props.title}</PublicationDescriptionWrap>;
+  return (
+    <PublicationDescriptionWrap variant={'body'} component={'div'}>
+      {props.title}
+    </PublicationDescriptionWrap>
+  );
 };
 
-const PublicationDescriptionWrap = styled.div`
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 160%; /* 32px */
-  letter-spacing: 0.15px;
-
+const PublicationDescriptionWrap = styled(Typography)`
   margin-bottom: 24px;
 
   word-break: break-word;
-`;
+` as typeof Typography;
 
 const DividerWrap = styled(Divider)`
   margin-top: 40px;

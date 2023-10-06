@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import React, { type ReactElement } from 'react';
-import { Button } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import bannerBg from './asset/Main banner.svg';
 import { type HomePageStore } from './HomePageStore';
 import { userStore } from '../../core/user';
@@ -12,7 +12,7 @@ export const CallToAction = (props: { store: HomePageStore }): ReactElement => {
       <CallToActionWrap>
         <FlexWrapColumn>
           <Heading>Unleash your data&apos;s potential</Heading>
-          <Text>
+          <Text variant={'body'} component={'div'}>
             Share your datasets and let them fuel new scientific breakthroughs
           </Text>
           <ButtonWrap
@@ -51,14 +51,10 @@ export const CallToActionWrap = styled('div')`
   padding: 40px 48px;
 `;
 
-export const Text = styled('div')`
+export const Text = styled(Typography)`
   max-width: 332px;
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 32px;
-  letter-spacing: 0.15000000596046448px;
   margin-bottom: 40px;
-`;
+` as typeof Typography;
 
 export const Heading = styled('div')`
   font-size: 34px;

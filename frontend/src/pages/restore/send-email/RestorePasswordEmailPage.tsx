@@ -3,7 +3,8 @@ import {
   CircularProgress,
   InputAdornment,
   Link,
-  TextField
+  TextField,
+  Typography
 } from '@mui/material';
 import styled from '@emotion/styled';
 import { ArrowForward, MailOutlined } from '@mui/icons-material';
@@ -46,7 +47,7 @@ export const RestorePasswordEmailPage: FunctionComponent<RestorePasswordEmailPro
           {!props.store.isSubmitted && (
             <FlexBody>
               <Header>Password recovery</Header>
-              <EmailLabel>
+              <EmailLabel variant={'body'} component={'div'}>
                 Enter the email you use for firstapproval.io
               </EmailLabel>
               <div style={{ marginBottom: '12px' }}>
@@ -94,7 +95,7 @@ export const RestorePasswordEmailPage: FunctionComponent<RestorePasswordEmailPro
           {props.store.isSubmitted && (
             <FlexBody>
               <Header>Reset your password</Header>
-              <EmailLabel>
+              <EmailLabel variant={'body'} component={'div'}>
                 If an account exists for {props.store.email} we&apos;ll send
                 instructions for resetting your password. Didn&apos;t get them?
                 Check the email address or ask to resend the instructions.
@@ -130,12 +131,10 @@ const FullWidthTextField = styled(TextField)`
   margin-bottom: 20px;
 `;
 
-const EmailLabel = styled('div')`
-  font-weight: 400;
-  font-size: 20px;
+const EmailLabel = styled(Typography)`
   margin-top: 28px;
   margin-bottom: 32px;
-`;
+` as typeof Typography;
 
 const LinkTextCenterWrap = styled(Link)`
   display: flex;

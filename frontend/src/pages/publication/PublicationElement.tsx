@@ -24,9 +24,9 @@ export const PublicationElement = (
     <PublicationRowWrap>
       <Typography variant={'body2'}>{authorsString}</Typography>
       <PublicationHeader>{publication.previewTitle ?? ''}</PublicationHeader>
-      <PublicationDescription>
+      <Typography variant={'body'}>
         {publication.previewSubtitle ?? ''}
-      </PublicationDescription>
+      </Typography>
     </PublicationRowWrap>
   );
 };
@@ -38,8 +38,6 @@ const PublicationRowWrap = styled.div`
 `;
 
 export const PublicationHeader = styled.span`
-  color: var(--text-primary, #040036);
-
   /* typography/h4 */
   font-family: Roboto;
   font-size: 34px;
@@ -49,16 +47,4 @@ export const PublicationHeader = styled.span`
   letter-spacing: 0.25px;
 
   margin: 16px 0;
-`;
-
-export const PublicationDescription = styled.span`
-  color: var(--text-primary, #040036);
-
-  /* typography/body */
-  font-family: Roboto;
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 160%; /* 32px */
-  letter-spacing: 0.15px;
 `;

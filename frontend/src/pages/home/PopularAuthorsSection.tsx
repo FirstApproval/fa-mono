@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import { type UserInfo } from '../../apis/first-approval-api';
 import { PopularAuthor } from './PopularAuthor';
 import { type ReactElement } from 'react';
+import { Typography } from '@mui/material';
 
 const GridContainer = styled.div`
   display: flex;
@@ -21,7 +22,9 @@ const PopularAuthorsSection = (props: {
   const { authors } = props;
   return (
     <>
-      <NameWrap>Popular authors</NameWrap>
+      <NameWrap variant={'h6'} component={'div'}>
+        Popular authors
+      </NameWrap>
       <GridContainer>
         {authors.map((author, idx) => (
           <AuthorCard key={idx}>
@@ -33,14 +36,8 @@ const PopularAuthorsSection = (props: {
   );
 };
 
-const NameWrap = styled.div`
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 160%; /* 32px */
-  letter-spacing: 0.15px;
-
+const NameWrap = styled(Typography)`
   margin-bottom: 32px;
-`;
+` as typeof Typography;
 
 export default PopularAuthorsSection;

@@ -11,7 +11,7 @@ import { observer } from 'mobx-react-lite';
 import { UploadType } from '../apis/first-approval-api';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
-import { FormControlLabel, Radio, RadioGroup } from '@mui/material';
+import { FormControlLabel, Radio, RadioGroup, Typography } from '@mui/material';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -100,7 +100,9 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
     return (
       <Wrap>
         {isDropZoneVisible && (
-          <DropZone onDrop={onDrop}>Drag files here for upload</DropZone>
+          <DropZone onDrop={onDrop} variant={'body'} component={'div'}>
+            Drag files here for upload
+          </DropZone>
         )}
         <FileBrowserFA
           instanceId={props.instanceId}
@@ -241,7 +243,7 @@ const Wrap = styled('div')`
   height: 100%;
 `;
 
-const DropZone = styled('div')`
+const DropZone = styled(Typography)`
   border-radius: 4px;
   border: 2px dashed var(--divider, #d2d2d6);
   background: var(--primary-states-selected, rgba(59, 78, 255, 0.08));
@@ -250,11 +252,7 @@ const DropZone = styled('div')`
   align-items: center;
   justify-content: center;
   min-height: 424px;
-
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 400;
-`;
+` as typeof Typography;
 
 const ContentWrap = styled.div`
   padding-top: 8px;

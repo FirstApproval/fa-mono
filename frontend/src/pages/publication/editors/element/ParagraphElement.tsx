@@ -1,6 +1,6 @@
 import React, { type ReactElement, useEffect, useRef } from 'react';
 import styled from '@emotion/styled';
-import { TextField } from '@mui/material';
+import { TextField, Typography } from '@mui/material';
 
 interface ParagraphProps {
   cursorPosition: number;
@@ -94,7 +94,11 @@ export const ParagraphElement = (props: ParagraphProps): ReactElement => {
           }}
         />
       )}
-      {props.isReadonly && <ValueWrap>{value}</ValueWrap>}
+      {props.isReadonly && (
+        <Typography variant={'body'} component={'div'}>
+          {value}
+        </Typography>
+      )}
     </ParagraphWrap>
   );
 };
@@ -106,12 +110,4 @@ const ParagraphWrap = styled.div`
 
 const TextFieldWrap = styled(TextField)`
   width: 100%;
-`;
-
-export const ValueWrap = styled.div`
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 160%; /* 32px */
-  letter-spacing: 0.15px;
 `;

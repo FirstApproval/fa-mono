@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import React, { type ReactElement } from 'react';
 import { type Publication } from '../../apis/first-approval-api';
-import { Avatar, Link, Tooltip } from '@mui/material';
+import { Avatar, Link, Tooltip, Typography } from '@mui/material';
 import { Download, RemoveRedEyeOutlined } from '@mui/icons-material';
 import { getInitials, renderProfileImage } from '../../util/userUtil';
 import { routerStore } from '../../core/router';
@@ -67,9 +67,9 @@ const RecommendedPublicationContent = (props: {
         </div>
       </AuthorFlexWrap>
       <NameWrap
-        href={`${publicationPath}${publication.id}`}
-        underline={'none'}
-        color={'#040036'}>
+        variant={'h6'}
+        component={'a'}
+        href={`${publicationPath}${publication.id}`}>
         {previewTitle?.slice(0, 120)}
         {previewTitle && previewTitle.length > 80 ? '...' : ''}
       </NameWrap>
@@ -123,16 +123,12 @@ const AvatarWrap = styled.div`
   margin-right: 8px;
 `;
 
-const NameWrap = styled(Link)`
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 160%; /* 32px */
-  letter-spacing: 0.15px;
-
+const NameWrap = styled(Typography)`
   margin-bottom: 16px;
   word-wrap: break-word;
-`;
+  text-decoration: none;
+  color: #040036;
+` as typeof Typography;
 
 const DownloadWrap = styled(Download)`
   margin-left: 24px;

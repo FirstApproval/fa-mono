@@ -3,7 +3,7 @@ import React, { type FunctionComponent, useState } from 'react';
 import { SignInPage } from './pages/login/SignInPage';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
-import { theme } from './theme';
+import { theme } from './ui-kit/theme';
 import { SignUpPage } from './pages/signup/SignUpPage';
 import { EnterNamePage } from './pages/signup/EnterNamePage';
 import { SetPasswordPage } from './pages/signup/SetPasswordPage';

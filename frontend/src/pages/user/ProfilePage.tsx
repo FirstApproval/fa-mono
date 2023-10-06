@@ -274,7 +274,7 @@ export const ProfilePage: FunctionComponent = observer(() => {
                         loadMoreButton(Tab.DRAFTS)}
                       {!notEmptyDrafts && !username && (
                         <CenterColumnElement>
-                          <YouDontHaveAnyDrafts>
+                          <YouDontHaveAnyDrafts variant={'body'}>
                             You don&apos;t have any drafts yet 🤷
                           </YouDontHaveAnyDrafts>
                           <HeightElement value="16px" />
@@ -352,7 +352,6 @@ export const WorkPlaces = styled(Typography)`
 `;
 
 export const EditProfileAndCreateDraftButtons = styled(Button)`
-  width: 140px;
   color: var(--inherit-text-primary-main, #040036);
 `;
 
@@ -408,17 +407,9 @@ const StartPublishingButton = styled(Button)`
   width: 180px;
 `;
 
-const YouDontHaveAnyDrafts = styled(Button)`
+const YouDontHaveAnyDrafts = styled(Typography)`
   color: var(--text-secondary, #68676e);
   text-align: center;
-
-  /* typography/body */
-  font-family: Roboto;
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 160%; /* 32px */
-  letter-spacing: 0.15px;
 `;
 
 const FlexBody = styled.div`

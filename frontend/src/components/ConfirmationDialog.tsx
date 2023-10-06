@@ -24,7 +24,9 @@ export const ConfirmationDialog = (props: {
         {title ?? 'Confirmation'}
       </DeleteDialogTitle>
       <DialogContentWrap>
-        <DialogWidthWrap>{text ?? 'Are you sure?'}</DialogWidthWrap>
+        <DialogWidthWrap variant={'body'}>
+          {text ?? 'Are you sure?'}
+        </DialogWidthWrap>
       </DialogContentWrap>
       <ConfirmDialogActions>
         <FlexWrapRow>
@@ -49,17 +51,8 @@ export const ConfirmationDialog = (props: {
   );
 };
 
-const DialogWidthWrap = styled.div`
+const DialogWidthWrap = styled(Typography)`
   max-width: 336px;
-  color: var(--text-primary, #040036);
-
-  /* typography/body */
-  font-family: Roboto;
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 160%; /* 32px */
-  letter-spacing: 0.15px;
 `;
 
 const DeleteDialogTitle = styled(Typography)`

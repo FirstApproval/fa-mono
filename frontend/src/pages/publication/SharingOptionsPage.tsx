@@ -330,7 +330,7 @@ const SharingOption = React.forwardRef<HTMLDivElement, SharingOptionsProps>(
 
 const PeerReviewSection = (): ReactElement => {
   return (
-    <PeerReviewSectionWrap>
+    <PeerReviewSectionWrap variant={'h6'} component={'div'}>
       <>
         Peer review
         <MarginLeftAuto>
@@ -354,7 +354,7 @@ const ButtonWrap = styled(Button)`
   margin-top: 24px;
 `;
 
-const PeerReviewSectionWrap = styled.div`
+const PeerReviewSectionWrap = styled(Typography)`
   border-radius: 8px;
   background: var(--grey-50, #f8f7fa);
   width: 100%;
@@ -365,10 +365,7 @@ const PeerReviewSectionWrap = styled.div`
   margin-bottom: 48px;
 
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 500;
-`;
+` as typeof Typography;
 
 const SoonChipWrap = styled(Chip)`
   border-radius: 100px;

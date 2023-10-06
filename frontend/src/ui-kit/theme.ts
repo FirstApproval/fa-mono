@@ -10,6 +10,12 @@ export const theme = createTheme({
     }
   },
   typography: {
+    body: {
+      fontSize: '20px',
+      fontWeight: 400,
+      lineHeight: '32px',
+      letterSpacing: '0.15px'
+    },
     h5: {
       fontWeight: 600
     }

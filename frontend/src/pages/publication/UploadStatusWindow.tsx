@@ -13,7 +13,13 @@ import {
   Replay,
   Warning
 } from '@mui/icons-material';
-import { CircularProgress, IconButton, Link, Stack } from '@mui/material';
+import {
+  CircularProgress,
+  IconButton,
+  Link,
+  Stack,
+  Typography
+} from '@mui/material';
 
 export const UploadStatusWindow = observer(
   (props: { fs: FileSystemFA }): ReactElement | null => {
@@ -54,7 +60,7 @@ export const UploadStatusWindow = observer(
           left: windowWidth - 400 - 16
         }}>
         <>
-          <UploadStatusHead>
+          <UploadStatusHead variant={'h6'} component={'div'}>
             {hasInProgress && <>Uploading {inProgress} items</>}
             {!hasInProgress && (
               <>
@@ -167,20 +173,14 @@ const UploadStatusWrap = styled.div`
   max-width: 400px;
 `;
 
-const UploadStatusHead = styled.div`
+const UploadStatusHead = styled(Typography)`
   padding: 12px 16px;
 
   background: var(--grey-100, #f3f2f5);
 
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 160%; /* 32px */
-  letter-spacing: 0.15px;
-
   display: flex;
   align-items: center;
-`;
+` as typeof Typography;
 
 const UploadStatusHeadActions = styled.div`
   margin-left: auto;

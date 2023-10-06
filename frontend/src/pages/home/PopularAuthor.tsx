@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import React, { MutableRefObject, type ReactElement } from 'react';
 import { type UserInfo } from '../../apis/first-approval-api';
-import { Avatar, Tooltip } from '@mui/material';
+import { Avatar, Tooltip, Typography } from '@mui/material';
 import {
   getCurrentWorkplacesString,
   getInitials,
@@ -35,7 +35,7 @@ export const PopularAuthor = (props: { author: UserInfo }): ReactElement => {
           title={
             isOverflow ? `${author.firstName} ${author.lastName}` : undefined
           }>
-          <NameWrap ref={nameRef}>
+          <NameWrap variant={'h6'} component={'div'} ref={nameRef}>
             {author.firstName} {author.lastName}
           </NameWrap>
         </Tooltip>
@@ -64,17 +64,12 @@ const MarginWrap = styled.div`
   margin-right: 16px;
 `;
 
-const NameWrap = styled.div`
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 160%; /* 32px */
-  letter-spacing: 0.15px;
+const NameWrap = styled(Typography)`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   width: 260px;
-`;
+` as typeof Typography;
 
 const WorkplacesWrap = styled.div`
   font-size: 14px;

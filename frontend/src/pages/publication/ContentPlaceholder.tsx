@@ -14,6 +14,7 @@ import {
   TagsIcon,
   TitleIcon
 } from './SectionIcon';
+import { Typography } from '@mui/material';
 
 export interface PlaceholderProps {
   onClick?: () => void;
@@ -166,7 +167,9 @@ export const ContentPlaceholder = (
     <ContentPlaceholderWrap tabIndex={0} onClick={props.onClick}>
       <FlexWrap>{props.icon}</FlexWrap>
       <TextWrap>
-        <LabelWrap>{props.text}</LabelWrap>
+        <LabelWrap variant={'h6'} component={'div'}>
+          {props.text}
+        </LabelWrap>
         {props.description && (
           <DescriptionWrap>{props.description}</DescriptionWrap>
         )}
@@ -200,13 +203,10 @@ const ContentPlaceholderWrap = styled.div`
   }
 `;
 
-const LabelWrap = styled.div`
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 500;
+const LabelWrap = styled(Typography)`
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
   margin-left: 8px;
-`;
+` as typeof Typography;
 
 const DescriptionWrap = styled.div`
   font-size: 16px;

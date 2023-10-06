@@ -6,6 +6,7 @@ import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
+import { Typography } from '@mui/material';
 
 export const DatasetIsPreparingDialog = observer(
   (props: { isOpen: boolean; onClose: () => void }): ReactElement => {
@@ -21,7 +22,7 @@ export const DatasetIsPreparingDialog = observer(
           Gotta wait - dataset is preparing for download
         </CustomDialogTitle>
         <DialogContentWrap>
-          <Content>
+          <Content variant={'body'}>
             Once ready, we notify you by email and the download link will be
             made available on this page. It may take up to a few hours because
             this dataset was in cold storage.
@@ -37,20 +38,9 @@ export const DatasetIsPreparingDialog = observer(
   }
 );
 
-const Content = styled.div`
+const Content = styled(Typography)`
   width: 100%;
   max-width: 600px;
-
-  color: var(--text-primary, #040036);
-  font-feature-settings: 'clig' off, 'liga' off;
-
-  /* typography/body */
-  font-family: Roboto;
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 160%; /* 32px */
-  letter-spacing: 0.15px;
 `;
 
 const CustomDialogTitle = styled(DialogTitle)`
