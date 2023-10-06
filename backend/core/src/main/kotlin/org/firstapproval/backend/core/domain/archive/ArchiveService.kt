@@ -57,7 +57,7 @@ class ArchiveService(
     @Scheduled(cron = "\${archive-publication-files.cron}")
     @SchedulerLock(name = "ArchiveService.archivePublicationFiles")
     fun archivePublicationFiles() {
-        val publications = publicationRepository.findAllByStatusOrderByCreationTimeDesc(READY_FOR_PUBLICATION)
+        val publications = publicationRepository.findAllByStatusOrderByCreationTime(READY_FOR_PUBLICATION)
         publications.forEach { publication ->
             runCatching {
                 log.info { "Publication files for id=${publication.id} started" }

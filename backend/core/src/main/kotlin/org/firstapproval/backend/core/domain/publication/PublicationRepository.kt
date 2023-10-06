@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query
 import java.util.UUID
 
 interface PublicationRepository : JpaRepository<Publication, String> {
-    fun findAllByStatusOrderByCreationTimeDesc(publicationStatus: PublicationStatus): List<Publication>
+    fun findAllByStatusOrderByCreationTime(publicationStatus: PublicationStatus): List<Publication>
 
     fun findAllByIdInAndStatus(ids: List<String>, publicationStatus: PublicationStatus): List<Publication>
 
