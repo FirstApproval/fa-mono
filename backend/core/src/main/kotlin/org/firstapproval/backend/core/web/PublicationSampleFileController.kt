@@ -74,7 +74,7 @@ class PublicationSampleFileController(
         fullPath: String,
         isDir: Boolean,
         type: UploadType,
-        sha256HashBase64: String,
+        sha256HashBase64: String?,
         contentLength: Long?,
         file: MultipartFile?
     ): ResponseEntity<PublicationFile> {
