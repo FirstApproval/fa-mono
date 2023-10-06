@@ -217,7 +217,7 @@ export const AccountPage: FunctionComponent = observer(() => {
           <FlexBody>
             <ColumnElement>
               <SpaceBetween>
-                <HeaderElement>Account settings</HeaderElement>
+                <HeaderElement variant={'h4'}>Account settings</HeaderElement>
                 <>
                   <div>
                     <IconButton
@@ -560,12 +560,7 @@ export const ColumnElement = styled.div`
   flex-direction: column;
 `;
 
-export const HeaderElement = styled.span`
-  font-family: Roboto;
-  font-size: 34px;
-  font-weight: 600;
-  line-height: 42px;
-  letter-spacing: 0.25px;
+export const HeaderElement = styled(Typography)`
   text-align: left;
 `;
 

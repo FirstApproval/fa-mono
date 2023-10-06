@@ -23,7 +23,9 @@ export const PublicationElement = (
   return (
     <PublicationRowWrap>
       <Typography variant={'body2'}>{authorsString}</Typography>
-      <PublicationHeader>{publication.previewTitle ?? ''}</PublicationHeader>
+      <PublicationHeader variant={'h4'}>
+        {publication.previewTitle ?? ''}
+      </PublicationHeader>
       <Typography variant={'body'}>
         {publication.previewSubtitle ?? ''}
       </Typography>
@@ -37,14 +39,6 @@ const PublicationRowWrap = styled.div`
   width: 100%;
 `;
 
-export const PublicationHeader = styled.span`
-  /* typography/h4 */
-  font-family: Roboto;
-  font-size: 34px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 123.5%; /* 41.99px */
-  letter-spacing: 0.25px;
-
+export const PublicationHeader = styled(Typography)`
   margin: 16px 0;
 `;

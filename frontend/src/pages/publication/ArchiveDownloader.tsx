@@ -8,7 +8,7 @@ import Dialog from '@mui/material/Dialog';
 import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
 import { PublicationPageStore } from './store/PublicationPageStore';
-import { LinearProgress } from '@mui/material';
+import { LinearProgress, Typography } from '@mui/material';
 
 export const ArchiveDownloader = observer(
   (props: {
@@ -62,7 +62,9 @@ export const ArchiveDownloader = observer(
               <PasscodeRowWrap>
                 <PasscodeContainer>
                   {publicationPageStore.passcode && (
-                    <Passcode>{publicationPageStore.passcode}</Passcode>
+                    <Typography variant={'h4'}>
+                      {publicationPageStore.passcode}
+                    </Typography>
                   )}
                   {!publicationPageStore.passcode && (
                     <LinearProgress style={{ width: '100%' }} />
@@ -123,16 +125,6 @@ const PasscodeContainer = styled.div`
   border-radius: 4px;
   background: var(--grey-100, #f3f2f5);
   margin-right: 12px;
-`;
-
-const Passcode = styled.div`
-  /* typography/h4 */
-  font-family: Roboto;
-  font-size: 34px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 123.5%; /* 41.99px */
-  letter-spacing: 0.25px;
 `;
 
 const ProtectionInfoText = styled.span`

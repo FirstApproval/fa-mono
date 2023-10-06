@@ -11,7 +11,9 @@ export const CallToAction = (props: { store: HomePageStore }): ReactElement => {
     <Wrap>
       <CallToActionWrap>
         <FlexWrapColumn>
-          <Heading>Unleash your data&apos;s potential</Heading>
+          <Heading variant={'h4'} component={'div'}>
+            Unleash your data&apos;s potential
+          </Heading>
           <Text variant={'body'} component={'div'}>
             Share your datasets and let them fuel new scientific breakthroughs
           </Text>
@@ -56,13 +58,9 @@ export const Text = styled(Typography)`
   margin-bottom: 40px;
 ` as typeof Typography;
 
-export const Heading = styled('div')`
-  font-size: 34px;
-  font-weight: 600;
-  line-height: 42px;
-  letter-spacing: 0.25px;
+export const Heading = styled(Typography)`
   margin-bottom: 16px;
-`;
+` as typeof Typography;
 
 export const ButtonText = styled('div')`
   max-width: 332px;

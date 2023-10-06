@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import React, { type ReactElement } from 'react';
 import { type Publication } from '../../apis/first-approval-api';
-import { Avatar, Link, Tooltip, Typography } from '@mui/material';
+import { Avatar, Tooltip, Typography } from '@mui/material';
 import { Download, RemoveRedEyeOutlined } from '@mui/icons-material';
 import { getInitials, renderProfileImage } from '../../util/userUtil';
 import { routerStore } from '../../core/router';

@@ -127,7 +127,9 @@ export const HomePage: FunctionComponent = observer(() => {
             )}
             {hasSearch && (
               <Wrap>
-                <ResultsLabel>Results for {store.searchQuery}</ResultsLabel>
+                <ResultsLabel variant={'h4'} component={'div'}>
+                  Results for {store.searchQuery}
+                </ResultsLabel>
                 {store.isSearching && <LinearProgress />}
                 {!store.isSearching && store.searchResults.length !== 0 && (
                   <>{mapPublications(store.searchResults)}</>
@@ -160,15 +162,9 @@ export const Header = styled('div')`
   font-weight: 700;
   line-height: 116.7%;
 `;
-export const ResultsLabel = styled('div')`
-  font-size: 34px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 123.5%; /* 41.99px */
-  letter-spacing: 0.25px;
-
+export const ResultsLabel = styled(Typography)`
   margin-bottom: 40px;
-`;
+` as typeof Typography;
 
 export const ContentWrap = styled('div')`
   width: 100%;

@@ -132,7 +132,9 @@ export const ProfilePage: FunctionComponent = observer(() => {
                   }}
                 />
                 <UserInfoElement>
-                  <NameElement>{lastNameAndFirstName}</NameElement>
+                  <NameElement variant={'h4'}>
+                    {lastNameAndFirstName}
+                  </NameElement>
                   <WorkPlaces
                     variant={'body1'}
                     style={{
@@ -329,12 +331,7 @@ export const EmailElement = styled.div`
   margin-bottom: 20px;
 `;
 
-export const NameElement = styled.span`
-  font-family: Roboto;
-  font-size: 34px;
-  font-weight: 600;
-  line-height: 42px;
-  letter-spacing: 0.25px;
+export const NameElement = styled(Typography)`
   text-align: left;
   word-break: break-word;
 `;

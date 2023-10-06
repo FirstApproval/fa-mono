@@ -135,7 +135,7 @@ export const PublicationSection = (props: {
           />
           <Authors>{authorsString}</Authors>
         </AuthorsWrap>
-        <PublicationLabel>
+        <PublicationLabel variant={'h4'} component={'div'}>
           {publication.previewTitle ?? publication.title ?? 'Untitled'}
         </PublicationLabel>
         {publication.previewSubtitle && (
@@ -401,16 +401,10 @@ const DividerWrap = styled(Divider)`
   margin-bottom: 40px;
 `;
 
-const PublicationLabel = styled.div`
-  font-size: 34px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 123.5%; /* 41.99px */
-  letter-spacing: 0.25px;
-
+const PublicationLabel = styled(Typography)`
   margin: 16px 0;
   word-break: break-word;
-`;
+` as typeof Typography;
 
 const Footer = styled.div`
   width: 100%;

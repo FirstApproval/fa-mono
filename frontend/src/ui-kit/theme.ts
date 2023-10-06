@@ -21,6 +21,16 @@ export const theme = createTheme({
     }
   },
   components: {
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          fontSize: '18px',
+          fontWeight: 500,
+          lineHeight: '26px',
+          letterSpacing: '0.46px'
+        }
+      }
+    },
     MuiButton: {
       styleOverrides: {
         root: {
