@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx';
-import { Workplace } from '../../../apis/first-approval-api';
+import { UserInfo, Workplace } from '../../../apis/first-approval-api';
 import {
   IWorkplaceStore,
   WorkplaceProps,
@@ -9,7 +9,7 @@ import { validateEmail } from '../../../util/emailUtil';
 
 export class AuthorEditorStore implements IWorkplaceStore {
   id: string | undefined = '';
-  userId: string | undefined;
+  user: UserInfo | undefined;
   email: string = '';
   firstName: string = '';
   lastName: string = '';
@@ -28,17 +28,13 @@ export class AuthorEditorStore implements IWorkplaceStore {
 
   constructor() {
     makeAutoObservable(this);
+    this.workplacesValidation = [{ isValidOrganization: true }];
     this.workplaces = [{ isFormer: false }];
-    this.workplacesValidation = [
-      { isValidOrganization: true, isValidAddress: true }
-    ];
     this.workplacesProps = [
       {
         orgQuery: '',
-        departmentQuery: '',
-        departmentQueryKey: '',
-        organizationOptions: [],
-        departmentOptions: []
+        orgQueryKey: '',
+        organizationOptions: []
       }
     ];
   }
@@ -48,8 +44,7 @@ export class AuthorEditorStore implements IWorkplaceStore {
     this.isValidFirstName = this.firstName.length > 0;
     this.isValidLastName = this.lastName.length > 0;
     this.workplacesValidation = this.workplaces.map((workplace) => ({
-      isValidOrganization: !!workplace.organization,
-      isValidAddress: !!workplace.address
+      isValidOrganization: !!workplace.organization
     }));
     // const currentWorkplaceAbsent = !this.workplaces.some(
     //   (workplace) => !workplace.isFormer
@@ -58,9 +53,7 @@ export class AuthorEditorStore implements IWorkplaceStore {
       this.isValidEmail &&
       this.isValidFirstName &&
       this.isValidLastName &&
-      this.workplacesValidation.every(
-        (v) => v.isValidOrganization && v.isValidAddress
-      )
+      this.workplacesValidation.every((v) => v.isValidOrganization)
     );
   }
 }

@@ -23,7 +23,6 @@ import { getTimeElapsedString } from '../util/dateUtil';
 import MenuItem from '@mui/material/MenuItem';
 import { ConfirmationDialog } from './ConfirmationDialog';
 import { ProfilePageStore } from '../pages/user/ProfilePageStore';
-
 import { renderProfileImage } from '../util/userUtil';
 import {
   publicationPath,
@@ -49,20 +48,15 @@ export const PublicationSection = (props: {
 }): ReactElement => {
   const { publication } = props;
 
-  const confirmedAuthorNames =
-    publication.confirmedAuthors!.map<PublicationAuthorName>((author) => ({
-      username: author.user.username,
-      firstName: author.user.firstName,
-      lastName: author.user.lastName,
-      ordinal: author.ordinal!
-    }));
-  const unconfirmedAuthorNames =
-    publication.unconfirmedAuthors!.map<PublicationAuthorName>((author) => ({
+  const authorNames = publication.authors!.map<PublicationAuthorName>(
+    (author) => ({
+      username: author.user?.username,
       firstName: author.firstName,
       lastName: author.lastName,
       ordinal: author.ordinal!
-    }));
-  const authors = [...confirmedAuthorNames, ...unconfirmedAuthorNames]?.sort(
+    })
+  );
+  const authors = authorNames?.sort(
     (authorName1, authorName2) => authorName1.ordinal! - authorName2.ordinal!
   );
   const authorsString = authors

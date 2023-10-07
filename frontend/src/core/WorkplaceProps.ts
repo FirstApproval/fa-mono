@@ -1,15 +1,9 @@
-import {
-  Organization,
-  OrganizationDepartment,
-  Workplace
-} from '../apis/first-approval-api';
+import { Organization, Workplace } from '../apis/first-approval-api';
 
 export interface WorkplaceProps {
   orgQuery: string;
-  departmentQuery: string;
-  departmentQueryKey: string;
+  orgQueryKey: string;
   organizationOptions: Organization[];
-  departmentOptions: OrganizationDepartment[];
 }
 
 export interface IWorkplaceStore {
@@ -20,5 +14,4 @@ export interface IWorkplaceStore {
 
 export interface WorkplaceValidationState {
   isValidOrganization: boolean;
-  isValidAddress: boolean;
 }

@@ -23,13 +23,14 @@ import { ProfilePage } from './pages/user/ProfilePage';
 import { AccountPage } from './pages/user/AccountPage';
 import { ResetPasswordPage } from './pages/restore/set-password/RestorePasswordPage';
 import { SharingOptionsPage } from './pages/publication/SharingOptionsPage';
-import { EnterSelfInfoPage } from './pages/signup/EnterSelfInfo';
 import logo from '../src/assets/logo-black.svg';
 import developing from '../src/assets/developing.svg';
 import { Button } from '@mui/material';
 import DesktopMacOutlinedIcon from '@mui/icons-material/DesktopMacOutlined';
 import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
 import { Page } from './core/router/constants';
+import { EnterAffiliationsPage } from './pages/signup/EnterAffiliationsPage';
+import { userStore } from './core/user';
 
 const MOBILE_VERSION_NOT_SUPPORT_STORAGE_KEY = 'mobileVersionNotSupportShown';
 
@@ -48,6 +49,9 @@ const App: FunctionComponent = observer(() => {
   const showMobileNotSupporting =
     window.innerWidth < 960 && !mobileVersionNowSupportShown;
 
+  console.log(
+    'isRegistration in payload ' + routerStore.payload.isRegistratioin
+  );
   return (
     <>
       {/*
@@ -106,10 +110,37 @@ const App: FunctionComponent = observer(() => {
               )}
               {page === Page.SIGN_UP_NAME && (
                 <EnterNamePage
-                  store={signUpStore}
+                  firstName={signUpStore.firstName}
+                  lastName={signUpStore.lastName}
+                  setFirstName={(value) => (signUpStore.firstName = value)}
+                  setLastName={(value) => (signUpStore.lastName = value)}
                   onContinueClick={() => {
                     navigatePage(Page.SIGN_UP_PASSWORD);
                   }}
+                />
+              )}
+              {page === Page.NAME && (
+                <EnterNamePage
+                  firstName={userStore.editableUser!.firstName}
+                  lastName={userStore.editableUser!.lastName}
+                  setFirstName={(value) =>
+                    (userStore.editableUser!.firstName = value)
+                  }
+                  setLastName={(value) =>
+                    (userStore.editableUser!.lastName = value)
+                  }
+                  onContinueClick={() => {
+                    userStore.updateUser([], true).then(() => {
+                      navigatePage(Page.AFFILIATIONS, '/', false, {
+                        isRegistration: true
+                      });
+                    });
+                  }}
+                />
+              )}
+              {page === Page.AFFILIATIONS && (
+                <EnterAffiliationsPage
+                  isRegistration={routerStore.payload.isRegistration}
                 />
               )}
               {page === Page.SIGN_UP_PASSWORD && (
@@ -136,11 +167,12 @@ const App: FunctionComponent = observer(() => {
                     navigatePage(Page.SIGN_IN);
                   }}
                   onContinueClick={() => {
-                    navigatePage(Page.SELF_INFO);
+                    navigatePage(Page.AFFILIATIONS, '/', false, {
+                      isRegistration: true
+                    });
                   }}
                 />
               )}
-              {page === Page.SELF_INFO && <EnterSelfInfoPage />}
               {page === Page.RESET_PASSWORD && (
                 <ResetPasswordPage
                   onSignInClick={() => {

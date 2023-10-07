@@ -13,9 +13,9 @@ export function getCurrentWorkplacesString(workplaces: Workplace[]): string {
       ?.filter((workplace) => !workplace.isFormer)
       .map(
         (workplace) =>
-          `${workplace.department?.name ?? ''} ${
-            workplace.organization?.name ?? ''
-          } ${workplace.address ?? ''}`.trim() ?? ''
+          `${workplace.organization?.name ?? ''} ${
+            workplace.address ?? ''
+          }`.trim() ?? ''
       )
       .join(', ') ?? ''
   );

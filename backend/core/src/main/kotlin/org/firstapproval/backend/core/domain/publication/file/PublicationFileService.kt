@@ -1,7 +1,10 @@
-package org.firstapproval.backend.core.domain.publication
+package org.firstapproval.backend.core.domain.publication.file
 
 import com.amazonaws.services.s3.model.S3Object
 import org.apache.commons.io.FilenameUtils
+import org.firstapproval.backend.core.domain.publication.PublicationRepository
+import org.firstapproval.backend.core.domain.publication.checkAccessToPublication
+import org.firstapproval.backend.core.domain.publication.checkPublicationCreator
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.external.s3.FILES
 import org.firstapproval.backend.core.external.s3.FileStorageService

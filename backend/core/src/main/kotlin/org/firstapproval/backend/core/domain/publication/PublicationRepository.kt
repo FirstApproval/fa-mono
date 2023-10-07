@@ -18,7 +18,7 @@ interface PublicationRepository : JpaRepository<Publication, String> {
         page: Pageable
     ): Page<Publication>
 
-    @Query("select p from Publication p join p.confirmedAuthors ca where ca.user.id = :userId and p.status in :publicationStatuses")
+    @Query("select p from Publication p join p.authors a where a.isConfirmed = true and a.user.id = :userId and p.status in :publicationStatuses")
     fun findAllByConfirmedAuthorUsername(
         publicationStatuses: Collection<PublicationStatus>,
         userId: UUID,
