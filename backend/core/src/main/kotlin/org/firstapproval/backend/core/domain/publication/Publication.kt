@@ -97,6 +97,7 @@ class Publication(
     var hash: String? = null,
     @Enumerated(STRING)
     var licenseType: LicenseType = ATTRIBUTION_NO_DERIVATIVES,
+    var characterCount: Long = 0,
 )
 
 enum class PublicationStatus {

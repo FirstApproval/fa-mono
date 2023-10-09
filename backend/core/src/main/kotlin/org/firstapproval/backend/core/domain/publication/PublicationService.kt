@@ -180,6 +180,7 @@ class PublicationService(
                 publicationRepository.saveAndFlush(publication)
                 publication.unconfirmedAuthors.addAll(unconfirmedPublicationAuthors)
             }
+            publication.characterCount = characterCount.toLong()
         }
         publicationRepository.saveAndFlush(publication)
     }

@@ -2020,6 +2020,8 @@ components:
           type: boolean
         licenseType:
           $ref: '#/components/schemas/PublicationLicenseTypeValue'
+        characterCount:
+          type: number
 
     PublicationStringValue:
       type: object
