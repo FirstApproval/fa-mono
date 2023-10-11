@@ -173,11 +173,6 @@ class PublicationPdfService(
                 .map { AuthorDescription(it.key, it.value) })
     }
 
-//    private fun authorsDescriptions(publication: Publication): String {
-//        return publication.authors.associate { (it.lastName + " " + it.firstName) to it.workplacesNames }
-//            .map { "<div style=\"margin-bottom: 2px\"><b>${it.key}.</b> ${it.value}</div>" }.joinToString(separator = "")
-//    }
-
     private fun grantingOrganizations(publication: Publication): List<String> {
         return publication.grantOrganizations!!
     }
