@@ -1,9 +1,10 @@
 package org.firstapproval.backend.core.domain.organizations
 
-import jakarta.persistence.*
-import jakarta.persistence.FetchType.EAGER
-import org.hibernate.annotations.Fetch
-import org.hibernate.annotations.FetchMode.SELECT
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.Id
+import jakarta.persistence.SequenceGenerator
+import jakarta.persistence.Table
 import java.time.ZonedDateTime
 import org.firstapproval.api.server.model.Organization as OrganizationApiObject
 
@@ -16,9 +17,6 @@ class Organization(
     @SequenceGenerator(name = SEQUENCE_NAME, sequenceName = SEQUENCE_NAME)
     @GeneratedValue(generator = SEQUENCE_NAME)
     var id: Long = 0,
-    @Fetch(SELECT)
-    @OneToMany(fetch = EAGER, cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "organization")
-    var departments: Set<OrganizationDepartment> = setOf(),
     var name: String,
     var countryName: String? = null,
     var countryCode: String? = null,
@@ -30,5 +28,4 @@ class Organization(
 fun Organization.toApiObject() = OrganizationApiObject().also {
     it.id = id
     it.name = name
-    it.departments = departments.map { department -> department.toApiObject() }
 }

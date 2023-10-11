@@ -11,6 +11,8 @@ import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLI
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
 import org.firstapproval.backend.core.domain.publication.StorageType.CLOUD_SECURE_STORAGE
 import org.firstapproval.backend.core.domain.publication.StorageType.IPFS
+import org.firstapproval.backend.core.domain.publication.file.PublicationFileRepository
+import org.firstapproval.backend.core.domain.publication.file.PublicationSampleFileRepository
 import org.firstapproval.backend.core.external.ipfs.DownloadLink
 import org.firstapproval.backend.core.external.ipfs.DownloadLinkRepository
 import org.firstapproval.backend.core.external.ipfs.IpfsClient.IpfsContentAvailability.INSTANT

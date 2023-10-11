@@ -70,7 +70,7 @@ export const HeaderComponent = (
                     routerStore.navigatePage(Page.SIGN_IN);
                   }}
                   size={'large'}>
-                  Sign in
+                  Log in
                 </ButtonWrap>
               )}
               {props.showLoginOutlinedButton && (
@@ -79,7 +79,7 @@ export const HeaderComponent = (
                   onClick={() => {
                     routerStore.navigatePage(Page.SIGN_IN);
                   }}>
-                  Sign in
+                  Log in
                 </Button>
               )}
               {props.showSignUpContainedButton && (

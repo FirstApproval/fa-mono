@@ -33,7 +33,7 @@ export const UserMenu = observer((): ReactElement => {
           routerStore.navigatePage(Page.SIGN_IN);
         }}
         size={'medium'}>
-        Sign in
+        Log in
       </ButtonWrap>
     );
   }

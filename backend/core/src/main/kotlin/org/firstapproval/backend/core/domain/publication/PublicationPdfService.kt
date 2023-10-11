@@ -73,14 +73,10 @@ class PublicationPdfService(
     }
 
     private fun authorNames(publication: Publication): String {
-        if (publication.confirmedAuthors.isEmpty() && publication.unconfirmedAuthors.isEmpty()) {
+        if (publication.authors.isEmpty()) {
             return "Draft. No authors yet."
         }
-        val confirmedAuthorNames = publication.confirmedAuthors
-            .map { it.user.lastName + " " + it.user.firstName }
-        val unconfirmedAuthorNames = publication.unconfirmedAuthors
-            .map { it.lastName + " " + it.firstName }
-        return (confirmedAuthorNames + unconfirmedAuthorNames).joinToString(postfix = ".")
+        return publication.authorsNames
     }
 
     private fun publishDate(publication: Publication): String {
