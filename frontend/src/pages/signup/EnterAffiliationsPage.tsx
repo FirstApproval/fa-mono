@@ -22,7 +22,6 @@ interface EnterAffiliationsPageProps {
 export const EnterAffiliationsPage = observer(
   (props: EnterAffiliationsPageProps): ReactElement => {
     console.log('isRegistration' + props.isRegistration);
-    debugger;
     return (
       <Parent>
         <HeaderComponent />
@@ -62,13 +61,14 @@ export const EnterAffiliationsPage = observer(
                 )
               }
               saveCallback={async (workplaces): Promise<boolean> => {
-                debugger;
                 const isValid = userStore.validate();
                 if (isValid) {
-                  return userStore.saveWorkplaces(workplaces).then(() => {
-                    routerStore.navigatePage(Page.HOME_PAGE);
-                    return true;
-                  });
+                  return userStore
+                    .updateUser(workplaces, false, true)
+                    .then(() => {
+                      routerStore.navigatePage(Page.HOME_PAGE);
+                      return true;
+                    });
                 }
                 return Promise.resolve(isValid);
               }}

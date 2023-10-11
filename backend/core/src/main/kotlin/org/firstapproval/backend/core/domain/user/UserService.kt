@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
 import java.io.ByteArrayInputStream
 import java.time.ZonedDateTime.now
-import java.util.*
+import java.util.UUID
 import java.util.UUID.fromString
 import java.util.UUID.randomUUID
 import javax.naming.LimitExceededException
@@ -305,6 +305,9 @@ class UserService(
                 if (confirmName == true) {
                     user.isNameConfirmed = true
                 }
+                if (confirmWorkplaces == true) {
+                    user.isWorkplacesConfirmed = true
+                }
 
                 if (workplaces != null && workplaces.size > 0) {
                     val userWorkplaces = workplaces.map { workplace ->
@@ -361,6 +364,18 @@ class UserService(
                 it.isConfirmed = true
                 it.user = user
             }
+            unconfirmedUsers.flatMap { it.workplaces }
+                .distinctBy { it.organization.id }
+                .map {
+                    Workplace(
+                        organization = it.organization,
+                        organizationDepartment = it.organizationDepartment,
+                        address = it.address,
+                        postalCode = it.postalCode,
+                        isFormer = it.isFormer,
+                        user = user
+                    )
+                }.let { user.workplaces.addAll(it) }
         }
     }
 }

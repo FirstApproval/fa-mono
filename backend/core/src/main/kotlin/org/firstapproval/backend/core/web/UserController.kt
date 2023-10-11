@@ -91,6 +91,7 @@ class UserController(
         getMeResponse.signedVia = user.externalIds.keys.map { OauthType.valueOf(it.name) }
         getMeResponse.workplaces = user.workplaces.map { it.toApiObject() }
         getMeResponse.isNameConfirmed = user.isNameConfirmed
+        getMeResponse.isWorkplacesConfirmed = user.isWorkplacesConfirmed
         return ok(getMeResponse)
     }
 
