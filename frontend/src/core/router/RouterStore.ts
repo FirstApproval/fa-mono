@@ -73,13 +73,11 @@ export class RouterStore {
       }
 
       if (path.startsWith(namePath)) {
-        debugger;
         this.navigatePage(Page.NAME, path, true);
         return;
       }
 
       if (path.startsWith(affiliationsPath)) {
-        debugger;
         this.navigatePage(Page.AFFILIATIONS, path, true);
         return;
       }
@@ -166,7 +164,10 @@ export class RouterStore {
     const userData = (await userService.getMe()).data;
     if (!userData.isNameConfirmed) {
       this.navigatePage(Page.NAME, namePath, true);
-    } else if (!userData?.workplaces?.length) {
+    } else if (
+      !userData.isWorkplacesConfirmed ||
+      !userData.workplaces?.length
+    ) {
       this.navigatePage(Page.AFFILIATIONS, affiliationsPath, true);
     } else {
       this.navigatePage(Page.HOME_PAGE, '/', true);

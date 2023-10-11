@@ -200,31 +200,6 @@ export class PublicationStore {
     }
   }
 
-  addConfirmedAuthor(userInfo: UserInfo): void {
-    const newValue = [...this.authors];
-    newValue.push({
-      user: userInfo,
-      ordinal: this.authors.length,
-      workplaces: userInfo.workplaces.map((workplace) => {
-        return {
-          organization: workplace.organization,
-          department: workplace.department,
-          address: workplace.address,
-          postalCode: workplace.postalCode,
-          isFormer: workplace.isFormer,
-          creationTime: workplace.creationTime
-        };
-      }),
-      email: userInfo.email,
-      firstName: userInfo.firstName,
-      lastName: userInfo.lastName,
-      isConfirmed: true
-    });
-    this.authors = newValue;
-    this.savingStatus = SavingStatusState.SAVING;
-    void this.updateAuthors();
-  }
-
   addOrEditAuthor(store: AuthorEditorStore): void {
     if (typeof store.index !== 'undefined' && store.index !== null) {
       const author = this.authors[store.index];

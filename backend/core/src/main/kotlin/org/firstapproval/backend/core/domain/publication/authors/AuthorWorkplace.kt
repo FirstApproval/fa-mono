@@ -29,7 +29,7 @@ class AuthorWorkplace(
     var organizationDepartment: String? = null,
     var address: String? = null,
     var postalCode: String? = null,
-    var isFormer: Boolean? = false,
+    var isFormer: Boolean = false,
     var creationTime: ZonedDateTime = now(),
     var editingTime: ZonedDateTime = now(),
 )
