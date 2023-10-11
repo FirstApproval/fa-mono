@@ -164,18 +164,19 @@ class PublicationPdfService(
 
     private fun authorsDescriptions(publication: Publication): List<AuthorDescription> {
         return (
-            publication.confirmedAuthors
+            publication.authors
                 .associate {
-                    it.user.lastName + " " + it.user.firstName to (it.user.workplaces.joinToString(", ") { workplace -> "${workplace.organization.name} ${workplace.organizationDepartment?.name}" }
+                    ((it.user?.lastName ?: it.lastName) + " " + (it.user?.firstName
+                        ?: it.firstName)) to (it.workplaces.joinToString(", ") { workplace -> "${workplace.organization.name} ${workplace.organizationDepartment ?: ""}" }
                         ?: "")
-                } +
-                publication.unconfirmedAuthors.associate
-                {
-                    it.lastName + " " + it.firstName to (it.workplaces.joinToString(", ") { workplace -> "${workplace.organization.name} ${workplace.organizationDepartment?.name}" }
-                        ?: "")
-                })
-            .map { AuthorDescription(it.key, it.value) }
+                }
+                .map { AuthorDescription(it.key, it.value) })
     }
+
+//    private fun authorsDescriptions(publication: Publication): String {
+//        return publication.authors.associate { (it.lastName + " " + it.firstName) to it.workplacesNames }
+//            .map { "<div style=\"margin-bottom: 2px\"><b>${it.key}.</b> ${it.value}</div>" }.joinToString(separator = "")
+//    }
 
     private fun grantingOrganizations(publication: Publication): List<String> {
         return publication.grantOrganizations!!
