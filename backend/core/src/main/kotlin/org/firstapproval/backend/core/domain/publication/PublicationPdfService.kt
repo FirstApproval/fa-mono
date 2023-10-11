@@ -165,12 +165,12 @@ class PublicationPdfService(
     private fun authorsDescriptions(publication: Publication): List<AuthorDescription> {
         return (
             publication.authors
-                .associate {
-                    ((it.user?.lastName ?: it.lastName) + " " + (it.user?.firstName
-                        ?: it.firstName)) to (it.workplaces.joinToString(", ") { workplace -> "${workplace.organization.name} ${workplace.organizationDepartment ?: ""}" }
-                        ?: "")
-                }
-                .map { AuthorDescription(it.key, it.value) })
+                .map {
+                    AuthorDescription(((it.user?.lastName ?: it.lastName) + " " + (it.user?.firstName
+                        ?: it.firstName)),
+                        (it.workplaces.joinToString(", ") { workplace -> "${workplace.organization.name} ${workplace.organizationDepartment ?: ""}" }
+                            ?: ""))
+                })
     }
 
     private fun grantingOrganizations(publication: Publication): List<String> {
