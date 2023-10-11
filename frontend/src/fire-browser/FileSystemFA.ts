@@ -1,6 +1,5 @@
 import {
   action,
-  computed,
   makeObservable,
   observable,
   reaction,
@@ -23,7 +22,6 @@ interface FileEntry {
   fullPath: string;
   name: string;
   isDirectory: boolean;
-  isUploading: boolean;
   note?: string;
 }
 
@@ -32,10 +30,8 @@ type UploadFilesAfterDialogFunction = (value: UploadType) => void;
 export class FileSystemFA {
   rootPathFiles: number = 0;
   currentPath: string = '/';
-  private publicationId: string = '';
-  private backEndFiles: FileEntry[] = [];
-  private localFiles: FileEntry[] = [];
-  private allLocalFiles: FileEntry[] = [];
+  files = new Map<string, Map<string, FileEntry>>();
+  publicationId: string = '';
   isLoading = false;
   initialized = false;
   activeUploads = 0;
@@ -49,21 +45,12 @@ export class FileSystemFA {
     uploadType: UploadType
   ) => {};
 
-  constructor(
-    publicationId: string,
-    readonly fileService: Omit<FileApi, 'configuration'>
-  ) {
-    this.publicationId = publicationId;
-    makeObservable<
-      FileSystemFA,
-      'backEndFiles' | 'localFiles' | 'allLocalFiles'
-    >(this, {
+  constructor(readonly fileService: Omit<FileApi, 'configuration'>) {
+    makeObservable(this, {
+      publicationId: observable,
       rootPathFiles: observable,
       currentPath: observable,
-      files: computed,
-      backEndFiles: observable,
-      localFiles: observable,
-      allLocalFiles: observable,
+      files: observable,
       isLoading: observable,
       initialized: observable,
       renameOrReplaceDialogOpen: observable,
@@ -71,15 +58,18 @@ export class FileSystemFA {
       addDirectoryImpossibleDialogOpen: observable,
       moveFilesImpossibleDialogOpen: observable,
       setCurrentPath: action,
+      setPublicationId: action,
       activeUploads: observable
     });
 
     reaction(
-      () => this.currentPath,
+      () => ({
+        publicationId: this.publicationId,
+        currentPath: this.currentPath
+      }),
       async () => {
         if (this.publicationId) {
-          const files = await this.listDirectory(this.currentPath);
-          this.backEndFiles = [...files];
+          await this.updateCurrentDirectory();
         } else {
           this.initialized = true;
         }
@@ -88,26 +78,21 @@ export class FileSystemFA {
         fireImmediately: true
       }
     );
-
-    reaction(() => this.currentPath, this.updateLocalFiles, {
-      fireImmediately: true
-    });
-
-    reaction(
-      () => this.files,
-      (files) => {
-        if (this.currentPath === '/') {
-          this.rootPathFiles = files.length;
-        }
-      },
-      { fireImmediately: true }
-    );
   }
 
-  async initialize(publicationId: string): Promise<void> {
+  setPublicationId(publicationId: string): void {
     this.publicationId = publicationId;
+  }
+
+  async updateCurrentDirectory(): Promise<void> {
     const files = await this.listDirectory(this.currentPath);
-    this.backEndFiles = [...files];
+    const current = new Map<string, FileEntry>(
+      this.files.get(this.currentPath)
+    );
+    for (const file of files) {
+      current.set(file.fullPath, file);
+    }
+    this.files.set(this.currentPath, current);
   }
 
   getPublicationFilesSize = async (): Promise<number> => {
@@ -129,17 +114,6 @@ export class FileSystemFA {
     this.moveFilesImpossibleDialogOpen = false;
   };
 
-  get files(): FileEntry[] {
-    const unuqiePath: Record<string, boolean> = {}; // Keeps track of seen property values
-    return [...this.backEndFiles, ...this.localFiles].filter((entry) => {
-      if (unuqiePath[entry.fullPath]) {
-        return false; // Duplicate, remove entry
-      }
-      unuqiePath[entry.fullPath] = true;
-      return true;
-    });
-  }
-
   setCurrentPath = (path: string): void => {
     this.currentPath = path;
   };
@@ -154,20 +128,6 @@ export class FileSystemFA {
     });
 
     void this.uploadQueue(uploadQueue);
-    this.allLocalFiles = [
-      ...this.allLocalFiles,
-      ...files.map((file) => {
-        const fullPath = this.fullPath('/' + file.name);
-        return {
-          id: fullPath,
-          name: file.name,
-          fullPath,
-          isDirectory: false,
-          isUploading: true
-        };
-      })
-    ];
-    this.updateLocalFiles();
   };
 
   uploadFile = (
@@ -211,8 +171,6 @@ export class FileSystemFA {
           config
         )
         .then((response) => {
-          this.cleanUploading(response.data);
-          this.actualizeFiles(response.data);
           this.uploadProgress.updateStatus(fullPath, {
             isSuccess: true,
             abortController: undefined
@@ -236,20 +194,6 @@ export class FileSystemFA {
     });
 
     void this.uploadQueue(uploadQueue);
-    this.allLocalFiles = [
-      ...this.allLocalFiles,
-      ...files.map((f) => {
-        const fullPath = this.fullPath(f.fullPath);
-        return {
-          id: fullPath,
-          name: f.name,
-          fullPath,
-          isDirectory: f.isDirectory,
-          isUploading: true
-        };
-      })
-    ];
-    this.updateLocalFiles();
   };
 
   uploadFileSystemEntry = (
@@ -294,8 +238,6 @@ export class FileSystemFA {
               config
             )
             .then((response) => {
-              this.cleanUploading(response.data);
-              this.actualizeFiles(response.data);
               this.uploadProgress.updateStatus(fullPath, {
                 isSuccess: true,
                 abortController: undefined
@@ -322,7 +264,6 @@ export class FileSystemFA {
             config
           )
           .then((response) => {
-            this.cleanUploading(response.data);
             this.uploadProgress.updateStatus(fullPath, {
               isSuccess: true,
               abortController: undefined
@@ -355,69 +296,6 @@ export class FileSystemFA {
     });
 
     void this.uploadQueue(uploadQueue);
-    this.allLocalFiles = [
-      ...this.allLocalFiles,
-      ...allFailed.map((f) => {
-        const fullPath = f.fullPath;
-        return {
-          id: fullPath,
-          name: f.file.name,
-          fullPath,
-          isDirectory: isFileSystemEntry(f.file) ? f.file.isDirectory : false,
-          isUploading: true
-        };
-      })
-    ];
-    this.updateLocalFiles();
-  };
-
-  actualizeFiles = (pf: PublicationFile): void => {
-    this.actualizeAllLocalFiles(pf);
-    if (pf.dirPath === this.currentPath) {
-      this.actualizeLocalFiles(pf);
-    }
-  };
-
-  actualizeAllLocalFiles = (pf: PublicationFile): void => {
-    const unuqiePath: Record<string, boolean> = {}; // Keeps track of seen property values
-    this.allLocalFiles = [
-      {
-        id: pf.id ?? '',
-        fullPath: pf.fullPath ?? '',
-        name: fullPathToName(pf.fullPath ?? ''),
-        isDirectory: pf.isDir ?? false,
-        isUploading: false,
-        note: pf.description
-      },
-      ...this.allLocalFiles
-    ].filter((entry) => {
-      if (unuqiePath[entry.fullPath]) {
-        return false; // Duplicate, remove entry
-      }
-      unuqiePath[entry.fullPath] = true;
-      return true;
-    });
-  };
-
-  actualizeLocalFiles = (pf: PublicationFile): void => {
-    const unuqiePath: Record<string, boolean> = {}; // Keeps track of seen property values
-    this.localFiles = [
-      {
-        id: pf.id ?? '',
-        fullPath: pf.fullPath ?? '',
-        name: fullPathToName(pf.fullPath ?? ''),
-        isDirectory: pf.isDir ?? false,
-        isUploading: false,
-        note: pf.description
-      },
-      ...this.localFiles
-    ].filter((entry) => {
-      if (unuqiePath[entry.fullPath]) {
-        return false; // Duplicate, remove entry
-      }
-      unuqiePath[entry.fullPath] = true;
-      return true;
-    });
   };
 
   createFolder = (name: string): void => {
@@ -429,20 +307,17 @@ export class FileSystemFA {
         dirPath: this.currentPath
       })
       .then((response) => {
-        this.cleanUploading(response.data);
+        const current = new Map<string, FileEntry>(
+          this.files.get(this.currentPath)
+        );
+        current.set(fullPath, {
+          id: fullPath,
+          name,
+          fullPath,
+          isDirectory: true
+        });
+        this.files.set(this.currentPath, current);
       });
-
-    this.allLocalFiles = [
-      ...this.allLocalFiles,
-      {
-        id: fullPath,
-        name,
-        fullPath,
-        isDirectory: true,
-        isUploading: true
-      }
-    ];
-    this.updateLocalFiles();
   };
 
   updateFile = (id: string, name: string, note: string): void => {
@@ -450,28 +325,16 @@ export class FileSystemFA {
       name,
       description: note
     });
-    const filter = (f: FileEntry): FileEntry => {
-      if (f.id === id) {
-        return {
-          ...f,
-          name,
-          note
-        };
-      } else {
-        return f;
-      }
-    };
-    this.backEndFiles = this.backEndFiles.map(filter);
-    this.allLocalFiles = this.allLocalFiles.map(filter);
-    this.updateLocalFiles();
   };
 
-  deleteFile = (ids: string[]): void => {
+  deleteFile = (fullPaths: string[]): void => {
+    const current = new Map<string, FileEntry>(
+      this.files.get(this.currentPath)
+    );
+    const ids = fullPaths.map((f) => current.get(f)?.id ?? '');
     void this.fileService.deleteFiles({ ids });
-    const filter = (f: FileEntry): boolean => !ids.includes(f.id);
-    this.backEndFiles = this.backEndFiles.filter(filter);
-    this.allLocalFiles = this.allLocalFiles.filter(filter);
-    this.updateLocalFiles();
+    fullPaths.forEach((f) => current.delete(f));
+    this.files.set(this.currentPath, current);
   };
 
   moveFiles = async (files: FileData[], destination: string): Promise<void> => {
@@ -485,10 +348,6 @@ export class FileSystemFA {
     for (const id of ids) {
       void this.fileService.moveFile(id, { newDirPath: destination });
     }
-    const filter = (f: FileEntry): boolean => !ids.includes(f.id);
-    this.backEndFiles = this.backEndFiles.filter(filter);
-    this.allLocalFiles = this.allLocalFiles.filter(filter);
-    this.updateLocalFiles();
   };
 
   hasDuplicatesInCurrentFolder = async (
@@ -522,39 +381,6 @@ export class FileSystemFA {
       }
     }
     return DuplicateCheckResult.DUPLICATES_NOT_FOUND;
-  };
-
-  private readonly updateLocalFiles = (): void => {
-    this.localFiles = this.allLocalFiles.filter((file) => {
-      const filePath = file.fullPath;
-      return (
-        filePath.startsWith(this.currentPath) &&
-        !filePath.slice(this.currentPath.length).includes('/')
-      );
-    });
-  };
-
-  private readonly cleanUploading = (file: PublicationFile): void => {
-    if (!file.fullPath || !file.id) return;
-    const id = file.id;
-    if (this.inCurrentDirectory(file)) {
-      this.allLocalFiles = this.allLocalFiles.map((f) => {
-        if (f.fullPath === file.fullPath) {
-          return {
-            ...f,
-            id,
-            isUploading: false
-          };
-        } else {
-          return f;
-        }
-      });
-      this.updateLocalFiles();
-    } else {
-      this.allLocalFiles = this.allLocalFiles.filter(
-        (f) => f.fullPath !== file.fullPath
-      );
-    }
   };
 
   private inCurrentDirectory(file: PublicationFile): boolean {

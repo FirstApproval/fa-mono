@@ -99,10 +99,14 @@ import { DatasetIsPreparingDialog } from './dialogs/DatasetIsPreparingDialog';
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
 
-  const [fs] = useState(() => new FileSystemFA(publicationId, fileService));
-  const [sfs] = useState(
-    () => new FileSystemFA(publicationId, sampleFileService)
-  );
+  const [fs] = useState(() => new FileSystemFA(fileService));
+  const [sfs] = useState(() => new FileSystemFA(sampleFileService));
+
+  useEffect(() => {
+    fs.setPublicationId(publicationId);
+    sfs.setPublicationId(publicationId);
+  }, [publicationId]);
+
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [contentLicensingDialogOpen, setContentLicensingDialogOpen] =

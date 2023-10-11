@@ -160,7 +160,7 @@ export const FileBrowserFA = observer(
       } else if (data.id === ChonkyActions.CreateFolder.id) {
         setNewFolderDialogOpen(true);
       } else if (data.id === ChonkyActions.DeleteFiles.id) {
-        setFilesToDelete(data.state.selectedFiles.map((f) => f.id));
+        setFilesToDelete(data.state.selectedFiles.map((f) => f.fullPath));
         setDeleteDialogOpen(true);
       } else if (data.id === ChonkyActions.MoveFiles.id) {
         const fullPath: string = data.payload.destination.fullPath;
@@ -243,20 +243,15 @@ export const FileBrowserFA = observer(
       myFileActions.push(ChonkyActions.PreviewFilesModal);
     }
 
-    const [files, setFiles] = useState<FileArray>([]);
-
-    useEffect(() => {
-      setFiles(
-        props.fs.files.map((f) => ({
-          id: f.id,
-          fullPath: f.fullPath,
-          name: f.name,
-          isDir: f.isDirectory,
-          isLoading: f.isUploading,
-          note: f.note
-        }))
-      );
-    }, [props.fs.files]);
+    const files = [
+      ...(props.fs.files.get(props.fs.currentPath)?.values() ?? [])
+    ].map((f) => ({
+      id: f.id,
+      fullPath: f.fullPath,
+      name: f.name,
+      isDir: f.isDirectory,
+      note: f.note
+    }));
 
     return (
       <>
