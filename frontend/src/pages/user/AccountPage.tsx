@@ -420,7 +420,7 @@ export const AccountPage: FunctionComponent = observer(() => {
                     isModalWindow={false}
                     store={userStore}
                     buttonType={ActionButtonType.FULL_WIDTH_CONFIRM}
-                    saveButtonText={'Save affiliations'}
+                    saveButtonText={<span>Save affiliations</span>}
                     saveCallback={async (workplaces): Promise<boolean> => {
                       const isValid = userStore.validate();
                       if (isValid) {

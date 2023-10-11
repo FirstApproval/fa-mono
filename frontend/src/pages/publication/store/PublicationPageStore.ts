@@ -88,14 +88,10 @@ export class PublicationPageStore {
 
     reaction(
       () => ({
-        confirmedAuthors: this.publicationStore.confirmedAuthors,
-        unconfirmedAuthors: this.publicationStore.unconfirmedAuthors
+        authors: this.publicationStore.authors
       }),
       (value) => {
-        if (
-          value.confirmedAuthors.length + value.unconfirmedAuthors.length >
-          1
-        ) {
+        if (value.authors.length + value.authors.length > 1) {
           this.openAuthors();
         }
       },

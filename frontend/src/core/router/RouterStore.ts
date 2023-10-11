@@ -4,8 +4,9 @@ import { createBrowserHistory } from 'history';
 import { authService, userService } from '../service';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  ACCOUNT_AFFILIATIONS_PATH,
+  affiliationsPath,
   authorPath,
+  namePath,
   Page,
   pathToOauthType,
   publicationPath,
@@ -68,6 +69,18 @@ export class RouterStore {
       if (path.startsWith(signUpPath)) {
         authStore.token = undefined;
         this.navigatePage(Page.SIGN_UP, path, true);
+        return;
+      }
+
+      if (path.startsWith(namePath)) {
+        debugger;
+        this.navigatePage(Page.NAME, path, true);
+        return;
+      }
+
+      if (path.startsWith(affiliationsPath)) {
+        debugger;
+        this.navigatePage(Page.AFFILIATIONS, path, true);
         return;
       }
 
@@ -139,8 +152,6 @@ export class RouterStore {
   }
 
   async navigateAfterLogin(): Promise<void> {
-    const userData = (await userService.getMe()).data;
-
     const requestedPublication = sessionStorage.getItem(
       PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY
     );
@@ -151,8 +162,12 @@ export class RouterStore {
         `${publicationPath}${requestedPublication}`,
         true
       );
-    } else if (userData?.workplaces?.length === 0) {
-      this.navigatePage(Page.ACCOUNT, ACCOUNT_AFFILIATIONS_PATH, true);
+    }
+    const userData = (await userService.getMe()).data;
+    if (!userData.isNameConfirmed) {
+      this.navigatePage(Page.NAME, namePath, true);
+    } else if (!userData?.workplaces?.length) {
+      this.navigatePage(Page.AFFILIATIONS, affiliationsPath, true);
     } else {
       this.navigatePage(Page.HOME_PAGE, '/', true);
     }

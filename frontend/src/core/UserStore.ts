@@ -11,7 +11,8 @@ import {
 import { userStore } from './user';
 import { cloneDeep } from 'lodash';
 import {
-  ACCOUNT_AFFILIATIONS_PATH,
+  affiliationsPath,
+  namePath,
   Page,
   publicationPath,
   signUpPath
@@ -53,8 +54,7 @@ export class UserStore implements IWorkplaceStore {
         if (!this.workplaces || this.workplaces.length === 0) {
           this.workplaces.push({ isFormer: false });
           this.workplacesValidation.push({
-            isValidOrganization: true,
-            isValidAddress: true
+            isValidOrganization: true
           });
         }
 
@@ -62,14 +62,11 @@ export class UserStore implements IWorkplaceStore {
         this.workplaces?.forEach((w, index) => {
           this.workplacesProps.push({
             orgQuery: w.organization?.name ?? '',
-            departmentQuery: w.department?.name ?? '',
-            departmentQueryKey: '',
-            organizationOptions: [],
-            departmentOptions: w.organization?.departments ?? []
+            orgQueryKey: '',
+            organizationOptions: []
           });
           this.workplacesValidation.push({
-            isValidOrganization: true,
-            isValidAddress: true
+            isValidOrganization: true
           });
         });
       });
@@ -78,8 +75,13 @@ export class UserStore implements IWorkplaceStore {
 
   createPublication = async (): Promise<void> => {
     const workplaces = userStore.user?.workplaces;
-    if (!workplaces?.length) {
-      routerStore.navigatePage(Page.ACCOUNT, ACCOUNT_AFFILIATIONS_PATH);
+    debugger;
+    if (!userStore.user?.isNameConfirmed) {
+      routerStore.navigatePage(Page.NAME, namePath, true);
+    } else if (!workplaces?.length) {
+      routerStore.navigatePage(Page.AFFILIATIONS, affiliationsPath, true, {
+        isRegistration: false
+      });
     } else {
       routerStore.navigatePage(Page.PUBLICATION, publicationPath);
     }
@@ -87,9 +89,10 @@ export class UserStore implements IWorkplaceStore {
 
   getCreatePublicationLink = (): string => {
     if (authStore.token) {
+      debugger;
       const workplaces = userStore.user?.workplaces;
       if (!workplaces?.length) {
-        return ACCOUNT_AFFILIATIONS_PATH;
+        return affiliationsPath;
       } else {
         return publicationPath;
       }
@@ -123,16 +126,27 @@ export class UserStore implements IWorkplaceStore {
     });
   };
 
+  updateUser = async (
+    workplaces: Workplace[],
+    confirmName: boolean
+  ): Promise<void> => {
+    await userService.updateUser({
+      firstName: this.editableUser!.firstName,
+      lastName: this.editableUser!.lastName,
+      middleName: this.editableUser!.middleName,
+      username: this.editableUser!.username,
+      confirmName,
+      workplaces: workplaces != null ? workplaces : this.workplaces
+    });
+  };
+
   validate(): boolean {
     this.workplacesValidation = this.workplaces.map((workplace) => ({
-      isValidOrganization: !!workplace.organization,
-      isValidAddress: !!workplace.address
+      isValidOrganization: !!workplace.organization
     }));
     // const currentWorkplaceAbsent = !this.workplaces.some(
     //   (workplace) => !workplace.isFormer
     // );
-    return this.workplacesValidation.every(
-      (v) => v.isValidOrganization && v.isValidAddress
-    );
+    return this.workplacesValidation.every((v) => v.isValidOrganization);
   }
 }

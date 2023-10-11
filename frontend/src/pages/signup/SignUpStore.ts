@@ -104,22 +104,4 @@ export class SignUpStore {
       this.isSubmitting = false;
     }
   }
-
-  // saveWorkplaces = async (workplaces: Workplace[]): Promise<void> => {
-  //   await userService.getMe().then(async (response) => {
-  //     const user = response.data;
-  //     await userService
-  //       .updateUser({
-  //         firstName: user.firstName,
-  //         middleName: user.middleName,
-  //         lastName: user.lastName,
-  //         username: user.username,
-  //         selfInfo: user.selfInfo,
-  //         workplaces: workplaces ?? []
-  //       })
-  //       .then(() => {
-  //         userStore.requestUserData();
-  //       });
-  //   });
-  // };
 }

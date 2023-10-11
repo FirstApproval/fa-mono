@@ -73,14 +73,10 @@ class PublicationPdfService(
     }
 
     private fun authorNames(publication: Publication): String {
-        if (publication.confirmedAuthors.isEmpty() && publication.unconfirmedAuthors.isEmpty()) {
+        if (publication.authors.isEmpty()) {
             return "Draft. No authors yet."
         }
-        val confirmedAuthorNames = publication.confirmedAuthors
-            .map { it.user.lastName + " " + it.user.firstName }
-        val unconfirmedAuthorNames = publication.unconfirmedAuthors
-            .map { it.lastName + " " + it.firstName }
-        return (confirmedAuthorNames + unconfirmedAuthorNames).joinToString(postfix = ".")
+        return publication.authorsNames
     }
 
     private fun publishDate(publication: Publication): String {
@@ -167,13 +163,7 @@ class PublicationPdfService(
     }
 
     private fun authorsDescriptions(publication: Publication): String {
-        return (publication.confirmedAuthors.associate { it.user.lastName + " " + it.user.firstName to (it.shortBio ?: "") } +
-            publication.unconfirmedAuthors.associate
-            {
-                it.lastName + " " + it.firstName to
-                    (it.workplaces.map { workplace -> "${workplace.organization.name} ${workplace.organizationDepartment?.name ?: ""}" }
-                        .joinToString { ", " } ?: "")
-            })
+        return publication.authors.associate { (it.lastName + " " + it.firstName) to it.workplacesNames }
             .map { "<div style=\"margin-bottom: 2px\"><b>${it.key}.</b> ${it.value}</div>" }.joinToString(separator = "")
     }
 
