@@ -229,6 +229,8 @@ class PublicationService(
     fun getDownloadLinkForArchive(user: User, id: String): DownloadLinkResponse {
         val publication = publicationRepository.getReferenceById(id)
         val title = publication.title ?: id
+        val authors = publication.confirmedAuthors.map { "${it.user.firstName} ${it.user.lastName}" } +
+            publication.unconfirmedAuthors.map { "${it.firstName} ${it.lastName}" }
         val link: DownloadLinkResponse = when (publication.storageType) {
             CLOUD_SECURE_STORAGE -> {
                 val link = fileStorageService.generateTemporaryDownloadLink(
@@ -245,7 +247,7 @@ class PublicationService(
         addDownloadHistory(user, publication)
         publication.downloadsCount += 1
         user.email?.let {
-            notificationService.sendArchivePassword(it, title, publication.archivePassword.require())
+            notificationService.sendArchivePassword(it, title, authors.joinToString(), publication.archivePassword.require())
         }
 
         return link
