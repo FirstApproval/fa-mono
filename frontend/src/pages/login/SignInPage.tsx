@@ -41,10 +41,10 @@ export const SignInPage: FunctionComponent<SignInPageProps> = observer(
         <HeaderComponent showSignUpOutlinedButton={true} />
         <FlexBodyCenter>
           <FlexBody>
-            <Header>Sign in</Header>
+            <Header>Log in</Header>
             <LoginOauth />
             <EmailLabel variant={'body'} component={'div'}>
-              or use your email to sign in:
+              or use your email to log in:
             </EmailLabel>
             <div>
               <FullWidthTextField
@@ -103,7 +103,7 @@ export const SignInPage: FunctionComponent<SignInPageProps> = observer(
               }}
               variant="contained"
               size={'large'}>
-              Sign in
+              Log in
             </FullWidthButton>
             <DividerWrap />
             <Typography variant={'body'}>
@@ -111,7 +111,7 @@ export const SignInPage: FunctionComponent<SignInPageProps> = observer(
               <LinkWrap onClick={props.onSignUpClick}>Create one</LinkWrap>
             </Typography>
             <FooterWrap>
-              By clicking “Sign in” above, you acknowledge that you have read
+              By clicking “Log in” above, you acknowledge that you have read and
               and understood, and agree to{' '}
               <LinkWrap color="inherit" href={'/docs/terms_and_conditions.pdf'}>
                 Terms & Conditions
