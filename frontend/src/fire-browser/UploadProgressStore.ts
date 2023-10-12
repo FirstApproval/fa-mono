@@ -1,6 +1,5 @@
 import { makeAutoObservable } from 'mobx';
 import { AxiosProgressEvent } from 'axios';
-import { v4 as uuidv4 } from 'uuid';
 import { FileSystemFA } from './FileSystemFA';
 
 interface ProgressStatus {
@@ -59,7 +58,12 @@ export class UploadProgressStore {
     this.notifyListener(fullPath);
   }
 
-  listener: () => void = () => {};
+  private listener: () => void = () => {};
+
+  setListener(l: () => void): void {
+    this.listener = l;
+    this.listener();
+  }
 
   notifyListener(fullPath: string): void {
     if (this.inCurrentDirectory(fullPath)) {

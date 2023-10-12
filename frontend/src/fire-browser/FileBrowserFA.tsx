@@ -7,14 +7,12 @@ import {
   type FileData,
   FileList,
   FileNavbar,
-  setChonkyDefaults,
-  FileArray
+  setChonkyDefaults
 } from '@first-approval/chonky';
 import React, {
   type MutableRefObject,
   type ReactElement,
   useEffect,
-  useMemo,
   useState
 } from 'react';
 import { ChonkyIconFA } from '@first-approval/chonky-icon-fontawesome';
@@ -37,7 +35,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { calculatePathChain } from './utils';
 import { UploadType } from '../apis/first-approval-api';
-import { mapKeys } from 'lodash';
 
 setChonkyDefaults({
   iconComponent: ChonkyIconFA,
@@ -255,7 +252,7 @@ export const FileBrowserFA = observer(
 
     const [files, setFiles] = useState<FileData[]>([]);
     useEffect(() => {
-      props.fs.listener = () => {
+      props.fs.setListener(() => {
         setFiles(
           [...props.fs.files.values()]
             .filter((f) => inCurrentDirectory(f.fullPath))
@@ -269,8 +266,8 @@ export const FileBrowserFA = observer(
               };
             })
         );
-      };
-      props.fs.uploadProgress.listener = () => {
+      });
+      props.fs.uploadProgress.setListener(() => {
         setFiles((prev) =>
           prev.map((f: FileData) => {
             const p = props.fs.uploadProgress.progressStatus.get(f.fullPath);
@@ -278,14 +275,20 @@ export const FileBrowserFA = observer(
               ...f,
               progress:
                 p && !p.isSuccess && !p.isFailed
-                  ? Math.floor(
-                      (p.progress.progress ? p.progress.progress : 1) * 100
+                  ? Math.min(
+                      Math.max(
+                        Math.floor(
+                          (p.progress.progress ? p.progress.progress : 1) * 100
+                        ),
+                        1
+                      ),
+                      99
                     )
                   : undefined
             };
           })
         );
-      };
+      });
     }, []);
 
     return (

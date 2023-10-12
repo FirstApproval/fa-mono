@@ -91,8 +91,8 @@ export class FileSystemFA {
   addFiles(files: FileEntry[]): void {
     for (const file of files) {
       this.files.set(file.fullPath, file);
-      this.notifyListener(file.fullPath);
     }
+    this.listener();
   }
 
   getPublicationFilesSize = async (): Promise<number> => {
@@ -312,7 +312,12 @@ export class FileSystemFA {
     this.notifyListener(fullPath);
   }
 
-  listener: () => void = () => {};
+  private listener: () => void = () => {};
+
+  setListener(l: () => void): void {
+    this.listener = l;
+    this.listener();
+  }
 
   notifyListener(fullPath: string): void {
     if (this.inCurrentDirectory(fullPath)) {
@@ -360,8 +365,10 @@ export class FileSystemFA {
       });
   };
 
-  updateFile = (id: string, name: string, note: string): void => {
-    void this.fileService.editFile(id, {
+  updateFile = (fullPath: string, name: string, note: string): void => {
+    const file = this.files.get(fullPath);
+    if (!file?.id) return;
+    void this.fileService.editFile(file.id, {
       name,
       description: note
     });
