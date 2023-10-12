@@ -7,6 +7,24 @@ servers:
   - url: '{URL}'
 
 paths:
+  /api/visitor:
+    get:
+      summary: Save visit to site
+      parameters:
+        - in: query
+          name: utm_source
+          schema:
+            type: string
+          required: false
+          description: UTM source
+      responses:
+        200:
+          description: Success
+      security:
+        - PublicAuth: [ ]
+      operationId: saveVisit
+      tags: [ visitor ]
+
   /api/authorize:
     post:
       summary: Authorize using email password

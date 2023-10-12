@@ -1,7 +1,7 @@
 import { authStore } from '../auth';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { createBrowserHistory } from 'history';
-import { authService, userService } from '../service';
+import { authService, userService, visitorService } from '../service';
 import { v4 as uuidv4 } from 'uuid';
 import {
   affiliationsPath,
@@ -16,6 +16,9 @@ import {
 } from './constants';
 import { PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY } from '../../pages/publication/ActionBar';
 import { routerStore } from '../router';
+
+const VISIT_MARK_KEY = 'visit-mark';
+const UTM_SOURCE_KEY = 'utm_source';
 
 const history = createBrowserHistory();
 
@@ -59,6 +62,19 @@ export class RouterStore {
 
       const authType = pathToOauthType[path] ?? undefined;
       const authCode = queryParams.get('code') ?? undefined;
+
+      const utmSource = queryParams.get('utm_source') ?? undefined;
+      if (utmSource) {
+        localStorage.setItem(UTM_SOURCE_KEY, utmSource);
+      }
+
+      if (localStorage.getItem(VISIT_MARK_KEY) !== 'true') {
+        void visitorService.saveVisit(utmSource).then((response) => {
+          if (response.status === 200) {
+            localStorage.setItem(VISIT_MARK_KEY, 'true');
+          }
+        });
+      }
 
       if (path.startsWith('/sign_in')) {
         authStore.token = undefined;

@@ -8,7 +8,8 @@ import {
   RegistrationApi,
   ReportApi,
   SampleFileApi,
-  UserApi
+  UserApi,
+  VisitorApi
 } from '../apis/first-approval-api';
 import { SampleFileServiceAdapter } from './SampleFileServiceAdapter';
 import { authStore } from './auth';
@@ -42,3 +43,5 @@ export const publicationService = new PublicationApi(configuration);
 export const organizationService = new OrganizationApi(configuration);
 
 export const reportService = new ReportApi(configuration);
+
+export const visitorService = new VisitorApi(configuration);
