@@ -34,7 +34,6 @@ export class FileSystemFA {
   publicationId: string = '';
   isLoading = false;
   initialized = false;
-  activeUploads = 0;
 
   uploadProgress = new UploadProgressStore(this);
 
@@ -58,8 +57,7 @@ export class FileSystemFA {
       addDirectoryImpossibleDialogOpen: observable,
       moveFilesImpossibleDialogOpen: observable,
       setCurrentPath: action,
-      setPublicationId: action,
-      activeUploads: observable
+      setPublicationId: action
     });
 
     reaction(
@@ -423,37 +421,13 @@ export class FileSystemFA {
   private async uploadQueue(
     uploadQueue: Array<() => Promise<void>>
   ): Promise<void> {
-    const concurrencyLimit = 4;
-    const queueLength = uploadQueue.length;
-    const results: Array<Promise<void>> = [];
-    let currentIndex = 0;
-    this.activeUploads += uploadQueue.length;
-
-    // Helper function to execute a single promise from the queue
-    const executePromise = async (index: number): Promise<void> => {
-      // Execute the promise at the given index
-      await uploadQueue[index]();
-      this.activeUploads -= 1;
-    };
-
-    // Function to handle the next promise in the queue
-    const handleNextPromise = async (): Promise<void> => {
-      if (currentIndex < queueLength) {
-        const promiseIndex = currentIndex;
-        currentIndex++;
-        const promise = executePromise(promiseIndex);
-        results.push(promise);
-        promise.finally(handleNextPromise);
+    for (const uploadFunction of uploadQueue) {
+      try {
+        await uploadFunction();
+      } catch (error) {
+        console.error(error);
       }
-    };
-
-    // Start the initial batch of promises
-    for (let i = 0; i < concurrencyLimit && i < queueLength; i++) {
-      void handleNextPromise();
     }
-
-    // Wait for all promises to complete
-    await Promise.all(results);
   }
 
   private fullPath(fullPath: string): string {
