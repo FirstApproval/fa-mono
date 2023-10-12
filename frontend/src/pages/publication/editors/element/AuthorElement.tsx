@@ -1,10 +1,9 @@
 import { Avatar, IconButton, Tooltip, Typography } from '@mui/material';
 import { Edit } from '@mui/icons-material';
-import React, { type ReactElement } from 'react';
+import React, { MutableRefObject, type ReactElement } from 'react';
 import styled from '@emotion/styled';
 import {
-  type ConfirmedAuthor,
-  type UnconfirmedAuthor,
+  Author,
   UserInfo,
   Workplace
 } from '../../../../apis/first-approval-api';
@@ -18,13 +17,12 @@ import { routerStore } from '../../../../core/router';
 
 import { Page } from '../../../../core/router/constants';
 import { getAuthorLink } from '../../../../core/router/utils';
-import { MutableRefObject } from 'react';
 import { useIsHorizontalOverflow } from '../../../../util/overflowUtil';
 
 interface AuthorElementProps {
   isReadonly: boolean;
   useMarginBottom: boolean;
-  author: ConfirmedAuthor | UnconfirmedAuthor | UserInfo | AuthorEditorStore;
+  author: Author | UserInfo | AuthorEditorStore;
   isConfirmed?: boolean;
   onAuthorEdit?: () => void;
   shouldOpenInNewTab?: boolean;
@@ -42,15 +40,14 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
   const isOverflow = useIsHorizontalOverflow(nameRef, () => {});
 
   if (isConfirmed) {
-    const confirmedAuthor = author as ConfirmedAuthor;
+    const confirmedAuthor = author as Author;
     // check that it is really confirmed user
     if (confirmedAuthor.user?.username) {
-      const authorUser = confirmedAuthor.user;
-      firstName = authorUser.firstName;
-      lastName = authorUser.lastName;
-      username = authorUser.username;
-      profileImage = authorUser.profileImage;
-      workplaces = authorUser.workplaces ?? [];
+      firstName = confirmedAuthor.firstName;
+      lastName = confirmedAuthor.lastName;
+      workplaces = confirmedAuthor.workplaces ?? [];
+      username = confirmedAuthor.user.username;
+      profileImage = confirmedAuthor.user.profileImage;
     } else {
       const authorEditorStore = author as AuthorEditorStore;
       firstName = authorEditorStore.firstName;
@@ -59,7 +56,7 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
       workplaces = authorEditorStore.workplaces;
     }
   } else if (!isConfirmed) {
-    const unconfirmedAuthor = author as UnconfirmedAuthor;
+    const unconfirmedAuthor = author as Author;
     firstName = unconfirmedAuthor.firstName;
     lastName = unconfirmedAuthor.lastName;
     workplaces = unconfirmedAuthor.workplaces ?? [];

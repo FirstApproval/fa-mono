@@ -8,9 +8,7 @@ import org.firstapproval.backend.core.domain.auth.OauthUser
 import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.domain.organizations.OrganizationService
 import org.firstapproval.backend.core.domain.organizations.Workplace
-import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
-import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthorRepository
-import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthorRepository
+import org.firstapproval.backend.core.domain.publication.authors.AuthorRepository
 import org.firstapproval.backend.core.domain.user.email.EmailChangeConfirmationRepository
 import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimit
 import org.firstapproval.backend.core.domain.user.limits.AuthorizationLimitRepository
@@ -54,8 +52,7 @@ class UserService(
     private val frontendProperties: FrontendProperties,
     private val notificationService: NotificationService,
     private val emailSender: JavaMailSender,
-    private val unconfirmedAuthorRepository: UnconfirmedAuthorRepository,
-    private val confirmedAuthorRepository: ConfirmedAuthorRepository,
+    private val authorRepository: AuthorRepository,
     private val fileStorageService: FileStorageService,
     private val transactionTemplate: TransactionTemplate,
     private val organizationService: OrganizationService,
@@ -190,7 +187,8 @@ class UserService(
                 password = emailRegistrationConfirmation.password,
                 firstName = emailRegistrationConfirmation.firstName,
                 lastName = emailRegistrationConfirmation.lastName,
-                username = if (userByUsername != null) userId.toString() else username
+                username = if (userByUsername != null) userId.toString() else username,
+                isNameConfirmed = true
             )
         )
         migratePublicationOfUnconfirmedUser(user)
@@ -304,16 +302,20 @@ class UserService(
                 user.middleName = middleName
                 user.lastName = lastName
                 user.username = username
+                if (confirmName == true) {
+                    user.isNameConfirmed = true
+                }
+                if (confirmWorkplaces == true) {
+                    user.isWorkplacesConfirmed = true
+                }
 
                 if (workplaces != null && workplaces.size > 0) {
                     val userWorkplaces = workplaces.map { workplace ->
                         val organization = organizationService.getOrSave(workplace.organization)
-                        val organizationDepartment = organizationService.getOrSave(workplace.department, organization)
-
                         Workplace(
                             id = workplace.id ?: randomUUID(),
-                            organization,
-                            organizationDepartment,
+                            organization = organization,
+                            organizationDepartment = workplace.department,
                             address = workplace.address,
                             postalCode = workplace.postalCode,
                             isFormer = workplace.isFormer,
@@ -355,25 +357,26 @@ class UserService(
 
     @Transactional
     fun migratePublicationOfUnconfirmedUser(user: User) {
-        val unconfirmedUsers = unconfirmedAuthorRepository.findByEmail(user.email)
-        unconfirmedUsers.flatMap { it.workplaces }
-            .distinctBy { it.organization.id }
-            .map {
-            Workplace(
-                id = randomUUID(),
-                organization = it.organization,
-                organizationDepartment = it.organizationDepartment,
-                address = it.address,
-                postalCode = it.postalCode,
-                isFormer = it.isFormer,
-                creationTime = now(),
-                editingTime = now(),
-                user = user
-            )
-        }.let { user.workplaces.addAll(it) }
-        val confirmedAuthors = unconfirmedUsers.map { ConfirmedAuthor(randomUUID(), user, it.publication, it.ordinal) }
-        confirmedAuthorRepository.saveAll(confirmedAuthors)
-        unconfirmedAuthorRepository.deleteAll(unconfirmedUsers)
+        val email = user.email
+        if (email != null) {
+            val unconfirmedUsers = authorRepository.findByEmailAndIsConfirmedFalse(email)
+            unconfirmedUsers.forEach {
+                it.isConfirmed = true
+                it.user = user
+            }
+            unconfirmedUsers.flatMap { it.workplaces }
+                .distinctBy { it.organization.id }
+                .map {
+                    Workplace(
+                        organization = it.organization,
+                        organizationDepartment = it.organizationDepartment,
+                        address = it.address,
+                        postalCode = it.postalCode,
+                        isFormer = it.isFormer,
+                        user = user
+                    )
+                }.let { user.workplaces.addAll(it) }
+        }
     }
 }
 

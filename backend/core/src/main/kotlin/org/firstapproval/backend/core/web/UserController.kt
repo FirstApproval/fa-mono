@@ -5,11 +5,8 @@ import org.firstapproval.api.server.model.*
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.JwtService
 import org.firstapproval.backend.core.config.security.user
-import org.firstapproval.backend.core.domain.organizations.UnconfirmedAuthorWorkplace
 import org.firstapproval.backend.core.domain.organizations.toApiObject
-import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthorRepository
-import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthor
-import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthorRepository
+import org.firstapproval.backend.core.domain.publication.authors.AuthorRepository
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.email.UserEmailService
 import org.firstapproval.backend.core.domain.user.toApiObject
@@ -18,15 +15,13 @@ import org.springframework.http.ResponseEntity.ok
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RestController
 import java.util.*
-import java.util.UUID.randomUUID
 
 @RestController
 class UserController(
     private val userService: UserService,
     private val userEmailService: UserEmailService,
     private val jwtService: JwtService,
-    private val unconfirmedAuthorRepository: UnconfirmedAuthorRepository,
-    private val confirmedAuthorRepository: ConfirmedAuthorRepository,
+    private val authorRepository: AuthorRepository,
     private val authHolderService: AuthHolderService,
 ) : UserApi {
 
@@ -95,37 +90,18 @@ class UserController(
         getMeResponse.profileImage = userService.getProfileImage(user.profileImage)
         getMeResponse.signedVia = user.externalIds.keys.map { OauthType.valueOf(it.name) }
         getMeResponse.workplaces = user.workplaces.map { it.toApiObject() }
+        getMeResponse.isNameConfirmed = user.isNameConfirmed
+        getMeResponse.isWorkplacesConfirmed = user.isWorkplacesConfirmed
         return ok(getMeResponse)
     }
 
     @Transactional
     override fun deleteUser(): ResponseEntity<Void> {
-        val confirmedAuthors = confirmedAuthorRepository.findAllByUserId(authHolderService.user.id)
-        val unconfirmedAuthors = confirmedAuthors.map {
-            val author = UnconfirmedAuthor(
-                randomUUID(),
-                it.publication,
-                it.user.email,
-                it.user.firstName,
-                it.user.middleName,
-                it.user.lastName,
-                it.ordinal
-            )
-            author.workplaces = it.user.workplaces.map { workplace ->
-                UnconfirmedAuthorWorkplace(
-                    id = randomUUID(),
-                    organization = workplace.organization,
-                    organizationDepartment = workplace.organizationDepartment,
-                    unconfirmedAuthor = author,
-                    address = workplace.address,
-                    postalCode = workplace.postalCode,
-                    isFormer = workplace.isFormer
-                )
-            }.toMutableList()
-            author
+        val authors = authorRepository.findAllByUserId(authHolderService.user.id)
+        authors.forEach {
+            it.isConfirmed = false
+            it.user = null
         }
-        unconfirmedAuthorRepository.saveAll(unconfirmedAuthors)
-        confirmedAuthorRepository.deleteAll(confirmedAuthors)
         userService.delete(authHolderService.user.id)
         return ok().build()
     }

@@ -2,12 +2,11 @@ import { action, makeAutoObservable, reaction } from 'mobx';
 import { publicationService } from '../../../core/service';
 import _, { some } from 'lodash';
 import {
-  type ConfirmedAuthor,
+  Author,
   LicenseType,
   type Paragraph,
   PublicationEditRequest,
   PublicationStatus,
-  type UnconfirmedAuthor,
   type UserInfo
 } from '../../../apis/first-approval-api';
 import { type FileSystemFA } from '../../../fire-browser/FileSystemFA';
@@ -60,8 +59,7 @@ export class PublicationStore {
   objectOfStudyTitle: string = '';
   objectOfStudy: ParagraphWithId[] = [];
   software: ParagraphWithId[] = [];
-  confirmedAuthors: ConfirmedAuthor[] = [];
-  unconfirmedAuthors: UnconfirmedAuthor[] = [];
+  authors: Author[] = [];
   authorNames: PublicationAuthorName[] = [];
   grantingOrganizations: ParagraphWithId[] = [];
   relatedArticles: ParagraphWithId[] = [];
@@ -120,12 +118,6 @@ export class PublicationStore {
 
   get isPublishing(): boolean {
     return this.publicationStatus === PublicationStatus.READY_FOR_PUBLICATION;
-  }
-
-  get authors(): Array<ConfirmedAuthor | UnconfirmedAuthor> {
-    return [...this.unconfirmedAuthors, ...this.confirmedAuthors].sort(
-      (author1, author2) => author1.ordinal! - author2.ordinal!
-    );
   }
 
   addSummaryParagraph(idx: number): void {
@@ -198,97 +190,47 @@ export class PublicationStore {
 
   deleteAuthor(store: AuthorEditorStore): void {
     if (typeof store.index !== 'undefined') {
-      if (store.isConfirmed) {
-        const confirmedAuthor = this.confirmedAuthors[store.index];
-        if (confirmedAuthor.id !== store.id) {
-          throw Error('Tried to delete wrong unconfirmed author');
-        }
-        this.confirmedAuthors.splice(store.index, 1);
-        this.savingStatus = SavingStatusState.SAVING;
-        void this.updateConfirmedAuthors();
-      } else {
-        const unconfirmedAuthor = this.unconfirmedAuthors[store.index];
-        if (unconfirmedAuthor.id !== store.id) {
-          throw Error('Tried to delete wrong unconfirmed author');
-        }
-        this.unconfirmedAuthors.splice(store.index, 1);
-        this.savingStatus = SavingStatusState.SAVING;
-        void this.updateUnconfirmedAuthors();
+      const author = this.authors[store.index];
+      if (author.id !== store.id) {
+        throw Error('Tried to delete wrong author');
       }
+      this.authors.splice(store.index, 1);
+      this.savingStatus = SavingStatusState.SAVING;
+      void this.updateAuthors();
     }
   }
 
-  addConfirmedAuthor(author: UserInfo): void {
-    const newValue = [...this.confirmedAuthors];
-    newValue.push({
-      user: author,
-      ordinal: this.authors.length
-    });
-    this.confirmedAuthors = newValue;
-    this.savingStatus = SavingStatusState.SAVING;
-    void this.updateConfirmedAuthors();
-  }
-
-  editConfirmedAuthor(store: AuthorEditorStore): void {
-    if (typeof store.index !== 'undefined') {
-      const confirmedAuthor = this.confirmedAuthors[store.index];
-      if (confirmedAuthor.id !== store.id) {
-        throw Error('Confirmed author found by index have different id');
-      }
-    }
-    this.savingStatus = SavingStatusState.SAVING;
-    void this.updateConfirmedAuthors();
-  }
-
-  updateConfirmedAuthors = _.throttle(async () => {
-    await this.editPublication({
-      confirmedAuthors: {
-        values: this.confirmedAuthors
-          .filter((it) => it.user.id && it.user.id.length > 0)
-          .map((t) => {
-            return {
-              id: t.id,
-              ordinal: t.ordinal,
-              userId: t.user.id
-            };
-          }),
-        edited: true
-      }
-    });
-    this.setAuthorNames();
-    this.savingStatus = SavingStatusState.SAVED;
-  }, EDIT_THROTTLE_MS);
-
-  addOrEditUnconfirmedAuthor(store: AuthorEditorStore): void {
+  addOrEditAuthor(store: AuthorEditorStore): void {
     if (typeof store.index !== 'undefined' && store.index !== null) {
-      const unconfirmedAuthor = this.unconfirmedAuthors[store.index];
-      if (unconfirmedAuthor.id !== store.id) {
+      const author = this.authors[store.index];
+      if (author.id !== store.id) {
         throw Error('Unconfirmed author found by index have different id');
       }
-      unconfirmedAuthor.email = store.email;
-      unconfirmedAuthor.firstName = store.firstName;
-      unconfirmedAuthor.lastName = store.lastName;
-      unconfirmedAuthor.workplaces = store.workplaces;
+      author.email = store.email;
+      author.firstName = store.firstName;
+      author.lastName = store.lastName;
+      author.workplaces = store.workplaces;
     } else {
-      const newValue = [...this.unconfirmedAuthors];
+      const newValue = [...this.authors];
       newValue.push({
         email: store.email,
         firstName: store.firstName,
-        middleName: '',
         lastName: store.lastName,
         ordinal: this.authors.length,
-        workplaces: store.workplaces
+        workplaces: store.workplaces,
+        isConfirmed: store.isConfirmed,
+        user: store.user
       });
-      this.unconfirmedAuthors = newValue;
+      this.authors = newValue;
     }
     this.savingStatus = SavingStatusState.SAVING;
-    void this.updateUnconfirmedAuthors();
+    void this.updateAuthors();
   }
 
-  updateUnconfirmedAuthors = _.throttle(async () => {
+  updateAuthors = _.throttle(async () => {
     await this.editPublication({
-      unconfirmedAuthors: {
-        values: this.unconfirmedAuthors,
+      authors: {
+        values: this.authors,
         edited: true
       }
     });
@@ -836,23 +778,17 @@ export class PublicationStore {
   };
 
   setAuthorNames = (): void => {
-    const confirmedAuthorNames =
-      this.confirmedAuthors.map<PublicationAuthorName>((author) => ({
-        username: author.user.username,
-        firstName: author.user.firstName,
-        lastName: author.user.lastName,
-        ordinal: author.ordinal!
-      }));
-    const unconfirmedAuthorNames =
-      this.unconfirmedAuthors.map<PublicationAuthorName>((author) => ({
+    const confirmedAuthorNames = this.authors.map<PublicationAuthorName>(
+      (author) => ({
+        username: author.user?.username,
         firstName: author.firstName,
         lastName: author.lastName,
         ordinal: author.ordinal!
-      }));
-    this.authorNames = [
-      ...confirmedAuthorNames,
-      ...unconfirmedAuthorNames
-    ].sort((author1, author2) => author1.ordinal! - author2.ordinal!);
+      })
+    );
+    this.authorNames = confirmedAuthorNames.sort(
+      (author1, author2) => author1.ordinal! - author2.ordinal!
+    );
   };
 
   deletePublication = async (publicationId: string): Promise<void> => {
@@ -967,11 +903,8 @@ export class PublicationStore {
           if (publication.tags?.length) {
             this.tags = new Set(publication.tags.map((p) => p.text));
           }
-          if (publication.confirmedAuthors?.length) {
-            this.confirmedAuthors = publication.confirmedAuthors || [];
-          }
-          if (publication.unconfirmedAuthors?.length) {
-            this.unconfirmedAuthors = publication.unconfirmedAuthors || [];
+          if (publication.authors?.length) {
+            this.authors = publication.authors || [];
           }
           if (publication.publicationTime) {
             this.publicationTime = new Date(publication.publicationTime);

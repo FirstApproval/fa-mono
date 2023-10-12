@@ -1,4 +1,4 @@
-package org.firstapproval.backend.core.domain.publication
+package org.firstapproval.backend.core.domain.publication.file
 
 import jakarta.persistence.Convert
 import jakarta.persistence.Entity
@@ -6,6 +6,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import org.firstapproval.backend.core.config.encryption.StringEncryptionConverter
+import org.firstapproval.backend.core.domain.publication.Publication
 import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
 import java.util.*

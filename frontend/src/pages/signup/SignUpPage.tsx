@@ -109,7 +109,7 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
             <DividerWrap2 />
             <CreateAccount variant={'body'}>
               Already have an account?{' '}
-              <LinkWrap onClick={props.onSignInClick}>Sign in</LinkWrap>
+              <LinkWrap onClick={props.onSignInClick}>Log in</LinkWrap>
             </CreateAccount>
             <FooterWrap>
               By clicking “Continue with Email/Google/ORCID/Facebook/LinkedIn”

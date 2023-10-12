@@ -88,7 +88,7 @@ export const RestorePasswordEmailPage: FunctionComponent<RestorePasswordEmailPro
                 </FullWidthButton>
               )}
               <LinkTextCenterWrap color="inherit" onClick={props.onSignInClick}>
-                Back to Sign In
+                Back to Log In
               </LinkTextCenterWrap>
             </FlexBody>
           )}
@@ -104,7 +104,7 @@ export const RestorePasswordEmailPage: FunctionComponent<RestorePasswordEmailPro
                 variant="contained"
                 size={'large'}
                 onClick={props.onSignInClick}>
-                Back to Sign In
+                Back to Log In
               </LoadingButton>
               {props.store.isSentAgain && (
                 <ContactUsWrap>

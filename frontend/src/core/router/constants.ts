@@ -15,12 +15,14 @@ export enum Page {
   ACCOUNT,
 
   SIGN_UP_NAME,
-  SELF_INFO,
+  AFFILIATIONS,
   SIGN_UP_PASSWORD,
   EMAIL_VERIFICATION,
 
   RESET_PASSWORD,
-  RESTORE_PASSWORD_EMAIL
+  RESTORE_PASSWORD_EMAIL,
+
+  NAME
 }
 
 export const pathToOauthType: Record<string, OauthType> = {
@@ -32,9 +34,9 @@ export const pathToOauthType: Record<string, OauthType> = {
 export const shortPublicationPath = '/p/';
 export const publicationPath = '/publication/';
 export const signUpPath = '/sign_up';
+export const namePath = '/name';
+export const affiliationsPath = '/affiliations';
 export const shortAuthorPath = '/a/';
 export const authorPath = '/author/';
 export const profilePath = '/profile/';
 export const accountPath = '/account/';
-
-export const ACCOUNT_AFFILIATIONS_PATH = '/account/affiliations';

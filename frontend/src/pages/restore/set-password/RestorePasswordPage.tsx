@@ -112,7 +112,7 @@ export const ResetPasswordPage: FunctionComponent<SetPasswordPageProps> =
                   variant="contained"
                   size={'large'}
                   onClick={props.onSignInClick}>
-                  Back to Sign In
+                  Back to Log In
                 </LoadingButton>
               </SuccessWrap>
             </FlexBody>

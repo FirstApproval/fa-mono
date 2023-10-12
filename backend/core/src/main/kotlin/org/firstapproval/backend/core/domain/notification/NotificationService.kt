@@ -7,6 +7,7 @@ import org.firstapproval.backend.core.config.Properties.EmailProperties
 import org.firstapproval.backend.core.domain.publication.Publication
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.infra.mail.MailService
+import org.firstapproval.backend.core.utils.require
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.thymeleaf.context.Context
@@ -82,11 +83,11 @@ class NotificationService(
             log.info { "emails for co-authors sent" }
             return
         }
-        val emails =
-            publication.unconfirmedAuthors.map { it.email } + publication.confirmedAuthors.filter { it.user.id != publication.creator.id }
-                .map { it.user.email }
-        val authors = publication.confirmedAuthors.map { "${it.user.firstName} ${it.user.lastName}" } +
-            publication.unconfirmedAuthors.map { "${it.firstName} ${it.lastName}" }
+        val emails = publication.authors
+                .filter { it.isConfirmed && (it.email?.isNotBlank() ?: false) }
+                .filter { it.user.require().id != publication.creator.id }
+                .map { it.user.require().email }
+        val authors = publication.authors.map { "${it.firstName} ${it.lastName}" }
         emails.map { email ->
             if (email != null) {
                 val context = Context()
@@ -131,16 +132,16 @@ class NotificationService(
             log.info { "Dataset is ready for download" }
             return
         }
-        if (user.email != null) {
-            val authors = publication.confirmedAuthors.map { "${it.user.firstName} ${it.user.lastName}" } +
-                publication.unconfirmedAuthors.map { "${it.firstName} ${it.lastName}" }
+        val email = user.email
+        if (email != null) {
+            val authors = publication.authors.map { "${it.firstName} ${it.lastName}" }
 
             val context = Context()
             val model: MutableMap<String, Any> = HashMap()
             model["authors"] = authors.joinToString()
             model["publicationLink"] = "${frontendProperties.url}/publication/${publication.id}"
-            model["title"] = publication.title ?: publication.id
-            model["email"] = user.email.toString()
+            model["title"] = publication.title ?: "Publication ${publication.id}"
+            model["email"] = email
             context.setVariables(model)
             val html = templateEngine.process("dataset-is-ready-for-download.html", context)
             mailService.send(user.email.toString(), "[FirstApproval] Dataset is ready for download: ${publication.title}", html, true)

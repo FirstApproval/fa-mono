@@ -28,7 +28,7 @@ export const LoginOauth: FunctionComponent = () => {
             size={'medium'}
             startIcon={<img src={google} />}
             href={authUrls.google}>
-            Sign in with Google
+            Log in with Google
           </FullWidthButton>
           <Divider />
           <Link href={authUrls.orcid}>

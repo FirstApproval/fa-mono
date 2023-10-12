@@ -2,7 +2,6 @@ import React, { type FunctionComponent, useState } from 'react';
 import { TextField } from '@mui/material';
 import styled from '@emotion/styled';
 import { ArrowForward } from '@mui/icons-material';
-import { type SignUpStore } from './SignUpStore';
 import { observer } from 'mobx-react-lite';
 import {
   FlexBody,
@@ -14,32 +13,36 @@ import {
 import { HeaderComponent } from '../../components/HeaderComponent';
 
 interface EnterNamePageProps {
-  store: SignUpStore;
+  firstName: string;
+  lastName: string;
+  setFirstName: (value: string) => void;
+  setLastName: (value: string) => void;
   onContinueClick: () => void;
 }
 
 export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
   (props: EnterNamePageProps) => {
+    const { firstName, lastName, setFirstName, setLastName, onContinueClick } =
+      props;
     const [isValidFirstName, setIsValidFirstName] = useState(true);
     const [isValidLastName, setIsValidLastName] = useState(true);
 
     const validate = (): boolean => {
-      const isFN = props.store.firstName.length > 0;
-      const isLN = props.store.lastName.length > 0;
+      const isFN = firstName.length > 0;
+      const isLN = lastName.length > 0;
       setIsValidFirstName(isFN);
       setIsValidLastName(isLN);
       return isFN && isLN;
     };
 
-    const nameNonEmpty =
-      props.store.firstName.length > 0 && props.store.lastName.length > 0;
+    const nameNonEmpty = firstName.length > 0 && lastName.length > 0;
 
     const validateAndConfirm = (event: any): void => {
       if (event.key === 'Enter' || event.keyCode === 13 || event.button === 0) {
         event.preventDefault();
         const isValid = validate();
         if (isValid) {
-          props.onContinueClick();
+          onContinueClick();
         }
       }
     };
@@ -57,9 +60,9 @@ export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
                 autoFocus
                 error={!isValidFirstName}
                 helperText={!isValidFirstName ? 'Enter valid name' : undefined}
-                value={props.store.firstName}
+                value={firstName}
                 onChange={(e) => {
-                  props.store.firstName = e.currentTarget.value;
+                  setFirstName(e.currentTarget.value);
                 }}
                 onKeyDown={validateAndConfirm}
                 label="First Name"
@@ -71,9 +74,9 @@ export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
                 autoComplete="family-name"
                 error={!isValidLastName}
                 helperText={!isValidLastName ? 'Enter valid name' : undefined}
-                value={props.store.lastName}
+                value={lastName}
                 onChange={(e) => {
-                  props.store.lastName = e.currentTarget.value;
+                  setLastName(e.currentTarget.value);
                 }}
                 onKeyDown={validateAndConfirm}
                 label="Last Name"

@@ -11,7 +11,7 @@ import org.firstapproval.api.server.model.UploadType
 import org.firstapproval.api.server.model.UploadType.RENAME
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
-import org.firstapproval.backend.core.domain.publication.PublicationFileService
+import org.firstapproval.backend.core.domain.publication.file.PublicationFileService
 import org.springframework.http.HttpStatus.OK
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok

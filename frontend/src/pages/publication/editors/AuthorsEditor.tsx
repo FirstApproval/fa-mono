@@ -7,11 +7,7 @@ import {
   DropResult,
   ResponderProvided
 } from 'react-beautiful-dnd';
-import {
-  type ConfirmedAuthor,
-  type UnconfirmedAuthor,
-  type UserInfo
-} from '../../../apis/first-approval-api';
+import { type Author, type UserInfo } from '../../../apis/first-approval-api';
 import { AuthorEditorStore } from '../store/AuthorEditorStore';
 import { AuthorElement } from './element/AuthorElement';
 import { authorService, userService } from '../../../core/service';
@@ -26,7 +22,12 @@ import {
   TextField,
   Typography
 } from '@mui/material';
-import { Add, DeleteOutlined, PersonAdd } from '@mui/icons-material';
+import {
+  Add,
+  DeleteOutlined,
+  InfoOutlined,
+  PersonAdd
+} from '@mui/icons-material';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -36,13 +37,18 @@ import { ContentEditorWrap, LabelWrap } from './styled';
 import { getInitials, renderProfileImage } from '../../../util/userUtil';
 import { type EditorProps } from './types';
 import { WorkplacesEditor } from '../../../components/WorkplacesEditor';
-import { FlexWrapColumn, FlexWrapRow, WidthElement } from '../../common.styled';
+import {
+  FlexWrapColumn,
+  FlexWrapRow,
+  HeightElement,
+  WidthElement
+} from '../../common.styled';
 import { LoadingButton } from '@mui/lab';
 import { PublicationStore } from '../store/PublicationStore';
+import { Flex, FlexAlignItems, FlexJustifyContent } from '../../../ui-kit/flex';
 
 interface AuthorEditState {
-  author?: ConfirmedAuthor | UnconfirmedAuthor;
-  isConfirmed?: boolean;
+  author?: Author;
   index?: number;
 }
 
@@ -67,9 +73,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
         setAuthorOptions(
           result.data.filter(
             (a1) =>
-              !publicationStore.confirmedAuthors.find(
-                (a2) => a1.id === a2.user.id
-              )
+              !publicationStore.authors.find((a2) => a1.id === a2.user?.id)
           )
         );
       })
@@ -78,6 +82,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
       });
   }, [query]);
 
+  const { authors } = publicationStore;
   return (
     <>
       <ContentEditorWrap>
@@ -89,29 +94,25 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
             const [movedItem] = reorderedItems.splice(result.source.index, 1); // Remove the dragged item
             reorderedItems.splice(result.destination.index, 0, movedItem); // Insert the item at the new position
             reorderedItems.forEach((reorderedAuthor, index) => {
-              const confirmed = reorderedAuthor as ConfirmedAuthor;
-              const unconfirmed = reorderedAuthor as UnconfirmedAuthor;
-              const email = confirmed.user?.email ?? unconfirmed.email;
               const author = publicationStore.authors.find(
-                (author) =>
-                  ((author as ConfirmedAuthor).user?.email ??
-                    (author as UnconfirmedAuthor).email) === email
+                (author) => author.id === reorderedAuthor.id
               );
               if (author) {
                 author.ordinal = index;
               }
             });
-            void publicationStore.updateConfirmedAuthors();
-            void publicationStore.updateUnconfirmedAuthors();
+            void publicationStore.updateAuthors();
           }}>
           <Droppable
             droppableId="droppable"
             isDropDisabled={publicationStore.isReadonly}>
             {(provided, snapshot) => (
               <div {...provided.droppableProps} ref={provided.innerRef}>
-                {publicationStore.authors.map(
-                  (author: UnconfirmedAuthor | ConfirmedAuthor, index) => {
-                    const isConfirmed = !!(author as ConfirmedAuthor).user;
+                {authors
+                  .sort(
+                    (author1, author2) => author1.ordinal! - author2.ordinal!
+                  )
+                  .map((author: Author, index) => {
                     return (
                       <Draggable
                         key={index.toString()}
@@ -128,9 +129,9 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                               useMarginBottom={true}
                               key={author.id}
                               author={author}
-                              isConfirmed={isConfirmed}
+                              isConfirmed={author.isConfirmed}
                               onAuthorEdit={() =>
-                                setEditingAuthor({ author, isConfirmed, index })
+                                setEditingAuthor({ author, index })
                               }
                               shouldOpenInNewTab={true}
                             />
@@ -138,8 +139,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                         )}
                       </Draggable>
                     );
-                  }
-                )}
+                  })}
                 {provided.placeholder}
               </div>
             )}
@@ -161,7 +161,27 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
               <Autocomplete
                 onChange={(event: any, newValue: UserInfo | null) => {
                   if (newValue) {
-                    publicationStore.addConfirmedAuthor(newValue);
+                    setEditingAuthor({
+                      author: {
+                        user: newValue,
+                        ordinal: authors.length,
+                        workplaces: newValue.workplaces.map((workplace) => {
+                          return {
+                            organization: workplace.organization,
+                            department: workplace.department,
+                            address: workplace.address,
+                            postalCode: workplace.postalCode,
+                            isFormer: workplace.isFormer,
+                            creationTime: workplace.creationTime
+                          };
+                        }),
+                        email: newValue.email,
+                        firstName: newValue.firstName,
+                        lastName: newValue.lastName,
+                        isConfirmed: true
+                      },
+                      index: undefined
+                    });
                   }
                 }}
                 forcePopupIcon={false}
@@ -259,6 +279,7 @@ const AddAuthorDialog = observer(
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [savingInProgress, setSavingInProgress] = useState(false);
     const [addAuthorVisible, setAddAuthorVisible] = useState(false);
+    const [isGotItShowed, setIsGotItShowed] = useState(true);
 
     const authorStore = useMemo((): AuthorEditorStore => {
       const authorStore = new AuthorEditorStore();
@@ -266,38 +287,36 @@ const AddAuthorDialog = observer(
         setAddAuthorVisible(false);
         return authorStore;
       }
-      const { author, isConfirmed, index } = props.editingAuthor;
+      const { author, index } = props.editingAuthor;
       if (!author) {
         authorStore.isNew = true;
         authorStore.isConfirmed = false;
         setAddAuthorVisible(true);
         return authorStore;
       }
-      if (isConfirmed) {
-        const user = (author as ConfirmedAuthor).user;
-        authorStore.firstName = user.firstName;
-        authorStore.lastName = user.lastName;
-        authorStore.email = user.email;
-        authorStore.userId = user.id;
-        authorStore.profileImage = user.profileImage;
-      } else {
-        const unconfirmedAuthor = author as UnconfirmedAuthor;
-        authorStore.firstName = unconfirmedAuthor.firstName;
-        authorStore.lastName = unconfirmedAuthor.lastName;
-        authorStore.email = unconfirmedAuthor.email;
-        authorStore.workplaces = unconfirmedAuthor.workplaces ?? [];
-        authorStore.workplacesProps = [];
-        authorStore.workplaces?.forEach((w, index) => {
-          authorStore.workplacesProps.push({
-            orgQuery: w.organization?.name ?? '',
-            departmentQuery: w.department?.name ?? '',
-            departmentQueryKey: '',
-            organizationOptions: [],
-            departmentOptions: w.organization?.departments ?? []
-          });
-        });
+      authorStore.firstName = author.firstName;
+      authorStore.lastName = author.lastName;
+      authorStore.email = author.email;
+      if (author.isConfirmed) {
+        authorStore.profileImage = author.user?.profileImage;
+        authorStore.user = author.user;
       }
-      authorStore.isConfirmed = isConfirmed!;
+      if (author.workplaces?.length) {
+        authorStore.workplacesProps = [];
+        authorStore.workplacesValidation = [];
+        authorStore.workplaces = author.workplaces;
+      }
+      authorStore.workplaces?.forEach((w) => {
+        authorStore.workplacesProps.push({
+          orgQuery: w.organization?.name ?? '',
+          orgQueryKey: '',
+          organizationOptions: []
+        });
+        authorStore.workplacesValidation.push({
+          isValidOrganization: !!w.organization
+        });
+      });
+      authorStore.isConfirmed = author.isConfirmed;
       authorStore.id = author.id;
       authorStore.isNew = false;
       authorStore.index = index;
@@ -307,14 +326,14 @@ const AddAuthorDialog = observer(
 
     const handleSaveButton = async (): Promise<void> => {
       if (authorStore.isConfirmed) {
-        publicationStore.editConfirmedAuthor(authorStore);
-        handleCloseAddAuthor();
+        publicationStore.addOrEditAuthor(authorStore);
       } else {
         return userService.existsByEmail(authorStore.email).then((result) => {
           if (result.data) {
             props.setIsUserExistsByEmail(true);
           } else {
-            publicationStore.addOrEditUnconfirmedAuthor(authorStore);
+            publicationStore.addOrEditAuthor(authorStore);
+            props.setShowSuccessSavingAlter(true);
           }
         });
       }
@@ -332,11 +351,6 @@ const AddAuthorDialog = observer(
       <>
         <Dialog
           open={addAuthorVisible}
-          onClose={() => {
-            if (authorStore.isConfirmed) {
-              handleCloseAddAuthor();
-            }
-          }}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description">
           <DialogTitleWrap id="alert-dialog-title">
@@ -409,13 +423,74 @@ const AddAuthorDialog = observer(
                   isConfirmed={true}
                   useMarginBottom={false}
                 />
+                <HeightElement value={'32px'} />
+                <FlexWrapRow>
+                  <MarginTextField
+                    value={authorStore.firstName}
+                    onChange={(e) => {
+                      authorStore.firstName = e.currentTarget.value;
+                    }}
+                    label="First name"
+                    variant="outlined"
+                    error={!authorStore.isValidFirstName}
+                    helperText={
+                      !authorStore.isValidFirstName
+                        ? 'Invalid first name'
+                        : undefined
+                    }
+                  />
+                  <FullWidthTextField
+                    value={authorStore.lastName}
+                    onChange={(e) => {
+                      authorStore.lastName = e.currentTarget.value;
+                    }}
+                    label="Last name"
+                    variant="outlined"
+                    error={!authorStore.isValidLastName}
+                    helperText={
+                      !authorStore.isValidLastName
+                        ? 'Invalid last name'
+                        : undefined
+                    }
+                  />
+                </FlexWrapRow>
+                {isGotItShowed && (
+                  <>
+                    <ChangesOnThisFormDoesntAffectProfileInfoWrap>
+                      <Flex
+                        alignItems={FlexAlignItems.center}
+                        justifyContent={FlexJustifyContent.spaceBetween}>
+                        <InfoOutlined
+                          htmlColor={'#0288D1'}
+                          sx={{ width: 22, height: 22, marginRight: '12px' }}
+                        />
+                        <ChangesOnThisFormDoesntAffectProfileText>
+                          Changes on this form doesn’t affect your profile info.
+                        </ChangesOnThisFormDoesntAffectProfileText>
+                      </Flex>
+                      <Button
+                        onClick={() => {
+                          setIsGotItShowed(false);
+                        }}>
+                        Got it
+                      </Button>
+                    </ChangesOnThisFormDoesntAffectProfileInfoWrap>
+                    <HeightElement value={'32px'} />
+                  </>
+                )}
+                <FlexWrapColumn>
+                  <WorkplacesTitle variant={'h6'}>
+                    Current workplaces (affiliations)
+                  </WorkplacesTitle>
+                  <WorkplacesEditor store={authorStore} isModalWindow={true} />
+                </FlexWrapColumn>
               </EditConfirmedAuthor>
             )}
           </DialogContentWrap>
           <DialogActionsWrap>
             <SpaceBetweenWrap>
               {((authorStore.isNew ||
-                authorStore.userId === publicationStore.creator?.id) && (
+                authorStore.user?.id === publicationStore.creator?.id) && (
                 <div />
               )) || (
                 <IconButton
@@ -428,26 +503,21 @@ const AddAuthorDialog = observer(
               <FlexWrapRow>
                 <Button onClick={handleCloseAddAuthor}>Cancel</Button>
                 <WidthElement value={'15px'} />
-                {!authorStore.isConfirmed && (
-                  <LoadingButton
-                    loading={savingInProgress}
-                    variant={'contained'}
-                    onClick={() => {
-                      const isValid = authorStore.validate();
-                      if (isValid) {
-                        setSavingInProgress(true);
-                        void handleSaveButton().then(() => {
-                          setTimeout(() => {
-                            setSavingInProgress(false);
-                            props.setShowSuccessSavingAlter(true);
-                            handleCloseAddAuthor();
-                          }, 1000);
-                        });
-                      }
-                    }}>
-                    {authorStore.isNew ? 'Add author' : 'Save'}
-                  </LoadingButton>
-                )}
+                <LoadingButton
+                  loading={savingInProgress}
+                  variant={'contained'}
+                  onClick={() => {
+                    const isValid = authorStore.validate();
+                    if (isValid) {
+                      setSavingInProgress(true);
+                      void handleSaveButton().then(() => {
+                        setSavingInProgress(false);
+                        handleCloseAddAuthor();
+                      });
+                    }
+                  }}>
+                  {authorStore.isNew ? 'Add author' : 'Save'}
+                </LoadingButton>
               </FlexWrapRow>
             </SpaceBetweenWrap>
           </DialogActionsWrap>
@@ -598,3 +668,39 @@ const DialogContentWrap = styled(DialogContent)`
 const WorkplacesTitle = styled(Typography)`
   margin-bottom: 32px;
 `;
+
+const ChangesOnThisFormDoesntAffectProfileInfoWrap = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 8px 6px 16px;
+  align-items: center;
+  align-self: stretch;
+  height: 48px;
+  border-radius: 4px;
+  background: var(--alert-info-fill, #e5f6fd);
+
+  color: var(--alert-info-content, #014361);
+  font-feature-settings: 'clig' off, 'liga' off;
+`;
+
+const ChangesOnThisFormDoesntAffectProfileText = styled.span`
+  /* typography/body2 */
+  font-family: Roboto;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 143%; /* 20.02px */
+  letter-spacing: 0.17px;
+`;
+
+// const GotItButton = styled.div`
+//   color: var(--alert-info-content, #014361);
+//
+//   /* components/button-small */
+//   font-family: Roboto;
+//   font-size: 14px;
+//   font-style: normal;
+//   font-weight: 500;
+//   line-height: 22px; /* 157.143% */
+//   letter-spacing: 0.46px;
+// `;

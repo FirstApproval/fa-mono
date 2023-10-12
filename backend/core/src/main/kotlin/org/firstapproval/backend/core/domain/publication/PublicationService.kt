@@ -1,46 +1,34 @@
 package org.firstapproval.backend.core.domain.publication
 
 import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
-import org.firstapproval.api.server.model.DownloadLinkResponse
-import org.firstapproval.api.server.model.Paragraph
+import org.firstapproval.api.server.model.*
 import org.firstapproval.api.server.model.PublicationContentStatus.AVAILABLE
 import org.firstapproval.api.server.model.PublicationContentStatus.PREPARING
-import org.firstapproval.api.server.model.PublicationEditRequest
-import org.firstapproval.api.server.model.PublicationsResponse
-import org.firstapproval.api.server.model.SubmitPublicationRequest
-import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.domain.organizations.OrganizationService
-import org.firstapproval.backend.core.domain.organizations.UnconfirmedAuthorWorkplace
 import org.firstapproval.backend.core.domain.organizations.toApiObject
 import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
-import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
-import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
-import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
+import org.firstapproval.backend.core.domain.publication.PublicationStatus.*
 import org.firstapproval.backend.core.domain.publication.StorageType.CLOUD_SECURE_STORAGE
 import org.firstapproval.backend.core.domain.publication.StorageType.IPFS
-import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
-import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthorRepository
-import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthor
+import org.firstapproval.backend.core.domain.publication.authors.Author
+import org.firstapproval.backend.core.domain.publication.authors.AuthorRepository
+import org.firstapproval.backend.core.domain.publication.authors.AuthorWorkplace
+import org.firstapproval.backend.core.domain.publication.authors.toApiObject
 import org.firstapproval.backend.core.domain.publication.downloader.Downloader
 import org.firstapproval.backend.core.domain.publication.downloader.DownloaderRepository
+import org.firstapproval.backend.core.domain.publication.file.PublicationFileRepository
+import org.firstapproval.backend.core.domain.publication.file.PublicationSampleFileRepository
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
 import org.firstapproval.backend.core.domain.user.UserService
-import org.firstapproval.backend.core.external.ipfs.DownloadLink
-import org.firstapproval.backend.core.external.ipfs.DownloadLinkRepository
+import org.firstapproval.backend.core.external.ipfs.*
 import org.firstapproval.backend.core.external.ipfs.IpfsClient.IpfsContentAvailability.ARCHIVE
 import org.firstapproval.backend.core.external.ipfs.IpfsClient.IpfsContentAvailability.INSTANT
-import org.firstapproval.backend.core.external.ipfs.IpfsStorageService
-import org.firstapproval.backend.core.external.ipfs.RestoreRequest
-import org.firstapproval.backend.core.external.ipfs.RestoreRequestRepository
-import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_FILES
-import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_SAMPLE_FILES
-import org.firstapproval.backend.core.external.s3.FILES
-import org.firstapproval.backend.core.external.s3.FileStorageService
-import org.firstapproval.backend.core.external.s3.SAMPLE_FILES
+import org.firstapproval.backend.core.external.s3.*
 import org.firstapproval.backend.core.infra.elastic.PublicationElastic
 import org.firstapproval.backend.core.infra.elastic.PublicationElasticRepository
+import org.firstapproval.backend.core.utils.allUniqueBy
 import org.firstapproval.backend.core.utils.require
 import org.firstapproval.backend.core.web.errors.RecordConflictException
 import org.springframework.data.domain.Page
@@ -52,19 +40,18 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
 import java.time.ZonedDateTime.now
-import java.util.UUID
+import java.util.*
 import java.util.UUID.randomUUID
 import org.firstapproval.api.server.model.AccessType as AccessTypeApiObject
-import org.firstapproval.api.server.model.ConfirmedAuthor as ConfirmedAuthorApiObject
+import org.firstapproval.api.server.model.Author as AuthorApiObject
 import org.firstapproval.api.server.model.LicenseType as LicenseTypeApiObject
 import org.firstapproval.api.server.model.Publication as PublicationApiObject
 import org.firstapproval.api.server.model.PublicationStatus as PublicationStatusApiObject
-import org.firstapproval.api.server.model.UnconfirmedAuthor as UnconfirmedAuthorApiObject
 
 @Service
 class PublicationService(
     private val publicationRepository: PublicationRepository,
-    private val confirmedAuthorRepository: ConfirmedAuthorRepository,
+    private val authorRepository: AuthorRepository,
     private val userRepository: UserRepository,
     private val userService: UserService,
     private val organizationService: OrganizationService,
@@ -82,8 +69,20 @@ class PublicationService(
     @Transactional
     fun create(user: User): Publication {
         val publication = publicationRepository.save(Publication(id = generateCode(), creator = user))
-        publication.confirmedAuthors =
-            confirmedAuthorRepository.saveAll(mutableListOf(ConfirmedAuthor(randomUUID(), user, publication, 0)))
+        publication.authors =
+            authorRepository.saveAll(
+                mutableListOf(
+                    Author(
+                        publication = publication,
+                        email = user.email,
+                        firstName = user.firstName,
+                        lastName = user.lastName,
+                        ordinal = 0,
+                        user = user,
+                        isConfirmed = true,
+                    )
+                )
+            )
         return publication
     }
 
@@ -98,18 +97,14 @@ class PublicationService(
             throw AccessDeniedException("Access denied")
         }
         with(request) {
-            val unconfirmedAuthorsEmails = unconfirmedAuthors?.let { unconfirmedAuthors.values.map { it.email }.toSet() } ?: setOf()
+            val isAuthorsEmailsUnique = authors?.values?.allUniqueBy { it.email } ?: true
+            if (!isAuthorsEmailsUnique) {
+                throw RecordConflictException("Authors emails not unique")
+            }
+
+            val unconfirmedAuthorsEmails = authors?.values?.filter { it.isConfirmed == false }?.map { it.email }?.toSet() ?: setOf()
             if (unconfirmedAuthorsEmails.isNotEmpty() && userRepository.findByEmailIn(unconfirmedAuthorsEmails).isNotEmpty()) {
                 throw RecordConflictException("User with this email already registered")
-            }
-            val confirmedAuthorsById =
-                confirmedAuthors?.let { authors ->
-                    userRepository.findAllById(authors.values.map { it.userId }).associateBy { it.id }
-                } ?: mapOf()
-            val confirmedAuthorsEmails = confirmedAuthorsById.values.map { { it.email } }
-
-            if (confirmedAuthorsEmails.intersect(unconfirmedAuthorsEmails).isNotEmpty()) {
-                throw RecordConflictException("Author with this email already added to publication as confirmed user")
             }
 
             publication.editingTime = now()
@@ -131,54 +126,38 @@ class PublicationService(
             if (methodDescription?.edited == true) publication.methodDescription = methodDescription.values.map { it.text }
             if (predictedGoals?.edited == true) publication.predictedGoals = predictedGoals.values.map { it.text }
             if (licenseType?.edited == true) publication.licenseType = LicenseType.valueOf(licenseType.value.name)
-            if (confirmedAuthors?.edited == true) {
-                if (confirmedAuthors.values.none { it.userId == publication.creator.id }) {
-                    throw RecordConflictException("Creator cannot be deleted from authors list")
-                }
-                val confirmedPublicationAuthors = confirmedAuthors.values.map { confirmedAuthor ->
-                    ConfirmedAuthor(
-                        id = confirmedAuthor.id ?: randomUUID(),
-                        user = confirmedAuthorsById[confirmedAuthor.userId].require(),
-                        ordinal = confirmedAuthor.ordinal,
+            if (authors?.edited == true) {
+                val unconfirmedPublicationAuthors = authors.values.map { authorApiObject ->
+                    val authorUser = if (authorApiObject.isConfirmed) authorApiObject.user.require().let {
+                        userRepository.getReferenceById(it.id)
+                    } else null
+                    Author(
+                        id = authorApiObject.id ?: randomUUID(),
+                        email = authorApiObject.email,
+                        firstName = authorApiObject.firstName,
+                        lastName = authorApiObject.lastName,
+                        ordinal = authorApiObject.ordinal,
+                        user = authorUser,
                         publication = publication,
+                        isConfirmed = authorApiObject.isConfirmed,
+                        workplaces = authorApiObject.workplaces.map { unconfirmedWorkplace ->
+                            val organization = organizationService.getOrSave(unconfirmedWorkplace.organization)
+                            AuthorWorkplace(
+                                id = unconfirmedWorkplace.id ?: randomUUID(),
+                                organization = organization,
+                                organizationDepartment = unconfirmedWorkplace.department,
+                                address = unconfirmedWorkplace.address,
+                                postalCode = unconfirmedWorkplace.postalCode,
+                                isFormer = unconfirmedWorkplace.isFormer,
+                                creationTime = unconfirmedWorkplace.creationTime?.toZonedDateTime() ?: now(),
+                                editingTime = now(),
+                            )
+                        }.toMutableList()
                     )
                 }
-                publication.confirmedAuthors.clear()
+                publication.authors.clear()
                 publicationRepository.saveAndFlush(publication)
-                publication.confirmedAuthors.addAll(confirmedPublicationAuthors)
-            }
-            if (unconfirmedAuthors?.edited == true) {
-                val unconfirmedPublicationAuthors = unconfirmedAuthors.values.map { unconfirmedAuthorApiObject ->
-                    val unconfirmedAuthor = UnconfirmedAuthor(
-                        id = unconfirmedAuthorApiObject.id ?: randomUUID(),
-                        email = unconfirmedAuthorApiObject.email,
-                        firstName = unconfirmedAuthorApiObject.firstName,
-                        middleName = unconfirmedAuthorApiObject.middleName,
-                        lastName = unconfirmedAuthorApiObject.lastName,
-                        ordinal = unconfirmedAuthorApiObject.ordinal,
-                        publication = publication
-                    )
-
-                    unconfirmedAuthor.workplaces = unconfirmedAuthorApiObject.workplaces.map { unconfirmedWorkplace ->
-                        val organization = organizationService.getOrSave(unconfirmedWorkplace.organization)
-                        val organizationDepartment = organizationService.getOrSave(unconfirmedWorkplace.department, organization)
-                        UnconfirmedAuthorWorkplace(
-                            id = unconfirmedWorkplace.id ?: randomUUID(),
-                            organization = organization,
-                            organizationDepartment = organizationDepartment,
-                            unconfirmedAuthor = unconfirmedAuthor,
-                            address = unconfirmedWorkplace.address,
-                            postalCode = unconfirmedWorkplace.postalCode,
-                            isFormer = unconfirmedWorkplace.isFormer,
-                            creationTime = unconfirmedWorkplace.creationTime?.toZonedDateTime() ?: now(),
-                            editingTime = now()
-                        )
-                    }.toMutableList()
-                    unconfirmedAuthor
-                }
-                publication.unconfirmedAuthors.clear()
-                publicationRepository.saveAndFlush(publication)
-                publication.unconfirmedAuthors.addAll(unconfirmedPublicationAuthors)
+                publication.authors.addAll(unconfirmedPublicationAuthors)
             }
         }
         publicationRepository.saveAndFlush(publication)
@@ -424,13 +403,12 @@ fun Publication.toApiObject(userService: UserService) = PublicationApiObject().a
     publicationApiModel.publicationTime = publicationTime?.toOffsetDateTime()
     publicationApiModel.methodDescription = methodDescription?.map { Paragraph(it) }
     publicationApiModel.predictedGoals = predictedGoals?.map { Paragraph(it) }
-    publicationApiModel.confirmedAuthors = confirmedAuthors.map { it.toApiObject(userService.getProfileImage(it.user.profileImage)) }
-    publicationApiModel.unconfirmedAuthors = unconfirmedAuthors.map { it.toApiObject() }
+    publicationApiModel.authors = authors.map { it.toApiObject(userService.getProfileImage(it.user?.profileImage)) }
     publicationApiModel.viewsCount = viewsCount
     publicationApiModel.downloadsCount = downloadsCount
     publicationApiModel.status = PublicationStatusApiObject.valueOf(status.name)
     publicationApiModel.accessType = AccessTypeApiObject.valueOf(accessType.name)
-    publicationApiModel.licenseType = licenseType?.let { LicenseTypeApiObject.valueOf(it.name) }
+    publicationApiModel.licenseType = licenseType.let { LicenseTypeApiObject.valueOf(it.name) }
     publicationApiModel.creationTime = creationTime.toOffsetDateTime()
     publicationApiModel.editingTime = editingTime.toOffsetDateTime()
     publicationApiModel.negativeData = negativeData
@@ -459,27 +437,24 @@ fun Publication.toPublicationElastic() =
         negativeData = negativeData,
     )
 
-fun ConfirmedAuthor.toApiObject(profileImage: ByteArray?) = ConfirmedAuthorApiObject().also {
-    it.id = id
-    it.ordinal = ordinal
-    it.user = UserInfo(
-        user.id,
-        user.firstName,
-        user.lastName,
-        user.email,
-        user.username,
-        user.workplaces.map { workplace -> workplace.toApiObject() }
-    )
-        .middleName(user.middleName)
-        .profileImage(profileImage)
-}
-
-fun UnconfirmedAuthor.toApiObject() = UnconfirmedAuthorApiObject().also {
+fun Author.toApiObject(profileImage: ByteArray?) = AuthorApiObject().also {
     it.id = id
     it.firstName = firstName
     it.lastName = lastName
-    it.middleName = middleName
     it.email = email
     it.ordinal = ordinal
+    it.isConfirmed = isConfirmed
+    it.user = user?.let {user ->
+        UserInfo(
+            user.id,
+            user.firstName,
+            user.lastName,
+            user.email,
+            user.username,
+            user.workplaces.map { workplace -> workplace.toApiObject() }
+        )
+            .middleName(user.middleName)
+            .profileImage(profileImage)
+    }
     it.workplaces = workplaces.map { workplace -> workplace.toApiObject() }
 }

@@ -10,7 +10,7 @@ import org.firstapproval.api.server.model.PublicationFile
 import org.firstapproval.api.server.model.UploadType
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
-import org.firstapproval.backend.core.domain.publication.PublicationSampleFileService
+import org.firstapproval.backend.core.domain.publication.file.PublicationSampleFileService
 import org.springframework.http.HttpStatus.OK
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
