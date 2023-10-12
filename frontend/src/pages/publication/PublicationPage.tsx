@@ -674,7 +674,10 @@ const PublicationBody = observer(
           <AuthorsPlaceholder onClick={openAuthors} />
         )}
         {authorsEnabled && (
-          <AuthorsEditor publicationStore={publicationStore} />
+          <AuthorsEditor
+            key={`authorsEditor_${publicationStore.authors.length}`}
+            publicationStore={publicationStore}
+          />
         )}
 
         {/* Granting organizations */}

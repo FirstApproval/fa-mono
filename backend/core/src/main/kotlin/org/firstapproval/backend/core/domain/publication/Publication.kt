@@ -9,8 +9,7 @@ import org.firstapproval.backend.core.config.encryption.StringListEncryptionConv
 import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
 import org.firstapproval.backend.core.domain.publication.LicenseType.ATTRIBUTION_NO_DERIVATIVES
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
-import org.firstapproval.backend.core.domain.publication.authors.ConfirmedAuthor
-import org.firstapproval.backend.core.domain.publication.authors.UnconfirmedAuthor
+import org.firstapproval.backend.core.domain.publication.authors.Author
 import org.firstapproval.backend.core.domain.user.User
 import org.hibernate.annotations.ColumnTransformer
 import org.hibernate.annotations.Fetch
@@ -75,10 +74,7 @@ class Publication(
     var predictedGoals: List<String>? = null,
     @Fetch(value = SELECT)
     @OneToMany(fetch = EAGER, cascade = [ALL], orphanRemoval = true, mappedBy = "publication")
-    var confirmedAuthors: MutableList<ConfirmedAuthor> = mutableListOf(),
-    @Fetch(value = SELECT)
-    @OneToMany(fetch = EAGER, cascade = [ALL], orphanRemoval = true, mappedBy = "publication")
-    var unconfirmedAuthors: MutableList<UnconfirmedAuthor> = mutableListOf(),
+    var authors: MutableList<Author> = mutableListOf(),
     var downloadsCount: Long = 0,
     var viewsCount: Long = 0,
     var creationTime: ZonedDateTime = now(),
@@ -98,7 +94,10 @@ class Publication(
     @Enumerated(STRING)
     var licenseType: LicenseType = ATTRIBUTION_NO_DERIVATIVES,
     var characterCount: Long = 0,
-)
+) {
+    val authorsNames: String
+        get() = authors.joinToString(postfix = ".") { it.lastName + " " + it.firstName }
+}
 
 enum class PublicationStatus {
     PENDING,

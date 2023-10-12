@@ -41,7 +41,15 @@ class User(
     @Fetch(SELECT)
     @OneToMany(fetch = EAGER, cascade = [ALL], orphanRemoval = true, mappedBy = "user")
     var workplaces: MutableList<Workplace> = mutableListOf(),
-)
+    var isNameConfirmed: Boolean = false,
+    var isWorkplacesConfirmed: Boolean = false
+) {
+    val workplacesNames: String
+        get() = workplaces.filter { it.organization.moderated }
+            .joinToString(postfix = ".") {
+                (it.organization.name + " ${it.organizationDepartment}").trim()
+            }
+}
 
 fun User.toApiObject(userService: UserService) = UserInfo().also {
     it.id = id

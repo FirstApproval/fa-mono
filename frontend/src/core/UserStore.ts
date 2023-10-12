@@ -11,7 +11,8 @@ import {
 import { userStore } from './user';
 import { cloneDeep } from 'lodash';
 import {
-  ACCOUNT_AFFILIATIONS_PATH,
+  affiliationsPath,
+  namePath,
   Page,
   publicationPath,
   signUpPath
@@ -53,8 +54,7 @@ export class UserStore implements IWorkplaceStore {
         if (!this.workplaces || this.workplaces.length === 0) {
           this.workplaces.push({ isFormer: false });
           this.workplacesValidation.push({
-            isValidOrganization: true,
-            isValidAddress: true
+            isValidOrganization: true
           });
         }
 
@@ -62,14 +62,11 @@ export class UserStore implements IWorkplaceStore {
         this.workplaces?.forEach((w, index) => {
           this.workplacesProps.push({
             orgQuery: w.organization?.name ?? '',
-            departmentQuery: w.department?.name ?? '',
-            departmentQueryKey: '',
-            organizationOptions: [],
-            departmentOptions: w.organization?.departments ?? []
+            orgQueryKey: '',
+            organizationOptions: []
           });
           this.workplacesValidation.push({
-            isValidOrganization: true,
-            isValidAddress: true
+            isValidOrganization: true
           });
         });
       });
@@ -77,9 +74,13 @@ export class UserStore implements IWorkplaceStore {
   }
 
   createPublication = async (): Promise<void> => {
-    const workplaces = userStore.user?.workplaces;
-    if (!workplaces?.length) {
-      routerStore.navigatePage(Page.ACCOUNT, ACCOUNT_AFFILIATIONS_PATH);
+    const user = userStore.user;
+    if (!user?.isNameConfirmed) {
+      routerStore.navigatePage(Page.NAME, namePath, true);
+    } else if (!user?.isWorkplacesConfirmed || !user?.workplaces?.length) {
+      routerStore.navigatePage(Page.AFFILIATIONS, affiliationsPath, true, {
+        isRegistration: false
+      });
     } else {
       routerStore.navigatePage(Page.PUBLICATION, publicationPath);
     }
@@ -89,7 +90,7 @@ export class UserStore implements IWorkplaceStore {
     if (authStore.token) {
       const workplaces = userStore.user?.workplaces;
       if (!workplaces?.length) {
-        return ACCOUNT_AFFILIATIONS_PATH;
+        return affiliationsPath;
       } else {
         return publicationPath;
       }
@@ -106,33 +107,43 @@ export class UserStore implements IWorkplaceStore {
     }
   };
 
-  saveWorkplaces = async (workplaces: Workplace[]): Promise<void> => {
-    await userService.getMe().then(async (response) => {
-      const user = response.data;
-      await userService
-        .updateUser({
-          firstName: user.firstName,
-          middleName: user.middleName,
-          lastName: user.lastName,
-          username: user.username,
-          workplaces
-        })
-        .then(() => {
-          userStore.requestUserData();
-        });
-    });
+  updateUser = async (
+    workplaces: Workplace[],
+    confirmName = false,
+    confirmWorkplaces = false
+  ): Promise<void> => {
+    await userService
+      .updateUser({
+        firstName: confirmName
+          ? this.editableUser!.firstName
+          : this.user!.firstName,
+        lastName: confirmName
+          ? this.editableUser!.lastName
+          : this.user!.lastName,
+        middleName: confirmName
+          ? this.editableUser!.middleName
+          : this.user!.middleName,
+        username: confirmName
+          ? this.editableUser!.username
+          : this.user!.username,
+        profileImage: this.editableUser!.profileImage,
+        deleteProfileImage: this.deleteProfileImage,
+        workplaces: workplaces != null ? workplaces : this.workplaces,
+        confirmName,
+        confirmWorkplaces
+      })
+      .then(() => {
+        userStore.requestUserData();
+      });
   };
 
   validate(): boolean {
     this.workplacesValidation = this.workplaces.map((workplace) => ({
-      isValidOrganization: !!workplace.organization,
-      isValidAddress: !!workplace.address
+      isValidOrganization: !!workplace.organization
     }));
     // const currentWorkplaceAbsent = !this.workplaces.some(
     //   (workplace) => !workplace.isFormer
     // );
-    return this.workplacesValidation.every(
-      (v) => v.isValidOrganization && v.isValidAddress
-    );
+    return this.workplacesValidation.every((v) => v.isValidOrganization);
   }
 }

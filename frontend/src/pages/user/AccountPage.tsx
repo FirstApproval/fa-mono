@@ -155,26 +155,13 @@ export const AccountPage: FunctionComponent = observer(() => {
     if (editableUser.username !== user?.username) {
       void userService.existsByUsername(editableUser.username).then((exist) => {
         setUsedUsername(exist.data);
+        if (!exist.data) {
+          void userStore.updateUser([], true, false).then(() => {
+            setSaveDisabled(true);
+            userStore.requestUserData();
+          });
+        }
       });
-    }
-
-    if (!isUsedUsername) {
-      const username =
-        (!isUsedUsername && editableUser.username) ?? editableUser?.username;
-      void userService
-        .updateUser({
-          firstName: editableUser.firstName,
-          lastName: editableUser.lastName,
-          username,
-          middleName: editableUser.middleName,
-          profileImage: editableUser.profileImage,
-          deleteProfileImage: userStore.deleteProfileImage,
-          workplaces: user.workplaces ?? []
-        })
-        .then(() => {
-          setSaveDisabled(true);
-          userStore.requestUserData();
-        });
     }
   };
 
@@ -420,13 +407,15 @@ export const AccountPage: FunctionComponent = observer(() => {
                     isModalWindow={false}
                     store={userStore}
                     buttonType={ActionButtonType.FULL_WIDTH_CONFIRM}
-                    saveButtonText={'Save affiliations'}
+                    saveButtonText={<span>Save affiliations</span>}
                     saveCallback={async (workplaces): Promise<boolean> => {
                       const isValid = userStore.validate();
                       if (isValid) {
-                        return userStore.saveWorkplaces(workplaces).then(() => {
-                          return true;
-                        });
+                        return userStore
+                          .updateUser(workplaces, false, true)
+                          .then(() => {
+                            return true;
+                          });
                       }
                       return Promise.resolve(isValid);
                     }}

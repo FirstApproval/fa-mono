@@ -20,11 +20,7 @@ import {
   ValidationErrorText,
   WidthElement
 } from '../pages/common.styled';
-import {
-  Organization,
-  OrganizationDepartment,
-  Workplace
-} from '../apis/first-approval-api';
+import { Organization, Workplace } from '../apis/first-approval-api';
 import { organizationService } from '../core/service';
 import {
   IWorkplaceStore,
@@ -38,10 +34,11 @@ import { Clear } from '@mui/icons-material';
 export enum ActionButtonType {
   FULL_WIDTH_CONFIRM = 'FULL_WIDTH_CONFIRM'
 }
+
 interface WorkplacesEditorProps {
   store: IWorkplaceStore;
   buttonType?: ActionButtonType;
-  saveButtonText?: string;
+  saveButtonText?: ReactElement;
   isModalWindow: boolean;
   saveCallback?: (workplaces: Workplace[]) => Promise<boolean>;
 }
@@ -92,7 +89,7 @@ export const WorkplacesEditor = observer(
           <DividerWrap hidden={index === 0} />
           <FlexWrapOrganization extendWidth={!isModalWindow}>
             <Autocomplete
-              key={`orgKey-${index}-${workplaceProps.departmentQueryKey}`}
+              key={`orgKey-${index}-${workplaceProps.orgQueryKey}`}
               filterOptions={(options, params) => {
                 if (!options) {
                   return options;
@@ -109,20 +106,16 @@ export const WorkplacesEditor = observer(
               }}
               onChange={(event: any, newValue: Organization | null) => {
                 workplace.organization = newValue ?? undefined;
-                workplaceProps.departmentOptions = newValue?.departments ?? [];
-                workplaceProps.departmentQuery = '';
                 workplaceProps.orgQuery = newValue?.name ?? '';
-                workplaceProps.departmentQueryKey = newValue?.name ?? ''; // for re-rendering
+                workplaceProps.orgQueryKey = '';
               }}
               onInputChange={(event, newInputValue, reason) => {
                 if (reason === 'reset' && newInputValue) {
                   workplaceProps.orgQuery = newInputValue;
                 }
                 if (!['selectOption', 'reset', 'blur'].includes(reason)) {
-                  workplace.department = undefined;
                   workplaceProps.orgQuery = newInputValue;
-                  workplaceProps.departmentOptions = [];
-                  workplaceProps.departmentQuery = '';
+                  workplaceProps.orgQueryKey = '';
                   setWorkplaceOrgQueryIndex(`${index}-${newInputValue}`);
                 }
               }}
@@ -145,7 +138,6 @@ export const WorkplacesEditor = observer(
                   {...params}
                   variant="outlined"
                   label={'Organization name'}
-                  // error={!workplace.organization}
                   placeholder={
                     'Institution, company, or organization you are affiliated with'
                   }
@@ -182,77 +174,15 @@ export const WorkplacesEditor = observer(
             )}
           </FlexWrapOrganization>
           <HeightElement value={'32px'} />
-          <Autocomplete
-            key={`departmentKey-${index}-${workplaceProps.departmentQueryKey}`}
-            filterOptions={(options, params) => {
-              if (!options) {
-                return options;
-              }
-              const { inputValue } = params;
-              // Suggest the creation of a new value
-              const isExisting = options.some(
-                (option) => inputValue === option.name
-              );
-              if (inputValue !== '' && !isExisting) {
-                options.push({ name: inputValue });
-              }
-              return options;
+          <TextField
+            multiline={false}
+            maxRows={1}
+            value={workplace.department ?? ''}
+            onChange={(e) => {
+              workplaces[index].department = e.currentTarget.value;
             }}
-            disabled={!workplace.organization}
-            onChange={(event: any, newValue: OrganizationDepartment | null) => {
-              if (newValue) {
-                workplace.department = newValue;
-              }
-            }}
-            onBlur={(e) => {
-              e.preventDefault();
-              if (
-                workplaceProps.departmentQuery &&
-                !workplaceProps.departmentOptions
-                  .map((org) => org.name)
-                  .includes(workplaceProps.departmentQuery)
-              ) {
-                const newDepartment = {
-                  name: workplaceProps.departmentQuery
-                };
-                workplaceProps.departmentOptions.push(newDepartment);
-                workplace.department = newDepartment;
-              }
-            }}
-            forcePopupIcon={false}
-            inputValue={workplaceProps.departmentQuery}
-            onInputChange={(event, newInputValue, reason) => {
-              if (reason !== 'reset' || newInputValue) {
-                workplacesProps[index].departmentQuery = newInputValue;
-              }
-            }}
-            renderOption={(props, option, state) => {
-              return (
-                <SelectOption {...props}>
-                  {`${option.id ? '' : 'Add department: '}${option.name}`}
-                </SelectOption>
-              );
-            }}
-            getOptionLabel={(option) => option.name ?? ''}
-            id="controllable-states-demo"
-            options={
-              (!workplaceProps.departmentQuery
-                ? workplaceProps.departmentOptions
-                : workplaceProps.departmentOptions.filter((dep) =>
-                    dep.name
-                      ?.toLowerCase()
-                      .includes(workplaceProps.departmentQuery.toLowerCase())
-                  )) ?? []
-            }
-            sx={{ width: '100%' }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                variant="outlined"
-                label="Department (opt)"
-                placeholder="Department (opt)"
-              />
-            )}
+            label="Department (opt.)"
+            variant="outlined"
           />
           <HeightElement value={'32px'} />
           <FlexWrapRowFullWidth>
@@ -263,13 +193,7 @@ export const WorkplacesEditor = observer(
               onChange={(e) => {
                 workplaces[index].address = e.currentTarget.value;
               }}
-              error={!workplaceValidationState.isValidAddress}
-              helperText={
-                !workplaceValidationState.isValidAddress
-                  ? 'Address can not be empty'
-                  : undefined
-              }
-              label="Address"
+              label="Address (opt.)"
               variant="outlined"
             />
             <WidthElement value={'16px'} />
@@ -345,18 +269,13 @@ export const WorkplacesEditor = observer(
           onClick={() => {
             workplacesProps[workplaces.length] = {
               orgQuery: '',
-              departmentQuery: '',
-              departmentQueryKey: '',
-              organizationOptions: [],
-              departmentOptions: []
+              orgQueryKey: '',
+              organizationOptions: []
             };
             workplaces.push({ isFormer: false });
-            workplacesValidation.push({
-              isValidOrganization: true,
-              isValidAddress: true
-            });
+            workplacesValidation.push({ isValidOrganization: true });
           }}>
-          + Add workplace
+          + Add affiliation
         </Button>
         <HeightElement value="32px" />
         {buttonType === ActionButtonType.FULL_WIDTH_CONFIRM && saveCallback && (

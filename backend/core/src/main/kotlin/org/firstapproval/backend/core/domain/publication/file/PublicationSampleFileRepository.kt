@@ -1,4 +1,4 @@
-package org.firstapproval.backend.core.domain.publication
+package org.firstapproval.backend.core.domain.publication.file
 
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable

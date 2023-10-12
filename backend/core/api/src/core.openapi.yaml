@@ -1838,6 +1838,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Workplace'
+        isNameConfirmed:
+          type: boolean
+        isWorkplacesConfirmed:
+          type: boolean
       required:
         - id
         - firstName
@@ -1847,6 +1851,7 @@ components:
         - canSetPassword
         - canChangePassword
         - workplaces
+        - isNameConfirmed
 
     ReportFile:
       type: object
@@ -1955,6 +1960,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Workplace'
+        confirmName:
+          type: boolean
+        confirmWorkplaces:
+          type: boolean
       required:
         - firstName
         - lastName
@@ -1970,7 +1979,7 @@ components:
         organization:
           $ref: '#/components/schemas/Organization'
         department:
-          $ref: '#/components/schemas/OrganizationDepartment'
+          type: string
         address:
           type: string
         postalCode:
@@ -1984,10 +1993,8 @@ components:
     PublicationEditRequest:
       type: object
       properties:
-        confirmedAuthors:
-          $ref: '#/components/schemas/ConfirmedAuthors'
-        unconfirmedAuthors:
-          $ref: '#/components/schemas/UnconfirmedAuthors'
+        authors:
+          $ref: '#/components/schemas/Authors'
         title:
           $ref: '#/components/schemas/PublicationStringValue'
         researchAreas:
@@ -2059,7 +2066,7 @@ components:
       required:
         - text
 
-    ConfirmedAuthors:
+    Authors:
       type: object
       properties:
         edited:
@@ -2067,48 +2074,9 @@ components:
         values:
           type: array
           items:
-            $ref: '#/components/schemas/ConfirmedAuthorBasicInfo'
+            $ref: '#/components/schemas/Author'
 
-    ConfirmedAuthor:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        ordinal:
-          type: integer
-          format: int32
-        user:
-          $ref: '#/components/schemas/UserInfo'
-      required:
-        - user
-
-    ConfirmedAuthorBasicInfo:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        userId:
-          type: string
-          format: uuid
-        ordinal:
-          type: integer
-          format: int32
-      required:
-        - userId
-
-    UnconfirmedAuthors:
-      type: object
-      properties:
-        edited:
-          type: boolean
-        values:
-          type: array
-          items:
-            $ref: '#/components/schemas/UnconfirmedAuthor'
-
-    UnconfirmedAuthor:
+    Author:
       type: object
       properties:
         id:
@@ -2118,13 +2086,15 @@ components:
           type: string
         firstName:
           type: string
-        middleName:
-          type: string
         lastName:
           type: string
         ordinal:
           type: integer
           format: int32
+        isConfirmed:
+          type: boolean
+        user:
+          $ref: '#/components/schemas/UserInfo'
         workplaces:
           type: array
           items:
@@ -2133,6 +2103,7 @@ components:
         - email
         - firstName
         - lastName
+        - isConfirmed
 
     Downloader:
       type: object
@@ -2153,21 +2124,8 @@ components:
           format: int64
         name:
           type: string
-        departments:
-          type: array
-          items:
-            $ref: '#/components/schemas/OrganizationDepartment'
       required:
         - name
-
-    OrganizationDepartment:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
 
     SearchOrganizationsResponse:
       type: object
@@ -2253,14 +2211,10 @@ components:
           $ref: '#/components/schemas/StringArray'
         predictedGoals:
           $ref: '#/components/schemas/StringArray'
-        confirmedAuthors:
+        authors:
           type: array
           items:
-            $ref: '#/components/schemas/ConfirmedAuthor'
-        unconfirmedAuthors:
-          type: array
-          items:
-            $ref: '#/components/schemas/UnconfirmedAuthor'
+            $ref: '#/components/schemas/Author'
         negativeData:
           type: string
           maxLength: 32768
