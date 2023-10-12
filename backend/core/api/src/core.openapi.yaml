@@ -9,7 +9,7 @@ servers:
 paths:
   /api/visitor:
     get:
-      summary: Save visit to site
+      summary: Save visitor
       parameters:
         - in: query
           name: utm_source
@@ -22,7 +22,7 @@ paths:
           description: Success
       security:
         - PublicAuth: [ ]
-      operationId: saveVisit
+      operationId: saveVisitor
       tags: [ visitor ]
 
   /api/authorize:
@@ -1646,6 +1646,8 @@ components:
         password:
           type: string
           minLength: 8
+        utmSource:
+          type: string
       required:
         - email
         - password
@@ -1730,6 +1732,8 @@ components:
           maxLength: 2048
         type:
           $ref: '#/components/schemas/OauthType'
+        utmSource:
+          type: string
       required:
         - code
         - type

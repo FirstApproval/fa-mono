@@ -11,10 +11,10 @@ import org.springframework.web.context.request.ServletRequestAttributes
 
 
 @RestController
-class VisitorCounterController(
+class VisitorController(
     private val visitorRepository: VisitorRepository,
 ) : VisitorApi {
-    override fun saveVisit(utmSource: String?): ResponseEntity<Void> {
+    override fun saveVisitor(utmSource: String?): ResponseEntity<Void> {
         val request = (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)!!.request
         val visitor = Visitor(ip = request.remoteAddr, utmSource = utmSource)
         visitorRepository.save(visitor)

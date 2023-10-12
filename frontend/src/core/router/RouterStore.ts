@@ -17,8 +17,8 @@ import {
 import { PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY } from '../../pages/publication/ActionBar';
 import { routerStore } from '../router';
 
-const VISIT_MARK_KEY = 'visit-mark';
-const UTM_SOURCE_KEY = 'utm_source';
+export const VISIT_MARK_KEY = 'visit-mark';
+export const UTM_SOURCE_KEY = 'utm_source';
 
 const history = createBrowserHistory();
 
@@ -69,7 +69,7 @@ export class RouterStore {
       }
 
       if (localStorage.getItem(VISIT_MARK_KEY) !== 'true') {
-        void visitorService.saveVisit(utmSource).then((response) => {
+        void visitorService.saveVisitor(utmSource).then((response) => {
           if (response.status === 200) {
             localStorage.setItem(VISIT_MARK_KEY, 'true');
           }
@@ -147,7 +147,8 @@ export class RouterStore {
         authService
           .authorizeOauth({
             code: authCode,
-            type: authType
+            type: authType,
+            utmSource: localStorage.getItem(UTM_SOURCE_KEY) ?? undefined
           })
           .then(async (response) => {
             authStore.token = response.data.token;
