@@ -21,7 +21,7 @@ import {
 } from '../../../core/router/constants';
 
 export const EDIT_THROTTLE_MS = 1000;
-export const MAX_CHARACTER_COUNT = 60000;
+export const MAX_CHARACTER_COUNT = 6;
 
 export type ParagraphWithId = Paragraph & { id: string };
 export type Section =
@@ -824,6 +824,8 @@ export class PublicationStore {
     this.isExceededLimit = this.characterCount > MAX_CHARACTER_COUNT;
     if (this.isExceededLimit && !this.displayLimitSnackbar) {
       this.displayLimitSnackbar = true;
+    } else if (!this.isExceededLimit) {
+      this.displayLimitSnackbar = false;
     }
     await publicationService.editPublication(
       this.publicationId,
