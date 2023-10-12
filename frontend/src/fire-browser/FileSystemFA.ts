@@ -244,32 +244,33 @@ export class FileSystemFA {
 
     if (file.isFile) {
       return async (): Promise<void> => {
-        (file as FileSystemFileEntry).file(async (file) => {
-          const hex = await calculateSHA256(file);
-          await this.fileService
-            .uploadFile(
-              this.publicationId,
-              fullPath,
-              false,
-              uploadType,
-              hex,
-              file.size,
-              file,
-              config
-            )
-            .then((response) => {
-              this.updateUpload(fullPath, response.data);
-              this.uploadProgress.updateStatus(fullPath, {
-                isSuccess: true,
-                abortController: undefined
-              });
-            })
-            .catch(() => {
-              this.uploadProgress.updateStatus(fullPath, {
-                isFailed: true
-              });
+        const entry = await new Promise<File>((resolve) =>
+          (file as FileSystemFileEntry).file(resolve)
+        );
+        const hex = await calculateSHA256(entry);
+        await this.fileService
+          .uploadFile(
+            this.publicationId,
+            fullPath,
+            false,
+            uploadType,
+            hex,
+            entry.size,
+            entry,
+            config
+          )
+          .then((response) => {
+            this.updateUpload(fullPath, response.data);
+            this.uploadProgress.updateStatus(fullPath, {
+              isSuccess: true,
+              abortController: undefined
             });
-        });
+          })
+          .catch(() => {
+            this.uploadProgress.updateStatus(fullPath, {
+              isFailed: true
+            });
+          });
       };
     } else {
       return async (): Promise<void> => {
