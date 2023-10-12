@@ -13,6 +13,7 @@ import React, {
   type MutableRefObject,
   type ReactElement,
   useEffect,
+  useMemo,
   useState
 } from 'react';
 import { ChonkyIconFA } from '@first-approval/chonky-icon-fontawesome';
@@ -39,6 +40,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { calculatePathChain } from './utils';
 import { UploadType } from '../apis/first-approval-api';
+import { groupBy, map, mapKeys } from 'lodash';
 
 setChonkyDefaults({
   iconComponent: ChonkyIconFA,
@@ -246,23 +248,43 @@ export const FileBrowserFA = observer(
       myFileActions.push(ChonkyActions.PreviewFilesModal);
     }
 
-    const inCurrentDirectory = (file: FileEntry): boolean => {
-      if (!file.fullPath) return false;
+    const inCurrentDirectory = (fullPath: string): boolean => {
+      if (!fullPath) return false;
       return (
-        file.fullPath.substring(0, file.fullPath.lastIndexOf('/') + 1) ===
+        fullPath.substring(0, fullPath.lastIndexOf('/') + 1) ===
         props.fs.currentPath
       );
     };
 
+    const progress = useMemo(
+      () =>
+        mapKeys(
+          [...props.fs.uploadProgress.progressStatus.values()].filter((p) =>
+            inCurrentDirectory(p.fullPath)
+          ),
+          'fullPath'
+        ),
+      [props.fs.uploadProgress.currentDirKey]
+    );
+
     const files = [...props.fs.files.values()]
-      .filter((f) => inCurrentDirectory(f))
-      .map((f) => ({
-        id: f.fullPath,
-        fullPath: f.fullPath,
-        name: f.name,
-        isDir: f.isDirectory,
-        note: f.note
-      }));
+      .filter((f) => inCurrentDirectory(f.fullPath))
+      .map((f) => {
+        const p = progress[f.fullPath];
+        return {
+          id: f.fullPath,
+          fullPath: f.fullPath,
+          name: f.name,
+          isDir: f.isDirectory,
+          note: f.note,
+          progress:
+            p && !p.isSuccess && !p.isFailed
+              ? Math.floor(
+                  (p.progress.progress ? p.progress.progress : 1) * 100
+                )
+              : undefined
+        };
+      });
 
     return (
       <>

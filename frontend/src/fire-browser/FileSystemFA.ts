@@ -16,7 +16,6 @@ import { calculateSHA256 } from '../util/sha256Util';
 import { authStore } from '../core/auth';
 import { AxiosProgressEvent } from 'axios';
 import { isFileSystemEntry, UploadProgressStore } from './UploadProgressStore';
-import { groupBy } from 'lodash';
 
 export interface FileEntry {
   id?: string;
@@ -37,7 +36,7 @@ export class FileSystemFA {
   initialized = false;
   activeUploads = 0;
 
-  uploadProgress = new UploadProgressStore();
+  uploadProgress = new UploadProgressStore(this);
 
   renameOrReplaceDialogOpen = false;
   addDirectoryImpossibleDialogOpen = false;
@@ -121,7 +120,6 @@ export class FileSystemFA {
   };
 
   addFilesInput = (files: File[], uploadType: UploadType): void => {
-    const path = this.currentPath;
     const uploadQueue: Array<() => Promise<void>> = [];
 
     files.forEach((file) => {
@@ -309,7 +307,7 @@ export class FileSystemFA {
       id: file.id,
       name: fullPathToName(file.fullPath ?? ''),
       fullPath,
-      isDirectory: true
+      isDirectory: file.isDir ?? false
     });
   }
 

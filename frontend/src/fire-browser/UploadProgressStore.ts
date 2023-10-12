@@ -1,5 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import { AxiosProgressEvent } from 'axios';
+import { v4 as uuidv4 } from 'uuid';
+import { FileSystemFA } from './FileSystemFA';
 
 interface ProgressStatus {
   fullPath: string;
@@ -11,9 +13,10 @@ interface ProgressStatus {
 }
 
 export class UploadProgressStore {
+  currentDirKey = uuidv4();
   progressStatus = new Map<string, ProgressStatus>();
 
-  constructor() {
+  constructor(readonly fs: FileSystemFA) {
     makeAutoObservable(this);
   }
 
@@ -54,7 +57,18 @@ export class UploadProgressStore {
       ...value,
       ...update
     });
+    if (this.inCurrentDirectory(fullPath)) {
+      this.currentDirKey = uuidv4();
+    }
   }
+
+  inCurrentDirectory = (fullPath: string): boolean => {
+    if (!fullPath) return false;
+    return (
+      fullPath.substring(0, fullPath.lastIndexOf('/') + 1) ===
+      this.fs.currentPath
+    );
+  };
 }
 
 export function isFileSystemEntry(
