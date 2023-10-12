@@ -2,7 +2,6 @@ import {
   ChonkyActions,
   FileAction,
   type FileActionHandler,
-  type FileArray,
   FileBrowser,
   FileContextMenu,
   type FileData,
@@ -17,7 +16,11 @@ import React, {
   useState
 } from 'react';
 import { ChonkyIconFA } from '@first-approval/chonky-icon-fontawesome';
-import { DuplicateCheckResult, type FileSystemFA } from './FileSystemFA';
+import {
+  DuplicateCheckResult,
+  FileEntry,
+  type FileSystemFA
+} from './FileSystemFA';
 import { observer } from 'mobx-react-lite';
 import styled from '@emotion/styled';
 import {
@@ -243,15 +246,23 @@ export const FileBrowserFA = observer(
       myFileActions.push(ChonkyActions.PreviewFilesModal);
     }
 
-    const files = [
-      ...(props.fs.files.get(props.fs.currentPath)?.values() ?? [])
-    ].map((f) => ({
-      id: f.id,
-      fullPath: f.fullPath,
-      name: f.name,
-      isDir: f.isDirectory,
-      note: f.note
-    }));
+    const inCurrentDirectory = (file: FileEntry): boolean => {
+      if (!file.fullPath) return false;
+      return (
+        file.fullPath.substring(0, file.fullPath.lastIndexOf('/') + 1) ===
+        props.fs.currentPath
+      );
+    };
+
+    const files = [...props.fs.files.values()]
+      .filter((f) => inCurrentDirectory(f))
+      .map((f) => ({
+        id: f.fullPath,
+        fullPath: f.fullPath,
+        name: f.name,
+        isDir: f.isDirectory,
+        note: f.note
+      }));
 
     return (
       <>

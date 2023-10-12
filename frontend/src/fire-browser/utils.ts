@@ -33,6 +33,10 @@ export const fullPathToName = (fullPath: string): string => {
   return fullPath.substring(fullPath.lastIndexOf('/') + 1);
 };
 
+export const fullPathToDirPath = (fullPath: string): string => {
+  return fullPath.substring(0, fullPath.lastIndexOf('/') + 1);
+};
+
 export const copyTextToClipboard = async (text: string): Promise<void> => {
   if ('clipboard' in navigator) {
     await navigator.clipboard.writeText(text);

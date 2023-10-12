@@ -10,15 +10,16 @@ import {
   type PublicationFile,
   UploadType
 } from '../apis/first-approval-api';
-import { fullPathToName } from './utils';
+import { fullPathToDirPath, fullPathToName } from './utils';
 import { type FileData } from '@first-approval/chonky/dist/types/file.types';
 import { calculateSHA256 } from '../util/sha256Util';
 import { authStore } from '../core/auth';
 import { AxiosProgressEvent } from 'axios';
 import { isFileSystemEntry, UploadProgressStore } from './UploadProgressStore';
+import { groupBy } from 'lodash';
 
-interface FileEntry {
-  id: string;
+export interface FileEntry {
+  id?: string;
   fullPath: string;
   name: string;
   isDirectory: boolean;
@@ -30,7 +31,7 @@ type UploadFilesAfterDialogFunction = (value: UploadType) => void;
 export class FileSystemFA {
   rootPathFiles: number = 0;
   currentPath: string = '/';
-  files = new Map<string, Map<string, FileEntry>>();
+  files = new Map<string, FileEntry>();
   publicationId: string = '';
   isLoading = false;
   initialized = false;
@@ -85,14 +86,15 @@ export class FileSystemFA {
   }
 
   async updateCurrentDirectory(): Promise<void> {
-    const files = await this.listDirectory(this.currentPath);
-    const current = new Map<string, FileEntry>(
-      this.files.get(this.currentPath)
-    );
+    const path = this.currentPath;
+    const files = await this.getPublicationFiles(path);
+    this.addFiles(path, files);
+  }
+
+  addFiles(path: string, files: FileEntry[]): void {
     for (const file of files) {
-      current.set(file.fullPath, file);
+      this.files.set(file.fullPath, file);
     }
-    this.files.set(this.currentPath, current);
   }
 
   getPublicationFilesSize = async (): Promise<number> => {
@@ -119,6 +121,7 @@ export class FileSystemFA {
   };
 
   addFilesInput = (files: File[], uploadType: UploadType): void => {
+    const path = this.currentPath;
     const uploadQueue: Array<() => Promise<void>> = [];
 
     files.forEach((file) => {
@@ -128,6 +131,16 @@ export class FileSystemFA {
     });
 
     void this.uploadQueue(uploadQueue);
+    const entries = files.map((file) => {
+      const fullPath = this.fullPath('/' + file.name);
+      return {
+        name: file.name,
+        fullPath,
+        isDirectory: false,
+        isUploading: true
+      };
+    });
+    this.addFiles(path, entries);
   };
 
   uploadFile = (
@@ -194,6 +207,19 @@ export class FileSystemFA {
     });
 
     void this.uploadQueue(uploadQueue);
+    const entries = files.map((f) => {
+      const fullPath = this.fullPath(f.fullPath);
+      return {
+        name: f.name,
+        fullPath,
+        isDirectory: f.isDirectory,
+        isUploading: true
+      };
+    });
+    const byDir = groupBy(entries, (e) => fullPathToDirPath(e.fullPath));
+    for (const dirPath in byDir) {
+      this.addFiles(dirPath, byDir[dirPath]);
+    }
   };
 
   uploadFileSystemEntry = (
@@ -278,6 +304,14 @@ export class FileSystemFA {
     }
   };
 
+  updateUpload(fullPath: string, file: PublicationFile): void {
+    this.files.set(fullPath, {
+      name,
+      fullPath,
+      isDirectory: true
+    });
+  }
+
   retryUploadAll = (): void => {
     const uploadQueue: Array<() => Promise<void>> = [];
     const allFailed = this.uploadProgress.allFailed;
@@ -307,16 +341,12 @@ export class FileSystemFA {
         dirPath: this.currentPath
       })
       .then((response) => {
-        const current = new Map<string, FileEntry>(
-          this.files.get(this.currentPath)
-        );
-        current.set(fullPath, {
-          id: fullPath,
+        this.files.set(fullPath, {
+          id: response.data.id,
           name,
           fullPath,
           isDirectory: true
         });
-        this.files.set(this.currentPath, current);
       });
   };
 
@@ -328,13 +358,13 @@ export class FileSystemFA {
   };
 
   deleteFile = (fullPaths: string[]): void => {
-    const current = new Map<string, FileEntry>(
-      this.files.get(this.currentPath)
-    );
-    const ids = fullPaths.map((f) => current.get(f)?.id ?? '');
-    void this.fileService.deleteFiles({ ids });
-    fullPaths.forEach((f) => current.delete(f));
-    this.files.set(this.currentPath, current);
+    const ids = fullPaths
+      .map((f) => this.files.get(f)?.id)
+      .filter((t) => t !== undefined) as string[];
+    if (ids.length) {
+      void this.fileService.deleteFiles({ ids });
+    }
+    fullPaths.forEach((f) => this.files.delete(f));
   };
 
   moveFiles = async (files: FileData[], destination: string): Promise<void> => {
@@ -432,7 +462,7 @@ export class FileSystemFA {
     return currentPath.substring(0, currentPath.length - 1) + fullPath;
   }
 
-  private readonly listDirectory = async (
+  private readonly getPublicationFiles = async (
     dirPath: string
   ): Promise<FileEntry[]> => {
     this.isLoading = true;
