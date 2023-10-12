@@ -10,7 +10,7 @@ import {
   type PublicationFile,
   UploadType
 } from '../apis/first-approval-api';
-import { fullPathToDirPath, fullPathToName } from './utils';
+import { fullPathToName } from './utils';
 import { type FileData } from '@first-approval/chonky/dist/types/file.types';
 import { calculateSHA256 } from '../util/sha256Util';
 import { authStore } from '../core/auth';
@@ -88,10 +88,10 @@ export class FileSystemFA {
   async updateCurrentDirectory(): Promise<void> {
     const path = this.currentPath;
     const files = await this.getPublicationFiles(path);
-    this.addFiles(path, files);
+    this.addFiles(files);
   }
 
-  addFiles(path: string, files: FileEntry[]): void {
+  addFiles(files: FileEntry[]): void {
     for (const file of files) {
       this.files.set(file.fullPath, file);
     }
@@ -140,7 +140,7 @@ export class FileSystemFA {
         isUploading: true
       };
     });
-    this.addFiles(path, entries);
+    this.addFiles(entries);
   };
 
   uploadFile = (
@@ -184,6 +184,7 @@ export class FileSystemFA {
           config
         )
         .then((response) => {
+          this.updateUpload(fullPath, response.data);
           this.uploadProgress.updateStatus(fullPath, {
             isSuccess: true,
             abortController: undefined
@@ -216,10 +217,7 @@ export class FileSystemFA {
         isUploading: true
       };
     });
-    const byDir = groupBy(entries, (e) => fullPathToDirPath(e.fullPath));
-    for (const dirPath in byDir) {
-      this.addFiles(dirPath, byDir[dirPath]);
-    }
+    this.addFiles(entries);
   };
 
   uploadFileSystemEntry = (
@@ -264,6 +262,7 @@ export class FileSystemFA {
               config
             )
             .then((response) => {
+              this.updateUpload(fullPath, response.data);
               this.uploadProgress.updateStatus(fullPath, {
                 isSuccess: true,
                 abortController: undefined
@@ -290,6 +289,7 @@ export class FileSystemFA {
             config
           )
           .then((response) => {
+            this.updateUpload(fullPath, response.data);
             this.uploadProgress.updateStatus(fullPath, {
               isSuccess: true,
               abortController: undefined
@@ -306,7 +306,8 @@ export class FileSystemFA {
 
   updateUpload(fullPath: string, file: PublicationFile): void {
     this.files.set(fullPath, {
-      name,
+      id: file.id,
+      name: fullPathToName(file.fullPath ?? ''),
       fullPath,
       isDirectory: true
     });
