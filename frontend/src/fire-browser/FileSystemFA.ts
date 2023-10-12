@@ -91,6 +91,7 @@ export class FileSystemFA {
   addFiles(files: FileEntry[]): void {
     for (const file of files) {
       this.files.set(file.fullPath, file);
+      this.notifyListener(file.fullPath);
     }
   }
 
@@ -308,7 +309,23 @@ export class FileSystemFA {
       fullPath,
       isDirectory: file.isDir ?? false
     });
+    this.notifyListener(fullPath);
   }
+
+  listener: () => void = () => {};
+
+  notifyListener(fullPath: string): void {
+    if (this.inCurrentDirectory(fullPath)) {
+      this.listener();
+    }
+  }
+
+  inCurrentDirectory = (fullPath: string): boolean => {
+    if (!fullPath) return false;
+    return (
+      fullPath.substring(0, fullPath.lastIndexOf('/') + 1) === this.currentPath
+    );
+  };
 
   retryUploadAll = (): void => {
     const uploadQueue: Array<() => Promise<void>> = [];
@@ -339,12 +356,7 @@ export class FileSystemFA {
         dirPath: this.currentPath
       })
       .then((response) => {
-        this.files.set(fullPath, {
-          id: response.data.id,
-          name,
-          fullPath,
-          isDirectory: true
-        });
+        this.updateUpload(fullPath, response.data);
       });
   };
 
@@ -362,7 +374,10 @@ export class FileSystemFA {
     if (ids.length) {
       void this.fileService.deleteFiles({ ids });
     }
-    fullPaths.forEach((f) => this.files.delete(f));
+    fullPaths.forEach((f) => {
+      this.files.delete(f);
+      this.notifyListener(f);
+    });
   };
 
   moveFiles = async (files: FileData[], destination: string): Promise<void> => {
@@ -410,14 +425,6 @@ export class FileSystemFA {
     }
     return DuplicateCheckResult.DUPLICATES_NOT_FOUND;
   };
-
-  private inCurrentDirectory(file: PublicationFile): boolean {
-    if (!file.fullPath) return false;
-    return (
-      file.fullPath.substring(0, file.fullPath.lastIndexOf('/') + 1) ===
-      this.currentPath
-    );
-  }
 
   private async uploadQueue(
     uploadQueue: Array<() => Promise<void>>

@@ -7,7 +7,8 @@ import {
   type FileData,
   FileList,
   FileNavbar,
-  setChonkyDefaults
+  setChonkyDefaults,
+  FileArray
 } from '@first-approval/chonky';
 import React, {
   type MutableRefObject,
@@ -17,11 +18,7 @@ import React, {
   useState
 } from 'react';
 import { ChonkyIconFA } from '@first-approval/chonky-icon-fontawesome';
-import {
-  DuplicateCheckResult,
-  FileEntry,
-  type FileSystemFA
-} from './FileSystemFA';
+import { DuplicateCheckResult, type FileSystemFA } from './FileSystemFA';
 import { observer } from 'mobx-react-lite';
 import styled from '@emotion/styled';
 import {
@@ -40,7 +37,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { calculatePathChain } from './utils';
 import { UploadType } from '../apis/first-approval-api';
-import { groupBy, map, mapKeys } from 'lodash';
+import { mapKeys } from 'lodash';
 
 setChonkyDefaults({
   iconComponent: ChonkyIconFA,
@@ -256,35 +253,40 @@ export const FileBrowserFA = observer(
       );
     };
 
-    const progress = useMemo(
-      () =>
-        mapKeys(
-          [...props.fs.uploadProgress.progressStatus.values()].filter((p) =>
-            inCurrentDirectory(p.fullPath)
-          ),
-          'fullPath'
-        ),
-      [props.fs.uploadProgress.currentDirKey]
-    );
-
-    const files = [...props.fs.files.values()]
-      .filter((f) => inCurrentDirectory(f.fullPath))
-      .map((f) => {
-        const p = progress[f.fullPath];
-        return {
-          id: f.fullPath,
-          fullPath: f.fullPath,
-          name: f.name,
-          isDir: f.isDirectory,
-          note: f.note,
-          progress:
-            p && !p.isSuccess && !p.isFailed
-              ? Math.floor(
-                  (p.progress.progress ? p.progress.progress : 1) * 100
-                )
-              : undefined
-        };
-      });
+    const [files, setFiles] = useState<FileData[]>([]);
+    useEffect(() => {
+      props.fs.listener = () => {
+        setFiles(
+          [...props.fs.files.values()]
+            .filter((f) => inCurrentDirectory(f.fullPath))
+            .map((f) => {
+              return {
+                id: f.fullPath,
+                fullPath: f.fullPath,
+                name: f.name,
+                isDir: f.isDirectory,
+                note: f.note
+              };
+            })
+        );
+      };
+      props.fs.uploadProgress.listener = () => {
+        setFiles((prev) =>
+          prev.map((f: FileData) => {
+            const p = props.fs.uploadProgress.progressStatus.get(f.fullPath);
+            return {
+              ...f,
+              progress:
+                p && !p.isSuccess && !p.isFailed
+                  ? Math.floor(
+                      (p.progress.progress ? p.progress.progress : 1) * 100
+                    )
+                  : undefined
+            };
+          })
+        );
+      };
+    }, []);
 
     return (
       <>

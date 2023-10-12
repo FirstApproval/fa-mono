@@ -13,7 +13,6 @@ interface ProgressStatus {
 }
 
 export class UploadProgressStore {
-  currentDirKey = uuidv4();
   progressStatus = new Map<string, ProgressStatus>();
 
   constructor(readonly fs: FileSystemFA) {
@@ -57,8 +56,14 @@ export class UploadProgressStore {
       ...value,
       ...update
     });
+    this.notifyListener(fullPath);
+  }
+
+  listener: () => void = () => {};
+
+  notifyListener(fullPath: string): void {
     if (this.inCurrentDirectory(fullPath)) {
-      this.currentDirKey = uuidv4();
+      this.listener();
     }
   }
 
