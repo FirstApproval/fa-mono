@@ -21,7 +21,7 @@ class AuthController(
 ) : AuthApi {
 
     override fun authorizeOauth(request: AuthorizeOauthRequest): ResponseEntity<AuthorizeResponse> {
-        val token = tokenService.exchangeOauthToken(request.code, OauthType.valueOf(request.type.toString()))
+        val token = tokenService.exchangeOauthToken(request.code, OauthType.valueOf(request.type.toString()), request.utmSource)
         return ok(AuthorizeResponse().token(token))
     }
 
@@ -32,11 +32,12 @@ class AuthController(
     }
 
     override fun authorizationLinks(): ResponseEntity<AuthorizationLinksResponse> {
-        return ok(AuthorizationLinksResponse()
-            .google(oauthProperties.google.authUrl)
-            .facebook(oauthProperties.facebook.authUrl)
-            .linkedin(oauthProperties.linkedin.authUrl)
-            .orcid(oauthProperties.orcid.authUrl)
+        return ok(
+            AuthorizationLinksResponse()
+                .google(oauthProperties.google.authUrl)
+                .facebook(oauthProperties.facebook.authUrl)
+                .linkedin(oauthProperties.linkedin.authUrl)
+                .orcid(oauthProperties.orcid.authUrl)
         )
     }
 }
