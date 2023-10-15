@@ -17,7 +17,7 @@ import { observer } from 'mobx-react-lite';
 import { Page } from '../../core/router/constants';
 import { ArrowForward, Close, InfoOutlined } from '@mui/icons-material';
 import { Flex, FlexAlignItems, FlexJustifyContent } from '../../ui-kit/flex';
-import { Typography } from '@mui/material';
+import { CircularProgress, Typography } from '@mui/material';
 import { C0288D1, C68676E } from '../../ui-kit/colors';
 
 interface EnterAffiliationsPageProps {
@@ -26,7 +26,13 @@ interface EnterAffiliationsPageProps {
 
 export const EnterAffiliationsPage = observer(
   (props: EnterAffiliationsPageProps): ReactElement => {
-    console.log('isRegistration' + props.isRegistration);
+    const { user } = userStore;
+    if (!user) {
+      return <CircularProgress />;
+    }
+
+    const showPrefilledDetailsText =
+      !user.isWorkplacesConfirmed && user.workplaces.length > 0;
     return (
       <Parent>
         <HeaderComponent />
@@ -48,16 +54,20 @@ export const EnterAffiliationsPage = observer(
                 ? 'Almost there!\nList your current affiliations:'
                 : 'Before the start,\n' + 'List your current affiliations:'}
             </Header>
-            <HeightElement value={'16px'} />
-            <PrefilledDetails>
-              <InfoOutlined htmlColor={C0288D1} sx={{ marginTop: '7px' }} />
-              <PrefilledDetailsText variant={'body2'}>
-                We've pre-filled some details from previous co-author credits on
-                First Approval. Editing them here won’t affect existing
-                publications. Adjust as needed.
-              </PrefilledDetailsText>
-            </PrefilledDetails>
-            <HeightElement value={'32px'} />
+            <HeightElement value={showPrefilledDetailsText ? '16px' : '20px'} />
+            {showPrefilledDetailsText && (
+              <>
+                <PrefilledDetails>
+                  <InfoOutlined htmlColor={C0288D1} sx={{ marginTop: '7px' }} />
+                  <PrefilledDetailsText variant={'body2'}>
+                    We've pre-filled some details from previous co-author
+                    credits on First Approval. Editing them here won’t affect
+                    existing publications. Adjust as needed.
+                  </PrefilledDetailsText>
+                </PrefilledDetails>
+                <HeightElement value={'32px'} />
+              </>
+            )}
             <WorkplacesEditor
               isModalWindow={false}
               store={userStore}
