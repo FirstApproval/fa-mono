@@ -9,59 +9,62 @@ export const NegativeDataEditMode = observer(
   (props: EditorProps): ReactElement => {
     const { publicationStore } = props;
     return (
-      <NegativeDataAllWrapper>
-        <NegativeDataWrapper>
-          <NegativeDataHeaderWrapper>
-            {!publicationStore.isNegative && (
-              <>
-                <WarningIcon
-                  htmlColor={'#a8a8b4'}
-                  style={{ marginRight: '5px' }}
-                />
-                <NegativeDataHeaderDisabled variant={'h6'}>
+      <Wrapper>
+        <NegativeDataAllWrapper>
+          <NegativeDataWrapper>
+            <NegativeDataHeaderWrapper>
+              {!publicationStore.isNegative && (
+                <>
+                  <WarningIcon
+                    htmlColor={'#a8a8b4'}
+                    style={{ marginRight: '5px' }}
+                  />
+                  <NegativeDataHeaderDisabled variant={'h6'}>
+                    My data is negative
+                  </NegativeDataHeaderDisabled>
+                </>
+              )}
+              {publicationStore.isNegative && (
+                <NegativeDataHeaderEnabled variant={'h6'}>
                   My data is negative
-                </NegativeDataHeaderDisabled>
-              </>
-            )}
-            {publicationStore.isNegative && (
-              <NegativeDataHeaderEnabled variant={'h6'}>
-                My data is negative
-              </NegativeDataHeaderEnabled>
-            )}
-          </NegativeDataHeaderWrapper>
-          <Switch
-            checked={publicationStore.isNegative}
-            onClick={publicationStore.invertNegativeData}
-          />
-        </NegativeDataWrapper>
-        {publicationStore.isNegative && (
-          <FullWidthInput
-            autoFocus
-            value={publicationStore.negativeData}
-            onChange={(e) => {
-              publicationStore.updateNegativeData(e.currentTarget.value);
-            }}
-            disableUnderline={true}
-            multiline={true}
-            placeholder="Why your data didn't confirm the initial hypothesis or expectations"
-            minRows={1}
-            maxRows={4}
-            inputProps={{
-              disableUnderline: true,
-              autoComplete: 'off',
-              style: {
-                fontSize: '20px',
-                fontWeight: '400',
-                fontStyle: 'normal',
-                lineHeight: '160%'
-              }
-            }}
-          />
-        )}
-      </NegativeDataAllWrapper>
+                </NegativeDataHeaderEnabled>
+              )}
+            </NegativeDataHeaderWrapper>
+            <Switch
+              checked={publicationStore.isNegative}
+              onClick={publicationStore.invertNegativeData}
+            />
+          </NegativeDataWrapper>
+          {publicationStore.isNegative && (
+            <FullWidthInput
+              autoFocus
+              value={publicationStore.negativeData}
+              onChange={(e) => {
+                publicationStore.updateNegativeData(e.currentTarget.value);
+              }}
+              disableUnderline={true}
+              multiline={true}
+              placeholder="Why your data didn't confirm the initial hypothesis or expectations"
+              minRows={1}
+              maxRows={4}
+              inputProps={{
+                disableUnderline: true,
+                autoComplete: 'off',
+                style: {
+                  fontSize: '20px',
+                  fontWeight: '400',
+                  fontStyle: 'normal',
+                  lineHeight: '160%'
+                }
+              }}
+            />
+          )}
+        </NegativeDataAllWrapper>
+      </Wrapper>
     );
   }
 );
+
 const NegativeDataHeaderEnabled = styled(Typography)`
   padding-top: 4px;
 `;
@@ -79,6 +82,11 @@ const NegativeDataHeaderWrapper = styled.div`
 const NegativeDataWrapper = styled.div`
   display: flex;
   justify-content: space-between;
+`;
+
+const Wrapper = styled.div`
+  padding-left: 16px;
+  padding-right: 16px;
 `;
 
 const NegativeDataAllWrapper = styled.div`

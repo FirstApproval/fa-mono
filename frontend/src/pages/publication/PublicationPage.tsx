@@ -687,6 +687,9 @@ const FilesWrap = styled.div`
 
   margin-top: 48px;
   margin-bottom: 40px;
+
+  padding-left: 16px;
+  padding-right: 16px;
 `;
 
 const SampleFilesPreviewWrap = styled.div`
@@ -694,6 +697,9 @@ const SampleFilesPreviewWrap = styled.div`
 
   margin-top: 48px;
   margin-bottom: 40px;
+
+  padding-left: 16px;
+  padding-right: 16px;
 
   overflow: hidden;
 `;

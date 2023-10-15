@@ -1,17 +1,17 @@
 import React, { type ReactElement } from 'react';
-import { LabelWrap } from './styled';
+import { LabelWrap, ContentEditorWrap } from './styled';
 import {
-  ParagraphEditorProps,
-  ParagraphElementWrap
+  ParagraphElementWrap,
+  ParagraphElementWrapProps
 } from './element/ParagraphElementWrap';
 
 export const ParagraphContentEditor = (
-  props: ParagraphEditorProps
+  props: ParagraphElementWrapProps & { text?: string }
 ): ReactElement => {
   return (
-    <>
+    <ContentEditorWrap>
       {props.text && <LabelWrap>{props.text}</LabelWrap>}
       <ParagraphElementWrap {...props} />
-    </>
+    </ContentEditorWrap>
   );
 };

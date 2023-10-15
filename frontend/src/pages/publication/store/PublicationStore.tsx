@@ -764,9 +764,6 @@ export class PublicationStore {
     if (!hasContent(this.method)) {
       result.push('method');
     }
-    if (this.objectOfStudyTitle.length === 0) {
-      result.push('object_of_study');
-    }
     if (!hasContent(this.objectOfStudy)) {
       result.push('object_of_study');
     }

@@ -2,19 +2,19 @@ import { ParagraphWithId } from '../../store/PublicationStore';
 import React, { ReactElement, useState } from 'react';
 import { ParagraphElement } from './ParagraphElement';
 
-export interface ParagraphEditorProps {
+export interface ParagraphElementWrapProps {
   isReadonly?: boolean;
-  text?: string;
   placeholder: string;
   value: ParagraphWithId[];
   onChange: (idx: number, value: string) => void;
   onAddParagraph: (idx: number) => void;
   onMergeParagraph: (idx: number) => void;
   onSplitParagraph: (idx: number, splitIndex: number) => void;
+  disableInitFocus?: boolean;
 }
 
 export const ParagraphElementWrap = (
-  props: Omit<ParagraphEditorProps, 'text'> & { disableInitFocus?: boolean }
+  props: ParagraphElementWrapProps
 ): ReactElement => {
   const [paragraphToFocus, setParagraphToFocus] = useState<number>(
     props.disableInitFocus ? -1 : 0

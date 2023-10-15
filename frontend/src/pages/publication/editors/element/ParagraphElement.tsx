@@ -108,6 +108,7 @@ const ParagraphWrap = styled.div`
   margin-bottom: 16px;
 
   padding-left: 16px;
+  padding-right: 16px;
 `;
 
 const TextFieldWrap = styled(TextField)`

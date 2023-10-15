@@ -1,11 +1,14 @@
-import { ParagraphEditorProps } from './element/ParagraphElementWrap';
+import { ParagraphElementWrapProps } from './element/ParagraphElementWrap';
 import { ListElement, ParagraphPrefixType } from './element/ListElement';
 import React, { ReactElement, useState } from 'react';
 import { ContentEditorWrap, LabelWrap } from './styled';
 import styled from '@emotion/styled';
 
 export const ListContentEditor = (
-  props: ParagraphEditorProps & { paragraphPrefixType?: ParagraphPrefixType }
+  props: ParagraphElementWrapProps & {
+    text?: string;
+    paragraphPrefixType?: ParagraphPrefixType;
+  }
 ): ReactElement => {
   return (
     <ContentEditorWrap>
@@ -17,7 +20,10 @@ export const ListContentEditor = (
   );
 };
 export const OrderedListContentEditor = (
-  props: ParagraphEditorProps & { paragraphPrefixType?: ParagraphPrefixType }
+  props: ParagraphElementWrapProps & {
+    text?: string;
+    paragraphPrefixType?: ParagraphPrefixType;
+  }
 ): ReactElement => {
   return (
     <ContentEditorWrap>
@@ -29,8 +35,7 @@ export const OrderedListContentEditor = (
   );
 };
 const ListElementWrap = (
-  props: Omit<ParagraphEditorProps, 'text'> & {
-    disableInitFocus?: boolean;
+  props: ParagraphElementWrapProps & {
     paragraphPrefixType?: ParagraphPrefixType;
   }
 ): ReactElement => {
