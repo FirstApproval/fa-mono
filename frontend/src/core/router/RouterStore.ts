@@ -1,7 +1,7 @@
 import { authStore } from '../auth';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { createBrowserHistory } from 'history';
-import { authService, userService } from '../service';
+import { authService, userService, visitorService } from '../service';
 import { v4 as uuidv4 } from 'uuid';
 import {
   affiliationsPath,
@@ -16,6 +16,9 @@ import {
 } from './constants';
 import { PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY } from '../../pages/publication/ActionBar';
 import { routerStore } from '../router';
+
+export const VISIT_MARK_KEY = 'visit-mark';
+export const UTM_SOURCE_KEY = 'utm_source';
 
 const history = createBrowserHistory();
 
@@ -60,6 +63,19 @@ export class RouterStore {
       const authType = pathToOauthType[path] ?? undefined;
       const authCode = queryParams.get('code') ?? undefined;
 
+      const utmSource = queryParams.get('utm_source') ?? undefined;
+      if (utmSource) {
+        localStorage.setItem(UTM_SOURCE_KEY, utmSource);
+      }
+
+      if (localStorage.getItem(VISIT_MARK_KEY) !== 'true') {
+        void visitorService.saveVisitor(utmSource).then((response) => {
+          if (response.status === 200) {
+            localStorage.setItem(VISIT_MARK_KEY, 'true');
+          }
+        });
+      }
+
       if (path.startsWith('/sign_in')) {
         authStore.token = undefined;
         this.navigatePage(Page.SIGN_IN, path, true);
@@ -73,13 +89,11 @@ export class RouterStore {
       }
 
       if (path.startsWith(namePath)) {
-        debugger;
         this.navigatePage(Page.NAME, path, true);
         return;
       }
 
       if (path.startsWith(affiliationsPath)) {
-        debugger;
         this.navigatePage(Page.AFFILIATIONS, path, true);
         return;
       }
@@ -133,7 +147,8 @@ export class RouterStore {
         authService
           .authorizeOauth({
             code: authCode,
-            type: authType
+            type: authType,
+            utmSource: localStorage.getItem(UTM_SOURCE_KEY) ?? undefined
           })
           .then(async (response) => {
             authStore.token = response.data.token;
@@ -166,7 +181,10 @@ export class RouterStore {
     const userData = (await userService.getMe()).data;
     if (!userData.isNameConfirmed) {
       this.navigatePage(Page.NAME, namePath, true);
-    } else if (!userData?.workplaces?.length) {
+    } else if (
+      !userData.isWorkplacesConfirmed ||
+      !userData.workplaces?.length
+    ) {
       this.navigatePage(Page.AFFILIATIONS, affiliationsPath, true);
     } else {
       this.navigatePage(Page.HOME_PAGE, '/', true);

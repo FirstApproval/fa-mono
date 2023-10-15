@@ -7,6 +7,24 @@ servers:
   - url: '{URL}'
 
 paths:
+  /api/visitor:
+    get:
+      summary: Save visitor
+      parameters:
+        - in: query
+          name: utm_source
+          schema:
+            type: string
+          required: false
+          description: UTM source
+      responses:
+        200:
+          description: Success
+      security:
+        - PublicAuth: [ ]
+      operationId: saveVisitor
+      tags: [ visitor ]
+
   /api/authorize:
     post:
       summary: Authorize using email password
@@ -1628,6 +1646,8 @@ components:
         password:
           type: string
           minLength: 8
+        utmSource:
+          type: string
       required:
         - email
         - password
@@ -1712,6 +1732,8 @@ components:
           maxLength: 2048
         type:
           $ref: '#/components/schemas/OauthType'
+        utmSource:
+          type: string
       required:
         - code
         - type
@@ -1840,6 +1862,8 @@ components:
             $ref: '#/components/schemas/Workplace'
         isNameConfirmed:
           type: boolean
+        isWorkplacesConfirmed:
+          type: boolean
       required:
         - id
         - firstName
@@ -1959,6 +1983,8 @@ components:
           items:
             $ref: '#/components/schemas/Workplace'
         confirmName:
+          type: boolean
+        confirmWorkplaces:
           type: boolean
       required:
         - firstName

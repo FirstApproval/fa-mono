@@ -73,4 +73,5 @@ data class OauthUser(
     val lastName: String? = null,
     val middleName: String? = null,
     val fullName: String? = null,
+    val utmSource: String? = null,
 )

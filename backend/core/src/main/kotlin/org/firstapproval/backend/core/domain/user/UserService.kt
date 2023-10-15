@@ -2,6 +2,7 @@ package org.firstapproval.backend.core.domain.user
 
 import mu.KotlinLogging.logger
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
+import org.firstapproval.api.server.model.RegistrationRequest
 import org.firstapproval.api.server.model.UserUpdateRequest
 import org.firstapproval.backend.core.config.Properties.FrontendProperties
 import org.firstapproval.backend.core.domain.auth.OauthUser
@@ -32,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
 import java.io.ByteArrayInputStream
 import java.time.ZonedDateTime.now
-import java.util.*
+import java.util.UUID
 import java.util.UUID.fromString
 import java.util.UUID.randomUUID
 import javax.naming.LimitExceededException
@@ -67,7 +68,7 @@ class UserService(
     fun getPublicUserProfile(username: String): User = userRepository.findByUsername(username).require()
 
     @Transactional(isolation = REPEATABLE_READ)
-    fun saveOrUpdate(oauthUser: OauthUser): User {
+    fun oauthSaveOrUpdate(oauthUser: OauthUser, utmSource: String?): User {
         val user = userRepository.findByEmailOrExternalIdAndType(
             email = oauthUser.email,
             externalId = oauthUser.externalId,
@@ -90,7 +91,8 @@ class UserService(
                 firstName = oauthUser.firstName,
                 lastName = oauthUser.lastName,
                 middleName = oauthUser.middleName,
-                fullName = oauthUser.fullName
+                fullName = oauthUser.fullName,
+                utmSource = utmSource
             )
         )
         migratePublicationOfUnconfirmedUser(savedUser)
@@ -107,17 +109,23 @@ class UserService(
     }
 
     @Transactional
-    fun startUserRegistration(email: String, password: String, firstName: String?, lastName: String?): UUID? {
-        val prevTry = emailRegistrationConfirmationRepository.findByEmail(email)
+    fun startUserRegistration(registrationRequest: RegistrationRequest): UUID? {
+        val prevTry = emailRegistrationConfirmationRepository.findByEmail(registrationRequest.email)
         return if (prevTry != null) {
-            alreadyStartedRegistration(prevTry, password, firstName, lastName)
+            alreadyStartedRegistration(prevTry, registrationRequest.password, registrationRequest.firstName, registrationRequest.lastName)
         } else {
-            val user = userRepository.findByEmailAndPasswordIsNull(email)
+            val user = userRepository.findByEmailAndPasswordIsNull(registrationRequest.email)
             if (user != null) {
                 notificationService.sendYouAlreadyHaveAccount(user)
                 null
             } else {
-                newAttemptForRegistration(email, password, firstName, lastName)
+                newAttemptForRegistration(
+                    registrationRequest.email,
+                    registrationRequest.password,
+                    registrationRequest.firstName,
+                    registrationRequest.lastName,
+                    registrationRequest.utmSource
+                )
             }
         }
     }
@@ -148,7 +156,7 @@ class UserService(
         return prevTry.id
     }
 
-    private fun newAttemptForRegistration(email: String, password: String, firstName: String?, lastName: String?): UUID {
+    private fun newAttemptForRegistration(email: String, password: String, firstName: String?, lastName: String?, utmSource: String?): UUID {
         if (userRepository.existsByEmail(email)) {
             throw RecordConflictException("user already exists")
         }
@@ -161,7 +169,8 @@ class UserService(
                 password = passwordEncoder.encode(password),
                 code = code,
                 firstName = firstName,
-                lastName = lastName
+                lastName = lastName,
+                utmSource = utmSource
             )
         )
         // TODO CREATE LINK
@@ -187,6 +196,7 @@ class UserService(
                 password = emailRegistrationConfirmation.password,
                 firstName = emailRegistrationConfirmation.firstName,
                 lastName = emailRegistrationConfirmation.lastName,
+                utmSource = emailRegistrationConfirmation.utmSource,
                 username = if (userByUsername != null) userId.toString() else username,
                 isNameConfirmed = true
             )
@@ -305,6 +315,9 @@ class UserService(
                 if (confirmName == true) {
                     user.isNameConfirmed = true
                 }
+                if (confirmWorkplaces == true) {
+                    user.isWorkplacesConfirmed = true
+                }
 
                 if (workplaces != null && workplaces.size > 0) {
                     val userWorkplaces = workplaces.map { workplace ->
@@ -361,6 +374,18 @@ class UserService(
                 it.isConfirmed = true
                 it.user = user
             }
+            unconfirmedUsers.flatMap { it.workplaces }
+                .distinctBy { it.organization.id }
+                .map {
+                    Workplace(
+                        organization = it.organization,
+                        organizationDepartment = it.organizationDepartment,
+                        address = it.address,
+                        postalCode = it.postalCode,
+                        isFormer = it.isFormer,
+                        user = user
+                    )
+                }.let { user.workplaces.addAll(it) }
         }
     }
 }

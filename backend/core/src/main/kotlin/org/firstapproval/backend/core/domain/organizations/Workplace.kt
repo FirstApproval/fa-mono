@@ -9,13 +9,14 @@ import org.hibernate.annotations.FetchMode.SELECT
 import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
 import java.util.*
+import java.util.UUID.randomUUID
 import org.firstapproval.api.server.model.Workplace as WorkplaceApiObject
 
 @Entity
 @Table(name = "users_workplaces")
 class Workplace(
     @Id
-    var id: UUID,
+    var id: UUID = randomUUID(),
     @Fetch(SELECT)
     @ManyToOne(fetch = EAGER)
     var organization: Organization,

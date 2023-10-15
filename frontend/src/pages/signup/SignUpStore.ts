@@ -8,6 +8,7 @@ import { registrationService, userService } from '../../core/service';
 import { authStore } from '../../core/auth';
 import { type AxiosError } from 'axios';
 import { routerStore } from '../../core/router';
+import { UTM_SOURCE_KEY } from '../../core/router/RouterStore';
 
 export const REGISTRATION_CONFIRMATION_TOKEN_STORAGE_KEY = 'registration_token';
 
@@ -33,7 +34,8 @@ export class SignUpStore {
       firstName: this.firstName,
       lastName: this.lastName,
       password: this.password,
-      email: this.email
+      email: this.email,
+      utmSource: localStorage.getItem(UTM_SOURCE_KEY) ?? undefined
     };
   }
 

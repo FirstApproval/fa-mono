@@ -8,17 +8,20 @@ export function getInitials(firstName?: string, lastName?: string): string {
 }
 
 export function getCurrentWorkplacesString(workplaces: Workplace[]): string {
-  return (
-    workplaces
-      ?.filter((workplace) => !workplace.isFormer)
-      .map(
-        (workplace) =>
-          `${workplace.organization?.name ?? ''} ${
-            workplace.address ?? ''
-          }`.trim() ?? ''
-      )
-      .join(', ') ?? ''
-  );
+  const formattedWorkplaces = workplaces
+    ?.filter((workplace) => !workplace.isFormer)
+    .map((workplace) =>
+      [
+        workplace.department,
+        workplace.organization?.name,
+        workplace.address,
+        workplace.postalCode
+      ]
+        .filter(Boolean)
+        .join(', ')
+    )
+    .join('. ');
+  return formattedWorkplaces ? `${formattedWorkplaces}.` : '';
 }
 
 export const renderProfileImage = (profileImage: string | undefined): string =>

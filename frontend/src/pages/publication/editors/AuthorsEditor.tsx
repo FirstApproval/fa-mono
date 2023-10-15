@@ -161,7 +161,27 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
               <Autocomplete
                 onChange={(event: any, newValue: UserInfo | null) => {
                   if (newValue) {
-                    publicationStore.addConfirmedAuthor(newValue);
+                    setEditingAuthor({
+                      author: {
+                        user: newValue,
+                        ordinal: authors.length,
+                        workplaces: newValue.workplaces.map((workplace) => {
+                          return {
+                            organization: workplace.organization,
+                            department: workplace.department,
+                            address: workplace.address,
+                            postalCode: workplace.postalCode,
+                            isFormer: workplace.isFormer,
+                            creationTime: workplace.creationTime
+                          };
+                        }),
+                        email: newValue.email,
+                        firstName: newValue.firstName,
+                        lastName: newValue.lastName,
+                        isConfirmed: true
+                      },
+                      index: undefined
+                    });
                   }
                 }}
                 forcePopupIcon={false}
@@ -313,6 +333,7 @@ const AddAuthorDialog = observer(
             props.setIsUserExistsByEmail(true);
           } else {
             publicationStore.addOrEditAuthor(authorStore);
+            props.setShowSuccessSavingAlter(true);
           }
         });
       }
@@ -491,7 +512,6 @@ const AddAuthorDialog = observer(
                       setSavingInProgress(true);
                       void handleSaveButton().then(() => {
                         setSavingInProgress(false);
-                        props.setShowSuccessSavingAlter(true);
                         handleCloseAddAuthor();
                       });
                     }

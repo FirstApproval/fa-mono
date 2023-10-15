@@ -74,11 +74,10 @@ export class UserStore implements IWorkplaceStore {
   }
 
   createPublication = async (): Promise<void> => {
-    const workplaces = userStore.user?.workplaces;
-    debugger;
-    if (!userStore.user?.isNameConfirmed) {
+    const user = userStore.user;
+    if (!user?.isNameConfirmed) {
       routerStore.navigatePage(Page.NAME, namePath, true);
-    } else if (!workplaces?.length) {
+    } else if (!user?.isWorkplacesConfirmed || !user?.workplaces?.length) {
       routerStore.navigatePage(Page.AFFILIATIONS, affiliationsPath, true, {
         isRegistration: false
       });
@@ -89,7 +88,6 @@ export class UserStore implements IWorkplaceStore {
 
   getCreatePublicationLink = (): string => {
     if (authStore.token) {
-      debugger;
       const workplaces = userStore.user?.workplaces;
       if (!workplaces?.length) {
         return affiliationsPath;
@@ -109,35 +107,34 @@ export class UserStore implements IWorkplaceStore {
     }
   };
 
-  saveWorkplaces = async (workplaces: Workplace[]): Promise<void> => {
-    await userService.getMe().then(async (response) => {
-      const user = response.data;
-      await userService
-        .updateUser({
-          firstName: user.firstName,
-          middleName: user.middleName,
-          lastName: user.lastName,
-          username: user.username,
-          workplaces
-        })
-        .then(() => {
-          userStore.requestUserData();
-        });
-    });
-  };
-
   updateUser = async (
     workplaces: Workplace[],
-    confirmName: boolean
+    confirmName = false,
+    confirmWorkplaces = false
   ): Promise<void> => {
-    await userService.updateUser({
-      firstName: this.editableUser!.firstName,
-      lastName: this.editableUser!.lastName,
-      middleName: this.editableUser!.middleName,
-      username: this.editableUser!.username,
-      confirmName,
-      workplaces: workplaces != null ? workplaces : this.workplaces
-    });
+    await userService
+      .updateUser({
+        firstName: confirmName
+          ? this.editableUser!.firstName
+          : this.user!.firstName,
+        lastName: confirmName
+          ? this.editableUser!.lastName
+          : this.user!.lastName,
+        middleName: confirmName
+          ? this.editableUser!.middleName
+          : this.user!.middleName,
+        username: confirmName
+          ? this.editableUser!.username
+          : this.user!.username,
+        profileImage: this.editableUser!.profileImage,
+        deleteProfileImage: this.deleteProfileImage,
+        workplaces: workplaces != null ? workplaces : this.workplaces,
+        confirmName,
+        confirmWorkplaces
+      })
+      .then(() => {
+        userStore.requestUserData();
+      });
   };
 
   validate(): boolean {

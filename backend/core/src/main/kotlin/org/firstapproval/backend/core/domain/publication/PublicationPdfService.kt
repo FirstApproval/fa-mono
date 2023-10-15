@@ -87,11 +87,11 @@ class PublicationPdfService(
         }
     }
 
-    private fun description(publication: Publication): String {
+    private fun description(publication: Publication): List<String> {
         return if (publication.description.isNullOrEmpty()) {
-            return "Draft. No description yet."
+            return listOf("Draft. No description yet.")
         } else {
-            toParagraphs(publication.description!!)
+            publication.description!!
         }
     }
 
@@ -122,11 +122,11 @@ class PublicationPdfService(
         }
     }
 
-    private fun experimentGoals(publication: Publication): String {
+    private fun experimentGoals(publication: Publication): List<String> {
         return if (publication.predictedGoals.isNullOrEmpty()) {
-            "Draft. No predicted goals yet."
+            listOf("Draft. No predicted goals yet.")
         } else {
-            toParagraphs(publication.description!!)
+            publication.predictedGoals!!
         }
     }
 
@@ -134,11 +134,11 @@ class PublicationPdfService(
         return publication.negativeData!!
     }
 
-    private fun method(publication: Publication): String {
+    private fun method(publication: Publication): List<String> {
         return if (publication.methodDescription.isNullOrEmpty()) {
-            "Draft. No method description yet."
+            listOf("Draft. No method description yet.")
         } else {
-            toParagraphs(publication.methodDescription!!)
+            publication.methodDescription!!
         }
     }
 
@@ -150,44 +150,43 @@ class PublicationPdfService(
         }
     }
 
-    private fun objectOfStudy(publication: Publication): String {
+    private fun objectOfStudy(publication: Publication): List<String> {
         return if (publication.objectOfStudyDescription.isNullOrEmpty()) {
-            "Draft. No object of study description yet."
+            listOf("Draft. No object of study description yet.")
         } else {
-            toParagraphs(publication.objectOfStudyDescription!!)
+            publication.objectOfStudyDescription!!
         }
     }
 
-    private fun software(publication: Publication): String {
-        return toParagraphs(publication.software!!)
+    private fun software(publication: Publication): List<String> {
+        return publication.software!!
     }
 
-    private fun authorsDescriptions(publication: Publication): String {
-        return publication.authors.associate { (it.lastName + " " + it.firstName) to it.workplacesNames }
-            .map { "<div style=\"margin-bottom: 2px\"><b>${it.key}.</b> ${it.value}</div>" }.joinToString(separator = "")
+    private fun authorsDescriptions(publication: Publication): List<AuthorDescription> {
+        return (
+            publication.authors
+                .map {
+                    AuthorDescription(((it.user?.lastName ?: it.lastName) + " " + (it.user?.firstName
+                        ?: it.firstName)),
+                        (it.workplaces.joinToString(", ") { workplace -> "${workplace.organization.name} ${workplace.organizationDepartment ?: ""}" }
+                            ?: ""))
+                })
     }
 
-    private fun grantingOrganizations(publication: Publication): String {
-        return publication.grantOrganizations!!.joinToString(
-            separator = "",
-            prefix = "<ul style=\"padding-left: 10px; margin-bottom: 4px\">",
-            postfix = "</ul>"
-        ) { "<li style=\"font: normal 400 10px \'Roboto\', sans-serif;\">$it</li>" }
+    private fun grantingOrganizations(publication: Publication): List<String> {
+        return publication.grantOrganizations!!
     }
 
-    private fun primaryArticles(publication: Publication): String {
-        return toParagraphs(publication.primaryArticles!!)
+    private fun primaryArticles(publication: Publication): List<String> {
+        return publication.primaryArticles!!
     }
 
-    private fun relatedArticles(publication: Publication): String {
-        return publication.relatedArticles!!.joinToString(
-            separator = "",
-            prefix = "<ol style=\"padding-left: 14px; margin-bottom: 4px\">",
-            postfix = "</ol>"
-        ) { "<li style=\"font: normal 400 10px \'Roboto\', sans-serif;\">$it</li>" }
-    }
-
-    private fun toParagraphs(strings: List<String>): String {
-        return strings.joinToString(separator = "<br/>")
+    private fun relatedArticles(publication: Publication): List<String> {
+        return publication.relatedArticles!!
     }
 }
+
+data class AuthorDescription(
+    val fullName: String,
+    val workplace: String
+)
