@@ -33,7 +33,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import styled from '@emotion/styled';
-import { ContentEditorWrap, LabelWrap } from './styled';
+import { SectionWrap, LabelWrap } from './styled';
 import { getInitials, renderProfileImage } from '../../../util/userUtil';
 import { type EditorProps } from './types';
 import { WorkplacesEditor } from '../../../components/WorkplacesEditor';
@@ -85,154 +85,156 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
   const { authors } = publicationStore;
   return (
     <>
-      <ContentEditorWrap>
+      <SectionWrap>
         <LabelWrap>Authors</LabelWrap>
-        <DragDropContext
-          onDragEnd={(result: DropResult, provided: ResponderProvided) => {
-            if (!result.destination) return; // Nothing to do if dropped outside the list
-            const reorderedItems = Array.from(publicationStore.authors);
-            const [movedItem] = reorderedItems.splice(result.source.index, 1); // Remove the dragged item
-            reorderedItems.splice(result.destination.index, 0, movedItem); // Insert the item at the new position
-            reorderedItems.forEach((reorderedAuthor, index) => {
-              const author = publicationStore.authors.find(
-                (author) => author.id === reorderedAuthor.id
-              );
-              if (author) {
-                author.ordinal = index;
-              }
-            });
-            void publicationStore.updateAuthors();
-          }}>
-          <Droppable
-            droppableId="droppable"
-            isDropDisabled={publicationStore.isReadonly}>
-            {(provided, snapshot) => (
-              <div {...provided.droppableProps} ref={provided.innerRef}>
-                {authors
-                  .sort(
-                    (author1, author2) => author1.ordinal! - author2.ordinal!
-                  )
-                  .map((author: Author, index) => {
-                    return (
-                      <Draggable
-                        key={index.toString()}
-                        draggableId={index.toString()}
-                        isDragDisabled={publicationStore.isReadonly}
-                        index={index}>
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}>
-                            <AuthorElement
-                              isReadonly={publicationStore.isReadonly}
-                              useMarginBottom={true}
-                              key={author.id}
-                              author={author}
-                              isConfirmed={author.isConfirmed}
-                              onAuthorEdit={() =>
-                                setEditingAuthor({ author, index })
-                              }
-                              shouldOpenInNewTab={true}
-                            />
-                          </div>
-                        )}
-                      </Draggable>
-                    );
-                  })}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
-        {!publicationStore.isReadonly && !searchVisible && (
-          <Button
-            variant={'outlined'}
-            startIcon={<Add />}
-            onClick={() => {
-              setSearchVisible(true);
-            }}>
-            Add author
-          </Button>
-        )}
-        {searchVisible && (
-          <SearchBar>
-            <FlexGrowWrap>
-              <Autocomplete
-                onChange={(event: any, newValue: UserInfo | null) => {
-                  if (newValue) {
-                    setEditingAuthor({
-                      author: {
-                        user: newValue,
-                        ordinal: authors.length,
-                        workplaces: newValue.workplaces.map((workplace) => {
-                          return {
-                            organization: workplace.organization,
-                            department: workplace.department,
-                            address: workplace.address,
-                            postalCode: workplace.postalCode,
-                            isFormer: workplace.isFormer,
-                            creationTime: workplace.creationTime
-                          };
-                        }),
-                        email: newValue.email,
-                        firstName: newValue.firstName,
-                        lastName: newValue.lastName,
-                        isConfirmed: true
-                      },
-                      index: undefined
-                    });
-                  }
-                }}
-                forcePopupIcon={false}
-                inputValue={query}
-                onInputChange={(event, newInputValue) => {
-                  setQuery(newInputValue);
-                }}
-                renderOption={(props, option, state) => {
-                  return (
-                    <AuthorSelectOption {...props}>
-                      <Avatar src={renderProfileImage(option.profileImage)}>
-                        {getInitials(option.firstName, option.lastName)}
-                      </Avatar>
-                      <AuthorWrap>
-                        <AuthorName>
-                          {option.firstName} {option.lastName}
-                        </AuthorName>
-                        <AuthorEmail variant={'body2'}>
-                          {option.email}
-                        </AuthorEmail>
-                      </AuthorWrap>
-                    </AuthorSelectOption>
-                  );
-                }}
-                getOptionLabel={(option) =>
-                  `${option.firstName} ${option.lastName} (${option.email})`
+        <AuthorsEditorWrap>
+          <DragDropContext
+            onDragEnd={(result: DropResult, provided: ResponderProvided) => {
+              if (!result.destination) return; // Nothing to do if dropped outside the list
+              const reorderedItems = Array.from(publicationStore.authors);
+              const [movedItem] = reorderedItems.splice(result.source.index, 1); // Remove the dragged item
+              reorderedItems.splice(result.destination.index, 0, movedItem); // Insert the item at the new position
+              reorderedItems.forEach((reorderedAuthor, index) => {
+                const author = publicationStore.authors.find(
+                  (author) => author.id === reorderedAuthor.id
+                );
+                if (author) {
+                  author.ordinal = index;
                 }
-                id="controllable-states-demo"
-                options={authorOptions}
-                sx={{ width: '100%' }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    placeholder={
-                      'Start typing to search other FA users by email or name...'
-                    }></TextField>
-                )}
-              />
-            </FlexGrowWrap>
-
-            <DividerWrap orientation={'vertical'} />
+              });
+              void publicationStore.updateAuthors();
+            }}>
+            <Droppable
+              droppableId="droppable"
+              isDropDisabled={publicationStore.isReadonly}>
+              {(provided, snapshot) => (
+                <div {...provided.droppableProps} ref={provided.innerRef}>
+                  {authors
+                    .sort(
+                      (author1, author2) => author1.ordinal! - author2.ordinal!
+                    )
+                    .map((author: Author, index) => {
+                      return (
+                        <Draggable
+                          key={index.toString()}
+                          draggableId={index.toString()}
+                          isDragDisabled={publicationStore.isReadonly}
+                          index={index}>
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}>
+                              <AuthorElement
+                                isReadonly={publicationStore.isReadonly}
+                                useMarginBottom={true}
+                                key={author.id}
+                                author={author}
+                                isConfirmed={author.isConfirmed}
+                                onAuthorEdit={() =>
+                                  setEditingAuthor({ author, index })
+                                }
+                                shouldOpenInNewTab={true}
+                              />
+                            </div>
+                          )}
+                        </Draggable>
+                      );
+                    })}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
+          {!publicationStore.isReadonly && !searchVisible && (
             <Button
-              variant={'text'}
-              startIcon={<PersonAdd />}
-              onClick={() => setEditingAuthor({})}>
-              Add manually
+              variant={'outlined'}
+              startIcon={<Add />}
+              onClick={() => {
+                setSearchVisible(true);
+              }}>
+              Add author
             </Button>
-          </SearchBar>
-        )}
-      </ContentEditorWrap>
+          )}
+          {searchVisible && (
+            <SearchBar>
+              <FlexGrowWrap>
+                <Autocomplete
+                  onChange={(event: any, newValue: UserInfo | null) => {
+                    if (newValue) {
+                      setEditingAuthor({
+                        author: {
+                          user: newValue,
+                          ordinal: authors.length,
+                          workplaces: newValue.workplaces.map((workplace) => {
+                            return {
+                              organization: workplace.organization,
+                              department: workplace.department,
+                              address: workplace.address,
+                              postalCode: workplace.postalCode,
+                              isFormer: workplace.isFormer,
+                              creationTime: workplace.creationTime
+                            };
+                          }),
+                          email: newValue.email,
+                          firstName: newValue.firstName,
+                          lastName: newValue.lastName,
+                          isConfirmed: true
+                        },
+                        index: undefined
+                      });
+                    }
+                  }}
+                  forcePopupIcon={false}
+                  inputValue={query}
+                  onInputChange={(event, newInputValue) => {
+                    setQuery(newInputValue);
+                  }}
+                  renderOption={(props, option, state) => {
+                    return (
+                      <AuthorSelectOption {...props}>
+                        <Avatar src={renderProfileImage(option.profileImage)}>
+                          {getInitials(option.firstName, option.lastName)}
+                        </Avatar>
+                        <AuthorWrap>
+                          <AuthorName>
+                            {option.firstName} {option.lastName}
+                          </AuthorName>
+                          <AuthorEmail variant={'body2'}>
+                            {option.email}
+                          </AuthorEmail>
+                        </AuthorWrap>
+                      </AuthorSelectOption>
+                    );
+                  }}
+                  getOptionLabel={(option) =>
+                    `${option.firstName} ${option.lastName} (${option.email})`
+                  }
+                  id="controllable-states-demo"
+                  options={authorOptions}
+                  sx={{ width: '100%' }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      placeholder={
+                        'Start typing to search other FA users by email or name...'
+                      }></TextField>
+                  )}
+                />
+              </FlexGrowWrap>
+
+              <DividerWrap orientation={'vertical'} />
+              <Button
+                variant={'text'}
+                startIcon={<PersonAdd />}
+                onClick={() => setEditingAuthor({})}>
+                Add manually
+              </Button>
+            </SearchBar>
+          )}
+        </AuthorsEditorWrap>
+      </SectionWrap>
       <AddAuthorDialog
         editingAuthor={editingAuthor}
         publicationStore={publicationStore}
@@ -580,6 +582,8 @@ const DeleteAuthorDialog = observer(
     );
   }
 );
+
+const AuthorsEditorWrap = styled.div``;
 
 const AddAuthorWrap = styled.div`
   min-width: 488px;

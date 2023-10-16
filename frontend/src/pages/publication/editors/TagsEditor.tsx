@@ -1,10 +1,9 @@
 import { observer } from 'mobx-react-lite';
 import React, { type ReactElement, useState } from 'react';
-import keyboardEnter from '../asset/keyboard_enter.svg';
 import styled from '@emotion/styled';
 import { Button, Chip, IconButton, TextField } from '@mui/material';
-import { Add } from '@mui/icons-material';
-import { ContentEditorWrap, LabelWrap } from './styled';
+import { Add, KeyboardReturn } from '@mui/icons-material';
+import { SectionWrap, LabelWrap } from './styled';
 
 import { type EditorProps } from './types';
 import { TagsWrap } from '../ContentPlaceholder';
@@ -17,32 +16,34 @@ export const TagsEditor = observer((props: EditorProps): ReactElement => {
 
   return (
     <TagsWrap>
-      <ContentEditorWrap>
+      <SectionWrap>
         <LabelWrap>Tags</LabelWrap>
-        <FlexWrap>
-          {Array.from(props.publicationStore.tags).map((tag, index) => (
-            <ChipWrap
-              key={index}
-              label={tag}
-              onDelete={
-                props.publicationStore.isReadonly
-                  ? undefined
-                  : () => {
-                      props.publicationStore.deleteTag(tag);
-                    }
-              }></ChipWrap>
-          ))}
-          {!props.publicationStore.isReadonly && !enableAddingNewTag && (
-            <AddNewTagButtonWrap
-              size={'small'}
-              onClick={() => {
-                setEnableAddingNewTag(true);
-              }}
-              startIcon={<AddIconWrap />}>
-              Add tag
-            </AddNewTagButtonWrap>
-          )}
-        </FlexWrap>
+        <FlexColumnWrap>
+          <FlexWrap>
+            {Array.from(props.publicationStore.tags).map((tag, index) => (
+              <ChipWrap
+                key={index}
+                label={tag}
+                onDelete={
+                  props.publicationStore.isReadonly
+                    ? undefined
+                    : () => {
+                        props.publicationStore.deleteTag(tag);
+                      }
+                }></ChipWrap>
+            ))}
+            {!props.publicationStore.isReadonly && !enableAddingNewTag && (
+              <AddNewTagButtonWrap
+                size={'small'}
+                onClick={() => {
+                  setEnableAddingNewTag(true);
+                }}
+                startIcon={<AddIconWrap />}>
+                Add tag
+              </AddNewTagButtonWrap>
+            )}
+          </FlexWrap>
+        </FlexColumnWrap>
         {enableAddingNewTag && !props.publicationStore.isReadonly && (
           <TagTextInputWrap>
             <FullWidthTextField
@@ -71,18 +72,24 @@ export const TagsEditor = observer((props: EditorProps): ReactElement => {
                   setEnableAddingNewTag(false);
                 }
               }}>
-              <img src={keyboardEnter}></img>
+              <KeyboardReturn />
             </IconButtonWrap>
           </TagTextInputWrap>
         )}
-      </ContentEditorWrap>
+      </SectionWrap>
     </TagsWrap>
   );
 });
 
+const FlexColumnWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
 const FlexWrap = styled.div`
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
 `;
 
 const ChipWrap = styled(Chip)`
@@ -113,5 +120,6 @@ const AddIconWrap = styled(Add)`
 
 const IconButtonWrap = styled(IconButton)`
   margin-top: -4px;
+  margin-left: 8px;
   margin-right: 24px;
 `;
