@@ -129,6 +129,7 @@ const FileAction: React.FC<ToolbarButtonProps> = (
 const ToolbarWrap = styled.div`
   display: flex;
   align-items: center;
+  min-height: 40px;
 
   margin-bottom: 16px;
 `;
