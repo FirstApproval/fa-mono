@@ -88,8 +88,8 @@ class UserService(
                 username = if (userByUsername != null) id.toString() else oauthUser.username,
                 externalIds = mutableMapOf(oauthUser.type to oauthUser.externalId),
                 email = oauthUser.email,
-                firstName = oauthUser.firstName,
-                lastName = oauthUser.lastName,
+                firstName = oauthUser.firstName ?: "",
+                lastName = oauthUser.lastName ?: "",
                 middleName = oauthUser.middleName,
                 fullName = oauthUser.fullName,
                 utmSource = utmSource
