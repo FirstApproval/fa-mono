@@ -16,8 +16,8 @@ class EmailRegistrationConfirmation(
     var id: UUID,
     @Convert(converter = StringEncryptionConverter::class)
     val email: String,
-    var firstName: String?,
-    var lastName: String?,
+    var firstName: String,
+    var lastName: String,
     var password: String,
     var code: String,
     var attemptCount: Int = 1,

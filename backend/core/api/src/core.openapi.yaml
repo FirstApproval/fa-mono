@@ -1651,6 +1651,8 @@ components:
       required:
         - email
         - password
+        - firstName
+        - lastName
 
     RegistrationResponse:
       type: object
