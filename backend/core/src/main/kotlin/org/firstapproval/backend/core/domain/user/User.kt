@@ -20,9 +20,9 @@ class User(
     @Id
     var id: UUID,
     var username: String,
-    var firstName: String? = null,
+    var firstName: String,
     var middleName: String? = null,
-    var lastName: String? = null,
+    var lastName: String,
     var fullName: String? = null,
     @Fetch(SELECT)
     @ElementCollection(fetch = EAGER)
