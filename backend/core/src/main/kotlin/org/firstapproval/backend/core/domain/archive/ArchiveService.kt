@@ -4,7 +4,7 @@ import mu.KotlinLogging.logger
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import net.lingala.zip4j.io.outputstream.ZipOutputStream
 import net.lingala.zip4j.model.ZipParameters
-import net.lingala.zip4j.model.enums.EncryptionMethod.ZIP_STANDARD
+import net.lingala.zip4j.model.enums.EncryptionMethod.AES
 import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.domain.publication.*
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
@@ -160,7 +160,7 @@ class ArchiveService(
                         val zipParms = ZipParameters()
                         zipParms.fileNameInZip = it.fullPath
                         zipParms.isEncryptFiles = true
-                        zipParms.encryptionMethod = ZIP_STANDARD
+                        zipParms.encryptionMethod = AES
                         zipOutputStream.putNextEntry(zipParms)
                         val buffer = ByteArray(1024)
                         var len: Int
