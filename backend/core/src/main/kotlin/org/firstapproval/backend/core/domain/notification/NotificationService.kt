@@ -103,13 +103,20 @@ class NotificationService(
         }
     }
 
-    fun sendArchivePassword(email: String, publicationName: String?, password: String) {
+    fun sendArchivePassword(email: String, publicationName: String?, authors: String, password: String) {
         if (emailProperties.noopMode) {
             log.info { "Archive password $password" }
             return
         }
-        val content = "Your password from archive of publication $publicationName { $password }"
-        mailService.send(email, "[FirstApproval] Password of dataset", content)
+        val context = Context()
+        val model: MutableMap<String, Any> = HashMap()
+        model["publicationName"] = publicationName!!
+        model["password"] = password
+        model["email"] = email
+        model["authors"] = authors
+        context.setVariables(model)
+        val html = templateEngine.process("password-of-dataset", context)
+        mailService.send(email, "[FirstApproval] Password of dataset", html, true)
     }
 
     fun sendReportEmailToSupport(reporterEmail: String, content: String) {

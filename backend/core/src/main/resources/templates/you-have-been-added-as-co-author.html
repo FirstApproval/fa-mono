@@ -226,7 +226,8 @@
 
         .div-wrapper {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
             width: 100%;
         }
 
@@ -247,6 +248,13 @@
 
         .ml-auto {
             margin-left: auto;
+        }
+
+        .logo {
+            background-color: white;
+            padding: 8px;
+            width: fit-content;
+            border-radius: 4px
         }
     </style>
 </head>
@@ -290,9 +298,10 @@
                         </div>
                     </div>
                 </div>
-                <div
-                    style='margin-top: 32px; background-color: white; padding-bottom: 4px; padding-top: 8px; padding-left: 8px; padding-right: 8px; width: fit-content; border-radius: 4px'>
-                    <img style='height: 24px; width: 160px' src='https://iili.io/HZyCRmx.jpg'>
+                <div class="div-wrapper">
+                    <div class="mr-auto ml-auto mt-32 logo">
+                        <img style='height: 24px; width: 24px' src='https://iili.io/J3RDE1S.jpg'>
+                    </div>
                 </div>
                 <div class='div-wrapper'>
                     <div class='link-parent mt-32' style='display: flex; flex-direction: row; justify-content: space-between;'>

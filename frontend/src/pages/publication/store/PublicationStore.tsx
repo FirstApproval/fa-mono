@@ -21,7 +21,7 @@ import {
 } from '../../../core/router/constants';
 
 export const EDIT_THROTTLE_MS = 1000;
-export const MAX_CHARACTER_COUNT = 6;
+export const MAX_CHARACTER_COUNT = 60000;
 
 export type ParagraphWithId = Paragraph & { id: string };
 export type Section =

@@ -119,7 +119,7 @@ const App: FunctionComponent = observer(() => {
                   }}
                 />
               )}
-              {page === Page.NAME && (
+              {page === Page.NAME && userStore.editableUser && (
                 <EnterNamePage
                   firstName={userStore.editableUser!.firstName}
                   lastName={userStore.editableUser!.lastName}
