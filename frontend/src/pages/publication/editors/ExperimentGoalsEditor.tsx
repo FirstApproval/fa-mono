@@ -1,16 +1,18 @@
 import { observer } from 'mobx-react-lite';
 import { EditorProps } from './types';
 import React, { ReactElement } from 'react';
-import { ParagraphContentEditor } from './ParagraphContentEditor';
 import { NegativeDataEditMode } from './NegativeDataEditMode';
 import { NegativeDataViewMode } from './NegativeDataViewMode';
+import { ParagraphElementWrap } from './element/ParagraphElementWrap';
+import { LabelWrap, SectionWrap } from './styled';
 
 export const ExperimentGoalsEditor = observer(
   (props: EditorProps): ReactElement => {
     const { publicationStore } = props;
     return (
-      <>
-        <ParagraphContentEditor
+      <SectionWrap>
+        <LabelWrap>{'Background & Aims'}</LabelWrap>
+        <ParagraphElementWrap
           isReadonly={publicationStore.isReadonly}
           value={publicationStore.experimentGoals}
           onChange={(idx, value) => {
@@ -25,10 +27,10 @@ export const ExperimentGoalsEditor = observer(
           onSplitParagraph={(idx, splitIndex) => {
             publicationStore.splitExperimentGoalsParagraph(idx, splitIndex);
           }}
-          text={'Background & Aims'}
           placeholder={
             'Describe the context of data collection and the experimental goals'
           }
+          disableInitFocus={props.publicationStore.disableAutofocus}
         />
         {!publicationStore.isReadonly && (
           <NegativeDataEditMode publicationStore={props.publicationStore} />
@@ -36,7 +38,7 @@ export const ExperimentGoalsEditor = observer(
         {publicationStore.isReadonly && publicationStore.isNegative && (
           <NegativeDataViewMode publicationStore={props.publicationStore} />
         )}
-      </>
+      </SectionWrap>
     );
   }
 );

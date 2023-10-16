@@ -33,7 +33,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import styled from '@emotion/styled';
-import { ContentEditorWrap, LabelWrap } from './styled';
+import { SectionWrap, LabelWrap } from './styled';
 import { getInitials, renderProfileImage } from '../../../util/userUtil';
 import { type EditorProps } from './types';
 import { WorkplacesEditor } from '../../../components/WorkplacesEditor';
@@ -85,7 +85,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
   const { authors } = publicationStore;
   return (
     <>
-      <ContentEditorWrap>
+      <SectionWrap>
         <LabelWrap>Authors</LabelWrap>
         <AuthorsEditorWrap>
           <DragDropContext
@@ -234,7 +234,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
             </SearchBar>
           )}
         </AuthorsEditorWrap>
-      </ContentEditorWrap>
+      </SectionWrap>
       <AddAuthorDialog
         editingAuthor={editingAuthor}
         publicationStore={publicationStore}
@@ -583,10 +583,7 @@ const DeleteAuthorDialog = observer(
   }
 );
 
-const AuthorsEditorWrap = styled.div`
-  padding-left: 16px;
-  padding-right: 16px;
-`;
+const AuthorsEditorWrap = styled.div``;
 
 const AddAuthorWrap = styled.div`
   min-width: 488px;

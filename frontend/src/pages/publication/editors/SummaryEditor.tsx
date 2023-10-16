@@ -21,7 +21,7 @@ export const SummaryEditor = observer((props: EditorProps): ReactElement => {
         props.publicationStore.splitSummaryParagraph(idx, splitIndex);
       }}
       placeholder={'Publication summary'}
-      text={'Summary'}
+      disableInitFocus={props.publicationStore.disableAutofocus}
     />
   );
 });

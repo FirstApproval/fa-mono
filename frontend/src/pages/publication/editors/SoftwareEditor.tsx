@@ -24,6 +24,7 @@ export const SoftwareEditor = observer((props: EditorProps): ReactElement => {
       placeholder={
         'Provide the software you used, with configuration options...'
       }
+      disableInitFocus={props.publicationStore.disableAutofocus}
     />
   );
 });

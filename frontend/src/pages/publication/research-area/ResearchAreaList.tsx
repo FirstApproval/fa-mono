@@ -49,8 +49,6 @@ const ReadonlyContentPlaceholderWrap = styled.div`
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-
-  padding-left: 16px;
 `;
 
 const PublicationAreaWrap = styled(Typography)`

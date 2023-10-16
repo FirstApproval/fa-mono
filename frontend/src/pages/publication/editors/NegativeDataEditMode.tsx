@@ -37,7 +37,7 @@ export const NegativeDataEditMode = observer(
           </NegativeDataWrapper>
           {publicationStore.isNegative && (
             <FullWidthInput
-              autoFocus
+              autoFocus={!publicationStore.disableAutofocus}
               value={publicationStore.negativeData}
               onChange={(e) => {
                 publicationStore.updateNegativeData(e.currentTarget.value);
@@ -85,13 +85,12 @@ const NegativeDataWrapper = styled.div`
 `;
 
 const Wrapper = styled.div`
-  padding-left: 16px;
-  padding-right: 16px;
+  margin-top: 32px;
 `;
 
 const NegativeDataAllWrapper = styled.div`
   border: 1px solid #d2d2d6;
-  padding: 4px 0 4px 8px;
+  padding: 16px;
   border-radius: 4px;
   gap: 8px;
   align-self: stretch;

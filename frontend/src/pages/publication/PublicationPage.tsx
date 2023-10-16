@@ -89,7 +89,7 @@ import { DatasetIsPreparingDialog } from './dialogs/DatasetIsPreparingDialog';
 import { SummaryEditor } from './editors/SummaryEditor';
 import { ExperimentGoalsEditor } from './editors/ExperimentGoalsEditor';
 import { MethodEditor } from './editors/MethodEditor';
-import { ObjectOfStudyEditor } from './editors/ObjectOfStudyEditor';
+import { DataDescriptionEditor } from './editors/DataDescriptionEditor';
 import { SoftwareEditor } from './editors/SoftwareEditor';
 import { GrantingOrganizationsEditor } from './editors/GrantingOrganizationsEditor';
 import { RelatedPublicationsEditor } from './editors/RelatedPublicationsEditor';
@@ -519,7 +519,7 @@ const PublicationBody = observer(
           <ObjectOfStudyPlaceholder onClick={openObjectOfStudy} />
         )}
         {objectOfStudyEnabled && (
-          <ObjectOfStudyEditor publicationStore={publicationStore} />
+          <DataDescriptionEditor publicationStore={publicationStore} />
         )}
 
         {/* Software */}
@@ -687,9 +687,6 @@ const FilesWrap = styled.div`
 
   margin-top: 48px;
   margin-bottom: 40px;
-
-  padding-left: 16px;
-  padding-right: 16px;
 `;
 
 const SampleFilesPreviewWrap = styled.div`
@@ -697,9 +694,6 @@ const SampleFilesPreviewWrap = styled.div`
 
   margin-top: 48px;
   margin-bottom: 40px;
-
-  padding-left: 16px;
-  padding-right: 16px;
 
   overflow: hidden;
 `;

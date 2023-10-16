@@ -3,7 +3,7 @@ import { EditorProps } from './types';
 import React, { ReactElement } from 'react';
 import { ParagraphContentEditor } from './ParagraphContentEditor';
 
-export const ObjectOfStudyEditor = observer(
+export const DataDescriptionEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <ParagraphContentEditor
@@ -24,8 +24,8 @@ export const ObjectOfStudyEditor = observer(
         placeholder={
           'Describe the data’s contents, structure and preliminary findings...'
         }
-        disableInitFocus
         text={'Data description'}
+        disableInitFocus={props.publicationStore.disableAutofocus}
       />
     );
   }

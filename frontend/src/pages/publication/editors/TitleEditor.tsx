@@ -43,7 +43,6 @@ export const TitleEditor = observer((props: EditorProps) => {
 
 const TextFieldWrap = styled(TextField)`
   width: 100%;
-  padding-left: 16px;
   margin-bottom: 48px;
   word-break: break-word;
 `;

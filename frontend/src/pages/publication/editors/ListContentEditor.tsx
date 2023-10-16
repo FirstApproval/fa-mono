@@ -1,7 +1,7 @@
 import { ParagraphElementWrapProps } from './element/ParagraphElementWrap';
 import { ListElement, ParagraphPrefixType } from './element/ListElement';
 import React, { ReactElement, useState } from 'react';
-import { ContentEditorWrap, LabelWrap } from './styled';
+import { SectionWrap, LabelWrap } from './styled';
 import styled from '@emotion/styled';
 
 export const ListContentEditor = (
@@ -11,12 +11,12 @@ export const ListContentEditor = (
   }
 ): ReactElement => {
   return (
-    <ContentEditorWrap>
+    <SectionWrap>
       {props.text && <LabelWrap>{props.text}</LabelWrap>}
       <UlWrap>
         <ListElementWrap {...props} />
       </UlWrap>
-    </ContentEditorWrap>
+    </SectionWrap>
   );
 };
 export const OrderedListContentEditor = (
@@ -26,12 +26,12 @@ export const OrderedListContentEditor = (
   }
 ): ReactElement => {
   return (
-    <ContentEditorWrap>
+    <SectionWrap>
       {props.text && <LabelWrap>{props.text}</LabelWrap>}
       <OlWrap>
         <ListElementWrap {...props} />
       </OlWrap>
-    </ContentEditorWrap>
+    </SectionWrap>
   );
 };
 const ListElementWrap = (
@@ -83,7 +83,7 @@ const UlWrap = styled.ul`
   list-style-type: disc;
   list-style-position: outside;
 
-  margin-left: -20px;
+  margin-left: -40px;
 
   font-size: 16px;
   font-style: normal;
@@ -96,7 +96,7 @@ const OlWrap = styled.ol`
   list-style-type: decimal;
   list-style-position: outside;
 
-  margin-left: -20px;
+  margin-left: -40px;
 
   font-size: 16px;
   font-style: normal;

@@ -1,5 +1,5 @@
 import React, { type ReactElement } from 'react';
-import { LabelWrap, ContentEditorWrap } from './styled';
+import { LabelWrap, SectionWrap } from './styled';
 import {
   ParagraphElementWrap,
   ParagraphElementWrapProps
@@ -9,9 +9,9 @@ export const ParagraphContentEditor = (
   props: ParagraphElementWrapProps & { text?: string }
 ): ReactElement => {
   return (
-    <ContentEditorWrap>
+    <SectionWrap>
       {props.text && <LabelWrap>{props.text}</LabelWrap>}
       <ParagraphElementWrap {...props} />
-    </ContentEditorWrap>
+    </SectionWrap>
   );
 };

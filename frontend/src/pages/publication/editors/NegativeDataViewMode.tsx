@@ -8,24 +8,30 @@ export const NegativeDataViewMode = observer(
   (props: EditorProps): ReactElement => {
     const { publicationStore } = props;
     return (
-      <NegativeDataViewWrapper>
-        <NegativeDataHeaderEnabled variant={'h6'}>
-          The data is negative
-        </NegativeDataHeaderEnabled>
-        <NegativeDataTextViewMode variant={'body'} component={'div'}>
-          {publicationStore.negativeData}
-        </NegativeDataTextViewMode>
-      </NegativeDataViewWrapper>
+      <Wrapper>
+        <NegativeDataViewWrapper>
+          <NegativeDataHeaderEnabled variant={'h6'}>
+            The data is negative
+          </NegativeDataHeaderEnabled>
+          <NegativeDataTextViewMode variant={'body'} component={'div'}>
+            {publicationStore.negativeData}
+          </NegativeDataTextViewMode>
+        </NegativeDataViewWrapper>
+      </Wrapper>
     );
   }
 );
+
+const Wrapper = styled.div`
+  margin-top: 32px;
+`;
+
 const NegativeDataHeaderEnabled = styled(Typography)`
   padding-top: 4px;
 `;
 
 const NegativeDataViewWrapper = styled.div`
   display: flex;
-  width: var(--stringLength, 680px);
   flex-direction: column;
   padding: 16px;
   justify-content: center;
@@ -35,7 +41,7 @@ const NegativeDataViewWrapper = styled.div`
   border-radius: 4px;
   background: var(--grey-50, #f8f7fa);
 
-  margin-bottom: 15px;
+  margin-bottom: 16px;
 `;
 
 const NegativeDataTextViewMode = styled(Typography)`

@@ -31,6 +31,7 @@ export const GrantingOrganizationsEditor = observer(
         placeholder={
           'Enter the names of the organizations that funded your research...'
         }
+        disableInitFocus={props.publicationStore.disableAutofocus}
       />
     );
   }

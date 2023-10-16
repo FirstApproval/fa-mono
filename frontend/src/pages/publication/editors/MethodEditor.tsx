@@ -24,6 +24,7 @@ export const MethodEditor = observer((props: EditorProps): ReactElement => {
         'Detail the steps of your method, helping others to reproduce it...'
       }
       text={'Materials and methods'}
+      disableInitFocus={props.publicationStore.disableAutofocus}
     />
   );
 });

@@ -33,6 +33,7 @@ export const RelatedPublicationsEditor = observer(
           placeholder={
             'Provide references of the articles that are closely related to your research'
           }
+          disableInitFocus={props.publicationStore.disableAutofocus}
         />
         <div style={{ marginBottom: 48 }}>
           <PrimaryArticleData

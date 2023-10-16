@@ -40,6 +40,7 @@ export enum ViewMode {
 }
 
 export class PublicationStore {
+  prevMode: ViewMode | null = null;
   viewMode: ViewMode = ViewMode.VIEW;
 
   publicationId: string;
@@ -96,6 +97,16 @@ export class PublicationStore {
       },
       { fireImmediately: true }
     );
+    reaction(
+      () => this.viewMode,
+      (viewMode, prev) => {
+        this.prevMode = prev;
+      }
+    );
+  }
+
+  get disableAutofocus(): boolean {
+    return this.prevMode === ViewMode.PREVIEW;
   }
 
   get isReadonly(): boolean {
