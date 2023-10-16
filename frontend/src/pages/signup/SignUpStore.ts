@@ -106,4 +106,10 @@ export class SignUpStore {
       this.isSubmitting = false;
     }
   }
+
+  async getUnconfirmedFullName(): Promise<void> {
+    const response = await userService.getUncorfirmedUserFullName(this.email);
+    this.firstName = response.data.firstName ?? '';
+    this.lastName = response.data.lastName ?? '';
+  }
 }

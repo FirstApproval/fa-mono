@@ -4,6 +4,8 @@ import {
   FlexBodyCenter,
   HeightElement,
   Parent,
+  PrefilledDetails,
+  PrefilledDetailsText,
   WidthElement
 } from '../common.styled';
 import { routerStore } from '../../core/router';
@@ -116,24 +118,6 @@ export const FlexBody = styled.div`
 export const YouCanChangeItLater = styled(Typography)`
   margin-top: 8px;
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
-`;
-
-export const PrefilledDetails = styled.div`
-  border-radius: 4px;
-  background: var(--alert-info-fill, #e5f6fd);
-
-  display: flex;
-  width: 500px;
-  padding: 6px 16px;
-  align-items: flex-start;
-  justify-content: start;
-`;
-
-export const PrefilledDetailsText = styled(Typography)`
-  margin-left: 12px;
-  color: var(--alert-info-content, #014361);
-  padding-top: 8px;
-  padding-bottom: 8px;
 `;
 
 export const Header = styled.div`

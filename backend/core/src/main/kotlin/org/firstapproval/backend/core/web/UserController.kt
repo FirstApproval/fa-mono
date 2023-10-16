@@ -120,4 +120,9 @@ class UserController(
         userService.update(authHolderService.user.id, request)
         return ok().build()
     }
+
+    override fun getUncorfirmedUserFullName(email: String): ResponseEntity<FullName> {
+        val unconfirmedAuthor = authorRepository.findByEmailAndIsConfirmedFalse(email).firstOrNull()
+        return ok(FullName().firstName(unconfirmedAuthor?.firstName).lastName(unconfirmedAuthor?.lastName))
+    }
 }

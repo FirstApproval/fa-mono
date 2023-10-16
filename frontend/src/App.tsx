@@ -104,6 +104,7 @@ const App: FunctionComponent = observer(() => {
                     navigatePage(Page.SIGN_IN);
                   }}
                   onContinueClick={() => {
+                    signUpStore.getUnconfirmedFullName().then();
                     navigatePage(Page.SIGN_UP_NAME);
                   }}
                 />
@@ -112,6 +113,7 @@ const App: FunctionComponent = observer(() => {
                 <EnterNamePage
                   firstName={signUpStore.firstName}
                   lastName={signUpStore.lastName}
+                  isOauth={false}
                   setFirstName={(value) => (signUpStore.firstName = value)}
                   setLastName={(value) => (signUpStore.lastName = value)}
                   onContinueClick={() => {
@@ -123,6 +125,7 @@ const App: FunctionComponent = observer(() => {
                 <EnterNamePage
                   firstName={userStore.editableUser!.firstName}
                   lastName={userStore.editableUser!.lastName}
+                  isOauth={true}
                   setFirstName={(value) =>
                     (userStore.editableUser!.firstName = value)
                   }
