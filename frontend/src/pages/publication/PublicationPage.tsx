@@ -47,15 +47,6 @@ import {
   ViewMode
 } from './store/PublicationStore';
 import { observer } from 'mobx-react-lite';
-import {
-  ExperimentGoalsEditor,
-  GrantingOrganizationsEditor,
-  MethodEditor,
-  ObjectOfStudyEditor,
-  RelatedPublicationsEditor,
-  SoftwareEditor,
-  SummaryEditor
-} from './editors/ParagraphEditor';
 import { FileSystemFA } from '../../fire-browser/FileSystemFA';
 import { TagsEditor } from './editors/TagsEditor';
 import { AuthorsEditor } from './editors/AuthorsEditor';
@@ -95,6 +86,13 @@ import { UploadStatusWindow } from './UploadStatusWindow';
 import { Footer } from '../home/Footer';
 import { HeaderComponent } from 'src/components/HeaderComponent';
 import { DatasetIsPreparingDialog } from './dialogs/DatasetIsPreparingDialog';
+import { SummaryEditor } from './editors/SummaryEditor';
+import { ExperimentGoalsEditor } from './editors/ExperimentGoalsEditor';
+import { MethodEditor } from './editors/MethodEditor';
+import { DataDescriptionEditor } from './editors/DataDescriptionEditor';
+import { SoftwareEditor } from './editors/SoftwareEditor';
+import { GrantingOrganizationsEditor } from './editors/GrantingOrganizationsEditor';
+import { RelatedPublicationsEditor } from './editors/RelatedPublicationsEditor';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -521,7 +519,7 @@ const PublicationBody = observer(
           <ObjectOfStudyPlaceholder onClick={openObjectOfStudy} />
         )}
         {objectOfStudyEnabled && (
-          <ObjectOfStudyEditor publicationStore={publicationStore} />
+          <DataDescriptionEditor publicationStore={publicationStore} />
         )}
 
         {/* Software */}
@@ -711,9 +709,7 @@ const DialogContentWrap = styled(DialogContent)`
 `;
 
 const PublicationBodyWrap = styled('div')`
-  width: 728px;
-  padding-left: 24px;
-  padding-right: 24px;
+  width: 712px;
 `;
 
 const ButtonWrap = styled(Button)<{ marginright?: string }>`

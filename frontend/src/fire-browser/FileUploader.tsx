@@ -104,27 +104,29 @@ export const FileUploader: FunctionComponent<FileUploaderProps> = observer(
             Drag files here for upload
           </DropZone>
         )}
-        <FileBrowserFA
-          instanceId={props.instanceId}
-          rootFolderName={props.rootFolderName}
-          fileDownloadUrlPrefix={props.fileDownloadUrlPrefix}
-          fs={fs}
-          isChonkyDragRef={isChonkyDragRef}
-          isReadonly={props.isReadonly}
-          onArchiveDownload={props.onArchiveDownload}
-          toolbarComponent={
-            props.isReadonly ? (
-              <FileToolbarView
-                instanceId={props.instanceId}
-                downloadDisabled={props.isPreview}
-              />
-            ) : (
-              <FileToolbar instanceId={props.instanceId} />
-            )
-          }
-          onEditFilesModalOpen={props.onEditFilesModalOpen}
-          onPreviewFilesModalOpen={props.onPreviewFilesModalOpen}
-        />
+        {!isDropZoneVisible && (
+          <FileBrowserFA
+            instanceId={props.instanceId}
+            rootFolderName={props.rootFolderName}
+            fileDownloadUrlPrefix={props.fileDownloadUrlPrefix}
+            fs={fs}
+            isChonkyDragRef={isChonkyDragRef}
+            isReadonly={props.isReadonly}
+            onArchiveDownload={props.onArchiveDownload}
+            toolbarComponent={
+              props.isReadonly ? (
+                <FileToolbarView
+                  instanceId={props.instanceId}
+                  downloadDisabled={props.isPreview}
+                />
+              ) : (
+                <FileToolbar instanceId={props.instanceId} />
+              )
+            }
+            onEditFilesModalOpen={props.onEditFilesModalOpen}
+            onPreviewFilesModalOpen={props.onPreviewFilesModalOpen}
+          />
+        )}
         <Dialog
           open={props.fs.renameOrReplaceDialogOpen}
           onClose={props.fs.closeReplaceOrRenameDialog}

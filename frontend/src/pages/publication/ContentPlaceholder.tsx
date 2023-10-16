@@ -189,6 +189,8 @@ const ContentPlaceholderWrap = styled.div`
   display: flex;
   align-items: center;
   padding: 8px 16px;
+  margin-left: -16px;
+  margin-right: -16px;
   margin-bottom: 8px;
 
   &:hover {

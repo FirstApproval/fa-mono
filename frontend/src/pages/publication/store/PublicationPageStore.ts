@@ -91,7 +91,7 @@ export class PublicationPageStore {
         authors: this.publicationStore.authors
       }),
       (value) => {
-        if (value.authors.length + value.authors.length > 1) {
+        if (value.authors.length > 1) {
           this.openAuthors();
         }
       },
