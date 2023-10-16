@@ -49,9 +49,6 @@ const App: FunctionComponent = observer(() => {
   const showMobileNotSupporting =
     window.innerWidth < 960 && !mobileVersionNowSupportShown;
 
-  console.log(
-    'isRegistration in payload ' + routerStore.payload.isRegistratioin
-  );
   return (
     <>
       {/*
@@ -104,7 +101,7 @@ const App: FunctionComponent = observer(() => {
                     navigatePage(Page.SIGN_IN);
                   }}
                   onContinueClick={() => {
-                    signUpStore.getUnconfirmedFullName().then();
+                    void signUpStore.getUnconfirmedFullName();
                     navigatePage(Page.SIGN_UP_NAME);
                   }}
                 />
