@@ -62,7 +62,7 @@ export const ArchiveDownloader = observer(
               <PasscodeRowWrap>
                 <PasscodeContainer>
                   {publicationPageStore.passcode && (
-                    <Typography variant={'h4'}>
+                    <Typography variant={'h6'}>
                       {publicationPageStore.passcode}
                     </Typography>
                   )}
@@ -119,7 +119,6 @@ const PasscodeContainer = styled.div`
   padding: 16px 32px;
   justify-content: center;
   align-items: center;
-  height: 76px;
   flex: 1 0 0;
 
   border-radius: 4px;
