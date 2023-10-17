@@ -44,17 +44,18 @@ class IpfsClient(
         return result.body.require()
     }
 
-    fun restore(id: Long): RestoreResponse {
+    fun restore(id: Long) {
         val httpEntity = HttpEntity(mapOf("restoreDays" to 1), headers)
 
-        val result = restTemplate.exchange(
+        val response = restTemplate.exchange(
             properties.contentsUrl + "/${id}/restore",
             POST,
             httpEntity,
             RestoreResponse::class.java
         )
-
-        return result.body.require()
+        if (response.body?.status != "ok") {
+            throw IpfsException("Status is not ok: ${response.body?.status}")
+        }
     }
 
     fun upload(file: java.io.File): File {
@@ -109,28 +110,7 @@ class IpfsClient(
     )
 
     class RestoreResponse(
-        val id: Long,
-        val filename: String? = null,
-        val origin: String? = null,
-        @JsonProperty("ipfs_cid")
-        val ipfsCid: String,
-        @JsonProperty("encrypted_file_cid")
-        val encryptedFileCid: String? = null,
-        @JsonProperty("encrypted_file_size")
-        val encryptedFileSize: Long? = null,
-        @JsonProperty("ipfs_file_size")
-        val ipfsFileSize: Long,
-        @JsonFormat(with = [ACCEPT_CASE_INSENSITIVE_PROPERTIES])
-        var availability: IpfsContentAvailability,
-        @JsonProperty("owner_id")
-        val ownerId: Long,
-        @JsonProperty("instant_till")
-        var instantTill: LocalDateTime,
-        @JsonProperty("created_at")
-        val createdAt: LocalDateTime,
-        @JsonProperty("updated_at")
-        val updatedAt: LocalDateTime,
-        val key: String? = null
+        var status: String? = null
     )
 
     class DownloadFile(
