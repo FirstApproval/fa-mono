@@ -110,7 +110,7 @@ class IpfsClient(
 
     class RestoreResponse(
         val id: Long,
-        val filename: String,
+        val filename: String? = null,
         val origin: String? = null,
         @JsonProperty("ipfs_cid")
         val ipfsCid: String,
