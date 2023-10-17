@@ -23,6 +23,7 @@ interface EnterNamePageProps {
   setLastName: (value: string) => void;
   onContinueClick: () => void;
   isOauth: boolean;
+  isPrefilledFullName: boolean;
 }
 
 export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
@@ -33,7 +34,8 @@ export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
       setFirstName,
       setLastName,
       onContinueClick,
-      isOauth
+      isOauth,
+      isPrefilledFullName
     } = props;
     const [isValidFirstName, setIsValidFirstName] = useState(true);
     const [isValidLastName, setIsValidLastName] = useState(true);
@@ -58,8 +60,7 @@ export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
       }
     };
 
-    const showPrefilledDetailsText =
-      !isOauth && (firstName.length > 0 || lastName.length > 0);
+    const showPrefilledDetailsText = !isOauth && isPrefilledFullName;
 
     return (
       <Parent>

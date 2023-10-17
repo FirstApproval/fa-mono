@@ -111,6 +111,7 @@ const App: FunctionComponent = observer(() => {
                   firstName={signUpStore.firstName}
                   lastName={signUpStore.lastName}
                   isOauth={false}
+                  isPrefilledFullName={signUpStore.isPrefilledFullName}
                   setFirstName={(value) => (signUpStore.firstName = value)}
                   setLastName={(value) => (signUpStore.lastName = value)}
                   onContinueClick={() => {
@@ -123,6 +124,7 @@ const App: FunctionComponent = observer(() => {
                   firstName={userStore.editableUser!.firstName}
                   lastName={userStore.editableUser!.lastName}
                   isOauth={true}
+                  isPrefilledFullName={signUpStore.isPrefilledFullName}
                   setFirstName={(value) =>
                     (userStore.editableUser!.firstName = value)
                   }
