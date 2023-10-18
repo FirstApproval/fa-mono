@@ -40,7 +40,7 @@ export const HeaderComponent = (
       <BetaDialogWithButton />
       {props.showAboutUsButton && (
         <ButtonWrap
-          href={'https://firstapproval.io/'}
+          href={'https://about.firstapproval.io/'}
           style={{ marginLeft: '32px' }}
           variant="text"
           size={'large'}>
