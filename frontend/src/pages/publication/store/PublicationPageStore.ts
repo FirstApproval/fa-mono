@@ -143,41 +143,42 @@ export class PublicationPageStore {
   };
 
   downloadPdf = async (): Promise<void> => {
-    const downloadLink = `${window.origin}/api/${
-      this.publicationStore.isPublished ? '' : 'pending-'
-    }publication/${this.publicationStore.publicationId}/pdf/download`;
-    debugger;
-    fetch(downloadLink, {
-      method: 'GET',
-      headers: this.publicationStore.isPublished
-        ? {}
-        : {
-            Authorization: `Bearer ${authStore.token}`
-          }
-    })
-      .then(async (response) => {
-        if (response.ok) {
-          const blob = await response.blob();
-
-          const blobUrl = window.URL.createObjectURL(blob);
-
-          const downloadLink = document.createElement('a');
-          downloadLink.href = blobUrl;
-          downloadLink.download = this.publicationStore.title + '.pdf';
-          document.body.appendChild(downloadLink);
-          downloadLink.click();
-          window.URL.revokeObjectURL(blobUrl);
-          document.body.removeChild(downloadLink);
-        } else {
-          console.error(
-            'Failed to download the file. Status: ',
-            response.status
-          );
-        }
+    if (this.publicationStore.isPublished) {
+      const downloadLink = document.createElement('a');
+      downloadLink.href = `${window.origin}/api/publication/${this.publicationStore.publicationId}/pdf/download`;
+      downloadLink.download = this.publicationStore.title + '.pdf';
+      downloadLink.style.display = 'none';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    } else {
+      const downloadLink = `${window.origin}/api/pending-publication/${this.publicationStore.publicationId}/pdf/download`;
+      fetch(downloadLink, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${authStore.token}` }
       })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
+        .then(async (response) => {
+          if (response.ok) {
+            const blob = await response.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+            const downloadLink = document.createElement('a');
+            downloadLink.href = blobUrl;
+            downloadLink.download = this.publicationStore.title + '.pdf';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            window.URL.revokeObjectURL(blobUrl);
+            document.body.removeChild(downloadLink);
+          } else {
+            console.error(
+              'Failed to download the file. Status: ',
+              response.status
+            );
+          }
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    }
   };
 
   downloadSampleFiles(): void {
