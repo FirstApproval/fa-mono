@@ -62,9 +62,9 @@ export const ArchiveDownloader = observer(
               <PasscodeRowWrap>
                 <PasscodeContainer>
                   {publicationPageStore.passcode && (
-                    <Typography variant={'h6'}>
+                    <PasscodeTypography variant={'h6'}>
                       {publicationPageStore.passcode}
-                    </Typography>
+                    </PasscodeTypography>
                   )}
                   {!publicationPageStore.passcode && (
                     <LinearProgress style={{ width: '100%' }} />
@@ -124,6 +124,10 @@ const PasscodeContainer = styled.div`
   border-radius: 4px;
   background: var(--grey-100, #f3f2f5);
   margin-right: 12px;
+`;
+
+const PasscodeTypography = styled(Typography)`
+  word-break: break-word;
 `;
 
 const ProtectionInfoText = styled.span`
