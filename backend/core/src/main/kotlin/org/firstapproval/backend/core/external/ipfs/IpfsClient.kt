@@ -33,12 +33,12 @@ class IpfsClient(
         fileHeaders.set("Authorization", properties.accessKey)
     }
 
-    fun getInfo(id: Long): File {
+    fun getInfo(id: Long): IpfsFile {
         val result = restTemplate.exchange(
             properties.contentsUrl + "/${id}",
             GET,
             httpEntity,
-            File::class.java
+            IpfsFile::class.java
         )
 
         return result.body.require()
@@ -59,7 +59,7 @@ class IpfsClient(
         }
     }
 
-    fun upload(file: java.io.File): File {
+    fun upload(file: java.io.File): IpfsFile {
         val parts: MultiValueMap<String, Any> = LinkedMultiValueMap()
         parts.add("file_in", FileSystemResource(file)) //TODO think how improve it
         val httpEntity = HttpEntity(parts, fileHeaders)
@@ -68,7 +68,7 @@ class IpfsClient(
             properties.contentsUrl,
             POST,
             httpEntity,
-            File::class.java
+            IpfsFile::class.java
         )
 
         return result.body.require()
@@ -85,18 +85,18 @@ class IpfsClient(
         return result.body.require()
     }
 
-    fun delete(id: Long): File {
+    fun delete(id: Long): IpfsFile {
         val result = restTemplate.exchange(
             properties.contentsUrl + "/${id}",
             DELETE,
             httpEntity,
-            File::class.java
+            IpfsFile::class.java
         )
 
         return result.body.require()
     }
 
-    class File(
+    class IpfsFile(
         val id: Long,
         val filename: String,
         val origin: String? = null,
