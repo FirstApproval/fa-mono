@@ -33,7 +33,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import styled from '@emotion/styled';
-import { SectionWrap, LabelWrap } from './styled';
+import { LabelWrap, SectionWrap } from './styled';
 import { getInitials, renderProfileImage } from '../../../util/userUtil';
 import { type EditorProps } from './types';
 import { WorkplacesEditor } from '../../../components/WorkplacesEditor';
@@ -86,7 +86,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
   return (
     <>
       <SectionWrap>
-        <LabelWrap>Authors</LabelWrap>
+        <LabelWrap marginBottom={'18px'}>Authors</LabelWrap>
         <AuthorsEditorWrap>
           <DragDropContext
             onDragEnd={(result: DropResult, provided: ResponderProvided) => {
@@ -121,13 +121,14 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                           isDragDisabled={publicationStore.isReadonly}
                           index={index}>
                           {(provided, snapshot) => (
-                            <div
+                            <DraggableContentWrapper
+                              isDragging={snapshot.isDragging}
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}>
                               <AuthorElement
                                 isReadonly={publicationStore.isReadonly}
-                                useMarginBottom={true}
+                                useMarginBottom={false}
                                 key={author.id}
                                 author={author}
                                 isConfirmed={author.isConfirmed}
@@ -136,7 +137,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                                 }
                                 shouldOpenInNewTab={true}
                               />
-                            </div>
+                            </DraggableContentWrapper>
                           )}
                         </Draggable>
                       );
@@ -146,6 +147,7 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
               )}
             </Droppable>
           </DragDropContext>
+          <HeightElement value={publicationStore.isReadonly ? '0px' : '28px'} />
           {!publicationStore.isReadonly && !searchVisible && (
             <Button
               variant={'outlined'}
@@ -697,14 +699,18 @@ const ChangesOnThisFormDoesntAffectProfileText = styled.span`
   letter-spacing: 0.17px;
 `;
 
-// const GotItButton = styled.div`
-//   color: var(--alert-info-content, #014361);
-//
-//   /* components/button-small */
-//   font-family: Roboto;
-//   font-size: 14px;
-//   font-style: normal;
-//   font-weight: 500;
-//   line-height: 22px; /* 157.143% */
-//   letter-spacing: 0.46px;
-// `;
+const DraggableContentWrapper = styled.div<{
+  isDragging: boolean;
+}>`
+  padding-top: 14px;
+  padding-bottom: 14px;
+  ${(props) =>
+    props.isDragging
+      ? 'border-radius: 4px;  transition-property: padding-left;\n  transition-duration: 1s;\n  transition-timing-function: ease-out;\n  ' +
+        'padding-left: 14px;\n' +
+        'opacity: 0.8;\n' +
+        'background: var(--primary-contrast, #fff);\n\n  /* elevation/5 */\n' +
+        'box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2),\n' +
+        '    0px 5px 8px 0px rgba(0, 0, 0, 0.14), 0px 1px 14px 0px rgba(0, 0, 0, 0.12);'
+      : ''}
+`;
