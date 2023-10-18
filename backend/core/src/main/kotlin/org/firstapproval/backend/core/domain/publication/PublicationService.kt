@@ -295,6 +295,13 @@ class PublicationService(
     }
 
     @Transactional(readOnly = true)
+    fun getPublished(id: String): Publication {
+        val publication = publicationRepository.getReferenceById(id)
+        checkStatusAndAccessType(publication)
+        return publication
+    }
+
+    @Transactional(readOnly = true)
     fun getAllPublications(page: Int, pageSize: Int): PublicationsResponse {
         val publicationsPage = publicationRepository.findAllByStatusAndAccessType(
             PUBLISHED,
