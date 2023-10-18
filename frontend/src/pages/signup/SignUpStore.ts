@@ -24,6 +24,7 @@ export class SignUpStore {
   isError = false;
   isCodeError = false;
   isSubmitting = false;
+  isPrefilledFullName = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -105,5 +106,13 @@ export class SignUpStore {
     } finally {
       this.isSubmitting = false;
     }
+  }
+
+  async getUnconfirmedFullName(): Promise<void> {
+    const response = await userService.getUncorfirmedUserFullName(this.email);
+    this.firstName = response.data.firstName ?? '';
+    this.lastName = response.data.lastName ?? '';
+    this.isPrefilledFullName =
+      this.firstName.length > 0 || this.lastName.length > 0;
   }
 }

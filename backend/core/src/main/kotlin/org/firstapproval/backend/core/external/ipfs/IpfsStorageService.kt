@@ -3,7 +3,6 @@ package org.firstapproval.backend.core.external.ipfs
 import org.firstapproval.backend.core.config.REQUIRE_NEW_TRANSACTION_TEMPLATE
 import org.firstapproval.backend.core.external.ipfs.IpfsClient.DownloadFile
 import org.firstapproval.backend.core.external.ipfs.IpfsClient.File
-import org.firstapproval.backend.core.external.ipfs.IpfsClient.RestoreResponse
 import org.firstapproval.backend.core.external.ipfs.QueryType.DELETE
 import org.firstapproval.backend.core.external.ipfs.QueryType.DOWNLOAD_LINK
 import org.firstapproval.backend.core.external.ipfs.QueryType.INFO
@@ -13,11 +12,9 @@ import org.firstapproval.backend.core.utils.require
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.transaction.support.TransactionTemplate
-import java.time.format.DateTimeFormatter
 
 const val MAX_FILE_SIZE = 2_147_483_648
 const val IPFS_CONTENT_ID_KEY = "contentId"
-const val INSTANT_TILL = "instantTill"
 
 @Service
 class IpfsStorageService(
@@ -31,14 +28,9 @@ class IpfsStorageService(
         return ipfsClient.getInfo(id)
     }
 
-    fun restore(id: Long): RestoreResponse {
-        val history = saveHistory(RESTORE, mutableMapOf(IPFS_CONTENT_ID_KEY to id))
-        val restoreResponse = ipfsClient.restore(id)
-        transactionTemplate.execute {
-            history.params[INSTANT_TILL] = restoreResponse.instantTill.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-            ipfsHistoryRepository.save(history)
-        }
-        return restoreResponse
+    fun restore(id: Long) {
+        saveHistory(RESTORE, mutableMapOf(IPFS_CONTENT_ID_KEY to id))
+        ipfsClient.restore(id)
     }
 
     fun upload(file: java.io.File): File {

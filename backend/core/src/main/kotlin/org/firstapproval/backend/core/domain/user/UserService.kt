@@ -88,8 +88,8 @@ class UserService(
                 username = if (userByUsername != null) id.toString() else oauthUser.username,
                 externalIds = mutableMapOf(oauthUser.type to oauthUser.externalId),
                 email = oauthUser.email,
-                firstName = oauthUser.firstName,
-                lastName = oauthUser.lastName,
+                firstName = oauthUser.firstName ?: "",
+                lastName = oauthUser.lastName ?: "",
                 middleName = oauthUser.middleName,
                 fullName = oauthUser.fullName,
                 utmSource = utmSource
@@ -133,8 +133,8 @@ class UserService(
     private fun alreadyStartedRegistration(
         prevTry: EmailRegistrationConfirmation,
         password: String,
-        firstName: String?,
-        lastName: String?
+        firstName: String,
+        lastName: String
     ): UUID {
         if (prevTry.attemptCount >= SEND_EMAIL_LIMIT) {
             throw LimitExceededException("limit exceeded")
@@ -156,7 +156,7 @@ class UserService(
         return prevTry.id
     }
 
-    private fun newAttemptForRegistration(email: String, password: String, firstName: String?, lastName: String?, utmSource: String?): UUID {
+    private fun newAttemptForRegistration(email: String, password: String, firstName: String, lastName: String, utmSource: String?): UUID {
         if (userRepository.existsByEmail(email)) {
             throw RecordConflictException("user already exists")
         }

@@ -41,6 +41,7 @@ export enum ViewMode {
 }
 
 export class PublicationStore {
+  prevMode: ViewMode | null = null;
   viewMode: ViewMode = ViewMode.VIEW;
 
   publicationId: string;
@@ -100,6 +101,16 @@ export class PublicationStore {
       },
       { fireImmediately: true }
     );
+    reaction(
+      () => this.viewMode,
+      (viewMode, prev) => {
+        this.prevMode = prev;
+      }
+    );
+  }
+
+  get disableAutofocus(): boolean {
+    return this.prevMode === ViewMode.PREVIEW;
   }
 
   get isReadonly(): boolean {
@@ -768,9 +779,6 @@ export class PublicationStore {
     if (!hasContent(this.method)) {
       result.push('method');
     }
-    if (this.objectOfStudyTitle.length === 0) {
-      result.push('object_of_study');
-    }
     if (!hasContent(this.objectOfStudy)) {
       result.push('object_of_study');
     }
@@ -807,8 +815,8 @@ export class PublicationStore {
     const response = await publicationService.createPublication();
     this.publicationId = response.data.id;
     this.loadInitialState();
-    await this.fs.initialize(this.publicationId);
-    await this.sfs.initialize(this.publicationId);
+    this.fs.setPublicationId(this.publicationId);
+    this.sfs.setPublicationId(this.publicationId);
     routerStore.navigatePage(
       Page.PUBLICATION,
       `${publicationPath}${this.publicationId}`,

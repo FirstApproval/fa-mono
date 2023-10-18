@@ -50,15 +50,6 @@ import {
   MAX_CHARACTER_COUNT
 } from './store/PublicationStore';
 import { observer } from 'mobx-react-lite';
-import {
-  ExperimentGoalsEditor,
-  GrantingOrganizationsEditor,
-  MethodEditor,
-  ObjectOfStudyEditor,
-  RelatedPublicationsEditor,
-  SoftwareEditor,
-  SummaryEditor
-} from './editors/ParagraphEditor';
 import { FileSystemFA } from '../../fire-browser/FileSystemFA';
 import { TagsEditor } from './editors/TagsEditor';
 import { AuthorsEditor } from './editors/AuthorsEditor';
@@ -98,14 +89,25 @@ import { UploadStatusWindow } from './UploadStatusWindow';
 import { Footer } from '../home/Footer';
 import { HeaderComponent } from 'src/components/HeaderComponent';
 import { DatasetIsPreparingDialog } from './dialogs/DatasetIsPreparingDialog';
+import { SummaryEditor } from './editors/SummaryEditor';
+import { ExperimentGoalsEditor } from './editors/ExperimentGoalsEditor';
+import { MethodEditor } from './editors/MethodEditor';
+import { DataDescriptionEditor } from './editors/DataDescriptionEditor';
+import { SoftwareEditor } from './editors/SoftwareEditor';
+import { GrantingOrganizationsEditor } from './editors/GrantingOrganizationsEditor';
+import { RelatedPublicationsEditor } from './editors/RelatedPublicationsEditor';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
 
-  const [fs] = useState(() => new FileSystemFA(publicationId, fileService));
-  const [sfs] = useState(
-    () => new FileSystemFA(publicationId, sampleFileService)
-  );
+  const [fs] = useState(() => new FileSystemFA(fileService));
+  const [sfs] = useState(() => new FileSystemFA(sampleFileService));
+
+  useEffect(() => {
+    fs.setPublicationId(publicationId);
+    sfs.setPublicationId(publicationId);
+  }, [publicationId]);
+
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [contentLicensingDialogOpen, setContentLicensingDialogOpen] =
@@ -255,7 +257,6 @@ export const PublicationPage: FunctionComponent = observer(() => {
                   <>
                     {publicationStore.viewMode === ViewMode.PREVIEW && (
                       <ButtonWrap
-                        disabled={fs.activeUploads > 0 || sfs.activeUploads > 0}
                         variant="contained"
                         size={'medium'}
                         onClick={async () => {
@@ -578,7 +579,7 @@ const PublicationBody = observer(
           <ObjectOfStudyPlaceholder onClick={openObjectOfStudy} />
         )}
         {objectOfStudyEnabled && (
-          <ObjectOfStudyEditor publicationStore={publicationStore} />
+          <DataDescriptionEditor publicationStore={publicationStore} />
         )}
 
         {/* Software */}
@@ -768,9 +769,7 @@ const DialogContentWrap = styled(DialogContent)`
 `;
 
 const PublicationBodyWrap = styled('div')`
-  width: 728px;
-  padding-left: 24px;
-  padding-right: 24px;
+  width: 712px;
 `;
 
 const ButtonWrap = styled(Button)<{ marginright?: string }>`

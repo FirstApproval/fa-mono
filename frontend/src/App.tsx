@@ -49,9 +49,6 @@ const App: FunctionComponent = observer(() => {
   const showMobileNotSupporting =
     window.innerWidth < 960 && !mobileVersionNowSupportShown;
 
-  console.log(
-    'isRegistration in payload ' + routerStore.payload.isRegistratioin
-  );
   return (
     <>
       {/*
@@ -104,6 +101,7 @@ const App: FunctionComponent = observer(() => {
                     navigatePage(Page.SIGN_IN);
                   }}
                   onContinueClick={() => {
+                    void signUpStore.getUnconfirmedFullName();
                     navigatePage(Page.SIGN_UP_NAME);
                   }}
                 />
@@ -112,6 +110,8 @@ const App: FunctionComponent = observer(() => {
                 <EnterNamePage
                   firstName={signUpStore.firstName}
                   lastName={signUpStore.lastName}
+                  isOauth={false}
+                  isPrefilledFullName={signUpStore.isPrefilledFullName}
                   setFirstName={(value) => (signUpStore.firstName = value)}
                   setLastName={(value) => (signUpStore.lastName = value)}
                   onContinueClick={() => {
@@ -123,6 +123,8 @@ const App: FunctionComponent = observer(() => {
                 <EnterNamePage
                   firstName={userStore.editableUser!.firstName}
                   lastName={userStore.editableUser!.lastName}
+                  isOauth={true}
+                  isPrefilledFullName={signUpStore.isPrefilledFullName}
                   setFirstName={(value) =>
                     (userStore.editableUser!.firstName = value)
                   }

@@ -364,6 +364,27 @@ paths:
       operationId: getUserInfoByUsername
       tags: [ user ]
 
+  /api/user/get-uncorfirmed-full-name-by-email/{email}:
+    parameters:
+      - in: path
+        name: email
+        schema:
+          type: string
+        required: true
+    get:
+      summary: Get uncorfirmed user full name by email
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FullName'
+      security:
+        - PublicAuth: [ ]
+      operationId: getUncorfirmedUserFullName
+      tags: [ user ]
+
   /api/publication:
     post:
       summary: Create publication
@@ -1651,6 +1672,8 @@ components:
       required:
         - email
         - password
+        - firstName
+        - lastName
 
     RegistrationResponse:
       type: object
@@ -1821,10 +1844,10 @@ components:
           $ref: '#/components/schemas/LicenseType'
         previewTitle:
           type: string
-          maxLength: 100
+          maxLength: 200
         previewSubtitle:
           type: string
-          maxLength: 200
+          maxLength: 300
       required:
         - accessType
         - storageType
@@ -1912,6 +1935,14 @@ components:
         - email
         - username
         - workplaces
+
+    FullName:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
 
     UploadType:
       type: string

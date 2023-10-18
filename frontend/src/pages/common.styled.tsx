@@ -135,3 +135,21 @@ export const CircularProgressWrap = styled(CircularProgress)`
   margin-left: 12px;
   margin-right: 12px;
 `;
+
+export const PrefilledDetails = styled.div`
+  border-radius: 4px;
+  background: var(--alert-info-fill, #e5f6fd);
+
+  display: flex;
+  width: 500px;
+  padding: 6px 16px;
+  align-items: flex-start;
+  justify-content: start;
+`;
+
+export const PrefilledDetailsText = styled(Typography)`
+  margin-left: 12px;
+  color: var(--alert-info-content, #014361);
+  padding-top: 8px;
+  padding-bottom: 8px;
+`;

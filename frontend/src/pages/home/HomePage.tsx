@@ -156,30 +156,31 @@ export const HomePage: FunctionComponent = observer(() => {
   );
 });
 
-export const Header = styled('div')`
+const Header = styled('div')`
   font-size: 48px;
   font-style: normal;
   font-weight: 700;
   line-height: 116.7%;
 `;
-export const ResultsLabel = styled(Typography)`
+
+const ResultsLabel = styled(Typography)`
   margin-bottom: 40px;
 ` as typeof Typography;
 
-export const ContentWrap = styled('div')`
+const ContentWrap = styled('div')`
   width: 100%;
   display: flex;
   justify-content: center;
 `;
 
-export const ContentWrapInner = styled('div')`
+const ContentWrapInner = styled('div')`
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 1240px;
 `;
 
-export const FlexBody = styled('div')`
+const FlexBody = styled('div')`
   max-width: 680px;
 `;
 
@@ -188,7 +189,7 @@ const DividerWrap = styled(Divider)`
   margin-bottom: 40px;
 `;
 
-export const Wrap = styled('div')`
+const Wrap = styled('div')`
   width: 100%;
   margin-left: auto;
   margin-right: auto;
