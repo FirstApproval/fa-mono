@@ -1,5 +1,6 @@
 import {
   action,
+  computed,
   makeObservable,
   observable,
   reaction,
@@ -17,11 +18,12 @@ import { authStore } from '../core/auth';
 import { AxiosProgressEvent } from 'axios';
 import { isFileSystemEntry, UploadProgressStore } from './UploadProgressStore';
 
-export interface FileEntry {
-  id?: string;
+interface FileEntry {
+  id: string;
   fullPath: string;
   name: string;
   isDirectory: boolean;
+  isUploading: boolean;
   note?: string;
 }
 
@@ -30,12 +32,15 @@ type UploadFilesAfterDialogFunction = (value: UploadType) => void;
 export class FileSystemFA {
   rootPathFiles: number = 0;
   currentPath: string = '/';
-  files = new Map<string, FileEntry>();
-  publicationId: string = '';
+  private publicationId: string = '';
+  private backEndFiles: FileEntry[] = [];
+  private localFiles: FileEntry[] = [];
+  private allLocalFiles: FileEntry[] = [];
   isLoading = false;
   initialized = false;
+  activeUploads = 0;
 
-  uploadProgress = new UploadProgressStore(this);
+  uploadProgress = new UploadProgressStore();
 
   renameOrReplaceDialogOpen = false;
   addDirectoryImpossibleDialogOpen = false;
@@ -44,12 +49,21 @@ export class FileSystemFA {
     uploadType: UploadType
   ) => {};
 
-  constructor(readonly fileService: Omit<FileApi, 'configuration'>) {
-    makeObservable(this, {
-      publicationId: observable,
+  constructor(
+    publicationId: string,
+    readonly fileService: Omit<FileApi, 'configuration'>
+  ) {
+    this.publicationId = publicationId;
+    makeObservable<
+      FileSystemFA,
+      'backEndFiles' | 'localFiles' | 'allLocalFiles'
+    >(this, {
       rootPathFiles: observable,
       currentPath: observable,
-      files: observable,
+      files: computed,
+      backEndFiles: observable,
+      localFiles: observable,
+      allLocalFiles: observable,
       isLoading: observable,
       initialized: observable,
       renameOrReplaceDialogOpen: observable,
@@ -57,17 +71,15 @@ export class FileSystemFA {
       addDirectoryImpossibleDialogOpen: observable,
       moveFilesImpossibleDialogOpen: observable,
       setCurrentPath: action,
-      setPublicationId: action
+      activeUploads: observable
     });
 
     reaction(
-      () => ({
-        publicationId: this.publicationId,
-        currentPath: this.currentPath
-      }),
+      () => this.currentPath,
       async () => {
         if (this.publicationId) {
-          await this.updateCurrentDirectory();
+          const files = await this.listDirectory(this.currentPath);
+          this.backEndFiles = [...files];
         } else {
           this.initialized = true;
         }
@@ -76,23 +88,26 @@ export class FileSystemFA {
         fireImmediately: true
       }
     );
+
+    reaction(() => this.currentPath, this.updateLocalFiles, {
+      fireImmediately: true
+    });
+
+    reaction(
+      () => this.files,
+      (files) => {
+        if (this.currentPath === '/') {
+          this.rootPathFiles = files.length;
+        }
+      },
+      { fireImmediately: true }
+    );
   }
 
-  setPublicationId(publicationId: string): void {
+  async initialize(publicationId: string): Promise<void> {
     this.publicationId = publicationId;
-  }
-
-  async updateCurrentDirectory(): Promise<void> {
-    const path = this.currentPath;
-    const files = await this.getPublicationFiles(path);
-    this.addFiles(files);
-  }
-
-  addFiles(files: FileEntry[]): void {
-    for (const file of files) {
-      this.files.set(file.fullPath, file);
-    }
-    this.listener();
+    const files = await this.listDirectory(this.currentPath);
+    this.backEndFiles = [...files];
   }
 
   getPublicationFilesSize = async (): Promise<number> => {
@@ -114,6 +129,17 @@ export class FileSystemFA {
     this.moveFilesImpossibleDialogOpen = false;
   };
 
+  get files(): FileEntry[] {
+    const unuqiePath: Record<string, boolean> = {}; // Keeps track of seen property values
+    return [...this.backEndFiles, ...this.localFiles].filter((entry) => {
+      if (unuqiePath[entry.fullPath]) {
+        return false; // Duplicate, remove entry
+      }
+      unuqiePath[entry.fullPath] = true;
+      return true;
+    });
+  }
+
   setCurrentPath = (path: string): void => {
     this.currentPath = path;
   };
@@ -128,16 +154,20 @@ export class FileSystemFA {
     });
 
     void this.uploadQueue(uploadQueue);
-    const entries = files.map((file) => {
-      const fullPath = this.fullPath('/' + file.name);
-      return {
-        name: file.name,
-        fullPath,
-        isDirectory: false,
-        isUploading: true
-      };
-    });
-    this.addFiles(entries);
+    this.allLocalFiles = [
+      ...this.allLocalFiles,
+      ...files.map((file) => {
+        const fullPath = this.fullPath('/' + file.name);
+        return {
+          id: fullPath,
+          name: file.name,
+          fullPath,
+          isDirectory: false,
+          isUploading: true
+        };
+      })
+    ];
+    this.updateLocalFiles();
   };
 
   uploadFile = (
@@ -181,7 +211,8 @@ export class FileSystemFA {
           config
         )
         .then((response) => {
-          this.updateUpload(fullPath, response.data);
+          this.cleanUploading(response.data);
+          this.actualizeFiles(response.data);
           this.uploadProgress.updateStatus(fullPath, {
             isSuccess: true,
             abortController: undefined
@@ -205,16 +236,20 @@ export class FileSystemFA {
     });
 
     void this.uploadQueue(uploadQueue);
-    const entries = files.map((f) => {
-      const fullPath = this.fullPath(f.fullPath);
-      return {
-        name: f.name,
-        fullPath,
-        isDirectory: f.isDirectory,
-        isUploading: true
-      };
-    });
-    this.addFiles(entries);
+    this.allLocalFiles = [
+      ...this.allLocalFiles,
+      ...files.map((f) => {
+        const fullPath = this.fullPath(f.fullPath);
+        return {
+          id: fullPath,
+          name: f.name,
+          fullPath,
+          isDirectory: f.isDirectory,
+          isUploading: true
+        };
+      })
+    ];
+    this.updateLocalFiles();
   };
 
   uploadFileSystemEntry = (
@@ -245,33 +280,33 @@ export class FileSystemFA {
 
     if (file.isFile) {
       return async (): Promise<void> => {
-        const entry = await new Promise<File>((resolve) =>
-          (file as FileSystemFileEntry).file(resolve)
-        );
-        const hex = await calculateSHA256(entry);
-        await this.fileService
-          .uploadFile(
-            this.publicationId,
-            fullPath,
-            false,
-            uploadType,
-            hex,
-            entry.size,
-            entry,
-            config
-          )
-          .then((response) => {
-            this.updateUpload(fullPath, response.data);
-            this.uploadProgress.updateStatus(fullPath, {
-              isSuccess: true,
-              abortController: undefined
+        (file as FileSystemFileEntry).file(async (file) => {
+          const hex = await calculateSHA256(file);
+          await this.fileService
+            .uploadFile(
+              this.publicationId,
+              fullPath,
+              false,
+              uploadType,
+              hex,
+              file.size,
+              file,
+              config
+            )
+            .then((response) => {
+              this.cleanUploading(response.data);
+              this.actualizeFiles(response.data);
+              this.uploadProgress.updateStatus(fullPath, {
+                isSuccess: true,
+                abortController: undefined
+              });
+            })
+            .catch(() => {
+              this.uploadProgress.updateStatus(fullPath, {
+                isFailed: true
+              });
             });
-          })
-          .catch(() => {
-            this.uploadProgress.updateStatus(fullPath, {
-              isFailed: true
-            });
-          });
+        });
       };
     } else {
       return async (): Promise<void> => {
@@ -287,7 +322,7 @@ export class FileSystemFA {
             config
           )
           .then((response) => {
-            this.updateUpload(fullPath, response.data);
+            this.cleanUploading(response.data);
             this.uploadProgress.updateStatus(fullPath, {
               isSuccess: true,
               abortController: undefined
@@ -300,36 +335,6 @@ export class FileSystemFA {
           });
       };
     }
-  };
-
-  updateUpload(fullPath: string, file: PublicationFile): void {
-    this.files.set(fullPath, {
-      id: file.id,
-      name: fullPathToName(file.fullPath ?? ''),
-      fullPath,
-      isDirectory: file.isDir ?? false
-    });
-    this.notifyListener(fullPath);
-  }
-
-  private listener: () => void = () => {};
-
-  setListener(l: () => void): void {
-    this.listener = l;
-    this.listener();
-  }
-
-  notifyListener(fullPath: string): void {
-    if (this.inCurrentDirectory(fullPath)) {
-      this.listener();
-    }
-  }
-
-  inCurrentDirectory = (fullPath: string): boolean => {
-    if (!fullPath) return false;
-    return (
-      fullPath.substring(0, fullPath.lastIndexOf('/') + 1) === this.currentPath
-    );
   };
 
   retryUploadAll = (): void => {
@@ -350,6 +355,69 @@ export class FileSystemFA {
     });
 
     void this.uploadQueue(uploadQueue);
+    this.allLocalFiles = [
+      ...this.allLocalFiles,
+      ...allFailed.map((f) => {
+        const fullPath = f.fullPath;
+        return {
+          id: fullPath,
+          name: f.file.name,
+          fullPath,
+          isDirectory: isFileSystemEntry(f.file) ? f.file.isDirectory : false,
+          isUploading: true
+        };
+      })
+    ];
+    this.updateLocalFiles();
+  };
+
+  actualizeFiles = (pf: PublicationFile): void => {
+    this.actualizeAllLocalFiles(pf);
+    if (pf.dirPath === this.currentPath) {
+      this.actualizeLocalFiles(pf);
+    }
+  };
+
+  actualizeAllLocalFiles = (pf: PublicationFile): void => {
+    const unuqiePath: Record<string, boolean> = {}; // Keeps track of seen property values
+    this.allLocalFiles = [
+      {
+        id: pf.id ?? '',
+        fullPath: pf.fullPath ?? '',
+        name: fullPathToName(pf.fullPath ?? ''),
+        isDirectory: pf.isDir ?? false,
+        isUploading: false,
+        note: pf.description
+      },
+      ...this.allLocalFiles
+    ].filter((entry) => {
+      if (unuqiePath[entry.fullPath]) {
+        return false; // Duplicate, remove entry
+      }
+      unuqiePath[entry.fullPath] = true;
+      return true;
+    });
+  };
+
+  actualizeLocalFiles = (pf: PublicationFile): void => {
+    const unuqiePath: Record<string, boolean> = {}; // Keeps track of seen property values
+    this.localFiles = [
+      {
+        id: pf.id ?? '',
+        fullPath: pf.fullPath ?? '',
+        name: fullPathToName(pf.fullPath ?? ''),
+        isDirectory: pf.isDir ?? false,
+        isUploading: false,
+        note: pf.description
+      },
+      ...this.localFiles
+    ].filter((entry) => {
+      if (unuqiePath[entry.fullPath]) {
+        return false; // Duplicate, remove entry
+      }
+      unuqiePath[entry.fullPath] = true;
+      return true;
+    });
   };
 
   createFolder = (name: string): void => {
@@ -361,30 +429,49 @@ export class FileSystemFA {
         dirPath: this.currentPath
       })
       .then((response) => {
-        this.updateUpload(fullPath, response.data);
+        this.cleanUploading(response.data);
       });
+
+    this.allLocalFiles = [
+      ...this.allLocalFiles,
+      {
+        id: fullPath,
+        name,
+        fullPath,
+        isDirectory: true,
+        isUploading: true
+      }
+    ];
+    this.updateLocalFiles();
   };
 
-  updateFile = (fullPath: string, name: string, note: string): void => {
-    const file = this.files.get(fullPath);
-    if (!file?.id) return;
-    void this.fileService.editFile(file.id, {
+  updateFile = (id: string, name: string, note: string): void => {
+    void this.fileService.editFile(id, {
       name,
       description: note
     });
+    const filter = (f: FileEntry): FileEntry => {
+      if (f.id === id) {
+        return {
+          ...f,
+          name,
+          note
+        };
+      } else {
+        return f;
+      }
+    };
+    this.backEndFiles = this.backEndFiles.map(filter);
+    this.allLocalFiles = this.allLocalFiles.map(filter);
+    this.updateLocalFiles();
   };
 
-  deleteFile = (fullPaths: string[]): void => {
-    const ids = fullPaths
-      .map((f) => this.files.get(f)?.id)
-      .filter((t) => t !== undefined) as string[];
-    if (ids.length) {
-      void this.fileService.deleteFiles({ ids });
-    }
-    fullPaths.forEach((f) => {
-      this.files.delete(f);
-      this.notifyListener(f);
-    });
+  deleteFile = (ids: string[]): void => {
+    void this.fileService.deleteFiles({ ids });
+    const filter = (f: FileEntry): boolean => !ids.includes(f.id);
+    this.backEndFiles = this.backEndFiles.filter(filter);
+    this.allLocalFiles = this.allLocalFiles.filter(filter);
+    this.updateLocalFiles();
   };
 
   moveFiles = async (files: FileData[], destination: string): Promise<void> => {
@@ -398,6 +485,10 @@ export class FileSystemFA {
     for (const id of ids) {
       void this.fileService.moveFile(id, { newDirPath: destination });
     }
+    const filter = (f: FileEntry): boolean => !ids.includes(f.id);
+    this.backEndFiles = this.backEndFiles.filter(filter);
+    this.allLocalFiles = this.allLocalFiles.filter(filter);
+    this.updateLocalFiles();
   };
 
   hasDuplicatesInCurrentFolder = async (
@@ -433,16 +524,81 @@ export class FileSystemFA {
     return DuplicateCheckResult.DUPLICATES_NOT_FOUND;
   };
 
+  private readonly updateLocalFiles = (): void => {
+    this.localFiles = this.allLocalFiles.filter((file) => {
+      const filePath = file.fullPath;
+      return (
+        filePath.startsWith(this.currentPath) &&
+        !filePath.slice(this.currentPath.length).includes('/')
+      );
+    });
+  };
+
+  private readonly cleanUploading = (file: PublicationFile): void => {
+    if (!file.fullPath || !file.id) return;
+    const id = file.id;
+    if (this.inCurrentDirectory(file)) {
+      this.allLocalFiles = this.allLocalFiles.map((f) => {
+        if (f.fullPath === file.fullPath) {
+          return {
+            ...f,
+            id,
+            isUploading: false
+          };
+        } else {
+          return f;
+        }
+      });
+      this.updateLocalFiles();
+    } else {
+      this.allLocalFiles = this.allLocalFiles.filter(
+        (f) => f.fullPath !== file.fullPath
+      );
+    }
+  };
+
+  private inCurrentDirectory(file: PublicationFile): boolean {
+    if (!file.fullPath) return false;
+    return (
+      file.fullPath.substring(0, file.fullPath.lastIndexOf('/') + 1) ===
+      this.currentPath
+    );
+  }
+
   private async uploadQueue(
     uploadQueue: Array<() => Promise<void>>
   ): Promise<void> {
-    for (const uploadFunction of uploadQueue) {
-      try {
-        await uploadFunction();
-      } catch (error) {
-        console.error(error);
+    const concurrencyLimit = 4;
+    const queueLength = uploadQueue.length;
+    const results: Array<Promise<void>> = [];
+    let currentIndex = 0;
+    this.activeUploads += uploadQueue.length;
+
+    // Helper function to execute a single promise from the queue
+    const executePromise = async (index: number): Promise<void> => {
+      // Execute the promise at the given index
+      await uploadQueue[index]();
+      this.activeUploads -= 1;
+    };
+
+    // Function to handle the next promise in the queue
+    const handleNextPromise = async (): Promise<void> => {
+      if (currentIndex < queueLength) {
+        const promiseIndex = currentIndex;
+        currentIndex++;
+        const promise = executePromise(promiseIndex);
+        results.push(promise);
+        promise.finally(handleNextPromise);
       }
+    };
+
+    // Start the initial batch of promises
+    for (let i = 0; i < concurrencyLimit && i < queueLength; i++) {
+      void handleNextPromise();
     }
+
+    // Wait for all promises to complete
+    await Promise.all(results);
   }
 
   private fullPath(fullPath: string): string {
@@ -450,7 +606,7 @@ export class FileSystemFA {
     return currentPath.substring(0, currentPath.length - 1) + fullPath;
   }
 
-  private readonly getPublicationFiles = async (
+  private readonly listDirectory = async (
     dirPath: string
   ): Promise<FileEntry[]> => {
     this.isLoading = true;

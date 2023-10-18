@@ -97,7 +97,7 @@ test('should upload files and directories', async () => {
     }
   ];
   const publicationId = 'aaaa-bbbb-cccc-dddd-eeee';
-  const fs = new FileSystemFA(fileService);
+  const fs = new FileSystemFA(publicationId, fileService);
   fs.addFilesDnd(files, UploadType.REPLACE);
 
   await waitFor(() => {
