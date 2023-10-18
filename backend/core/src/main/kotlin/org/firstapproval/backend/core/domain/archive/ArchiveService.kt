@@ -315,7 +315,7 @@ class ArchiveService(
             publication.publicationTime = now()
             publicationRepository.save(publication)
         } catch (ex: Exception) {
-            log.error(ex) { "s3 persistence error" }
+            log.error(ex) { "ipfs persistence error" }
             throw ex
         } finally {
             tempArchive.delete()
