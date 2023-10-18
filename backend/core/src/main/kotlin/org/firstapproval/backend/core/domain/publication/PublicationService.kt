@@ -80,6 +80,17 @@ class PublicationService(
                         ordinal = 0,
                         user = user,
                         isConfirmed = true,
+                        workplaces = user.workplaces.map {
+                            AuthorWorkplace(
+                                organization = it.organization,
+                                organizationDepartment = it.organizationDepartment,
+                                address = it.address,
+                                postalCode = it.postalCode,
+                                isFormer = it.isFormer,
+                                creationTime = now(),
+                                editingTime = now(),
+                            )
+                        }.toMutableList()
                     )
                 )
             )
@@ -240,7 +251,7 @@ class PublicationService(
             ?: run {
                 downloadLinkRepository.deleteById(pub.id)
                 val contentInfo = ipfsStorageService.getInfo(contentId)
-                return when (contentInfo.availability) {
+                return when (ARCHIVE) {
                     INSTANT -> {
                         val downloadLinkInfo = ipfsStorageService.getDownloadLink(contentId)
                         val expirationTime = now().plusSeconds(downloadLinkInfo.expiresIn)  //3600 seconds - default value
@@ -443,7 +454,7 @@ fun Author.toApiObject(profileImage: ByteArray?) = AuthorApiObject().also {
     it.email = email
     it.ordinal = ordinal
     it.isConfirmed = isConfirmed
-    it.user = user?.let {user ->
+    it.user = user?.let { user ->
         UserInfo(
             user.id,
             user.firstName,
