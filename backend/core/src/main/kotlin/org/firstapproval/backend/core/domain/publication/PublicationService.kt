@@ -251,7 +251,7 @@ class PublicationService(
             ?: run {
                 downloadLinkRepository.deleteById(pub.id)
                 val contentInfo = ipfsStorageService.getInfo(contentId)
-                return when (ARCHIVE) {
+                return when (contentInfo.availability) {
                     INSTANT -> {
                         val downloadLinkInfo = ipfsStorageService.getDownloadLink(contentId)
                         val expirationTime = now().plusSeconds(downloadLinkInfo.expiresIn)  //3600 seconds - default value
