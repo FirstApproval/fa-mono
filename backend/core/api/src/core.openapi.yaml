@@ -864,6 +864,28 @@ paths:
       operationId: downloadPdf
       tags: [ publication ]
 
+  /api/pending-publication/{id}/pdf/download:
+    get:
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            maxLength: 7
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+      security:
+        - TokenAuth: [ ]
+      operationId: downloadPendingPdf
+      tags: [ publication ]
+
   /api/publication/{id}/files/sample/download-link:
     parameters:
       - in: path
