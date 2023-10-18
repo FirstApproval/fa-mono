@@ -13,6 +13,7 @@ import org.firstapproval.api.server.model.SubmitPublicationRequest
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.PublicationPdfService
+import org.firstapproval.backend.core.domain.publication.PublicationRepository
 import org.firstapproval.backend.core.domain.publication.PublicationService
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
 import org.firstapproval.backend.core.domain.publication.downloader.DownloaderRepository
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class PublicationController(
     private val publicationService: PublicationService,
+    private val publicationRepository: PublicationRepository,
     private val userService: UserService,
     private val downloaderRepository: DownloaderRepository,
     private val authHolderService: AuthHolderService,
@@ -136,7 +138,7 @@ class PublicationController(
     }
 
     override fun downloadPdf(id: String): ResponseEntity<Resource> {
-        val publicationName = publicationService.get(null, id)
+        val publicationName = publicationRepository.getReferenceById(id)
         val pdfContent = publicationPdfService.generate(id)
         return ok()
             .contentType(APPLICATION_PDF)
