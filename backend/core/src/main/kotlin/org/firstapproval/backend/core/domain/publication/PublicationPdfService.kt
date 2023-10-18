@@ -10,7 +10,6 @@ import java.text.DecimalFormat
 
 @Service
 class PublicationPdfService(
-    private val publicationRepository: PublicationRepository,
     private val pdfService: PdfService,
     private val frontendProperties: FrontendProperties
 ) {
@@ -18,8 +17,7 @@ class PublicationPdfService(
     private val formatter = DecimalFormat("#.##")
 
     @Transactional(readOnly = true)
-    fun generate(publicationId: String): ByteArray {
-        val publication = publicationRepository.getReferenceById(publicationId)
+    fun generate(publication: Publication): ByteArray {
         val templateName = "pdf/publication-pdf"
         return pdfService.generate(templateName, generateThymeleafContext(publication))
     }
