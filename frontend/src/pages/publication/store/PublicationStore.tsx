@@ -815,8 +815,8 @@ export class PublicationStore {
     const response = await publicationService.createPublication();
     this.publicationId = response.data.id;
     this.loadInitialState();
-    this.fs.setPublicationId(this.publicationId);
-    this.sfs.setPublicationId(this.publicationId);
+    await this.fs.initialize(this.publicationId);
+    await this.sfs.initialize(this.publicationId);
     routerStore.navigatePage(
       Page.PUBLICATION,
       `${publicationPath}${this.publicationId}`,

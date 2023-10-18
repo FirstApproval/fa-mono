@@ -100,14 +100,10 @@ import { RelatedPublicationsEditor } from './editors/RelatedPublicationsEditor';
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
 
-  const [fs] = useState(() => new FileSystemFA(fileService));
-  const [sfs] = useState(() => new FileSystemFA(sampleFileService));
-
-  useEffect(() => {
-    fs.setPublicationId(publicationId);
-    sfs.setPublicationId(publicationId);
-  }, [publicationId]);
-
+  const [fs] = useState(() => new FileSystemFA(publicationId, fileService));
+  const [sfs] = useState(
+    () => new FileSystemFA(publicationId, sampleFileService)
+  );
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [contentLicensingDialogOpen, setContentLicensingDialogOpen] =
@@ -257,6 +253,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
                   <>
                     {publicationStore.viewMode === ViewMode.PREVIEW && (
                       <ButtonWrap
+                        disabled={fs.activeUploads > 0 || sfs.activeUploads > 0}
                         variant="contained"
                         size={'medium'}
                         onClick={async () => {

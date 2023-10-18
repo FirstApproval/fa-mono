@@ -1,6 +1,5 @@
 import { makeAutoObservable } from 'mobx';
 import { AxiosProgressEvent } from 'axios';
-import { FileSystemFA } from './FileSystemFA';
 
 interface ProgressStatus {
   fullPath: string;
@@ -14,7 +13,7 @@ interface ProgressStatus {
 export class UploadProgressStore {
   progressStatus = new Map<string, ProgressStatus>();
 
-  constructor(readonly fs: FileSystemFA) {
+  constructor() {
     makeAutoObservable(this);
   }
 
@@ -55,29 +54,7 @@ export class UploadProgressStore {
       ...value,
       ...update
     });
-    this.notifyListener(fullPath);
   }
-
-  private listener: () => void = () => {};
-
-  setListener(l: () => void): void {
-    this.listener = l;
-    this.listener();
-  }
-
-  notifyListener(fullPath: string): void {
-    if (this.inCurrentDirectory(fullPath)) {
-      this.listener();
-    }
-  }
-
-  inCurrentDirectory = (fullPath: string): boolean => {
-    if (!fullPath) return false;
-    return (
-      fullPath.substring(0, fullPath.lastIndexOf('/') + 1) ===
-      this.fs.currentPath
-    );
-  };
 }
 
 export function isFileSystemEntry(
