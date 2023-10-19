@@ -30,11 +30,6 @@ commands[command]
 function run(command, notGenerateSourceMap) {
   execSync(command, {
     stdio: 'inherit',
-    env: {
-      ...process.env,
-      NODE_ENV: 'production',
-      devtool: false
-    }
   });
 }
 
