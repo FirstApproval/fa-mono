@@ -44,7 +44,7 @@ export class AuthorEditorStore implements IWorkplaceStore {
     this.isValidFirstName = this.firstName.length > 0;
     this.isValidLastName = this.lastName.length > 0;
     this.workplacesValidation = this.workplaces.map((workplace) => ({
-      isValidOrganization: !!workplace.organization
+      isValidOrganization: !!workplace.organization?.name?.length
     }));
     // const currentWorkplaceAbsent = !this.workplaces.some(
     //   (workplace) => !workplace.isFormer
