@@ -3,14 +3,13 @@ const execSync = require('child_process').execSync;
 const command = process.argv[2];
 const url = process.argv[3];
 const noDeps = process.argv[4] === 'no-deps';
-const notGenerateSourceMap = process.argv[4] === 'notGenerateSourceMap';
 
 const commands = {
   api: () => scripts.api(url),
   build: () => {
     !noDeps && run('npm install');
     scripts.api(url);
-    scripts.build(notGenerateSourceMap);
+    scripts.build();
   },
   start: () => {
     scripts.api(url);
@@ -20,8 +19,7 @@ const commands = {
 
 const scripts = {
   api: (url) => generateApi(url),
-  build: (notGenerateSourceMap) =>
-    build('', notGenerateSourceMap ? 'GENERATE_SOURCEMAP=false' : ''),
+  build: () => build(),
   start: () => start()
 };
 
@@ -29,9 +27,9 @@ commands[command]
   ? commands[command]()
   : error(`Command '${command}' not found, run 'npm run ${command}'`);
 
-function run(command) {
+function run(command, notGenerateSourceMap) {
   execSync(command, {
-    stdio: 'inherit'
+    stdio: 'inherit',
   });
 }
 
@@ -40,7 +38,7 @@ function build(name = '', suffix = '') {
 }
 
 function start() {
-  run('react-scripts start');
+  run('react-scripts start GENERATE_SOURCEMAP=false');
 }
 
 function generateApi(url) {
