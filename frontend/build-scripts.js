@@ -32,7 +32,6 @@ function run(command, notGenerateSourceMap) {
     stdio: 'inherit',
     env: {
       ...process.env,
-      NODE_ENV: 'production',
       devtool: false
     }
   });
@@ -43,7 +42,7 @@ function build(name = '', suffix = '') {
 }
 
 function start() {
-  run('react-scripts start GENERATE_SOURCEMAP=false');
+  run('react-scripts start');
 }
 
 function generateApi(url) {
