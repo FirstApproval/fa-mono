@@ -18,7 +18,7 @@ class PdfService(
         val html = templateEngine.process(templateName, templateContext)
 
         val renderer = ITextRenderer()
-        renderer.fontResolver.addFont("templates/pdf/Roboto-Flex.ttf", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED)
+        renderer.fontResolver.addFont("templates/pdf/Roboto-Regular.ttf", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED)
         renderer.setDocumentFromString(html)
         renderer.layout()
         renderer.createPDF(outputStream)
