@@ -33,31 +33,33 @@ class IpfsClient(
         fileHeaders.set("Authorization", properties.accessKey)
     }
 
-    fun getInfo(id: Long): File {
+    fun getInfo(id: Long): IpfsFile {
         val result = restTemplate.exchange(
             properties.contentsUrl + "/${id}",
             GET,
             httpEntity,
-            File::class.java
+            IpfsFile::class.java
         )
 
         return result.body.require()
     }
 
-    fun restore(id: Long): RestoreResponse {
+    fun restore(id: Long) {
         val httpEntity = HttpEntity(mapOf("restoreDays" to 1), headers)
 
-        val result = restTemplate.exchange(
+        val response = restTemplate.exchange(
             properties.contentsUrl + "/${id}/restore",
             POST,
             httpEntity,
             RestoreResponse::class.java
         )
-
-        return result.body.require()
+        val responseData = response.body.require()
+        if (responseData.status != "ok" && responseData.id == null) {
+            throw IpfsException("Status is not ok and no data returned")
+        }
     }
 
-    fun upload(file: java.io.File): File {
+    fun upload(file: java.io.File): IpfsFile {
         val parts: MultiValueMap<String, Any> = LinkedMultiValueMap()
         parts.add("file_in", FileSystemResource(file)) //TODO think how improve it
         val httpEntity = HttpEntity(parts, fileHeaders)
@@ -66,7 +68,7 @@ class IpfsClient(
             properties.contentsUrl,
             POST,
             httpEntity,
-            File::class.java
+            IpfsFile::class.java
         )
 
         return result.body.require()
@@ -83,18 +85,18 @@ class IpfsClient(
         return result.body.require()
     }
 
-    fun delete(id: Long): File {
+    fun delete(id: Long): IpfsFile {
         val result = restTemplate.exchange(
             properties.contentsUrl + "/${id}",
             DELETE,
             httpEntity,
-            File::class.java
+            IpfsFile::class.java
         )
 
         return result.body.require()
     }
 
-    class File(
+    class IpfsFile(
         val id: Long,
         val filename: String,
         val origin: String? = null,
@@ -109,27 +111,28 @@ class IpfsClient(
     )
 
     class RestoreResponse(
-        val id: Long,
-        val filename: String,
+        var status: String? = null,
+        val id: Long? = null,
+        val filename: String? = null,
         val origin: String? = null,
         @JsonProperty("ipfs_cid")
-        val ipfsCid: String,
+        val ipfsCid: String? = null,
         @JsonProperty("encrypted_file_cid")
         val encryptedFileCid: String? = null,
         @JsonProperty("encrypted_file_size")
         val encryptedFileSize: Long? = null,
         @JsonProperty("ipfs_file_size")
-        val ipfsFileSize: Long,
+        val ipfsFileSize: Long? = null,
         @JsonFormat(with = [ACCEPT_CASE_INSENSITIVE_PROPERTIES])
-        var availability: IpfsContentAvailability,
+        var availability: IpfsContentAvailability? = null,
         @JsonProperty("owner_id")
-        val ownerId: Long,
+        val ownerId: Long? = null,
         @JsonProperty("instant_till")
-        var instantTill: LocalDateTime,
+        var instantTill: LocalDateTime? = null,
         @JsonProperty("created_at")
-        val createdAt: LocalDateTime,
+        val createdAt: LocalDateTime? = null,
         @JsonProperty("updated_at")
-        val updatedAt: LocalDateTime,
+        val updatedAt: LocalDateTime? = null,
         val key: String? = null
     )
 

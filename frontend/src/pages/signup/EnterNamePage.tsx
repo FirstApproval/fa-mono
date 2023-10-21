@@ -1,16 +1,20 @@
 import React, { type FunctionComponent, useState } from 'react';
 import { TextField } from '@mui/material';
 import styled from '@emotion/styled';
-import { ArrowForward } from '@mui/icons-material';
+import { ArrowForward, InfoOutlined } from '@mui/icons-material';
 import { observer } from 'mobx-react-lite';
 import {
   FlexBody,
   FlexBodyCenter,
   FullWidthButton,
   Header,
-  Parent
+  HeightElement,
+  Parent,
+  PrefilledDetails,
+  PrefilledDetailsText
 } from '../common.styled';
 import { HeaderComponent } from '../../components/HeaderComponent';
+import { C0288D1 } from '../../ui-kit/colors';
 
 interface EnterNamePageProps {
   firstName: string;
@@ -18,12 +22,21 @@ interface EnterNamePageProps {
   setFirstName: (value: string) => void;
   setLastName: (value: string) => void;
   onContinueClick: () => void;
+  isOauth: boolean;
+  isPrefilledFullName: boolean;
 }
 
 export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
   (props: EnterNamePageProps) => {
-    const { firstName, lastName, setFirstName, setLastName, onContinueClick } =
-      props;
+    const {
+      firstName,
+      lastName,
+      setFirstName,
+      setLastName,
+      onContinueClick,
+      isOauth,
+      isPrefilledFullName
+    } = props;
     const [isValidFirstName, setIsValidFirstName] = useState(true);
     const [isValidLastName, setIsValidLastName] = useState(true);
 
@@ -47,13 +60,30 @@ export const EnterNamePage: FunctionComponent<EnterNamePageProps> = observer(
       }
     };
 
+    const showPrefilledDetailsText = !isOauth && isPrefilledFullName;
+
     return (
       <Parent>
         <HeaderComponent showLoginOutlinedButton={false} />
         <FlexBodyCenter>
           <FlexBody>
             <Header>Welcome</Header>
-            <EmailLabel>To start, what&apos;s your name?</EmailLabel>
+            {showPrefilledDetailsText && (
+              <>
+                <PrefilledDetails>
+                  <InfoOutlined htmlColor={C0288D1} sx={{ marginTop: '7px' }} />
+                  <PrefilledDetailsText variant={'body2'}>
+                    We've pre-filled some details from previous co-author
+                    credits on First Approval. Editing them here won’t affect
+                    existing publications. Adjust as needed.
+                  </PrefilledDetailsText>
+                </PrefilledDetails>
+                <HeightElement value={'32px'} />
+              </>
+            )}
+            {!showPrefilledDetailsText && (
+              <EmailLabel>To start, what&apos;s your name?</EmailLabel>
+            )}
             <div>
               <FullWidthTextField
                 autoComplete="given-name"

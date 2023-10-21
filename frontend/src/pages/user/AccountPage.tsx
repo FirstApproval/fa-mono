@@ -156,14 +156,20 @@ export const AccountPage: FunctionComponent = observer(() => {
       void userService.existsByUsername(editableUser.username).then((exist) => {
         setUsedUsername(exist.data);
         if (!exist.data) {
-          void userStore.updateUser([], true, false).then(() => {
-            setSaveDisabled(true);
-            userStore.requestUserData();
-          });
+          void updateUser();
         }
       });
+    } else {
+      void updateUser();
     }
   };
+
+  async function updateUser(): Promise<void> {
+    void userStore.updateUser([], true, false).then(() => {
+      setSaveDisabled(true);
+      userStore.requestUserData();
+    });
+  }
 
   async function toBase64(file: File): Promise<string> {
     return await new Promise((resolve, reject) => {

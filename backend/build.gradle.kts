@@ -46,6 +46,7 @@ subprojects {
             dependency("io.github.microutils:kotlin-logging-jvm:2.0.11")
             dependency("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2")
             dependency("com.fasterxml.jackson.core:jackson-databind:2.14.2")
+            dependency("org.xhtmlrenderer:flying-saucer-pdf:9.3.1")
             dependency("io.jsonwebtoken:jjwt:0.9.1")
             dependency("org.springframework.boot:spring-boot-starter-webflux:3.1.0-SNAPSHOT")
             dependency("com.amazonaws:aws-java-sdk-s3:1.12.449")

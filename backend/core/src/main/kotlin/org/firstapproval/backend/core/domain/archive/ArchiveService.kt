@@ -4,15 +4,19 @@ import mu.KotlinLogging.logger
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import net.lingala.zip4j.io.outputstream.ZipOutputStream
 import net.lingala.zip4j.model.ZipParameters
-import net.lingala.zip4j.model.enums.EncryptionMethod.ZIP_STANDARD
+import net.lingala.zip4j.model.enums.AesKeyStrength.KEY_STRENGTH_256
+import net.lingala.zip4j.model.enums.EncryptionMethod.AES
+import org.apache.commons.lang3.RandomStringUtils.randomPrint
 import org.firstapproval.backend.core.domain.notification.NotificationService
-import org.firstapproval.backend.core.domain.publication.*
+import org.firstapproval.backend.core.domain.publication.Publication
+import org.firstapproval.backend.core.domain.publication.PublicationRepository
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
 import org.firstapproval.backend.core.domain.publication.StorageType.CLOUD_SECURE_STORAGE
 import org.firstapproval.backend.core.domain.publication.StorageType.IPFS
 import org.firstapproval.backend.core.domain.publication.file.PublicationFileRepository
 import org.firstapproval.backend.core.domain.publication.file.PublicationSampleFileRepository
+import org.firstapproval.backend.core.domain.publication.toPublicationElastic
 import org.firstapproval.backend.core.external.ipfs.DownloadLink
 import org.firstapproval.backend.core.external.ipfs.DownloadLinkRepository
 import org.firstapproval.backend.core.external.ipfs.IpfsClient.IpfsContentAvailability.INSTANT
@@ -37,6 +41,7 @@ import kotlin.io.path.exists
 
 private const val BATCH_SIZE = 10
 private const val TMP_FOLDER = "archive_tmp"
+private const val ARCHIVE_PASSWORD_LENGTH = 32
 
 private const val DESCRIPTIONS_FILE_DEFAULT_NAME = "descriptions"
 
@@ -65,7 +70,7 @@ class ArchiveService(
                 log.info { "Publication files for id=${publication.id} started" }
                 val publicationFilesIds = mutableListOf<UUID>()
                 transactionTemplate.execute { _ ->
-                    val password = (100000000..999999999).random().toString()
+                    val password = randomPrint(ARCHIVE_PASSWORD_LENGTH)
                     publicationFilesIds.addAll(archiveProcess(publication, password))
                 }
                 if (publicationFilesIds.isNotEmpty()) {
@@ -157,11 +162,14 @@ class ArchiveService(
                     }
                     if (!it.isDir) {
                         val inputStream = fileStorageService.get(FILES, it.id.toString()).objectContent
-                        val zipParms = ZipParameters()
-                        zipParms.fileNameInZip = it.fullPath
-                        zipParms.isEncryptFiles = true
-                        zipParms.encryptionMethod = ZIP_STANDARD
-                        zipOutputStream.putNextEntry(zipParms)
+                        val zipParams = ZipParameters()
+                        zipParams.fileNameInZip = it.fullPath
+                        zipParams.isEncryptFiles = true
+                        zipParams.encryptionMethod = AES
+                        // The assignment of aesKeyStrength = KEY_STRENGTH_256 is intended
+                        // solely for developer understanding, but it is, in fact, the default value.
+                        zipParams.aesKeyStrength = KEY_STRENGTH_256
+                        zipOutputStream.putNextEntry(zipParams)
                         val buffer = ByteArray(1024)
                         var len: Int
 
@@ -307,7 +315,7 @@ class ArchiveService(
             publication.publicationTime = now()
             publicationRepository.save(publication)
         } catch (ex: Exception) {
-            log.error(ex) { "s3 persistence error" }
+            log.error(ex) { "ipfs persistence error" }
             throw ex
         } finally {
             tempArchive.delete()

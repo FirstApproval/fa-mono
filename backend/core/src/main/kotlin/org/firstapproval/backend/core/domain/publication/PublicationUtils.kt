@@ -13,8 +13,8 @@ fun checkAccessToPublication(user: User?, publication: Publication) {
 }
 
 fun checkStatusAndAccessType(publication: Publication) {
-    if (publication.status != PUBLISHED && publication.accessType != OPEN) {
-        throw IllegalArgumentException()
+    if (publication.accessType != OPEN || publication.status == PENDING) {
+        throw AccessDeniedException("Access denied")
     }
 }
 

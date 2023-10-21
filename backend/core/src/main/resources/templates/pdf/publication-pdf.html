@@ -1,26 +1,6 @@
 <html>
 <head>
     <style>
-        @font-face {
-            font-family: 'Roboto', sans-serif;
-            src: url(Roboto-Regular.ttf);
-            font-style: normal;
-            font-weight: 400;
-        }
-
-        @font-face {
-            font-family: 'Roboto', sans-serif;
-            src: url(Roboto-Medium.ttf);
-            font-style: normal;
-            font-weight: 500;
-        }
-
-        @font-face {
-            font-family: 'Roboto', sans-serif;
-            src: url(Roboto-Bold.ttf);
-            font-style: normal;
-            font-weight: 700;
-        }
 
         @page {
             size: a4 portrait;
@@ -302,8 +282,8 @@
         <div class='block-title'>
             Data description
         </div>
-        <div class='block-content-name' th:text='${objectOfStudyName}'>
-        </div>
+<!--        <div class='block-content-name' th:text='${objectOfStudyName}'>-->
+<!--        </div>-->
         <div class='block-content'>
             <div th:each='o:${objectOfStudy}' th:text='${o}'></div>
         </div>

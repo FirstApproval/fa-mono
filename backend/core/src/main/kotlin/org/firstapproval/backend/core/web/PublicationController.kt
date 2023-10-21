@@ -27,6 +27,7 @@ import org.springframework.http.MediaType.APPLICATION_PDF
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
+import org.firstapproval.backend.core.domain.publication.Publication as PublicationEntity
 
 @RestController
 class PublicationController(
@@ -94,7 +95,7 @@ class PublicationController(
     }
 
     override fun getPublicationPublic(id: String): ResponseEntity<Publication> {
-        val pub = publicationService.get(null, id)
+        val pub = publicationService.getPublished(id)
         val publicationResponse = pub.toApiObject(userService)
         return ok().body(publicationResponse)
     }
@@ -136,11 +137,20 @@ class PublicationController(
     }
 
     override fun downloadPdf(id: String): ResponseEntity<Resource> {
-        val publicationName = publicationService.get(null, id)
-        val pdfContent = publicationPdfService.generate(id)
+        val publication = publicationService.getPublished(id)
+        return downloadPdf(publication)
+    }
+
+    override fun downloadPendingPdf(id: String): ResponseEntity<Resource> {
+        val publication = publicationService.get(authHolderService.user, id)
+        return downloadPdf(publication)
+    }
+
+    fun downloadPdf(publication: PublicationEntity): ResponseEntity<Resource> {
+        val pdfContent = publicationPdfService.generate(publication)
         return ok()
             .contentType(APPLICATION_PDF)
-            .header("Content-disposition", "attachment; filename=\"${publicationName.title ?: publicationName.id}.pdf\"")
+            .header("Content-disposition", "attachment; filename=\"${publication.title ?: publication.id}.pdf\"")
             .contentLength(pdfContent.size.toLong())
             .body(ByteArrayResource(pdfContent))
     }

@@ -11,6 +11,8 @@ import {
   Button,
   DialogContent,
   LinearProgress,
+  Snackbar,
+  SnackbarContent,
   Tooltip,
   Typography
 } from '@mui/material';
@@ -44,7 +46,8 @@ import {
   PublicationStore,
   SavingStatusState,
   type Section,
-  ViewMode
+  ViewMode,
+  MAX_CHARACTER_COUNT
 } from './store/PublicationStore';
 import { observer } from 'mobx-react-lite';
 import { FileSystemFA } from '../../fire-browser/FileSystemFA';
@@ -129,6 +132,8 @@ export const PublicationPage: FunctionComponent = observer(() => {
     [publicationStore, fs, sfs]
   );
 
+  const [openLimitSnackbar, setOpenLimitSnackbar] = useState(false);
+
   const { isLoading, validate } = publicationStore;
 
   const validateSections = (): boolean => {
@@ -172,10 +177,18 @@ export const PublicationPage: FunctionComponent = observer(() => {
     }
   }, [publicationStore.publicationStatus]);
 
+  useEffect(() => {
+    setOpenLimitSnackbar(publicationStore.displayLimitSnackbar);
+  }, [publicationStore.displayLimitSnackbar]);
+
   const nextViewMode =
     publicationStore.viewMode === ViewMode.PREVIEW
       ? ViewMode.EDIT
       : ViewMode.PREVIEW;
+
+  const handleLimitSnackbarClose = (): void => {
+    setOpenLimitSnackbar(false);
+  };
 
   return (
     <>
@@ -202,18 +215,28 @@ export const PublicationPage: FunctionComponent = observer(() => {
                 <BetaDialogWithButton />
                 {!publicationStore.isView && (
                   <>
-                    <Tooltip
-                      title={
-                        isOverflow
-                          ? `${publicationStore.creator?.firstName} ${publicationStore.creator?.lastName}`
-                          : undefined
-                      }>
-                      <DraftedBy variant={'body1'} ref={nameRef}>
-                        Draft by
-                        {/* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */}
-                        {` ${publicationStore.creator?.firstName} ${publicationStore.creator?.lastName}`}
-                      </DraftedBy>
-                    </Tooltip>
+                    {!publicationStore.isExceededLimit && (
+                      <Tooltip
+                        title={
+                          isOverflow
+                            ? `${publicationStore.creator?.firstName} ${publicationStore.creator?.lastName}`
+                            : undefined
+                        }>
+                        <DraftedBy variant={'body1'} ref={nameRef}>
+                          Draft by
+                          {/* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */}
+                          {` ${publicationStore.creator?.firstName} ${publicationStore.creator?.lastName}`}
+                        </DraftedBy>
+                      </Tooltip>
+                    )}
+                    {publicationStore.isExceededLimit && (
+                      <CharacterCountWrap>
+                        <ErrorSpanWrap color="error">
+                          {publicationStore.characterCount}
+                        </ErrorSpanWrap>
+                        {`/${MAX_CHARACTER_COUNT}`}
+                      </CharacterCountWrap>
+                    )}
                     {publicationStore.savingStatus ===
                       SavingStatusState.SAVING && (
                       <SavingStatus variant={'body1'}>Saving...</SavingStatus>
@@ -234,6 +257,10 @@ export const PublicationPage: FunctionComponent = observer(() => {
                         variant="contained"
                         size={'medium'}
                         onClick={async () => {
+                          if (publicationStore.isExceededLimit) {
+                            setOpenLimitSnackbar(true);
+                            return;
+                          }
                           const isValid = validateSections();
                           if (isValid) {
                             routerStore.navigatePage(
@@ -308,6 +335,36 @@ export const PublicationPage: FunctionComponent = observer(() => {
         )}
         <FlexBodyCenter>
           <PublicationBodyWrap>
+            <Snackbar
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'center'
+              }}
+              open={openLimitSnackbar}
+              autoHideDuration={5000}
+              onClose={handleLimitSnackbarClose}>
+              <SnackbarContent
+                message={`You have exceeded the limit of ${MAX_CHARACTER_COUNT} characters. 
+                Your article is ${publicationStore.characterCount}. Please shorten and try again.`}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  backgroundColor: 'var(--error-dark, #C62828)'
+                }}
+                action={
+                  <Button
+                    size="small"
+                    sx={{
+                      color: 'white',
+                      backgroundColor: 'var(--error-dark, #C62828)'
+                    }}
+                    onClick={handleLimitSnackbarClose}>
+                    OK
+                  </Button>
+                }
+              />
+            </Snackbar>
             {isLoading && <LinearProgress />}
             {!isLoading && (
               <PublicationBody
@@ -746,4 +803,32 @@ const FlexDiv = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+`;
+
+const ErrorSpanWrap = styled.span`
+  color: var(--error-main, #d32f2f);
+  font-feature-settings: 'clig' off, 'liga' off;
+
+  /* typography/body1 */
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%; /* 24px */
+  letter-spacing: 0.15px;
+`;
+
+const CharacterCountWrap = styled.div`
+  margin: 0 16px;
+  max-width: 260px;
+  color: var(--text-primary, #040036);
+  font-feature-settings: 'clig' off, 'liga' off;
+
+  /* typography/body1 */
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: 0.15px;
 `;

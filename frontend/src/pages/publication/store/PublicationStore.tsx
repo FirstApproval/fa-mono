@@ -21,6 +21,7 @@ import {
 } from '../../../core/router/constants';
 
 export const EDIT_THROTTLE_MS = 1000;
+export const MAX_CHARACTER_COUNT = 60000;
 
 export type ParagraphWithId = Paragraph & { id: string };
 export type Section =
@@ -80,6 +81,9 @@ export class PublicationStore {
   sampleArchiveSize: number | null = null;
 
   viewCounterUpdated: boolean = false;
+  characterCount: number = 0;
+  isExceededLimit: boolean = false;
+  displayLimitSnackbar: boolean = false;
 
   constructor(
     publicationId: string,
@@ -823,10 +827,34 @@ export class PublicationStore {
   async editPublication(
     publicationEditRequest: PublicationEditRequest
   ): Promise<void> {
+    this.characterCount = this.countCharacter();
+    publicationEditRequest.characterCount = this.characterCount;
+    this.isExceededLimit = this.characterCount > MAX_CHARACTER_COUNT;
+    if (this.isExceededLimit && !this.displayLimitSnackbar) {
+      this.displayLimitSnackbar = true;
+    } else if (!this.isExceededLimit) {
+      this.displayLimitSnackbar = false;
+    }
     await publicationService.editPublication(
       this.publicationId,
       publicationEditRequest
     );
+  }
+
+  private countCharacter(): number {
+    let count = 0;
+    count += this.title.length;
+    this.summary.forEach((it) => (count += it.text.length));
+    this.experimentGoals.forEach((it) => (count += it.text.length));
+    count += this.negativeData.length;
+    this.method.forEach((it) => (count += it.text.length));
+    count += this.objectOfStudyTitle.length;
+    this.objectOfStudy.forEach((it) => (count += it.text.length));
+    this.grantingOrganizations.forEach((it) => (count += it.text.length));
+    this.relatedArticles.forEach((it) => (count += it.text.length));
+    this.primaryArticles.forEach((it) => (count += it.text.length));
+    this.tags.forEach((it) => (count += it.length));
+    return count;
   }
 
   private loadInitialState(): void {
@@ -940,6 +968,7 @@ export class PublicationStore {
             this.savingStatus = SavingStatusState.SAVED;
           }
           this.creator = publication.creator;
+          this.characterCount = this.countCharacter();
         })
       )
       .finally(

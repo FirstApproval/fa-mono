@@ -6,11 +6,13 @@ import org.firstapproval.backend.core.infra.pdf.PdfService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.thymeleaf.context.Context
+import java.io.File
+import java.io.FileOutputStream
 import java.text.DecimalFormat
+
 
 @Service
 class PublicationPdfService(
-    private val publicationRepository: PublicationRepository,
     private val pdfService: PdfService,
     private val frontendProperties: FrontendProperties
 ) {
@@ -18,8 +20,7 @@ class PublicationPdfService(
     private val formatter = DecimalFormat("#.##")
 
     @Transactional(readOnly = true)
-    fun generate(publicationId: String): ByteArray {
-        val publication = publicationRepository.getReferenceById(publicationId)
+    fun generate(publication: Publication): ByteArray {
         val templateName = "pdf/publication-pdf"
         return pdfService.generate(templateName, generateThymeleafContext(publication))
     }
@@ -41,7 +42,7 @@ class PublicationPdfService(
             model["negativeData"] = negativeData(publication)
         }
         model["method"] = method(publication)
-        model["objectOfStudyName"] = objectOfStudyName(publication)
+//        model["objectOfStudyName"] = objectOfStudyName(publication)
         model["objectOfStudy"] = objectOfStudy(publication)
         if (!publication.software.isNullOrEmpty()) {
             model["software"] = software(publication)
@@ -142,13 +143,13 @@ class PublicationPdfService(
         }
     }
 
-    private fun objectOfStudyName(publication: Publication): String {
-        return if (publication.objectOfStudyTitle.isNullOrEmpty()) {
-            "Draft. No object of study yet."
-        } else {
-            publication.objectOfStudyTitle!!
-        }
-    }
+//    private fun objectOfStudyName(publication: Publication): String {
+//        return if (publication.objectOfStudyTitle.isNullOrEmpty()) {
+//            "Draft. No object of study yet."
+//        } else {
+//            publication.objectOfStudyTitle!!
+//        }
+//    }
 
     private fun objectOfStudy(publication: Publication): List<String> {
         return if (publication.objectOfStudyDescription.isNullOrEmpty()) {

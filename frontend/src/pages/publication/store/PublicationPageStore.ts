@@ -4,6 +4,7 @@ import { PublicationStore } from './PublicationStore';
 import { FileSystemFA } from '../../../fire-browser/FileSystemFA';
 import { FileData } from '@first-approval/chonky/dist/types/file.types';
 import { PublicationContentStatus } from '../../../apis/first-approval-api';
+import { authStore } from '../../../core/auth';
 
 export class PublicationPageStore {
   get summaryEnabled(): boolean {
@@ -142,13 +143,42 @@ export class PublicationPageStore {
   };
 
   downloadPdf = async (): Promise<void> => {
-    const downloadLink = document.createElement('a');
-    downloadLink.href = `${window.origin}/api/publication/${this.publicationStore.publicationId}/pdf/download`;
-    downloadLink.download = this.publicationStore.title + '.pdf';
-    downloadLink.style.display = 'none';
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
+    if (this.publicationStore.isPublished) {
+      const downloadLink = document.createElement('a');
+      downloadLink.href = `${window.origin}/api/publication/${this.publicationStore.publicationId}/pdf/download`;
+      downloadLink.download = this.publicationStore.title + '.pdf';
+      downloadLink.style.display = 'none';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    } else {
+      const downloadLink = `${window.origin}/api/pending-publication/${this.publicationStore.publicationId}/pdf/download`;
+      fetch(downloadLink, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${authStore.token}` }
+      })
+        .then(async (response) => {
+          if (response.ok) {
+            const blob = await response.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+            const downloadLink = document.createElement('a');
+            downloadLink.href = blobUrl;
+            downloadLink.download = this.publicationStore.title + '.pdf';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            window.URL.revokeObjectURL(blobUrl);
+            document.body.removeChild(downloadLink);
+          } else {
+            console.error(
+              'Failed to download the file. Status: ',
+              response.status
+            );
+          }
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    }
   };
 
   downloadSampleFiles(): void {

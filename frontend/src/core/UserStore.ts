@@ -139,11 +139,8 @@ export class UserStore implements IWorkplaceStore {
 
   validate(): boolean {
     this.workplacesValidation = this.workplaces.map((workplace) => ({
-      isValidOrganization: !!workplace.organization
+      isValidOrganization: !!workplace.organization?.name?.length
     }));
-    // const currentWorkplaceAbsent = !this.workplaces.some(
-    //   (workplace) => !workplace.isFormer
-    // );
     return this.workplacesValidation.every((v) => v.isValidOrganization);
   }
 }

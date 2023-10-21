@@ -90,23 +90,16 @@ export const WorkplacesEditor = observer(
           <FlexWrapOrganization extendWidth={!isModalWindow}>
             <Autocomplete
               key={`orgKey-${index}-${workplaceProps.orgQueryKey}`}
-              filterOptions={(options, params) => {
-                if (!options) {
-                  return options;
-                }
-                const { inputValue } = params;
-                // Suggest the creation of a new value
-                const isExisting = options.some(
-                  (option) => inputValue === option.name
-                );
-                if (inputValue !== '' && !isExisting) {
-                  options.push({ name: inputValue });
-                }
-                return options;
-              }}
               onChange={(event: any, newValue: Organization | null) => {
                 workplace.organization = newValue ?? undefined;
                 workplaceProps.orgQuery = newValue?.name ?? '';
+                workplaceProps.orgQueryKey = '';
+              }}
+              onBlur={(event: any) => {
+                const orgName = event.target.value;
+                workplace.organization = workplaceProps
+                  .organizationOptions[0] ?? { name: orgName };
+                workplaceProps.orgQuery = workplace.organization.name;
                 workplaceProps.orgQueryKey = '';
               }}
               onInputChange={(event, newInputValue, reason) => {
@@ -123,11 +116,7 @@ export const WorkplacesEditor = observer(
               forcePopupIcon={false}
               inputValue={workplaceProps?.orgQuery}
               renderOption={(props, option, state) => {
-                return (
-                  <SelectOption {...props}>{`${
-                    option.id ? '' : 'Add organization: '
-                  }${option.name}`}</SelectOption>
-                );
+                return <SelectOption {...props}>{option.name}</SelectOption>;
               }}
               getOptionLabel={(option) => option.name}
               options={workplaceProps.organizationOptions ?? []}

@@ -80,6 +80,17 @@ class PublicationService(
                         ordinal = 0,
                         user = user,
                         isConfirmed = true,
+                        workplaces = user.workplaces.map {
+                            AuthorWorkplace(
+                                organization = it.organization,
+                                organizationDepartment = it.organizationDepartment,
+                                address = it.address,
+                                postalCode = it.postalCode,
+                                isFormer = it.isFormer,
+                                creationTime = now(),
+                                editingTime = now(),
+                            )
+                        }.toMutableList()
                     )
                 )
             )
@@ -159,6 +170,7 @@ class PublicationService(
                 publicationRepository.saveAndFlush(publication)
                 publication.authors.addAll(unconfirmedPublicationAuthors)
             }
+            publication.characterCount = characterCount.toLong()
         }
         publicationRepository.saveAndFlush(publication)
     }
@@ -279,6 +291,13 @@ class PublicationService(
     fun get(user: User?, id: String): Publication {
         val publication = publicationRepository.getReferenceById(id)
         checkAccessToPublication(user, publication)
+        return publication
+    }
+
+    @Transactional(readOnly = true)
+    fun getPublished(id: String): Publication {
+        val publication = publicationRepository.getReferenceById(id)
+        checkStatusAndAccessType(publication)
         return publication
     }
 
@@ -442,7 +461,7 @@ fun Author.toApiObject(profileImage: ByteArray?) = AuthorApiObject().also {
     it.email = email
     it.ordinal = ordinal
     it.isConfirmed = isConfirmed
-    it.user = user?.let {user ->
+    it.user = user?.let { user ->
         UserInfo(
             user.id,
             user.firstName,
