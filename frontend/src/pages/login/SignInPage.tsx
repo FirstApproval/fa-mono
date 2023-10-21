@@ -161,9 +161,14 @@ const ForgotPasswordLabel = styled('div')`
 `;
 
 const DividerWrap = styled(Divider)`
-  margin-top: 44px;
-  margin-bottom: 48px;
+  margin-top: 24px;
+  margin-bottom: 24px;
   width: 100%;
+
+  @media (min-width: 768px) {
+    margin-top: 44px;
+    margin-bottom: 48px;
+  }
 `;
 
 const FooterWrap = styled('div')`

@@ -146,15 +146,25 @@ const EmailLabel = styled(Typography)`
 ` as typeof Typography;
 
 const DividerWrap = styled(Divider)`
-  margin-top: 32px;
-  margin-bottom: 40px;
+  margin-top: 24px;
+  margin-bottom: 24px;
   width: 100%;
+
+  @media (min-width: 768px) {
+    margin-top: 32px;
+    margin-bottom: 40px;
+  }
 `;
 
 const DividerWrap2 = styled(Divider)`
-  margin-top: 42px;
-  margin-bottom: 40px;
+  margin-top: 24px;
+  margin-bottom: 24px;
   width: 100%;
+
+  @media (min-width: 768px) {
+    margin-top: 42px;
+    margin-bottom: 40px;
+  }
 `;
 
 const AlertWrap = styled(Alert)`

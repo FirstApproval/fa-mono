@@ -30,6 +30,9 @@ export const HeaderComponent = (
     showLoginOutlinedButton: false
   }
 ): ReactElement => {
+  const showSignUpButton =
+    props.showSignUpContainedButton ?? props.showSignUpOutlinedButton;
+
   return (
     <Wrap>
       <FlexHeader>
@@ -75,23 +78,41 @@ export const HeaderComponent = (
             {!authStore.token && (
               <>
                 {props.showLoginButton && (
-                  <ButtonWrap
-                    variant="outlined"
-                    onClick={() => {
-                      routerStore.navigatePage(Page.SIGN_IN);
-                    }}
-                    size={'large'}>
-                    Log in
-                  </ButtonWrap>
+                  <Box
+                    component={Grid}
+                    item
+                    xs={1}
+                    display={{
+                      xs: showSignUpButton ? 'none' : 'block',
+                      md: 'block'
+                    }}>
+                    <ButtonWrap
+                      variant="outlined"
+                      onClick={() => {
+                        routerStore.navigatePage(Page.SIGN_IN);
+                      }}
+                      size={'large'}>
+                      Log in
+                    </ButtonWrap>
+                  </Box>
                 )}
                 {props.showLoginOutlinedButton && (
-                  <Button
-                    variant="outlined"
-                    onClick={() => {
-                      routerStore.navigatePage(Page.SIGN_IN);
+                  <Box
+                    component={Grid}
+                    item
+                    xs={1}
+                    display={{
+                      xs: showSignUpButton ? 'none' : 'block',
+                      md: 'block'
                     }}>
-                    Log in
-                  </Button>
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
+                        routerStore.navigatePage(Page.SIGN_IN);
+                      }}>
+                      Log in
+                    </Button>
+                  </Box>
                 )}
                 {props.showSignUpContainedButton && (
                   <SignUpButton
@@ -125,11 +146,12 @@ export const HeaderComponent = (
 export const Wrap = styled.div`
   display: flex;
   padding: 8px 24px;
-  margin-bottom: 80px;
+  margin-bottom: 32px;
   border-bottom: 1px solid #eeeeee;
 
   @media (min-width: 768px) {
     padding: 12px 32px;
+    margin-bottom: 80px;
   }
 `;
 

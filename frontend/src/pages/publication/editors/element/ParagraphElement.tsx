@@ -1,6 +1,6 @@
 import React, { type ReactElement, useEffect, useRef } from 'react';
 import styled from '@emotion/styled';
-import { TextField, Typography } from '@mui/material';
+import { Grid, TextField, Typography } from '@mui/material';
 
 interface ParagraphProps {
   cursorPosition: number;
