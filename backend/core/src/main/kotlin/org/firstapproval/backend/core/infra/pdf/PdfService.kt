@@ -7,7 +7,6 @@ import org.thymeleaf.spring6.SpringTemplateEngine
 import org.xhtmlrenderer.pdf.ITextRenderer
 import java.io.ByteArrayOutputStream
 
-
 @Service
 class PdfService(
     private val templateEngine: SpringTemplateEngine,
