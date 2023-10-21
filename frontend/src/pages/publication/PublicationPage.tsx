@@ -1,59 +1,30 @@
 import React, {
   type FunctionComponent,
   MutableRefObject,
-  type ReactElement,
   useEffect,
   useMemo,
-  useRef,
   useState
 } from 'react';
 import {
   Button,
-  DialogContent,
   LinearProgress,
   Snackbar,
   SnackbarContent,
   Tooltip,
   Typography
 } from '@mui/material';
-import {
-  FlexBodyCenter,
-  FlexHeader,
-  HeightElement,
-  Logo,
-  Parent,
-  StyledMenuItem,
-  TitleRowWrap
-} from '../common.styled';
-import { FileUploader } from '../../fire-browser/FileUploader';
+import { FlexBodyCenter, Logo, Parent, StyledMenuItem } from '../common.styled';
 import { routerStore } from '../../core/router';
 import styled from '@emotion/styled';
 import {
-  AuthorsPlaceholder,
-  ExperimentGoalsPlaceholder,
-  FilesPlaceholder,
-  GrantingOrganisationsPlaceholder,
-  MethodPlaceholder,
-  ObjectOfStudyPlaceholder,
-  RelatedPublicationsPlaceholder,
-  SampleFilesPlaceholder,
-  SoftwarePlaceholder,
-  SummaryPlaceholder,
-  TagsPlaceholder,
-  TagsWrap
-} from './ContentPlaceholder';
-import {
+  MAX_CHARACTER_COUNT,
   PublicationStore,
   SavingStatusState,
   type Section,
-  ViewMode,
-  MAX_CHARACTER_COUNT
+  ViewMode
 } from './store/PublicationStore';
 import { observer } from 'mobx-react-lite';
 import { FileSystemFA } from '../../fire-browser/FileSystemFA';
-import { TagsEditor } from './editors/TagsEditor';
-import { AuthorsEditor } from './editors/AuthorsEditor';
-import { TitleEditor } from './editors/TitleEditor';
 import logo from '../../assets/logo-black-short.svg';
 import { UserMenu } from '../../components/UserMenu';
 import { ValidationDialog } from './ValidationDialog';
@@ -62,11 +33,6 @@ import {
   publicationService,
   sampleFileService
 } from '../../core/service';
-import { DraftText } from './DraftText';
-import { Authors } from './Authors';
-import { DateViewsDownloads } from './DateViewsDownloads';
-import { ActionBar } from './ActionBar';
-import { authStore } from '../../core/auth';
 import { DownloadersDialog } from './DownloadersDialog';
 import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
 import { PublicationStatus } from '../../apis/first-approval-api';
@@ -76,26 +42,14 @@ import Menu from '@mui/material/Menu';
 import { ConfirmationDialog } from '../../components/ConfirmationDialog';
 import { ContentLicensingDialog } from '../../components/ContentLicensingDialog';
 import { PublicationPageStore } from './store/PublicationPageStore';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import { Close, Edit } from '@mui/icons-material';
-import { FileBrowserFA } from '../../fire-browser/FileBrowserFA';
+import { Edit } from '@mui/icons-material';
 import { Page } from '../../core/router/constants';
 import { Helmet } from 'react-helmet';
 import { useIsHorizontalOverflow } from '../../util/overflowUtil';
 import { ResearchAreaStore } from './research-area/ResearchAreaStore';
-import { ResearchArea } from './research-area/ResearchArea';
-import { UploadStatusWindow } from './UploadStatusWindow';
 import { Footer } from '../home/Footer';
 import { HeaderComponent } from 'src/components/HeaderComponent';
-import { DatasetIsPreparingDialog } from './dialogs/DatasetIsPreparingDialog';
-import { SummaryEditor } from './editors/SummaryEditor';
-import { ExperimentGoalsEditor } from './editors/ExperimentGoalsEditor';
-import { MethodEditor } from './editors/MethodEditor';
-import { DataDescriptionEditor } from './editors/DataDescriptionEditor';
-import { SoftwareEditor } from './editors/SoftwareEditor';
-import { GrantingOrganizationsEditor } from './editors/GrantingOrganizationsEditor';
-import { RelatedPublicationsEditor } from './editors/RelatedPublicationsEditor';
+import { PublicationBody } from './PublicationBody';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -465,304 +419,19 @@ export const PublicationPage: FunctionComponent = observer(() => {
   );
 });
 
-const PublicationBody = observer(
-  (props: {
-    publicationId: string;
-    publicationStore: PublicationStore;
-    researchAreaStore: ResearchAreaStore;
-    publicationPageStore: PublicationPageStore;
-    openDownloadersDialog: () => void;
-    fs: FileSystemFA;
-    sfs: FileSystemFA;
-  }): ReactElement => {
-    const {
-      fs,
-      sfs,
-      publicationStore,
-      researchAreaStore,
-      publicationPageStore
-    } = props;
+export const FlexHeader = styled.div`
+  display: flex;
+  border-bottom: 1px solid #eeeeee;
+  padding: 12px 32px;
+  height: 64px;
+  margin-bottom: 80px;
+  align-items: center;
+  justify-content: center;
+  position: sticky;
+  top: 0;
 
-    const {
-      openSummary,
-      openExperimentGoals,
-      openMethod,
-      openObjectOfStudy,
-      openSoftware,
-      openFiles,
-      openSampleFilesModal,
-      closeSampleFilesModal,
-      openAuthors,
-      openGrantingOrganizations,
-      openRelatedArticles,
-      openTags,
-      summaryEnabled,
-      experimentGoalsEnabled,
-      methodEnabled,
-      objectOfStudyEnabled,
-      softwareEnabled,
-      filesEnabled,
-      sampleFilesEnabled,
-      sampleFilesHidden,
-      sampleFilesModalOpen,
-      authorsEnabled,
-      grantingOrganizationsEnabled,
-      relatedArticlesEnabled,
-      tagsEnabled
-    } = publicationPageStore;
-
-    const isChonkyDragRef = useRef(false);
-
-    return (
-      <>
-        {publicationStore.isPreview && <DraftText />}
-        {publicationStore.isView && (
-          <DateViewsDownloads
-            openDownloadersDialog={() => {
-              downloadersStore.clearAndOpen(
-                props.publicationId,
-                publicationStore.downloadsCount
-              );
-            }}
-            publicationStore={publicationStore}
-            displayLicense={false}
-          />
-        )}
-        <HeightElement value={'24px'} />
-        <TitleEditor publicationStore={publicationStore} />
-
-        {publicationStore.isReadonly && (
-          <Authors publicationStore={publicationStore} />
-        )}
-
-        <ResearchArea researchAreaStore={researchAreaStore} />
-
-        {publicationStore.isView && (
-          <ActionBar
-            publicationStore={publicationStore}
-            publicationPageStore={publicationPageStore}
-            displayDivider={true}
-          />
-        )}
-
-        {!summaryEnabled &&
-          researchAreaStore.isInitialized &&
-          !publicationStore.isReadonly && <HeightElement value={'24px'} />}
-
-        {/* Summary */}
-        {!summaryEnabled && !publicationStore.isReadonly && (
-          <SummaryPlaceholder onClick={openSummary} />
-        )}
-        {summaryEnabled && (
-          <SummaryEditor publicationStore={publicationStore} />
-        )}
-
-        {/* Experiment goals */}
-        {!experimentGoalsEnabled && !publicationStore.isReadonly && (
-          <ExperimentGoalsPlaceholder onClick={openExperimentGoals} />
-        )}
-        {experimentGoalsEnabled && (
-          <ExperimentGoalsEditor publicationStore={publicationStore} />
-        )}
-
-        {/* Method */}
-        {!methodEnabled && !publicationStore.isReadonly && (
-          <MethodPlaceholder onClick={openMethod} />
-        )}
-        {methodEnabled && <MethodEditor publicationStore={publicationStore} />}
-
-        {/* Data description */}
-        {!objectOfStudyEnabled && !publicationStore.isReadonly && (
-          <ObjectOfStudyPlaceholder onClick={openObjectOfStudy} />
-        )}
-        {objectOfStudyEnabled && (
-          <DataDescriptionEditor publicationStore={publicationStore} />
-        )}
-
-        {/* Software */}
-        {!softwareEnabled && !publicationStore.isReadonly && (
-          <SoftwarePlaceholder onClick={openSoftware} />
-        )}
-        {softwareEnabled && (
-          <SoftwareEditor publicationStore={publicationStore} />
-        )}
-
-        {/* Files */}
-        {!filesEnabled && !publicationStore.isReadonly && (
-          <FilesPlaceholder onClick={openFiles} />
-        )}
-        {filesEnabled && (
-          <FilesWrap>
-            <FileUploader
-              instanceId={'main'}
-              rootFolderName={'Files'}
-              fileDownloadUrlPrefix={'/api/files/download'}
-              fs={fs}
-              isReadonly={publicationStore.isReadonly}
-              onArchiveDownload={() => {
-                if (authStore.token) {
-                  publicationPageStore.downloadFiles();
-                  publicationPageStore.isPasscodeDialogOpen = true;
-                } else {
-                  routerStore.navigatePage(Page.SIGN_UP);
-                }
-              }}
-              onPreviewFilesModalOpen={() => {
-                publicationPageStore.openSampleFilesModal();
-              }}
-              isPreview={publicationStore.isPreview}
-            />
-          </FilesWrap>
-        )}
-
-        {/* Sample files */}
-        {!sampleFilesEnabled &&
-          !publicationStore.isReadonly &&
-          !sampleFilesHidden && (
-            <SampleFilesPlaceholder onClick={openSampleFilesModal} />
-          )}
-        {sampleFilesEnabled && !publicationStore.isReadonly && (
-          <SampleFilesPreviewWrap>
-            <FileBrowserFA
-              instanceId={'sample'}
-              rootFolderName={'Sample files'}
-              fileDownloadUrlPrefix={'/api/sample-files/download'}
-              fs={sfs}
-              isReadonly={true}
-              isChonkyDragRef={isChonkyDragRef}
-              onEditFilesModalOpen={() => {
-                publicationPageStore.openSampleFilesModal();
-              }}
-            />
-          </SampleFilesPreviewWrap>
-        )}
-        <Dialog
-          maxWidth={'xl'}
-          open={sampleFilesModalOpen}
-          onClose={closeSampleFilesModal}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description">
-          <DialogContentWrap>
-            <TitleRowWrap>
-              <DialogTitle style={{ padding: 0 }}></DialogTitle>
-              <Close
-                style={{ cursor: 'pointer' }}
-                htmlColor={'gray'}
-                onClick={closeSampleFilesModal}
-              />
-            </TitleRowWrap>
-            <SampleFilesWrap>
-              <FileUploader
-                instanceId={'sample'}
-                rootFolderName={'Sample files'}
-                fileDownloadUrlPrefix={'/api/sample-files/download'}
-                onArchiveDownload={(files) => {
-                  props.publicationPageStore.downloadSampleMultiFiles(files);
-                }}
-                fs={sfs}
-                isReadonly={publicationStore.isReadonly}
-                isPreview={publicationStore.isPreview}
-              />
-            </SampleFilesWrap>
-          </DialogContentWrap>
-        </Dialog>
-
-        {/* Authors */}
-        {!authorsEnabled && !publicationStore.isReadonly && (
-          <AuthorsPlaceholder onClick={openAuthors} />
-        )}
-        {authorsEnabled && (
-          <AuthorsEditor
-            key={`authorsEditor_${publicationStore.authors.length}`}
-            publicationStore={publicationStore}
-          />
-        )}
-
-        {/* Granting organizations */}
-        {!grantingOrganizationsEnabled && !publicationStore.isReadonly && (
-          <GrantingOrganisationsPlaceholder
-            onClick={openGrantingOrganizations}
-          />
-        )}
-        {grantingOrganizationsEnabled && (
-          <GrantingOrganizationsEditor publicationStore={publicationStore} />
-        )}
-
-        {/* Related publications */}
-        {!relatedArticlesEnabled && !publicationStore.isReadonly && (
-          <RelatedPublicationsPlaceholder onClick={openRelatedArticles} />
-        )}
-        {relatedArticlesEnabled && (
-          <RelatedPublicationsEditor publicationStore={publicationStore} />
-        )}
-
-        {/* Tags */}
-        {!tagsEnabled && !publicationStore.isReadonly && (
-          <TagsWrap>
-            <TagsPlaceholder onClick={openTags} />
-          </TagsWrap>
-        )}
-        {tagsEnabled && <TagsEditor publicationStore={publicationStore} />}
-        {publicationStore.isView && (
-          <>
-            <HeightElement value={'4px'} />
-            <ActionBar
-              publicationStore={publicationStore}
-              publicationPageStore={publicationPageStore}
-              displayDivider={false}
-            />
-            <HeightElement value={'40px'} />
-            <DateViewsDownloads
-              openDownloadersDialog={() => {
-                downloadersStore.clearAndOpen(
-                  props.publicationId,
-                  publicationStore.downloadsCount
-                );
-              }}
-              publicationStore={publicationStore}
-              displayLicense={true}
-            />
-          </>
-        )}
-        {publicationStore.isPreview && <DraftText />}
-        <Space />
-
-        <UploadStatusWindow fs={fs} />
-        <DatasetIsPreparingDialog
-          isOpen={publicationPageStore.isDataPreparingDialogOpen}
-          onClose={() =>
-            (publicationPageStore.isDataPreparingDialogOpen = false)
-          }
-        />
-      </>
-    );
-  }
-);
-
-const FilesWrap = styled.div`
-  height: 450px;
-
-  margin-top: 48px;
-  margin-bottom: 40px;
-`;
-
-const SampleFilesPreviewWrap = styled.div`
-  height: 192px;
-
-  margin-top: 48px;
-  margin-bottom: 40px;
-
-  overflow: hidden;
-`;
-
-const SampleFilesWrap = styled.div`
-  height: 450px;
-
-  margin-top: 16px;
-`;
-
-const DialogContentWrap = styled(DialogContent)`
-  min-width: 728px;
+  background-color: #fff;
+  z-index: 10;
 `;
 
 const PublicationBodyWrap = styled('div')`
@@ -773,10 +442,6 @@ const ButtonWrap = styled(Button)<{ marginright?: string }>`
   margin-right: ${(props) => props.marginright ?? '24px'};
   width: 90px;
   height: 36px;
-`;
-
-const Space = styled.div`
-  margin-bottom: 120px;
 `;
 
 const ToolbarContainer = styled.div`

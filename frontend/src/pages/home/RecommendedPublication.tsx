@@ -117,6 +117,8 @@ const Footer = styled.div`
   align-items: center;
 
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
+
+  margin-bottom: 32px;
 `;
 
 const AvatarWrap = styled.div`

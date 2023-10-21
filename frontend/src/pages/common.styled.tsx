@@ -9,26 +9,6 @@ export const Parent = styled.div`
   min-height: calc(100vh - 104px);
 `;
 
-export const FlexHeader = styled.div`
-  display: flex;
-  border-bottom: 1px solid #eeeeee;
-  padding: 12px 32px;
-  height: 64px;
-  margin-bottom: 80px;
-  align-items: center;
-  justify-content: center;
-  position: sticky;
-  top: 0;
-
-  background-color: #fff;
-  z-index: 10;
-`;
-
-export const FlexHeaderRight = styled.div`
-  margin-left: auto;
-  display: flex;
-`;
-
 export const FlexBodyCenter = styled.div`
   display: flex;
   justify-content: center;

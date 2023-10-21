@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { type UserInfo } from '../../apis/first-approval-api';
 import { PopularAuthor } from './PopularAuthor';
 import { type ReactElement } from 'react';
-import { Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 
 const GridContainer = styled.div`
   display: flex;
@@ -27,9 +27,11 @@ const PopularAuthorsSection = (props: {
       </NameWrap>
       <GridContainer>
         {authors.map((author, idx) => (
-          <AuthorCard key={idx}>
-            <PopularAuthor author={author} />
-          </AuthorCard>
+          <Grid item xs={12} md={6} key={idx}>
+            <AuthorCard>
+              <PopularAuthor author={author} />
+            </AuthorCard>
+          </Grid>
         ))}
       </GridContainer>
     </>
