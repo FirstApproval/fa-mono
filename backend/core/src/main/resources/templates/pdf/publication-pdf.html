@@ -3,23 +3,9 @@
     <style>
         @font-face {
             font-family: 'Roboto', sans-serif;
-            src: url(Roboto-Regular.ttf);
+            src: url(Roboto-Flex.ttf);
             font-style: normal;
             font-weight: 400;
-        }
-
-        @font-face {
-            font-family: 'Roboto', sans-serif;
-            src: url(Roboto-Medium.ttf);
-            font-style: normal;
-            font-weight: 500;
-        }
-
-        @font-face {
-            font-family: 'Roboto', sans-serif;
-            src: url(Roboto-Bold.ttf);
-            font-style: normal;
-            font-weight: 700;
         }
 
         @page {
@@ -42,7 +28,7 @@
             }
 
             @bottom-right {
-                font: normal 400 14px "Roboto", sans-serif;
+                font: normal 400 14px "Roboto Flex", sans-serif;
                 content: 'First Approval • firstapproval.io | ' counter(page);
             }
         }
@@ -51,7 +37,7 @@
             padding-top: 24px;
 
             @bottom-left {
-                font: normal 400 14px "Roboto", sans-serif;
+                font: normal 400 14px "Roboto Flex", sans-serif;
                 content: 'First Approval • firstapproval.io | ' counter(page);
             }
         }
@@ -60,7 +46,7 @@
             padding-top: 24px;
 
             @bottom-right {
-                font: normal 400 14px "Roboto", sans-serif;
+                font: normal 400 14px "Roboto Flex", sans-serif;
                 content: 'First Approval • firstapproval.io | ' counter(page);
             }
         }
@@ -83,7 +69,7 @@
 
         .header-1 {
             position: running(header-1-content);
-            font: normal 600 12px "Roboto", sans-serif;
+            font: normal 600 12px "Roboto Flex", sans-serif;
             margin-top: 22px;
         }
 
@@ -97,7 +83,7 @@
         }
 
         .negative-data {
-            font: normal 600 16px "Roboto", sans-serif;
+            font: normal 600 16px "Roboto Flex", sans-serif;
             float: right;
             width: 120px;
             height: 26px;
@@ -120,22 +106,22 @@
         }
 
         .title {
-            font: normal 700 36px "Roboto", sans-serif;
+            font: normal 700 36px "Roboto Flex", sans-serif;
             margin-top: 20px;
             margin-bottom: 16px;
         }
 
         .authors {
-            font: normal 600 12px "Roboto", sans-serif;
+            font: normal 600 12px "Roboto Flex", sans-serif;
         }
 
         .authors-link {
-            font: normal 400 12px "Roboto", sans-serif;
+            font: normal 400 12px "Roboto Flex", sans-serif;
             text-decoration: none;
         }
 
         .description {
-            font: normal 500 14px "Roboto", sans-serif;
+            font: normal 500 14px "Roboto Flex", sans-serif;
             margin-top: 24px;
             text-align: justify;
         }
@@ -149,30 +135,30 @@
         }
 
         .block-title {
-            font: normal 700 14px "Roboto", sans-serif;
+            font: normal 700 14px "Roboto Flex", sans-serif;
             margin-bottom: 8px;
         }
 
         .block-content-name {
-            font: normal 500 12px "Roboto", sans-serif;
+            font: normal 500 12px "Roboto Flex", sans-serif;
             margin-bottom: 4px;
             text-align: justify;
         }
 
         .block-content {
-            font: normal 400 12px "Roboto", sans-serif;
+            font: normal 400 12px "Roboto Flex", sans-serif;
             margin-bottom: 20px;
             text-align: justify;
         }
 
         .authors-description-content {
-            font: normal 400 10px "Roboto", sans-serif;
+            font: normal 400 10px "Roboto Flex", sans-serif;
             margin-bottom: 20px;
             text-align: justify;
         }
 
         .files-content {
-            font: normal 400 12px "Roboto", sans-serif;
+            font: normal 400 12px "Roboto Flex", sans-serif;
             border: 1px solid black;
             padding: 12px;
             margin-bottom: 16px;
@@ -180,7 +166,7 @@
         }
 
         .negative-data-title {
-            font: normal 600 12px "Roboto", sans-serif;
+            font: normal 600 12px "Roboto Flex", sans-serif;
             margin-bottom: 2px;
         }
 
@@ -188,16 +174,16 @@
             background-color: #EBEBED;
             padding: 8px;
             margin-bottom: 16px;
-            font: normal 400 12px "Roboto", sans-serif;
+            font: normal 400 12px "Roboto Flex", sans-serif;
         }
 
         .related-articles-title {
-            font: normal 600 10px "Roboto", sans-serif;
+            font: normal 600 10px "Roboto Flex", sans-serif;
             margin-bottom: 2px;
         }
 
         .related-articles-content {
-            font: normal 400 10px "Roboto", sans-serif;
+            font: normal 400 10px "Roboto Flex", sans-serif;
             background-color: #EBEBED;
             padding: 8px;
             margin-bottom: 16px;
@@ -334,7 +320,7 @@
 
         <div th:if='${grantingOrganizations}' class='block-content'>
             <ul style='padding-left: 10px; margin-bottom: 4px'>
-                <li style="font: normal 400 10px 'Roboto', sans-serif;" th:each='i : ${grantingOrganizations}' th:text='${i}'></li>
+                <li style="font: normal 400 10px 'Roboto Flex', sans-serif;" th:each='i : ${grantingOrganizations}' th:text='${i}'></li>
             </ul>
         </div>
 
@@ -351,7 +337,7 @@
         </div>
         <div th:if='${relatedArticles}' class='block-content'>
             <ol style='padding-left: 14px; margin-bottom: 4px'>
-                <li style="font: normal 400 10px 'Roboto', sans-serif;" th:each='i : ${relatedArticles}' th:text='${i}'></li>
+                <li style="font: normal 400 10px 'Roboto Flex', sans-serif;" th:each='i : ${relatedArticles}' th:text='${i}'></li>
             </ol>
         </div>
 

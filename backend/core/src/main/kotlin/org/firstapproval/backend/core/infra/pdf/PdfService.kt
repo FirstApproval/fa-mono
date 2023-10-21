@@ -1,10 +1,12 @@
 package org.firstapproval.backend.core.infra.pdf
 
-import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
+import com.lowagie.text.pdf.BaseFont
 import org.springframework.stereotype.Service
 import org.thymeleaf.context.Context
 import org.thymeleaf.spring6.SpringTemplateEngine
+import org.xhtmlrenderer.pdf.ITextRenderer
 import java.io.ByteArrayOutputStream
+
 
 @Service
 class PdfService(
@@ -12,14 +14,15 @@ class PdfService(
 ) {
 
     fun generate(templateName: String, templateContext: Context): ByteArray {
-        val htmlContent = templateEngine.process(templateName, templateContext)
-        ByteArrayOutputStream().use { os ->
-            val builder = PdfRendererBuilder()
-            builder.useFastMode()
-            builder.withHtmlContent(htmlContent, null)
-            builder.toStream(os)
-            builder.run()
-            return os.toByteArray()
-        }
+        val outputStream = ByteArrayOutputStream()
+        val html = templateEngine.process(templateName, templateContext)
+
+        val renderer = ITextRenderer()
+        renderer.fontResolver.addFont("templates/pdf/Roboto-Flex.ttf", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED)
+        renderer.setDocumentFromString(html)
+        renderer.layout()
+        renderer.createPDF(outputStream)
+        outputStream.close()
+        return outputStream.toByteArray()
     }
 }

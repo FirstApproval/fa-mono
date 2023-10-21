@@ -6,7 +6,10 @@ import org.firstapproval.backend.core.infra.pdf.PdfService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.thymeleaf.context.Context
+import java.io.File
+import java.io.FileOutputStream
 import java.text.DecimalFormat
+
 
 @Service
 class PublicationPdfService(

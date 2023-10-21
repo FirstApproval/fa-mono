@@ -34,6 +34,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("com.auth0:jwks-rsa:0.21.1")
+    implementation("org.xhtmlrenderer:flying-saucer-pdf")
     implementation("com.vladmihalcea:hibernate-types-60:2.21.1")
     implementation("net.logstash.logback:logstash-logback-encoder:7.3")
     implementation("net.javacrumbs.shedlock:shedlock-spring:4.42.0")
