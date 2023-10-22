@@ -158,7 +158,7 @@ const PrimaryArticleSpanWrap = styled.span`
 `;
 
 const PrimaryArticleNameWrap = styled.span`
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
   display: inline-block;
 `;
 

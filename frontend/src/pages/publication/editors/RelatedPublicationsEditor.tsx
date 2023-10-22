@@ -35,14 +35,14 @@ export const RelatedPublicationsEditor = observer(
           }
           disableInitFocus={props.publicationStore.disableAutofocus}
         />
-        {/* <div style={{ marginBottom: 48 }}> */}
-        {/*  <PrimaryArticleData */}
-        {/*    isReadOnly={props.publicationStore.isReadonly} */}
-        {/*    onChange={(value) => { */}
-        {/*      props.publicationStore.updatePrimaryArticle(value); */}
-        {/*    }} */}
-        {/*    value={props.publicationStore.primaryArticles}></PrimaryArticleData> */}
-        {/* </div> */}
+        <div style={{ marginBottom: 48 }}>
+          <PrimaryArticleData
+            isReadOnly={props.publicationStore.isReadonly}
+            onChange={(value) => {
+              props.publicationStore.updatePrimaryArticle(value);
+            }}
+            value={props.publicationStore.primaryArticles}></PrimaryArticleData>
+        </div>
       </>
     );
   }
