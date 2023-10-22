@@ -2084,9 +2084,7 @@ components:
           $ref: '#/components/schemas/PublicationStringArrayValue'
         tags:
           $ref: '#/components/schemas/PublicationStringArrayValue'
-        objectOfStudyTitle:
-          $ref: '#/components/schemas/PublicationStringValue'
-        objectOfStudyDescription:
+        dataDescription:
           $ref: '#/components/schemas/PublicationStringArrayValue'
         software:
           $ref: '#/components/schemas/PublicationStringArrayValue'
@@ -2272,10 +2270,7 @@ components:
           $ref: '#/components/schemas/StringArray'
         tags:
           $ref: '#/components/schemas/StringArray'
-        objectOfStudyTitle:
-          type: string
-          maxLength: 32768
-        objectOfStudyDescription:
+        dataDescription:
           $ref: '#/components/schemas/StringArray'
         software:
           $ref: '#/components/schemas/StringArray'

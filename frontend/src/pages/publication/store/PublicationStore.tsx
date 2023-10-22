@@ -29,7 +29,7 @@ export type Section =
   | 'summary'
   | 'goals'
   | 'method'
-  | 'object_of_study'
+  | 'data_description'
   | 'files'
   | 'sample_files'
   | 'tags';
@@ -58,8 +58,7 @@ export class PublicationStore {
   experimentGoals: ParagraphWithId[] = [];
   methodTitle: string = '';
   method: ParagraphWithId[] = [];
-  objectOfStudyTitle: string = '';
-  objectOfStudy: ParagraphWithId[] = [];
+  dataDescription: ParagraphWithId[] = [];
   software: ParagraphWithId[] = [];
   authors: Author[] = [];
   authorNames: PublicationAuthorName[] = [];
@@ -162,13 +161,13 @@ export class PublicationStore {
     this.method = newValue;
   }
 
-  addObjectOfStudyParagraph(idx: number): void {
-    const newValue = [...this.objectOfStudy];
+  addDataDescriptionParagraph(idx: number): void {
+    const newValue = [...this.dataDescription];
     newValue.splice(idx + 1, 0, {
       text: '',
       id: uuidv4()
     });
-    this.objectOfStudy = newValue;
+    this.dataDescription = newValue;
   }
 
   addSoftwareParagraph(idx: number): void {
@@ -387,41 +386,25 @@ export class PublicationStore {
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
-  updateObjectOfStudyTitle(value: string): void {
-    this.objectOfStudyTitle = value;
-    this.savingStatus = SavingStatusState.SAVING;
-    void this.doUpdateObjectOfStudyTitle();
-  }
-
-  doUpdateObjectOfStudyTitle = _.throttle(async () => {
-    await this.editPublication({
-      objectOfStudyTitle: {
-        value: this.objectOfStudyTitle,
-        edited: true
-      }
-    });
-    this.savingStatus = SavingStatusState.SAVED;
-  }, EDIT_THROTTLE_MS);
-
-  updateObjectOfStudyParagraph(idx: number, value: string): void {
-    const newValue = [...this.objectOfStudy];
+  updateDataDescriptionParagraph(idx: number, value: string): void {
+    const newValue = [...this.dataDescription];
     newValue[idx] = {
       text: value,
       id: newValue[idx].id
     };
-    this.objectOfStudy = newValue;
+    this.dataDescription = newValue;
     this.savingStatus = SavingStatusState.SAVING;
-    void this.updateObjectOfStudy();
+    void this.updateDataDescription();
   }
 
-  updateObjectOfStudy = _.throttle(async () => {
-    const objectOfStudy: Paragraph[] = this.objectOfStudy.filter(
+  updateDataDescription = _.throttle(async () => {
+    const dataDescription: Paragraph[] = this.dataDescription.filter(
       (p) => p.text.length > 0
     );
 
     await this.editPublication({
-      objectOfStudyDescription: {
-        values: objectOfStudy,
+      dataDescription: {
+        values: dataDescription,
         edited: true
       }
     });
@@ -639,21 +622,21 @@ export class PublicationStore {
     void this.updateMethod();
   };
 
-  mergeObjectOfStudyParagraph = (idx: number): void => {
+  mergeDataDescriptionParagraph = (idx: number): void => {
     if (idx <= 0) return;
-    const newValue = [...this.objectOfStudy];
+    const newValue = [...this.dataDescription];
     newValue[idx - 1] = {
       text: newValue[idx - 1].text + newValue[idx].text,
       id: newValue[idx - 1].id
     };
     newValue.splice(idx, 1);
-    this.objectOfStudy = newValue;
-    void this.updateObjectOfStudy();
+    this.dataDescription = newValue;
+    void this.updateDataDescription();
   };
 
-  splitObjectOfStudyParagraph = (idx: number, splitIndex: number): void => {
+  splitDataDescriptionParagraph = (idx: number, splitIndex: number): void => {
     if (idx < 0) return;
-    const newValue = [...this.objectOfStudy];
+    const newValue = [...this.dataDescription];
     const newElement = {
       text: newValue[idx].text.substring(splitIndex),
       id: uuidv4()
@@ -663,8 +646,8 @@ export class PublicationStore {
       text: newValue[idx].text.substring(0, splitIndex),
       id: newValue[idx].id
     };
-    this.objectOfStudy = newValue;
-    void this.updateObjectOfStudy();
+    this.dataDescription = newValue;
+    void this.updateDataDescription();
   };
 
   mergeSoftwareParagraph = (idx: number): void => {
@@ -779,8 +762,8 @@ export class PublicationStore {
     if (!hasContent(this.method)) {
       result.push('method');
     }
-    if (!hasContent(this.objectOfStudy)) {
-      result.push('object_of_study');
+    if (!hasContent(this.dataDescription)) {
+      result.push('data_description');
     }
     if (this.fs.rootPathFiles === 0) {
       result.push('files');
@@ -848,8 +831,7 @@ export class PublicationStore {
     this.experimentGoals.forEach((it) => (count += it.text.length));
     count += this.negativeData.length;
     this.method.forEach((it) => (count += it.text.length));
-    count += this.objectOfStudyTitle.length;
-    this.objectOfStudy.forEach((it) => (count += it.text.length));
+    this.dataDescription.forEach((it) => (count += it.text.length));
     this.grantingOrganizations.forEach((it) => (count += it.text.length));
     this.relatedArticles.forEach((it) => (count += it.text.length));
     this.primaryArticles.forEach((it) => (count += it.text.length));
@@ -912,15 +894,9 @@ export class PublicationStore {
             this.grantingOrganizations =
               publication.grantOrganizations.map(mapParagraph);
           }
-          if (publication.objectOfStudyTitle?.length) {
-            this.objectOfStudyTitle = publication.objectOfStudyTitle;
-            if (!publication.objectOfStudyDescription?.length) {
-              this.addObjectOfStudyParagraph(0);
-            }
-          }
-          if (publication.objectOfStudyDescription?.length) {
-            this.objectOfStudy =
-              publication.objectOfStudyDescription.map(mapParagraph);
+          if (publication.dataDescription?.length) {
+            this.dataDescription =
+              publication.dataDescription.map(mapParagraph);
           }
           if (publication.relatedArticles?.length) {
             this.relatedArticles =
