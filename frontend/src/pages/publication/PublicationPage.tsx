@@ -6,11 +6,12 @@ import React, {
 } from 'react';
 import {
   Button,
+  Grid,
   LinearProgress,
   Snackbar,
   SnackbarContent
 } from '@mui/material';
-import { FlexBodyCenter, Parent } from '../common.styled';
+import { Parent } from '../common.styled';
 import { routerStore } from '../../core/router';
 import styled from '@emotion/styled';
 import {
@@ -124,57 +125,59 @@ export const PublicationPage: FunctionComponent = observer(() => {
           setDeleteDialogOpen={setDeleteDialogOpen}
           setValidationErrors={setValidationErrors}
         />
-        <FlexBodyCenter>
-          <PublicationBodyWrap>
-            <Snackbar
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'center'
-              }}
-              open={openLimitSnackbar}
-              autoHideDuration={5000}
-              onClose={handleLimitSnackbarClose}>
-              <SnackbarContent
-                message={`You have exceeded the limit of ${MAX_CHARACTER_COUNT} characters. 
+        <Grid container justifyContent={'center'}>
+          <Grid item sm={12} md={8} lg={6} maxWidth={'712px'}>
+            <PublicationBodyWrap>
+              <Snackbar
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'center'
+                }}
+                open={openLimitSnackbar}
+                autoHideDuration={5000}
+                onClose={handleLimitSnackbarClose}>
+                <SnackbarContent
+                  message={`You have exceeded the limit of ${MAX_CHARACTER_COUNT} characters. 
                 Your article is ${publicationStore.characterCount}. Please shorten and try again.`}
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  backgroundColor: 'var(--error-dark, #C62828)'
-                }}
-                action={
-                  <Button
-                    size="small"
-                    sx={{
-                      color: 'white',
-                      backgroundColor: 'var(--error-dark, #C62828)'
-                    }}
-                    onClick={handleLimitSnackbarClose}>
-                    OK
-                  </Button>
-                }
-              />
-            </Snackbar>
-            {isLoading && <LinearProgress />}
-            {!isLoading && (
-              <PublicationBody
-                publicationId={publicationId}
-                publicationStore={publicationStore}
-                researchAreaStore={researchAreaStore}
-                publicationPageStore={publicationPageStore}
-                openDownloadersDialog={() => {
-                  downloadersStore.clearAndOpen(
-                    publicationId,
-                    publicationStore.downloadsCount
-                  );
-                }}
-                fs={fs}
-                sfs={sfs}
-              />
-            )}
-          </PublicationBodyWrap>
-        </FlexBodyCenter>
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    backgroundColor: 'var(--error-dark, #C62828)'
+                  }}
+                  action={
+                    <Button
+                      size="small"
+                      sx={{
+                        color: 'white',
+                        backgroundColor: 'var(--error-dark, #C62828)'
+                      }}
+                      onClick={handleLimitSnackbarClose}>
+                      OK
+                    </Button>
+                  }
+                />
+              </Snackbar>
+              {isLoading && <LinearProgress />}
+              {!isLoading && (
+                <PublicationBody
+                  publicationId={publicationId}
+                  publicationStore={publicationStore}
+                  researchAreaStore={researchAreaStore}
+                  publicationPageStore={publicationPageStore}
+                  openDownloadersDialog={() => {
+                    downloadersStore.clearAndOpen(
+                      publicationId,
+                      publicationStore.downloadsCount
+                    );
+                  }}
+                  fs={fs}
+                  sfs={sfs}
+                />
+              )}
+            </PublicationBodyWrap>
+          </Grid>
+        </Grid>
       </Parent>
       <ValidationDialog
         publicationPageStore={publicationPageStore}
@@ -217,5 +220,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
 });
 
 const PublicationBodyWrap = styled('div')`
-  width: 712px;
+  max-width: 760px;
+  padding-left: 24px;
+  padding-right: 24px;
 `;
