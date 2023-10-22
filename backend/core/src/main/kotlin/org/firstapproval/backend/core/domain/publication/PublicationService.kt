@@ -86,7 +86,6 @@ class PublicationService(
                                 organizationDepartment = it.organizationDepartment,
                                 address = it.address,
                                 postalCode = it.postalCode,
-                                isFormer = it.isFormer,
                                 creationTime = now(),
                                 editingTime = now(),
                             )
@@ -159,7 +158,6 @@ class PublicationService(
                                 organizationDepartment = unconfirmedWorkplace.department,
                                 address = unconfirmedWorkplace.address,
                                 postalCode = unconfirmedWorkplace.postalCode,
-                                isFormer = unconfirmedWorkplace.isFormer,
                                 creationTime = unconfirmedWorkplace.creationTime?.toZonedDateTime() ?: now(),
                                 editingTime = now(),
                             )

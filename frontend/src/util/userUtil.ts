@@ -9,7 +9,6 @@ export function getInitials(firstName?: string, lastName?: string): string {
 
 export function getCurrentWorkplacesString(workplaces: Workplace[]): string {
   const formattedWorkplaces = workplaces
-    ?.filter((workplace) => !workplace.isFormer)
     .map((workplace) =>
       [
         workplace.department,

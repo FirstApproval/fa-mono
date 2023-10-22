@@ -26,7 +26,6 @@ class Workplace(
     var user: User,
     var address: String? = null,
     var postalCode: String? = null,
-    var isFormer: Boolean,
     var creationTime: ZonedDateTime = now(),
     var editingTime: ZonedDateTime = now(),
 )
@@ -37,6 +36,5 @@ fun Workplace.toApiObject() = WorkplaceApiObject().also {
     it.department = organizationDepartment
     it.address = address
     it.postalCode = postalCode
-    it.isFormer = isFormer
     it.creationTime = creationTime.toOffsetDateTime()
 }
