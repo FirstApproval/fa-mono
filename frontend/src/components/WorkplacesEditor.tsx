@@ -1,5 +1,4 @@
 import React, { type ReactElement, useEffect, useState } from 'react';
-import ErrorOutline from '@mui/icons-material/ErrorOutline';
 import styled from '@emotion/styled';
 import {
   Alert,
@@ -7,19 +6,11 @@ import {
   Button,
   CircularProgress,
   Divider,
-  FormControlLabel,
   IconButton,
   Snackbar,
-  Switch,
   TextField
 } from '@mui/material';
-import {
-  FullWidth,
-  HeightElement,
-  ValidationError,
-  ValidationErrorText,
-  WidthElement
-} from '../pages/common.styled';
+import { FullWidth, HeightElement, WidthElement } from '../pages/common.styled';
 import { Organization, Workplace } from '../apis/first-approval-api';
 import { organizationService } from '../core/service';
 import {
@@ -73,10 +64,6 @@ export const WorkplacesEditor = observer(
           });
       }
     }, [workplaceOrgQueryIndex]);
-
-    const currentWorkplaceAbsent = !workplaces.some(
-      (workplace) => !workplace.isFormer
-    );
 
     const mapWorkplace = (
       workplace: Workplace,
@@ -146,9 +133,6 @@ export const WorkplacesEditor = observer(
                   workplaces.splice(index, 1);
                   workplacesProps.splice(index, 1);
                   workplacesValidation.splice(index, 1);
-                  if (workplaces.length === 1) {
-                    workplaces[0].isFormer = false;
-                  }
                 }}>
                 <Clear
                   sx={{
@@ -197,20 +181,6 @@ export const WorkplacesEditor = observer(
               variant="outlined"
             />
           </FlexWrapRowFullWidth>
-          {!isModalWindow && (
-            <FormerWorkplace
-              labelPlacement={'start'}
-              control={
-                <Switch
-                  checked={workplace.isFormer}
-                  onChange={(event) => {
-                    workplaces[index].isFormer = event.currentTarget.checked;
-                  }}
-                />
-              }
-              label="Former workplace"
-            />
-          )}
         </FullWidth>
       );
     };
@@ -236,21 +206,6 @@ export const WorkplacesEditor = observer(
             );
           })}
         </FullWidth>
-        {currentWorkplaceAbsent && (
-          <>
-            <HeightElement value={'32px'} />
-            <ValidationError>
-              <ErrorOutline
-                htmlColor={'#D32F2F'}
-                sx={{ width: '22px', height: '22px' }}
-              />
-              <WidthElement value={'12px'} />
-              <ValidationErrorText variant={'body2'}>
-                You must add at least one current workplace.
-              </ValidationErrorText>
-            </ValidationError>
-          </>
-        )}
         <HeightElement value="32px" />
         <Button
           disabled={false}
@@ -261,7 +216,7 @@ export const WorkplacesEditor = observer(
               orgQueryKey: '',
               organizationOptions: []
             };
-            workplaces.push({ isFormer: false });
+            workplaces.push({});
             workplacesValidation.push({ isValidOrganization: true });
           }}>
           + Add affiliation
@@ -271,7 +226,6 @@ export const WorkplacesEditor = observer(
           <SaveButton
             size={'large'}
             loading={savingInProgress}
-            disabled={currentWorkplaceAbsent}
             color={'primary'}
             variant={'contained'}
             onClick={() => {
@@ -350,20 +304,6 @@ const DividerWrap = styled(Divider)`
   margin-top: 32px;
   margin-bottom: 32px;
   width: 100%;
-`;
-
-const FormerWorkplace = styled(FormControlLabel)`
-  margin-top: 32px;
-  align-self: end;
-  color: var(--text-disabled, rgba(4, 0, 54, 0.38));
-
-  /* typography/body1 */
-  font-family: Roboto;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 150%; /* 24px */
-  letter-spacing: 0.15px;
 `;
 
 export const SaveButton = styled(LoadingButton)`

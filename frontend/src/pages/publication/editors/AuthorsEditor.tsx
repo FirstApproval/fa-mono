@@ -174,7 +174,6 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                               department: workplace.department,
                               address: workplace.address,
                               postalCode: workplace.postalCode,
-                              isFormer: workplace.isFormer,
                               creationTime: workplace.creationTime
                             };
                           }),

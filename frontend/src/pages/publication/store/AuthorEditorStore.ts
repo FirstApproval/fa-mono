@@ -29,7 +29,7 @@ export class AuthorEditorStore implements IWorkplaceStore {
   constructor() {
     makeAutoObservable(this);
     this.workplacesValidation = [{ isValidOrganization: true }];
-    this.workplaces = [{ isFormer: false }];
+    this.workplaces = [{}];
     this.workplacesProps = [
       {
         orgQuery: '',
@@ -46,9 +46,6 @@ export class AuthorEditorStore implements IWorkplaceStore {
     this.workplacesValidation = this.workplaces.map((workplace) => ({
       isValidOrganization: !!workplace.organization?.name?.length
     }));
-    // const currentWorkplaceAbsent = !this.workplaces.some(
-    //   (workplace) => !workplace.isFormer
-    // );
     return (
       this.isValidEmail &&
       this.isValidFirstName &&

@@ -328,7 +328,6 @@ class UserService(
                             organizationDepartment = workplace.department,
                             address = workplace.address,
                             postalCode = workplace.postalCode,
-                            isFormer = workplace.isFormer,
                             creationTime = workplace.creationTime?.toZonedDateTime() ?: now(),
                             editingTime = now(),
                             user = user
@@ -382,7 +381,6 @@ class UserService(
                         organizationDepartment = it.organizationDepartment,
                         address = it.address,
                         postalCode = it.postalCode,
-                        isFormer = it.isFormer,
                         user = user
                     )
                 }.let { user.workplaces.addAll(it) }

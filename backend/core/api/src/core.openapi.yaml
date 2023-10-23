@@ -2059,8 +2059,6 @@ components:
           type: string
         postalCode:
           type: string
-        isFormer:
-          type: boolean
         creationTime:
           type: string
           format: date-time
