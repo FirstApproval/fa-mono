@@ -48,11 +48,7 @@
                 "type": "text",
                 "analyzer": "edge_ngram_analyzer"
             },
-            "objectOfStudyTitle": {
-                "type": "text",
-                "analyzer": "edge_ngram_analyzer"
-            },
-            "objectOfStudyDescription": {
+            "dataDescription": {
                 "type": "text",
                 "analyzer": "edge_ngram_analyzer"
             },

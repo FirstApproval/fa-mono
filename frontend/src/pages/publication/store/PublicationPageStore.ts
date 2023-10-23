@@ -22,11 +22,8 @@ export class PublicationPageStore {
     );
   }
 
-  get objectOfStudyEnabled(): boolean {
-    return (
-      this.publicationStore.objectOfStudyTitle.length > 0 ||
-      this.publicationStore.objectOfStudy.length > 0
-    );
+  get dataDescriptionEnabled(): boolean {
+    return this.publicationStore.dataDescription.length > 0;
   }
 
   get softwareEnabled(): boolean {
@@ -232,9 +229,9 @@ export class PublicationPageStore {
     }
   };
 
-  openObjectOfStudy = (): void => {
-    if (!this.objectOfStudyEnabled) {
-      this.publicationStore.addObjectOfStudyParagraph(0);
+  openDataDescription = (): void => {
+    if (!this.dataDescriptionEnabled) {
+      this.publicationStore.addDataDescriptionParagraph(0);
     }
   };
 

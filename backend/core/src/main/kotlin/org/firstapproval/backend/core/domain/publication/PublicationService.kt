@@ -127,9 +127,8 @@ class PublicationService(
             if (primaryArticles?.edited == true) publication.primaryArticles = primaryArticles.values.map { it.text }
             if (relatedArticles?.edited == true) publication.relatedArticles = relatedArticles.values.map { it.text }
             if (tags?.edited == true) publication.tags = tags.values.map { it.text }
-            if (objectOfStudyTitle?.edited == true) publication.objectOfStudyTitle = objectOfStudyTitle.value
-            if (objectOfStudyDescription?.edited == true) {
-                publication.objectOfStudyDescription = objectOfStudyDescription.values.map { it.text }
+            if (dataDescription?.edited == true) {
+                publication.dataDescription = dataDescription.values.map { it.text }
             }
             if (software?.edited == true) publication.software = software.values.map { it.text }
             if (methodTitle?.edited == true) publication.methodTitle = methodTitle.value
@@ -411,8 +410,7 @@ fun Publication.toApiObject(userService: UserService) = PublicationApiObject().a
     publicationApiModel.primaryArticles = primaryArticles?.map { Paragraph(it) }
     publicationApiModel.relatedArticles = relatedArticles?.map { Paragraph(it) }
     publicationApiModel.tags = tags?.map { Paragraph(it) }
-    publicationApiModel.objectOfStudyTitle = objectOfStudyTitle
-    publicationApiModel.objectOfStudyDescription = objectOfStudyDescription?.map { Paragraph(it) }
+    publicationApiModel.dataDescription = dataDescription?.map { Paragraph(it) }
     publicationApiModel.software = software?.map { Paragraph(it) }
     publicationApiModel.methodTitle = methodTitle
     publicationApiModel.publicationTime = publicationTime?.toOffsetDateTime()
@@ -441,8 +439,7 @@ fun Publication.toPublicationElastic() =
         primaryArticles = primaryArticles,
         relatedArticles = relatedArticles,
         tags = tags,
-        objectOfStudyTitle = objectOfStudyTitle,
-        objectOfStudyDescription = objectOfStudyDescription,
+        dataDescription = dataDescription,
         software = software,
         methodTitle = methodTitle,
         methodDescription = methodDescription,
