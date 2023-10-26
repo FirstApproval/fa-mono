@@ -20,7 +20,7 @@ import {
   FilesPlaceholder,
   GrantingOrganisationsPlaceholder,
   MethodPlaceholder,
-  ObjectOfStudyPlaceholder,
+  DataDescriptionPlaceholder,
   RelatedPublicationsPlaceholder,
   SampleFilesPlaceholder,
   SoftwarePlaceholder,
@@ -70,7 +70,7 @@ export const PublicationBody = observer(
       openSummary,
       openExperimentGoals,
       openMethod,
-      openObjectOfStudy,
+      openDataDescription,
       openSoftware,
       openFiles,
       openSampleFilesModal,
@@ -82,7 +82,7 @@ export const PublicationBody = observer(
       summaryEnabled,
       experimentGoalsEnabled,
       methodEnabled,
-      objectOfStudyEnabled,
+      dataDescriptionEnabled,
       softwareEnabled,
       filesEnabled,
       sampleFilesEnabled,
@@ -155,10 +155,10 @@ export const PublicationBody = observer(
         {methodEnabled && <MethodEditor publicationStore={publicationStore} />}
 
         {/* Data description */}
-        {!objectOfStudyEnabled && !publicationStore.isReadonly && (
-          <ObjectOfStudyPlaceholder onClick={openObjectOfStudy} />
+        {!dataDescriptionEnabled && !publicationStore.isReadonly && (
+          <DataDescriptionPlaceholder onClick={openDataDescription} />
         )}
-        {objectOfStudyEnabled && (
+        {dataDescriptionEnabled && (
           <DataDescriptionEditor publicationStore={publicationStore} />
         )}
 
