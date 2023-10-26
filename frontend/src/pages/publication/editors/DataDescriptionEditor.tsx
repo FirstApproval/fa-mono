@@ -8,18 +8,18 @@ export const DataDescriptionEditor = observer(
     return (
       <ParagraphContentEditor
         isReadonly={props.publicationStore.isReadonly}
-        value={props.publicationStore.objectOfStudy}
+        value={props.publicationStore.dataDescription}
         onChange={(idx, value) => {
-          props.publicationStore.updateObjectOfStudyParagraph(idx, value);
+          props.publicationStore.updateDataDescriptionParagraph(idx, value);
         }}
         onAddParagraph={(idx) => {
-          props.publicationStore.addObjectOfStudyParagraph(idx);
+          props.publicationStore.addDataDescriptionParagraph(idx);
         }}
         onMergeParagraph={(idx) => {
-          props.publicationStore.mergeObjectOfStudyParagraph(idx);
+          props.publicationStore.mergeDataDescriptionParagraph(idx);
         }}
         onSplitParagraph={(idx, splitIndex) => {
-          props.publicationStore.splitObjectOfStudyParagraph(idx, splitIndex);
+          props.publicationStore.splitDataDescriptionParagraph(idx, splitIndex);
         }}
         placeholder={
           'Describe the data’s contents, structure and preliminary findings...'

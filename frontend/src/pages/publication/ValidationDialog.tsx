@@ -6,7 +6,7 @@ import {
   ExperimentGoalsPlaceholder,
   FilesPlaceholder,
   MethodPlaceholder,
-  ObjectOfStudyPlaceholder,
+  DataDescriptionPlaceholder,
   SummaryPlaceholder,
   TitlePlaceholder
 } from './ContentPlaceholder';
@@ -19,7 +19,7 @@ export const ValidationDialog = (props: {
   onClose: () => void;
 }): ReactElement => {
   const { isOpen, onClose, errors, publicationPageStore } = props;
-  const { openExperimentGoals, openMethod, openObjectOfStudy, openFiles } =
+  const { openExperimentGoals, openMethod, openDataDescription, openFiles } =
     publicationPageStore;
   return (
     <Dialog
@@ -61,11 +61,11 @@ export const ValidationDialog = (props: {
             }}
           />
         )}
-        {errors.includes('object_of_study') && (
-          <ObjectOfStudyPlaceholder
+        {errors.includes('data_description') && (
+          <DataDescriptionPlaceholder
             onClick={() => {
               onClose();
-              openObjectOfStudy();
+              openDataDescription();
             }}
           />
         )}
