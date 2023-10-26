@@ -56,11 +56,9 @@ class Publication(
     @ColumnTransformer(write = "?::text")
     @Convert(converter = StringListEncryptionConverter::class)
     var tags: List<String>? = null,
-    @Convert(converter = StringEncryptionConverter::class)
-    var objectOfStudyTitle: String? = null,
     @ColumnTransformer(write = "?::text")
     @Convert(converter = StringListEncryptionConverter::class)
-    var objectOfStudyDescription: List<String>? = null,
+    var dataDescription: List<String>? = null,
     @ColumnTransformer(write = "?::text")
     @Convert(converter = StringListEncryptionConverter::class)
     var software: List<String>? = null,

@@ -52,7 +52,7 @@ export class UserStore implements IWorkplaceStore {
         this.editableUser = cloneDeep(response.data);
         this.workplaces = cloneDeep(response.data.workplaces ?? []);
         if (!this.workplaces || this.workplaces.length === 0) {
-          this.workplaces.push({ isFormer: false });
+          this.workplaces.push({});
           this.workplacesValidation.push({
             isValidOrganization: true
           });

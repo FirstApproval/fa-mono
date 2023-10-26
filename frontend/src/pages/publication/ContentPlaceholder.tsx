@@ -69,7 +69,7 @@ export const MethodPlaceholder = (props: PlaceholderProps): ReactElement => {
   );
 };
 
-export const ObjectOfStudyPlaceholder = (
+export const DataDescriptionPlaceholder = (
   props: PlaceholderProps
 ): ReactElement => {
   return (

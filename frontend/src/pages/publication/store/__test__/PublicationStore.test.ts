@@ -94,11 +94,11 @@ describe('should correctly split paragraphs', () => {
       expect(publicationStore.title).toBe('Research');
     });
 
-    publicationStore.addObjectOfStudyParagraph(0);
-    publicationStore.updateObjectOfStudyParagraph(0, 'This is my object');
-    publicationStore.splitObjectOfStudyParagraph(0, 4);
-    expect(publicationStore.objectOfStudy[0].text).toBe('This');
-    expect(publicationStore.objectOfStudy[1].text).toBe(' is my object');
+    publicationStore.addDataDescriptionParagraph(0);
+    publicationStore.updateDataDescriptionParagraph(0, 'This is my object');
+    publicationStore.splitDataDescriptionParagraph(0, 4);
+    expect(publicationStore.dataDescription[0].text).toBe('This');
+    expect(publicationStore.dataDescription[1].text).toBe(' is my object');
   });
 
   test('software', async () => {
@@ -237,13 +237,13 @@ describe('should correctly merge paragraphs', () => {
       expect(publicationStore.title).toBe('Research');
     });
 
-    publicationStore.addObjectOfStudyParagraph(0);
-    publicationStore.updateObjectOfStudyParagraph(0, 'This');
-    publicationStore.addObjectOfStudyParagraph(1);
-    publicationStore.updateObjectOfStudyParagraph(1, ' is my object');
-    publicationStore.mergeObjectOfStudyParagraph(1);
-    expect(publicationStore.objectOfStudy[0].text).toBe('This is my object');
-    expect(publicationStore.objectOfStudy[1]).toBe(undefined);
+    publicationStore.addDataDescriptionParagraph(0);
+    publicationStore.updateDataDescriptionParagraph(0, 'This');
+    publicationStore.addDataDescriptionParagraph(1);
+    publicationStore.updateDataDescriptionParagraph(1, ' is my object');
+    publicationStore.mergeDataDescriptionParagraph(1);
+    expect(publicationStore.dataDescription[0].text).toBe('This is my object');
+    expect(publicationStore.dataDescription[1]).toBe(undefined);
   });
 
   test('software', async () => {

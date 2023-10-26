@@ -7,6 +7,7 @@ import {
   Divider,
   IconButton,
   InputAdornment,
+  Snackbar,
   Tabs,
   TextField,
   Typography
@@ -55,6 +56,7 @@ export const AccountPage: FunctionComponent = observer(() => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [previousPassword, setPreviousPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [showSuccessSavingAlter, setShowSuccessSavingAlter] = useState(false);
 
   const [isValidEmail, setIsValidEmail] = useState(true);
   const [isUsedEmail, setUsedEmail] = useState(false);
@@ -117,6 +119,7 @@ export const AccountPage: FunctionComponent = observer(() => {
       }
       // userStore.requestUserData();
       setSaveDisabled(true);
+      setShowSuccessSavingAlter(true);
     }
   };
 
@@ -430,6 +433,18 @@ export const AccountPage: FunctionComponent = observer(() => {
               )}
               {tabNumber === 3 && (
                 <TabContainer>
+                  {showSuccessSavingAlter && (
+                    <Snackbar
+                      open={showSuccessSavingAlter}
+                      autoHideDuration={4000}
+                      onClose={() => {
+                        setShowSuccessSavingAlter(false);
+                      }}>
+                      <Alert severity="success" sx={{ width: '100%' }}>
+                        Password successfully saved!
+                      </Alert>
+                    </Snackbar>
+                  )}
                   {editableUser.canChangePassword && (
                     <>
                       <NameElement variant={'h6'}>Old password</NameElement>

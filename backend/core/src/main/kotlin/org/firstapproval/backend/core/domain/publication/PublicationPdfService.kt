@@ -6,8 +6,6 @@ import org.firstapproval.backend.core.infra.pdf.PdfService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.thymeleaf.context.Context
-import java.io.File
-import java.io.FileOutputStream
 import java.text.DecimalFormat
 
 
@@ -42,8 +40,7 @@ class PublicationPdfService(
             model["negativeData"] = negativeData(publication)
         }
         model["method"] = method(publication)
-//        model["objectOfStudyName"] = objectOfStudyName(publication)
-        model["objectOfStudy"] = objectOfStudy(publication)
+        model["dataDescription"] = dataDescription(publication)
         if (!publication.software.isNullOrEmpty()) {
             model["software"] = software(publication)
         }
@@ -143,19 +140,11 @@ class PublicationPdfService(
         }
     }
 
-//    private fun objectOfStudyName(publication: Publication): String {
-//        return if (publication.objectOfStudyTitle.isNullOrEmpty()) {
-//            "Draft. No object of study yet."
-//        } else {
-//            publication.objectOfStudyTitle!!
-//        }
-//    }
-
-    private fun objectOfStudy(publication: Publication): List<String> {
-        return if (publication.objectOfStudyDescription.isNullOrEmpty()) {
-            listOf("Draft. No object of study description yet.")
+    private fun dataDescription(publication: Publication): List<String> {
+        return if (publication.dataDescription.isNullOrEmpty()) {
+            listOf("Draft. No data description yet.")
         } else {
-            publication.objectOfStudyDescription!!
+            publication.dataDescription!!
         }
     }
 
