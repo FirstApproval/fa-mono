@@ -1,8 +1,8 @@
 import React, { type ReactElement } from 'react';
 import styled from '@emotion/styled';
-import { Button, Stack } from '@mui/material';
+import { Box, Button, Grid, Stack } from '@mui/material';
 import { routerStore } from '../core/router';
-import { FlexHeader, FlexHeaderRight, Logo } from '../pages/common.styled';
+import { Logo } from '../pages/common.styled';
 import logo from '../assets/logo-black.svg';
 import { BetaDialogWithButton } from './BetaDialogWithButton';
 import { authStore } from '../core/auth';
@@ -30,85 +30,146 @@ export const HeaderComponent = (
     showLoginOutlinedButton: false
   }
 ): ReactElement => {
+  const showSignUpButton =
+    props.showSignUpContainedButton ?? props.showSignUpOutlinedButton;
+
   return (
-    <FlexHeader>
-      <FALinkWrap link={'/'}>
-        <Logo onClick={routerStore.goHome}>
-          <img src={logo} />
-        </Logo>
-      </FALinkWrap>
-      <BetaDialogWithButton />
-      {props.showAboutUsButton && (
-        <ButtonWrap
-          href={'https://about.firstapproval.io/'}
-          style={{ marginLeft: '32px' }}
-          variant="text"
-          size={'large'}>
-          About
-        </ButtonWrap>
-      )}
-      <FlexHeaderRight>
-        <Stack direction="row" alignItems="center" spacing={2}>
-          {props.showPublishButton && (
+    <Wrap>
+      <FlexHeader>
+        <Grid item xs={12}>
+          <FALinkWrap link={'/'}>
+            <Logo onClick={routerStore.goHome}>
+              <img src={logo} />
+            </Logo>
+          </FALinkWrap>
+        </Grid>
+        <BetaDialogWithButton />
+        <Box component={Grid} item xs={1} display={{ xs: 'none', md: 'block' }}>
+          {props.showAboutUsButton && (
             <ButtonWrap
-              href={userStore.getCreatePublicationLink()}
-              onClick={(e) => {
-                e.preventDefault();
-                userStore.goToCreatePublication();
-              }}
-              variant="outlined"
+              href={'https://about.firstapproval.io/'}
+              style={{ marginLeft: '32px' }}
+              variant="text"
               size={'large'}>
-              Publish
+              About
             </ButtonWrap>
           )}
-          {!authStore.token && (
-            <>
-              {props.showLoginButton && (
+        </Box>
+        <FlexHeaderRight>
+          <Stack direction="row" alignItems="center" spacing={2}>
+            <Box
+              component={Grid}
+              item
+              xs={1}
+              display={{ xs: 'none', md: 'block' }}>
+              {props.showPublishButton && (
                 <ButtonWrap
-                  variant="outlined"
-                  onClick={() => {
-                    routerStore.navigatePage(Page.SIGN_IN);
+                  href={userStore.getCreatePublicationLink()}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    userStore.goToCreatePublication();
                   }}
+                  variant="outlined"
                   size={'large'}>
-                  Log in
+                  Publish
                 </ButtonWrap>
               )}
-              {props.showLoginOutlinedButton && (
-                <Button
-                  variant="outlined"
-                  onClick={() => {
-                    routerStore.navigatePage(Page.SIGN_IN);
-                  }}>
-                  Log in
-                </Button>
-              )}
-              {props.showSignUpContainedButton && (
-                <SignUpButton
-                  variant="contained"
-                  onClick={() => {
-                    routerStore.navigatePage(Page.SIGN_UP);
-                  }}
-                  size={'large'}>
-                  Sign up
-                </SignUpButton>
-              )}
-              {props.showSignUpOutlinedButton && (
-                <Button
-                  variant="outlined"
-                  onClick={() => {
-                    routerStore.navigatePage(Page.SIGN_UP);
-                  }}>
-                  Sign up
-                </Button>
-              )}
-            </>
-          )}
-        </Stack>
-        {authStore.token && <UserMenu />}
-      </FlexHeaderRight>
-    </FlexHeader>
+            </Box>
+            {!authStore.token && (
+              <>
+                {props.showLoginButton && (
+                  <Box
+                    component={Grid}
+                    item
+                    xs={1}
+                    display={{
+                      xs: showSignUpButton ? 'none' : 'block',
+                      md: 'block'
+                    }}>
+                    <ButtonWrap
+                      variant="outlined"
+                      onClick={() => {
+                        routerStore.navigatePage(Page.SIGN_IN);
+                      }}
+                      size={'large'}>
+                      Log in
+                    </ButtonWrap>
+                  </Box>
+                )}
+                {props.showLoginOutlinedButton && (
+                  <Box
+                    component={Grid}
+                    item
+                    xs={1}
+                    display={{
+                      xs: showSignUpButton ? 'none' : 'block',
+                      md: 'block'
+                    }}>
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
+                        routerStore.navigatePage(Page.SIGN_IN);
+                      }}>
+                      Log in
+                    </Button>
+                  </Box>
+                )}
+                {props.showSignUpContainedButton && (
+                  <SignUpButton
+                    variant="contained"
+                    onClick={() => {
+                      routerStore.navigatePage(Page.SIGN_UP);
+                    }}
+                    size={'large'}>
+                    Sign up
+                  </SignUpButton>
+                )}
+                {props.showSignUpOutlinedButton && (
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      routerStore.navigatePage(Page.SIGN_UP);
+                    }}>
+                    Sign up
+                  </Button>
+                )}
+              </>
+            )}
+          </Stack>
+          {authStore.token && <UserMenu />}
+        </FlexHeaderRight>
+      </FlexHeader>
+    </Wrap>
   );
 };
+
+export const Wrap = styled.div`
+  display: flex;
+  padding: 8px 24px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid #eeeeee;
+
+  @media (min-width: 768px) {
+    padding: 12px 32px;
+    margin-bottom: 80px;
+  }
+`;
+
+export const FlexHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  width: 100%;
+
+  z-index: 10;
+`;
+
+export const FlexHeaderRight = styled.div`
+  margin-left: auto;
+  display: flex;
+`;
 
 const ButtonWrap = styled(Button)<{
   width?: string;

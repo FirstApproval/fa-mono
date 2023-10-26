@@ -1,6 +1,8 @@
 import React, { type FunctionComponent, ReactElement, useState } from 'react';
 import {
+  Box,
   Divider,
+  Grid,
   InputAdornment,
   LinearProgress,
   TextField,
@@ -47,26 +49,17 @@ export const HomePage: FunctionComponent = observer(() => {
   return (
     <>
       <Parent>
-        <div
+        <BetaBannerWrap
           onClick={() => {
             setIsBetaDialogOpen(true);
           }}
-          style={{
-            display: 'flex',
-            width: '100%',
-            height: '48px',
-            backgroundColor: 'var(--primary-main, #3B4EFF)',
-            justifyContent: 'center',
-            alignItems: 'center',
-            alignContent: 'center',
-            cursor: 'pointer'
-          }}>
+          style={{}}>
           <img src={developer} />
           <BetaHeaderText variant={'subtitle2'}>
             We are fine-tuning the platform and would love your feedback
           </BetaHeaderText>
           <img src={cloud} />
-        </div>
+        </BetaBannerWrap>
         <BetaDialog
           isOpen={isBetaDialogOpen}
           onClose={() => setIsBetaDialogOpen(false)}
@@ -77,75 +70,91 @@ export const HomePage: FunctionComponent = observer(() => {
           showLoginButton={true}
           showSignUpContainedButton={true}
         />
-        <ContentWrap>
-          <ContentWrapInner>
-            <Wrap>
-              <Header>Discover science</Header>
-            </Wrap>
-            <Wrap>
-              <FullWidthTextField
-                autoFocus
-                value={store.inputValue}
-                onChange={(event) => {
-                  store.inputValue = event.currentTarget.value;
-                  if (!store.inputValue) {
-                    store.searchQuery = '';
-                  }
-                }}
-                placeholder={'Search the data you need...'}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter' || event.keyCode === 13) {
-                    void store.search();
-                  }
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <Search />
-                    </InputAdornment>
-                  )
-                }}
-              />
-            </Wrap>
-            {!hasSearch && (
-              <>
-                <RecommendedPublicationsSection
-                  publications={store.recommendedPublications}
-                />
-                <CallToAction store={store} />
-                <FlexBodyCenter>
-                  <FlexBody>
-                    <PopularAuthorsSection authors={store.popularAuthors} />
-                    <DividerWrap />
-                    {store.isLoadingPublications && <LinearProgress />}
-                    {!store.isLoadingPublications && (
-                      <>{mapPublications(store.publications)}</>
-                    )}
-                  </FlexBody>
-                </FlexBodyCenter>
-              </>
-            )}
-            {hasSearch && (
-              <Wrap>
-                <ResultsLabel variant={'h4'} component={'div'}>
-                  Results for {store.searchQuery}
-                </ResultsLabel>
-                {store.isSearching && <LinearProgress />}
-                {!store.isSearching && store.searchResults.length !== 0 && (
-                  <>{mapPublications(store.searchResults)}</>
-                )}
-                {!store.isSearching && store.searchResults.length === 0 && (
-                  <ContentWrap>
-                    <SearchHintText variant={'body'}>
-                      Make sure all words are spelled correctly or try more
-                      general keywords.
-                    </SearchHintText>
-                  </ContentWrap>
-                )}
-              </Wrap>
-            )}
-          </ContentWrapInner>
-        </ContentWrap>
+        <Box sx={{ flexGrow: 1 }}>
+          <ContentWrap>
+            <ContentWrapInner>
+              <Grid
+                container
+                spacing={3}
+                justifyContent={'center'}
+                maxWidth={'1240px'}>
+                <Grid item xs={12} md={11} lg={11}>
+                  <Wrap>
+                    <Header>Discover science</Header>
+                  </Wrap>
+                  <Wrap>
+                    <FullWidthTextField
+                      autoFocus
+                      value={store.inputValue}
+                      onChange={(event) => {
+                        store.inputValue = event.currentTarget.value;
+                        if (!store.inputValue) {
+                          store.searchQuery = '';
+                        }
+                      }}
+                      placeholder={'Search the data you need...'}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.keyCode === 13) {
+                          void store.search();
+                        }
+                      }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <Search />
+                          </InputAdornment>
+                        )
+                      }}
+                    />
+                  </Wrap>
+                </Grid>
+              </Grid>
+              {!hasSearch && (
+                <Grid
+                  container
+                  spacing={3}
+                  justifyContent={'center'}
+                  maxWidth={'1240px'}>
+                  <Grid item xs={12} md={11} lg={11}>
+                    <RecommendedPublicationsSection
+                      publications={store.recommendedPublications}
+                    />
+                    <CallToAction store={store} />
+                    <FlexBodyCenter>
+                      <FlexBody>
+                        <PopularAuthorsSection authors={store.popularAuthors} />
+                        <DividerWrap />
+                        {store.isLoadingPublications && <LinearProgress />}
+                        {!store.isLoadingPublications && (
+                          <>{mapPublications(store.publications)}</>
+                        )}
+                      </FlexBody>
+                    </FlexBodyCenter>
+                  </Grid>
+                </Grid>
+              )}
+              {hasSearch && (
+                <Wrap>
+                  <ResultsLabel variant={'h4'} component={'div'}>
+                    Results for {store.searchQuery}
+                  </ResultsLabel>
+                  {store.isSearching && <LinearProgress />}
+                  {!store.isSearching && store.searchResults.length !== 0 && (
+                    <>{mapPublications(store.searchResults)}</>
+                  )}
+                  {!store.isSearching && store.searchResults.length === 0 && (
+                    <ContentWrap>
+                      <SearchHintText variant={'body'}>
+                        Make sure all words are spelled correctly or try more
+                        general keywords.
+                      </SearchHintText>
+                    </ContentWrap>
+                  )}
+                </Wrap>
+              )}
+            </ContentWrapInner>
+          </ContentWrap>
+        </Box>
       </Parent>
       <Footer />
       <DownloadersDialog
@@ -155,6 +164,23 @@ export const HomePage: FunctionComponent = observer(() => {
     </>
   );
 });
+
+const BetaBannerWrap = styled.div`
+  display: flex;
+  width: 100%;
+  height: 48px;
+  background-color: var(--primary-main, #3b4eff);
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  cursor: pointer;
+
+  padding: 8px 24px;
+
+  @media (min-width: 768px) {
+    padding: 12px 32px;
+  }
+`;
 
 const Header = styled('div')`
   font-size: 48px;
@@ -171,13 +197,14 @@ const ContentWrap = styled('div')`
   width: 100%;
   display: flex;
   justify-content: center;
+  padding: 0px 24px 0px 24px;
 `;
 
 const ContentWrapInner = styled('div')`
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 1240px;
 `;
 
 const FlexBody = styled('div')`
