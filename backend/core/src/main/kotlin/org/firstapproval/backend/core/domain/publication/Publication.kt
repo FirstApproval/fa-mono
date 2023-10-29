@@ -92,6 +92,7 @@ class Publication(
     @Enumerated(STRING)
     var licenseType: LicenseType = ATTRIBUTION_NO_DERIVATIVES,
     var characterCount: Long = 0,
+    var isBlocked: Boolean = false,
 ) {
     val authorsNames: String
         get() = authors.joinToString(postfix = ".") { it.lastName + " " + it.firstName }

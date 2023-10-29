@@ -907,6 +907,26 @@ paths:
       operationId: getPublicationSampleFilesDownloadLink
       tags: [ publication ]
 
+  /api/publication/{id}/block:
+    put:
+      summary: Block publication
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            minLength: 7
+            maxLength: 7
+          required: true
+          description: Publication id
+      responses:
+        200:
+          description: Success
+      security:
+        - BasicAuth: [ ]
+      operationId: blockPublication
+      tags: [ publication ]
+
   /api/files/check-duplicates/{publicationId}:
     post:
       summary: Check file duplicates
@@ -2384,3 +2404,8 @@ components:
       description: Access with auth JWT token
       type: http
       scheme: bearer
+
+    BasicAuth:
+      description: Basic auth credentials for admin methods
+      type: http
+      scheme: basic

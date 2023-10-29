@@ -3,6 +3,7 @@ package org.firstapproval.backend.core.config
 import io.jsonwebtoken.JwtException
 import mu.KotlinLogging.logger
 import org.firstapproval.backend.core.config.security.*
+import org.firstapproval.backend.core.config.Properties.AdminProperties
 import org.firstapproval.backend.core.domain.auth.TokenService
 import org.firstapproval.backend.core.domain.user.UserService
 import org.springframework.context.annotation.Bean
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.HttpStatusEntryPoint
 import org.springframework.security.web.authentication.logout.LogoutFilter
@@ -60,6 +62,22 @@ class WebSecurityConfig {
                 it.authenticationEntryPoint(HttpStatusEntryPoint(UNAUTHORIZED))
             }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+        return http.build()
+    }
+
+    @Bean
+    fun basicAuthSecurityFilterChain(
+        http: HttpSecurity,
+        apiService: ApiService,
+        adminProperties: AdminProperties,
+        passwordEncoder: PasswordEncoder
+    ): SecurityFilterChain {
+        http.apply(BasicAuthConfigurer())
+            .requestMatcher(*apiService.getAllPathsByScheme("BasicAuth"))
+            .inMemoryUser(
+                username = adminProperties.login,
+                encodedPassword = passwordEncoder.encode(adminProperties.password)
+            )
         return http.build()
     }
 }
