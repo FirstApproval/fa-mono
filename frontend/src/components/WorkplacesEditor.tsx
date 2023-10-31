@@ -84,7 +84,6 @@ export const WorkplacesEditor = observer(
               }}
               onBlur={(event: any) => {
                 const orgName = event.target.value;
-                debugger;
                 if (
                   !(
                     workplace.organization?.name &&
