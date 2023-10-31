@@ -86,12 +86,8 @@ export const WorkplacesEditor = observer(
               onBlur={(event: any) => {
                 const orgName = event.target.value;
                 if (
-                  !(
-                    workplace.organization?.name &&
-                    workplace.organization.name
-                      .toLowerCase()
-                      .includes(orgName.toLowerCase())
-                  )
+                  !workplace.organization?.name?.toLowerCase() !==
+                  orgName.toLowerCase()
                 ) {
                   workplace.organization = { name: orgName };
                   workplaceProps.orgQuery = workplace.organization.name;
