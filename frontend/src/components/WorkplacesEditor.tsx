@@ -84,9 +84,19 @@ export const WorkplacesEditor = observer(
               }}
               onBlur={(event: any) => {
                 const orgName = event.target.value;
-                workplace.organization = workplaceProps
-                  .organizationOptions[0] ?? { name: orgName };
-                workplaceProps.orgQuery = workplace.organization.name;
+                debugger;
+                if (
+                  !(
+                    workplace.organization?.name &&
+                    workplace.organization.name
+                      .toLowerCase()
+                      .includes(orgName.toLowerCase())
+                  )
+                ) {
+                  workplace.organization = workplaceProps
+                    .organizationOptions[0] ?? { name: orgName };
+                  workplaceProps.orgQuery = workplace.organization.name;
+                }
                 workplaceProps.orgQueryKey = '';
               }}
               onInputChange={(event, newInputValue, reason) => {
