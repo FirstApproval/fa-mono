@@ -254,7 +254,7 @@ export const PublicationBody = observer(
         {!authorsEnabled && !publicationStore.isReadonly && (
           <AuthorsPlaceholder onClick={openAuthors} />
         )}
-        {authorsEnabled && (
+        {(authorsEnabled || publicationStore.isReadonly) && (
           <AuthorsEditor
             key={`authorsEditor_${publicationStore.authors.length}`}
             publicationStore={publicationStore}
