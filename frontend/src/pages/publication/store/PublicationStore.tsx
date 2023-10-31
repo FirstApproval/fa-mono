@@ -223,7 +223,7 @@ export class PublicationStore {
       author.email = store.email;
       author.firstName = store.firstName;
       author.lastName = store.lastName;
-      author.workplaces = store.workplaces;
+      author.workplaces = [...store.workplaces];
     } else {
       const newValue = [...this.authors];
       newValue.push({
