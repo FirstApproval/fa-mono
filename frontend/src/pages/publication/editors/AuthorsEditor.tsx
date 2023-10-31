@@ -312,7 +312,6 @@ const AddAuthorDialog = observer(
       authorStore.workplaces?.forEach((w) => {
         authorStore.workplacesProps.push({
           orgQuery: w.organization?.name ?? '',
-          orgQueryKey: '',
           organizationOptions: []
         });
         authorStore.workplacesValidation.push({

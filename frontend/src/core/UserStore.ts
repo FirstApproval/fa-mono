@@ -62,7 +62,6 @@ export class UserStore implements IWorkplaceStore {
         this.workplaces?.forEach((w, index) => {
           this.workplacesProps.push({
             orgQuery: w.organization?.name ?? '',
-            orgQueryKey: '',
             organizationOptions: []
           });
           this.workplacesValidation.push({

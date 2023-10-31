@@ -171,7 +171,6 @@ export const PublicationPageHeader = observer(
                       }
                       size={'medium'}
                       onClick={() => {
-                        debugger;
                         if (
                           nextViewMode !== ViewMode.PREVIEW ||
                           validateSections()
