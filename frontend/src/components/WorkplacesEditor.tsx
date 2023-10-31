@@ -76,6 +76,7 @@ export const WorkplacesEditor = observer(
           <DividerWrap hidden={index === 0} />
           <FlexWrapOrganization extendWidth={!isModalWindow}>
             <Autocomplete
+              noOptionsText={null}
               key={`orgKey-${index}-${workplaceProps.orgQueryKey}`}
               onChange={(event: any, newValue: Organization | null) => {
                 workplace.organization = newValue ?? undefined;
@@ -92,8 +93,7 @@ export const WorkplacesEditor = observer(
                       .includes(orgName.toLowerCase())
                   )
                 ) {
-                  workplace.organization = workplaceProps
-                    .organizationOptions[0] ?? { name: orgName };
+                  workplace.organization = { name: orgName };
                   workplaceProps.orgQuery = workplace.organization.name;
                 }
                 workplaceProps.orgQueryKey = '';
