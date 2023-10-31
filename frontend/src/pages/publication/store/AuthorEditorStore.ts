@@ -33,7 +33,6 @@ export class AuthorEditorStore implements IWorkplaceStore {
     this.workplacesProps = [
       {
         orgQuery: '',
-        orgQueryKey: '',
         organizationOptions: []
       }
     ];

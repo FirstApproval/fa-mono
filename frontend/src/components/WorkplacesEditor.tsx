@@ -77,22 +77,20 @@ export const WorkplacesEditor = observer(
           <FlexWrapOrganization extendWidth={!isModalWindow}>
             <Autocomplete
               noOptionsText={null}
-              key={`orgKey-${index}-${workplaceProps.orgQueryKey}`}
+              key={`orgKey-${index}`}
               onChange={(event: any, newValue: Organization | null) => {
                 workplace.organization = newValue ?? undefined;
                 workplaceProps.orgQuery = newValue?.name ?? '';
-                workplaceProps.orgQueryKey = '';
               }}
               onBlur={(event: any) => {
                 const orgName = event.target.value;
                 if (
-                  !workplace.organization?.name?.toLowerCase() !==
+                  workplace.organization?.name?.toLowerCase() !==
                   orgName.toLowerCase()
                 ) {
                   workplace.organization = { name: orgName };
-                  workplaceProps.orgQuery = workplace.organization.name;
+                  workplaceProps.orgQuery = orgName;
                 }
-                workplaceProps.orgQueryKey = '';
               }}
               onInputChange={(event, newInputValue, reason) => {
                 if (reason === 'reset' && newInputValue) {
@@ -100,11 +98,10 @@ export const WorkplacesEditor = observer(
                 }
                 if (!['selectOption', 'reset', 'blur'].includes(reason)) {
                   workplaceProps.orgQuery = newInputValue;
-                  workplaceProps.orgQueryKey = '';
                   setWorkplaceOrgQueryIndex(`${index}-${newInputValue}`);
                 }
               }}
-              blurOnSelect={true}
+              blurOnSelect={false}
               forcePopupIcon={false}
               inputValue={workplaceProps?.orgQuery}
               renderOption={(props, option, state) => {
@@ -218,7 +215,6 @@ export const WorkplacesEditor = observer(
           onClick={() => {
             workplacesProps[workplaces.length] = {
               orgQuery: '',
-              orgQueryKey: '',
               organizationOptions: []
             };
             workplaces.push({});
