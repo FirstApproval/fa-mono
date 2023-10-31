@@ -330,6 +330,7 @@ const AddAuthorDialog = observer(
     const handleSaveButton = async (): Promise<void> => {
       if (authorStore.isConfirmed) {
         publicationStore.addOrEditAuthor(authorStore);
+        props.setShowSuccessSavingAlter(true);
       } else {
         return userService.existsByEmail(authorStore.email).then((result) => {
           if (result.data) {
