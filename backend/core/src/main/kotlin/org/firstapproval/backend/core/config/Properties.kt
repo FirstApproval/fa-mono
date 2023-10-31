@@ -86,4 +86,11 @@ class Properties {
         lateinit var host: String
         var port by notNull<Int>()
     }
+
+    @Component
+    @ConfigurationProperties("admin")
+    class AdminProperties {
+        lateinit var login: String
+        lateinit var password: String
+    }
 }

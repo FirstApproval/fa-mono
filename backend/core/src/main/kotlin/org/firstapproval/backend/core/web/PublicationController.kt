@@ -146,6 +146,11 @@ class PublicationController(
         return downloadPdf(publication)
     }
 
+    override fun blockPublication(id: String): ResponseEntity<Void> {
+        publicationService.blockPublication(id)
+        return ok().build()
+    }
+
     fun downloadPdf(publication: PublicationEntity): ResponseEntity<Resource> {
         val pdfContent = publicationPdfService.generate(publication)
         return ok()
