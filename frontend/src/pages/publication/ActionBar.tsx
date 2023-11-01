@@ -7,8 +7,10 @@ import pdf from './asset/pdf.svg';
 import citate from './asset/citate.svg';
 import {
   Alert,
+  Box,
   Button,
   Divider,
+  Grid,
   Snackbar,
   Tooltip,
   Typography
@@ -59,20 +61,11 @@ export const ActionBar = observer(
           marginTop: '32px',
           marginBottom: '12px'
         }}>
-        {props.displayDivider && <Divider color={'#D2D2D6'} />}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginTop: '16px',
-            marginBottom: '16px'
-          }}>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center'
-            }}>
+        {props.displayDivider && (
+          <Divider color={'#D2D2D6'} sx={{ marginBottom: '16px' }} />
+        )}
+        <Grid container rowSpacing={2}>
+          <Grid item sm={12} md={8}>
             {publicationStore.publicationStatus ===
               PublicationStatus.READY_FOR_PUBLICATION && (
               <FlexWrapRow>
@@ -103,12 +96,14 @@ export const ActionBar = observer(
                     color={'primary'}
                     style={{ marginRight: '8px' }}
                   />
-                  <span>
-                    {publicationPageStore.contentStatus ===
-                    PublicationContentStatus.PREPARING
-                      ? 'Preparing...'
-                      : 'Download'}
-                  </span>
+                  <Box display={{ xs: 'none', lg: 'block' }}>
+                    <span>
+                      {publicationPageStore.contentStatus ===
+                      PublicationContentStatus.PREPARING
+                        ? 'Preparing...'
+                        : 'Download'}
+                    </span>
+                  </Box>
                   <div style={{ marginRight: 4 }}></div>
                   <span style={{ fontWeight: '400' }}>
                     {getArchiveSizeTitle(publicationStore.archiveSize)}
@@ -128,7 +123,12 @@ export const ActionBar = observer(
                       color={'inherit'}
                       style={{ marginRight: '8px' }}
                     />{' '}
-                    <span>Download sample</span>
+                    <Box display={{ xs: 'none', lg: 'block' }}>
+                      <span>Download sample</span>
+                    </Box>
+                    <Box display={{ xs: 'block', lg: 'none' }}>
+                      <span>Sample</span>
+                    </Box>
                     <div style={{ marginRight: 4 }}></div>
                     <span style={{ fontWeight: '400' }}>
                       {getArchiveSizeTitle(publicationStore.sampleArchiveSize)}
@@ -136,12 +136,8 @@ export const ActionBar = observer(
                   </DownloadSampleFilesButtonWrap>
                 </Tooltip>
               )}
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center'
-            }}>
+          </Grid>
+          <Grid item sm={12} md={4}>
             <Tooltip title="Download publication PDF">
               <PdfButtonWrap
                 variant="outlined"
@@ -169,10 +165,12 @@ export const ActionBar = observer(
                 <ContentCopy />
               </ActionButtonWrap>
             </Tooltip>
-          </div>
-        </div>
+          </Grid>
+        </Grid>
 
-        {props.displayDivider && <Divider color={'#D2D2D6'} />}
+        {props.displayDivider && (
+          <Divider color={'#D2D2D6'} sx={{ marginTop: '16px' }} />
+        )}
         <ArchiveDownloader
           isPasscodeOpen={publicationPageStore.isPasscodeDialogOpen}
           setIsPasscodeOpen={(value) =>

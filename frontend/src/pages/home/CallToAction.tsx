@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import React, { type ReactElement } from 'react';
-import { Button, Typography } from '@mui/material';
+import { Box, Button, Grid, Typography } from '@mui/material';
 import bannerBg from './asset/Main banner.svg';
 import { type HomePageStore } from './HomePageStore';
 import { userStore } from '../../core/user';
@@ -28,10 +28,19 @@ export const CallToAction = (props: { store: HomePageStore }): ReactElement => {
           </ButtonWrap>
         </FlexWrapColumn>
       </CallToActionWrap>
-      <img src={bannerBg} />
+      <Box component={Grid} item xs={1} display={{ xs: 'none', lg: 'block' }}>
+        <ImgWrap>
+          <img src={bannerBg} />
+        </ImgWrap>
+      </Box>
     </Wrap>
   );
 };
+
+export const ImgWrap = styled('div')`
+  margin-left: -324px;
+  margin-bottom: -6px;
+`;
 
 export const Wrap = styled('div')`
   display: flex;
@@ -40,7 +49,7 @@ export const Wrap = styled('div')`
   justify-content: space-between;
 
   width: 100%;
-  margin: 0 80px 80px;
+  margin-bottom: 80px;
 
   border-radius: 8px;
   background: linear-gradient(90deg, #3b4eff 0%, #3c47e5 36.32%, #030d96 100%);

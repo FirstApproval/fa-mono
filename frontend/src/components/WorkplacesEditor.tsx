@@ -76,18 +76,21 @@ export const WorkplacesEditor = observer(
           <DividerWrap hidden={index === 0} />
           <FlexWrapOrganization extendWidth={!isModalWindow}>
             <Autocomplete
-              key={`orgKey-${index}-${workplaceProps.orgQueryKey}`}
+              noOptionsText={null}
+              key={`orgKey-${index}`}
               onChange={(event: any, newValue: Organization | null) => {
                 workplace.organization = newValue ?? undefined;
                 workplaceProps.orgQuery = newValue?.name ?? '';
-                workplaceProps.orgQueryKey = '';
               }}
               onBlur={(event: any) => {
                 const orgName = event.target.value;
-                workplace.organization = workplaceProps
-                  .organizationOptions[0] ?? { name: orgName };
-                workplaceProps.orgQuery = workplace.organization.name;
-                workplaceProps.orgQueryKey = '';
+                if (
+                  workplace.organization?.name?.toLowerCase() !==
+                  orgName.toLowerCase()
+                ) {
+                  workplace.organization = { name: orgName };
+                  workplaceProps.orgQuery = orgName;
+                }
               }}
               onInputChange={(event, newInputValue, reason) => {
                 if (reason === 'reset' && newInputValue) {
@@ -95,11 +98,10 @@ export const WorkplacesEditor = observer(
                 }
                 if (!['selectOption', 'reset', 'blur'].includes(reason)) {
                   workplaceProps.orgQuery = newInputValue;
-                  workplaceProps.orgQueryKey = '';
                   setWorkplaceOrgQueryIndex(`${index}-${newInputValue}`);
                 }
               }}
-              blurOnSelect={true}
+              blurOnSelect={false}
               forcePopupIcon={false}
               inputValue={workplaceProps?.orgQuery}
               renderOption={(props, option, state) => {
@@ -213,7 +215,6 @@ export const WorkplacesEditor = observer(
           onClick={() => {
             workplacesProps[workplaces.length] = {
               orgQuery: '',
-              orgQueryKey: '',
               organizationOptions: []
             };
             workplaces.push({});

@@ -7,6 +7,13 @@ import { getAuthorLink } from '../../core/router/utils';
 
 export const Authors = observer(
   (props: { publicationStore: PublicationStore }): ReactElement => {
+    const getPunctuation = (index: number): string => {
+      return index < props.publicationStore.authorNames.length - 2
+        ? ', '
+        : index === props.publicationStore.authorNames.length - 2
+        ? ' and '
+        : '';
+    };
     return (
       <div
         style={{
@@ -17,7 +24,8 @@ export const Authors = observer(
           fontSize: '16px',
           fontWeight: '400',
           lineHeight: '150%',
-          letterSpacing: '0.15px'
+          letterSpacing: '0.15px',
+          flexWrap: 'wrap'
         }}>
         <span style={{ marginRight: '6px' }}>Authored by</span>
         {props.publicationStore.authorNames
@@ -39,11 +47,7 @@ export const Authors = observer(
                     cursor: 'pointer'
                   }}>
                   {author.firstName} {author.lastName}
-                </span>
-                <span>
-                  {index < props.publicationStore.authorNames.length - 1
-                    ? ' ,'
-                    : ''}
+                  {getPunctuation(index)}
                 </span>
               </div>
             ) : (
@@ -52,11 +56,7 @@ export const Authors = observer(
                 style={{ marginRight: '4px' }}>
                 <span>
                   {author.firstName} {author.lastName}
-                </span>
-                <span>
-                  {index < props.publicationStore.authorNames.length - 1
-                    ? ' ,'
-                    : ''}
+                  {getPunctuation(index)}
                 </span>
               </div>
             )

@@ -67,7 +67,7 @@ export const PrimaryArticleData = observer(
                 openDialogWithPreCreated(index);
               }}>
               <PrimaryArticleSpanWrap>Primary article:</PrimaryArticleSpanWrap>
-              {' ' + v.text}
+              <PrimaryArticleNameWrap>{' ' + v.text}</PrimaryArticleNameWrap>
             </ArticleContentWrap>
           ))}
         </div>
@@ -155,6 +155,11 @@ export const PrimaryArticleData = observer(
 const PrimaryArticleSpanWrap = styled.span`
   background: var(--grey-50, #f8f7fa);
   border-radius: 2px;
+`;
+
+const PrimaryArticleNameWrap = styled.span`
+  overflow-wrap: anywhere;
+  display: inline-block;
 `;
 
 const ArticleContentWrap = styled.div`

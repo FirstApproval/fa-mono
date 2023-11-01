@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, runInAction } from 'mobx';
 import { authorService, publicationService } from '../../core/service';
 import { type Publication, type UserInfo } from '../../apis/first-approval-api';
 
@@ -29,9 +29,13 @@ export class HomePageStore {
     this.isLoadingPublications = true;
     try {
       const response = await publicationService.getAllPublications(0, 25);
-      this.publications = response.data.publications ?? [];
+      runInAction(() => {
+        this.publications = response.data.publications ?? [];
+      });
     } finally {
-      this.isLoadingPublications = false;
+      runInAction(() => {
+        this.isLoadingPublications = false;
+      });
     }
   }
 
@@ -39,9 +43,13 @@ export class HomePageStore {
     this.isLoadingPopularAuthors = true;
     try {
       const response = await authorService.getTopAuthors(0, 4);
-      this.popularAuthors = response.data.authors ?? [];
+      runInAction(() => {
+        this.popularAuthors = response.data.authors ?? [];
+      });
     } finally {
-      this.isLoadingPopularAuthors = false;
+      runInAction(() => {
+        this.isLoadingPopularAuthors = false;
+      });
     }
   }
 
@@ -52,9 +60,13 @@ export class HomePageStore {
         0,
         4
       );
-      this.recommendedPublications = response.data.publications ?? [];
+      runInAction(() => {
+        this.recommendedPublications = response.data.publications ?? [];
+      });
     } finally {
-      this.isLoadingRecommendedPublications = false;
+      runInAction(() => {
+        this.isLoadingRecommendedPublications = false;
+      });
     }
   }
 

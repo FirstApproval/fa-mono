@@ -11,11 +11,11 @@ void (async (): Promise<void> => {
 
   const module = await import('./App');
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const container = document.getElementById('root')!;
-  container.style.minWidth = '960px';
-  const root = createRoot(container);
-  root.render(React.createElement(module.default));
+  const container = document.getElementById('root');
+  if (container) {
+    const root = createRoot(container);
+    root.render(React.createElement(module.default));
+  }
 })();
 
 axios.interceptors.response.use(

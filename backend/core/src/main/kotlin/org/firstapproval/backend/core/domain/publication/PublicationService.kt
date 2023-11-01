@@ -97,7 +97,7 @@ class PublicationService(
     }
 
     @Transactional(readOnly = true)
-    fun findAllByIdIn(ids: List<String>) = publicationRepository.findAllByIdInAndStatus(ids, PUBLISHED)
+    fun findAllByIdIn(ids: List<String>) = publicationRepository.findAllByIdInAndStatusAndIsBlockedIsFalse(ids, PUBLISHED)
 
     @Transactional
     fun edit(user: User, id: String, request: PublicationEditRequest) {
@@ -215,7 +215,7 @@ class PublicationService(
 
     @Transactional
     fun getDownloadLinkForArchive(user: User, id: String): DownloadLinkResponse {
-        val publication = publicationRepository.getReferenceById(id)
+        val publication = publicationRepository.findByIdAndIsBlockedIsFalse(id)
         val title = publication.title ?: id
         val link: DownloadLinkResponse = when (publication.storageType) {
             CLOUD_SECURE_STORAGE -> {
@@ -273,7 +273,7 @@ class PublicationService(
 
     @Transactional
     fun getDownloadLinkForSampleArchive(id: String): DownloadLinkResponse {
-        val publication = publicationRepository.getReferenceById(id)
+        val publication = publicationRepository.findByIdAndIsBlockedIsFalse(id)
         val title = publication.title ?: id
         val link =
             fileStorageService.generateTemporaryDownloadLink(
@@ -286,21 +286,21 @@ class PublicationService(
 
     @Transactional(readOnly = true)
     fun get(user: User?, id: String): Publication {
-        val publication = publicationRepository.getReferenceById(id)
+        val publication = publicationRepository.findByIdAndIsBlockedIsFalse(id)
         checkAccessToPublication(user, publication)
         return publication
     }
 
     @Transactional(readOnly = true)
     fun getPublished(id: String): Publication {
-        val publication = publicationRepository.getReferenceById(id)
+        val publication = publicationRepository.findByIdAndIsBlockedIsFalse(id)
         checkStatusAndAccessType(publication)
         return publication
     }
 
     @Transactional(readOnly = true)
     fun getAllPublications(page: Int, pageSize: Int): PublicationsResponse {
-        val publicationsPage = publicationRepository.findAllByStatusAndAccessType(
+        val publicationsPage = publicationRepository.findAllByStatusAndAccessTypeAndIsBlockedIsFalse(
             PUBLISHED,
             OPEN,
             PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime"))
@@ -312,7 +312,7 @@ class PublicationService(
 
     @Transactional(readOnly = true)
     fun getAllFeaturedPublications(page: Int, pageSize: Int): PublicationsResponse {
-        val publicationsPage = publicationRepository.findAllByStatusAndAccessTypeAndIsFeatured(
+        val publicationsPage = publicationRepository.findAllByStatusAndAccessTypeAndIsFeaturedAndIsBlockedIsFalse(
             PUBLISHED,
             OPEN,
             true,
@@ -329,7 +329,7 @@ class PublicationService(
         page: Int,
         pageSize: Int,
     ): PublicationsResponse {
-        val publicationsPage = publicationRepository.findAllByConfirmedAuthorUsername(
+        val publicationsPage = publicationRepository.findAllByConfirmedAuthorUsernameAndIsBlockedIsFalse(
             setOf(PUBLISHED, READY_FOR_PUBLICATION),
             user.id,
             PageRequest.of(page, pageSize)
@@ -345,7 +345,7 @@ class PublicationService(
         page: Int,
         pageSize: Int,
     ): PublicationsResponse {
-        val publicationsPage = publicationRepository.findAllByStatusInAndAccessTypeAndCreatorId(
+        val publicationsPage = publicationRepository.findAllByStatusInAndAccessTypeAndCreatorIdAndIsBlockedIsFalse(
             statuses,
             OPEN,
             user.id,
@@ -380,8 +380,17 @@ class PublicationService(
         }
     }
 
+    fun blockPublication(id: String) {
+        val publication = publicationRepository.getReferenceById(id)
+        if (publication.status == PENDING) {
+            throw AccessDeniedException("Forbidden block draft publications. Only published publications can be blocked")
+        }
+        publication.isBlocked = true
+        publicationRepository.save(publication)
+    }
+
     private fun generateCode(): String {
-        val id = randomAlphanumeric(7).uppercase();
+        val id = randomAlphanumeric(7).uppercase()
         return if (publicationRepository.existsById(id)) {
             generateCode()
         } else {

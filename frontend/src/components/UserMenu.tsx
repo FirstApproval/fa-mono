@@ -43,7 +43,7 @@ export const UserMenu = observer((): ReactElement => {
       <IconButton
         onClick={handleClick}
         size="small"
-        sx={{ ml: 3 }}
+        sx={{ ml: 3, padding: 0 }}
         aria-controls={open ? 'user-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}>

@@ -133,6 +133,7 @@ export const ProfilePage: FunctionComponent = observer(() => {
                 />
                 <UserInfoElement>
                   <NameElement variant={'h4'}>
+                    {/* eslint-disable-next-line */}
                     {lastNameAndFirstName}
                   </NameElement>
                   <WorkPlaces

@@ -9,28 +9,34 @@ import java.util.UUID
 interface PublicationRepository : JpaRepository<Publication, String> {
     fun findAllByStatusOrderByCreationTime(publicationStatus: PublicationStatus): List<Publication>
 
-    fun findAllByIdInAndStatus(ids: List<String>, publicationStatus: PublicationStatus): List<Publication>
+    fun findAllByIdInAndStatusAndIsBlockedIsFalse(ids: List<String>, publicationStatus: PublicationStatus): List<Publication>
 
-    fun findAllByStatusInAndAccessTypeAndCreatorId(
+    fun findAllByStatusInAndAccessTypeAndCreatorIdAndIsBlockedIsFalse(
         publicationStatuses: Collection<PublicationStatus>,
         accessType: AccessType,
         creatorId: UUID,
         page: Pageable
     ): Page<Publication>
 
-    @Query("select p from Publication p join p.authors a where a.isConfirmed = true and a.user.id = :userId and p.status in :publicationStatuses")
-    fun findAllByConfirmedAuthorUsername(
+    @Query("select p from Publication p join p.authors a where a.isConfirmed = true and a.user.id = :userId and p.status in :publicationStatuses and p.isBlocked = false")
+    fun findAllByConfirmedAuthorUsernameAndIsBlockedIsFalse(
         publicationStatuses: Collection<PublicationStatus>,
         userId: UUID,
         page: Pageable
     ): Page<Publication>
 
-    fun findAllByStatusAndAccessTypeAndIsFeatured(
+    fun findAllByStatusAndAccessTypeAndIsFeaturedAndIsBlockedIsFalse(
         status: PublicationStatus,
         accessType: AccessType,
         isFeatured: Boolean,
         page: Pageable
     ): Page<Publication>
 
-    fun findAllByStatusAndAccessType(status: PublicationStatus, accessType: AccessType, page: Pageable): Page<Publication>
+    fun findAllByStatusAndAccessTypeAndIsBlockedIsFalse(
+        status: PublicationStatus,
+        accessType: AccessType,
+        page: Pageable
+    ): Page<Publication>
+
+    fun findByIdAndIsBlockedIsFalse(id: String): Publication
 }

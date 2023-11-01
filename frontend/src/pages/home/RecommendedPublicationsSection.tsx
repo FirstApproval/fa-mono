@@ -4,17 +4,12 @@ import React, { type ReactElement } from 'react';
 import { RecommendedPublication } from './RecommendedPublication';
 import { DownloadersDialog } from '../publication/DownloadersDialog';
 import { downloadersStore } from '../publication/store/downloadsStore';
-import { Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 
 const GridContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: start;
-`;
-
-const PublicationCard = styled.div`
-  width: calc(25%);
-  padding: 4px;
 `;
 
 const RecommendedPublicationsSection = (props: {
@@ -31,7 +26,7 @@ const RecommendedPublicationsSection = (props: {
           </NameWrap>
           <GridContainer>
             {publications.map((publication, idx) => (
-              <PublicationCard key={idx}>
+              <Grid item xs={12} md={6} lg={3} key={idx}>
                 <RecommendedPublication
                   publication={publication}
                   openDownloadersDialog={() => {
@@ -41,7 +36,7 @@ const RecommendedPublicationsSection = (props: {
                     );
                   }}
                 />
-              </PublicationCard>
+              </Grid>
             ))}
           </GridContainer>
         </Wrap>
@@ -56,8 +51,6 @@ const RecommendedPublicationsSection = (props: {
 
 export const Wrap = styled('div')`
   width: 100%;
-  margin-left: 80px;
-  margin-right: 80px;
 
   margin-bottom: 40px;
 `;

@@ -2,7 +2,6 @@ import { Organization, Workplace } from '../apis/first-approval-api';
 
 export interface WorkplaceProps {
   orgQuery: string;
-  orgQueryKey: string;
   organizationOptions: Organization[];
 }
 
