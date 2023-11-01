@@ -114,8 +114,8 @@ class FileStorageService(private val amazonS3: AmazonS3, private val s3Propertie
                 pageNumber++
             }
             val completeRequest = CompleteMultipartUploadRequest(bucketName, key, initResponse.uploadId, partETags)
-            val sha256OfFile = Base64.getEncoder().encodeToString(md.digest())
-            if (sha256HexBase64 != null && sha256OfFile != sha256HexBase64) {
+            val sha256HexBase64OfFile = Base64.getEncoder().encodeToString(md.digest())
+            if (sha256HexBase64 != null && sha256HexBase64OfFile != sha256HexBase64) {
                 amazonS3.abortMultipartUpload(AbortMultipartUploadRequest(bucketName, key, initResponse.uploadId))
             } else {
                 amazonS3.completeMultipartUpload(completeRequest)
