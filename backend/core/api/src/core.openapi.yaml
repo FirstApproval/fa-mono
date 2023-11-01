@@ -2093,7 +2093,7 @@ components:
         researchAreas:
           $ref: '#/components/schemas/PublicationStringArrayValue'
         description:
-          $ref: '#/components/schemas/PublicationStringArrayValue'
+          $ref: '#/components/schemas/PublicationStringValue'
         grantOrganizations:
           $ref: '#/components/schemas/PublicationStringArrayValue'
         primaryArticles:
@@ -2103,15 +2103,15 @@ components:
         tags:
           $ref: '#/components/schemas/PublicationStringArrayValue'
         dataDescription:
-          $ref: '#/components/schemas/PublicationStringArrayValue'
+          $ref: '#/components/schemas/PublicationStringValue'
         software:
-          $ref: '#/components/schemas/PublicationStringArrayValue'
+          $ref: '#/components/schemas/PublicationStringValue'
         methodTitle:
           $ref: '#/components/schemas/PublicationStringValue'
         methodDescription:
-          $ref: '#/components/schemas/PublicationStringArrayValue'
+          $ref: '#/components/schemas/PublicationStringValue'
         predictedGoals:
-          $ref: '#/components/schemas/PublicationStringArrayValue'
+          $ref: '#/components/schemas/PublicationStringValue'
         negativeData:
           $ref: '#/components/schemas/PublicationStringValue'
         isNegative:
@@ -2277,7 +2277,8 @@ components:
           type: string
           maxLength: 300
         description:
-          $ref: '#/components/schemas/StringArray'
+          type: string
+          maxLength: 32768
         researchAreas:
           $ref: '#/components/schemas/StringArray'
         grantOrganizations:
@@ -2289,16 +2290,20 @@ components:
         tags:
           $ref: '#/components/schemas/StringArray'
         dataDescription:
-          $ref: '#/components/schemas/StringArray'
+          type: string
+          maxLength: 32768
         software:
-          $ref: '#/components/schemas/StringArray'
+          type: string
+          maxLength: 32768
         methodTitle:
           type: string
           maxLength: 32768
         methodDescription:
-          $ref: '#/components/schemas/StringArray'
+          type: string
+          maxLength: 32768
         predictedGoals:
-          $ref: '#/components/schemas/StringArray'
+          type: string
+          maxLength: 32768
         authors:
           type: array
           items:

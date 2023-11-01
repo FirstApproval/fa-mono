@@ -7,28 +7,15 @@ import { PublicationContentStatus } from '../../../apis/first-approval-api';
 import { authStore } from '../../../core/auth';
 
 export class PublicationPageStore {
-  get summaryEnabled(): boolean {
-    return this.publicationStore.summary.length > 0;
-  }
+  summaryEnabled = false;
 
-  get experimentGoalsEnabled(): boolean {
-    return this.publicationStore.experimentGoals.length > 0;
-  }
+  experimentGoalsEnabled = false;
 
-  get methodEnabled(): boolean {
-    return (
-      this.publicationStore.methodTitle.length > 0 ||
-      this.publicationStore.method.length > 0
-    );
-  }
+  methodEnabled = false;
 
-  get dataDescriptionEnabled(): boolean {
-    return this.publicationStore.dataDescription.length > 0;
-  }
+  dataDescriptionEnabled = false;
 
-  get softwareEnabled(): boolean {
-    return this.publicationStore.software.length > 0;
-  }
+  softwareEnabled = false;
 
   filesEnabled = false;
 
@@ -63,6 +50,56 @@ export class PublicationPageStore {
     readonly sfs: FileSystemFA
   ) {
     makeAutoObservable(this);
+
+    reaction(
+      () => publicationStore.summary,
+      (summary) => {
+        if (summary.length > 0) {
+          this.openSummary();
+        }
+      },
+      { fireImmediately: true }
+    );
+
+    reaction(
+      () => publicationStore.method,
+      (method) => {
+        if (method.length > 0) {
+          this.openMethod();
+        }
+      },
+      { fireImmediately: true }
+    );
+
+    reaction(
+      () => publicationStore.experimentGoals,
+      (experimentGoals) => {
+        if (experimentGoals.length > 0) {
+          this.openExperimentGoals();
+        }
+      },
+      { fireImmediately: true }
+    );
+
+    reaction(
+      () => publicationStore.dataDescription,
+      (dataDescription) => {
+        if (dataDescription.length > 0) {
+          this.openDataDescription();
+        }
+      },
+      { fireImmediately: true }
+    );
+
+    reaction(
+      () => publicationStore.software,
+      (software) => {
+        if (software.length > 0) {
+          this.openSoftware();
+        }
+      },
+      { fireImmediately: true }
+    );
 
     reaction(
       () => fs.rootPathFiles,
@@ -212,33 +249,23 @@ export class PublicationPageStore {
   };
 
   openSummary = (): void => {
-    if (!this.summaryEnabled) {
-      this.publicationStore.addSummaryParagraph(0);
-    }
+    this.summaryEnabled = true;
   };
 
   openExperimentGoals = (): void => {
-    if (!this.experimentGoalsEnabled) {
-      this.publicationStore.addExperimentGoalsParagraph(0);
-    }
+    this.experimentGoalsEnabled = true;
   };
 
   openMethod = (): void => {
-    if (!this.methodEnabled) {
-      this.publicationStore.addMethodParagraph(0);
-    }
+    this.methodEnabled = true;
   };
 
   openDataDescription = (): void => {
-    if (!this.dataDescriptionEnabled) {
-      this.publicationStore.addDataDescriptionParagraph(0);
-    }
+    this.dataDescriptionEnabled = true;
   };
 
   openSoftware = (): void => {
-    if (!this.softwareEnabled) {
-      this.publicationStore.addSoftwareParagraph(0);
-    }
+    this.softwareEnabled = true;
   };
 
   openFiles = (): void => {

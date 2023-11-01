@@ -245,7 +245,7 @@
 </div>
 <hr />
 
-<div class='description' th:each='i:${description}' th:text='${i}'>
+<div class='description' th:each='i:${description}' th:utext='${i}'>
 </div>
 
 <div style='height: 32px; width: 100%'></div>
@@ -261,7 +261,7 @@
             Background &amp; Aims
         </div>
         <div class='block-content'>
-            <div th:each='goal:${experimentGoals}' th:text='${goal}'></div>
+            <div th:each='goal:${experimentGoals}' th:utext='${goal}'></div>
         </div>
 
         <div th:if='${isNegative}' class='negative-data-content'>
@@ -276,21 +276,21 @@
             Materials and methods
         </div>
         <div class='block-content'>
-            <div th:each='m:${method}' th:text='${m}'></div>
+            <div th:each='m:${method}' th:utext='${m}'></div>
         </div>
 
         <div class='block-title'>
             Data description
         </div>
         <div class='block-content'>
-            <div th:each='o:${dataDescription}' th:text='${o}'></div>
+            <div th:each='o:${dataDescription}' th:utext='${o}'></div>
         </div>
 
         <div th:if='${software}' class='block-title'>
             Software
         </div>
         <div th:if='${software}' class='block-content'>
-            <div th:each='s:${software}' th:text='${s}'></div>
+            <div th:each='s:${software}' th:utext='${s}'></div>
         </div>
 
         <div class='block-title'>

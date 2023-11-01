@@ -121,19 +121,19 @@ class PublicationService(
             if (title?.edited == true) publication.title = title.value
             if (negativeData?.edited == true) publication.negativeData = negativeData.value
             if (isNegative != null) publication.isNegative = isNegative
-            if (description?.edited == true) publication.description = description.values.map { it.text }
+            if (description?.edited == true) publication.description = description.value
             if (researchAreas?.edited == true) publication.researchAreas = researchAreas.values.map { it.text }
             if (grantOrganizations?.edited == true) publication.grantOrganizations = grantOrganizations.values.map { it.text }
             if (primaryArticles?.edited == true) publication.primaryArticles = primaryArticles.values.map { it.text }
             if (relatedArticles?.edited == true) publication.relatedArticles = relatedArticles.values.map { it.text }
             if (tags?.edited == true) publication.tags = tags.values.map { it.text }
             if (dataDescription?.edited == true) {
-                publication.dataDescription = dataDescription.values.map { it.text }
+                publication.dataDescription = dataDescription.value
             }
-            if (software?.edited == true) publication.software = software.values.map { it.text }
+            if (software?.edited == true) publication.software = software.value
             if (methodTitle?.edited == true) publication.methodTitle = methodTitle.value
-            if (methodDescription?.edited == true) publication.methodDescription = methodDescription.values.map { it.text }
-            if (predictedGoals?.edited == true) publication.predictedGoals = predictedGoals.values.map { it.text }
+            if (methodDescription?.edited == true) publication.methodDescription = methodDescription.value
+            if (predictedGoals?.edited == true) publication.predictedGoals = predictedGoals.value
             if (licenseType?.edited == true) publication.licenseType = LicenseType.valueOf(licenseType.value.name)
             if (authors?.edited == true) {
                 val unconfirmedPublicationAuthors = authors.values.map { authorApiObject ->
@@ -413,18 +413,18 @@ fun Publication.toApiObject(userService: UserService) = PublicationApiObject().a
     publicationApiModel.title = title
     publicationApiModel.previewTitle = previewTitle
     publicationApiModel.previewSubtitle = previewSubtitle
-    publicationApiModel.description = description?.map { Paragraph(it) }
+    publicationApiModel.description = description
     publicationApiModel.researchAreas = researchAreas?.map { Paragraph(it) }
     publicationApiModel.grantOrganizations = grantOrganizations?.map { Paragraph(it) }
     publicationApiModel.primaryArticles = primaryArticles?.map { Paragraph(it) }
     publicationApiModel.relatedArticles = relatedArticles?.map { Paragraph(it) }
     publicationApiModel.tags = tags?.map { Paragraph(it) }
-    publicationApiModel.dataDescription = dataDescription?.map { Paragraph(it) }
-    publicationApiModel.software = software?.map { Paragraph(it) }
+    publicationApiModel.dataDescription = dataDescription
+    publicationApiModel.software = software
     publicationApiModel.methodTitle = methodTitle
     publicationApiModel.publicationTime = publicationTime?.toOffsetDateTime()
-    publicationApiModel.methodDescription = methodDescription?.map { Paragraph(it) }
-    publicationApiModel.predictedGoals = predictedGoals?.map { Paragraph(it) }
+    publicationApiModel.methodDescription = methodDescription
+    publicationApiModel.predictedGoals = predictedGoals
     publicationApiModel.authors = authors.map { it.toApiObject(userService.getProfileImage(it.user?.profileImage)) }
     publicationApiModel.viewsCount = viewsCount
     publicationApiModel.downloadsCount = downloadsCount

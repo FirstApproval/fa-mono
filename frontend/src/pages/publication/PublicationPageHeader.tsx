@@ -22,6 +22,7 @@ import { FileSystemFA } from '../../fire-browser/FileSystemFA';
 import Menu from '@mui/material/Menu';
 import { PublicationPageStore } from './store/PublicationPageStore';
 import { observer } from 'mobx-react-lite';
+import { sanitizer } from '../../util/sanitizer';
 
 export const PublicationPageHeader = observer(
   (props: {
@@ -147,12 +148,12 @@ export const PublicationPageHeader = observer(
                               routerStore.path,
                               true,
                               {
-                                publicationTitle: publicationStore.title,
-                                publicationSummary:
-                                  publicationStore.summary[0].text.substring(
-                                    0,
-                                    200
-                                  ),
+                                publicationTitle:
+                                  publicationStore.title.substring(0, 200),
+                                publicationSummary: sanitizer(
+                                  publicationStore.summary,
+                                  { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }
+                                ).substring(0, 300),
                                 licenseType: publicationStore.licenseType,
                                 filesSize: await fs.getPublicationFilesSize()
                               }

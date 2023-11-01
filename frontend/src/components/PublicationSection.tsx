@@ -40,6 +40,7 @@ import {
   FlexDirection,
   FlexJustifyContent
 } from '../ui-kit/flex';
+import { sanitizer } from '../util/sanitizer';
 
 export const PublicationSection = (props: {
   publication: Publication;
@@ -137,9 +138,12 @@ export const PublicationSection = (props: {
           />
         )}
         {!publication.previewSubtitle && (
-          <PublicationDescriptionBox
-            title={publication.description?.[0]?.text ?? ''}
-          />
+          <PublicationDescriptionWrap
+            variant={'body'}
+            component={'div'}
+            dangerouslySetInnerHTML={{
+              __html: sanitizer(publication.description ?? '')
+            }}></PublicationDescriptionWrap>
         )}
       </Link>
       <Flex alignItems={FlexAlignItems.center}>

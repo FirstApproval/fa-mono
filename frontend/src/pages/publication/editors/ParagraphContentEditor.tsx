@@ -1,17 +1,14 @@
 import React, { type ReactElement } from 'react';
-import { LabelWrap, SectionWrap } from './styled';
-import {
-  ParagraphElementWrap,
-  ParagraphElementWrapProps
-} from './element/ParagraphElementWrap';
+import { LabelWrap, SectionWrap as SectionWrap2 } from './styled';
+import { SectionWrap, SectionWrapProps } from './element/SectionWrap';
 
 export const ParagraphContentEditor = (
-  props: ParagraphElementWrapProps & { text?: string }
+  props: SectionWrapProps & { text?: string }
 ): ReactElement => {
   return (
-    <SectionWrap>
+    <SectionWrap2>
       {props.text && <LabelWrap>{props.text}</LabelWrap>}
-      <ParagraphElementWrap {...props} />
-    </SectionWrap>
+      <SectionWrap {...props} />
+    </SectionWrap2>
   );
 };

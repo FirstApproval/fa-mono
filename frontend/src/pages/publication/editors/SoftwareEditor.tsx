@@ -8,17 +8,8 @@ export const SoftwareEditor = observer((props: EditorProps): ReactElement => {
     <ParagraphContentEditor
       isReadonly={props.publicationStore.isReadonly}
       value={props.publicationStore.software}
-      onChange={(idx, value) => {
-        props.publicationStore.updateSoftwareParagraph(idx, value);
-      }}
-      onAddParagraph={(idx) => {
-        props.publicationStore.addSoftwareParagraph(idx);
-      }}
-      onMergeParagraph={(idx) => {
-        props.publicationStore.mergeSoftwareParagraph(idx);
-      }}
-      onSplitParagraph={(idx, splitIndex) => {
-        props.publicationStore.splitSoftwareParagraph(idx, splitIndex);
+      onChange={(value) => {
+        props.publicationStore.updateSoftwareParagraph(value);
       }}
       text={'Software'}
       placeholder={

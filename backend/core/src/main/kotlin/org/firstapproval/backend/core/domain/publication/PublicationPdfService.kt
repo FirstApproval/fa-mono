@@ -85,9 +85,9 @@ class PublicationPdfService(
         }
     }
 
-    private fun description(publication: Publication): List<String> {
+    private fun description(publication: Publication): String {
         return if (publication.description.isNullOrEmpty()) {
-            return listOf("Draft. No description yet.")
+            return "Draft. No description yet."
         } else {
             publication.description!!
         }
@@ -120,9 +120,9 @@ class PublicationPdfService(
         }
     }
 
-    private fun experimentGoals(publication: Publication): List<String> {
+    private fun experimentGoals(publication: Publication): String {
         return if (publication.predictedGoals.isNullOrEmpty()) {
-            listOf("Draft. No predicted goals yet.")
+            "Draft. No predicted goals yet."
         } else {
             publication.predictedGoals!!
         }
@@ -132,23 +132,23 @@ class PublicationPdfService(
         return publication.negativeData!!
     }
 
-    private fun method(publication: Publication): List<String> {
+    private fun method(publication: Publication): String {
         return if (publication.methodDescription.isNullOrEmpty()) {
-            listOf("Draft. No method description yet.")
+            "Draft. No method description yet."
         } else {
             publication.methodDescription!!
         }
     }
 
-    private fun dataDescription(publication: Publication): List<String> {
+    private fun dataDescription(publication: Publication): String {
         return if (publication.dataDescription.isNullOrEmpty()) {
-            listOf("Draft. No data description yet.")
+            "Draft. No data description yet."
         } else {
             publication.dataDescription!!
         }
     }
 
-    private fun software(publication: Publication): List<String> {
+    private fun software(publication: Publication): String {
         return publication.software!!
     }
 
