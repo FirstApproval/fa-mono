@@ -6,7 +6,7 @@ import downloads from './asset/downloads.svg';
 import { type PublicationStore } from './store/PublicationStore';
 import Menu from '@mui/material/Menu';
 import { StyledMenuItem } from '../common.styled';
-import { IconButton, Typography } from '@mui/material';
+import { IconButton, Tooltip, Typography } from '@mui/material';
 import WarningAmber from '@mui/icons-material/WarningAmber';
 import { ReportProblemDialog } from './ReportProblemDialog';
 import MoreHoriz from '@mui/icons-material/MoreHoriz';
@@ -56,28 +56,30 @@ export const DateViewsDownloads = observer(
               {props.publicationStore.viewsCount}
             </div>
           </div>
-          <div
-            onClick={() => {
-              if (props.publicationStore.downloadsCount) {
-                props.openDownloadersDialog();
-              }
-            }}
-            style={{
-              marginLeft: '24px',
-              display: 'flex',
-              alignItems: 'center',
-              cursor: `${
-                props.publicationStore.downloadsCount &&
-                props.publicationStore.downloadsCount > 0
-                  ? 'pointer'
-                  : 'initial'
-              }`
-            }}>
-            <img src={downloads} width={20} height={20} />
-            <div style={{ marginLeft: '4px' }}>
-              {props.publicationStore.downloadsCount}
+          <Tooltip title="Number of downloads">
+            <div
+              onClick={() => {
+                if (props.publicationStore.downloadsCount) {
+                  props.openDownloadersDialog();
+                }
+              }}
+              style={{
+                marginLeft: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                cursor: `${
+                  props.publicationStore.downloadsCount &&
+                  props.publicationStore.downloadsCount > 0
+                    ? 'pointer'
+                    : 'initial'
+                }`
+              }}>
+              <img src={downloads} width={20} height={20} />
+              <div style={{ marginLeft: '4px' }}>
+                {props.publicationStore.downloadsCount}
+              </div>
             </div>
-          </div>
+          </Tooltip>
           <Menu
             anchorEl={utilAnchor}
             id="user-menu"
