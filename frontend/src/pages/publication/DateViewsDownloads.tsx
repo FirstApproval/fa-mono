@@ -111,15 +111,17 @@ export const DateViewsDownloads = observer(
             setIsOpen={(value) =>
               setReportProblemOpened(value)
             }></ReportProblemDialog>
-          <IconButton
-            onClick={handleUtilMenuClick}
-            size="small"
-            sx={{ ml: 3 }}
-            aria-controls={openUtilMenu ? 'user-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={openUtilMenu ? 'true' : undefined}>
-            <MoreHoriz htmlColor={'#68676E'} />
-          </IconButton>
+          <Tooltip title="More">
+            <IconButton
+              onClick={handleUtilMenuClick}
+              size="small"
+              sx={{ ml: 3 }}
+              aria-controls={openUtilMenu ? 'user-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={openUtilMenu ? 'true' : undefined}>
+              <MoreHoriz htmlColor={'#68676E'} />
+            </IconButton>
+          </Tooltip>
         </FlexWrapRow>
         <LicensingLinkWrap
           onClick={() => {
