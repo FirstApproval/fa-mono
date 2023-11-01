@@ -7,7 +7,6 @@ import com.amazonaws.services.s3.model.DeleteObjectsRequest
 import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest
 import com.amazonaws.services.s3.model.InitiateMultipartUploadRequest
-import com.amazonaws.services.s3.model.InitiateMultipartUploadResult
 import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.services.s3.model.PartETag
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides
@@ -86,39 +85,41 @@ class FileStorageService(private val amazonS3: AmazonS3, private val s3Propertie
     }
 
     private fun uploadLargeFile(bucketName: String, key: String, contentLength: Long, sha256HexBase64: String?, inputStream: InputStream) {
-        val initRequest = InitiateMultipartUploadRequest(bucketName, key)
-        initRequest.objectMetadata = ObjectMetadata()
-        initRequest.objectMetadata.contentLength = contentLength
-        val initResponse = amazonS3.initiateMultipartUpload(initRequest)
+        inputStream.use { stream ->
+            val initRequest = InitiateMultipartUploadRequest(bucketName, key)
+            initRequest.objectMetadata = ObjectMetadata()
+            initRequest.objectMetadata.contentLength = contentLength
+            val initResponse = amazonS3.initiateMultipartUpload(initRequest)
 
-        var bytesRead: Int
-        val data = ByteArray(5 * 1024 * 1024)
+            var bytesRead: Int
+            val data = ByteArray(5 * 1024 * 1024)
 
-        var pageNumber = 0
+            var pageNumber = 0
 
-        val partETags = mutableListOf<PartETag>()
+            val partETags = mutableListOf<PartETag>()
 
-        val md = MessageDigest.getInstance("SHA-256")
+            val md = MessageDigest.getInstance("SHA-256")
 
-        while (inputStream.read(data).also { bytesRead = it } != -1) {
-            val trimmed = data.copyOfRange(0, bytesRead)
-            val uploadRequest = UploadPartRequest().withUploadId(initResponse.uploadId)
-                .withBucketName(bucketName)
-                .withKey(key)
-                .withInputStream(ByteArrayInputStream(trimmed))
-                .withPartSize(trimmed.size.toLong())
-                .withPartNumber(pageNumber)
-            val uploadResult = amazonS3.uploadPart(uploadRequest)
-            partETags.add(uploadResult.partETag)
-            md.update(data, 0, bytesRead);
-            pageNumber++
-        }
-        val completeRequest = CompleteMultipartUploadRequest(bucketName, key, initResponse.uploadId, partETags)
-        val sha256OfFile = Base64.getEncoder().encodeToString(md.digest())
-        if (sha256HexBase64 != null && sha256OfFile != sha256HexBase64) {
-            amazonS3.abortMultipartUpload(AbortMultipartUploadRequest(bucketName, key, initResponse.uploadId))
-        } else {
-            amazonS3.completeMultipartUpload(completeRequest)
+            while (stream.read(data).also { bytesRead = it } != -1) {
+                val trimmed = data.copyOfRange(0, bytesRead)
+                val uploadRequest = UploadPartRequest().withUploadId(initResponse.uploadId)
+                    .withBucketName(bucketName)
+                    .withKey(key)
+                    .withInputStream(ByteArrayInputStream(trimmed))
+                    .withPartSize(trimmed.size.toLong())
+                    .withPartNumber(pageNumber)
+                val uploadResult = amazonS3.uploadPart(uploadRequest)
+                partETags.add(uploadResult.partETag)
+                md.update(data, 0, bytesRead);
+                pageNumber++
+            }
+            val completeRequest = CompleteMultipartUploadRequest(bucketName, key, initResponse.uploadId, partETags)
+            val sha256OfFile = Base64.getEncoder().encodeToString(md.digest())
+            if (sha256HexBase64 != null && sha256OfFile != sha256HexBase64) {
+                amazonS3.abortMultipartUpload(AbortMultipartUploadRequest(bucketName, key, initResponse.uploadId))
+            } else {
+                amazonS3.completeMultipartUpload(completeRequest)
+            }
         }
     }
 }
