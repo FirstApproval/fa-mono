@@ -11,15 +11,6 @@ export const SummaryEditor = observer((props: EditorProps): ReactElement => {
       onChange={(idx, value) => {
         props.publicationStore.updateSummaryParagraph(idx, value);
       }}
-      onAddParagraph={(idx) => {
-        props.publicationStore.addSummaryParagraph(idx);
-      }}
-      onMergeParagraph={(idx) => {
-        props.publicationStore.mergeSummaryParagraph(idx);
-      }}
-      onSplitParagraph={(idx, splitIndex) => {
-        props.publicationStore.splitSummaryParagraph(idx, splitIndex);
-      }}
       placeholder={'Publication summary'}
       disableInitFocus={props.publicationStore.disableAutofocus}
     />

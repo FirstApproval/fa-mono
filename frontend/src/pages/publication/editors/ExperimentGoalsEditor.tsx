@@ -18,15 +18,6 @@ export const ExperimentGoalsEditor = observer(
           onChange={(idx, value) => {
             publicationStore.updateExperimentGoalsParagraph(idx, value);
           }}
-          onAddParagraph={(idx) => {
-            publicationStore.addExperimentGoalsParagraph(idx);
-          }}
-          onMergeParagraph={(idx) => {
-            publicationStore.mergeExperimentGoalsParagraph(idx);
-          }}
-          onSplitParagraph={(idx, splitIndex) => {
-            publicationStore.splitExperimentGoalsParagraph(idx, splitIndex);
-          }}
           placeholder={
             'Describe the context of data collection and the experimental goals'
           }

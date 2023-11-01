@@ -11,15 +11,6 @@ export const MethodEditor = observer((props: EditorProps): ReactElement => {
       onChange={(idx, value) => {
         props.publicationStore.updateMethodParagraph(idx, value);
       }}
-      onAddParagraph={(idx) => {
-        props.publicationStore.addMethodParagraph(idx);
-      }}
-      onMergeParagraph={(idx) => {
-        props.publicationStore.mergeMethodParagraph(idx);
-      }}
-      onSplitParagraph={(idx, splitIndex) => {
-        props.publicationStore.splitMethodParagraph(idx, splitIndex);
-      }}
       placeholder={
         'Detail the steps of your method, helping others to reproduce it...'
       }

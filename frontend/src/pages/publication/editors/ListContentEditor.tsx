@@ -7,6 +7,9 @@ import styled from '@emotion/styled';
 export const ListContentEditor = (
   props: ParagraphElementWrapProps & {
     text?: string;
+    onAddParagraph: (idx: number) => void;
+    onMergeParagraph: (idx: number) => void;
+    onSplitParagraph: (idx: number, splitIndex: number) => void;
     paragraphPrefixType?: ParagraphPrefixType;
   }
 ): ReactElement => {
@@ -22,6 +25,9 @@ export const ListContentEditor = (
 export const OrderedListContentEditor = (
   props: ParagraphElementWrapProps & {
     text?: string;
+    onAddParagraph: (idx: number) => void;
+    onMergeParagraph: (idx: number) => void;
+    onSplitParagraph: (idx: number, splitIndex: number) => void;
     paragraphPrefixType?: ParagraphPrefixType;
   }
 ): ReactElement => {
@@ -36,6 +42,9 @@ export const OrderedListContentEditor = (
 };
 const ListElementWrap = (
   props: ParagraphElementWrapProps & {
+    onAddParagraph: (idx: number) => void;
+    onMergeParagraph: (idx: number) => void;
+    onSplitParagraph: (idx: number, splitIndex: number) => void;
     paragraphPrefixType?: ParagraphPrefixType;
   }
 ): ReactElement => {

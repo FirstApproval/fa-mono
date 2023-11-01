@@ -12,15 +12,6 @@ export const DataDescriptionEditor = observer(
         onChange={(idx, value) => {
           props.publicationStore.updateDataDescriptionParagraph(idx, value);
         }}
-        onAddParagraph={(idx) => {
-          props.publicationStore.addDataDescriptionParagraph(idx);
-        }}
-        onMergeParagraph={(idx) => {
-          props.publicationStore.mergeDataDescriptionParagraph(idx);
-        }}
-        onSplitParagraph={(idx, splitIndex) => {
-          props.publicationStore.splitDataDescriptionParagraph(idx, splitIndex);
-        }}
         placeholder={
           'Describe the data’s contents, structure and preliminary findings...'
         }
