@@ -96,27 +96,31 @@ class FileStorageService(private val amazonS3: AmazonS3, private val s3Propertie
         var pageNumber = 0
         val partETags = mutableListOf<PartETag>()
         val md = MessageDigest.getInstance("SHA-256")
-        inputStream.use { stream ->
-            while (stream.read(data).also { bytesRead = it } != -1) {
-                val trimmed = data.copyOfRange(0, bytesRead)
-                val uploadRequest = UploadPartRequest().withUploadId(initResponse.uploadId)
-                    .withBucketName(bucketName)
-                    .withKey(key)
-                    .withInputStream(ByteArrayInputStream(trimmed))
-                    .withPartSize(trimmed.size.toLong())
-                    .withPartNumber(pageNumber)
-                val uploadResult = amazonS3.uploadPart(uploadRequest)
-                partETags.add(uploadResult.partETag)
-                md.update(data, 0, bytesRead);
-                pageNumber++
+        try {
+            inputStream.use { stream ->
+                while (stream.read(data).also { bytesRead = it } != -1) {
+                    val trimmed = data.copyOfRange(0, bytesRead)
+                    val uploadRequest = UploadPartRequest().withUploadId(initResponse.uploadId)
+                        .withBucketName(bucketName)
+                        .withKey(key)
+                        .withInputStream(ByteArrayInputStream(trimmed))
+                        .withPartSize(trimmed.size.toLong())
+                        .withPartNumber(pageNumber)
+                    val uploadResult = amazonS3.uploadPart(uploadRequest)
+                    partETags.add(uploadResult.partETag)
+                    md.update(data, 0, bytesRead);
+                    pageNumber++
+                }
+                val completeRequest = CompleteMultipartUploadRequest(bucketName, key, initResponse.uploadId, partETags)
+                val sha256HexBase64OfFile = Base64.getEncoder().encodeToString(md.digest())
+                if (sha256HexBase64 != null && sha256HexBase64OfFile != sha256HexBase64) {
+                    amazonS3.abortMultipartUpload(AbortMultipartUploadRequest(bucketName, key, initResponse.uploadId))
+                } else {
+                    amazonS3.completeMultipartUpload(completeRequest)
+                }
             }
-            val completeRequest = CompleteMultipartUploadRequest(bucketName, key, initResponse.uploadId, partETags)
-            val sha256HexBase64OfFile = Base64.getEncoder().encodeToString(md.digest())
-            if (sha256HexBase64 != null && sha256HexBase64OfFile != sha256HexBase64) {
-                amazonS3.abortMultipartUpload(AbortMultipartUploadRequest(bucketName, key, initResponse.uploadId))
-            } else {
-                amazonS3.completeMultipartUpload(completeRequest)
-            }
+        } catch (e: Exception) {
+            amazonS3.abortMultipartUpload(AbortMultipartUploadRequest(bucketName, key, initResponse.uploadId))
         }
     }
 }
