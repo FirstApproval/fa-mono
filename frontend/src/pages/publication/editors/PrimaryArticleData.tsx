@@ -66,8 +66,10 @@ export const PrimaryArticleData = observer(
                 }
                 openDialogWithPreCreated(index);
               }}>
-              <PrimaryArticleSpanWrap>Primary article:</PrimaryArticleSpanWrap>
-              <PrimaryArticleNameWrap>{' ' + v.text}</PrimaryArticleNameWrap>
+              <PrimaryArticleSpanWrap>
+                {'Primary article: '}
+              </PrimaryArticleSpanWrap>
+              <PrimaryArticleNameWrap>{v.text}</PrimaryArticleNameWrap>
             </ArticleContentWrap>
           ))}
         </div>
@@ -86,7 +88,9 @@ export const PrimaryArticleData = observer(
               dataset.
             </span>
           )}
-          {props.value.length > 0 && <span>Add primary article</span>}
+          {!props.isReadOnly && props.value.length > 0 && (
+            <span>Add primary article</span>
+          )}
         </LinkWrap>
         <Dialog
           open={addPrimaryArticleOpened}
