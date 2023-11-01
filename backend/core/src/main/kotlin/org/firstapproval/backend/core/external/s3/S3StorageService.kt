@@ -89,7 +89,7 @@ class FileStorageService(private val amazonS3: AmazonS3, private val s3Propertie
         val initRequest = InitiateMultipartUploadRequest(bucketName, key)
         initRequest.objectMetadata = ObjectMetadata()
         initRequest.objectMetadata.contentLength = contentLength
-        val initResponse: InitiateMultipartUploadResult = amazonS3.initiateMultipartUpload(initRequest)
+        val initResponse = amazonS3.initiateMultipartUpload(initRequest)
 
         var bytesRead: Int
         val data = ByteArray(5 * 1024 * 1024)
