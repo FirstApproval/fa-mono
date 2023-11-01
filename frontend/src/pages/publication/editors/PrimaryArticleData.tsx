@@ -66,10 +66,7 @@ export const PrimaryArticleData = observer(
                 }
                 openDialogWithPreCreated(index);
               }}>
-              <PrimaryArticleSpanWrap>
-                {'Primary article: '}
-              </PrimaryArticleSpanWrap>
-              <PrimaryArticleNameWrap>{v.text}</PrimaryArticleNameWrap>
+              <PrimaryArticleNameWrap>{`Primary article: ${v.text}`}</PrimaryArticleNameWrap>
             </ArticleContentWrap>
           ))}
         </div>
@@ -156,11 +153,6 @@ export const PrimaryArticleData = observer(
   }
 );
 
-const PrimaryArticleSpanWrap = styled.span`
-  background: var(--grey-50, #f8f7fa);
-  border-radius: 2px;
-`;
-
 const PrimaryArticleNameWrap = styled.span`
   overflow-wrap: anywhere;
   display: inline-block;
@@ -183,11 +175,3 @@ const FullWidthTextarea = styled(TextField)`
 const LinkWrap = styled(Link)`
   cursor: pointer;
 `;
-
-// import DialogTitle from "@mui/material/DialogTitle"
-// import DialogContent from "@mui/material/DialogContent"
-// import DialogActions from "@mui/material/DialogActions"
-// import Button from "@mui/material/Button"
-// import Dialog from "@mui/material/Dialog"
-// import React from "react"
-//
