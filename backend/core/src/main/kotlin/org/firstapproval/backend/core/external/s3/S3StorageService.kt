@@ -29,6 +29,7 @@ const val PROFILE_IMAGES = "profile-images"
 const val REPORT_FILES = "report-files"
 
 private const val FOUR_GB = 4 * 1024 * 1024 * 1024L
+private const val FIVE_MB = 5 * 1024 * 1024
 
 class FileStorageService(private val amazonS3: AmazonS3, private val s3Properties: S3Properties) {
 
@@ -91,14 +92,10 @@ class FileStorageService(private val amazonS3: AmazonS3, private val s3Propertie
         val initResponse = amazonS3.initiateMultipartUpload(initRequest)
 
         var bytesRead: Int
-        val data = ByteArray(5 * 1024 * 1024)
-
+        val data = ByteArray(FIVE_MB)
         var pageNumber = 0
-
         val partETags = mutableListOf<PartETag>()
-
         val md = MessageDigest.getInstance("SHA-256")
-
         inputStream.use { stream ->
             while (stream.read(data).also { bytesRead = it } != -1) {
                 val trimmed = data.copyOfRange(0, bytesRead)
