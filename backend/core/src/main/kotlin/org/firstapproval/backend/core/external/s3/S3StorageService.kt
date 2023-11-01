@@ -49,7 +49,7 @@ class FileStorageService(private val amazonS3: AmazonS3, private val s3Propertie
         metadata.setHeader("x-amz-storage-class", s3Properties.bucketStorageClass)
 
         if (contentLength > FOUR_GB) {
-            uploadLargeFile(bucketName, id, contentLength, sha256HexBase64, data)
+            uploadLargeFile(bucketName + s3Properties.bucketPostfix, id, contentLength, sha256HexBase64, data)
         } else {
             if (sha256HexBase64 != null) {
                 metadata.setHeader("x-amz-sdk-checksum-algorithm", "SHA256")
