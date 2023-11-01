@@ -146,14 +146,16 @@ export const ActionBar = observer(
                 <img src={pdf} style={{ marginRight: '8px' }} /> PDF
               </PdfButtonWrap>
             </Tooltip>
-            <ActionButtonWrap
-              variant="outlined"
-              size={'medium'}
-              onClick={() => {
-                publicationPageStore.isCitateDialogOpen = true;
-              }}>
-              <img src={citate} />
-            </ActionButtonWrap>
+            <Tooltip title="Cite">
+              <ActionButtonWrap
+                variant="outlined"
+                size={'medium'}
+                onClick={() => {
+                  publicationPageStore.isCitateDialogOpen = true;
+                }}>
+                <img src={citate} />
+              </ActionButtonWrap>
+            </Tooltip>
             <Tooltip title="Copy publication link">
               <ActionButtonWrap
                 variant="outlined"
