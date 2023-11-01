@@ -120,6 +120,7 @@ class FileStorageService(private val amazonS3: AmazonS3, private val s3Propertie
                 }
             }
         } catch (e: Exception) {
+            log.error(e) { "Error during multipart upload" }
             amazonS3.abortMultipartUpload(AbortMultipartUploadRequest(bucketName, key, initResponse.uploadId))
         }
     }
