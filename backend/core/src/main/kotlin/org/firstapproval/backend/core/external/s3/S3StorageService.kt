@@ -15,7 +15,6 @@ import com.amazonaws.services.s3.model.S3Object
 import com.amazonaws.services.s3.model.UploadPartRequest
 import mu.KotlinLogging.logger
 import org.firstapproval.backend.core.config.Properties.S3Properties
-import org.firstapproval.backend.core.utils.sha256HashFromByteArrayHash
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.security.MessageDigest
@@ -49,7 +48,7 @@ class FileStorageService(private val amazonS3: AmazonS3, private val s3Propertie
         }
         metadata.setHeader("x-amz-storage-class", s3Properties.bucketStorageClass)
 
-        if (contentLength > 5 * 1024 * 1024) {
+        if (contentLength > FOUR_GB) {
             uploadLargeFile(bucketName, id, contentLength, sha256HexBase64, data)
         } else {
             if (sha256HexBase64 != null) {
