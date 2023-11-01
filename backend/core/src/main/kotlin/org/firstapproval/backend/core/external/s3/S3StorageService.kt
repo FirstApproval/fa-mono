@@ -1,6 +1,7 @@
 package org.firstapproval.backend.core.external.s3
 
 import com.amazonaws.services.s3.AmazonS3
+import com.amazonaws.services.s3.model.AbortMultipartUploadRequest
 import com.amazonaws.services.s3.model.CompleteMultipartUploadRequest
 import com.amazonaws.services.s3.model.DeleteObjectsRequest
 import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion
@@ -14,8 +15,11 @@ import com.amazonaws.services.s3.model.S3Object
 import com.amazonaws.services.s3.model.UploadPartRequest
 import mu.KotlinLogging.logger
 import org.firstapproval.backend.core.config.Properties.S3Properties
+import org.firstapproval.backend.core.utils.sha256HashFromByteArrayHash
 import java.io.ByteArrayInputStream
 import java.io.InputStream
+import java.security.MessageDigest
+import java.util.Base64
 import java.util.Date
 import java.util.UUID
 
@@ -45,8 +49,8 @@ class FileStorageService(private val amazonS3: AmazonS3, private val s3Propertie
         }
         metadata.setHeader("x-amz-storage-class", s3Properties.bucketStorageClass)
 
-        if (contentLength > FOUR_GB) {
-            uploadLargeFile(bucketName, id, contentLength, data)
+        if (contentLength > 5 * 1024 * 1024) {
+            uploadLargeFile(bucketName, id, contentLength, sha256HexBase64, data)
         } else {
             if (sha256HexBase64 != null) {
                 metadata.setHeader("x-amz-sdk-checksum-algorithm", "SHA256")
@@ -82,10 +86,14 @@ class FileStorageService(private val amazonS3: AmazonS3, private val s3Propertie
         return url.toString()
     }
 
-    private fun uploadLargeFile(bucketName: String, key: String, contentLength: Long, inputStream: InputStream) {
+    private fun uploadLargeFile(bucketName: String, key: String, contentLength: Long, sha256HexBase64: String?, inputStream: InputStream) {
         val initRequest = InitiateMultipartUploadRequest(bucketName, key)
         initRequest.objectMetadata = ObjectMetadata()
         initRequest.objectMetadata.contentLength = contentLength
+//        if (sha256HexBase64 != null) {
+//            initRequest.objectMetadata.setHeader("x-amz-sdk-checksum-algorithm", "SHA256")
+//            initRequest.objectMetadata.setHeader("x-amz-checksum-sha256", sha256HexBase64)
+//        }
         val initResponse: InitiateMultipartUploadResult = amazonS3.initiateMultipartUpload(initRequest)
 
         var bytesRead: Int
@@ -94,6 +102,8 @@ class FileStorageService(private val amazonS3: AmazonS3, private val s3Propertie
         var pageNumber = 0
 
         val partETags = mutableListOf<PartETag>()
+
+        val md = MessageDigest.getInstance("SHA-256")
 
         while (inputStream.read(data).also { bytesRead = it } != -1) {
             val trimmed = data.copyOfRange(0, bytesRead)
@@ -105,10 +115,15 @@ class FileStorageService(private val amazonS3: AmazonS3, private val s3Propertie
                 .withPartNumber(pageNumber)
             val uploadResult = amazonS3.uploadPart(uploadRequest)
             partETags.add(uploadResult.partETag)
+            md.update(data, 0, bytesRead);
             pageNumber++
         }
         val completeRequest = CompleteMultipartUploadRequest(bucketName, key, initResponse.uploadId, partETags)
-        val res = amazonS3.completeMultipartUpload(completeRequest)
-        println(res)
+        val sha256OfFile = Base64.getEncoder().encodeToString(md.digest())
+        if (sha256OfFile != sha256HexBase64) {
+            amazonS3.abortMultipartUpload(AbortMultipartUploadRequest(bucketName, key, initResponse.uploadId))
+        } else {
+            amazonS3.completeMultipartUpload(completeRequest)
+        }
     }
 }
