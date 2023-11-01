@@ -85,21 +85,21 @@ class FileStorageService(private val amazonS3: AmazonS3, private val s3Propertie
     }
 
     private fun uploadLargeFile(bucketName: String, key: String, contentLength: Long, sha256HexBase64: String?, inputStream: InputStream) {
+        val initRequest = InitiateMultipartUploadRequest(bucketName, key)
+        initRequest.objectMetadata = ObjectMetadata()
+        initRequest.objectMetadata.contentLength = contentLength
+        val initResponse = amazonS3.initiateMultipartUpload(initRequest)
+
+        var bytesRead: Int
+        val data = ByteArray(5 * 1024 * 1024)
+
+        var pageNumber = 0
+
+        val partETags = mutableListOf<PartETag>()
+
+        val md = MessageDigest.getInstance("SHA-256")
+
         inputStream.use { stream ->
-            val initRequest = InitiateMultipartUploadRequest(bucketName, key)
-            initRequest.objectMetadata = ObjectMetadata()
-            initRequest.objectMetadata.contentLength = contentLength
-            val initResponse = amazonS3.initiateMultipartUpload(initRequest)
-
-            var bytesRead: Int
-            val data = ByteArray(5 * 1024 * 1024)
-
-            var pageNumber = 0
-
-            val partETags = mutableListOf<PartETag>()
-
-            val md = MessageDigest.getInstance("SHA-256")
-
             while (stream.read(data).also { bytesRead = it } != -1) {
                 val trimmed = data.copyOfRange(0, bytesRead)
                 val uploadRequest = UploadPartRequest().withUploadId(initResponse.uploadId)
