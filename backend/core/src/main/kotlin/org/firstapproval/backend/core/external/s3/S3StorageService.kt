@@ -90,10 +90,6 @@ class FileStorageService(private val amazonS3: AmazonS3, private val s3Propertie
         val initRequest = InitiateMultipartUploadRequest(bucketName, key)
         initRequest.objectMetadata = ObjectMetadata()
         initRequest.objectMetadata.contentLength = contentLength
-//        if (sha256HexBase64 != null) {
-//            initRequest.objectMetadata.setHeader("x-amz-sdk-checksum-algorithm", "SHA256")
-//            initRequest.objectMetadata.setHeader("x-amz-checksum-sha256", sha256HexBase64)
-//        }
         val initResponse: InitiateMultipartUploadResult = amazonS3.initiateMultipartUpload(initRequest)
 
         var bytesRead: Int
@@ -120,7 +116,7 @@ class FileStorageService(private val amazonS3: AmazonS3, private val s3Propertie
         }
         val completeRequest = CompleteMultipartUploadRequest(bucketName, key, initResponse.uploadId, partETags)
         val sha256OfFile = Base64.getEncoder().encodeToString(md.digest())
-        if (sha256OfFile != sha256HexBase64) {
+        if (sha256HexBase64 != null && sha256OfFile != sha256HexBase64) {
             amazonS3.abortMultipartUpload(AbortMultipartUploadRequest(bucketName, key, initResponse.uploadId))
         } else {
             amazonS3.completeMultipartUpload(completeRequest)
