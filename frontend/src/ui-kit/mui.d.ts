@@ -18,3 +18,14 @@ declare module '@mui/material/Typography' {
     body: true;
   }
 }
+
+declare module '@mui/material/styles' {
+  interface BreakpointOverrides {
+    xs: true;
+    s: true;
+    sm: true;
+    md: true;
+    lg: true;
+    xl: true;
+  }
+}
