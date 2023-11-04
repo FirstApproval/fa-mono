@@ -17,7 +17,7 @@ export async function calculateSHA256(file: File): Promise<string> {
           calculateChunk(start + chunkSize);
         } else {
           const hashArray = Array.from(new Uint8Array(hash.arrayBuffer()));
-          resolve(btoa(String.fromCharCode.apply(null, hashArray)));
+          resolve(btoa(String.fromCharCode(...hashArray)));
         }
       };
       reader.readAsArrayBuffer(blob);
