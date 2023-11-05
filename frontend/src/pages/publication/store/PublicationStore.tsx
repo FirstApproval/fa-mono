@@ -1,6 +1,6 @@
 import { action, makeAutoObservable, reaction } from 'mobx';
 import { publicationService } from '../../../core/service';
-import _, { some } from 'lodash';
+import _ from 'lodash';
 import {
   Author,
   LicenseType,
@@ -52,14 +52,13 @@ export class PublicationStore {
 
   creator: UserInfo | undefined;
 
-  summary: ParagraphWithId[] = [];
+  summary: string = '';
   savingStatus: SavingStatusState = SavingStatusState.PREVIEW;
 
-  experimentGoals: ParagraphWithId[] = [];
-  methodTitle: string = '';
-  method: ParagraphWithId[] = [];
-  dataDescription: ParagraphWithId[] = [];
-  software: ParagraphWithId[] = [];
+  experimentGoals: string = '';
+  method: string = '';
+  dataDescription: string = '';
+  software: string = '';
   authors: Author[] = [];
   authorNames: PublicationAuthorName[] = [];
   grantingOrganizations: ParagraphWithId[] = [];
@@ -132,51 +131,6 @@ export class PublicationStore {
 
   get isPublishing(): boolean {
     return this.publicationStatus === PublicationStatus.READY_FOR_PUBLICATION;
-  }
-
-  addSummaryParagraph(idx: number): void {
-    const newValue = [...this.summary];
-    newValue.splice(idx + 1, 0, {
-      text: '',
-      id: uuidv4()
-    });
-    this.summary = newValue;
-  }
-
-  addExperimentGoalsParagraph(idx: number): void {
-    const newValue = [...this.experimentGoals];
-    newValue.splice(idx + 1, 0, {
-      text: '',
-      id: uuidv4()
-    });
-    this.experimentGoals = newValue;
-  }
-
-  addMethodParagraph(idx: number): void {
-    const newValue = [...this.method];
-    newValue.splice(idx + 1, 0, {
-      text: '',
-      id: uuidv4()
-    });
-    this.method = newValue;
-  }
-
-  addDataDescriptionParagraph(idx: number): void {
-    const newValue = [...this.dataDescription];
-    newValue.splice(idx + 1, 0, {
-      text: '',
-      id: uuidv4()
-    });
-    this.dataDescription = newValue;
-  }
-
-  addSoftwareParagraph(idx: number): void {
-    const newValue = [...this.software];
-    newValue.splice(idx + 1, 0, {
-      text: '',
-      id: uuidv4()
-    });
-    this.software = newValue;
   }
 
   addGrantingOrganization(idx: number): void {
@@ -299,137 +253,80 @@ export class PublicationStore {
     this.relatedArticles = newValue;
   }
 
-  updateSummaryParagraph(idx: number, value: string): void {
-    const newValue = [...this.summary];
-    newValue[idx] = {
-      text: value,
-      id: newValue[idx].id
-    };
-    this.summary = newValue;
+  updateSummaryParagraph(value: string): void {
+    this.summary = value;
     this.savingStatus = SavingStatusState.SAVING;
     void this.updateSummary();
   }
 
   updateSummary = _.throttle(async () => {
-    const summary: Paragraph[] = this.summary.filter((p) => p.text.length > 0);
-
     await this.editPublication({
       description: {
-        values: summary,
+        value: this.summary,
         edited: true
       }
     });
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
-  updateExperimentGoalsParagraph(idx: number, value: string): void {
-    const newValue = [...this.experimentGoals];
-    newValue[idx] = {
-      text: value,
-      id: newValue[idx].id
-    };
-    this.experimentGoals = newValue;
+  updateExperimentGoalsParagraph(value: string): void {
+    this.experimentGoals = value;
     this.savingStatus = SavingStatusState.SAVING;
     void this.updateExperimentGoals();
   }
 
   updateExperimentGoals = _.throttle(async () => {
-    const predictedGoals: Paragraph[] = this.experimentGoals.filter(
-      (p) => p.text.length > 0
-    );
-
     await this.editPublication({
       predictedGoals: {
-        values: predictedGoals,
+        value: this.experimentGoals,
         edited: true
       }
     });
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
-  updateMethodParagraph(idx: number, value: string): void {
-    const newValue = [...this.method];
-    newValue[idx] = {
-      text: value,
-      id: newValue[idx].id
-    };
-    this.method = newValue;
+  updateMethodParagraph(value: string): void {
+    this.method = value;
     this.savingStatus = SavingStatusState.SAVING;
     void this.updateMethod();
   }
 
   updateMethod = _.throttle(async () => {
-    const method: Paragraph[] = this.method.filter((p) => p.text.length > 0);
-
     await this.editPublication({
       methodDescription: {
-        values: method,
+        value: this.method,
         edited: true
       }
     });
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
-  updateMethodTitle(value: string): void {
-    this.methodTitle = value;
-    this.savingStatus = SavingStatusState.SAVING;
-    void this.doUpdateMethodTitle();
-  }
-
-  doUpdateMethodTitle = _.throttle(async () => {
-    await this.editPublication({
-      methodTitle: {
-        value: this.methodTitle,
-        edited: true
-      }
-    });
-    this.savingStatus = SavingStatusState.SAVED;
-  }, EDIT_THROTTLE_MS);
-
-  updateDataDescriptionParagraph(idx: number, value: string): void {
-    const newValue = [...this.dataDescription];
-    newValue[idx] = {
-      text: value,
-      id: newValue[idx].id
-    };
-    this.dataDescription = newValue;
+  updateDataDescriptionParagraph(value: string): void {
+    this.dataDescription = value;
     this.savingStatus = SavingStatusState.SAVING;
     void this.updateDataDescription();
   }
 
   updateDataDescription = _.throttle(async () => {
-    const dataDescription: Paragraph[] = this.dataDescription.filter(
-      (p) => p.text.length > 0
-    );
-
     await this.editPublication({
       dataDescription: {
-        values: dataDescription,
+        value: this.dataDescription,
         edited: true
       }
     });
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
-  updateSoftwareParagraph(idx: number, value: string): void {
-    const newValue = [...this.software];
-    newValue[idx] = {
-      text: value,
-      id: newValue[idx].id
-    };
-    this.software = newValue;
+  updateSoftwareParagraph(value: string): void {
+    this.software = value;
     this.savingStatus = SavingStatusState.SAVING;
     void this.updateSoftware();
   }
 
   updateSoftware = _.throttle(async () => {
-    const software: Paragraph[] = this.software.filter(
-      (p) => p.text.length > 0
-    );
-
     await this.editPublication({
       software: {
-        values: software,
+        value: this.software,
         edited: true
       }
     });
@@ -538,146 +435,6 @@ export class PublicationStore {
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
-  mergeSummaryParagraph = (idx: number): void => {
-    if (idx <= 0) return;
-    const newValue = [...this.summary];
-    newValue[idx - 1] = {
-      text: newValue[idx - 1].text + newValue[idx].text,
-      id: newValue[idx - 1].id
-    };
-    newValue.splice(idx, 1);
-    this.summary = newValue;
-    void this.updateSummary();
-  };
-
-  splitSummaryParagraph = (idx: number, splitIndex: number): void => {
-    if (idx < 0) return;
-    const newValue = [...this.summary];
-    const newElement = {
-      text: newValue[idx].text.substring(splitIndex),
-      id: uuidv4()
-    };
-    newValue.splice(idx + 1, 0, newElement);
-    newValue[idx] = {
-      text: newValue[idx].text.substring(0, splitIndex),
-      id: newValue[idx].id
-    };
-    this.summary = newValue;
-    void this.updateSummary();
-  };
-
-  mergeExperimentGoalsParagraph = (idx: number): void => {
-    if (idx <= 0) return;
-    const newValue = [...this.experimentGoals];
-    newValue[idx - 1] = {
-      text: newValue[idx - 1].text + newValue[idx].text,
-      id: newValue[idx - 1].id
-    };
-    newValue.splice(idx, 1);
-    this.experimentGoals = newValue;
-    void this.updateExperimentGoals();
-  };
-
-  splitExperimentGoalsParagraph = (idx: number, splitIndex: number): void => {
-    if (idx < 0) return;
-    const newValue = [...this.experimentGoals];
-    const newElement = {
-      text: newValue[idx].text.substring(splitIndex),
-      id: uuidv4()
-    };
-    newValue.splice(idx + 1, 0, newElement);
-    newValue[idx] = {
-      text: newValue[idx].text.substring(0, splitIndex),
-      id: newValue[idx].id
-    };
-    this.experimentGoals = newValue;
-    void this.updateExperimentGoals();
-  };
-
-  mergeMethodParagraph = (idx: number): void => {
-    if (idx <= 0) return;
-    const newValue = [...this.method];
-    newValue[idx - 1] = {
-      text: newValue[idx - 1].text + newValue[idx].text,
-      id: newValue[idx - 1].id
-    };
-    newValue.splice(idx, 1);
-    this.method = newValue;
-    void this.updateMethod();
-  };
-
-  splitMethodParagraph = (idx: number, splitIndex: number): void => {
-    if (idx < 0) return;
-    const newValue = [...this.method];
-    const newElement = {
-      text: newValue[idx].text.substring(splitIndex),
-      id: uuidv4()
-    };
-    newValue.splice(idx + 1, 0, newElement);
-    newValue[idx] = {
-      text: newValue[idx].text.substring(0, splitIndex),
-      id: newValue[idx].id
-    };
-    this.method = newValue;
-    void this.updateMethod();
-  };
-
-  mergeDataDescriptionParagraph = (idx: number): void => {
-    if (idx <= 0) return;
-    const newValue = [...this.dataDescription];
-    newValue[idx - 1] = {
-      text: newValue[idx - 1].text + newValue[idx].text,
-      id: newValue[idx - 1].id
-    };
-    newValue.splice(idx, 1);
-    this.dataDescription = newValue;
-    void this.updateDataDescription();
-  };
-
-  splitDataDescriptionParagraph = (idx: number, splitIndex: number): void => {
-    if (idx < 0) return;
-    const newValue = [...this.dataDescription];
-    const newElement = {
-      text: newValue[idx].text.substring(splitIndex),
-      id: uuidv4()
-    };
-    newValue.splice(idx + 1, 0, newElement);
-    newValue[idx] = {
-      text: newValue[idx].text.substring(0, splitIndex),
-      id: newValue[idx].id
-    };
-    this.dataDescription = newValue;
-    void this.updateDataDescription();
-  };
-
-  mergeSoftwareParagraph = (idx: number): void => {
-    if (idx <= 0) return;
-    const newValue = [...this.software];
-    newValue[idx - 1] = {
-      text: newValue[idx - 1].text + newValue[idx].text,
-      id: newValue[idx - 1].id
-    };
-    newValue.splice(idx, 1);
-    this.software = newValue;
-    void this.updateSoftware();
-  };
-
-  splitSoftwareParagraph = (idx: number, splitIndex: number): void => {
-    if (idx < 0) return;
-    const newValue = [...this.software];
-    const newElement = {
-      text: newValue[idx].text.substring(splitIndex),
-      id: uuidv4()
-    };
-    newValue.splice(idx + 1, 0, newElement);
-    newValue[idx] = {
-      text: newValue[idx].text.substring(0, splitIndex),
-      id: newValue[idx].id
-    };
-    this.software = newValue;
-    void this.updateSoftware();
-  };
-
   mergeGrantingOrganizationsParagraph = (idx: number): void => {
     if (idx <= 0) return;
     const newValue = [...this.grantingOrganizations];
@@ -746,23 +503,19 @@ export class PublicationStore {
   validate = (): Section[] => {
     const result: Section[] = [];
 
-    const hasContent = (paragraphs: Paragraph[]): boolean => {
-      return some(paragraphs, (p) => p.text.length > 0);
-    };
-
     if (this.title.length === 0) {
       result.push('title');
     }
-    if (!hasContent(this.summary)) {
+    if (this.summary.length === 0) {
       result.push('summary');
     }
-    if (!hasContent(this.experimentGoals)) {
+    if (this.experimentGoals.length === 0) {
       result.push('goals');
     }
-    if (!hasContent(this.method)) {
+    if (this.method.length === 0) {
       result.push('method');
     }
-    if (!hasContent(this.dataDescription)) {
+    if (this.dataDescription.length === 0) {
       result.push('data_description');
     }
     if (this.fs.rootPathFiles === 0) {
@@ -827,11 +580,11 @@ export class PublicationStore {
   private countCharacter(): number {
     let count = 0;
     count += this.title.length;
-    this.summary.forEach((it) => (count += it.text.length));
-    this.experimentGoals.forEach((it) => (count += it.text.length));
+    count += this.summary.length;
+    count += this.experimentGoals.length;
     count += this.negativeData.length;
-    this.method.forEach((it) => (count += it.text.length));
-    this.dataDescription.forEach((it) => (count += it.text.length));
+    count += this.method.length;
+    count += this.dataDescription.length;
     this.grantingOrganizations.forEach((it) => (count += it.text.length));
     this.relatedArticles.forEach((it) => (count += it.text.length));
     this.primaryArticles.forEach((it) => (count += it.text.length));
@@ -873,30 +626,23 @@ export class PublicationStore {
             this.researchAreas = publication.researchAreas;
           }
           if (publication.description?.length) {
-            this.summary = publication.description.map(mapParagraph);
+            this.summary = publication.description;
           }
           if (publication.predictedGoals?.length) {
-            this.experimentGoals = publication.predictedGoals.map(mapParagraph);
-          }
-          if (publication.methodTitle?.length) {
-            this.methodTitle = publication.methodTitle;
-            if (!publication.methodDescription?.length) {
-              this.addMethodParagraph(0);
-            }
+            this.experimentGoals = publication.predictedGoals;
           }
           if (publication.methodDescription?.length) {
-            this.method = publication.methodDescription.map(mapParagraph);
+            this.method = publication.methodDescription;
           }
           if (publication.software?.length) {
-            this.software = publication.software.map(mapParagraph);
+            this.software = publication.software;
           }
           if (publication.grantOrganizations?.length) {
             this.grantingOrganizations =
               publication.grantOrganizations.map(mapParagraph);
           }
           if (publication.dataDescription?.length) {
-            this.dataDescription =
-              publication.dataDescription.map(mapParagraph);
+            this.dataDescription = publication.dataDescription;
           }
           if (publication.relatedArticles?.length) {
             this.relatedArticles =

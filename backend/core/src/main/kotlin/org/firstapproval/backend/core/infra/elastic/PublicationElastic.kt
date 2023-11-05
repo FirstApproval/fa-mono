@@ -17,7 +17,7 @@ class PublicationElastic(
     @Field(type = Text, analyzer = "edge_ngram_analyzer")
     var title: String? = null,
     @Field(type = Text, analyzer = "edge_ngram_analyzer")
-    var description: List<String>? = null,
+    var description: String? = null,
     @Field(type = Text, analyzer = "edge_ngram_analyzer")
     var grantOrganizations: List<String>? = null,
     @Field(type = Text, analyzer = "edge_ngram_analyzer")
@@ -27,15 +27,15 @@ class PublicationElastic(
     @Field(type = Text, analyzer = "edge_ngram_analyzer")
     var tags: List<String>? = null,
     @Field(type = Text, analyzer = "edge_ngram_analyzer")
-    var dataDescription: List<String>? = null,
+    var dataDescription: String? = null,
     @Field(type = Text, analyzer = "edge_ngram_analyzer")
-    var software: List<String>? = null,
+    var software: String? = null,
     @Field(type = Text, analyzer = "edge_ngram_analyzer")
     var methodTitle: String? = null,
     @Field(type = Text, analyzer = "edge_ngram_analyzer")
-    var methodDescription: List<String>? = null,
+    var methodDescription: String? = null,
     @Field(type = Text, analyzer = "edge_ngram_analyzer")
-    var predictedGoals: List<String>? = null,
+    var predictedGoals: String? = null,
     @Field(type = Date_Nanos)
     var creationTime: ZonedDateTime = ZonedDateTime.now(),
     @Field(type = Date_Nanos)

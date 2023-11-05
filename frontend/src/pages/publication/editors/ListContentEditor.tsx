@@ -1,14 +1,24 @@
-import { ParagraphElementWrapProps } from './element/ParagraphElementWrap';
 import { ListElement, ParagraphPrefixType } from './element/ListElement';
 import React, { ReactElement, useState } from 'react';
 import { SectionWrap, LabelWrap } from './styled';
 import styled from '@emotion/styled';
+import { ParagraphWithId } from '../store/PublicationStore';
+
+export interface ListContentEditorProps {
+  isReadonly?: boolean;
+  placeholder: string;
+  value: ParagraphWithId[];
+  onChange: (idx: number, value: string) => void;
+  disableInitFocus?: boolean;
+  text?: string;
+  onAddParagraph: (idx: number) => void;
+  onMergeParagraph: (idx: number) => void;
+  onSplitParagraph: (idx: number, splitIndex: number) => void;
+  paragraphPrefixType?: ParagraphPrefixType;
+}
 
 export const ListContentEditor = (
-  props: ParagraphElementWrapProps & {
-    text?: string;
-    paragraphPrefixType?: ParagraphPrefixType;
-  }
+  props: ListContentEditorProps
 ): ReactElement => {
   return (
     <SectionWrap>
@@ -20,10 +30,7 @@ export const ListContentEditor = (
   );
 };
 export const OrderedListContentEditor = (
-  props: ParagraphElementWrapProps & {
-    text?: string;
-    paragraphPrefixType?: ParagraphPrefixType;
-  }
+  props: ListContentEditorProps
 ): ReactElement => {
   return (
     <SectionWrap>
@@ -34,11 +41,7 @@ export const OrderedListContentEditor = (
     </SectionWrap>
   );
 };
-const ListElementWrap = (
-  props: ParagraphElementWrapProps & {
-    paragraphPrefixType?: ParagraphPrefixType;
-  }
-): ReactElement => {
+const ListElementWrap = (props: ListContentEditorProps): ReactElement => {
   const [paragraphToFocus, setParagraphToFocus] = useState<number>(
     props.disableInitFocus ? -1 : 0
   );

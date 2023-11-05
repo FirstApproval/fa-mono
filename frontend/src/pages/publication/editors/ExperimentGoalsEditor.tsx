@@ -3,29 +3,20 @@ import { EditorProps } from './types';
 import React, { ReactElement } from 'react';
 import { NegativeDataEditMode } from './NegativeDataEditMode';
 import { NegativeDataViewMode } from './NegativeDataViewMode';
-import { ParagraphElementWrap } from './element/ParagraphElementWrap';
-import { LabelWrap, SectionWrap } from './styled';
+import { SectionWrap } from './element/SectionWrap';
+import { LabelWrap, SectionWrap as SectionWrap2 } from './styled';
 
 export const ExperimentGoalsEditor = observer(
   (props: EditorProps): ReactElement => {
     const { publicationStore } = props;
     return (
-      <SectionWrap>
+      <SectionWrap2>
         <LabelWrap>{'Background & Aims'}</LabelWrap>
-        <ParagraphElementWrap
+        <SectionWrap
           isReadonly={publicationStore.isReadonly}
           value={publicationStore.experimentGoals}
-          onChange={(idx, value) => {
-            publicationStore.updateExperimentGoalsParagraph(idx, value);
-          }}
-          onAddParagraph={(idx) => {
-            publicationStore.addExperimentGoalsParagraph(idx);
-          }}
-          onMergeParagraph={(idx) => {
-            publicationStore.mergeExperimentGoalsParagraph(idx);
-          }}
-          onSplitParagraph={(idx, splitIndex) => {
-            publicationStore.splitExperimentGoalsParagraph(idx, splitIndex);
+          onChange={(value) => {
+            publicationStore.updateExperimentGoalsParagraph(value);
           }}
           placeholder={
             'Describe the context of data collection and the experimental goals'
@@ -38,7 +29,7 @@ export const ExperimentGoalsEditor = observer(
         {publicationStore.isReadonly && publicationStore.isNegative && (
           <NegativeDataViewMode publicationStore={props.publicationStore} />
         )}
-      </SectionWrap>
+      </SectionWrap2>
     );
   }
 );

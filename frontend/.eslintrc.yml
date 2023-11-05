@@ -13,6 +13,7 @@ parserOptions:
 plugins:
   - react
   - prettier
+  - jam3
 rules: {
   "react/react-in-jsx-scope": "off",
   "react/jsx-uses-react": "off",
@@ -47,6 +48,12 @@ rules: {
       "ignoreUrls": true,
       "ignoreStrings": true,
       "ignoreTemplateLiterals": true
+    }
+  ],
+  "jam3/no-sanitizer-with-danger": [
+    2,
+    {
+      "wrapperName": [ "sanitizer" ]
     }
   ]
 }
