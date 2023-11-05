@@ -10,7 +10,7 @@ export async function calculateSHA256(file: File): Promise<string> {
 
 export async function sha256ForFileByParts(file: File): Promise<string> {
   return new Promise((resolve) => {
-    const chunkSize = 10 * 1024 * 1024; // Размер куска (10 МБ в данном случае)
+    const chunkSize = 10 * 1024 * 1024;
     const hash = sha256.create();
 
     const calculateChunk = (start: number): void => {
@@ -22,9 +22,7 @@ export async function sha256ForFileByParts(file: File): Promise<string> {
         hash.update(new Uint8Array(data));
 
         if (start + chunkSize < file.size) {
-          setTimeout(() => {
-            calculateChunk(start + chunkSize);
-          }, 10);
+          calculateChunk(start + chunkSize);
         } else {
           const hashArray = Array.from(new Uint8Array(hash.arrayBuffer()));
           resolve(btoa(String.fromCharCode(...hashArray)));
