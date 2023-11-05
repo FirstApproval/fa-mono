@@ -28,7 +28,7 @@ const val ARCHIVED_PUBLICATION_SAMPLE_FILES = "archived-publication-sample-files
 const val PROFILE_IMAGES = "profile-images"
 const val REPORT_FILES = "report-files"
 
-private const val LARGE_FILE_SIZE_GB = 1 * 1024 * 1024 * 1024L
+private const val LARGE_FILE_SIZE = 1 * 1024 * 1024 * 1024L
 private const val BATCH_SIZE = 5 * 1024 * 1024
 
 class FileStorageService(private val amazonS3: AmazonS3, private val s3Properties: S3Properties) {
@@ -48,7 +48,7 @@ class FileStorageService(private val amazonS3: AmazonS3, private val s3Propertie
         }
         metadata.setHeader("x-amz-storage-class", s3Properties.bucketStorageClass)
 
-        if (contentLength > LARGE_FILE_SIZE_GB) {
+        if (contentLength > LARGE_FILE_SIZE) {
             uploadLargeFile(bucketName + s3Properties.bucketPostfix, id, contentLength, sha256HexBase64, data)
         } else {
             if (sha256HexBase64 != null) {
