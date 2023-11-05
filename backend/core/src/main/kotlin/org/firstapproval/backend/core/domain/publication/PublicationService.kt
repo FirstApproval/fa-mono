@@ -303,7 +303,7 @@ class PublicationService(
         val publicationsPage = publicationRepository.findAllByStatusAndAccessTypeAndIsBlockedIsFalse(
             PUBLISHED,
             OPEN,
-            PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime"))
+            PageRequest.of(page, pageSize, Sort.by(DESC, "publicationTime"))
         )
         return PublicationsResponse()
             .publications(publicationsPage.map { it.toApiObject(userService) }.toList())
@@ -316,7 +316,7 @@ class PublicationService(
             PUBLISHED,
             OPEN,
             true,
-            PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime"))
+            PageRequest.of(page, pageSize, Sort.by(DESC, "publicationTime"))
         )
         return PublicationsResponse()
             .publications(publicationsPage.map { it.toApiObject(userService) }.toList())
