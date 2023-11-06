@@ -1,11 +1,12 @@
 import { sha256 } from 'js-sha256';
 
 export async function calculateSHA256(file: File): Promise<string> {
-  if (file.size > 500 * 1024 * 1024) {
-    return sha256ForFileByParts(file);
-  } else {
-    return sha256ForFile(file);
-  }
+  return sha256ForFileByParts(file);
+  // if (file.size > 100 * 1024 * 1024) {
+  //   return sha256ForFileByParts(file);
+  // } else {
+  //   return sha256ForFile(file);
+  // }
 }
 
 export async function sha256ForFileByParts(file: File): Promise<string> {
