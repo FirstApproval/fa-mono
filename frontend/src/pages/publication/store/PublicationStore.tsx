@@ -58,6 +58,7 @@ export class PublicationStore {
   experimentGoals: string = '';
   method: string = '';
   dataDescription: string = '';
+  preliminaryResults: string = '';
   software: string = '';
   authors: Author[] = [];
   authorNames: PublicationAuthorName[] = [];
@@ -311,6 +312,22 @@ export class PublicationStore {
     await this.editPublication({
       dataDescription: {
         value: this.dataDescription,
+        edited: true
+      }
+    });
+    this.savingStatus = SavingStatusState.SAVED;
+  }, EDIT_THROTTLE_MS);
+
+  updatePreliminaryResultsParagraph(value: string): void {
+    this.preliminaryResults = value;
+    this.savingStatus = SavingStatusState.SAVING;
+    void this.updatePreliminaryResults();
+  }
+
+  updatePreliminaryResults = _.throttle(async () => {
+    await this.editPublication({
+      preliminaryResults: {
+        value: this.preliminaryResults,
         edited: true
       }
     });
@@ -585,6 +602,7 @@ export class PublicationStore {
     count += this.negativeData.length;
     count += this.method.length;
     count += this.dataDescription.length;
+    count += this.preliminaryResults.length;
     this.grantingOrganizations.forEach((it) => (count += it.text.length));
     this.relatedArticles.forEach((it) => (count += it.text.length));
     this.primaryArticles.forEach((it) => (count += it.text.length));
@@ -643,6 +661,9 @@ export class PublicationStore {
           }
           if (publication.dataDescription?.length) {
             this.dataDescription = publication.dataDescription;
+          }
+          if (publication.preliminaryResults?.length) {
+            this.preliminaryResults = publication.preliminaryResults;
           }
           if (publication.relatedArticles?.length) {
             this.relatedArticles =

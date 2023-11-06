@@ -58,6 +58,8 @@ class Publication(
     @Convert(converter = StringEncryptionConverter::class)
     var dataDescription: String? = null,
     @Convert(converter = StringEncryptionConverter::class)
+    var preliminaryResults: String? = null,
+    @Convert(converter = StringEncryptionConverter::class)
     var software: String? = null,
     @Convert(converter = StringEncryptionConverter::class)
     var methodTitle: String? = null,

@@ -52,6 +52,10 @@
                 "type": "text",
                 "analyzer": "edge_ngram_analyzer"
             },
+            "preliminaryResults": {
+                "type": "text",
+                "analyzer": "edge_ngram_analyzer"
+            },
             "software": {
                 "type": "text",
                 "analyzer": "edge_ngram_analyzer"

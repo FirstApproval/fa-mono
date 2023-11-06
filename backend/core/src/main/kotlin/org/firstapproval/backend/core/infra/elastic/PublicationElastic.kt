@@ -29,6 +29,8 @@ class PublicationElastic(
     @Field(type = Text, analyzer = "edge_ngram_analyzer")
     var dataDescription: String? = null,
     @Field(type = Text, analyzer = "edge_ngram_analyzer")
+    var preliminaryResults: String? = null,
+    @Field(type = Text, analyzer = "edge_ngram_analyzer")
     var software: String? = null,
     @Field(type = Text, analyzer = "edge_ngram_analyzer")
     var methodTitle: String? = null,

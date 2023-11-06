@@ -26,7 +26,8 @@ import {
   SoftwarePlaceholder,
   SummaryPlaceholder,
   TagsPlaceholder,
-  TagsWrap
+  TagsWrap,
+  PreliminaryResultsPlaceholder
 } from './ContentPlaceholder';
 import { SummaryEditor } from './editors/SummaryEditor';
 import { ExperimentGoalsEditor } from './editors/ExperimentGoalsEditor';
@@ -47,6 +48,7 @@ import { RelatedPublicationsEditor } from './editors/RelatedPublicationsEditor';
 import { TagsEditor } from './editors/TagsEditor';
 import { UploadStatusWindow } from './UploadStatusWindow';
 import { DatasetIsPreparingDialog } from './dialogs/DatasetIsPreparingDialog';
+import { PreliminaryResultsEditor } from './editors/PreliminaryResultsEditor';
 
 export const PublicationBody = observer(
   (props: {
@@ -71,6 +73,7 @@ export const PublicationBody = observer(
       openExperimentGoals,
       openMethod,
       openDataDescription,
+      openPreliminaryResults,
       openSoftware,
       openFiles,
       openSampleFilesModal,
@@ -83,6 +86,7 @@ export const PublicationBody = observer(
       experimentGoalsEnabled,
       methodEnabled,
       dataDescriptionEnabled,
+      preliminaryResultsEnabled,
       softwareEnabled,
       filesEnabled,
       sampleFilesEnabled,
@@ -160,6 +164,14 @@ export const PublicationBody = observer(
         )}
         {dataDescriptionEnabled && (
           <DataDescriptionEditor publicationStore={publicationStore} />
+        )}
+
+        {/* Preliminary Results */}
+        {!preliminaryResultsEnabled && !publicationStore.isReadonly && (
+          <PreliminaryResultsPlaceholder onClick={openPreliminaryResults} />
+        )}
+        {preliminaryResultsEnabled && (
+          <PreliminaryResultsEditor publicationStore={publicationStore} />
         )}
 
         {/* Software */}

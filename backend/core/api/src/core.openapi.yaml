@@ -2104,6 +2104,8 @@ components:
           $ref: '#/components/schemas/PublicationStringArrayValue'
         dataDescription:
           $ref: '#/components/schemas/PublicationStringValue'
+        preliminaryResults:
+          $ref: '#/components/schemas/PublicationStringValue'
         software:
           $ref: '#/components/schemas/PublicationStringValue'
         methodTitle:
@@ -2290,6 +2292,9 @@ components:
         tags:
           $ref: '#/components/schemas/StringArray'
         dataDescription:
+          type: string
+          maxLength: 32768
+        preliminaryResults:
           type: string
           maxLength: 32768
         software:
