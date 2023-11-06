@@ -67,7 +67,6 @@ class PublicationPdfService(
         }
     }.toMap()
 
-
     private fun url(publication: Publication): String {
         return "${frontendProperties.url}/publication/${publication.id}"
     }
