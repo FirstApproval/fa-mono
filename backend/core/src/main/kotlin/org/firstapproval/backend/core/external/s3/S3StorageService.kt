@@ -29,7 +29,7 @@ const val PROFILE_IMAGES = "profile-images"
 const val REPORT_FILES = "report-files"
 
 private const val LARGE_FILE_SIZE = 1 * 1024 * 1024 * 1024L
-private const val BATCH_SIZE = 5 * 1024 * 1024
+private const val BATCH_SIZE = 25 * 1024 * 1024
 
 class FileStorageService(private val amazonS3: AmazonS3, private val s3Properties: S3Properties) {
 
