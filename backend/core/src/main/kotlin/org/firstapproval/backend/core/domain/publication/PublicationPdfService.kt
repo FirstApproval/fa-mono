@@ -54,9 +54,19 @@ class PublicationPdfService(
         if (!publication.relatedArticles.isNullOrEmpty()) {
             model["relatedArticles"] = relatedArticles(publication)
         }
-        context.setVariables(model)
+        context.setVariables(prepareModel(model))
         return context
     }
+
+    private fun prepareModel(model: MutableMap<String, Any>) = model.map { (k, v) ->
+        if (v is String) {
+            k to v
+                .replace("<br>", "<br></br>")
+        } else {
+            k to v
+        }
+    }.toMap()
+
 
     private fun url(publication: Publication): String {
         return "${frontendProperties.url}/publication/${publication.id}"
