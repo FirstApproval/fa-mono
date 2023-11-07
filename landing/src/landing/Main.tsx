@@ -125,7 +125,27 @@ const MainTitle = styled.div`
 `;
 
 const MainLeft = styled.div`
-  margin-right: 96px;
+  margin-right: 0px;
+
+  @media (min-width: 400px) {
+    margin-right: 0px;
+  }
+
+  @media (min-width: 600px) {
+    margin-right: 0px;
+  }
+
+  @media (min-width: 1000px) {
+    margin-right: 40px;
+  }
+
+  @media (min-width: 1200px) {
+    margin-right: 96px;
+  }
+
+  @media (min-width: 1536px) {
+    margin-right: 96px;
+  }
 `;
 
 const MainSubtitle = styled.div`

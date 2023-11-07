@@ -106,7 +106,6 @@ export const Terms = (): ReactElement => {
                 turning your insights and activity into measurable gains.
               </CardText>
             </CardWrap>
-            <div style={{ height: '100vh' }} />
           </CardsWrap>
         </Grid>
       </Grid>
@@ -181,7 +180,6 @@ const PublishTermsWrap = styled.div`
   line-height: 120%; /* 76.8px */
   letter-spacing: -0.5px;
 
-  margin-top: 200px;
   position: sticky;
   top: 50%;
   left: 50%;
@@ -191,4 +189,6 @@ const PublishTermsWrap = styled.div`
 const CardsWrap = styled(UploadWrap)`
   position: relative;
   z-index: 0;
+
+  margin-top: 200px;
 `;

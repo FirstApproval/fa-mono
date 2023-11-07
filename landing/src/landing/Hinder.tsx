@@ -77,7 +77,6 @@ export const Hinder = (): ReactElement => {
 const HinderSticky = styled.div`
   font-feature-settings: 'clig' off, 'liga' off;
   font-family: Roboto;
-  font-size: 72px;
   font-style: normal;
   font-weight: 700;
   line-height: 120%;
@@ -88,6 +87,28 @@ const HinderSticky = styled.div`
   top: 10%;
   left: 50%;
   height: 100vh;
+
+  font-size: 34px;
+
+  @media (min-width: 400px) {
+    font-size: 40px;
+  }
+
+  @media (min-width: 600px) {
+    font-size: 48px;
+  }
+
+  @media (min-width: 1000px) {
+    font-size: 48px;
+  }
+
+  @media (min-width: 1200px) {
+    font-size: 64px;
+  }
+
+  @media (min-width: 1536px) {
+    font-size: 64px;
+  }
 `;
 
 const HinderGray = styled.span`
