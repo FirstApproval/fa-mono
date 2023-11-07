@@ -51,6 +51,7 @@ export const DownloadersDialog = (props: {
                 isReadonly={true}
                 useMarginBottom={false}
                 author={downloader}
+                isConfirmed={true}
               />
               <HeightElement value={'28px'} />
             </>
