@@ -2,6 +2,7 @@
   "name": "first-approval-landing",
   "version": "0.1.0",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "start": "react-scripts start",
     "build": "react-scripts build",
