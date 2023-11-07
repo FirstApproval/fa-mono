@@ -46,15 +46,6 @@ function start() {
 }
 
 function generateApi(url) {
-  execSync(
-    'openapi-generator-cli generate' +
-      ' -g typescript-axios ' +
-      ' -i ../backend/core/api/src/core.openapi.yaml ' +
-      ' -o src/apis/first-approval-api ' +
-      ` --server-variables=URL=${url} ` +
-      ' --additional-properties=stringEnums=true,enumPropertyNaming=original,removeEnumValuePrefix=false,serviceSuffix=ApiService',
-    { stdio: 'inherit' }
-  );
 }
 
 function error(message) {
