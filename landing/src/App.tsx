@@ -13,29 +13,15 @@ import { DataFirst } from './landing/DataFirst';
 const LandingApp = (): ReactElement => {
   return (
     <ThemeProvider theme={theme}>
-      <FlexWrap>
-        <PageWrap>
-          <Grid container spacing={2}>
-            <Main />
-            <DatasetUpload />
-            <Terms />
-            <Hinder />
-            <DataFirst />
-          </Grid>
-        </PageWrap>
-      </FlexWrap>
+      <Grid container spacing={2}>
+        <Main />
+        <DatasetUpload />
+        <Terms />
+        <Hinder />
+        <DataFirst />
+      </Grid>
     </ThemeProvider>
   );
 };
 
 export default LandingApp;
-
-const PageWrap = styled.div`
-  max-width: 1980px;
-`;
-
-const FlexWrap = styled.div`
-  //display: flex;
-  //flex-direction: column;
-  //align-items: center;
-`;
