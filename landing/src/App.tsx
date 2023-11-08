@@ -7,7 +7,6 @@ import { Hinder } from './landing/Hinder';
 import { Terms } from './landing/Terms';
 import { ThemeProvider } from '@mui/material';
 import { theme } from './theme';
-import styled from '@emotion/styled';
 import { DataFirst } from './landing/DataFirst';
 
 const LandingApp = (): ReactElement => {
