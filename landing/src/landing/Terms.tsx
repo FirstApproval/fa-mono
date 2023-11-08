@@ -26,6 +26,8 @@ export const Terms = (): ReactElement => {
       const opacity = Math.max(1 - diff / (elementHeight / 2), 0.2);
       if (diff > 0) {
         publishTermsRef.current.style.opacity = String(opacity);
+      } else {
+        publishTermsRef.current.style.opacity = String(1);
       }
     });
   }, []);
@@ -36,7 +38,14 @@ export const Terms = (): ReactElement => {
         <Grid item xs={12}>
           <CardsWrap ref={cardsRef}>
             <PublishTermsWrap ref={publishTermsRef}>
-              Publish on your terms
+              <PublishTermsFlex>
+                <AccessTerms>Flexible access settings</AccessTerms>
+                <PublishTerms>
+                  Publish
+                  <br />
+                  on your terms
+                </PublishTerms>
+              </PublishTermsFlex>
             </PublishTermsWrap>
             <CardWrap>
               <IconWrap>
@@ -170,6 +179,20 @@ const CardText = styled.div`
 `;
 
 const PublishTermsWrap = styled.div`
+  position: sticky;
+  top: 0;
+  left: 0;
+  height: 100vh;
+`;
+
+const PublishTermsFlex = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+`;
+
+const PublishTerms = styled.div`
   color: var(--text-primary, #040036);
   text-align: center;
   font-feature-settings: 'clig' off, 'liga' off;
@@ -180,10 +203,19 @@ const PublishTermsWrap = styled.div`
   line-height: 120%; /* 76.8px */
   letter-spacing: -0.5px;
 
-  position: sticky;
-  top: 50%;
-  left: 50%;
-  height: 100vh;
+  margin-top: 20px;
+`;
+
+const AccessTerms = styled.div`
+  color: var(--text-disabled, rgba(4, 0, 54, 0.38));
+  text-align: center;
+  font-feature-settings: 'clig' off, 'liga' off;
+  /* typography/h5 */
+  font-family: Roboto;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 133.4%; /* 32.016px */
 `;
 
 const CardsWrap = styled(UploadWrap)`
