@@ -2,7 +2,6 @@ import { type FunctionComponent, useEffect, useState } from 'react';
 import { CircularProgress, Grid, IconButton, Link } from '@mui/material';
 import google from './asset/Google logo.svg';
 import orcid from './asset/ORCID logo.svg';
-import facebook from './asset/Facebook logo.svg';
 import linked from './asset/LinkedIn logo.svg';
 import styled from '@emotion/styled';
 import { FullWidthButton } from '../common.styled';
