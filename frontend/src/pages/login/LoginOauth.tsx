@@ -40,13 +40,6 @@ export const LoginOauth: FunctionComponent = () => {
             </Link>
           </Grid>
           <Grid display={'flex'} item xs={4} md={2} justifyContent={'center'}>
-            <Link href={authUrls.facebook}>
-              <IconButtonWrap size={'medium'}>
-                <img src={facebook} />
-              </IconButtonWrap>
-            </Link>
-          </Grid>
-          <Grid display={'flex'} item xs={4} md={2} justifyContent={'center'}>
             <Link href={authUrls.linkedin}>
               <IconButtonWrap size={'medium'}>
                 <img src={linked} />
