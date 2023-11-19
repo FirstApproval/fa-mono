@@ -7,29 +7,34 @@ import { Request } from './assets/svg-animation/Request';
 import { Clock } from './assets/svg-animation/Clock';
 import { Benefits } from './assets/svg-animation/Benefits';
 import styled from '@emotion/styled';
-import { UploadWrap } from './styled';
 
 export const Terms = (): ReactElement => {
   const cardsRef = useRef<HTMLDivElement | null>(null);
   const publishTermsRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    window.addEventListener('scroll', (e) => {
-      if (!cardsRef.current) return;
-      if (!publishTermsRef.current) return;
-      const scrollY = window.scrollY;
-      const cardsRect = cardsRef.current.getBoundingClientRect();
-      const publishTermsRect = publishTermsRef.current.getBoundingClientRect();
-      const elementHeight = publishTermsRect.height;
-      const top = cardsRect.top + scrollY;
-      const diff = scrollY - top;
-      const opacity = Math.max(1 - diff / (elementHeight / 2), 0.2);
-      if (diff > 0) {
-        publishTermsRef.current.style.opacity = String(opacity);
-      } else {
-        publishTermsRef.current.style.opacity = String(1);
-      }
-    });
+    window.addEventListener(
+      'scroll',
+      (e) => {
+        if (!cardsRef.current) return;
+        if (!publishTermsRef.current) return;
+        const cardsRect = cardsRef.current.getBoundingClientRect();
+        const publishTermsRect =
+          publishTermsRef.current.getBoundingClientRect();
+        if (cardsRect.top < 0) {
+          const elementHeight = publishTermsRect.height;
+          const opacity = Math.max(
+            1 - Math.abs(cardsRect.top) / (elementHeight / 2),
+            0.2
+          );
+          console.log(opacity);
+          publishTermsRef.current.style.opacity = String(opacity);
+        } else {
+          publishTermsRef.current.style.opacity = String(1);
+        }
+      },
+      { passive: true }
+    );
   }, []);
 
   return (
@@ -218,9 +223,37 @@ const AccessTerms = styled.div`
   line-height: 133.4%; /* 32.016px */
 `;
 
-const CardsWrap = styled(UploadWrap)`
+const CardsWrap = styled.div`
   position: relative;
   z-index: 0;
 
   margin-top: 200px;
+
+  padding-left: 24px;
+  padding-right: 24px;
+
+  @media (min-width: 1024px) {
+    padding-left: 74px;
+    padding-right: 74px;
+  }
+
+  @media (min-width: 1280px) {
+    padding-left: 92px;
+    padding-right: 92px;
+  }
+
+  @media (min-width: 1440px) {
+    padding-left: 128px;
+    padding-right: 128px;
+  }
+
+  @media (min-width: 1536px) {
+    padding-left: 176px;
+    padding-right: 176px;
+  }
+
+  @media (min-width: 1980px) {
+    padding-left: 368px;
+    padding-right: 368px;
+  }
 `;

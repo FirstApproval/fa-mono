@@ -2,10 +2,10 @@ import Grid from '@mui/material/Grid/Grid';
 import Ticker from 'react-ticker';
 import styled from '@emotion/styled';
 import { Main as MainSvg } from './assets/svg-animation/Main';
-import { ReactComponent as PartneredWith } from './assets/partners/partneredWith.svg';
-import { ReactComponent as BostonMatrix } from './assets/partners/bostonMatrix.svg';
-import { ReactComponent as OpenGenes } from './assets/partners/openGenes.svg';
-import { ReactComponent as OpenLongevity } from './assets/partners/openLongevity.svg';
+import { ReactComponent as PartneredWith } from './assets/partners/partnered_with.svg';
+import { ReactComponent as BostonMatrix } from './assets/partners/boston_matrix.svg';
+import { ReactComponent as OpenGenes } from './assets/partners/open_genes.svg';
+import { ReactComponent as OpenLongevity } from './assets/partners/open_longevity.svg';
 import { ReactElement } from 'react';
 
 export const Main = (): ReactElement => {
@@ -79,10 +79,37 @@ const TickerWrap = styled.div`
 `;
 
 const MainWrapper = styled.div`
-  padding: 40px;
+  padding-left: 16px;
+  padding-right: 16px;
 
-  @media (min-width: 768px) {
-    padding: 120px;
+  @media (min-width: 400px) {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  @media (min-width: 600px) {
+    padding-left: 120px;
+    padding-right: 120px;
+  }
+
+  @media (min-width: 1000px) {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+
+  @media (min-width: 1200px) {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+
+  @media (min-width: 1536px) {
+    padding-left: 64px;
+    padding-right: 64px;
+  }
+
+  @media (min-width: 1980px) {
+    padding-left: 120px;
+    padding-right: 120px;
   }
 `;
 

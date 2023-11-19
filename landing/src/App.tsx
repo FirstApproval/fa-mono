@@ -8,16 +8,20 @@ import { Terms } from './landing/Terms';
 import { ThemeProvider } from '@mui/material';
 import { theme } from './theme';
 import { DataFirst } from './landing/DataFirst';
+import { ApprovalParadigm } from './landing/ApprovalParadigm';
 
 const LandingApp = (): ReactElement => {
   return (
     <ThemeProvider theme={theme}>
-      <Grid container spacing={2}>
-        <Main />
-        <DatasetUpload />
-        <Terms />
-        <Hinder />
-        <DataFirst />
+      <Grid container spacing={2} justifyContent={'center'}>
+        <Grid container spacing={2} maxWidth={'1980px'}>
+          <Main />
+          <DatasetUpload />
+          <Terms />
+          <Hinder />
+          <ApprovalParadigm />
+          <DataFirst />
+        </Grid>
       </Grid>
     </ThemeProvider>
   );
