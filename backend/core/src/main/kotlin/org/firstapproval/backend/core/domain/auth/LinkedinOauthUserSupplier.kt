@@ -12,28 +12,22 @@ class LinkedinOauthUserSupplier : OauthUserSupplier() {
     override fun getOauthUser(code: String): OauthUser {
         val tokens = exchangeForTokens<AccessTokenResponse>(code, oauthProperties.linkedin, GET)
         val userData = exchangeTokenForResources<LinkedInProfile>(oauthProperties.linkedin.dataUrl, tokens.accessToken)
-        val emailData = exchangeTokenForResources<LinkedInEmailResponse>(oauthProperties.linkedin.dataUrl2, tokens.accessToken)
-        val email = emailData.elements[0].handle.emailAddress
         return OauthUser(
-            externalId = userData.id,
-            email = email,
-            username = email.split("@").first(),
+            externalId = userData.sub,
+            email = userData.email,
+            username = userData.email.split("@").first(),
             type = LINKEDIN,
-            firstName = userData.localizedFirstName,
-            lastName = userData.localizedLastName,
+            firstName = userData.givenName,
+            lastName = userData.familyName,
         )
     }
 }
 
 data class LinkedInProfile(
-    val localizedLastName: String,
-    val localizedFirstName: String,
-    val id: String
+    @JsonProperty("given_name")
+    val givenName: String,
+    @JsonProperty("family_name")
+    val familyName: String,
+    val email: String,
+    val sub: String,
 )
-
-data class LinkedInEmailResponse(val elements: List<LinkedInEmailElement>)
-
-data class LinkedInEmailElement(@JsonProperty("handle~") val handle: LinkedInEmailHolder)
-
-data class LinkedInEmailHolder(val emailAddress: String)
-
