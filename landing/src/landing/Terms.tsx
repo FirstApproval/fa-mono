@@ -13,28 +13,26 @@ export const Terms = (): ReactElement => {
   const publishTermsRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    window.addEventListener(
-      'scroll',
-      (e) => {
-        if (!cardsRef.current) return;
-        if (!publishTermsRef.current) return;
-        const cardsRect = cardsRef.current.getBoundingClientRect();
-        const publishTermsRect =
-          publishTermsRef.current.getBoundingClientRect();
-        if (cardsRect.top < 0) {
-          const elementHeight = publishTermsRect.height;
-          const opacity = Math.max(
-            1 - Math.abs(cardsRect.top) / (elementHeight / 2),
-            0.2
-          );
-          console.log(opacity);
-          publishTermsRef.current.style.opacity = String(opacity);
-        } else {
-          publishTermsRef.current.style.opacity = String(1);
-        }
-      },
-      { passive: true }
-    );
+    const handler = (): void => {
+      if (!cardsRef.current) return;
+      if (!publishTermsRef.current) return;
+      const cardsRect = cardsRef.current.getBoundingClientRect();
+      const publishTermsRect = publishTermsRef.current.getBoundingClientRect();
+      if (cardsRect.top < 0) {
+        const elementHeight = publishTermsRect.height;
+        const opacity = Math.max(
+          1 - Math.abs(cardsRect.top) / (elementHeight / 2),
+          0.2
+        );
+        publishTermsRef.current.style.opacity = String(opacity);
+      } else {
+        publishTermsRef.current.style.opacity = String(1);
+      }
+    };
+
+    window.addEventListener('scroll', handler, { passive: true });
+
+    return () => window.removeEventListener('scroll', handler);
   }, []);
 
   return (

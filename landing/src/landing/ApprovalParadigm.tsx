@@ -1,64 +1,101 @@
 import Grid from '@mui/material/Grid';
-import { ReactElement } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import feedbackOpt from './assets/approval_first/feedback_opt.png';
 import immutable_approve from './assets/approval_first/immutable_approve.svg';
 import peer_review from './assets/approval_first/peer_review.svg';
 
 export const ApprovalParadigm = (): ReactElement => {
-  // const cardsRef = useRef<HTMLDivElement | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  const [visibleCard, setVisibleCard] = useState(0);
+
+  useEffect(() => {
+    const handler = (): void => {
+      if (!scrollRef.current) return;
+      const cardsRect = scrollRef.current.getBoundingClientRect();
+      if (cardsRect.top > 0 && cardsRect.top < cardsRect.height) {
+        const position = Math.abs(cardsRect.top) / cardsRect.height;
+        console.log(position);
+        if (position > 0.0) {
+          setVisibleCard(2);
+        }
+        if (position > 0.3) {
+          setVisibleCard(1);
+        }
+        if (position > 0.6) {
+          setVisibleCard(0);
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handler, { passive: true });
+
+    return () => window.removeEventListener('scroll', handler);
+  }, []);
 
   return (
     <Grid item xs={12}>
       <CardsWrap>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <SubtitleWrap>Approval first</SubtitleWrap>
-            <TitleWrap>
-              Evolving the
-              <br />
-              approval paradigm
-            </TitleWrap>
+        <PublishTermsWrap>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <SubtitleWrap>Approval first</SubtitleWrap>
+              <TitleWrap>
+                Evolving the
+                <br />
+                approval paradigm
+              </TitleWrap>
+            </Grid>
+            <Grid item xs={6}>
+              {visibleCard === 0 && (
+                <CardWrap>
+                  <CardTextContainer>
+                    <img src={peer_review} />
+                    <CardCaptionWrap>Data review</CardCaptionWrap>
+                    <CardTitleWrap>Fair peer review</CardTitleWrap>
+                    <CardTextWrap>
+                      We focus on the quality of your data, ensuring that the
+                      value of your research is fully recognized, regardless of
+                      the outcomes.
+                    </CardTextWrap>
+                  </CardTextContainer>
+                </CardWrap>
+              )}
+              {visibleCard === 1 && (
+                <CardWrap>
+                  <CardTextContainer>
+                    <img src={feedbackOpt} width={'100%'} />
+                    <CardCaptionWrap>Public approve</CardCaptionWrap>
+                    <CardTitleWrap>Feedback-rich environment</CardTitleWrap>
+                    <CardTextWrap>
+                      After downloading your dataset, users can comment,
+                      fostering valuable, informed scientific discussions.
+                    </CardTextWrap>
+                  </CardTextContainer>
+                </CardWrap>
+              )}
+              {visibleCard === 2 && (
+                <CardWrap>
+                  <CardTextContainer>
+                    <img src={immutable_approve} />
+                    <CardCaptionWrap>Immutable approve</CardCaptionWrap>
+                    <CardTitleWrap>
+                      Beyond scientific journals: Tech-driven trust in
+                      publishing
+                    </CardTitleWrap>
+                    <CardTextWrap>
+                      Using time stamping methodology, we safeguard your
+                      research's legacy, ensuring its credibility and trust for
+                      future generations.
+                    </CardTextWrap>
+                  </CardTextContainer>
+                </CardWrap>
+              )}
+            </Grid>
           </Grid>
-          <Grid item xs={6}>
-            <CardWrap>
-              <CardTextContainer>
-                <img src={peer_review} />
-                <CardCaptionWrap>Data review</CardCaptionWrap>
-                <CardTitleWrap>Fair peer review</CardTitleWrap>
-                <CardTextWrap>
-                  We focus on the quality of your data, ensuring that the value
-                  of your research is fully recognized, regardless of the
-                  outcomes.
-                </CardTextWrap>
-              </CardTextContainer>
-            </CardWrap>
-            <CardWrap>
-              <CardTextContainer>
-                <img src={feedbackOpt} />
-                <CardCaptionWrap>Data review</CardCaptionWrap>
-                <CardTitleWrap>Fair peer review</CardTitleWrap>
-                <CardTextWrap>
-                  We focus on the quality of your data, ensuring that the value
-                  of your research is fully recognized, regardless of the
-                  outcomes.
-                </CardTextWrap>
-              </CardTextContainer>
-            </CardWrap>
-            <CardWrap>
-              <CardTextContainer>
-                <img src={immutable_approve} />
-                <CardCaptionWrap>Data review</CardCaptionWrap>
-                <CardTitleWrap>Fair peer review</CardTitleWrap>
-                <CardTextWrap>
-                  We focus on the quality of your data, ensuring that the value
-                  of your research is fully recognized, regardless of the
-                  outcomes.
-                </CardTextWrap>
-              </CardTextContainer>
-            </CardWrap>
-          </Grid>
-        </Grid>
+        </PublishTermsWrap>
+        <div ref={scrollRef} style={{ height: '100vh' }} />
       </CardsWrap>
     </Grid>
   );
@@ -69,8 +106,6 @@ const CardsWrap = styled.div`
   z-index: 0;
 
   margin-top: 200px;
-
-  height: 100vh;
 
   padding-left: 24px;
   padding-right: 24px;
@@ -99,6 +134,13 @@ const CardsWrap = styled.div`
     padding-left: 368px;
     padding-right: 368px;
   }
+`;
+
+const PublishTermsWrap = styled.div`
+  position: sticky;
+  top: 0;
+  left: 0;
+  height: 100vh;
 `;
 
 const SubtitleWrap = styled.div`
@@ -137,6 +179,19 @@ const CardWrap = styled.div`
   background: var(--text-primary, #040036);
 
   height: 100%;
+
+  overflow: hidden;
+
+  animation: fade-in 1s;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 100;
+    }
+  }
 `;
 
 const CardCaptionWrap = styled.div`
