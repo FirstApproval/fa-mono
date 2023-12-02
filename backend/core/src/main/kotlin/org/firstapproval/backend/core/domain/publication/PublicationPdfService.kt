@@ -62,6 +62,7 @@ class PublicationPdfService(
         if (v is String) {
             k to v
                 .replace("<br>", "<br></br>")
+                .replace("&nbsp;", " ")
         } else {
             k to v
         }
