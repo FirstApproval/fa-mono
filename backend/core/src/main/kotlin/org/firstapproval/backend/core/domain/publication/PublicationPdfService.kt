@@ -44,6 +44,9 @@ class PublicationPdfService(
         if (!publication.software.isNullOrEmpty()) {
             model["software"] = software(publication)
         }
+        if (!publication.preliminaryResults.isNullOrEmpty()) {
+            model["preliminaryResults"] = preliminaryResults(publication)
+        }
         model["authorsDescription"] = authorsDescriptions(publication)
         if (!publication.grantOrganizations.isNullOrEmpty()) {
             model["grantingOrganizations"] = grantingOrganizations(publication)
@@ -156,6 +159,10 @@ class PublicationPdfService(
         } else {
             publication.dataDescription!!
         }
+    }
+
+    private fun preliminaryResults(publication: Publication): String {
+        return publication.preliminaryResults!!
     }
 
     private fun software(publication: Publication): String {

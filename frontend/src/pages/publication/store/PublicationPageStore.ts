@@ -15,6 +15,8 @@ export class PublicationPageStore {
 
   dataDescriptionEnabled = false;
 
+  preliminaryResultsEnabled = false;
+
   softwareEnabled = false;
 
   filesEnabled = false;
@@ -86,6 +88,16 @@ export class PublicationPageStore {
       (dataDescription) => {
         if (dataDescription.length > 0) {
           this.openDataDescription();
+        }
+      },
+      { fireImmediately: true }
+    );
+
+    reaction(
+      () => publicationStore.preliminaryResults,
+      (preliminaryResults) => {
+        if (preliminaryResults.length > 0) {
+          this.openPreliminaryResults();
         }
       },
       { fireImmediately: true }
@@ -262,6 +274,10 @@ export class PublicationPageStore {
 
   openDataDescription = (): void => {
     this.dataDescriptionEnabled = true;
+  };
+
+  openPreliminaryResults = (): void => {
+    this.preliminaryResultsEnabled = true;
   };
 
   openSoftware = (): void => {

@@ -12,7 +12,8 @@ import {
   SoftwareIcon,
   SummaryIcon,
   TagsIcon,
-  TitleIcon
+  TitleIcon,
+  PreliminaryResultsIcon
 } from './SectionIcon';
 import { Typography } from '@mui/material';
 
@@ -77,6 +78,18 @@ export const DataDescriptionPlaceholder = (
       onClick={props.onClick}
       text={'Data description'}
       icon={<DataDescriptionIcon />}
+    />
+  );
+};
+
+export const PreliminaryResultsPlaceholder = (
+  props: PlaceholderProps
+): ReactElement => {
+  return (
+    <ContentPlaceholder
+      onClick={props.onClick}
+      text={'Preliminary Results | optional'}
+      icon={<PreliminaryResultsIcon />}
     />
   );
 };

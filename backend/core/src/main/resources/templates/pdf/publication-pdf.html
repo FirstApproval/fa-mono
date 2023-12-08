@@ -286,6 +286,13 @@
             <div th:each='o:${dataDescription}' th:utext='${o}'></div>
         </div>
 
+        <div th:if='${preliminaryResults}' class='block-title'>
+            Preliminary Results
+        </div>
+        <div th:if='${preliminaryResults}' class='block-content'>
+            <div th:each='r:${preliminaryResults}' th:utext='${r}'></div>
+        </div>
+
         <div th:if='${software}' class='block-title'>
             Software
         </div>

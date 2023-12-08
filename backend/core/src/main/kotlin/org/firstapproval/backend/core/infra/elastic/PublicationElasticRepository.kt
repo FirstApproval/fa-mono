@@ -19,6 +19,7 @@ private const val PUBLICATIONS_SEARCH_QUERY = """
           "relatedArticles",
           "tags",
           "dataDescription",
+          "preliminaryResults",
           "software",
           "methodTitle",
           "methodDescription",

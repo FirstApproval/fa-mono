@@ -3,19 +3,19 @@ import { EditorProps } from './types';
 import React, { ReactElement } from 'react';
 import { ParagraphContentEditor } from './ParagraphContentEditor';
 
-export const DataDescriptionEditor = observer(
+export const PreliminaryResultsEditor = observer(
   (props: EditorProps): ReactElement => {
     return (
       <ParagraphContentEditor
         isReadonly={props.publicationStore.isReadonly}
-        value={props.publicationStore.dataDescription}
+        value={props.publicationStore.preliminaryResults}
         onChange={(value) => {
-          props.publicationStore.updateDataDescriptionParagraph(value);
+          props.publicationStore.updatePreliminaryResultsParagraph(value);
         }}
         placeholder={
-          "Describe your data's contents, structure, and any transformations applied to the raw data"
+          'Describe your initial observations or interpretations derived from the data'
         }
-        text={'Data description'}
+        text={'Preliminary Results'}
         disableInitFocus={props.publicationStore.disableAutofocus}
       />
     );

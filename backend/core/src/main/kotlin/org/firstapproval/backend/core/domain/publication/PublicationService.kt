@@ -127,9 +127,8 @@ class PublicationService(
             if (primaryArticles?.edited == true) publication.primaryArticles = primaryArticles.values.map { it.text }
             if (relatedArticles?.edited == true) publication.relatedArticles = relatedArticles.values.map { it.text }
             if (tags?.edited == true) publication.tags = tags.values.map { it.text }
-            if (dataDescription?.edited == true) {
-                publication.dataDescription = dataDescription.value
-            }
+            if (dataDescription?.edited == true) publication.dataDescription = dataDescription.value
+            if (preliminaryResults?.edited == true) publication.preliminaryResults = preliminaryResults.value
             if (software?.edited == true) publication.software = software.value
             if (methodTitle?.edited == true) publication.methodTitle = methodTitle.value
             if (methodDescription?.edited == true) publication.methodDescription = methodDescription.value
@@ -420,6 +419,7 @@ fun Publication.toApiObject(userService: UserService) = PublicationApiObject().a
     publicationApiModel.relatedArticles = relatedArticles?.map { Paragraph(it) }
     publicationApiModel.tags = tags?.map { Paragraph(it) }
     publicationApiModel.dataDescription = dataDescription
+    publicationApiModel.preliminaryResults = preliminaryResults
     publicationApiModel.software = software
     publicationApiModel.methodTitle = methodTitle
     publicationApiModel.publicationTime = publicationTime?.toOffsetDateTime()
@@ -449,6 +449,7 @@ fun Publication.toPublicationElastic() =
         relatedArticles = relatedArticles,
         tags = tags,
         dataDescription = dataDescription,
+        preliminaryResults = preliminaryResults,
         software = software,
         methodTitle = methodTitle,
         methodDescription = methodDescription,
