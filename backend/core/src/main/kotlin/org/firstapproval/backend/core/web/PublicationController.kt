@@ -80,10 +80,10 @@ class PublicationController(
                 .isLast(pageResult.isLast)
                 .items(
                     pageResult.map { elasticModel ->
-                        dbModels
-                            .first { it.id == elasticModel.id }
-                            .toApiObject(userService)
-                    }.toList()
+                        dbModels.firstOrNull { it.id == elasticModel.id }?.toApiObject(userService)
+                    }
+                        .filterNotNull()
+                        .toList()
                 )
         )
     }
