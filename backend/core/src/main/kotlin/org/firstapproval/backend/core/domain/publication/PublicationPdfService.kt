@@ -4,10 +4,8 @@ import org.firstapproval.backend.core.config.Properties.FrontendProperties
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.infra.pdf.PdfService
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import org.thymeleaf.context.Context
 import java.text.DecimalFormat
-
 
 @Service
 class PublicationPdfService(
@@ -17,7 +15,6 @@ class PublicationPdfService(
 
     private val formatter = DecimalFormat("#.##")
 
-    @Transactional(readOnly = true)
     fun generate(publication: Publication): ByteArray {
         val templateName = "pdf/publication-pdf"
         return pdfService.generate(templateName, generateThymeleafContext(publication))

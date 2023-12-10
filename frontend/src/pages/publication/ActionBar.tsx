@@ -64,7 +64,7 @@ export const ActionBar = observer(
         {props.displayDivider && (
           <Divider color={'#D2D2D6'} sx={{ marginBottom: '16px' }} />
         )}
-        <Grid container rowSpacing={2}>
+        <Grid container rowSpacing={2} alignItems={'center'}>
           <Grid item sm={12} md={8}>
             {publicationStore.publicationStatus ===
               PublicationStatus.READY_FOR_PUBLICATION && (
@@ -72,6 +72,15 @@ export const ActionBar = observer(
                 <CircularProgressWrap size={24} />
                 <Typography variant={'body2'}>
                   Publishing... This may take some time. Please wait.
+                </Typography>
+              </FlexWrapRow>
+            )}
+            {publicationStore.publicationStatus ===
+              PublicationStatus.MODERATION && (
+              <FlexWrapRow>
+                <CircularProgressWrap size={24} />
+                <Typography variant={'body2'}>
+                  Moderation... This may take up to one day. Please wait.
                 </Typography>
               </FlexWrapRow>
             )}

@@ -907,7 +907,7 @@ paths:
       operationId: getPublicationSampleFilesDownloadLink
       tags: [ publication ]
 
-  /api/publication/{id}/block:
+  /api/moderation/publication/{id}/block:
     put:
       summary: Block publication
       parameters:
@@ -924,8 +924,53 @@ paths:
           description: Success
       security:
         - BasicAuth: [ ]
-      operationId: blockPublication
-      tags: [ publication ]
+      operationId: moderationBlockPublication
+      tags: [ moderation ]
+
+  /api/moderation/publication/{id}/publish:
+    put:
+      summary: Change publication status from MODERATION to PUBLISHED
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            minLength: 7
+            maxLength: 7
+          required: true
+          description: Publication id
+      responses:
+        200:
+          description: Success
+      security:
+        - BasicAuth: [ ]
+      operationId: moderationPublishPublication
+      tags: [ moderation ]
+
+  /api/moderation/publication/{id}/pdf:
+    get:
+      summary: Download pdf file
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            minLength: 7
+            maxLength: 7
+          required: true
+          description: Publication id
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+      security:
+        - BasicAuth: [ ]
+      operationId: moderationDownloadPdf
+      tags: [ moderation ]
 
   /api/files/check-duplicates/{publicationId}:
     post:
@@ -2005,6 +2050,7 @@ components:
       enum:
         - PENDING
         - READY_FOR_PUBLICATION
+        - MODERATION
         - PUBLISHED
 
     StorageType:

@@ -21,6 +21,8 @@ class NotificationService(
     private val frontendProperties: Properties.FrontendProperties,
     @Value("\${tech-support-email}")
     private val techSupportEmail: String,
+    @Value("\${admin-email}")
+    private val adminEmail: String,
 ) {
     val log = logger {}
 
@@ -84,9 +86,9 @@ class NotificationService(
             return
         }
         val emails = publication.authors
-                .filter { it.isConfirmed && (it.email?.isNotBlank() ?: false) }
-                .filter { it.user.require().id != publication.creator.id }
-                .map { it.user.require().email }
+            .filter { it.isConfirmed && (it.email?.isNotBlank() ?: false) }
+            .filter { it.user.require().id != publication.creator.id }
+            .map { it.user.require().email }
         val authors = publication.authors.map { "${it.firstName} ${it.lastName}" }
         emails.map { email ->
             if (email != null) {
@@ -146,5 +148,27 @@ class NotificationService(
             val html = templateEngine.process("dataset-is-ready-for-download.html", context)
             mailService.send(user.email.toString(), "[FirstApproval] Dataset is ready for download: ${publication.title}", html, true)
         }
+    }
+
+    fun sendNewPublicationForModeration(publication: Publication) {
+        if (emailProperties.noopMode) {
+            log.info { "new publication for moderation" }
+            return
+        }
+        val content = "ID: ${publication.id}, Title: ${publication.title}"
+        mailService.send(adminEmail, "[FirstApproval] New publication for moderation", content)
+    }
+
+    fun sendPublicationPassedModeration(publication: Publication) {
+        if (emailProperties.noopMode) {
+            log.info { "publication passed moderation" }
+            return
+        }
+        val content = "Congratulations! Your publication \"${publication.title}\" successfully passed moderation!"
+        publication.authors
+            .mapNotNull { it.email }
+            .forEach { email ->
+                mailService.send(email, "[FirstApproval] Publication passed moderation", content)
+            }
     }
 }

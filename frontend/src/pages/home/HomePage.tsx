@@ -134,7 +134,7 @@ export const HomePage: FunctionComponent = observer(() => {
                 </Grid>
               )}
               {hasSearch && (
-                <Wrap>
+                <ResultsWrap>
                   <ResultsLabel variant={'h4'} component={'div'}>
                     Results for {store.searchQuery}
                   </ResultsLabel>
@@ -150,7 +150,7 @@ export const HomePage: FunctionComponent = observer(() => {
                       </SearchHintText>
                     </ContentWrap>
                   )}
-                </Wrap>
+                </ResultsWrap>
               )}
             </ContentWrapInner>
           </ContentWrap>
@@ -214,6 +214,19 @@ const FlexBody = styled('div')`
 const DividerWrap = styled(Divider)`
   margin-top: 8px;
   margin-bottom: 40px;
+`;
+
+const ResultsWrap = styled('div')`
+  width: 100%;
+  max-width: 1110px;
+  margin-left: auto;
+  margin-right: auto;
+
+  margin-bottom: 40px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const Wrap = styled('div')`

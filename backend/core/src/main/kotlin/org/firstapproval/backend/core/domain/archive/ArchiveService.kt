@@ -10,7 +10,7 @@ import org.apache.commons.lang3.RandomStringUtils.randomPrint
 import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.domain.publication.Publication
 import org.firstapproval.backend.core.domain.publication.PublicationRepository
-import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
+import org.firstapproval.backend.core.domain.publication.PublicationStatus.MODERATION
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
 import org.firstapproval.backend.core.domain.publication.StorageType.CLOUD_SECURE_STORAGE
 import org.firstapproval.backend.core.domain.publication.StorageType.IPFS
@@ -22,7 +22,11 @@ import org.firstapproval.backend.core.external.ipfs.DownloadLinkRepository
 import org.firstapproval.backend.core.external.ipfs.IpfsClient.IpfsContentAvailability.INSTANT
 import org.firstapproval.backend.core.external.ipfs.IpfsStorageService
 import org.firstapproval.backend.core.external.ipfs.RestoreRequestRepository
-import org.firstapproval.backend.core.external.s3.*
+import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_FILES
+import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_SAMPLE_FILES
+import org.firstapproval.backend.core.external.s3.FILES
+import org.firstapproval.backend.core.external.s3.FileStorageService
+import org.firstapproval.backend.core.external.s3.SAMPLE_FILES
 import org.firstapproval.backend.core.infra.elastic.PublicationElasticRepository
 import org.firstapproval.backend.core.utils.calculateSHA256
 import org.springframework.data.domain.PageRequest
@@ -34,7 +38,7 @@ import java.io.File.createTempFile
 import java.io.FileOutputStream
 import java.nio.file.Files
 import java.time.ZonedDateTime.now
-import java.util.*
+import java.util.UUID
 import kotlin.io.path.Path
 import kotlin.io.path.exists
 
@@ -125,8 +129,7 @@ class ArchiveService(
     private fun archiveProcess(publication: Publication, password: String): List<UUID> {
         val sampleArchiveResult = archiveSampleFilesProcess(publication)
         val mainArchiveResult = archivePublicationFilesProcess(publication, password)
-        publication.status = PUBLISHED
-        publication.publicationTime = now()
+        publication.status = MODERATION
         publication.archivePassword = password
         publication.archiveSize = mainArchiveResult.size
         publication.archiveSampleSize = sampleArchiveResult.size
@@ -134,7 +137,7 @@ class ArchiveService(
         publication.filesCount = mainArchiveResult.filesCount.toLong()
         publication.foldersCount = mainArchiveResult.foldersCount.toLong()
         publicationRepository.save(publication)
-        notificationService.sendEmailForCoAuthorsChanged(publication)
+        notificationService.sendNewPublicationForModeration(publication)
         elasticRepository.save(publication.toPublicationElastic())
         return listOf()
     }
@@ -311,9 +314,9 @@ class ArchiveService(
         try {
             val ipfsFileInfo = ipfsStorageService.upload(tempArchive)
             publication.contentId = ipfsFileInfo.id
-            publication.status = PUBLISHED
-            publication.publicationTime = now()
+            publication.status = MODERATION
             publicationRepository.save(publication)
+            notificationService.sendNewPublicationForModeration(publication)
         } catch (ex: Exception) {
             log.error(ex) { "ipfs persistence error" }
             throw ex

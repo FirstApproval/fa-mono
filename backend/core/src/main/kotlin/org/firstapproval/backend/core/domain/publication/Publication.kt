@@ -98,6 +98,7 @@ class Publication(
 enum class PublicationStatus {
     PENDING,
     READY_FOR_PUBLICATION,
+    MODERATION,
     PUBLISHED
 }
 

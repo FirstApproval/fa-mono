@@ -91,6 +91,20 @@ export const PublicationPage: FunctionComponent = observer(() => {
           publicationService
             .getPublicationStatus(publicationStore.publicationId)
             .then((status) => {
+              if (status.data === PublicationStatus.MODERATION) {
+                window.location.reload();
+              }
+            });
+        }, 3000);
+      }, 1000);
+    }
+
+    if (publicationStore.publicationStatus === PublicationStatus.MODERATION) {
+      window.setTimeout(() => {
+        window.setInterval(() => {
+          publicationService
+            .getPublicationStatus(publicationStore.publicationId)
+            .then((status) => {
               if (status.data === PublicationStatus.PUBLISHED) {
                 window.location.reload();
               }
