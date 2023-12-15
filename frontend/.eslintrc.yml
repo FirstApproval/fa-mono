@@ -40,6 +40,7 @@ rules: {
   "@typescript-eslint/no-unnecessary-type-assertion": "off",
   "@typescript-eslint/naming-convention": "off",
   "react/no-unescaped-entities": "off",
+  "@typescript-eslint/no-unused-vars": "off",
   "max-len": [
     "error",
     {

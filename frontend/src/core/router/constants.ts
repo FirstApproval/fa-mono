@@ -8,6 +8,8 @@ export enum Page {
 
   HOME_PAGE,
 
+  CONTACTS_PAGE,
+
   PUBLICATION,
   SHARING_OPTIONS,
 

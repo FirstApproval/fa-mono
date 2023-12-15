@@ -31,6 +31,7 @@ import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
 import { Page } from './core/router/constants';
 import { EnterAffiliationsPage } from './pages/signup/EnterAffiliationsPage';
 import { userStore } from './core/user';
+import { ContactsPage } from './pages/contacts/ContactsPage';
 
 const MOBILE_VERSION_NOT_SUPPORT_STORAGE_KEY = 'mobileVersionNotSupportShown';
 
@@ -70,6 +71,9 @@ const App: FunctionComponent = observer(() => {
             <>
               {page === Page.LOADING && <LoadingPage />}
               {page === Page.HOME_PAGE && <HomePage key={routerStore.key} />}
+              {page === Page.CONTACTS_PAGE && (
+                <ContactsPage key={routerStore.key} />
+              )}
               {page === Page.PUBLICATION && (
                 <PublicationPage key={routerStore.key} />
               )}

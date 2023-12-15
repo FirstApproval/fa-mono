@@ -14,6 +14,7 @@ import { FALinkWrap } from './LinkWrap';
 interface HeaderComponentProps {
   showAboutUsButton?: boolean;
   showPublishButton?: boolean;
+  showContactsButton?: boolean;
   showLoginButton?: boolean;
   showSignUpContainedButton?: boolean;
   showSignUpOutlinedButton?: boolean;
@@ -24,6 +25,7 @@ export const HeaderComponent = (
   props: HeaderComponentProps = {
     showAboutUsButton: false,
     showPublishButton: false,
+    showContactsButton: false,
     showLoginButton: false,
     showSignUpContainedButton: false,
     showSignUpOutlinedButton: false,
@@ -44,7 +46,14 @@ export const HeaderComponent = (
           </FALinkWrap>
         </Grid>
         <BetaDialogWithButton />
-        <Box component={Grid} item xs={1} display={{ xs: 'none', md: 'block' }}>
+        <Box
+          component={Grid}
+          item
+          xs={1}
+          display={{
+            xs: 'none',
+            md: 'block'
+          }}>
           {props.showAboutUsButton && (
             <ButtonWrap
               href={'https://about.firstapproval.io/'}
@@ -55,13 +64,36 @@ export const HeaderComponent = (
             </ButtonWrap>
           )}
         </Box>
+        <Box
+          component={Grid}
+          item
+          xs={1}
+          display={{
+            xs: 'none',
+            md: 'block'
+          }}>
+          {props.showContactsButton && (
+            <ButtonWrap
+              onClick={() => {
+                routerStore.navigatePage(Page.CONTACTS_PAGE);
+              }}
+              variant="text"
+              style={{ width: '120px' }}
+              size={'large'}>
+              Contact us
+            </ButtonWrap>
+          )}
+        </Box>
         <FlexHeaderRight>
           <Stack direction="row" alignItems="center" spacing={2}>
             <Box
               component={Grid}
               item
               xs={1}
-              display={{ xs: 'none', md: 'block' }}>
+              display={{
+                xs: 'none',
+                md: 'block'
+              }}>
               {props.showPublishButton && (
                 <ButtonWrap
                   href={userStore.getCreatePublicationLink()}
