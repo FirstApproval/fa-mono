@@ -8,6 +8,9 @@
 /frontend/dist/
 /frontend/src/apis/
 /landing/node_modules/
+/landing/build/
+/landing/dist/
+/landing/src/apis/
 volumes/
 
 .idea
