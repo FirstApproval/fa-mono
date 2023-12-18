@@ -1,6 +1,6 @@
 import './App.css';
 import Grid from '@mui/material/Grid/Grid';
-import { ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 import { Main } from './landing/Main';
 import { DatasetUpload } from './landing/DatasetUpload';
 import { Hinder } from './landing/Hinder';
@@ -13,6 +13,7 @@ import { Header } from './landing/Header';
 import { Footer } from './landing/Footer';
 import { JoinBeta } from './landing/JoinBeta';
 import { ApprovalParadigmMobile } from './landing/ApprovalParadigmMobile';
+import { Editor } from './landing/Editor';
 
 const LandingApp = (): ReactElement => {
   return (
@@ -21,6 +22,7 @@ const LandingApp = (): ReactElement => {
       <Grid container spacing={2} justifyContent={'center'}>
         <Grid container spacing={2} maxWidth={'1980px'}>
           <Main />
+          <Editor />
           <DatasetUpload />
           <Terms />
           <Hinder />

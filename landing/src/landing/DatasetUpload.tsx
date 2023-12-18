@@ -2,7 +2,7 @@ import Grid from '@mui/material/Grid/Grid';
 import stored from './assets/not_just_stored.mov';
 import files from './assets/make_your_files_talk.mov';
 import styled from '@emotion/styled';
-import { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 
 export const DatasetUpload = (): ReactElement => {
   const [videoRef, setVideoRef] = useState<HTMLVideoElement | null>(null);
@@ -23,6 +23,11 @@ export const DatasetUpload = (): ReactElement => {
 
   return (
     <Grid item xs={12}>
+      <TitleWrap>
+        <Title>Highly secure and smart file manager</Title>
+        <SubTitle>Upload your dataset and enjoy peace of mind</SubTitle>
+      </TitleWrap>
+
       <UploadWrap>
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
@@ -67,6 +72,50 @@ export const DatasetUpload = (): ReactElement => {
     </Grid>
   );
 };
+
+const TitleWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+    
+    @media (max-width: 500px) {
+        text-align: center;
+    }
+`;
+
+const Title = styled.div`
+  width: 720px;
+  color: rgba(4, 0, 54, 0.38);
+  font-feature-settings: 'clig' off, 'liga' off;
+  font-family: Roboto, serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 133.4%; /* 26.68px */
+    
+    @media (max-width: 500px) {
+        width: 100%;
+    }
+`;
+
+const SubTitle = styled.div`
+  width: 720px;
+  margin-top: 20px;
+  margin-bottom: 64px;
+  color: #040036;
+  font-feature-settings: 'clig' off, 'liga' off;
+  font-family: Roboto, serif;
+  font-size: 48px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 120%; /* 57.6px */
+  letter-spacing: -0.5px;
+
+    @media (max-width: 500px) {
+        width: 100%;
+        padding-left: 16px;
+    }
+`;
 
 const VideoMaxWidth = styled.video`
   max-width: 100%;
