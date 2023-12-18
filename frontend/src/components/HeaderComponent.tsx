@@ -14,7 +14,6 @@ import { FALinkWrap } from './LinkWrap';
 interface HeaderComponentProps {
   showAboutUsButton?: boolean;
   showPublishButton?: boolean;
-  showContactsButton?: boolean;
   showLoginButton?: boolean;
   showSignUpContainedButton?: boolean;
   showSignUpOutlinedButton?: boolean;
@@ -25,7 +24,6 @@ export const HeaderComponent = (
   props: HeaderComponentProps = {
     showAboutUsButton: false,
     showPublishButton: false,
-    showContactsButton: false,
     showLoginButton: false,
     showSignUpContainedButton: false,
     showSignUpOutlinedButton: false,
@@ -71,19 +69,7 @@ export const HeaderComponent = (
           display={{
             xs: 'none',
             md: 'block'
-          }}>
-          {props.showContactsButton && (
-            <ButtonWrap
-              onClick={() => {
-                routerStore.navigatePage(Page.CONTACTS_PAGE);
-              }}
-              variant="text"
-              style={{ width: '120px' }}
-              size={'large'}>
-              Contact us
-            </ButtonWrap>
-          )}
-        </Box>
+          }}></Box>
         <FlexHeaderRight>
           <Stack direction="row" alignItems="center" spacing={2}>
             <Box

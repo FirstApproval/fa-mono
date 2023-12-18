@@ -4,6 +4,8 @@ import logo from '../../assets/logo.svg';
 import { Button, Stack } from '@mui/material';
 import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
 import { BetaDialog } from '../../components/BetaDialog';
+import { routerStore } from '../../core/router';
+import { Page } from '../../core/router/constants';
 
 export const Footer = (): ReactElement => {
   const [isBetaDialogOpen, setIsBetaDialogOpen] = useState(false);
@@ -33,6 +35,11 @@ export const Footer = (): ReactElement => {
               </ButtonWrap>
               <ButtonWrap href={'https://firstapproval.io/'} size={'medium'}>
                 About
+              </ButtonWrap>
+              <ButtonWrap
+                onClick={() => routerStore.navigatePage(Page.CONTACTS_PAGE)}
+                size={'medium'}>
+                Contact us
               </ButtonWrap>
             </Stack>
           </LogoWrap>
