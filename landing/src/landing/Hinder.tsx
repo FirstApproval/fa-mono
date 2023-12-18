@@ -85,9 +85,13 @@ const HinderSticky = styled.div`
   position: sticky;
   top: 10%;
   left: 50%;
-  height: 100vh;
+  height: 70vh;
 
   font-size: 34px;
+
+    @media (max-width: 500px) {
+        height: 100vh;
+    }
 
   @media (min-width: 400px) {
     font-size: 40px;

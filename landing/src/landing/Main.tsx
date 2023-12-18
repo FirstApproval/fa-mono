@@ -13,7 +13,14 @@ export const Main = (): ReactElement => {
     <Grid item xs={12}>
       <MainWrapper>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={6} order={{ xs: 2, md: 1 }}>
+          <Grid
+            item
+            xs={12}
+            md={6}
+            order={{
+              xs: 2,
+              md: 1
+            }}>
             <MainLeft>
               <MainTitle>Reimagined scientific data publishing</MainTitle>
               <MainSubtitle>
@@ -23,7 +30,14 @@ export const Main = (): ReactElement => {
               </MainSubtitle>
             </MainLeft>
           </Grid>
-          <Grid item xs={12} md={6} order={{ xs: 1, md: 2 }}>
+          <Grid
+            item
+            xs={12}
+            md={6}
+            order={{
+              xs: 1,
+              md: 2
+            }}>
             <MainSvg />
           </Grid>
           <Grid
@@ -81,6 +95,12 @@ const TickerWrap = styled.div`
 const MainWrapper = styled.div`
   padding-left: 16px;
   padding-right: 16px;
+
+  margin-bottom: 104px;
+
+  @media (max-width: 500px) {
+    margin-bottom: 64px;
+  }
 
   @media (min-width: 400px) {
     padding-left: 20px;

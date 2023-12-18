@@ -140,6 +140,10 @@ const CardWrap = styled.div`
   z-index: 10;
 
   margin-top: 40px;
+    
+    @media (max-width: 500px) {
+        padding: 24px;
+    }
 `;
 
 const CardSubtitle = styled.div`
@@ -229,6 +233,10 @@ const CardsWrap = styled.div`
 
   padding-left: 24px;
   padding-right: 24px;
+
+    @media (max-width: 500px) {
+        margin-top: 0;
+    }
 
   @media (min-width: 1024px) {
     padding-left: 74px;

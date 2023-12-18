@@ -39,7 +39,11 @@ export const DatasetUpload = (): ReactElement => {
             </VideoWrap>
           </Grid>
           <Grid item xs={12} md={6}>
-            <div style={{ height: '100%', backgroundColor: '#f3f2f5' }}>
+            <div
+              style={{
+                height: '100%',
+                backgroundColor: '#f3f2f5'
+              }}>
               <VideoWrap>
                 <video
                   muted
@@ -70,14 +74,18 @@ const VideoMaxWidth = styled.video`
 
 const VideoWrap = styled.div`
   padding: 48px;
-  background: var(--grey-100, #f3f2f5);
+  background: #f3f2f5;
   overflow: hidden;
+
+  @media (max-width: 500px) {
+    padding: 24px;
+  }
 `;
 
 const VideoSubtitle = styled.div`
-  color: var(--text-disabled, rgba(4, 0, 54, 0.38));
+  color: rgba(4, 0, 54, 0.38);
   font-feature-settings: 'clig' off, 'liga' off;
-  font-family: Roboto;
+  font-family: Roboto, serif;
   font-size: 20px;
   font-style: normal;
   font-weight: 600;
@@ -87,9 +95,9 @@ const VideoSubtitle = styled.div`
 `;
 
 const VideoTitle = styled.div`
-  color: var(--text-primary, #040036);
+  color: #040036;
   font-feature-settings: 'clig' off, 'liga' off;
-  font-family: Roboto;
+  font-family: Roboto, serif;
   font-size: 34px;
   font-style: normal;
   font-weight: 600;
@@ -100,10 +108,10 @@ const VideoTitle = styled.div`
 `;
 
 const VideoText = styled.div`
-  color: var(--text-primary, #040036);
+  color: #040036;
   font-feature-settings: 'clig' off, 'liga' off;
   /* typography/body */
-  font-family: Roboto;
+  font-family: Roboto, serif;
   font-size: 20px;
   font-style: normal;
   font-weight: 400;
@@ -114,8 +122,7 @@ const VideoText = styled.div`
 `;
 
 const UploadWrap = styled.div`
-  padding-left: 24px;
-  padding-right: 24px;
+  padding-left: 16px;
 
   @media (min-width: 1024px) {
     padding-left: 74px;

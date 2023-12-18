@@ -16,7 +16,6 @@ export const ApprovalParadigm = (): ReactElement => {
       const cardsRect = scrollRef.current.getBoundingClientRect();
       if (cardsRect.top > 0 && cardsRect.top < cardsRect.height) {
         const position = Math.abs(cardsRect.top) / cardsRect.height;
-        console.log(position);
         if (position > 0.0) {
           setVisibleCard(2);
         }
@@ -105,10 +104,12 @@ const CardsWrap = styled.div`
   position: relative;
   z-index: 0;
 
-  margin-top: 200px;
-
   padding-left: 24px;
   padding-right: 24px;
+
+  @media (max-width: 500px) {
+    display: none;
+  }
 
   @media (min-width: 1024px) {
     padding-left: 74px;

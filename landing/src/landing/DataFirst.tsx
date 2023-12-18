@@ -16,6 +16,16 @@ export const DataFirst = (): ReactElement => {
                 <br />
                 future of research in AI era
               </Title>
+              <Subtitle2>
+                The future of science leans heavily into data. While traditional
+                publishing reveres comprehensive elucidation,{' '}
+                <Subtitle3>
+                  we're entering an era where quality datasets become the
+                  foundation for AI-driven analyses and breakthroughs
+                </Subtitle3>
+                . Streamline your publishing with First Approval, where data
+                does the talking.
+              </Subtitle2>
             </TextWrap>
             <ImgWrap>
               <Img src={image} />
@@ -33,6 +43,11 @@ const Wrap = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  @media (max-width: 500px) {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
 `;
 
 const TextWrap = styled.div`
@@ -42,20 +57,30 @@ const TextWrap = styled.div`
 `;
 
 const Subtitle = styled.div`
-  color: var(--text-disabled, rgba(4, 0, 54, 0.38));
+  color: rgba(4, 0, 54, 0.38);
   font-feature-settings: 'clig' off, 'liga' off;
   /* typography/h5 */
-  font-family: Roboto;
+  font-family: Roboto, serif;
   font-size: 24px;
   font-style: normal;
   font-weight: 600;
   line-height: 133.4%; /* 32.016px */
+
+  @media (max-width: 500px) {
+    color: rgba(4, 0, 54, 0.38);
+    font-feature-settings: 'clig' off, 'liga' off;
+    font-family: Roboto, serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 154%; /* 24.64px */
+  }
 `;
 
 const Title = styled.div`
-  color: var(--text-primary, #040036);
+  color: #040036;
   font-feature-settings: 'clig' off, 'liga' off;
-  font-family: Roboto;
+  font-family: Roboto, serif;
   font-style: normal;
   font-weight: 700;
   line-height: 120%; /* 86.4px */
@@ -64,6 +89,17 @@ const Title = styled.div`
   margin-top: 20px;
 
   font-size: 34px;
+
+  @media (max-width: 500px) {
+    color: #040036;
+    font-feature-settings: 'clig' off, 'liga' off;
+    font-family: Roboto, serif;
+    font-size: 34px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%; /* 40.8px */
+    letter-spacing: -0.5px;
+  }
 
   @media (min-width: 400px) {
     font-size: 40px;
@@ -84,6 +120,54 @@ const Title = styled.div`
   @media (min-width: 1536px) {
     font-size: 64px;
   }
+`;
+
+const Subtitle2 = styled.div`
+  margin-top: 32px;
+  margin-bottom: 32px;
+  color: rgba(4, 0, 54, 0.38);
+  font-feature-settings: 'clig' off, 'liga' off;
+
+  max-width: 860px;
+
+  /* typography/h5 */
+  font-family: Roboto, serif;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 133.4%; /* 32.016px */
+
+  @media (max-width: 500px) {
+      max-width: 100%;
+      margin-bottom: 0;
+    font-feature-settings: 'clig' off, 'liga' off;
+    font-family: Roboto, serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 154%; /* 24.64px */
+  }
+`;
+
+const Subtitle3 = styled.span`
+  color: #040036;
+  font-feature-settings: 'clig' off, 'liga' off;
+
+  /* typography/h5 */
+  font-family: Roboto;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 133.4%;
+
+    @media (max-width: 500px) {
+        font-feature-settings: 'clig' off, 'liga' off;
+        font-family: Roboto, serif;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 154%; /* 24.64px */
+    }
 `;
 
 const Img = styled.img`
