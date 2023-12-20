@@ -94,7 +94,7 @@ export class RouterStore {
         return;
       }
 
-      if (path.startsWith(contactsPath)) {
+      if (window.location.pathname.startsWith(contactsPath)) {
         this.navigatePage(Page.CONTACTS_PAGE, path, true);
         return;
       }

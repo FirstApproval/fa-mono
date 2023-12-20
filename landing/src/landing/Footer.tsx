@@ -33,7 +33,9 @@ export const Footer = (): ReactElement => {
             target={'_blank'}>
             Terms
           </HelpLink>
-          <HelpLink href={'https://firstapproval.io/contacts'} target={'_blank'}>
+          <HelpLink
+            href={'https://firstapproval.io/contacts'}
+            target={'_blank'}>
             Contact us
           </HelpLink>
         </HelpLinksWrap>
@@ -170,12 +172,13 @@ const XOnXText = styled.span`
 `;
 
 const HelpLinksWrap = styled.div`
-  width: 189px;
+  width: 300px;
   margin-top: 68px;
   display: flex;
   justify-content: space-between;
 
   @media (max-width: 500px) {
+    width: 280px;
     margin-top: 32px;
   }
 `;
@@ -244,7 +247,7 @@ const FineTuningText = styled.div`
   letter-spacing: 0.15px;
 
   @media (max-width: 500px) {
-      margin-top: 32px;
+    margin-top: 32px;
     font-family: Roboto, serif;
     font-size: 14px;
     font-style: normal;
