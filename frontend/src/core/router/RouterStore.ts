@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   affiliationsPath,
   authorPath,
+  contactsPath,
   namePath,
   Page,
   pathToOauthType,
@@ -90,6 +91,11 @@ export class RouterStore {
 
       if (path.startsWith(namePath)) {
         this.navigatePage(Page.NAME, path, true);
+        return;
+      }
+
+      if (path.startsWith(contactsPath)) {
+        this.navigatePage(Page.CONTACTS_PAGE, path, true);
         return;
       }
 

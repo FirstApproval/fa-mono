@@ -37,6 +37,7 @@ export const shortPublicationPath = '/p/';
 export const publicationPath = '/publication/';
 export const signUpPath = '/sign_up';
 export const namePath = '/name';
+export const contactsPath = '/contacts';
 export const affiliationsPath = '/affiliations';
 export const shortAuthorPath = '/a/';
 export const authorPath = '/author/';

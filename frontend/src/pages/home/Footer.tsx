@@ -25,19 +25,25 @@ export const Footer = (): ReactElement => {
                 size={'medium'}>
                 Help
               </ButtonWrap>
-              <ButtonWrap href={'/docs/privacy_policy.pdf'} size={'medium'}>
-                Privacy
-              </ButtonWrap>
-              <ButtonWrap
+              <ButtonLinkWrap
+                href={'/docs/privacy_policy.pdf'}
+                target={'_blank'}>
+                <ButtonWrap size={'medium'}>Privacy</ButtonWrap>
+              </ButtonLinkWrap>
+              <ButtonLinkWrap
                 href={'/docs/terms_and_conditions.pdf'}
-                size={'medium'}>
-                Terms
-              </ButtonWrap>
-              <ButtonWrap href={'https://firstapproval.io/'} size={'medium'}>
-                About
-              </ButtonWrap>
+                target={'_blank'}>
+                <ButtonWrap size={'medium'}>Terms</ButtonWrap>
+              </ButtonLinkWrap>
+              <ButtonLinkWrap
+                href={'https://about.firstapproval.io/'}
+                target={'_blank'}>
+                <ButtonWrap size={'medium'}>About</ButtonWrap>
+              </ButtonLinkWrap>
               <ButtonWrap
-                onClick={() => routerStore.navigatePage(Page.CONTACTS_PAGE)}
+                onClick={() =>
+                  routerStore.navigatePage(Page.CONTACTS_PAGE, '/contacts')
+                }
                 size={'medium'}>
                 Contact us
               </ButtonWrap>
@@ -49,6 +55,8 @@ export const Footer = (): ReactElement => {
     </>
   );
 };
+
+const ButtonLinkWrap = styled.a``;
 
 const ButtonWrap = styled(Button)`
   color: var(--inherit-white-main, #fff);

@@ -115,11 +115,17 @@ export const SignUpPage: FunctionComponent<SignUpPageProps> = observer(
               By clicking “Continue with Email/Google/ORCID/Facebook/LinkedIn”
               above, you acknowledge that you have read and understood, and
               agree to{' '}
-              <LinkWrap color="inherit" href={'/docs/terms_and_conditions.pdf'}>
+              <LinkWrap
+                color="inherit"
+                href={'/docs/terms_and_conditions.pdf'}
+                target={'_blank'}>
                 Terms & Conditions
               </LinkWrap>{' '}
               and{' '}
-              <LinkWrap color="inherit" href={'/docs/privacy_policy.pdf'}>
+              <LinkWrap
+                color="inherit"
+                href={'/docs/privacy_policy.pdf'}
+                target={'_blank'}>
                 Privacy Policy
               </LinkWrap>
               .

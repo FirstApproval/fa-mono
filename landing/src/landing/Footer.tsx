@@ -33,6 +33,9 @@ export const Footer = (): ReactElement => {
             target={'_blank'}>
             Terms
           </HelpLink>
+          <HelpLink href={'https://firstapproval.io/contacts'} target={'_blank'}>
+            Contact us
+          </HelpLink>
         </HelpLinksWrap>
       </div>
 

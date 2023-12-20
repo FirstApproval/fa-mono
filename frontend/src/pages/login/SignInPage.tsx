@@ -82,7 +82,10 @@ export const SignInPage: FunctionComponent<SignInPageProps> = observer(
                 <ValidationError>
                   <ErrorOutline
                     htmlColor={'#D32F2F'}
-                    sx={{ width: '22px', height: '22px' }}
+                    sx={{
+                      width: '22px',
+                      height: '22px'
+                    }}
                   />
                   <WidthElement value={'12px'} />
                   <ValidationErrorText variant={'body2'}>
@@ -113,11 +116,17 @@ export const SignInPage: FunctionComponent<SignInPageProps> = observer(
             <FooterWrap>
               By clicking “Log in” above, you acknowledge that you have read and
               and understood, and agree to{' '}
-              <LinkWrap color="inherit" href={'/docs/terms_and_conditions.pdf'}>
+              <LinkWrap
+                color="inherit"
+                href={'/docs/terms_and_conditions.pdf'}
+                target={'_blank'}>
                 Terms & Conditions
               </LinkWrap>{' '}
               and{' '}
-              <LinkWrap color="inherit" href={'/docs/privacy_policy.pdf'}>
+              <LinkWrap
+                color="inherit"
+                href={'/docs/privacy_policy.pdf'}
+                target={'_blank'}>
                 Privacy Policy
               </LinkWrap>
               .
