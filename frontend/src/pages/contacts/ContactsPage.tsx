@@ -107,6 +107,10 @@ const ContentWrap = styled('div')`
 const InnerContentWrap = styled('div')`
   width: 400px;
   font-size: 16px;
+
+  @media (max-width: 500px) {
+    width: 300px;
+  }
 `;
 
 const BetaHeaderText = styled(Typography)`
