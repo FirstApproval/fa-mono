@@ -1,5 +1,4 @@
 import './App.css';
-import Grid from '@mui/material/Grid/Grid';
 import React, { ReactElement } from 'react';
 import { Main } from './landing/Main';
 import { DatasetUpload } from './landing/DatasetUpload';
@@ -19,18 +18,14 @@ const LandingApp = (): ReactElement => {
   return (
     <ThemeProvider theme={theme}>
       <Header />
-      <Grid container spacing={2} justifyContent={'center'}>
-        <Grid container spacing={2} maxWidth={'1980px'}>
-          <Main />
-          <Editor />
-          <DatasetUpload />
-          <Terms />
-          <Hinder />
-          <ApprovalParadigm />
-          <ApprovalParadigmMobile />
-          <DataFirst />
-        </Grid>
-      </Grid>
+      <Main />
+      <Editor />
+      <DatasetUpload />
+      <Terms />
+      <Hinder />
+      <ApprovalParadigm />
+      <ApprovalParadigmMobile />
+      <DataFirst />
       <JoinBeta />
       <Footer />
     </ThemeProvider>

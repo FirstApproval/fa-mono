@@ -24,17 +24,18 @@ export const Editor = (): ReactElement => {
         />
       )}
       <ReactPlayer
+        className="video-editor"
         url={videoUrl}
         playing={true}
         muted={true}
         loop={true}
-        width={'1000px'}
-        height={'630px'}
         onReady={handleReady}
         style={{ display: ready ? 'block' : 'none' }}
       />
       <PdfExampleWrap>
-        <PdfExample />
+        <PdfExampleLogoContainerWrap>
+          <PdfExampleLogoWrap />
+        </PdfExampleLogoContainerWrap>
         <PdfExampleText>
           With instant final PDF.{' '}
           <PdfExampleText2>
@@ -48,15 +49,11 @@ export const Editor = (): ReactElement => {
 };
 
 const EditorWrap = styled.div`
-  margin: 120px 0 200px;
+  margin: 80px 0 200px;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-
-  @media (max-width: 500px) {
-    display: none;
-  }
 `;
 
 const Title = styled.div`
@@ -70,7 +67,15 @@ const Title = styled.div`
   line-height: 133.4%; /* 26.68px */
 
   @media (max-width: 500px) {
-    width: 100%;
+    width: 300px;
+
+    color: rgba(4, 0, 54, 0.38);
+    font-feature-settings: 'clig' off, 'liga' off;
+    font-family: Roboto, serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 154%; /* 24.64px */
   }
 `;
 
@@ -88,8 +93,28 @@ const SubTitle = styled.div`
   letter-spacing: -0.5px;
 
   @media (max-width: 500px) {
-    width: 100%;
-    padding-left: 16px;
+    width: 300px;
+
+    color: #040036;
+    font-feature-settings: 'clig' off, 'liga' off;
+    font-family: Roboto, serif;
+    font-size: 34px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%; /* 40.8px */
+    letter-spacing: -0.5px;
+  }
+`;
+
+const PdfExampleLogoContainerWrap = styled.div`
+  @media (max-width: 500px) {
+    width: 45px;
+  }
+`;
+
+const PdfExampleLogoWrap = styled(PdfExample)`
+  @media (max-width: 500px) {
+    width: 45px;
   }
 `;
 
@@ -99,6 +124,11 @@ const PdfExampleWrap = styled.div`
   justify-content: space-between;
   align-items: center;
   gap: 32px;
+
+  @media (max-width: 500px) {
+    width: 300px;
+    align-items: start;
+  }
 `;
 
 const PdfExampleText = styled.div`
@@ -112,6 +142,15 @@ const PdfExampleText = styled.div`
   font-style: normal;
   font-weight: 600;
   line-height: 133.4%; /* 32.016px */
+
+  @media (max-width: 500px) {
+    font-feature-settings: 'clig' off, 'liga' off;
+    font-family: Roboto, serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 154%; /* 24.64px */
+  }
 `;
 
 const PdfExampleText2 = styled.span`
@@ -124,4 +163,13 @@ const PdfExampleText2 = styled.span`
   font-style: normal;
   font-weight: 600;
   line-height: 133.4%;
+
+  @media (max-width: 500px) {
+    font-feature-settings: 'clig' off, 'liga' off;
+    font-family: Roboto, serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 154%;
+  }
 `;

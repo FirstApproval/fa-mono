@@ -2,3 +2,17 @@
 @import '@fontsource/roboto/400.css';
 @import '@fontsource/roboto/500.css';
 @import '@fontsource/roboto/700.css';
+
+.video-editor {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    width: 1000px !important;
+    height: 630px !important;
+
+    @media (max-width: 500px) {
+        width: 333px !important;
+        height: 210px !important;
+    }
+}
