@@ -53,16 +53,17 @@ export const ContactsPage: FunctionComponent = observer(() => {
                 </a>{' '}
               </div>
               <div>
-                CEO: <a href={'mailto:tim@firstapproval.io'}>Dr. Tim Glinin</a>{' '}
+                Scientific partnerships:{' '}
+                <a href={'mailto:tim@firstapproval.io'}>Dr. Tim Glinin</a>{' '}
               </div>
               <div>
-                COO:{' '}
+                Business partnerships:{' '}
                 <a href={'mailto:anastasia@firstapproval.io'}>
                   Anastasia Shubina
                 </a>{' '}
               </div>
               <div>
-                CTO:{' '}
+                Technical questions and engineering:{' '}
                 <a href={'mailto:sergei@firstapproval.io'}>Sergei Frolov</a>{' '}
               </div>
             </InnerContentWrap>
@@ -104,7 +105,7 @@ const ContentWrap = styled('div')`
 `;
 
 const InnerContentWrap = styled('div')`
-  width: 300px;
+  width: 400px;
   font-size: 16px;
 `;
 
