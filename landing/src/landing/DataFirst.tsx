@@ -138,8 +138,8 @@ const Subtitle2 = styled.div`
   line-height: 133.4%; /* 32.016px */
 
   @media (max-width: 500px) {
-      max-width: 100%;
-      margin-bottom: 0;
+    max-width: 100%;
+    margin-bottom: 0;
     font-feature-settings: 'clig' off, 'liga' off;
     font-family: Roboto, serif;
     font-size: 16px;
@@ -160,14 +160,14 @@ const Subtitle3 = styled.span`
   font-weight: 600;
   line-height: 133.4%;
 
-    @media (max-width: 500px) {
-        font-feature-settings: 'clig' off, 'liga' off;
-        font-family: Roboto, serif;
-        font-size: 16px;
-        font-style: normal;
-        font-weight: 600;
-        line-height: 154%; /* 24.64px */
-    }
+  @media (max-width: 500px) {
+    font-feature-settings: 'clig' off, 'liga' off;
+    font-family: Roboto, serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 154%; /* 24.64px */
+  }
 `;
 
 const Img = styled.img`

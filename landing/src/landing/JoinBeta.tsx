@@ -28,9 +28,16 @@ const MovingText = styled.div`
   display: inline-flex;
   white-space: nowrap;
   animation: ${moveText} 45s linear infinite;
+  color: #040036;
 
   @media (max-width: 500px) {
     animation: ${moveText} 20s linear infinite;
+  }
+
+  &:hover {
+    transition: color 1s ease-in-out;
+    color: #3c47e5;
+    animation-play-state: paused;
   }
 `;
 
@@ -39,7 +46,6 @@ const TextBlock = styled.span`
   width: 50%;
   text-align: center;
 
-  color: #040036;
   font-feature-settings: 'clig' off, 'liga' off;
   font-family: Roboto, serif;
   font-size: 180px;

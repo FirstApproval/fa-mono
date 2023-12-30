@@ -106,7 +106,7 @@ const HinderSticky = styled.div`
   height: 80vh;
 
   @media (max-width: 500px) {
-    height: 80vh;
+    height: 65vh;
     top: 15%;
     font-feature-settings: 'clig' off, 'liga' off;
     font-family: Roboto, sans-serif;

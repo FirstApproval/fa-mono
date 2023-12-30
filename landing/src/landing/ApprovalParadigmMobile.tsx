@@ -1,9 +1,9 @@
 import Grid from '@mui/material/Grid';
 import { ReactElement } from 'react';
 import styled from '@emotion/styled';
-import { ReactComponent as FeedbackOpt } from './assets/approval_first/feedback_opt_mobile.svg';
-import { ReactComponent as Immutable_approve } from './assets/approval_first/immutable_approve_mobile.svg';
-import { ReactComponent as Peer_review } from './assets/approval_first/peer_review_mobile.svg';
+import Paradigm1 from './assets/paradigm1_mobile.png';
+import Paradigm2 from './assets/paradigm2_mobile.png';
+import Paradigm3 from './assets/paradigm3_mobile.png';
 
 export const ApprovalParadigmMobile = (): ReactElement => {
   return (
@@ -11,14 +11,14 @@ export const ApprovalParadigmMobile = (): ReactElement => {
       <CardsWrap>
         <SubtitleWrap>Approval first</SubtitleWrap>
         <TitleWrap>
-          Evolving the
+          Evolving the approval
           <br />
-          approval paradigm
+          paradigm
         </TitleWrap>
         <ImagesWrap>
-          <AdaptiveFeedbackOpt />
-          <AdaptiveImmutable_approve />
-          <AdaptivePeer_review />
+          <img src={Paradigm1} width={282} height={443} />
+          <img src={Paradigm2} width={282} height={443} />
+          <img src={Paradigm3} width={282} height={443} />
         </ImagesWrap>
       </CardsWrap>
     </Grid>
@@ -26,9 +26,10 @@ export const ApprovalParadigmMobile = (): ReactElement => {
 };
 
 const CardsWrap = styled.div`
-  width: 100%;
+  width: calc(100% - 16px);
   position: relative;
   z-index: 0;
+  padding-left: 16px;
 
   margin-bottom: 128px;
 
@@ -38,8 +39,6 @@ const CardsWrap = styled.div`
 `;
 
 const SubtitleWrap = styled.div`
-  padding: 0 24px;
-
   color: rgba(4, 0, 54, 0.38);
   font-feature-settings: 'clig' off, 'liga' off;
   /* typography/h5 */
@@ -60,21 +59,7 @@ const SubtitleWrap = styled.div`
   }
 `;
 
-const AdaptiveFeedbackOpt = styled(FeedbackOpt)`
-  width: 100%;
-`;
-
-const AdaptiveImmutable_approve = styled(Immutable_approve)`
-  width: 100%;
-`;
-
-const AdaptivePeer_review = styled(Peer_review)`
-  width: 100%;
-`;
-
 const TitleWrap = styled.div`
-  padding: 0 24px;
-
   color: #040036;
   font-feature-settings: 'clig' off, 'liga' off;
   font-family: Roboto, serif;
@@ -101,7 +86,7 @@ const TitleWrap = styled.div`
 const ImagesWrap = styled.div`
   margin-top: 24px;
   display: flex;
-  flex-direction: column;
+  overflow-x: scroll;
   gap: 24px;
   align-items: center;
 `;
