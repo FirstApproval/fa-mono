@@ -1,17 +1,12 @@
 import Grid from '@mui/material/Grid/Grid';
-import Ticker from 'react-ticker';
 import styled from '@emotion/styled';
 import { Main as MainSvg } from './assets/svg-animation/Main';
-import { ReactComponent as PartneredWith } from './assets/partners/partnered_with.svg';
-import { ReactComponent as BostonMatrix } from './assets/partners/boston_matrix.svg';
-import { ReactComponent as OpenGenes } from './assets/partners/open_genes.svg';
-import { ReactComponent as OpenLongevity } from './assets/partners/open_longevity.svg';
 import { ReactElement } from 'react';
 
 export const Main = (): ReactElement => {
   return (
-    <Grid item xs={12}>
-      <MainWrapper>
+    <MainContentWrap>
+      <MainWrap>
         <Grid container spacing={2}>
           <Grid
             item
@@ -40,103 +35,32 @@ export const Main = (): ReactElement => {
             }}>
             <MainSvg />
           </Grid>
-          <Grid
-            item
-            xs={12}
-            display={'flex'}
-            justifyContent={'center'}
-            order={{ xs: 3 }}>
-            <TickerWrap>
-              <Ticker height={34}>
-                {({ index }) => {
-                  const idx = index % 4;
-                  return (
-                    <>
-                      {idx === 0 && (
-                        <PartnerWrap>
-                          <PartneredWith />
-                        </PartnerWrap>
-                      )}
-                      {idx === 1 && (
-                        <PartnerWrap>
-                          <BostonMatrix />
-                        </PartnerWrap>
-                      )}
-                      {idx === 2 && (
-                        <PartnerWrap>
-                          <OpenGenes />
-                        </PartnerWrap>
-                      )}
-                      {idx === 3 && (
-                        <PartnerWrap>
-                          <OpenLongevity />
-                        </PartnerWrap>
-                      )}
-                    </>
-                  );
-                }}
-              </Ticker>
-            </TickerWrap>
-          </Grid>
         </Grid>
-      </MainWrapper>
-    </Grid>
+      </MainWrap>
+    </MainContentWrap>
   );
 };
 
-const TickerWrap = styled.div`
-  position: relative;
-
-  margin-top: 80px;
-
-  width: 80%;
+const MainContentWrap = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 120px;
 `;
 
-const MainWrapper = styled.div`
-  padding-left: 16px;
-  padding-right: 16px;
-
-  margin-bottom: 104px;
+const MainWrap = styled.div`
+  max-width: 1920px;
+  padding: 0 120px;
 
   @media (max-width: 500px) {
-    margin-bottom: 64px;
-  }
-
-  @media (min-width: 400px) {
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-
-  @media (min-width: 600px) {
-    padding-left: 120px;
-    padding-right: 120px;
-  }
-
-  @media (min-width: 1000px) {
-    padding-left: 40px;
-    padding-right: 40px;
-  }
-
-  @media (min-width: 1200px) {
-    padding-left: 40px;
-    padding-right: 40px;
-  }
-
-  @media (min-width: 1536px) {
-    padding-left: 64px;
-    padding-right: 64px;
-  }
-
-  @media (min-width: 1980px) {
-    padding-left: 120px;
-    padding-right: 120px;
+    padding: 0 16px;
   }
 `;
 
 const MainTitle = styled.div`
-  color: var(--text-primary, #040036);
+  color: #040036;
   font-feature-settings: 'clig' off, 'liga' off;
-  font-family: Roboto;
+  font-family: Roboto, serif;
   font-style: normal;
   font-weight: 700;
   line-height: 121%; /* 116.16px */
@@ -172,14 +96,18 @@ const MainTitle = styled.div`
 `;
 
 const MainLeft = styled.div`
-  margin-right: 0px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-right: 0;
 
   @media (min-width: 400px) {
-    margin-right: 0px;
+    margin-right: 0;
   }
 
   @media (min-width: 600px) {
-    margin-right: 0px;
+    margin-right: 0;
   }
 
   @media (min-width: 1000px) {
@@ -196,9 +124,9 @@ const MainLeft = styled.div`
 `;
 
 const MainSubtitle = styled.div`
-  color: var(--text-primary, #040036);
+  color: #040036;
   font-feature-settings: 'clig' off, 'liga' off;
-  font-family: Roboto;
+  font-family: Roboto, serif;
   font-style: normal;
   font-weight: 400;
   line-height: 154%; /* 36.96px */
@@ -233,8 +161,4 @@ const MainSubtitle = styled.div`
     font-size: 24px;
     text-align: left;
   }
-`;
-
-const PartnerWrap = styled.div`
-  margin-left: 80px;
 `;

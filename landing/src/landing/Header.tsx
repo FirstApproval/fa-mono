@@ -15,6 +15,9 @@ export const Header = (): ReactElement => {
 };
 
 const HeaderWrap = styled.div`
+  position: sticky;
+  top: 0;
+
   padding: 30px 40px 120px;
 
   display: flex;
