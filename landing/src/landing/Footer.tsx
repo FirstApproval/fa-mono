@@ -130,6 +130,13 @@ const XTextWrap = styled.a`
     margin-top: 32px;
     width: 274px;
   }
+
+    &:hover {
+        transition: 300ms ease-in-out;
+        border-radius: 8px;
+        background: #FFF;
+        box-shadow: 0 6px 12px 0 rgba(4, 0, 54, 0.18);
+    }
 `;
 
 const XFollowUsText = styled.span`
@@ -204,6 +211,10 @@ const HelpLink = styled.a`
     line-height: 143%; /* 20.02px */
     letter-spacing: 0.17px;
   }
+
+    &:hover {
+        text-decoration: underline;
+    }
 `;
 
 const GetEarlyAccessWrap = styled.div`
@@ -216,6 +227,13 @@ const GetEarlyAccessWrap = styled.div`
   @media (max-width: 500px) {
     margin-top: 32px;
   }
+    
+    &:hover {
+        transition: 300ms ease-in-out;
+        border-radius: 16px;
+        background: #FFF;
+        box-shadow: 0 6px 12px 0 rgba(4, 0, 54, 0.18);
+    }
 `;
 
 const GetEarlyAccessText = styled.span`
