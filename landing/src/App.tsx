@@ -13,7 +13,7 @@ import { Footer } from './landing/Footer';
 import { JoinBeta } from './landing/JoinBeta';
 import { ApprovalParadigmMobile } from './landing/ApprovalParadigmMobile';
 import { Editor } from './landing/Editor';
-import { Partners } from "./landing/Partners"
+import { Partners } from './landing/Partners';
 
 const LandingApp = (): ReactElement => {
   return (

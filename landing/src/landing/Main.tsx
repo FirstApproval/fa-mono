@@ -45,7 +45,11 @@ const MainContentWrap = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
-  margin-bottom: 120px;
+  margin-bottom: 200px;
+
+  @media (max-width: 500px) {
+    margin-bottom: 120px;
+  }
 `;
 
 const MainWrap = styled.div`

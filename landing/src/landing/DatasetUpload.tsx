@@ -29,26 +29,27 @@ export const DatasetUpload = (): ReactElement => {
       </TitleWrap>
 
       <UploadWrap>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
-            <VideoWrap>
-              <VideoMaxWidth ref={setVideoRef} muted autoPlay loop playsInline>
-                <source src={stored} />
-              </VideoMaxWidth>
-              <VideoSubtitle>Encrypted storage</VideoSubtitle>
-              <VideoTitle>Not just stored, it's shielded</VideoTitle>
-              <VideoText>
-                We use decentralized storage what ensures your research is
-                impervious to theft.
-              </VideoText>
-            </VideoWrap>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <div
-              style={{
-                height: '100%',
-                backgroundColor: '#f3f2f5'
-              }}>
+        <UploadContentWrap>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
+              <VideoWrap>
+                <VideoMaxWidth
+                  ref={setVideoRef}
+                  muted
+                  autoPlay
+                  loop
+                  playsInline>
+                  <source src={stored} />
+                </VideoMaxWidth>
+                <VideoSubtitle>Encrypted storage</VideoSubtitle>
+                <VideoTitle>Not just stored, it's shielded</VideoTitle>
+                <VideoText>
+                  We use decentralized storage what ensures your research is
+                  impervious to theft.
+                </VideoText>
+              </VideoWrap>
+            </Grid>
+            <Grid item xs={12} md={6}>
               <VideoWrap>
                 <video
                   muted
@@ -65,9 +66,9 @@ export const DatasetUpload = (): ReactElement => {
                   speaks clearly to others.
                 </VideoText>
               </VideoWrap>
-            </div>
+            </Grid>
           </Grid>
-        </Grid>
+        </UploadContentWrap>
       </UploadWrap>
     </Grid>
   );
@@ -77,44 +78,61 @@ const TitleWrap = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-    
-    @media (max-width: 500px) {
-        text-align: center;
-    }
+
+  @media (max-width: 500px) {
+  }
 `;
 
 const Title = styled.div`
-  width: 720px;
+  width: 850px;
   color: rgba(4, 0, 54, 0.38);
   font-feature-settings: 'clig' off, 'liga' off;
   font-family: Roboto, serif;
-  font-size: 20px;
+  font-size: 24px;
   font-style: normal;
   font-weight: 600;
-  line-height: 133.4%; /* 26.68px */
-    
-    @media (max-width: 500px) {
-        width: 100%;
-    }
+  line-height: 133.4%;
+
+  @media (max-width: 500px) {
+    width: 328px;
+
+    color: rgba(4, 0, 54, 0.38);
+    font-feature-settings: 'clig' off, 'liga' off;
+    font-family: Roboto, serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 154%; /* 24.64px */
+  }
 `;
 
 const SubTitle = styled.div`
-  width: 720px;
+  width: 850px;
   margin-top: 20px;
   margin-bottom: 64px;
   color: #040036;
   font-feature-settings: 'clig' off, 'liga' off;
   font-family: Roboto, serif;
-  font-size: 48px;
+  font-size: 72px;
   font-style: normal;
   font-weight: 700;
-  line-height: 120%; /* 57.6px */
+  line-height: 120%; /* 86.4px */
   letter-spacing: -0.5px;
 
-    @media (max-width: 500px) {
-        width: 100%;
-        padding-left: 16px;
-    }
+  @media (max-width: 500px) {
+    width: 328px;
+
+    color: #040036;
+    font-feature-settings: 'clig' off, 'liga' off;
+    font-family: Roboto, serif;
+    font-size: 34px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%; /* 40.8px */
+    letter-spacing: -0.5px;
+    margin-top: 8px;
+    margin-bottom: 32px;
+  }
 `;
 
 const VideoMaxWidth = styled.video`
@@ -128,6 +146,7 @@ const VideoWrap = styled.div`
 
   @media (max-width: 500px) {
     padding: 24px;
+    margin: 0 16px;
   }
 `;
 
@@ -171,30 +190,16 @@ const VideoText = styled.div`
 `;
 
 const UploadWrap = styled.div`
-  padding-left: 16px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
-  @media (min-width: 1024px) {
-    padding-left: 74px;
-    padding-right: 74px;
-  }
+const UploadContentWrap = styled.div`
+  max-width: 1184px;
 
-  @media (min-width: 1280px) {
-    padding-left: 92px;
-    padding-right: 92px;
-  }
-
-  @media (min-width: 1440px) {
-    padding-left: 128px;
-    padding-right: 128px;
-  }
-
-  @media (min-width: 1536px) {
-    padding-left: 176px;
-    padding-right: 176px;
-  }
-
-  @media (min-width: 1980px) {
-    padding-left: 368px;
-    padding-right: 368px;
+  @media (max-width: 500px) {
+    width: 100%;
   }
 `;

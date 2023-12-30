@@ -8,6 +8,8 @@
     flex-direction: row;
     justify-content: center;
 
+    border: 1px solid #D2D2D6;
+
     width: 1000px !important;
     height: 630px !important;
 
