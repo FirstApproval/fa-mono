@@ -57,60 +57,66 @@ export const Hinder = (): ReactElement => {
   }, []);
 
   return (
-    <Grid item xs={12}>
-      <Grid container spacing={2}>
+    <HinderContainerWrap>
+      <HinderContentWrap>
         <Grid item xs={12}>
-          <HinderWrap ref={hinderRef}>
-            <HinderSticky ref={hinderStickyRef}>
-              <HinderMain>{text}</HinderMain>
-              <HinderGray>{grayText}</HinderGray>
-            </HinderSticky>
-            <div style={{ height: '100vh' }} />
-          </HinderWrap>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <HinderWrap ref={hinderRef}>
+                <HinderSticky ref={hinderStickyRef}>
+                  <HinderMain>{text}</HinderMain>
+                  <HinderGray>{grayText}</HinderGray>
+                </HinderSticky>
+                <div style={{ height: '100vh' }} />
+              </HinderWrap>
+            </Grid>
+          </Grid>
         </Grid>
-      </Grid>
-    </Grid>
+      </HinderContentWrap>
+    </HinderContainerWrap>
   );
 };
 
+const HinderContainerWrap = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+`;
+
+const HinderContentWrap = styled.div`
+  width: 1184px;
+
+  @media (max-width: 500px) {
+    width: 100%;
+  }
+`;
+
 const HinderSticky = styled.div`
   font-feature-settings: 'clig' off, 'liga' off;
-  font-family: Roboto;
+  font-family: Roboto, sans-serif;
+  font-size: 72px;
   font-style: normal;
   font-weight: 700;
-  line-height: 120%;
+  line-height: 120%; /* 86.4px */
   letter-spacing: -0.5px;
 
-  margin-top: 200px;
+  margin: 200px 0;
   position: sticky;
-  top: 10%;
-  left: 50%;
-  height: 70vh;
+  top: 20%;
+  height: 80vh;
 
-  font-size: 34px;
+  @media (max-width: 500px) {
+    height: 80vh;
+    top: 15%;
+    font-feature-settings: 'clig' off, 'liga' off;
+    font-family: Roboto, sans-serif;
+    font-size: 34px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%; /* 40.8px */
+    letter-spacing: -0.5px;
 
-    @media (max-width: 500px) {
-        height: 100vh;
-    }
-
-  @media (min-width: 400px) {
-    font-size: 40px;
-  }
-
-  @media (min-width: 600px) {
-    font-size: 48px;
-  }
-
-  @media (min-width: 1000px) {
-    font-size: 48px;
-  }
-
-  @media (min-width: 1200px) {
-    font-size: 64px;
-  }
-
-  @media (min-width: 1536px) {
-    font-size: 64px;
+    margin: 200px 0 100px;
   }
 `;
 
@@ -126,31 +132,8 @@ const HinderWrap = styled.div`
   position: relative;
   z-index: 0;
 
-  padding-left: 24px;
-  padding-right: 24px;
-
-  @media (min-width: 1024px) {
-    padding-left: 74px;
-    padding-right: 74px;
-  }
-
-  @media (min-width: 1280px) {
-    padding-left: 92px;
-    padding-right: 92px;
-  }
-
-  @media (min-width: 1440px) {
-    padding-left: 128px;
-    padding-right: 128px;
-  }
-
-  @media (min-width: 1536px) {
-    padding-left: 176px;
-    padding-right: 176px;
-  }
-
-  @media (min-width: 1980px) {
-    padding-left: 368px;
-    padding-right: 368px;
+  @media (max-width: 500px) {
+    padding-left: 16px;
+    padding-right: 16px;
   }
 `;

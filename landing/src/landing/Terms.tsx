@@ -36,94 +36,112 @@ export const Terms = (): ReactElement => {
   }, []);
 
   return (
-    <Grid item xs={12}>
-      <Grid container spacing={2}>
+    <TermsWrap>
+      <TermsCardsWrap>
         <Grid item xs={12}>
-          <CardsWrap ref={cardsRef}>
-            <PublishTermsWrap ref={publishTermsRef}>
-              <PublishTermsFlex>
-                <AccessTerms>Flexible access settings</AccessTerms>
-                <PublishTerms>
-                  Publish
-                  <br />
-                  on your terms
-                </PublishTerms>
-              </PublishTermsFlex>
-            </PublishTermsWrap>
-            <CardWrap>
-              <IconWrap>
-                <Citations />
-              </IconWrap>
-              <CardSubtitle>Open access with FA</CardSubtitle>
-              <CardTitle>Elevate your citation index</CardTitle>
-              <CardText>
-                With open-access mode and a focus on bite-sized experiments,
-                your research gets the attention and citations it deserves.
-              </CardText>
-            </CardWrap>
-            <CardWrap style={{ marginLeft: 'auto' }}>
-              <IconWrap>
-                <Rocket />
-              </IconWrap>
-              <CardSubtitle>Co-authorship agreement</CardSubtitle>
-              <CardTitle>Boost your publishing activity</CardTitle>
-              <CardText>
-                Before download, users formally commit to crediting you as a
-                co-author when basing their research on your dataset. Put
-                collaboration on stream.
-              </CardText>
-            </CardWrap>
-            <CardWrap>
-              <IconWrap>
-                <OpenAccess />
-              </IconWrap>
-              <CardSubtitle>Option</CardSubtitle>
-              <CardTitle>Open access</CardTitle>
-              <CardText>
-                Freely accessible to our community. Share your dataset openly
-                with all registered users.
-              </CardText>
-            </CardWrap>
-            <CardWrap style={{ marginLeft: 'auto' }}>
-              <IconWrap>
-                <Request />
-              </IconWrap>
-              <CardSubtitle>Option</CardSubtitle>
-              <CardTitle>On request</CardTitle>
-              <CardText>
-                Share with discretion. Handpick the researchers who gain access,
-                ensuring it's in the right hands.
-              </CardText>
-            </CardWrap>
-            <CardWrap>
-              <IconWrap>
-                <Clock />
-              </IconWrap>
-              <CardSubtitle>Monetization</CardSubtitle>
-              <CardTitle>Set the price for early access</CardTitle>
-              <CardText>
-                Start with monetizing your data with exclusive early access,
-                then, on your terms, transition to sharing it openly for the
-                wider scientific good.
-              </CardText>
-            </CardWrap>
-            <CardWrap style={{ marginLeft: 'auto' }}>
-              <IconWrap>
-                <Benefits />
-              </IconWrap>
-              <CardSubtitle>Other benefits</CardSubtitle>
-              <CardTitle>Get rewards for activity</CardTitle>
-              <CardText>
-                Get tokens for your quality data and community interaction,
-                turning your insights and activity into measurable gains.
-              </CardText>
-            </CardWrap>
-          </CardsWrap>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <CardsWrap ref={cardsRef}>
+                <PublishTermsWrap ref={publishTermsRef}>
+                  <PublishTermsFlex>
+                    <AccessTerms>Flexible access settings</AccessTerms>
+                    <PublishTerms>
+                      Publish
+                      <br />
+                      on your terms
+                    </PublishTerms>
+                  </PublishTermsFlex>
+                </PublishTermsWrap>
+                <CardWrap>
+                  <IconWrap>
+                    <Citations />
+                  </IconWrap>
+                  <CardSubtitle>Open access with FA</CardSubtitle>
+                  <CardTitle>Elevate your citation index</CardTitle>
+                  <CardText>
+                    With open-access mode and a focus on bite-sized experiments,
+                    your research gets the attention and citations it deserves.
+                  </CardText>
+                </CardWrap>
+                <CardWrap style={{ marginLeft: 'auto' }}>
+                  <IconWrap>
+                    <Rocket />
+                  </IconWrap>
+                  <CardSubtitle>Co-authorship agreement</CardSubtitle>
+                  <CardTitle>Boost your publishing activity</CardTitle>
+                  <CardText>
+                    Before download, users formally commit to crediting you as a
+                    co-author when basing their research on your dataset. Put
+                    collaboration on stream.
+                  </CardText>
+                </CardWrap>
+                <CardWrap>
+                  <IconWrap>
+                    <OpenAccess />
+                  </IconWrap>
+                  <CardSubtitle>Option</CardSubtitle>
+                  <CardTitle>Open access</CardTitle>
+                  <CardText>
+                    Freely accessible to our community. Share your dataset
+                    openly with all registered users.
+                  </CardText>
+                </CardWrap>
+                <CardWrap style={{ marginLeft: 'auto' }}>
+                  <IconWrap>
+                    <Request />
+                  </IconWrap>
+                  <CardSubtitle>Option</CardSubtitle>
+                  <CardTitle>On request</CardTitle>
+                  <CardText>
+                    Share with discretion. Handpick the researchers who gain
+                    access, ensuring it's in the right hands.
+                  </CardText>
+                </CardWrap>
+                <CardWrap>
+                  <IconWrap>
+                    <Clock />
+                  </IconWrap>
+                  <CardSubtitle>Monetization</CardSubtitle>
+                  <CardTitle>Set the price for early access</CardTitle>
+                  <CardText>
+                    Start with monetizing your data with exclusive early access,
+                    then, on your terms, transition to sharing it openly for the
+                    wider scientific good.
+                  </CardText>
+                </CardWrap>
+                <CardWrap style={{ marginLeft: 'auto' }}>
+                  <IconWrap>
+                    <Benefits />
+                  </IconWrap>
+                  <CardSubtitle>Other benefits</CardSubtitle>
+                  <CardTitle>Get rewards for activity</CardTitle>
+                  <CardText>
+                    Get tokens for your quality data and community interaction,
+                    turning your insights and activity into measurable gains.
+                  </CardText>
+                </CardWrap>
+              </CardsWrap>
+            </Grid>
+          </Grid>
         </Grid>
-      </Grid>
-    </Grid>
+      </TermsCardsWrap>
+    </TermsWrap>
   );
 };
+
+const TermsWrap = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+`;
+
+const TermsCardsWrap = styled.div`
+  width: 1184px;
+
+  @media (max-width: 500px) {
+    width: 100%;
+  }
+`;
 
 const IconWrap = styled.div`
   height: 64px;
@@ -140,10 +158,10 @@ const CardWrap = styled.div`
   z-index: 10;
 
   margin-top: 40px;
-    
-    @media (max-width: 500px) {
-        padding: 24px;
-    }
+
+  @media (max-width: 500px) {
+    padding: 24px;
+  }
 `;
 
 const CardSubtitle = styled.div`
@@ -231,35 +249,6 @@ const CardsWrap = styled.div`
 
   margin-top: 200px;
 
-  padding-left: 24px;
-  padding-right: 24px;
-
-    @media (max-width: 500px) {
-        margin-top: 0;
-    }
-
-  @media (min-width: 1024px) {
-    padding-left: 74px;
-    padding-right: 74px;
-  }
-
-  @media (min-width: 1280px) {
-    padding-left: 92px;
-    padding-right: 92px;
-  }
-
-  @media (min-width: 1440px) {
-    padding-left: 128px;
-    padding-right: 128px;
-  }
-
-  @media (min-width: 1536px) {
-    padding-left: 176px;
-    padding-right: 176px;
-  }
-
-  @media (min-width: 1980px) {
-    padding-left: 368px;
-    padding-right: 368px;
-  }
+  padding-left: 16px;
+  padding-right: 16px;
 `;
