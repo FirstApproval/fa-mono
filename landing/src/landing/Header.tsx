@@ -17,6 +17,7 @@ export const Header = (): ReactElement => {
 const HeaderWrap = styled.div`
   position: sticky;
   top: 0;
+  z-index: 1000;
 
   padding: 30px 40px 120px;
 
