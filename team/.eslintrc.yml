@@ -1,0 +1,52 @@
+env:
+  browser: false
+  es2021: false,
+  node: false
+extends:
+  - prettier
+  - standard-with-typescript
+  - plugin:react/recommended
+parserOptions:
+  "project": "./tsconfig.json"
+  ecmaVersion: latest
+  sourceType: module
+plugins:
+  - react
+  - prettier
+rules: {
+  "react/react-in-jsx-scope": "off",
+  "react/jsx-uses-react": "off",
+  "react/prop-types": "off",
+  "@typescript-eslint/restrict-plus-operands": "off",
+  "prettier/prettier": "error",
+  "@typescript-eslint/semi": "off",
+  "@typescript-eslint/member-delimiter-style": "off",
+  "@typescript-eslint/space-before-function-paren": "off",
+  "@typescript-eslint/no-misused-promises": "off",
+  "@typescript-eslint/strict-boolean-expressions": "off",
+  "n/no-callback-literal": "off",
+  "multiline-ternary": "off",
+  "@typescript-eslint/restrict-template-expressions": "off",
+  "@typescript-eslint/consistent-type-imports": "off",
+  "@typescript-eslint/indent": "off",
+  "@typescript-eslint/no-non-null-assertion": "off",
+  "@typescript-eslint/brace-style": "off",
+  "no-debugger": "off",
+  "@typescript-eslint/no-confusing-void-expression": "off",
+  "@typescript-eslint/return-await": "off",
+  "@typescript-eslint/prefer-readonly:": "off",
+  "@typescript-eslint/no-floating-promises": "off",
+  "@typescript-eslint/no-unnecessary-type-assertion": "off",
+  "@typescript-eslint/naming-convention": "off",
+  "react/no-unescaped-entities": "off",
+  "max-len": [
+    "error",
+    {
+      "code": 140,
+      "ignoreComments": true,
+      "ignoreUrls": true,
+      "ignoreStrings": true,
+      "ignoreTemplateLiterals": true
+    }
+  ]
+}

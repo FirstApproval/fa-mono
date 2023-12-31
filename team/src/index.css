@@ -1,0 +1,34 @@
+@import '@fontsource/roboto/300.css';
+@import '@fontsource/roboto/400.css';
+@import '@fontsource/roboto/500.css';
+@import '@fontsource/roboto/700.css';
+
+html {
+    overflow-x: hidden;
+}
+
+body {
+    margin: 0;
+    color: #040036;
+    overflow-x: hidden;
+}
+
+a {
+    color: #040036;
+}
+
+.video-editor {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    border: 1px solid #D2D2D6;
+
+    width: 1000px !important;
+    height: 630px !important;
+
+    @media (max-width: 500px) {
+        width: 333px !important;
+        height: 210px !important;
+    }
+}
