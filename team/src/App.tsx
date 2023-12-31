@@ -17,10 +17,16 @@ import AnastasiaPng from './team/assets/anastasia.png';
 import SergeiPng from './team/assets/sergei.png';
 import VladimirPng from './team/assets/vladimir.png';
 import IliaPng from './team/assets/ilia.png';
+import IliaAdvisorPng from './team/assets/ilia_advisor.png';
 import VladislavPng from './team/assets/vlad.png';
 import LeonidPng from './team/assets/leonid.png';
 import IvanPng from './team/assets/ivan.png';
 import BeibarysPng from './team/assets/beibarys.png';
+import MichailAdvisorPng from './team/assets/michail_advisor.png';
+import AnastasiaAdvisorPng from './team/assets/anastasia_advisor.png';
+import StanislavAdvisorPng from './team/assets/stanisla_advisor.png';
+import PeterAdvisorPng from './team/assets/peter_advisor.png';
+import AlexeyAdvisorPng from './team/assets/alexey_advisor.png';
 import TimofeyRound from './team/assets/timofey_round.png';
 
 const font12px = css`
@@ -384,6 +390,106 @@ const LandingApp = (): ReactElement => {
         </OnlyMobile>
       </Container>
 
+      <Container>
+        <ExpertsContent>
+          <ExpertsTitle>
+            Our expert board is a dynamic blend of foundation heads, leading
+            scientists, and industry innovators
+          </ExpertsTitle>
+          <VerticalDivider height={'80px'} mobileHeight={'40px'} />
+          <OnlyDesktop>
+            <ExpertsRow>
+              <Expert
+                logo={MichailAdvisorPng}
+                name={'Mikhail Batin'}
+                title={'Founder | Longevity fund'}
+                url={'https://www.linkedin.com/in/sergeyfrolovdev/'}
+              />
+              <Expert
+                logo={AnastasiaAdvisorPng}
+                name={'Anastasia Egorova'}
+                title={'Founder | Longevity fund'}
+                url={'https://www.linkedin.com/in/sergeyfrolovdev/'}
+              />
+              <Expert
+                logo={StanislavAdvisorPng}
+                name={'Stanislav Yankauskas'}
+                title={'Scientist'}
+                url={'https://www.linkedin.com/in/sergeyfrolovdev/'}
+              />
+            </ExpertsRow>
+            <VerticalDivider height={'16px'} />
+            <ExpertsRow>
+              <Expert
+                logo={IliaAdvisorPng}
+                name={'Ilya Fomin'}
+                title={'Technology leader | Youtube'}
+                url={'https://www.linkedin.com/in/sergeyfrolovdev/'}
+              />
+              <Expert
+                logo={PeterAdvisorPng}
+                name={'Peter Lidsky'}
+                title={'Scientist'}
+                url={'https://www.linkedin.com/in/sergeyfrolovdev/'}
+              />
+              <Expert
+                logo={AlexeyAdvisorPng}
+                name={'Aleksei Petrenko'}
+                title={'Researcher | Apple'}
+                url={'https://www.linkedin.com/in/sergeyfrolovdev/'}
+              />
+            </ExpertsRow>
+          </OnlyDesktop>
+          <OnlyMobile>
+            <ExpertsColumn>
+              <Expert
+                logo={MichailAdvisorPng}
+                name={'Mikhail Batin'}
+                title={'Founder | Longevity fund'}
+                url={'https://www.linkedin.com/in/sergeyfrolovdev/'}
+              />
+              <VerticalDivider mobileHeight={'8px'} />
+              <Expert
+                logo={AnastasiaAdvisorPng}
+                name={'Anastasia Egorova'}
+                title={'Founder | Longevity fund'}
+                url={'https://www.linkedin.com/in/sergeyfrolovdev/'}
+              />
+              <VerticalDivider mobileHeight={'8px'} />
+              <Expert
+                logo={StanislavAdvisorPng}
+                name={'Stanislav Yankauskas'}
+                title={'Scientist'}
+                url={'https://www.linkedin.com/in/sergeyfrolovdev/'}
+              />
+              <VerticalDivider mobileHeight={'8px'} />
+              <Expert
+                logo={IliaAdvisorPng}
+                name={'Ilya Fomin'}
+                title={'Technology leader | Youtube'}
+                url={'https://www.linkedin.com/in/sergeyfrolovdev/'}
+              />
+              <VerticalDivider mobileHeight={'8px'} />
+              <Expert
+                logo={PeterAdvisorPng}
+                name={'Peter Lidsky'}
+                title={'Scientist'}
+                url={'https://www.linkedin.com/in/sergeyfrolovdev/'}
+              />
+              <VerticalDivider mobileHeight={'8px'} />
+              <Expert
+                logo={AlexeyAdvisorPng}
+                name={'Aleksei Petrenko'}
+                title={'Researcher | Apple'}
+                url={'https://www.linkedin.com/in/sergeyfrolovdev/'}
+              />
+            </ExpertsColumn>
+          </OnlyMobile>
+        </ExpertsContent>
+      </Container>
+
+      <VerticalDivider height={'160px'} mobileHeight={'56px'} />
+
       <JoinBeta />
       <Footer />
     </ThemeProvider>
@@ -404,7 +510,7 @@ const TeamMember = ({ logo, name, title, url }: TeamMemberProps) => {
 
     @media (max-width: 500px) {
       width: calc((100vw - 32px - 24px) / 2);
-        height: auto;
+      height: auto;
     }
   `;
 
@@ -412,7 +518,7 @@ const TeamMember = ({ logo, name, title, url }: TeamMemberProps) => {
     width: 300px;
     height: 300px;
     filter: grayscale(100%);
-      
+
     @media (max-width: 500px) {
       width: calc((100vw - 32px - 24px) / 2);
       height: calc((100vw - 32px - 24px) / 2);
@@ -432,7 +538,7 @@ const TeamMember = ({ logo, name, title, url }: TeamMemberProps) => {
     ${font34px};
     display: flex;
     align-items: center;
-      
+
     @media (max-width: 500px) {
       margin-top: 12px;
       ${font24px};
@@ -601,6 +707,101 @@ const ElementContent = styled.div`
     ${font34px};
   }
 `;
+
+const ExpertsContent = styled.div`
+  width: 1169px;
+  margin: 160px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @media (max-width: 500px) {
+    width: calc(100% - 32px);
+    margin: 56px 16px;
+  }
+`;
+
+const ExpertsTitle = styled.div`
+  width: 600px;
+  ${font34px};
+
+  @media (max-width: 500px) {
+    width: 100%;
+    ${font16px};
+  }
+`;
+
+const ExpertsRow = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+`;
+
+const ExpertsColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: calc(100vw - 32px);
+`;
+
+const Expert = ({ logo, name, title, url }: TeamMemberProps) => {
+  const ExpertContainer = styled.a`
+    display: flex;
+    align-items: center;
+    border-radius: 80px;
+    border: 1px solid #d2d2d6;
+    background: #fff;
+    padding: 8px 32px 8px 8px;
+
+    text-decoration: none;
+
+    @media (max-width: 500px) {
+      border: none;
+      padding: 8px 0;
+    }
+  `;
+
+  const ExpertLogo = styled.img`
+    width: 80px;
+    height: 80px;
+    margin-right: 16px;
+    filter: grayscale(100%);
+
+    @media (max-width: 500px) {
+      width: 64px;
+      height: 64px;
+    }
+  `;
+
+  const ExpertNameContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  `;
+
+  const ExpertName = styled.div`
+    ${font24px};
+
+    @media (max-width: 500px) {
+      ${font16px};
+    }
+  `;
+
+  const ExpertTitle = styled.div`
+    ${font16px};
+    ${colorDim};
+  `;
+
+  return (
+    <ExpertContainer href={url} target={'_blank'}>
+      <ExpertLogo src={logo} />
+      <ExpertNameContainer>
+        <ExpertName>{name}</ExpertName>
+        <ExpertTitle>{title}</ExpertTitle>
+      </ExpertNameContainer>
+    </ExpertContainer>
+  );
+};
 
 const TeamElementContent = styled(ElementContent)`
   margin: 160px 0 80px;
