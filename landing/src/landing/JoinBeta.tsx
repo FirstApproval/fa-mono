@@ -35,7 +35,7 @@ const MovingText = styled.div`
   }
 
   &:hover {
-    transition: color 1s ease-in-out;
+    transition: color 200ms ease-in-out;
     color: #3c47e5;
     animation-play-state: paused;
   }

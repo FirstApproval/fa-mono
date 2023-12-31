@@ -1,5 +1,5 @@
 import Grid from '@mui/material/Grid';
-import { ReactElement, useEffect, useRef, useState } from 'react';
+import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import Paradigm1 from './assets/paradigm1.png';
 import Paradigm2 from './assets/paradigm2.png';
@@ -9,22 +9,59 @@ export const ApprovalParadigm = (): ReactElement => {
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
   const [visibleCard, setVisibleCard] = useState(0);
+  const [progress, setProgress] = useState(0);
+
+  const range1 = {
+    start: 0.166,
+    end: -0.166
+  };
+  const range2 = {
+    start: -0.166,
+    end: -0.486
+  };
+  const range3 = {
+    start: -0.486,
+    end: -0.801
+  };
+
+  const calculateProgress = (position: any, range: any) => {
+    // console.log("position: " + position);
+    const totalRange = range.end - range.start;
+    const progressInRange = (position - range.start) / totalRange;
+    // console.log("progressInRange: " + progressInRange);
+    const result = Math.min(Math.max(progressInRange * 100, 0), 100);
+    // console.log("result: " + result);
+    return result; // Ограничиваем значения между 0% и 100%
+  };
 
   useEffect(() => {
     const handler = (): void => {
       if (!scrollRef.current) return;
       const cardsRect = scrollRef.current.getBoundingClientRect();
-      if (cardsRect.top > 0 && cardsRect.top < cardsRect.height) {
-        const position = Math.abs(cardsRect.top) / cardsRect.height;
-        if (position > 0.0) {
-          setVisibleCard(2);
-        }
-        if (position > 0.3) {
-          setVisibleCard(1);
-        }
-        if (position > 0.6) {
-          setVisibleCard(0);
-        }
+
+      const position = cardsRect.top / cardsRect.height;
+
+      let rangeNumber = 0;
+
+      if (position > -0.166) {
+        setVisibleCard(0);
+        rangeNumber = 0;
+      }
+      if (position <= -0.166 && position > -0.486) {
+        setVisibleCard(1);
+        rangeNumber = 1;
+      }
+      if (position <= -0.486) {
+        setVisibleCard(2);
+        rangeNumber = 2;
+      }
+
+      if (rangeNumber === 0) {
+        setProgress(calculateProgress(position, range1));
+      } else if (rangeNumber === 1) {
+        setProgress(calculateProgress(position, range2));
+      } else if (rangeNumber === 2) {
+        setProgress(calculateProgress(position, range3));
       }
     };
 
@@ -51,18 +88,42 @@ export const ApprovalParadigm = (): ReactElement => {
               </Grid>
               <Grid item xs={6}>
                 {visibleCard === 0 && (
-                  <img src={Paradigm1} width={572} height={760} />
+                  <>
+                    <ProgressBarContainer>
+                      <ProgressBar
+                        width={progress}
+                        color={`rgba(4, 0, 54, ${progress / 100})`}
+                      />
+                    </ProgressBarContainer>
+                    <img src={Paradigm1} width={572} height={760} />
+                  </>
                 )}
                 {visibleCard === 1 && (
-                  <img src={Paradigm2} width={572} height={760} />
+                  <>
+                    <ProgressBarContainer>
+                      <ProgressBar
+                        width={progress}
+                        color={`rgba(4, 0, 54, ${progress / 100})`}
+                      />
+                    </ProgressBarContainer>
+                    <img src={Paradigm2} width={572} height={760} />
+                  </>
                 )}
                 {visibleCard === 2 && (
-                  <img src={Paradigm3} width={572} height={760} />
+                  <>
+                    <ProgressBarContainer>
+                      <ProgressBar
+                        width={progress}
+                        color={`rgba(4, 0, 54, ${progress / 100})`}
+                      />
+                    </ProgressBarContainer>
+                    <img src={Paradigm3} width={572} height={760} />
+                  </>
                 )}
               </Grid>
             </Grid>
           </PublishTermsWrap>
-          <div ref={scrollRef} style={{ height: '100vh' }} />
+          <div ref={scrollRef} style={{ height: '600vh' }} />
         </CardsWrap>
       </CardsContainerWrap>
     </Grid>
@@ -73,7 +134,7 @@ const CardsContainerWrap = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
-    
+
   @media (max-width: 500px) {
     display: none;
   }
@@ -113,4 +174,17 @@ const TitleWrap = styled.div`
   font-weight: 700;
   line-height: 120%; /* 86.4px */
   letter-spacing: -0.5px;
+`;
+
+const ProgressBarContainer = styled.div`
+  width: 572px;
+  background-color: rgba(4, 0, 54, 0.2);
+  border-radius: 5px;
+  margin-bottom: 4px;
+`;
+
+const ProgressBar = styled('div')<{ width: number; color: string }>`
+  height: 4px;
+  width: ${(props) => props.width}%;
+  background-color: ${(props) => props.color};
 `;
