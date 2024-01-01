@@ -26,7 +26,7 @@ const HeaderWrap = styled.div`
   align-items: center;
 
   @media (max-width: 500px) {
-    padding: 16px 8px 64px;
+    padding: 16px 8px;
     background-color: rgba(255, 255, 255, 0.8);
   }
 `;
