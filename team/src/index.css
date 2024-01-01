@@ -3,14 +3,9 @@
 @import '@fontsource/roboto/500.css';
 @import '@fontsource/roboto/700.css';
 
-html {
-    overflow-x: hidden;
-}
-
 body {
     margin: 0;
     color: #040036;
-    overflow-x: hidden;
 }
 
 a {

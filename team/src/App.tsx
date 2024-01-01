@@ -113,6 +113,10 @@ const colorDim = css`
   color: rgba(4, 0, 54, 0.38);
 `;
 
+const colorStandard = css`
+  color: #040036;
+`;
+
 const LandingApp = (): ReactElement => {
   return (
     <ThemeProvider theme={theme}>
@@ -161,8 +165,12 @@ const LandingApp = (): ReactElement => {
         <ElementContent>
           <CitationContainer />I saw firsthand: Less than 10 from 10 000
           initiatives successfully made it to market{' '}
-          <FlasksContainer src={Flasks} />
-          <FlasksMobileContainer src={Flasks} />
+          <FlasksContentContainer>
+            <FlasksContainer src={Flasks} />
+          </FlasksContentContainer>
+          <FlasksMobileContentContainer>
+            <FlasksMobileContainer src={Flasks} />
+          </FlasksMobileContentContainer>
         </ElementContent>
       </Container>
 
@@ -198,8 +206,76 @@ const LandingApp = (): ReactElement => {
               of day{' '}
             </ElementDimText>
           </OnlyMobile>
+          <ArticlesRow>
+            <EmptyArticlesPrefix></EmptyArticlesPrefix>
+            <Article
+              name={'Molecular Brain'}
+              text={
+                'No raw data, no science: another possible source of the reproducibility crisis'
+              }
+              link={'https://doi.org/10.1186/s13041-020-0552-2'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <EmptyArticlesPostfix />
+          </ArticlesRow>
         </ElementContent>
       </Container>
+
+      <VerticalDivider height={'396px'} />
 
       <Container>
         <DescriptionContent>
@@ -226,8 +302,114 @@ const LandingApp = (): ReactElement => {
           <OnlyMobile>
             A staggering 60% <br /> of studies face replication challenges{' '}
           </OnlyMobile>
+          <ArticlesRow>
+            <EmptyArticlesPrefix></EmptyArticlesPrefix>
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <Article
+              name={'Nature'}
+              text={'Many researchers say they’ll share data — but don’t'}
+              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+            />
+            <EmptyArticlesPostfix />
+          </ArticlesRow>
         </ElementContent>
       </Container>
+
+      <VerticalDivider height={'396px'} />
 
       <Container>
         <DescriptionContent>
@@ -561,6 +743,101 @@ const TeamMember = ({ logo, name, title, url }: TeamMemberProps) => {
   );
 };
 
+const EmptyArticlesPrefix = styled.div`
+  min-width: calc((100vw - 900px) / 2);
+  height: 316px;
+`;
+
+const EmptyArticlesPostfix = styled.div`
+  min-width: 12px;
+  height: 316px;
+`;
+
+const ArticlesRow = styled.div`
+  width: 100vw;
+  display: flex;
+  gap: 24px;
+  overflow-x: scroll;
+  position: absolute;
+  left: calc(-1 * (100vw - (100vw - ((100vw - 860px) / 2))));
+  bottom: -396px;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+type ArticleProps = {
+  name: string;
+  text: string;
+  link: string;
+};
+
+const Article = ({ name, text, link }: ArticleProps) => {
+  const ArticleContent = styled.a`
+    height: 266px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid #d2d2d6;
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+      transition: 1s;
+      border: 1px solid #040036;
+
+      * {
+        transition: 1s;
+        color: #040036;
+      }
+    }
+  `;
+
+  const ArticleTitleContainer = styled.div`
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  `;
+
+  const ArticleTitle1Container = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  `;
+
+  const ArticleTitle = styled.div`
+    ${font20px};
+    ${colorDim};
+  `;
+
+  const ArticleLink = styled.div`
+    ${font12px};
+    ${colorDim};
+    width: 252px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  `;
+
+  return (
+    <ArticleContent href={link} target={'_blank'}>
+      <ArticleTitleContainer>
+        <ArticleTitle1Container>
+          <ArticleTitle>{name}</ArticleTitle>
+          <CallMade />
+        </ArticleTitle1Container>
+        <VerticalDivider height={'16px'} />
+        <ArticleTitle>{text}</ArticleTitle>
+      </ArticleTitleContainer>
+      <ArticleLink>{link}</ArticleLink>
+    </ArticleContent>
+  );
+};
+
 const TeamMemberRow = styled.div`
   display: flex;
   justify-content: space-between;
@@ -668,11 +945,16 @@ const CitationContainer = styled(Citation)`
   }
 `;
 
-const FlasksContainer = styled.img`
+const FlasksContentContainer = styled.div`
   position: absolute;
   z-index: -1;
   bottom: -142px;
   left: 0;
+  overflow: hidden;
+  width: calc(100vw - ((100vw - 860px) / 2));
+`;
+
+const FlasksContainer = styled.img`
   height: 62px;
 
   @media (max-width: 500px) {
@@ -680,15 +962,36 @@ const FlasksContainer = styled.img`
   }
 `;
 
-const FlasksMobileContainer = styled.img`
+const FlasksMobileContentContainer = styled.div`
   position: absolute;
   z-index: -1;
   bottom: -102px;
   left: 0;
+  overflow: hidden;
+  width: calc(100vw - ((100vw - 100%) / 2));
+`;
+
+const FlasksMobileContainer = styled.img`
   height: 62px;
 
   @media (min-width: 500px) {
     display: none;
+  }
+`;
+
+const ElementContentXOverflowHidden = styled.div`
+  position: relative;
+  z-index: 1;
+  width: 860px;
+  margin: 160px 0;
+
+  ${font72px};
+
+  @media (max-width: 500px) {
+    width: calc(100% - 32px);
+    margin: 56px 16px;
+
+    ${font34px};
   }
 `;
 

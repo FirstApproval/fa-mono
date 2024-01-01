@@ -15,6 +15,7 @@ export const Header = (): ReactElement => {
 };
 
 const HeaderWrap = styled.div`
+  z-index: 1000;
   position: sticky;
   top: 0;
 
@@ -26,7 +27,7 @@ const HeaderWrap = styled.div`
 
   @media (max-width: 500px) {
     padding: 16px;
-    background-color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.8);
   }
 `;
 
