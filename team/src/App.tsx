@@ -207,7 +207,9 @@ const LandingApp = (): ReactElement => {
             </ElementDimText>
           </OnlyMobile>
           <ArticlesRow>
-            <EmptyArticlesPrefix></EmptyArticlesPrefix>
+            <OnlyDesktop>
+              <EmptyArticlesPrefix></EmptyArticlesPrefix>
+            </OnlyDesktop>
             <Article
               name={'Molecular Brain'}
               text={
@@ -270,12 +272,14 @@ const LandingApp = (): ReactElement => {
               text={'Many researchers say they’ll share data — but don’t'}
               link={'https://doi.org/10.1038/d41586-022-01692-1'}
             />
-            <EmptyArticlesPostfix />
+            <OnlyDesktop>
+              <EmptyArticlesPostfix />
+            </OnlyDesktop>
           </ArticlesRow>
         </ElementContent>
       </Container>
 
-      <VerticalDivider height={'396px'} />
+      <VerticalDivider height={'396px'} mobileHeight={'356px'} />
 
       <Container>
         <DescriptionContent>
@@ -303,7 +307,9 @@ const LandingApp = (): ReactElement => {
             A staggering 60% <br /> of studies face replication challenges{' '}
           </OnlyMobile>
           <ArticlesRow>
-            <EmptyArticlesPrefix></EmptyArticlesPrefix>
+            <OnlyDesktop>
+              <EmptyArticlesPrefix></EmptyArticlesPrefix>
+            </OnlyDesktop>
             <Article
               name={'Nature'}
               text={'Many researchers say they’ll share data — but don’t'}
@@ -404,12 +410,14 @@ const LandingApp = (): ReactElement => {
               text={'Many researchers say they’ll share data — but don’t'}
               link={'https://doi.org/10.1038/d41586-022-01692-1'}
             />
-            <EmptyArticlesPostfix />
+            <OnlyDesktop>
+              <EmptyArticlesPostfix />
+            </OnlyDesktop>
           </ArticlesRow>
         </ElementContent>
       </Container>
 
-      <VerticalDivider height={'396px'} />
+      <VerticalDivider height={'396px'} mobileHeight={'356px'} />
 
       <Container>
         <DescriptionContent>
@@ -765,6 +773,12 @@ const ArticlesRow = styled.div`
 
   &::-webkit-scrollbar {
     display: none;
+  }
+    
+  @media (max-width: 500px) {
+    width: 100%;
+    left: 0;
+    bottom: -356px;
   }
 `;
 
