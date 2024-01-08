@@ -79,7 +79,7 @@ const TitleWrap = styled.div`
   flex-direction: column;
   align-items: center;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
   }
 `;
 
@@ -93,7 +93,7 @@ const Title = styled.div`
   font-weight: 600;
   line-height: 133.4%;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     width: 328px;
 
     color: rgba(4, 0, 54, 0.38);
@@ -119,7 +119,7 @@ const SubTitle = styled.div`
   line-height: 120%; /* 86.4px */
   letter-spacing: -0.5px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     width: 328px;
 
     color: #040036;
@@ -144,7 +144,7 @@ const VideoWrap = styled.div`
   background: #f3f2f5;
   overflow: hidden;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     padding: 24px;
     margin: 0 16px;
   }
@@ -199,7 +199,7 @@ const UploadWrap = styled.div`
 const UploadContentWrap = styled.div`
   max-width: 1184px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     width: 100%;
   }
 `;

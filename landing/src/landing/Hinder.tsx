@@ -86,7 +86,7 @@ const HinderContainerWrap = styled.div`
 const HinderContentWrap = styled.div`
   width: 1184px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     width: 100%;
   }
 `;
@@ -105,7 +105,7 @@ const HinderSticky = styled.div`
   top: 20%;
   height: 80vh;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     height: 65vh;
     top: 15%;
     font-feature-settings: 'clig' off, 'liga' off;
@@ -132,7 +132,7 @@ const HinderWrap = styled.div`
   position: relative;
   z-index: 0;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     padding-left: 16px;
     padding-right: 16px;
   }

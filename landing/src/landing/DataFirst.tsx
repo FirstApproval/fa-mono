@@ -44,7 +44,7 @@ const Wrap = styled.div`
   flex-direction: column;
   align-items: center;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     padding-left: 24px;
     padding-right: 24px;
   }
@@ -66,7 +66,7 @@ const Subtitle = styled.div`
   font-weight: 600;
   line-height: 133.4%; /* 32.016px */
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     color: rgba(4, 0, 54, 0.38);
     font-feature-settings: 'clig' off, 'liga' off;
     font-family: Roboto, serif;
@@ -90,7 +90,7 @@ const Title = styled.div`
 
   font-size: 34px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     color: #040036;
     font-feature-settings: 'clig' off, 'liga' off;
     font-family: Roboto, serif;
@@ -137,7 +137,7 @@ const Subtitle2 = styled.div`
   font-weight: 600;
   line-height: 133.4%; /* 32.016px */
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     max-width: 100%;
     margin-bottom: 0;
     font-feature-settings: 'clig' off, 'liga' off;
@@ -160,7 +160,7 @@ const Subtitle3 = styled.span`
   font-weight: 600;
   line-height: 133.4%;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     font-feature-settings: 'clig' off, 'liga' off;
     font-family: Roboto, serif;
     font-size: 16px;

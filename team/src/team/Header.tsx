@@ -25,14 +25,14 @@ const HeaderWrap = styled.div`
   justify-content: space-between;
   align-items: center;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     padding: 16px;
     background-color: rgba(255, 255, 255, 0.8);
   }
 `;
 
 const AdaptiveLogoWrap = styled(Logo)`
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     width: 160px;
   }
 `;
@@ -63,7 +63,7 @@ const ButtonWrap = styled(Button)`
   justify-content: center;
   align-items: center;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     font-feature-settings: 'clig' off, 'liga' off;
 
     /* components/button-large */

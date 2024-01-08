@@ -47,7 +47,7 @@ const MainContentWrap = styled.div`
   justify-content: center;
   margin-bottom: 200px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     margin-bottom: 120px;
   }
 `;
@@ -56,7 +56,7 @@ const MainWrap = styled.div`
   max-width: 1920px;
   padding: 0 120px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     padding: 0 16px;
   }
 `;

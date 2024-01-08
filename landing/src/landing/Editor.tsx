@@ -72,7 +72,7 @@ const ButtonContainer = styled.div`
   margin-top: 32px;
   display: flex;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     margin-top: 16px;
     width: 100%;
     display: flex;
@@ -109,7 +109,7 @@ const ButtonWrap = styled(Button)`
   justify-content: center;
   align-items: center;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     width: 195px;
     height: 42px;
     margin-left: 18px;
@@ -133,7 +133,7 @@ const EditorWrap = styled.div`
   width: 100%;
   margin-bottom: 320px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     margin-bottom: 112px;
   }
 `;
@@ -148,7 +148,7 @@ const Title = styled.div`
   font-weight: 600;
   line-height: 133.4%;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     width: 328px;
 
     color: rgba(4, 0, 54, 0.38);
@@ -174,7 +174,7 @@ const SubTitle = styled.div`
   line-height: 120%; /* 86.4px */
   letter-spacing: -0.5px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     width: 328px;
 
     color: #040036;
@@ -191,7 +191,7 @@ const SubTitle = styled.div`
 `;
 
 const PdfExampleLogoContainerWrap = styled.div`
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     width: 45px;
   }
 `;
@@ -200,7 +200,7 @@ const ImgWrap = styled.img`
   width: 1000px;
   height: 630px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     width: 333px;
     height: 210px;
   }
@@ -213,7 +213,7 @@ const EditorHeaderWrap = styled(EditorHeader)`
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
     width: 335px;
@@ -224,7 +224,7 @@ const EditorHeaderWrap = styled(EditorHeader)`
 `;
 
 const PdfExampleLogoWrap = styled(PdfExample)`
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     width: 45px;
   }
 `;
@@ -237,7 +237,7 @@ const PdfExampleWrap = styled.div`
   gap: 32px;
   width: 850px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     margin-top: 32px;
     width: 328px;
     align-items: start;
@@ -256,7 +256,7 @@ const PdfExampleText = styled.div`
   font-weight: 600;
   line-height: 133.4%; /* 32.016px */
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     font-feature-settings: 'clig' off, 'liga' off;
     font-family: Roboto, serif;
     font-size: 16px;
@@ -277,7 +277,7 @@ const PdfExampleText2 = styled.span`
   font-weight: 600;
   line-height: 133.4%;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     font-feature-settings: 'clig' off, 'liga' off;
     font-family: Roboto, serif;
     font-size: 16px;

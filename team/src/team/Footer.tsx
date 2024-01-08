@@ -64,7 +64,7 @@ const LogoWrap = styled.a`
 `;
 
 const AdaptiveLogoWrap = styled(Logo)`
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     width: 160px;
   }
 `;
@@ -78,7 +78,7 @@ const FooterWrap = styled.div`
   display: flex;
   justify-content: space-between;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     margin: 0 16px 16px;
     padding: 32px 16px;
 
@@ -100,7 +100,7 @@ const LogoTextWrap = styled.div`
   line-height: 160%; /* 32px */
   letter-spacing: 0.15px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     margin-top: 8px;
     font-family: Roboto, serif;
     font-size: 14px;
@@ -112,7 +112,7 @@ const LogoTextWrap = styled.div`
 `;
 
 const AdaptiveXLogoWrap = styled(XLogo)`
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     width: 32px;
   }
 `;
@@ -126,7 +126,7 @@ const XTextWrap = styled.a`
   padding: 8px;
   text-decoration: none;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     margin-top: 32px;
     width: 274px;
   }
@@ -149,7 +149,7 @@ const XFollowUsText = styled.span`
   font-weight: 600;
   line-height: 133.4%; /* 24.012px */
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     font-feature-settings: 'clig' off, 'liga' off;
     font-family: Roboto, serif;
     font-size: 13px;
@@ -168,7 +168,7 @@ const XOnXText = styled.span`
   font-weight: 600;
   line-height: 133.4%;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     font-feature-settings: 'clig' off, 'liga' off;
     font-family: Roboto, serif;
     font-size: 13px;
@@ -184,7 +184,7 @@ const HelpLinksWrap = styled.div`
   display: flex;
   justify-content: space-between;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     width: 280px;
     margin-top: 32px;
   }
@@ -203,7 +203,7 @@ const HelpLink = styled.a`
   line-height: 150%; /* 24px */
   letter-spacing: 0.15px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     font-family: Roboto, serif;
     font-size: 14px;
     font-style: normal;
@@ -224,7 +224,7 @@ const GetEarlyAccessWrap = styled.div`
   display: flex;
   align-items: center;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     margin-top: 32px;
   }
     
@@ -264,7 +264,7 @@ const FineTuningText = styled.div`
   line-height: 150%; /* 24px */
   letter-spacing: 0.15px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     margin-top: 32px;
     font-family: Roboto, serif;
     font-size: 14px;
@@ -289,7 +289,7 @@ const FirstApprovalFooterText = styled.div`
   line-height: 150%; /* 24px */
   letter-spacing: 0.15px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     margin-top: 32px;
     text-align: start;
 

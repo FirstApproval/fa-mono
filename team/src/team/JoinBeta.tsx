@@ -30,7 +30,7 @@ const MovingText = styled.div`
   animation: ${moveText} 45s linear infinite;
   color: #040036;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     animation: ${moveText} 20s linear infinite;
   }
 
@@ -54,7 +54,7 @@ const TextBlock = styled.span`
   line-height: 120%; /* 216px */
   letter-spacing: -0.5px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     font-feature-settings: 'clig' off, 'liga' off;
     font-family: Roboto, serif;
     font-size: 34px;
@@ -75,7 +75,7 @@ const JoinBetaWrap = styled.div`
   position: relative;
   width: 100%;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     margin-bottom: 96px;
   }
 `;

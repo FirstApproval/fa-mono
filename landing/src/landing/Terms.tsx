@@ -138,7 +138,7 @@ const TermsWrap = styled.div`
 const TermsCardsWrap = styled.div`
   width: 1184px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     width: 100%;
   }
 `;
@@ -159,7 +159,7 @@ const CardWrap = styled.div`
 
   margin-top: 40px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     padding: 24px;
   }
 `;

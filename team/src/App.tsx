@@ -698,7 +698,7 @@ const TeamMember = ({ logo, name, title, url }: TeamMemberProps) => {
     width: 300px;
     height: 400px;
 
-    @media (max-width: 500px) {
+    @media (max-width: 1300px) {
       width: calc((100vw - 32px - 24px) / 2);
       height: auto;
     }
@@ -709,7 +709,7 @@ const TeamMember = ({ logo, name, title, url }: TeamMemberProps) => {
     height: 300px;
     filter: grayscale(100%);
 
-    @media (max-width: 500px) {
+    @media (max-width: 1300px) {
       width: calc((100vw - 32px - 24px) / 2);
       height: calc((100vw - 32px - 24px) / 2);
     }
@@ -729,7 +729,7 @@ const TeamMember = ({ logo, name, title, url }: TeamMemberProps) => {
     display: flex;
     align-items: center;
 
-    @media (max-width: 500px) {
+    @media (max-width: 1300px) {
       margin-top: 12px;
       ${font24px};
     }
@@ -775,7 +775,7 @@ const ArticlesRow = styled.div`
     display: none;
   }
     
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     width: 100%;
     left: 0;
     bottom: -356px;
@@ -862,14 +862,14 @@ const TeamContainerTitle = styled.div`
   ${font34px};
   ${colorDim};
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     margin-bottom: 20px;
     ${font16px};
   }
 `;
 
 const OnlyDesktop = styled.div`
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     display: none;
   }
 `;
@@ -906,7 +906,7 @@ const MainLogo = styled(TeamLogo)`
 const MainTimofeyRoundText = styled.div`
   ${font24px};
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     ${font16px};
   }
 `;
@@ -920,7 +920,7 @@ const TimofeyRoundLogo = styled.img`
 const MainTitle = styled.div`
   ${font96px};
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     ${font51px};
   }
 `;
@@ -943,7 +943,7 @@ const MainSubtitle = styled.div`
 const MainContent = styled.div`
   width: 1026px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     width: 100%;
   }
 `;
@@ -954,7 +954,7 @@ const CitationContainer = styled(Citation)`
   top: -36px;
   left: -60px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     display: none;
   }
 `;
@@ -971,7 +971,7 @@ const FlasksContentContainer = styled.div`
 const FlasksContainer = styled.img`
   height: 62px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     display: none;
   }
 `;
@@ -1001,7 +1001,7 @@ const ElementContentXOverflowHidden = styled.div`
 
   ${font72px};
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     width: calc(100% - 32px);
     margin: 56px 16px;
 
@@ -1017,7 +1017,7 @@ const ElementContent = styled.div`
 
   ${font72px};
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     width: calc(100% - 32px);
     margin: 56px 16px;
 
@@ -1032,7 +1032,7 @@ const ExpertsContent = styled.div`
   flex-direction: column;
   align-items: center;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     width: calc(100% - 32px);
     margin: 56px 16px;
   }
@@ -1042,7 +1042,7 @@ const ExpertsTitle = styled.div`
   width: 600px;
   ${font34px};
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     width: 100%;
     ${font16px};
   }
@@ -1072,7 +1072,7 @@ const Expert = ({ logo, name, title, url }: TeamMemberProps) => {
 
     text-decoration: none;
 
-    @media (max-width: 500px) {
+    @media (max-width: 1300px) {
       border: none;
       padding: 8px 0;
     }
@@ -1084,7 +1084,7 @@ const Expert = ({ logo, name, title, url }: TeamMemberProps) => {
     margin-right: 16px;
     filter: grayscale(100%);
 
-    @media (max-width: 500px) {
+    @media (max-width: 1300px) {
       width: 64px;
       height: 64px;
     }
@@ -1099,7 +1099,7 @@ const Expert = ({ logo, name, title, url }: TeamMemberProps) => {
   const ExpertName = styled.div`
     ${font24px};
 
-    @media (max-width: 500px) {
+    @media (max-width: 1300px) {
       ${font16px};
     }
   `;
@@ -1123,7 +1123,7 @@ const Expert = ({ logo, name, title, url }: TeamMemberProps) => {
 const TeamElementContent = styled(ElementContent)`
   margin: 160px 0 80px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     margin: 56px 16px 40px;
   }
 `;
@@ -1136,7 +1136,7 @@ const DescriptionContent = styled.div`
   width: 600px;
   margin: 160px 0;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     width: calc(100% - 32px);
     margin: 56px 16px;
   }
@@ -1146,7 +1146,7 @@ const DescriptionBaseText = styled.span`
   ${colorDim};
   ${font34px};
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     ${font16px};
   }
 `;
@@ -1154,7 +1154,7 @@ const DescriptionBaseText = styled.span`
 const DescriptionBrightText = styled.span`
   ${font34px};
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     ${font16px};
   }
 `;
@@ -1165,7 +1165,7 @@ const VerticalDivider = styled('div')<{
 }>`
   height: ${(props) => props.height ?? '0'};
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     height: ${(props) => props.mobileHeight ?? '0'};
   }
 `;

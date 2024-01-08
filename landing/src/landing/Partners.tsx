@@ -43,7 +43,7 @@ const MovingText = styled.div`
   white-space: nowrap;
   animation: ${moveText} 45s linear infinite;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     animation: ${moveText} 20s linear infinite;
   }
 `;
@@ -63,7 +63,7 @@ const TextBlock = styled.span`
   font-weight: 600;
   line-height: 133.4%; /* 26.68px */
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
   }
 `;
 
@@ -73,7 +73,7 @@ const MainWrap = styled.div`
   justify-content: center;
   margin-bottom: 220px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     margin-bottom: 120px;
   }
 `;
@@ -91,7 +91,7 @@ const JoinBetaWrap = styled.div`
     transparent
   );
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     width: 100%;
   }
 `;

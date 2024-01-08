@@ -13,7 +13,7 @@
     width: 1000px !important;
     height: 630px !important;
 
-    @media (max-width: 500px) {
+    @media (max-width: 1300px) {
         width: 333px !important;
         height: 210px !important;
     }

@@ -48,7 +48,7 @@ const SubtitleWrap = styled.div`
   font-weight: 600;
   line-height: 133.4%; /* 32.016px */
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     color: rgba(4, 0, 54, 0.38);
     font-feature-settings: 'clig' off, 'liga' off;
     font-family: Roboto, serif;
@@ -69,7 +69,7 @@ const TitleWrap = styled.div`
   line-height: 120%; /* 86.4px */
   letter-spacing: -0.5px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 1300px) {
     margin-top: 16px;
     margin-bottom: 48px;
     color: #040036;
