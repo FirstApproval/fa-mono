@@ -43,19 +43,20 @@ export const HeaderComponent = (
             </Logo>
           </FALinkWrap>
         </Grid>
-        <BetaDialogWithButton />
+        <OnlyDesktop>
+          <BetaDialogWithButton />
+        </OnlyDesktop>
         <Box
           component={Grid}
           item
           xs={1}
           display={{
-            xs: 'none',
+            xs: 'block',
             md: 'block'
           }}>
           {props.showAboutUsButton && (
             <ButtonWrap
               href={'https://about.firstapproval.io/'}
-              style={{ marginLeft: '32px' }}
               variant="text"
               size={'large'}>
               About
@@ -189,6 +190,18 @@ export const FlexHeaderRight = styled.div`
   display: flex;
 `;
 
+export const OnlyDesktop = styled.div`
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+export const OnlyMobile = styled.div`
+  @media (min-width: 768px) {
+    display: none;
+  }
+`;
+
 const ButtonWrap = styled(Button)<{
   width?: string;
   marginLeft?: string;
@@ -209,15 +222,18 @@ const ButtonWrap = styled(Button)<{
   justify-content: center;
   align-items: center;
   color: var(--inherit-text-primary-main, #040036);
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+  }
 `;
 
 const SignUpButton = styled(Button)`
   display: flex;
   height: 40px;
-  padding: 8px 22px;
-  flex-direction: column;
+  width: 100px;
+  padding: 8px;
   justify-content: center;
   align-items: flex-end;
-
-  color: var(--primary-contrast, #fff);
+  color: #fff;
 `;
