@@ -3,7 +3,7 @@
 @import '@fontsource/roboto/500.css';
 @import '@fontsource/roboto/700.css';
 
-.video-editor {
+.video-editor-desktop {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -14,7 +14,21 @@
     height: 630px !important;
 
     @media (max-width: 1300px) {
-        width: 333px !important;
-        height: 210px !important;
+        display: none !important;
+    }
+}
+
+.video-editor-mobile {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    border: 1px solid #D2D2D6;
+
+    width: 333px !important;
+    height: 210px !important;
+
+    @media (min-width: 1300px) {
+        display: none !important;
     }
 }

@@ -1,9 +1,9 @@
 import styled from '@emotion/styled';
 import React, { ReactElement, useState } from 'react';
-import ReactPlayer from 'react-player';
 import { ReactComponent as PdfExample } from './assets/pdf_example.svg';
 import { ReactComponent as EditorHeader } from './assets/editorHeader.svg';
 import { Button } from '@mui/material';
+import ReactPlayer from "react-player"
 
 export const Editor = (): ReactElement => {
   const [ready, setReady] = useState(false);
@@ -28,7 +28,7 @@ export const Editor = (): ReactElement => {
         />
       )}
       <ReactPlayer
-        className="video-editor"
+        className="video-editor-desktop"
         url={videoUrl}
         playing={true}
         muted={true}
@@ -36,6 +36,16 @@ export const Editor = (): ReactElement => {
         onReady={handleReady}
         style={{ display: ready ? 'block' : 'none' }}
       />
+      <video
+        muted
+        autoPlay
+        loop
+        playsInline
+        className="video-editor-mobile"
+        style={{ display: ready ? 'block' : 'none' }}
+        onPlaying={handleReady}>
+        <source src={videoUrl} />
+      </video>
       <PdfExampleWrap>
         <PdfExampleLogoContainerWrap>
           <PdfExampleLogoWrap />
