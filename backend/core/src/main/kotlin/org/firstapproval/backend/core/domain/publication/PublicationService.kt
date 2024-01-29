@@ -29,6 +29,7 @@ import org.firstapproval.backend.core.domain.publication.file.PublicationSampleF
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
 import org.firstapproval.backend.core.domain.user.UserService
+import org.firstapproval.backend.core.external.doi.DoiService
 import org.firstapproval.backend.core.external.ipfs.DownloadLink
 import org.firstapproval.backend.core.external.ipfs.DownloadLinkRepository
 import org.firstapproval.backend.core.external.ipfs.IpfsClient.IpfsContentAvailability.ARCHIVE
@@ -80,6 +81,7 @@ class PublicationService(
     private val publicationFileRepository: PublicationFileRepository,
     private val sampleFileRepository: PublicationSampleFileRepository,
     private val transactionTemplate: TransactionTemplate,
+    private val doiService: DoiService
 ) {
     @Transactional
     fun create(user: User): Publication {

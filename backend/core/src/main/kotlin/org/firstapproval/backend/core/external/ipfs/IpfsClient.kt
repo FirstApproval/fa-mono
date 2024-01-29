@@ -14,6 +14,7 @@ import org.springframework.http.MediaType.MULTIPART_FORM_DATA
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
+import java.lang.IllegalStateException
 import java.time.LocalDateTime
 
 class IpfsClient(
@@ -70,6 +71,10 @@ class IpfsClient(
             httpEntity,
             IpfsFile::class.java
         )
+
+        if (!result.statusCode.is2xxSuccessful) {
+            throw IllegalStateException()
+        }
 
         return result.body.require()
     }

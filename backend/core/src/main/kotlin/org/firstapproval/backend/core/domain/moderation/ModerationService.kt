@@ -7,10 +7,10 @@ import org.firstapproval.backend.core.domain.publication.PublicationRepository
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.MODERATION
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
+import org.firstapproval.backend.core.external.doi.DoiService
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
 
 @Service
@@ -18,6 +18,7 @@ class ModerationService(
     private val publicationRepository: PublicationRepository,
     private val publicationPdfService: PublicationPdfService,
     private val notificationService: NotificationService,
+    private val doiService: DoiService
 ) {
 
     @Transactional(readOnly = true)
@@ -31,6 +32,7 @@ class ModerationService(
         if (publication.status == MODERATION) {
             publication.status = PUBLISHED
             publication.publicationTime = now()
+            doiService.create(publication)
             publicationRepository.save(publication)
             notificationService.sendEmailForCoAuthorsChanged(publication)
             notificationService.sendPublicationPassedModeration(publication)
