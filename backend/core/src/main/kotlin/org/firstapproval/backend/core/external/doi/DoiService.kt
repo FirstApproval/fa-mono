@@ -4,7 +4,7 @@ import mu.KotlinLogging.logger
 import org.firstapproval.backend.core.config.Properties.DoiProperties
 import org.firstapproval.backend.core.domain.publication.Publication
 import org.springframework.stereotype.Service
-import java.io.File
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class DoiService(
@@ -13,6 +13,8 @@ class DoiService(
     private val doiProperties: DoiProperties
 ) {
     private val logger = logger { }
+
+    @Transactional
     fun create(publication: Publication) {
         val pubId = publication.id
         val doiId = String.format(doiProperties.idTemplate, pubId)

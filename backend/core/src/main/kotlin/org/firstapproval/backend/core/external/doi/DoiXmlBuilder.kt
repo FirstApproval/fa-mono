@@ -5,11 +5,12 @@ import org.firstapproval.backend.core.config.Properties.DoiProperties
 import org.firstapproval.backend.core.domain.publication.Publication
 import org.firstapproval.backend.core.domain.publication.authors.Author
 import org.firstapproval.backend.core.domain.user.User
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.io.Resource
 import org.springframework.stereotype.Service
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.Node
-import java.io.File
 import java.io.StringWriter
 import java.time.ZonedDateTime.now
 import java.time.format.DateTimeFormatter
@@ -22,14 +23,16 @@ import javax.xml.transform.stream.StreamResult
 val CROSSREF_TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")!!
 
 @Service
-class DoiXmlBuilder(private val doiProperties: DoiProperties) {
+class DoiXmlBuilder(
+    private val doiProperties: DoiProperties,
+    @Value("classpath:doi/dataset.5.3.0.xml") private val datasetXmlTemplate: Resource
+) {
     val log = logger { }
 
-    fun build(publication: Publication, doiId: String): String {
-        val filePath = "backend/core/src/main/resources/doi/dataset.5.3.0.xml" // Путь к вашему XML-файлу
+    fun build(publication: Publication, doiId: String): String { val filePath = "doi/dataset.5.3.0.xml" // Путь к вашему XML-файлу
         val docBuilderFactory = DocumentBuilderFactory.newInstance()
         val docBuilder = docBuilderFactory.newDocumentBuilder()
-        val doc = docBuilder.parse(File(filePath))
+        val doc = docBuilder.parse(datasetXmlTemplate.inputStream)
 
         // Включаем изменения в документе
         val rootElement = doc.documentElement
