@@ -12,6 +12,7 @@ import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.Node
 import java.io.StringWriter
+import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
 import java.time.format.DateTimeFormatter
 import javax.xml.parsers.DocumentBuilderFactory
@@ -29,7 +30,7 @@ class DoiXmlBuilder(
 ) {
     val log = logger { }
 
-    fun build(publication: Publication, doiId: String): String { val filePath = "doi/dataset.5.3.0.xml" // Путь к вашему XML-файлу
+    fun build(publication: Publication, doiId: String, publicationTime: ZonedDateTime): String {
         val docBuilderFactory = DocumentBuilderFactory.newInstance()
         val docBuilder = docBuilderFactory.newDocumentBuilder()
         val doc = docBuilder.parse(datasetXmlTemplate.inputStream)
@@ -60,11 +61,11 @@ class DoiXmlBuilder(
 
         val publicationDateNode = databaseDateNode.getElementsByTagName("publication_date").item(0) as Element
         val publicationMonthNode = publicationDateNode.getElementsByTagName("month").item(0) as Element
-        publicationMonthNode.textContent = publication.publicationTime!!.monthValue.toString()
+        publicationMonthNode.textContent = publicationTime.monthValue.toString()
         val publicationDayNode = publicationDateNode.getElementsByTagName("day").item(0) as Element
-        publicationDayNode.textContent = publication.publicationTime!!.dayOfMonth.toString()
+        publicationDayNode.textContent = publicationTime.dayOfMonth.toString()
         val publicationYearNode = publicationDateNode.getElementsByTagName("year").item(0) as Element
-        publicationYearNode.textContent = publication.publicationTime!!.year.toString()
+        publicationYearNode.textContent = publicationTime.year.toString()
 
         datasetNode.getElementsByTagName("description").item(0).textContent = publication.description ?: ""
 

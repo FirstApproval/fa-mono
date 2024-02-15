@@ -30,9 +30,10 @@ class ModerationService(
     fun publishPublication(id: String) {
         val publication = publicationRepository.getReferenceById(id)
         if (publication.status == MODERATION) {
+            val publicationTime = now()
+            doiService.create(publication, publicationTime)
             publication.status = PUBLISHED
-            publication.publicationTime = now()
-            doiService.create(publication)
+            publication.publicationTime = publicationTime
             publicationRepository.save(publication)
             notificationService.sendEmailForCoAuthorsChanged(publication)
             notificationService.sendPublicationPassedModeration(publication)
