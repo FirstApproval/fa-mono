@@ -16,18 +16,18 @@ import { ResearchArea } from './research-area/ResearchArea';
 import { ActionBar } from './ActionBar';
 import {
   AuthorsPlaceholder,
+  DataDescriptionPlaceholder,
   ExperimentGoalsPlaceholder,
   FilesPlaceholder,
   GrantingOrganisationsPlaceholder,
   MethodPlaceholder,
-  DataDescriptionPlaceholder,
+  PreliminaryResultsPlaceholder,
   RelatedPublicationsPlaceholder,
   SampleFilesPlaceholder,
   SoftwarePlaceholder,
   SummaryPlaceholder,
   TagsPlaceholder,
-  TagsWrap,
-  PreliminaryResultsPlaceholder
+  TagsWrap
 } from './ContentPlaceholder';
 import { SummaryEditor } from './editors/SummaryEditor';
 import { ExperimentGoalsEditor } from './editors/ExperimentGoalsEditor';
@@ -99,6 +99,7 @@ export const PublicationBody = observer(
     } = publicationPageStore;
 
     const isChonkyDragRef = useRef(false);
+    const doiLink = `https://doi.org/10.62251/fa:ds:${publicationStore.publicationId}`;
 
     return (
       <>
@@ -121,6 +122,10 @@ export const PublicationBody = observer(
         {publicationStore.isReadonly && (
           <Authors publicationStore={publicationStore} />
         )}
+
+        {publicationStore.isPublished && <a href={doiLink}>{doiLink}</a>}
+
+        <HeightElement value={'24px'} />
 
         <ResearchArea researchAreaStore={researchAreaStore} />
 

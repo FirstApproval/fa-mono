@@ -21,6 +21,17 @@ class Properties {
     }
 
     @Component
+    @ConfigurationProperties("doi")
+    class DoiProperties {
+        lateinit var crossrefPublicationEndpoint: URL
+        lateinit var idTemplate: String
+        lateinit var linkTemplate: String
+        lateinit var login: String
+        lateinit var password: String
+        lateinit var doiDataResourceTemplate: String
+    }
+
+    @Component
     @ConfigurationProperties("ipfs")
     class IpfsProperties {
         lateinit var contentsUrl: String

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doi_batch xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.crossref.org/schema/5.3.0 https://www.crossref.org/schemas/crossref5.3.0.xsd"
+	xmlns="http://www.crossref.org/schema/5.3.0" xmlns:jats="http://www.ncbi.nlm.nih.gov/JATS1"
+	xmlns:fr="http://www.crossref.org/fundref.xsd" xmlns:ai="http://www.crossref.org/AccessIndicators.xsd" xmlns:mml="http://www.w3.org/1998/Math/MathML" version="5.3.0">
+	<head>
+		<doi_batch_id>FA_SOME_BATCH_ID</doi_batch_id>
+		<timestamp>some_timestamp</timestamp>
+		<depositor>
+			<depositor_name>First Approval</depositor_name>
+			<email_address>info@firstapproval.io</email_address>
+		</depositor>
+		<registrant>First Approval</registrant>
+	</head>
+	<body>
+		<database>
+			<database_metadata language="en">
+				<titles><title>First Approval Datasets</title></titles>
+			</database_metadata>
+			<dataset>
+                <contributors>
+                </contributors>
+				<titles><title>Tissue-specific expression patterns of nuclear receptors</title></titles>
+				<database_date>
+					<creation_date>
+						<month>some_month</month>
+						<day>some_day</day>
+						<year>some_year</year>
+					</creation_date>
+					<publication_date>
+                        <month>some_month</month>
+                        <day>some_day</day>
+                        <year>some_year</year>
+					</publication_date>
+				</database_date>
+				<description language="en">Publication description</description>
+                <doi_data>
+                    <doi>some_doi</doi>
+                    <resource>first approval publication link</resource>
+                </doi_data>
+			</dataset>
+		</database>
+	</body>
+</doi_batch>

@@ -1,5 +1,6 @@
 package org.firstapproval.backend.core.domain.publication
 
+import org.firstapproval.backend.core.config.Properties.DoiProperties
 import org.firstapproval.backend.core.config.Properties.FrontendProperties
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.infra.pdf.PdfService
@@ -10,7 +11,8 @@ import java.text.DecimalFormat
 @Service
 class PublicationPdfService(
     private val pdfService: PdfService,
-    private val frontendProperties: FrontendProperties
+    private val frontendProperties: FrontendProperties,
+    private val doiProperties: DoiProperties
 ) {
 
     private val formatter = DecimalFormat("#.##")
@@ -23,6 +25,7 @@ class PublicationPdfService(
     private fun generateThymeleafContext(publication: Publication): Context {
         val context = Context()
         val model: MutableMap<String, Any> = HashMap()
+        model["doiLink"] = String.format(doiProperties.linkTemplate, publication.id)
         model["isPreview"] = publication.status != PUBLISHED
         model["isNegative"] = publication.isNegative
         model["url"] = url(publication)
