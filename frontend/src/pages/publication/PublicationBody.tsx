@@ -99,7 +99,6 @@ export const PublicationBody = observer(
     } = publicationPageStore;
 
     const isChonkyDragRef = useRef(false);
-    const doiLink = `https://doi.org/10.62251/fa:ds:${publicationStore.publicationId}`;
 
     return (
       <>
@@ -123,7 +122,9 @@ export const PublicationBody = observer(
           <Authors publicationStore={publicationStore} />
         )}
 
-        {publicationStore.isPublished && <a href={doiLink}>{doiLink}</a>}
+        {publicationStore.isPublished && (
+          <a href={publicationStore.doiLink}>{publicationStore.doiLink}</a>
+        )}
 
         <HeightElement value={'24px'} />
 

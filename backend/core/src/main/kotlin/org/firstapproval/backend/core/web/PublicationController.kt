@@ -10,6 +10,7 @@ import org.firstapproval.api.server.model.PublicationStatus
 import org.firstapproval.api.server.model.PublicationsResponse
 import org.firstapproval.api.server.model.SearchPublicationsResponse
 import org.firstapproval.api.server.model.SubmitPublicationRequest
+import org.firstapproval.backend.core.config.Properties.DoiProperties
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.PublicationPdfService
@@ -35,7 +36,8 @@ class PublicationController(
     private val userService: UserService,
     private val downloaderRepository: DownloaderRepository,
     private val authHolderService: AuthHolderService,
-    private val publicationPdfService: PublicationPdfService
+    private val publicationPdfService: PublicationPdfService,
+    private val doiProperties: DoiProperties
 ) : PublicationApi {
 
     override fun getAllPublications(page: Int, pageSize: Int): ResponseEntity<PublicationsResponse> {
@@ -80,7 +82,7 @@ class PublicationController(
                 .isLast(pageResult.isLast)
                 .items(
                     pageResult.map { elasticModel ->
-                        dbModels.firstOrNull { it.id == elasticModel.id }?.toApiObject(userService)
+                        dbModels.firstOrNull { it.id == elasticModel.id }?.toApiObject(userService, doiProperties)
                     }
                         .filterNotNull()
                         .toList()
@@ -90,13 +92,13 @@ class PublicationController(
 
     override fun getPublication(id: String): ResponseEntity<Publication> {
         val pub = publicationService.get(authHolderService.user, id)
-        val publicationResponse = pub.toApiObject(userService)
+        val publicationResponse = pub.toApiObject(userService, doiProperties)
         return ok().body(publicationResponse)
     }
 
     override fun getPublicationPublic(id: String): ResponseEntity<Publication> {
         val pub = publicationService.getPublished(id)
-        val publicationResponse = pub.toApiObject(userService)
+        val publicationResponse = pub.toApiObject(userService, doiProperties)
         return ok().body(publicationResponse)
     }
 

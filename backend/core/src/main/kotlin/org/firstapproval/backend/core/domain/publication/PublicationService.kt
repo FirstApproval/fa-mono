@@ -9,6 +9,7 @@ import org.firstapproval.api.server.model.PublicationEditRequest
 import org.firstapproval.api.server.model.PublicationsResponse
 import org.firstapproval.api.server.model.SubmitPublicationRequest
 import org.firstapproval.api.server.model.UserInfo
+import org.firstapproval.backend.core.config.Properties.DoiProperties
 import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.domain.organizations.OrganizationService
 import org.firstapproval.backend.core.domain.organizations.toApiObject
@@ -29,7 +30,6 @@ import org.firstapproval.backend.core.domain.publication.file.PublicationSampleF
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
 import org.firstapproval.backend.core.domain.user.UserService
-import org.firstapproval.backend.core.external.doi.DoiService
 import org.firstapproval.backend.core.external.ipfs.DownloadLink
 import org.firstapproval.backend.core.external.ipfs.DownloadLinkRepository
 import org.firstapproval.backend.core.external.ipfs.IpfsClient.IpfsContentAvailability.ARCHIVE
@@ -81,7 +81,7 @@ class PublicationService(
     private val publicationFileRepository: PublicationFileRepository,
     private val sampleFileRepository: PublicationSampleFileRepository,
     private val transactionTemplate: TransactionTemplate,
-    private val doiService: DoiService
+    private val doiProperties: DoiProperties
 ) {
     @Transactional
     fun create(user: User): Publication {
@@ -322,7 +322,7 @@ class PublicationService(
             PageRequest.of(page, pageSize, Sort.by(DESC, "publicationTime"))
         )
         return PublicationsResponse()
-            .publications(publicationsPage.map { it.toApiObject(userService) }.toList())
+            .publications(publicationsPage.map { it.toApiObject(userService, doiProperties) }.toList())
             .isLastPage(publicationsPage.isLast)
     }
 
@@ -335,7 +335,7 @@ class PublicationService(
             PageRequest.of(page, pageSize, Sort.by(DESC, "publicationTime"))
         )
         return PublicationsResponse()
-            .publications(publicationsPage.map { it.toApiObject(userService) }.toList())
+            .publications(publicationsPage.map { it.toApiObject(userService, doiProperties) }.toList())
             .isLastPage(publicationsPage.isLast)
     }
 
@@ -351,7 +351,7 @@ class PublicationService(
             PageRequest.of(page, pageSize)
         )
         return PublicationsResponse(publicationsPage.isLast)
-            .publications(publicationsPage.map { it.toApiObject(userService) }.toList())
+            .publications(publicationsPage.map { it.toApiObject(userService, doiProperties) }.toList())
     }
 
     @Transactional
@@ -369,7 +369,7 @@ class PublicationService(
         )
 
         return PublicationsResponse()
-            .publications(publicationsPage.map { it.toApiObject(userService) }.toList())
+            .publications(publicationsPage.map { it.toApiObject(userService, doiProperties) }.toList())
             .isLastPage(publicationsPage.isLast)
     }
 
@@ -406,7 +406,7 @@ class PublicationService(
     }
 }
 
-fun Publication.toApiObject(userService: UserService) = PublicationApiObject().also { publicationApiModel ->
+fun Publication.toApiObject(userService: UserService, doiProperties: DoiProperties) = PublicationApiObject().also { publicationApiModel ->
     publicationApiModel.id = id
     publicationApiModel.creator = UserInfo()
         .id(creator.id)
@@ -421,6 +421,7 @@ fun Publication.toApiObject(userService: UserService) = PublicationApiObject().a
     publicationApiModel.previewTitle = previewTitle
     publicationApiModel.previewSubtitle = previewSubtitle
     publicationApiModel.description = description
+    publicationApiModel.doiLink = if (status == PUBLISHED) doiProperties.linkTemplate.format(id) else null
     publicationApiModel.researchAreas = researchAreas?.map { Paragraph(it) }
     publicationApiModel.grantOrganizations = grantOrganizations?.map { Paragraph(it) }
     publicationApiModel.primaryArticles = primaryArticles?.map { Paragraph(it) }

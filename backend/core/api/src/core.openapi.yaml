@@ -2327,6 +2327,9 @@ components:
         description:
           type: string
           maxLength: 32768
+        doiLink:
+          type: string
+          maxLength: 300
         researchAreas:
           $ref: '#/components/schemas/StringArray'
         grantOrganizations:

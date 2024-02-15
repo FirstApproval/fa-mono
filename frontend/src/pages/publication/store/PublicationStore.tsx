@@ -48,6 +48,7 @@ export class PublicationStore {
   isLoading = true;
 
   title = '';
+  doiLink = '';
   researchAreas: Paragraph[] = [];
 
   creator: UserInfo | undefined;
@@ -645,6 +646,10 @@ export class PublicationStore {
           }
           if (publication.description?.length) {
             this.summary = publication.description;
+          }
+          if (publication.doiLink?.length) {
+            debugger;
+            this.doiLink = publication.doiLink;
           }
           if (publication.predictedGoals?.length) {
             this.experimentGoals = publication.predictedGoals;
