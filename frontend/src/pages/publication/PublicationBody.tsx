@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { DialogContent } from '@mui/material';
+import { DialogContent, Tooltip } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 import { PublicationStore } from './store/PublicationStore';
 import { ResearchAreaStore } from './research-area/ResearchAreaStore';
@@ -41,7 +41,7 @@ import { Page } from '../../core/router/constants';
 import { FileBrowserFA } from '../../fire-browser/FileBrowserFA';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Close } from '@mui/icons-material';
+import { Close, ContentCopy } from '@mui/icons-material';
 import { AuthorsEditor } from './editors/AuthorsEditor';
 import { GrantingOrganizationsEditor } from './editors/GrantingOrganizationsEditor';
 import { RelatedPublicationsEditor } from './editors/RelatedPublicationsEditor';
@@ -49,6 +49,7 @@ import { TagsEditor } from './editors/TagsEditor';
 import { UploadStatusWindow } from './UploadStatusWindow';
 import { DatasetIsPreparingDialog } from './dialogs/DatasetIsPreparingDialog';
 import { PreliminaryResultsEditor } from './editors/PreliminaryResultsEditor';
+import { copyTextToClipboard } from '../../fire-browser/utils';
 
 export const PublicationBody = observer(
   (props: {
@@ -123,7 +124,24 @@ export const PublicationBody = observer(
         )}
 
         {publicationStore.isPublished && (
-          <a href={publicationStore.doiLink}>{publicationStore.doiLink}</a>
+          <Tooltip
+            placement="bottom"
+            title={'Copy doi link'}
+            arrow={true}
+            onClick={() => {
+              void copyTextToClipboard(publicationStore.doiLink).finally();
+            }}>
+            <div
+              style={{
+                width: 'max-content',
+                display: 'flex',
+                justifyContent: 'center',
+                cursor: 'pointer'
+              }}>
+              <a>{publicationStore.doiLink}</a>
+              <ContentCopy style={{ marginLeft: '8px' }} />
+            </div>
+          </Tooltip>
         )}
 
         <HeightElement value={'24px'} />
