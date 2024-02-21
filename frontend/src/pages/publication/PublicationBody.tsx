@@ -41,7 +41,7 @@ import { Page } from '../../core/router/constants';
 import { FileBrowserFA } from '../../fire-browser/FileBrowserFA';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Close, ContentCopy } from '@mui/icons-material';
+import { Close } from '@mui/icons-material';
 import { AuthorsEditor } from './editors/AuthorsEditor';
 import { GrantingOrganizationsEditor } from './editors/GrantingOrganizationsEditor';
 import { RelatedPublicationsEditor } from './editors/RelatedPublicationsEditor';
@@ -131,16 +131,12 @@ export const PublicationBody = observer(
             onClick={() => {
               void copyTextToClipboard(publicationStore.doiLink).finally();
             }}>
-            <div
+            <a
               style={{
-                width: 'max-content',
-                display: 'flex',
-                justifyContent: 'center',
                 cursor: 'pointer'
               }}>
-              <a>{publicationStore.doiLink}</a>
-              <ContentCopy style={{ marginLeft: '8px' }} />
-            </div>
+              {publicationStore.doiLink}
+            </a>
           </Tooltip>
         )}
 
