@@ -41,7 +41,13 @@ export const Footer = (): ReactElement => {
           </ButtonLinkWrap>
 
           <ButtonLinkWrap
-            href={'https://about.firstapproval.io/'}
+            href={'https://intro.dev.firstapproval.io/'}
+            target={'_blank'}>
+            <ButtonWrap size={'medium'}>Intro</ButtonWrap>
+          </ButtonLinkWrap>
+
+          <ButtonLinkWrap
+            href={'https://about.dev.firstapproval.io/'}
             target={'_blank'}>
             <ButtonWrap size={'medium'}>About</ButtonWrap>
           </ButtonLinkWrap>

@@ -56,7 +56,7 @@ export const HeaderComponent = (
           }}>
           {props.showAboutUsButton && (
             <ButtonWrap
-              href={'https://about.firstapproval.io/'}
+              href={'https://about.dev.firstapproval.io/'}
               variant="text"
               size={'large'}>
               About

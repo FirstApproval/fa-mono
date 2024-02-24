@@ -4,8 +4,10 @@ import { createRoot } from 'react-dom/client';
 import { initAuth } from './core/auth';
 import { initRouter } from './core/router';
 import axios from 'axios';
+import { initRedirects } from './core/init-redirects';
 
 void (async (): Promise<void> => {
+  await initRedirects();
   await initAuth();
   await initRouter();
 
