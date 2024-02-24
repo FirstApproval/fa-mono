@@ -211,11 +211,22 @@ const LandingApp = (): ReactElement => {
               <EmptyArticlesPrefix></EmptyArticlesPrefix>
             </OnlyDesktop>
             <Article
+              name={'Daily Dot'}
+              text={
+                'Many researchers don’t share their raw data like they’re supposed to'
+              }
+              link={
+                'https://www.dailydot.com/parsec/scientific-studies-data-sharing-problems-reproducibility/'
+              }
+            />
+            <Article
               name={'Molecular Brain'}
               text={
                 'No raw data, no science: another possible source of the reproducibility crisis'
               }
-              link={'https://doi.org/10.1186/s13041-020-0552-2'}
+              link={
+                'https://molecularbrain.biomedcentral.com/articles/10.1186/s13041-020-0552-2'
+              }
             />
             <Article
               name={'Nature'}
@@ -223,54 +234,58 @@ const LandingApp = (): ReactElement => {
               link={'https://doi.org/10.1038/d41586-022-01692-1'}
             />
             <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+              name={'LWW'}
+              text={'Impact of data transparency Scientific publications'}
+              link={
+                'https://journals.lww.com/picp/fulltext/2018/09010/impact_of_data_transparency__scientific.6.aspx'
+              }
             />
             <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+              name={'Scientific Data'}
+              text={
+                'Data sharing practices and data availability upon request differ across scientific disciplines'
+              }
+              link={'https://doi.org/10.1038/s41597-021-00981-0'}
             />
             <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+              name={'Plos One'}
+              text={
+                'Changes in Data Sharing and Data Reuse Practices and Perceptions among Scientists Worldwide'
+              }
+              link={'https://doi.org/10.1371/journal.pone.0134826'}
             />
             <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+              name={'Royal Society Open Science'}
+              text={
+                'Data availability, reusability, and analytic reproducibility'
+              }
+              link={'https://doi.org/10.1098/rsos.180448'}
             />
             <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+              name={'Nejm'}
+              text={'Data Sharing'}
+              link={'https://www.nejm.org/doi/full/10.1056/nejme1516564'}
             />
             <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+              name={'Plos One'}
+              text={
+                'The citation advantage of linking publications to research data'
+              }
+              link={'https://doi.org/10.1371/journal.pone.0230416'}
             />
             <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+              name={'Plos One'}
+              text={
+                'Sharing Detailed Research Data Is Associated with Increased Citation Rate'
+              }
+              link={'https://doi.org/10.1371/journal.pone.0000308'}
             />
             <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
-            />
-            <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
-            />
-            <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+              name={'Genome Medicine'}
+              text={
+                'Developing and implementing an institute-wide data sharing policy'
+              }
+              link={'https://doi.org/10.1186/gm276'}
             />
             <OnlyDesktop>
               <EmptyArticlesPostfix />
@@ -311,104 +326,129 @@ const LandingApp = (): ReactElement => {
               <EmptyArticlesPrefix></EmptyArticlesPrefix>
             </OnlyDesktop>
             <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+              name={'Plos Medicine'}
+              text={'How to Make More Published Research True'}
+              link={
+                'https://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.1001747'
+              }
+            />
+            <Article
+              name={'BBC News'}
+              text={"Most scientists can't replicate studies by their peers"}
+              link={'https://www.bbc.com/news/science-environment-39054778'}
             />
             <Article
               name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+              text={'A controlled trial for reproducibility'}
+              link={'https://www.nature.com/articles/d41586-020-00672-7'}
+            />
+            <Article
+              name={'Plos Biology'}
+              text={'The Economics of Reproducibility in Preclinical Research'}
+              link={
+                'https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.1002165'
+              }
+            />
+            <Article
+              name={'Pubmed'}
+              text={
+                'Avoidable waste in the production and reporting of research evidence'
+              }
+              link={'https://pubmed.ncbi.nlm.nih.gov/19525005/'}
+            />
+            <Article
+              name={'The Lancet'}
+              text={'Biomedical research: increasing value, reducing waste'}
+              link={
+                'https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(13)62329-6/fulltext'
+              }
+            />
+            <Article
+              name={'Wiley Online Library'}
+              text={
+                'The impact of fraudulent and irreproducible data to the translational research crisis – solutions and implementation'
+              }
+              link={'https://onlinelibrary.wiley.com/doi/10.1111/jnc.13844'}
+            />
+            <Article
+              name={'Taylor & Francis Online'}
+              text={'Reproducibility and Research Integrity'}
+              link={
+                'https://www.tandfonline.com/doi/abs/10.1080/08989621.2016.1257387'
+              }
+            />
+            <Article
+              name={'The Academy of Medical Sciences'}
+              text={'Reproducibility and reliability of biomedical research'}
+              link={
+                'https://acmedsci.ac.uk/policy/policy-projects/reproducibility-and-reliability-of-biomedical-research'
+              }
             />
             <Article
               name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+              text={'A manifesto for reproducible science'}
+              link={'https://www.nature.com/articles/s41562-016-0021'}
             />
             <Article
               name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+              text={
+                'Believe it or not: how much can we rely on published data on potential drug targets?'
+              }
+              link={'https://www.nature.com/articles/nrd3439-c1'}
             />
             <Article
               name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+              text={'Raise standards for preclinical cancer research'}
+              link={'https://www.nature.com/articles/483531a'}
             />
             <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+              name={'Science'}
+              text={'Estimating the reproducibility of psychological science'}
+              link={'https://www.science.org/doi/10.1126/science.aac4716'}
             />
             <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+              name={'PlOS Medicine'}
+              text={'Why Most Clinical Research Is Not Useful'}
+              link={
+                'https://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.1002049'
+              }
             />
             <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+              name={'Plos One'}
+              text={
+                'How Many Scientists Fabricate and Falsify Research? A Systematic Review and Meta-Analysis of Survey Data'
+              }
+              link={
+                'https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0005738'
+              }
             />
             <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+              name={'Pubmed'}
+              text={
+                'The Prevalence of Inappropriate Image Duplication in Biomedical Research Publications'
+              }
+              link={'https://pubmed.ncbi.nlm.nih.gov/27273827/'}
             />
             <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+              name={'ASM Journals'}
+              text={'Retracted Science and the Retraction Index'}
+              link={'https://journals.asm.org/doi/10.1128/iai.05661-11'}
             />
             <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+              name={'ResearchGate'}
+              text={
+                'Recommendations for Increasing Replicability in Psychology'
+              }
+              link={
+                'https://www.researchgate.net/publication/237044274_Recommendations_for_Increasing_Replicability_in_Psychology'
+              }
             />
             <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
-            />
-            <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
-            />
-            <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
-            />
-            <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
-            />
-            <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
-            />
-            <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
-            />
-            <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
-            />
-            <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
-            />
-            <Article
-              name={'Nature'}
-              text={'Many researchers say they’ll share data — but don’t'}
-              link={'https://doi.org/10.1038/d41586-022-01692-1'}
+              name={'Pubmed'}
+              text={
+                'Reproducibility in science: improving the standard for basic and preclinical research'
+              }
+              link={'https://pubmed.ncbi.nlm.nih.gov/25552691/'}
             />
             <OnlyDesktop>
               <EmptyArticlesPostfix />
@@ -774,7 +814,7 @@ const ArticlesRow = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
-    
+
   @media (max-width: 1300px) {
     width: 100%;
     left: 0;
