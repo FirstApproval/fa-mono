@@ -35,6 +35,7 @@ export const pathToOauthType: Record<string, OauthType> = {
 };
 export const shortPublicationPath = '/p/';
 export const publicationPath = '/publication/';
+export const signInPath = '/sign_in';
 export const signUpPath = '/sign_up';
 export const namePath = '/name';
 export const contactsPath = '/contacts';

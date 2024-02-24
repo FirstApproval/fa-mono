@@ -23,7 +23,7 @@ void (async (): Promise<void> => {
 axios.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response.status === 401) {
+    if (error.response?.status === 401) {
       localStorage.clear();
       window.location.replace('/sign_in');
     }

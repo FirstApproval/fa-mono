@@ -8,7 +8,7 @@ import { BetaDialogWithButton } from './BetaDialogWithButton';
 import { authStore } from '../core/auth';
 import { userStore } from '../core/user';
 import { UserMenu } from './UserMenu';
-import { Page } from '../core/router/constants';
+import { Page, signInPath, signUpPath } from '../core/router/constants';
 import { FALinkWrap } from './LinkWrap';
 
 interface HeaderComponentProps {
@@ -108,7 +108,7 @@ export const HeaderComponent = (
                     <ButtonWrap
                       variant="outlined"
                       onClick={() => {
-                        routerStore.navigatePage(Page.SIGN_IN);
+                        routerStore.navigatePage(Page.SIGN_IN, signInPath);
                       }}
                       size={'large'}>
                       Log in
@@ -127,7 +127,7 @@ export const HeaderComponent = (
                     <Button
                       variant="outlined"
                       onClick={() => {
-                        routerStore.navigatePage(Page.SIGN_IN);
+                        routerStore.navigatePage(Page.SIGN_IN, signInPath);
                       }}>
                       Log in
                     </Button>
@@ -137,7 +137,7 @@ export const HeaderComponent = (
                   <SignUpButton
                     variant="contained"
                     onClick={() => {
-                      routerStore.navigatePage(Page.SIGN_UP);
+                      routerStore.navigatePage(Page.SIGN_UP, signUpPath);
                     }}
                     size={'large'}>
                     Sign up
@@ -147,7 +147,7 @@ export const HeaderComponent = (
                   <Button
                     variant="outlined"
                     onClick={() => {
-                      routerStore.navigatePage(Page.SIGN_UP);
+                      routerStore.navigatePage(Page.SIGN_UP, signUpPath);
                     }}>
                     Sign up
                   </Button>
