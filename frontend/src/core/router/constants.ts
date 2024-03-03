@@ -24,7 +24,9 @@ export enum Page {
   RESET_PASSWORD,
   RESTORE_PASSWORD_EMAIL,
 
-  NAME
+  NAME,
+  EMAIL,
+  CHANGE_EMAIL_VERIFICATION
 }
 
 export const pathToOauthType: Record<string, OauthType> = {
@@ -37,6 +39,7 @@ export const shortPublicationPath = '/p/';
 export const publicationPath = '/publication/';
 export const signUpPath = '/sign_up';
 export const namePath = '/name';
+export const emailPath = '/e-mail';
 export const contactsPath = '/contacts';
 export const affiliationsPath = '/affiliations';
 export const shortAuthorPath = '/a/';

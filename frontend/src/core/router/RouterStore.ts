@@ -1,4 +1,5 @@
 import { authStore } from '../auth';
+import { userStore } from '../user';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { createBrowserHistory } from 'history';
 import { authService, userService, visitorService } from '../service';
@@ -7,6 +8,7 @@ import {
   affiliationsPath,
   authorPath,
   contactsPath,
+  emailPath,
   namePath,
   Page,
   pathToOauthType,
@@ -75,6 +77,11 @@ export class RouterStore {
             localStorage.setItem(VISIT_MARK_KEY, 'true');
           }
         });
+      }
+
+      if (authStore.token && !userStore.user?.email) {
+        this.navigatePage(Page.EMAIL, emailPath, true);
+        return;
       }
 
       if (path.startsWith('/sign_in')) {
@@ -187,6 +194,8 @@ export class RouterStore {
     const userData = (await userService.getMe()).data;
     if (!userData.isNameConfirmed) {
       this.navigatePage(Page.NAME, namePath, true);
+    } else if (!userData.email) {
+      this.navigatePage(Page.EMAIL, emailPath, true);
     } else if (
       !userData.isWorkplacesConfirmed ||
       !userData.workplaces?.length

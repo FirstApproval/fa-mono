@@ -10,11 +10,15 @@ import { FlexBody, FlexBodyCenter, Header, Parent } from '../common.styled';
 import { routerStore } from '../../core/router';
 import { authStore } from '../../core/auth';
 import { HeaderComponent } from '../../components/HeaderComponent';
+import { UserStore } from 'src/core/UserStore';
 
 interface EmailVerificationPageProps {
+  email: string;
   store: SignUpStore;
+  userStore: UserStore;
   onSignInClick: () => void;
   onContinueClick: () => void;
+  isRegistration: boolean;
 }
 
 export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps> =
@@ -46,8 +50,8 @@ export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps
             <Header>Check your email</Header>
             <EmailLabel variant={'body'} component={'div'}>
               We&apos;ve sent you a six-digit confirmation code to{' '}
-              <b>{props.store.email}</b>. Please enter it below to confirm your
-              email address.
+              <b>{props.email}</b>. Please enter it below to confirm your email
+              address.
             </EmailLabel>
             <div>
               <FullWidthTextField
@@ -61,11 +65,19 @@ export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps
                   const code = e.currentTarget.value;
                   props.store.code = code;
                   if (code.length === 6) {
-                    void props.store.submitRegistrationRequest().then(() => {
-                      if (authStore.token) {
+                    if (props.isRegistration) {
+                      void props.store.submitRegistrationRequest().then(() => {
+                        props.store.code = '';
+                        if (authStore.token) {
+                          props.onContinueClick();
+                        }
+                      });
+                    } else {
+                      void props.userStore.confirmChangeEmail(code).then(() => {
+                        props.store.code = '';
                         props.onContinueClick();
-                      }
-                    });
+                      });
+                    }
                   }
                 }}
                 label="Enter 6-digit code"

@@ -32,6 +32,7 @@ class UserEmailService(
         val id = randomUUID()
 
         emailChangeConfirmationRepository.deleteByUserId(user.id)
+        emailChangeConfirmationRepository.flush()
         emailChangeConfirmationRepository.save(
             EmailChangeConfirmation(
                 id = id,

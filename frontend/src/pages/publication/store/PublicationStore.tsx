@@ -648,7 +648,6 @@ export class PublicationStore {
             this.summary = publication.description;
           }
           if (publication.doiLink?.length) {
-            debugger;
             this.doiLink = publication.doiLink;
           }
           if (publication.predictedGoals?.length) {

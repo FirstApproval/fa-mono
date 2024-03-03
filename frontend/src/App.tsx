@@ -32,6 +32,7 @@ import { Page } from './core/router/constants';
 import { EnterAffiliationsPage } from './pages/signup/EnterAffiliationsPage';
 import { userStore } from './core/user';
 import { ContactsPage } from './pages/contacts/ContactsPage';
+import { EnterEmailPage } from './pages/signup/EnterEmailPage';
 
 const MOBILE_VERSION_NOT_SUPPORT_STORAGE_KEY = 'mobileVersionNotSupportShown';
 
@@ -144,6 +145,17 @@ const App: FunctionComponent = observer(() => {
                   }}
                 />
               )}
+              {page === Page.EMAIL && userStore.editableUser && (
+                <EnterEmailPage
+                  onContinueClick={() => {
+                    userStore.updateUser([]).then(() => {
+                      navigatePage(Page.CHANGE_EMAIL_VERIFICATION);
+                    });
+                  }}
+                  signUpStore={signUpStore}
+                  store={userStore}
+                />
+              )}
               {page === Page.AFFILIATIONS && (
                 <EnterAffiliationsPage
                   isRegistration={routerStore.payload.isRegistration}
@@ -168,7 +180,9 @@ const App: FunctionComponent = observer(() => {
               )}
               {page === Page.EMAIL_VERIFICATION && (
                 <EmailVerificationPage
+                  email={signUpStore.email}
                   store={signUpStore}
+                  userStore={userStore}
                   onSignInClick={() => {
                     navigatePage(Page.SIGN_IN);
                   }}
@@ -177,6 +191,21 @@ const App: FunctionComponent = observer(() => {
                       isRegistration: true
                     });
                   }}
+                  isRegistration={true}
+                />
+              )}
+              {page === Page.CHANGE_EMAIL_VERIFICATION && (
+                <EmailVerificationPage
+                  email={userStore.newEmail!}
+                  store={signUpStore}
+                  userStore={userStore}
+                  onSignInClick={() => {
+                    navigatePage(Page.SIGN_IN);
+                  }}
+                  onContinueClick={() =>
+                    navigatePage(Page.HOME_PAGE, '/', true)
+                  }
+                  isRegistration={false}
                 />
               )}
               {page === Page.RESET_PASSWORD && (

@@ -24,6 +24,8 @@ export class UserStore implements IWorkplaceStore {
   deleteProfileImage = false;
   workplaces: Workplace[] = [];
   workplacesProps: WorkplaceProps[] = [];
+  changeEmailConfirmationToken: string | undefined;
+  newEmail: string | undefined;
 
   workplacesValidation: WorkplaceValidationState[] = [];
 
@@ -80,6 +82,8 @@ export class UserStore implements IWorkplaceStore {
       routerStore.navigatePage(Page.AFFILIATIONS, affiliationsPath, true, {
         isRegistration: false
       });
+    } else if (!user?.email) {
+      routerStore.navigatePage(Page.EMAIL_VERIFICATION, namePath, true);
     } else {
       routerStore.navigatePage(Page.PUBLICATION, publicationPath);
     }
@@ -127,7 +131,7 @@ export class UserStore implements IWorkplaceStore {
           : this.user!.username,
         profileImage: this.editableUser!.profileImage,
         deleteProfileImage: this.deleteProfileImage,
-        workplaces: workplaces != null ? workplaces : this.workplaces,
+        workplaces: workplaces ?? this.workplaces,
         confirmName,
         confirmWorkplaces
       })
@@ -141,5 +145,18 @@ export class UserStore implements IWorkplaceStore {
       isValidOrganization: !!workplace.organization?.name?.length
     }));
     return this.workplacesValidation.every((v) => v.isValidOrganization);
+  }
+
+  async confirmChangeEmail(code: string): Promise<any> {
+    return userService
+      .confirmChangeEmail({
+        code,
+        confirmationToken: this.changeEmailConfirmationToken!
+      })
+      .then(() => {
+        this.changeEmailConfirmationToken = undefined;
+        this.newEmail = undefined;
+        this.requestUserData();
+      });
   }
 }
