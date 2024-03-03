@@ -32,6 +32,13 @@ export const LoginOauth: FunctionComponent = () => {
             </FullWidthButton>
           </Grid>
           <Grid display={'flex'} item xs={4} md={2} justifyContent={'center'}>
+            <Link href={authUrls.orcid}>
+              <IconButtonWrap size={'medium'}>
+                <img src={orcid} />
+              </IconButtonWrap>
+            </Link>
+          </Grid>
+          <Grid display={'flex'} item xs={4} md={2} justifyContent={'center'}>
             <Link href={authUrls.linkedin}>
               <IconButtonWrap size={'medium'}>
                 <img src={linked} />
