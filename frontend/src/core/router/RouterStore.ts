@@ -8,11 +8,13 @@ import {
   affiliationsPath,
   authorPath,
   contactsPath,
+  emailChangeConfirmationPath,
   emailPath,
   namePath,
   Page,
   pathToOauthType,
   publicationPath,
+  registrationConfirmationPath,
   shortAuthorPath,
   shortPublicationPath,
   signUpPath
@@ -77,6 +79,11 @@ export class RouterStore {
             localStorage.setItem(VISIT_MARK_KEY, 'true');
           }
         });
+      }
+
+      if (path.startsWith('/email-change-confirmation')) {
+        this.navigatePage(Page.CHANGE_EMAIL_VERIFICATION, path, true);
+        return;
       }
 
       if (authStore.token && !userStore.user?.email) {
@@ -254,6 +261,22 @@ export class RouterStore {
 
   get lastPathSegment(): string {
     return this._path.substring(this._path.lastIndexOf('/') + 1);
+  }
+
+  get emailConfirmationToken(): string {
+    return this._path.substring(
+      this._path.lastIndexOf(emailChangeConfirmationPath) +
+        emailChangeConfirmationPath.length,
+      this._path.lastIndexOf('/')
+    );
+  }
+
+  get registrationConfirmationPath(): string {
+    return this._path.substring(
+      this._path.lastIndexOf(registrationConfirmationPath) +
+        registrationConfirmationPath.length,
+      this._path.lastIndexOf('/')
+    );
   }
 
   openInNewTab(url: string): void {

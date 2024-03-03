@@ -151,7 +151,7 @@ class UserService(
         prevTry.lastName = lastName
         prevTry.password = passwordEncoder.encode(password)
         // TODO CREATE LINK
-        val link = "${frontendProperties.registrationConfirmationUrl}/${code}"
+        val link = "${frontendProperties.registrationConfirmationUrl}/${prevTry.id}/${code}"
         notificationService.sendConfirmationEmail(code, link, prevTry.email, "email-template")
         return prevTry.id
     }
@@ -174,7 +174,7 @@ class UserService(
             )
         )
         // TODO CREATE LINK
-        val link = "${frontendProperties.registrationConfirmationUrl}/${code}"
+        val link = "${frontendProperties.registrationConfirmationUrl}/${registrationToken}/${code}"
         notificationService.sendConfirmationEmail(code, link, email, "email-template")
         return registrationToken
     }

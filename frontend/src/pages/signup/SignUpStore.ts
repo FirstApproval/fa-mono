@@ -17,7 +17,6 @@ export class SignUpStore {
   firstName: string = '';
   lastName: string = '';
   password: string = '';
-  code: string = '';
 
   lastResponse: RegistrationResponse | undefined;
 
@@ -40,11 +39,13 @@ export class SignUpStore {
     };
   }
 
-  getSubmitRegistrationRequestData(): SubmitRegistrationRequest | undefined {
+  getSubmitRegistrationRequestData(
+    code: string
+  ): SubmitRegistrationRequest | undefined {
     if (this.lastResponse === undefined) return undefined;
     return {
       registrationToken: this.lastResponse.registrationToken,
-      code: this.code
+      code
     };
   }
 
@@ -66,8 +67,8 @@ export class SignUpStore {
     }
   }
 
-  async submitRegistrationRequest(): Promise<void> {
-    const request = this.getSubmitRegistrationRequestData();
+  async submitRegistrationRequest(code: string): Promise<void> {
+    const request = this.getSubmitRegistrationRequestData(code);
     if (request === undefined) {
       return;
     }
@@ -81,7 +82,6 @@ export class SignUpStore {
       this.firstName = '';
       this.lastName = '';
       this.password = '';
-      this.code = '';
       void routerStore.navigateAfterLogin();
     } catch (e) {
       const error = e as AxiosError;

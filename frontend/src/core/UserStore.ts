@@ -24,9 +24,9 @@ export class UserStore implements IWorkplaceStore {
   deleteProfileImage = false;
   workplaces: Workplace[] = [];
   workplacesProps: WorkplaceProps[] = [];
-  changeEmailConfirmationToken: string | undefined;
   newEmail: string | undefined;
   isSubmitting = false;
+  changeEmailConfirmationToken: string | undefined;
 
   workplacesValidation: WorkplaceValidationState[] = [];
 
@@ -148,16 +148,17 @@ export class UserStore implements IWorkplaceStore {
     return this.workplacesValidation.every((v) => v.isValidOrganization);
   }
 
-  async confirmChangeEmail(code: string): Promise<any> {
+  async confirmChangeEmail(
+    code: string,
+    confirmationToken: string
+  ): Promise<any> {
     return userService
-      .confirmChangeEmail({
-        code,
-        confirmationToken: this.changeEmailConfirmationToken!
-      })
+      .confirmChangeEmail({ code, confirmationToken })
       .then(() => {
-        this.changeEmailConfirmationToken = undefined;
         this.newEmail = undefined;
-        this.requestUserData();
+        if (authStore.token) {
+          this.requestUserData();
+        }
       });
   }
 }

@@ -1,4 +1,4 @@
-import React, { type FunctionComponent, useEffect } from 'react';
+import React, { type FunctionComponent, useEffect, useState } from 'react';
 import { Alert, Link, Snackbar, TextField, Typography } from '@mui/material';
 import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
@@ -24,21 +24,32 @@ interface EmailVerificationPageProps {
 export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps> =
   observer((props: EmailVerificationPageProps) => {
     const isError = props.store.isError;
+    const [code, setCode] = useState('');
+    const [emailConfirmationToken, setEmailConfirmationToken] = useState('');
 
     useEffect(() => {
-      const code = routerStore.lastPathSegment;
-      if (code) {
-        const registrationToken = localStorage.getItem(
-          REGISTRATION_CONFIRMATION_TOKEN_STORAGE_KEY
-        );
-        if (registrationToken == null) {
-          props.onSignInClick();
-          return;
+      const codeFromUrl = routerStore.lastPathSegment;
+      if (codeFromUrl) {
+        const registrationConfirmationTokenFromUrl =
+          routerStore.registrationConfirmationPath;
+        if (props.isRegistration && registrationConfirmationTokenFromUrl) {
+          props.store.lastResponse = {
+            registrationToken: registrationConfirmationTokenFromUrl
+          };
+          void props.store.submitRegistrationRequest(codeFromUrl);
+          localStorage.removeItem(REGISTRATION_CONFIRMATION_TOKEN_STORAGE_KEY);
+        } else {
+          const emailConfirmationTokenFromUrl =
+            routerStore.emailConfirmationToken;
+          if (emailConfirmationTokenFromUrl) {
+            void props.userStore
+              .confirmChangeEmail(codeFromUrl, emailConfirmationTokenFromUrl)
+              .then(() => {
+                props.userStore.changeEmailConfirmationToken = undefined;
+                props.onContinueClick();
+              });
+          }
         }
-        props.store.code = code;
-        props.store.lastResponse = { registrationToken };
-        void props.store.submitRegistrationRequest();
-        localStorage.removeItem(REGISTRATION_CONFIRMATION_TOKEN_STORAGE_KEY);
       }
     }, []);
 
@@ -60,23 +71,37 @@ export const EmailVerificationPage: FunctionComponent<EmailVerificationPageProps
                   props.store.isCodeError ? 'Invalid code' : undefined
                 }
                 type={'number'}
-                value={props.store.code}
+                value={code}
                 onChange={(e) => {
                   const code = e.currentTarget.value;
-                  props.store.code = code;
+                  setCode(code);
                   if (code.length === 6) {
                     if (props.isRegistration) {
-                      void props.store.submitRegistrationRequest().then(() => {
-                        props.store.code = '';
-                        if (authStore.token) {
-                          props.onContinueClick();
-                        }
-                      });
+                      void props.store
+                        .submitRegistrationRequest(code)
+                        .then(() => {
+                          setCode('');
+                          setEmailConfirmationToken('');
+                          if (authStore.token) {
+                            localStorage.removeItem(
+                              REGISTRATION_CONFIRMATION_TOKEN_STORAGE_KEY
+                            );
+                            props.onContinueClick();
+                          }
+                        });
                     } else {
-                      void props.userStore.confirmChangeEmail(code).then(() => {
-                        props.store.code = '';
-                        props.onContinueClick();
-                      });
+                      void props.userStore
+                        .confirmChangeEmail(
+                          code,
+                          props.userStore.changeEmailConfirmationToken!
+                        )
+                        .then(() => {
+                          setCode('');
+                          setEmailConfirmationToken('');
+                          props.userStore.changeEmailConfirmationToken =
+                            undefined;
+                          props.onContinueClick();
+                        });
                     }
                   }
                 }}

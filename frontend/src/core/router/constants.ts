@@ -46,3 +46,5 @@ export const shortAuthorPath = '/a/';
 export const authorPath = '/author/';
 export const profilePath = '/profile/';
 export const accountPath = '/account/';
+export const emailChangeConfirmationPath = '/email-change-confirmation/';
+export const registrationConfirmationPath = '/registration-confirmation/';
