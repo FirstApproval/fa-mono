@@ -17,7 +17,7 @@ import { UserStore } from '../../core/UserStore';
 import { userService } from '../../core/service';
 
 interface EnterEmailPageProps {
-  store: UserStore;
+  userStore: UserStore;
   signUpStore: SignUpStore;
   onContinueClick: () => void;
 }
@@ -28,7 +28,7 @@ export const EnterEmailPage: FunctionComponent<EnterEmailPageProps> = observer(
     const [isUsedEmail, setUsedEmail] = useState(false);
 
     const validate = (): boolean => {
-      const email = props.store.newEmail ?? '';
+      const email = props.userStore.newEmail ?? '';
       const isVE = email.length > 0 && validateEmail(email);
       setIsValidEmail(isVE);
       return isVE;
@@ -37,30 +37,34 @@ export const EnterEmailPage: FunctionComponent<EnterEmailPageProps> = observer(
     const validateAndContinue = (event: any): void => {
       if (event.key === 'Enter' || event.keyCode === 13 || event.button === 0) {
         event.preventDefault();
+        props.userStore.isSubmitting = true;
         const isValid = validate();
         if (isValid) {
           void props.signUpStore
-            .existsByEmail(props.store.newEmail!)
+            .existsByEmail(props.userStore.newEmail!)
             .then((exist) => {
               if (exist) {
                 setUsedEmail(true);
               } else {
                 void userService
                   .changeEmail({
-                    email: props.store.newEmail!
+                    email: props.userStore.newEmail!
                   })
                   .then((response) => {
-                    props.store.changeEmailConfirmationToken =
+                    props.userStore.changeEmailConfirmationToken =
                       response.data.confirmationToken;
+                    props.userStore.isSubmitting = false;
                     props.onContinueClick();
                   });
               }
             });
+        } else {
+          props.userStore.isSubmitting = false;
         }
       }
     };
 
-    const emailNonEmpty = !!props.store.newEmail?.length;
+    const emailNonEmpty = !!props.userStore.newEmail?.length;
 
     return (
       <Parent>
@@ -74,10 +78,10 @@ export const EnterEmailPage: FunctionComponent<EnterEmailPageProps> = observer(
                 autoFocus
                 error={!isValidEmail}
                 helperText={!isValidEmail ? 'Invalid address' : undefined}
-                value={props.store.newEmail}
+                value={props.userStore.newEmail}
                 type={'email'}
                 onChange={(e) => {
-                  props.store.newEmail = e.currentTarget.value;
+                  props.userStore.newEmail = e.currentTarget.value;
                 }}
                 onKeyDown={validateAndContinue}
                 label="Email"
@@ -97,7 +101,7 @@ export const EnterEmailPage: FunctionComponent<EnterEmailPageProps> = observer(
               </AlertWrap>
             )}
             <FullWidthButton
-              // loading={props.signUpStore.isSubmitting}
+              loading={props.userStore.isSubmitting}
               disabled={!emailNonEmpty}
               variant="contained"
               size={'large'}

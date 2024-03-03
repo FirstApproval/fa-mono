@@ -153,7 +153,7 @@ const App: FunctionComponent = observer(() => {
                     });
                   }}
                   signUpStore={signUpStore}
-                  store={userStore}
+                  userStore={userStore}
                 />
               )}
               {page === Page.AFFILIATIONS && (

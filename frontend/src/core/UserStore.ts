@@ -26,6 +26,7 @@ export class UserStore implements IWorkplaceStore {
   workplacesProps: WorkplaceProps[] = [];
   changeEmailConfirmationToken: string | undefined;
   newEmail: string | undefined;
+  isSubmitting = false;
 
   workplacesValidation: WorkplaceValidationState[] = [];
 
