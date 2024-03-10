@@ -67,6 +67,7 @@ export const ActionBar = observer(
         <Grid
           container
           rowSpacing={2}
+          spacing={2}
           alignItems={{ xs: 'center', lg: 'space-between' }}>
           <Grid item sm={6} md={8}>
             {publicationStore.publicationStatus ===
@@ -135,10 +136,7 @@ export const ActionBar = observer(
                       color={'inherit'}
                       style={{ marginRight: '8px' }}
                     />{' '}
-                    <Box display={{ xs: 'none', lg: 'block' }}>
-                      <span>Download sample</span>
-                    </Box>
-                    <Box display={{ xs: 'block', lg: 'none' }}>
+                    <Box display={{ xs: 'block', lg: 'block' }}>
                       <span>Sample</span>
                     </Box>
                     <div style={{ marginRight: 4 }}></div>
