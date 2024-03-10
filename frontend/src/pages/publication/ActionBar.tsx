@@ -64,8 +64,11 @@ export const ActionBar = observer(
         {props.displayDivider && (
           <Divider color={'#D2D2D6'} sx={{ marginBottom: '16px' }} />
         )}
-        <Grid container rowSpacing={2} alignItems={'center'}>
-          <Grid item sm={12} md={8}>
+        <Grid
+          container
+          rowSpacing={2}
+          alignItems={{ xs: 'center', lg: 'space-between' }}>
+          <Grid item sm={6} md={6}>
             {publicationStore.publicationStatus ===
               PublicationStatus.READY_FOR_PUBLICATION && (
               <FlexWrapRow>
@@ -146,7 +149,15 @@ export const ActionBar = observer(
                 </Tooltip>
               )}
           </Grid>
-          <Grid item sm={12} md={4}>
+          <Grid
+            item
+            sm={6}
+            md={6}
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'flex-end'
+            }}>
             <Tooltip title="Download publication PDF">
               <PdfButtonWrap
                 variant="outlined"
