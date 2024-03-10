@@ -73,11 +73,10 @@ export class UserStore implements IWorkplaceStore {
           });
         });
 
-        const page = routerStore.page;
         if (
-          !this.user.email &&
-          page !== Page.EMAIL_VERIFICATION &&
-          page !== Page.CHANGE_EMAIL_VERIFICATION
+          !response.data.email &&
+          routerStore.page !== Page.EMAIL_VERIFICATION &&
+          routerStore.page !== Page.CHANGE_EMAIL_VERIFICATION
         ) {
           routerStore.navigatePage(Page.EMAIL, emailPath, true);
         }

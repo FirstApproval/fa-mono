@@ -68,7 +68,7 @@ export const ActionBar = observer(
           container
           rowSpacing={2}
           alignItems={{ xs: 'center', lg: 'space-between' }}>
-          <Grid item sm={6} md={7}>
+          <Grid item sm={6} md={8}>
             {publicationStore.publicationStatus ===
               PublicationStatus.READY_FOR_PUBLICATION && (
               <FlexWrapRow>
@@ -152,7 +152,7 @@ export const ActionBar = observer(
           <Grid
             item
             sm={6}
-            md={5}
+            md={4}
             style={{
               display: 'flex',
               flexDirection: 'row',
