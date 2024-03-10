@@ -86,11 +86,6 @@ export class RouterStore {
         return;
       }
 
-      if (authStore.token && !userStore.user?.email) {
-        this.navigatePage(Page.EMAIL, emailPath, true);
-        return;
-      }
-
       if (path.startsWith('/sign_in')) {
         authStore.token = undefined;
         this.navigatePage(Page.SIGN_IN, path, true);
@@ -202,6 +197,7 @@ export class RouterStore {
     if (!userData.isNameConfirmed) {
       this.navigatePage(Page.NAME, namePath, true);
     } else if (!userData.email) {
+      debugger;
       this.navigatePage(Page.EMAIL, emailPath, true);
     } else if (
       !userData.isWorkplacesConfirmed ||

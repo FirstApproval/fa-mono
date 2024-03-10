@@ -12,6 +12,7 @@ import { userStore } from './user';
 import { cloneDeep } from 'lodash';
 import {
   affiliationsPath,
+  emailPath,
   namePath,
   Page,
   publicationPath,
@@ -71,6 +72,15 @@ export class UserStore implements IWorkplaceStore {
             isValidOrganization: true
           });
         });
+
+        const page = routerStore.page;
+        if (
+          !this.user.email &&
+          page !== Page.EMAIL_VERIFICATION &&
+          page !== Page.CHANGE_EMAIL_VERIFICATION
+        ) {
+          routerStore.navigatePage(Page.EMAIL, emailPath, true);
+        }
       });
     });
   }
@@ -84,7 +94,7 @@ export class UserStore implements IWorkplaceStore {
         isRegistration: false
       });
     } else if (!user?.email) {
-      routerStore.navigatePage(Page.EMAIL_VERIFICATION, namePath, true);
+      routerStore.navigatePage(Page.EMAIL, emailPath, true);
     } else {
       routerStore.navigatePage(Page.PUBLICATION, publicationPath);
     }
