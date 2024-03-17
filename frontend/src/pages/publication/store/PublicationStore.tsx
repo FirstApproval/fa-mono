@@ -604,6 +604,7 @@ export class PublicationStore {
     count += this.method.length;
     count += this.dataDescription.length;
     count += this.preliminaryResults.length;
+    count += this.software.length;
     this.grantingOrganizations.forEach((it) => (count += it.text.length));
     this.relatedArticles.forEach((it) => (count += it.text.length));
     this.primaryArticles.forEach((it) => (count += it.text.length));
