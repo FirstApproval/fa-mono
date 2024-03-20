@@ -55,7 +55,7 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
       profileImage = authorEditorStore.profileImage;
       workplaces = authorEditorStore.workplaces;
     }
-  } else if (!isConfirmed) {
+  } else if (isConfirmed === false) {
     const unconfirmedAuthor = author as Author;
     firstName = unconfirmedAuthor.firstName;
     lastName = unconfirmedAuthor.lastName;
