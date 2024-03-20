@@ -87,12 +87,12 @@ export const AuthorElement = (props: AuthorElementProps): ReactElement => {
         <AuthorWrap>
           <Tooltip title={isOverflow ? `${firstName} ${lastName}` : undefined}>
             <AuthorName ref={nameRef}>
-              {isConfirmed && (
+              {(isConfirmed ?? isConfirmed === undefined) && (
                 <span style={{ textDecoration: 'underline' }}>
                   {firstName} {lastName}
                 </span>
               )}
-              {!isConfirmed && (
+              {isConfirmed === false && (
                 <span>
                   {firstName} {lastName} (not registered)
                 </span>
