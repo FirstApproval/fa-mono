@@ -25,6 +25,7 @@ export class PublicationPageStore {
 
   sampleFilesEnabled = false;
   sampleFilesModalOpen = false;
+  collaborationRequirementDialogOpen = false;
 
   get sampleFilesHidden(): boolean {
     return this.fs.rootPathFiles === 0;
@@ -169,15 +170,18 @@ export class PublicationPageStore {
     );
   }
 
-  downloadFiles(): void {
+  downloadFiles(agreeToTheFirstApprovalLicense: boolean): void {
     if (this.contentStatus !== PublicationContentStatus.PREPARING) {
-      void this.doDownloadFiles();
+      void this.doDownloadFiles(agreeToTheFirstApprovalLicense);
     }
   }
 
-  doDownloadFiles = async (): Promise<void> => {
+  doDownloadFiles = async (
+    agreeToTheFirstApprovalLicense: boolean
+  ): Promise<void> => {
     const response = await publicationService.getDownloadLink(
-      this.publicationStore.publicationId
+      this.publicationStore.publicationId,
+      agreeToTheFirstApprovalLicense
     );
     const downloadData = response.data;
     switch (downloadData.contentStatus) {

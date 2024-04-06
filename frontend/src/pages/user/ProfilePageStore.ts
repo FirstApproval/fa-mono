@@ -21,7 +21,7 @@ export class ProfilePageStore {
     makeAutoObservable(this);
     this.userStore = userStore;
 
-    for (const tab of [Tab.PUBLISHED, Tab.DRAFTS]) {
+    for (const tab of [Tab.PUBLISHED, Tab.DRAFTS, Tab.DOWNLOADED]) {
       this.publicationsLastPage.set(tab as Tab, false);
       this.publicationsPageNum.set(tab as Tab, 0);
     }
@@ -29,6 +29,7 @@ export class ProfilePageStore {
     void this.loadUser(username);
     if (authStore.token) {
       void this.load(Tab.DRAFTS);
+      void this.load(Tab.DOWNLOADED);
     }
   }
 
@@ -39,19 +40,28 @@ export class ProfilePageStore {
         : [PublicationStatus.PUBLISHED, PublicationStatus.MODERATION];
     const isCurrentUserProfilePage =
       !username || this.userStore?.user?.username === username;
-    const publicationsData = (
-      isCurrentUserProfilePage
-        ? await publicationService.getMyPublications(
-            this.publicationsPageNum.get(tab)!,
-            20,
-            statuses
-          )
-        : await publicationService.getUserPublications(
-            username!,
-            this.publicationsPageNum.get(tab)!,
-            20
-          )
-    ).data;
+    let publicationsData: PublicationsResponse;
+
+      if (tab === Tab.DOWNLOADED) {
+        publicationsData = await publicationService.getMyDownloadedPublications(
+          this.publicationsPageNum.get(tab)!,
+          20
+        ).data
+      } else {
+        publicationsData = (
+          isCurrentUserProfilePage
+            ? await publicationService.getMyPublications(
+              this.publicationsPageNum.get(tab)!,
+              20,
+              statuses
+            )
+            : await publicationService.getUserPublications(
+              username!,
+              this.publicationsPageNum.get(tab)!,
+              20
+            )
+        ).data
+      }
 
     const newPublicationArray = [
       ...(this.publications.get(tab) ?? []),
@@ -84,5 +94,6 @@ export class ProfilePageStore {
 
 export enum Tab {
   PUBLISHED = 'PUBLISHED',
-  DRAFTS = 'DRAFTS'
+  DRAFTS = 'DRAFTS',
+  DOWNLOADED = 'DOWNLOADED'
 }

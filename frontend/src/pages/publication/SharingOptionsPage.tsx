@@ -27,7 +27,7 @@ import {
   AccessType,
   DataCollectionType,
   LicenseType,
-  Reviewer,
+  StorageType,
   StorageType,
   UseType
 } from '../../apis/first-approval-api';
@@ -201,21 +201,23 @@ export const SharingOptionsPage = (props: {
                   'All registered users can download your attached files instantly. Set the rules for your data use below.'
                 }
               />
-              <SharingOption
-                icon={<MessageOutlined fontSize={'medium'} />}
-                label={'Direct Share'}
-                isSelected={accessType === AccessType.PERSONAL_SHARE}
-                onClick={() => setAccessType(AccessType.PERSONAL_SHARE)}
-                description={
-                  'The dataset will not be published but will receive a reserved DOI and will be accessible through a direct link.'
-                }
-                isDisabled={true}
-                disabledChipLabel={
-                  props.dataCollectionType === DataCollectionType.STUDENT
-                    ? NOT_FOR_COMPETITION_CHIP_LABEL
-                    : SOON_CHIP_LABEL
-                }
-              />
+              <Tooltip title="Like science, we value openness and are excited to share what we're working on. New features currently in our 'lab', are being tested and perfected, so stay tuned.">
+                <SharingOption
+                  icon={<MessageOutlined fontSize={'medium'} />}
+                  label={'Direct Share'}
+                  isSelected={accessType === AccessType.PERSONAL_SHARE}
+                  onClick={() => setAccessType(AccessType.PERSONAL_SHARE)}
+                  description={
+                    'The dataset will not be published but will receive a reserved DOI and will be accessible through a direct link.'
+                  }
+                  isDisabled={true}
+                  disabledChipLabel={
+                    props.dataCollectionType === DataCollectionType.STUDENT
+                      ? NOT_FOR_COMPETITION_CHIP_LABEL
+                      : SOON_CHIP_LABEL
+                  }
+                />
+              </Tooltip>
             </SharingOptionsContainer>
             <SharingOptionSelectedDescription
               variant={'body2'}
@@ -249,15 +251,6 @@ export const SharingOptionsPage = (props: {
                 }
               />
             </SharingOptionsContainer>
-            {useType === UseType.CO_AUTHORSHIP && (
-              <SharingOptionSelectedDescription
-                variant={'body2'}
-                component={'div'}>
-                Co-authorship license is active for five years from the date of
-                publication. After that, the data becomes available under an
-                open CC BY-ND license.
-              </SharingOptionSelectedDescription>
-            )}
             <Typography variant={'h6'}>Your files storage</Typography>
             <SharingOptionsContainer>
               <SharingOption
@@ -344,6 +337,8 @@ export const SharingOptionsPage = (props: {
               onClick={() => {
                 void publicationService
                   .submitPublication(publicationId, {
+                    accessType: AccessType.OPEN,
+                    useType,
                     accessType,
                     useType,
                     storageType,
@@ -600,7 +595,7 @@ const FairPeerReviewSectionWrap = styled(Typography)`
   width: 100%;
   display: flex;
   align-items: center;
-  padding: 8px 16px 8px 0;
+  padding: 8px 16px;
   margin-top: 16px;
   margin-bottom: 24px;
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
@@ -645,10 +640,10 @@ const SharingOptionWrap = styled.div<{
   border-radius: 8px;
   border: 1px solid var(--divider, #d2d2d6);
   ${(props) =>
-    props.isSelected
-      ? 'border: 2px solid var(--primary-dark, #3C47E5);' +
-        'box-shadow: 0px 0px 4px 0px #3B4EFF;'
-      : ''}
+          props.isSelected
+                  ? 'border: 2px solid var(--primary-dark, #3C47E5);' +
+                  'box-shadow: 0px 0px 4px 0px #3B4EFF;'
+                  : ''}
   display: flex;
   flex-direction: column;
 `;
@@ -741,6 +736,33 @@ const SharingOptionsWrap = styled.div`
   justify-content: space-between;
   padding-top: 24px;
   padding-bottom: 24px;
+`;
+
+const StorageOptionLabelWrap = styled.div<{
+  disabled: boolean;
+}>`
+  /* components/alert-title */
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 150%; /* 24px */
+  letter-spacing: 0.15px;
+
+  margin-right: 8px;
+  color: ${(props) => (props.disabled ? '#04003661' : '#040036')};
+`;
+
+const StorageOptionDescription = styled(Typography)<{
+  disabled: boolean;
+}>`
+  margin-top: 4px;
+  color: ${(props) => (props.disabled ? '#04003661' : '#040036')};
+`;
+
+const FlexWrapRowRadioLabel = styled.span`
+  margin-top: 27.5px;
+  display: flex;
 `;
 
 const ContentLicensingButton = styled.div`

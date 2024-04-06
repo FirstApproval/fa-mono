@@ -7,13 +7,16 @@ import { PublicationPageStore } from './store/PublicationPageStore';
 import { FileSystemFA } from '../../fire-browser/FileSystemFA';
 import React, { ReactElement, useRef } from 'react';
 import { DraftText } from './DraftText';
-import { DateViewsDownloads } from './DateViewsDownloads';
-import { downloadersStore } from './store/downloadsStore';
+import { DateViewsDownloadsCollaborators } from './DateViewsDownloadsCollaborators';
+import { collaborationStore, downloadersStore } from './store/downloadsStore';
 import { HeightElement, TitleRowWrap } from '../common.styled';
 import { TitleEditor } from './editors/TitleEditor';
 import { Authors } from './Authors';
 import { ResearchArea } from './research-area/ResearchArea';
-import { ActionBar } from './ActionBar';
+import {
+  ActionBar,
+  PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY
+} from './ActionBar';
 import {
   AuthorsPlaceholder,
   DataDescriptionPlaceholder,
@@ -52,6 +55,9 @@ import { PreliminaryResultsEditor } from './editors/PreliminaryResultsEditor';
 import { copyTextToClipboard } from '../../fire-browser/utils';
 import { AcademicLevelElement } from "./academic-level/AcademicLevelElement"
 import { AcademicLevelPlaceholder } from './academic-level/AcademicLevelPlaceholder';
+import { CollaborationRequirementsDialog } from '../../components/CollaborationRequirementsDialog';
+import { UseType } from '../../apis/first-approval-api';
+import { CreateCollaborationRequestDialog } from '../../components/CreateCollaborationRequestDialog';
 
 export const PublicationBody = observer(
   (props: {
@@ -59,7 +65,6 @@ export const PublicationBody = observer(
     publicationStore: PublicationStore;
     researchAreaStore: ResearchAreaStore;
     publicationPageStore: PublicationPageStore;
-    openDownloadersDialog: () => void;
     fs: FileSystemFA;
     sfs: FileSystemFA;
   }): ReactElement => {
@@ -109,11 +114,17 @@ export const PublicationBody = observer(
       <>
         {publicationStore.isPreview && <DraftText />}
         {publicationStore.isView && (
-          <DateViewsDownloads
+          <DateViewsDownloadsCollaborators
             openDownloadersDialog={() => {
               downloadersStore.clearAndOpen(
                 props.publicationId,
                 publicationStore.downloadsCount
+              );
+            }}
+            openCollaborationRequestsDialog={() => {
+              collaborationStore.clearAndOpen(
+                props.publicationId,
+                publicationStore.collaboratorsCount
               );
             }}
             publicationStore={publicationStore}
@@ -233,9 +244,17 @@ export const PublicationBody = observer(
               isReadonly={publicationStore.isReadonly}
               onArchiveDownload={() => {
                 if (authStore.token) {
-                  publicationPageStore.downloadFiles();
-                  publicationPageStore.isPasscodeDialogOpen = true;
+                  if (publicationStore.useType === UseType.CO_AUTHORSHIP) {
+                    publicationPageStore.collaborationRequirementDialogOpen =
+                      true;
+                  } else {
+                    publicationPageStore.downloadFiles(false);
+                  }
                 } else {
+                  sessionStorage.setItem(
+                    PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY,
+                    publicationStore.publicationId
+                  );
                   routerStore.navigatePage(Page.SIGN_UP);
                 }
               }}
@@ -344,11 +363,17 @@ export const PublicationBody = observer(
               displayDivider={false}
             />
             <HeightElement value={'40px'} />
-            <DateViewsDownloads
+            <DateViewsDownloadsCollaborators
               openDownloadersDialog={() => {
                 downloadersStore.clearAndOpen(
                   props.publicationId,
                   publicationStore.downloadsCount
+                );
+              }}
+              openCollaborationRequestsDialog={() => {
+                collaborationStore.clearAndOpen(
+                  props.publicationId,
+                  publicationStore.collaboratorsCount
                 );
               }}
               publicationStore={publicationStore}
@@ -366,6 +391,22 @@ export const PublicationBody = observer(
             (publicationPageStore.isDataPreparingDialogOpen = false)
           }
         />
+        <CollaborationRequirementsDialog
+          isOpen={publicationPageStore.collaborationRequirementDialogOpen}
+          onClose={() =>
+            (publicationPageStore.collaborationRequirementDialogOpen = false)
+          }
+          onConfirm={(agreeToTheFirstApprovalLicense: boolean) => {
+            publicationPageStore.downloadFiles(agreeToTheFirstApprovalLicense);
+            publicationPageStore.collaborationRequirementDialogOpen = false;
+            publicationPageStore.isPasscodeDialogOpen = true;
+          }}
+        />
+        <CreateCollaborationRequestDialog
+          publicationId={publicationStore.publicationId}
+          onClose={() =>
+            (collaborationStore.openCreateCollaborationRequestDialog = false)
+          }></CreateCollaborationRequestDialog>
       </>
     );
   }

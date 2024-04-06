@@ -12,4 +12,8 @@ interface DownloaderRepository : JpaRepository<Downloader, UUID> {
     fun getByUserAndPublication(user: User, publication: Publication): Downloader?
 
     fun findAllByPublicationId(publicationId: String, pageable: Pageable): Page<Downloader>
+
+    fun findAllByUserId(userId: UUID, pageable: Pageable): Page<Downloader>
+
+    fun existsByUserIdAndPublication(userId: UUID, publication: Publication): Boolean
 }

@@ -4,12 +4,14 @@ import _ from 'lodash';
 import {
   AcademicLevel,
   Author,
+  CollaborationRequestStatus,
   DataCollectionType,
   LicenseType,
   type Paragraph,
   PublicationEditRequest,
   PublicationStatus,
-  type UserInfo
+  type UserInfo,
+  UseType
 } from '../../../apis/first-approval-api';
 import { type FileSystemFA } from '../../../fire-browser/FileSystemFA';
 import { v4 as uuidv4 } from 'uuid';
@@ -81,6 +83,7 @@ export class PublicationStore {
   publicationTime: Date = new Date();
   viewsCount: number = 0;
   downloadsCount: number = 0;
+  collaboratorsCount: number = 0;
 
   licenseType: LicenseType | null = null;
   dataCollectionType: DataCollectionType | null = null;
@@ -93,6 +96,9 @@ export class PublicationStore {
   characterCount: number = 0;
   isExceededLimit: boolean = false;
   displayLimitSnackbar: boolean = false;
+  userCollaborationStatus: CollaborationRequestStatus | null = null;
+  isDownloadedByUser: boolean = false;
+  useType: UseType | null = null;
 
   constructor(
     publicationId: string,
@@ -717,6 +723,9 @@ export class PublicationStore {
           if (publication.downloadsCount) {
             this.downloadsCount = publication.downloadsCount;
           }
+          if (publication.collaboratorsCount) {
+            this.collaboratorsCount = publication.collaboratorsCount;
+          }
           if (publication.status) {
             this.publicationStatus = publication.status;
           }
@@ -747,6 +756,9 @@ export class PublicationStore {
           }
           this.creator = publication.creator;
           this.characterCount = this.countCharacter();
+          this.userCollaborationStatus = publication.userCollaborationStatus!;
+          this.useType = publication.useType!;
+          this.isDownloadedByUser = publication.isDownloadedByUser;
         })
       )
       .finally(

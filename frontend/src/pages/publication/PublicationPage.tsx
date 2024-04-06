@@ -29,7 +29,7 @@ import {
 } from '../../core/service';
 import { DownloadersDialog } from './DownloadersDialog';
 import { PublicationStatus } from '../../apis/first-approval-api';
-import { downloadersStore } from './store/downloadsStore';
+import { collaborationStore, downloadersStore } from './store/downloadsStore';
 import { ConfirmationDialog } from '../../components/ConfirmationDialog';
 import { ContentLicensingDialog } from '../../components/ContentLicensingDialog';
 import { PublicationPageStore } from './store/PublicationPageStore';
@@ -39,6 +39,8 @@ import { Footer } from '../home/Footer';
 import { PublicationBody } from './PublicationBody';
 import { PublicationPageHeader } from './PublicationPageHeader';
 import { chooseDataCollectionPath, Page } from "../../core/router/constants"
+import { CollaboratorsDialog } from './CollaboratorsDialog';
+import { CollaborationRequestDialog } from '../../components/CollaborationRequestDialog';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -180,12 +182,6 @@ export const PublicationPage: FunctionComponent = observer(() => {
                   publicationStore={publicationStore}
                   researchAreaStore={researchAreaStore}
                   publicationPageStore={publicationPageStore}
-                  openDownloadersDialog={() => {
-                    downloadersStore.clearAndOpen(
-                      publicationId,
-                      publicationStore.downloadsCount
-                    );
-                  }}
                   fs={fs}
                   sfs={sfs}
                 />
@@ -205,6 +201,16 @@ export const PublicationPage: FunctionComponent = observer(() => {
       <DownloadersDialog
         isOpen={downloadersStore.open}
         downloaders={downloadersStore.downloaders}
+      />
+      <CollaboratorsDialog
+        isOpen={collaborationStore.collaboratorsDialogOpen}
+        collaborationRequests={collaborationStore.collaborationRequests}
+      />
+      <CollaborationRequestDialog
+        isOpen={collaborationStore.collaborationRequestDialogOpen}
+        onClose={() => {
+          collaborationStore.closeCollaborationRequest();
+        }}
       />
       <ConfirmationDialog
         isOpen={deleteDialogOpen}

@@ -20,9 +20,9 @@ export const ConfirmationDialog = (props: {
       onClose={onClose}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description">
-      <DeleteDialogTitle id="alert-dialog-title" variant={'h5'}>
+      <ConfirmDialogTitle id="alert-dialog-title" variant={'h5'}>
         {title ?? 'Confirmation'}
-      </DeleteDialogTitle>
+      </ConfirmDialogTitle>
       <DialogContentWrap>
         <DialogWidthWrap variant={'body'}>
           {text ?? 'Are you sure?'}
@@ -53,9 +53,10 @@ export const ConfirmationDialog = (props: {
 
 const DialogWidthWrap = styled(Typography)`
   max-width: 336px;
+  white-space: pre-line;
 `;
 
-const DeleteDialogTitle = styled(Typography)`
+const ConfirmDialogTitle = styled(Typography)`
   padding-top: 32px;
   padding-left: 32px;
 `;

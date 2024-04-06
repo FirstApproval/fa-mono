@@ -10,7 +10,6 @@ import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
 import org.firstapproval.backend.core.domain.publication.LicenseType.ATTRIBUTION_NO_DERIVATIVES
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
 import org.firstapproval.backend.core.domain.publication.authors.Author
-import org.firstapproval.backend.core.domain.publication.reviewers.Reviewer
 import org.firstapproval.backend.core.domain.user.User
 import org.hibernate.annotations.ColumnTransformer
 import org.hibernate.annotations.Fetch
@@ -31,6 +30,8 @@ class Publication(
     var status: PublicationStatus = PENDING,
     @Enumerated(STRING)
     var accessType: AccessType = OPEN,
+    @Enumerated(STRING)
+    var useType: UseType? = null,
     @Enumerated(STRING)
     var useType: UseType? = null,
     @Enumerated(STRING)
@@ -76,6 +77,7 @@ class Publication(
     @OneToMany(fetch = EAGER, cascade = [ALL], orphanRemoval = true, mappedBy = "publication")
     var authors: MutableList<Author> = mutableListOf(),
     var downloadsCount: Long = 0,
+    var collaboratorsCount: Long = 0,
     var viewsCount: Long = 0,
     var creationTime: ZonedDateTime = now(),
     var editingTime: ZonedDateTime = now(),
@@ -128,7 +130,7 @@ enum class LicenseType {
 }
 
 enum class UseType {
-    CITATE,
+    CITATION,
     CO_AUTHORSHIP,
 }
 

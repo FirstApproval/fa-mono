@@ -6,27 +6,31 @@ import downloads from './asset/downloads.svg';
 import { type PublicationStore } from './store/PublicationStore';
 import Menu from '@mui/material/Menu';
 import { StyledMenuItem } from '../common.styled';
-import { IconButton, Tooltip, Typography } from '@mui/material';
+import { Button, IconButton, Tooltip, Typography } from '@mui/material';
 import WarningAmber from '@mui/icons-material/WarningAmber';
 import { ReportProblemDialog } from './ReportProblemDialog';
+import AlternateEmailOutlinedIcon from '@mui/icons-material/AlternateEmailOutlined';
 import MoreHoriz from '@mui/icons-material/MoreHoriz';
 import styled from '@emotion/styled';
 import { getContentLicensingAbbreviation } from '../../util/publicationUtils';
 import { routerStore } from '../../core/router';
 import { LicenseType } from '../../apis/first-approval-api';
+import { collaborationStore } from './store/downloadsStore';
 
-export const DateViewsDownloads = observer(
+export const DateViewsDownloadsCollaborators = observer(
   (props: {
     publicationStore: PublicationStore;
     displayLicense: boolean;
     openDownloadersDialog: () => void;
+    openCollaborationRequestsDialog: () => void;
   }): ReactElement => {
     const [utilAnchor, setUtilAnchor] = useState<null | HTMLElement>(null);
     const openUtilMenu = Boolean(utilAnchor);
+    const { publicationStore } = props;
 
     const [reportProblemOpened, setReportProblemOpened] = useState(false);
     const licenseTypeAbbreviation = getContentLicensingAbbreviation(
-      props.publicationStore.licenseType
+      publicationStore.licenseType
     );
 
     const handleUtilMenuClick = (
@@ -43,7 +47,7 @@ export const DateViewsDownloads = observer(
       <FlexWrapRowSpaceBetween variant={'body2'} component={'div'}>
         <FlexWrapRow>
           <Moment format={'D MMMM YYYY'}>
-            {props.publicationStore.publicationTime}
+            {publicationStore.publicationTime}
           </Moment>
           <div
             style={{
@@ -53,13 +57,13 @@ export const DateViewsDownloads = observer(
             }}>
             <img src={views} width={20} height={20} />
             <div style={{ marginLeft: '4px' }}>
-              {props.publicationStore.viewsCount}
+              {publicationStore.viewsCount}
             </div>
           </div>
           <Tooltip title="Number of downloads">
             <div
               onClick={() => {
-                if (props.publicationStore.downloadsCount) {
+                if (publicationStore.downloadsCount) {
                   props.openDownloadersDialog();
                 }
               }}
@@ -68,18 +72,57 @@ export const DateViewsDownloads = observer(
                 display: 'flex',
                 alignItems: 'center',
                 cursor: `${
-                  props.publicationStore.downloadsCount &&
-                  props.publicationStore.downloadsCount > 0
+                  publicationStore.downloadsCount &&
+                  publicationStore.downloadsCount > 0
                     ? 'pointer'
                     : 'initial'
                 }`
               }}>
               <img src={downloads} width={20} height={20} />
               <div style={{ marginLeft: '4px' }}>
-                {props.publicationStore.downloadsCount}
+                {publicationStore.downloadsCount}
               </div>
             </div>
           </Tooltip>
+          <Tooltip title="Number of collaborators">
+            <div
+              onClick={() => {
+                if (publicationStore.collaboratorsCount) {
+                  props.openCollaborationRequestsDialog();
+                }
+              }}
+              style={{
+                marginLeft: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                cursor: `${
+                  publicationStore.collaboratorsCount &&
+                  publicationStore.collaboratorsCount > 0
+                    ? 'pointer'
+                    : 'initial'
+                }`
+              }}>
+              <AlternateEmailOutlinedIcon />
+              <div style={{ marginLeft: '4px' }}>
+                {publicationStore.collaboratorsCount}
+              </div>
+            </div>
+          </Tooltip>
+          {publicationStore.isDownloadedByUser ? (
+            <RequestCollaborationButton
+              color="primary"
+              variant="text"
+              size={'small'}
+              onClick={() =>
+                (collaborationStore.openCreateCollaborationRequestDialog = true)
+              }>
+              Request collaboration
+            </RequestCollaborationButton>
+          ) : (
+            <UnderCollaborationRequirements variant={'body2'}>
+              Under collaboration requirements
+            </UnderCollaborationRequirements>
+          )}
           <Menu
             anchorEl={utilAnchor}
             id="user-menu"
@@ -107,7 +150,7 @@ export const DateViewsDownloads = observer(
           </Menu>
           <ReportProblemDialog
             isOpen={reportProblemOpened}
-            publicationId={props.publicationStore.publicationId}
+            publicationId={publicationStore.publicationId}
             setIsOpen={(value) =>
               setReportProblemOpened(value)
             }></ReportProblemDialog>
@@ -126,7 +169,7 @@ export const DateViewsDownloads = observer(
         <LicensingLinkWrap
           onClick={() => {
             routerStore.openInNewTab(
-              props.publicationStore.licenseType ===
+              publicationStore.licenseType ===
                 LicenseType.ATTRIBUTION_NO_DERIVATIVES
                 ? 'https://creativecommons.org/licenses/by-nd/4.0/legalcode'
                 : 'https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode'
@@ -164,4 +207,27 @@ export const FlexWrapRow = styled.div`
   display: flex;
   align-items: center;
   height: 100%;
+`;
+
+const UnderCollaborationRequirements = styled(Typography)`
+  display: flex;
+  height: 48px;
+  padding: 8px 22px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: var(--text-disabled, rgba(4, 0, 54, 0.38));
+`;
+
+const RequestCollaborationButton = styled(Button)`
+  display: flex;
+  height: 32px;
+  padding: 4px 10px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  border: 1px solid;
+
+  margin-left: 24px;
 `;

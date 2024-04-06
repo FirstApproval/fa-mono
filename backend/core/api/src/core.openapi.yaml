@@ -438,6 +438,34 @@ paths:
       operationId: getMyPublications
       tags: [ publication ]
 
+  /api/user/downloaded-publications:
+    get:
+      summary: Get user publications
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: true
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          required: true
+          description: Page size
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicationsResponse'
+      security:
+        - TokenAuth: [ ]
+      operationId: getMyDownloadedPublications
+      tags: [ publication ]
+
   /api/user-publications/{username}:
     get:
       summary: Get user publications by username
@@ -736,6 +764,175 @@ paths:
       operationId: getPublicationDownloaders
       tags: [ publication ]
 
+  #  /api/publication/collaborators/check-user-is-collaborator/{publicationId}:
+  #    get:
+  #      summary: Check user is collaborator of publication
+  #      parameters:
+  #        - in: path
+  #          name: publicationId
+  #          schema:
+  #            type: string
+  #            maxLength: 7
+  #          required: true
+  #          description: Return true if user is collaborator of publication
+  #      responses:
+  #        200:
+  #          description: Success
+  #          content:
+  #            'application/json':
+  #              schema:
+  #                type: boolean
+  #      security:
+  #        - TokenAuth: [ ]
+  #      operationId: isUserCollaborator
+  #      tags: [ collaborator ]
+  #
+  #  /api/publication/{publicationId}/collaboration-requests:
+  #    get:
+  #      summary: Get publication
+  #      parameters:
+  #        - in: path
+  #          name: publicationId
+  #          schema:
+  #            type: string
+  #            maxLength: 7
+  #          required: true
+  #          description: Publication id
+  #        - in: query
+  #          name: page
+  #          schema:
+  #            type: integer
+  #          required: true
+  #          description: Page number
+  #        - in: query
+  #          name: pageSize
+  #          schema:
+  #            type: integer
+  #          required: true
+  #          description: Page size
+  #      responses:
+  #        200:
+  #          description: Success
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/GetCollaborationRequestsResponse'
+  #      security:
+  #        - TokenAuth: [ ]
+  #      operationId: getPublicationCollaborators
+  #      tags: [ collaborator ]
+
+  /api/collabortion/requests/{publicationId}:
+    post:
+      summary: Get collaboration requests
+      parameters:
+        - in: path
+          name: publicationId
+          schema:
+            type: string
+            maxLength: 7
+          required: true
+          description: Publication id
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: true
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          required: true
+          description: Page size
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCollaborationRequestsResponse'
+      security:
+        - TokenAuth: [ ]
+      operationId: getCollaborationRequests
+      tags: [ collaboration-request ]
+
+  /api/collabortion/request-collaboration/{publicationId}:
+    post:
+      summary: Create a collaboration request
+      parameters:
+        - in: path
+          name: publicationId
+          schema:
+            type: string
+            maxLength: 7
+          required: true
+          description: Publication id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCollaborationRequest'
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: createCollaborationRequest
+      tags: [ collaboration-request ]
+
+  /api/collabortion/request/{collaborationRequestId}:
+    get:
+      summary: Retrieve a collaboration request
+      parameters:
+        - in: path
+          name: collaborationRequestId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Collaboration request id
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollaborationRequestInfo'
+      security:
+        - TokenAuth: [ ]
+      operationId: getCollaborationRequest
+      tags: [ collaboration-request ]
+
+  /api/collabortion/accept-or-reject-request-collaboration/{collaborationRequestId}:
+    post:
+      summary: Approve a request for cooperation
+      parameters:
+        - in: path
+          name: collaborationRequestId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Collaboration request id
+        - in: query
+          name: authorResponse
+          schema:
+            type: string
+          description: Author response to collaboration request
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/CollaborationRequestStatus'
+          description: Decision of
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: acceptOrRejectCollaborationRequest
+      tags: [ collaboration-request ]
+
   /api/publication/search:
     get:
       summary: Search publications
@@ -840,6 +1037,12 @@ paths:
             maxLength: 7
           required: true
           description: Publication id
+        - in: query
+          name: agreeToTheFirstApprovalLicense
+          schema:
+            type: boolean
+          required: true
+          description: User agree to the First Approval License
       responses:
         200:
           description: Success
@@ -2049,6 +2252,81 @@ components:
         - username
         - workplaces
 
+    CollaboratorInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userInfo:
+          $ref: '#/components/schemas/UserInfo'
+        creationTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - userInfo
+        - creationTime
+
+    CollaborationRequestInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstNameLegal:
+          type: string
+        lastNameLegal:
+          type: string
+        typeOfWork:
+          $ref: '#/components/schemas/CollaborationRequestTypeOfWork'
+        status:
+          $ref: '#/components/schemas/CollaborationRequestStatus'
+        userInfo:
+          $ref: '#/components/schemas/UserInfo'
+        publicationTitle:
+          type: string
+        publicationId:
+          type: string
+          maxLength: 7
+        description:
+          type: string
+        creationTime:
+          type: string
+          format: date-time
+        decisionTime:
+          type: string
+          format: date-time
+        autoApproval:
+          type: boolean
+      required:
+        - id
+        - status
+        - userInfo
+        - firstNameLegal
+        - lastNameLegal
+        - typeOfWork
+        - publicationTitle
+        - publicationId
+        - creationTime
+        - autoApproval
+
+    CreateCollaborationRequest:
+      type: object
+      properties:
+        firstNameLegal:
+          type: string
+        lastNameLegal:
+          type: string
+        typeOfWork:
+          $ref: '#/components/schemas/CollaborationRequestTypeOfWork'
+        description:
+          type: string
+      required:
+        - firstNameLegal
+        - lastNameLegal
+        - typeOfWork
+
     FullName:
       type: object
       properties:
@@ -2078,6 +2356,20 @@ components:
         - READY_FOR_PUBLICATION
         - MODERATION
         - PUBLISHED
+
+    CollaborationRequestStatus:
+      type: string
+      enum:
+        - ACCEPTED
+        - REJECTED
+        - PENDING
+
+    CollaborationRequestTypeOfWork:
+      type: string
+      enum:
+        - ARTICLE
+        - DATASET
+        - OTHER_PUBLICATION
 
     UseType:
       type: string
@@ -2372,6 +2664,19 @@ components:
         - pageNum
         - isLast
 
+    GetCollaborationRequestsResponse:
+      type: object
+      properties:
+        isLastPage:
+          type: boolean
+        collaborationRequests:
+          type: array
+          items:
+            $ref: '#/components/schemas/CollaborationRequestInfo'
+      required:
+        - collaborationRequests
+        - isLastPage
+
     Publication:
       type: object
       properties:
@@ -2470,6 +2775,9 @@ components:
         downloadsCount:
           type: integer
           format: int64
+        collaboratorsCount:
+          type: integer
+          format: int64
         total:
           type: number
           format: integer
@@ -2479,6 +2787,10 @@ components:
         sampleArchiveSize:
           type: integer
           format: int64
+        userCollaborationStatus:
+          $ref: '#/components/schemas/CollaborationRequestStatus'
+        isDownloadedByUser:
+          type: boolean
       required:
         - id
         - status
@@ -2489,6 +2801,8 @@ components:
         - creationTime
         - editingTime
         - total
+        - isUserCollaborator
+        - isDownloadedByUser
 
     PublicationsResponse:
       type: object
