@@ -16,6 +16,8 @@ import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.PublicationPdfService
 import org.firstapproval.backend.core.domain.publication.PublicationService
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
+import org.firstapproval.backend.core.domain.publication.UseType
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestRepository
 import org.firstapproval.backend.core.domain.publication.downloader.DownloaderRepository
 import org.firstapproval.backend.core.domain.publication.toApiObject
 import org.firstapproval.backend.core.domain.user.UserService
@@ -35,6 +37,8 @@ class PublicationController(
     private val publicationService: PublicationService,
     private val userService: UserService,
     private val downloaderRepository: DownloaderRepository,
+//    private val collaboratorRepository: CollaboratorRepository,
+    private val collaborationRequestRepository: CollaborationRequestRepository,
     private val authHolderService: AuthHolderService,
     private val publicationPdfService: PublicationPdfService,
     private val doiProperties: DoiProperties
@@ -63,6 +67,11 @@ class PublicationController(
         return ok().body(publications)
     }
 
+    override fun getMyDownloadedPublications(page: Int, pageSize: Int): ResponseEntity<PublicationsResponse> {
+        val publications = publicationService.getUserDownloadedPublications(authHolderService.user, setOf(PENDING), page, pageSize)
+        return ok().body(publications)
+    }
+
     override fun createPublication(): ResponseEntity<CreatePublicationResponse> {
         val pub = publicationService.create(authHolderService.user)
         return ok().body(CreatePublicationResponse(pub.id, PublicationStatus.valueOf(pub.status.name), pub.creationTime.toOffsetDateTime()))
@@ -77,12 +86,11 @@ class PublicationController(
         val pageResult = publicationService.search(text, limit, page)
         val dbModels = publicationService.findAllByIdIn(pageResult.content.map { it.id })
         return ok().body(
-            SearchPublicationsResponse()
-                .pageNum(pageResult.number)
-                .isLast(pageResult.isLast)
+            SearchPublicationsResponse(pageResult.number, pageResult.isLast)
                 .items(
                     pageResult.map { elasticModel ->
-                        dbModels.firstOrNull { it.id == elasticModel.id }?.toApiObject(userService, doiProperties)
+                        dbModels.firstOrNull { it.id == elasticModel.id }
+                            ?.toApiObject(userService, doiProperties, collaborationRequestRepository, downloaderRepository)
                     }
                         .filterNotNull()
                         .toList()
@@ -92,13 +100,15 @@ class PublicationController(
 
     override fun getPublication(id: String): ResponseEntity<Publication> {
         val pub = publicationService.get(authHolderService.user, id)
-        val publicationResponse = pub.toApiObject(userService, doiProperties)
+        val publicationResponse =
+            pub.toApiObject(userService, doiProperties, collaborationRequestRepository, downloaderRepository, authHolderService.user)
         return ok().body(publicationResponse)
     }
 
     override fun getPublicationPublic(id: String): ResponseEntity<Publication> {
         val pub = publicationService.getPublished(id)
-        val publicationResponse = pub.toApiObject(userService, doiProperties)
+        val publicationResponse =
+            pub.toApiObject(userService, doiProperties, collaborationRequestRepository, downloaderRepository, authHolderService.user)
         return ok().body(publicationResponse)
     }
 
@@ -107,8 +117,12 @@ class PublicationController(
         return ok(PublicationStatus.valueOf(publication.status.name))
     }
 
-    override fun getDownloadLink(id: String): ResponseEntity<DownloadLinkResponse> {
-        val downloadLink = publicationService.getDownloadLinkForArchive(authHolderService.user, id)
+    override fun getDownloadLink(id: String, agreeToTheFirstApprovalLicense: Boolean): ResponseEntity<DownloadLinkResponse> {
+        val pub = publicationService.getPublished(id)
+        if (pub.useType == UseType.CO_AUTHORSHIP && pub.creator.id != authHolderService.user.id && !agreeToTheFirstApprovalLicense) {
+            throw IllegalArgumentException("User must agree to the First Approval License")
+        }
+        val downloadLink = publicationService.getDownloadLinkForArchive(authHolderService.user, id, agreeToTheFirstApprovalLicense)
         return ok(downloadLink)
     }
 

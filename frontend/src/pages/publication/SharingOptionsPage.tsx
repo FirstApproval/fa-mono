@@ -1,4 +1,4 @@
-import React, { type ReactElement, useState } from 'react';
+import React, { MouseEventHandler, type ReactElement, useState } from 'react';
 import styled from '@emotion/styled';
 import {
   Checkbox,
@@ -6,27 +6,27 @@ import {
   FormControlLabel,
   FormGroup,
   IconButton,
-  Radio,
-  Switch,
   TextField,
   Tooltip,
   Typography
 } from '@mui/material';
 import {
+  AlternateEmail,
   Close,
   CloudOutlined,
   MessageOutlined,
-  MonetizationOnOutlined,
   Public,
   ViewInArOutlined
 } from '@mui/icons-material';
+import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
 import Button from '@mui/material/Button';
 import { routerStore } from '../../core/router';
 import { publicationService } from '../../core/service';
 import {
   AccessType,
   LicenseType,
-  StorageType
+  StorageType,
+  UseType
 } from '../../apis/first-approval-api';
 import { Page } from '../../core/router/constants';
 import { FlexWrapColumn, FlexWrapRow, HeightElement } from '../common.styled';
@@ -56,6 +56,7 @@ export const SharingOptionsPage = (props: {
     understandAfterPublishingCannotBeEdited,
     setUnderstandAfterPublishingCannotBeEdited
   ] = useState(false);
+  const [useType, setUseType] = useState(UseType.CITATE);
   const [storageType, setStorageType] = useState(
     StorageType.CLOUD_SECURE_STORAGE
   );
@@ -113,114 +114,170 @@ export const SharingOptionsPage = (props: {
         <BodyWrap>
           <BodyContentWrap>
             <HeaderWrap>
-              <Typography variant={'h5'}>Publishing</Typography>
-              <MarginLeftAuto>
-                <IconButton>
-                  <Close
-                    onClick={() => {
-                      routerStore.navigatePage(
-                        Page.PUBLICATION,
-                        routerStore.path,
-                        true
-                      );
-                    }}
-                  />
-                </IconButton>
-              </MarginLeftAuto>
+              <HeaderTitleWrap>
+                <Typography variant={'h5'}>Publishing</Typography>
+                <MarginLeftAuto>
+                  <IconButton>
+                    <Close
+                      onClick={() => {
+                        routerStore.navigatePage(
+                          Page.PUBLICATION,
+                          routerStore.path,
+                          true
+                        );
+                      }}
+                    />
+                  </IconButton>
+                </MarginLeftAuto>
+              </HeaderTitleWrap>
+              <HeightElement value={'36px'} />
             </HeaderWrap>
+            <Typography variant={'h6'}>Access to your dataset</Typography>
             <SharingOptionsWrap>
               <SharingOption
-                icon={<Public fontSize={'large'} />}
+                icon={<Public fontSize={'medium'} />}
                 label={'Open access'}
                 description={
-                  'All registered users can download your attached files instantly. '
+                  'All registered users can download your attached files instantly. Set the rules for your data use below.'
                 }
+                height={'128px'}
                 isSelected
               />
               <Tooltip title="Like science, we value openness and are excited to share what we're working on. New features currently in our 'lab', are being tested and perfected, so stay tuned.">
                 <SharingOption
-                  icon={<MessageOutlined fontSize={'large'} />}
+                  icon={<MessageOutlined fontSize={'medium'} />}
                   label={'On request'}
-                  description={
-                    'Other users must send a request with their intention cover letter, which you can approve or decline.'
-                  }
+                  description={''}
                   isDisabled={true}
-                />
-              </Tooltip>
-              <Tooltip title="Like science, we value openness and are excited to share what we're working on. New features currently in our 'lab', are being tested and perfected, so stay tuned.">
-                <SharingOption
-                  icon={<MonetizationOnOutlined fontSize={'large'} />}
-                  label={<>{'Monetize or Co-Authorship'}</>}
-                  description={
-                    'Set a price for access or/and accept requests for co-authorship.'
-                  }
                   noMargin={true}
-                  isDisabled={true}
+                  height={'128px'}
                 />
               </Tooltip>
             </SharingOptionsWrap>
-            <StorageOptionsWrap>
-              <Typography variant={'h6'}>
-                How would you like to store your dataset?
-              </Typography>
-              <FormControlLabel
-                value={StorageType.CLOUD_SECURE_STORAGE}
-                label={
-                  <FlexWrapColumn>
-                    <FlexWrapRowRadioLabel>
-                      <StorageOptionLabelWrap disabled={false}>
-                        Cloud Secure Storage
-                      </StorageOptionLabelWrap>
-                      <CloudOutlined />
-                    </FlexWrapRowRadioLabel>
-                    <StorageOptionDescription
-                      variant={'body1'}
-                      disabled={false}>
-                      Store dataset in our secure, centralized cloud system.
-                      Easy access and high-speed downloads.
-                    </StorageOptionDescription>
-                  </FlexWrapColumn>
+            <SharingOptionSelectedDescription
+              variant={'body2'}
+              component={'div'}>
+              Only the files you upload may be subject to access restrictions.
+              Your data annotation text is always accessible to everyone.
+            </SharingOptionSelectedDescription>
+            <Typography variant={'h6'}>Use of your dataset</Typography>
+            <SharingOptionsWrap>
+              <SharingOption
+                onClick={() => setUseType(UseType.CITATE)}
+                isSelected={useType === UseType.CITATE}
+                icon={<FormatQuoteIcon fontSize={'medium'} />}
+                label={'Citation is enough'}
+                description={
+                  'Others may use your data, provided that they cite your dataset in their research.'
                 }
-                control={
-                  <Radio
-                    checked={storageType === StorageType.CLOUD_SECURE_STORAGE}
-                    onChange={() =>
-                      setStorageType(StorageType.CLOUD_SECURE_STORAGE)
-                    }
-                  />
-                }
+                height={'168px'}
               />
-              <FormControlLabel
-                disabled={isIpfsDisabled}
-                value={StorageType.IPFS}
-                labelPlacement={'end'}
-                label={
-                  <FlexWrapColumn>
-                    <FlexWrapRowRadioLabel>
-                      <StorageOptionLabelWrap disabled={isIpfsDisabled}>
-                        Decentralized Storage (IPFS)
-                      </StorageOptionLabelWrap>
-                      <ViewInArOutlined />
-                    </FlexWrapRowRadioLabel>
-                    <StorageOptionDescription
-                      variant={'body1'}
-                      disabled={isIpfsDisabled}>
-                      Distribute dataset across a decentralized network for
-                      added resilience and permanence. Maximum dataset size 2GB
-                    </StorageOptionDescription>
-                  </FlexWrapColumn>
+              <SharingOption
+                onClick={() => setUseType(UseType.CO_AUTHORSHIP)}
+                isSelected={useType === UseType.CO_AUTHORSHIP}
+                icon={<AlternateEmail fontSize={'medium'} />}
+                label={'Co-authorship requirement'}
+                description={
+                  "Be credited as a co-author in journal publications when your data is vital to others' research. You can accept or reject collaboration requests. "
                 }
-                control={
-                  <Radio
-                    checked={storageType === StorageType.IPFS}
-                    onChange={() => {
-                      setStorageType(StorageType.IPFS);
-                    }}
-                  />
-                }
+                height={'168px'}
               />
-            </StorageOptionsWrap>
-            <PeerReviewSection />
+            </SharingOptionsWrap>
+            {useType === UseType.CO_AUTHORSHIP && (
+              <SharingOptionSelectedDescription
+                variant={'body2'}
+                component={'div'}>
+                Co-authorship license is active for five years from the date of
+                publication. After that, the data becomes available under an
+                open CC BY-ND license.
+              </SharingOptionSelectedDescription>
+            )}
+            <Typography variant={'h6'}>Your files storage</Typography>
+            <SharingOptionsWrap>
+              <SharingOption
+                onClick={() => setStorageType(StorageType.CLOUD_SECURE_STORAGE)}
+                isSelected={storageType === StorageType.CLOUD_SECURE_STORAGE}
+                icon={<CloudOutlined fontSize={'medium'} />}
+                label={'Cloud Secure Storage'}
+                description={
+                  'Store dataset in our secure, centralized cloud system. Easy access and high-speed downloads.'
+                }
+                height={'164px'}
+              />
+              <SharingOption
+                onClick={() => setStorageType(StorageType.IPFS)}
+                isSelected={storageType === StorageType.IPFS}
+                icon={<ViewInArOutlined fontSize={'medium'} />}
+                label={'Decentralized Storage (IPFS)'}
+                height={'164px'}
+                description={
+                  'Distribute dataset across a decentralized network for added resilience and permanence. Maximum dataset size 2GB '
+                }
+                isDisabled={isIpfsDisabled}
+              />
+              {/* <FormControlLabel */}
+              {/*  value={StorageType.CLOUD_SECURE_STORAGE} */}
+              {/*  label={ */}
+              {/*    <FlexWrapColumn> */}
+              {/*      <FlexWrapRowRadioLabel> */}
+              {/*        <StorageOptionLabelWrap disabled={false}> */}
+              {/*          Cloud Secure Storage */}
+              {/*        </StorageOptionLabelWrap> */}
+              {/*        <CloudOutlined /> */}
+              {/*      </FlexWrapRowRadioLabel> */}
+              {/*      <StorageOptionDescription */}
+              {/*        variant={'body1'} */}
+              {/*        disabled={false}> */}
+              {/*        Store dataset in our secure, centralized cloud system. */}
+              {/*        Easy access and high-speed downloads. */}
+              {/*      </StorageOptionDescription> */}
+              {/*    </FlexWrapColumn> */}
+              {/*  } */}
+              {/*  control={ */}
+              {/*    <Radio */}
+              {/*      checked={storageType === StorageType.CLOUD_SECURE_STORAGE} */}
+              {/*      onChange={() => */}
+              {/*        setStorageType(StorageType.CLOUD_SECURE_STORAGE) */}
+              {/*      } */}
+              {/*    /> */}
+              {/*  } */}
+              {/* /> */}
+              {/* <FormControlLabel */}
+              {/*  disabled={isIpfsDisabled} */}
+              {/*  value={StorageType.IPFS} */}
+              {/*  labelPlacement={'end'} */}
+              {/*  label={ */}
+              {/*    <FlexWrapColumn> */}
+              {/*      <FlexWrapRowRadioLabel> */}
+              {/*        <StorageOptionLabelWrap disabled={isIpfsDisabled}> */}
+              {/*          Decentralized Storage (IPFS) */}
+              {/*        </StorageOptionLabelWrap> */}
+              {/*        <ViewInArOutlined /> */}
+              {/*      </FlexWrapRowRadioLabel> */}
+              {/*      <StorageOptionDescription */}
+              {/*        variant={'body1'} */}
+              {/*        disabled={isIpfsDisabled}> */}
+              {/*        Distribute dataset across a decentralized network for */}
+              {/*        added resilience and permanence. Maximum dataset size 2GB */}
+              {/*      </StorageOptionDescription> */}
+              {/*    </FlexWrapColumn> */}
+              {/*  } */}
+              {/*  control={ */}
+              {/*    <Radio */}
+              {/*      checked={storageType === StorageType.IPFS} */}
+              {/*      onChange={() => { */}
+              {/*        setStorageType(StorageType.IPFS); */}
+              {/*      }} */}
+              {/*    /> */}
+              {/*  } */}
+              {/* /> */}
+            </SharingOptionsWrap>
+            <FairPeerReviewSection />
+            <NowAllTheWorksWrap variant={'body1'}>
+              Now all the works are undergoing pre-moderation. We are still
+              working to organize an honest peer review based on the quality of
+              the data, not on your outcomes. Stay tuned!
+            </NowAllTheWorksWrap>
             <FormGroup>
               <FormControlLabel
                 control={
@@ -267,6 +324,7 @@ export const SharingOptionsPage = (props: {
                 void publicationService
                   .submitPublication(publicationId, {
                     accessType: AccessType.OPEN,
+                    useType,
                     storageType,
                     previewTitle,
                     previewSubtitle,
@@ -296,49 +354,57 @@ interface SharingOptionsProps {
   isSelected?: boolean;
   noMargin?: boolean;
   isDisabled?: boolean;
+  height: string;
+  onClick?: MouseEventHandler;
 }
 
 // eslint-disable-next-line react/display-name
 const SharingOption = React.forwardRef<HTMLDivElement, SharingOptionsProps>(
   (props: SharingOptionsProps, ref): ReactElement => {
-    const { label, description, isDisabled, isSelected, noMargin } = props;
+    const {
+      label,
+      description,
+      isDisabled,
+      isSelected,
+      noMargin,
+      height,
+      onClick
+    } = props;
     return (
       <SharingOptionWrap
         {...props}
         ref={ref}
+        onClick={onClick}
         isSelected={isSelected}
+        height={height}
         noMargin={noMargin}>
-        <FlexWrapRow>
-          <IconWrap>{props.icon}</IconWrap>
-          {isDisabled && (
-            <MarginLeftAuto>
-              <SoonChip />
-            </MarginLeftAuto>
-          )}
-        </FlexWrapRow>
-
-        <SharingOptionLabel variant={'h6'} isDisabled={isDisabled}>
-          {label}
-        </SharingOptionLabel>
-        <SharingOptionDescription isDisabled={isDisabled}>
-          <Typography variant={'body2'}>{description}</Typography>
-        </SharingOptionDescription>
+        <div>
+          <FlexWrapRow>
+            <IconWrap isDisabled={isDisabled}>{props.icon}</IconWrap>
+            <SharingOptionLabel isDisabled={isDisabled}>
+              {label}
+            </SharingOptionLabel>
+          </FlexWrapRow>
+          <SharingOptionDescription isDisabled={isDisabled}>
+            <Typography variant={'body2'}>{description}</Typography>
+          </SharingOptionDescription>
+        </div>
+        {isDisabled && (
+          <FlexWrapRow>
+            <SoonChip />
+          </FlexWrapRow>
+        )}
       </SharingOptionWrap>
     );
   }
 );
 
-const PeerReviewSection = (): ReactElement => {
+const FairPeerReviewSection = (): ReactElement => {
   return (
-    <PeerReviewSectionWrap variant={'h6'} component={'div'}>
-      <>
-        Peer review
-        <MarginLeftAuto>
-          <Switch disabled={true} />
-          <SoonChip />
-        </MarginLeftAuto>
-      </>
-    </PeerReviewSectionWrap>
+    <FairPeerReviewSectionWrap variant={'h6'} component={'div'}>
+      <FairPeerReviewTitleWrap>Fair peer review</FairPeerReviewTitleWrap>
+      <SoonChip />
+    </FairPeerReviewSectionWrap>
   );
 };
 
@@ -354,17 +420,40 @@ const ButtonWrap = styled(Button)`
   margin-top: 24px;
 `;
 
-const PeerReviewSectionWrap = styled(Typography)`
-  border-radius: 8px;
+const SharingOptionSelectedDescription = styled(Typography)`
+  border-radius: 4px;
+  gap: 8px;
   background: var(--grey-50, #f8f7fa);
   width: 100%;
   display: flex;
   align-items: center;
   padding: 8px 16px;
-  margin-top: 48px;
-  margin-bottom: 48px;
+  margin-bottom: 24px;
 
+  color: var(--text-secondary, #68676e);
+` as typeof Typography;
+
+const FairPeerReviewSectionWrap = styled(Typography)`
+  border-radius: 8px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  margin-top: 16px;
+  margin-bottom: 24px;
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
+` as typeof Typography;
+
+const FairPeerReviewTitleWrap = styled.div`
+  margin-right: 8px;
+`;
+
+const NowAllTheWorksWrap = styled(Typography)`
+  border: 1px solid var(--divider, #d2d2d6);
+  color: var(--text-disabled, rgba(4, 0, 54, 0.38));
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
 ` as typeof Typography;
 
 const SoonChipWrap = styled(Chip)`
@@ -381,11 +470,12 @@ const SoonChipWrap = styled(Chip)`
 const SharingOptionWrap = styled.div<{
   noMargin?: boolean;
   isSelected?: boolean;
+  height: string;
 }>`
   cursor: pointer;
-  padding: 24px;
-  width: 189px;
-  height: 272px;
+  padding: 16px;
+  width: 300px;
+  height: 128px;
   border-radius: 8px;
   border: 1px solid var(--divider, #d2d2d6);
   ${(props) =>
@@ -393,17 +483,27 @@ const SharingOptionWrap = styled.div<{
       ? 'border: 2px solid var(--primary-dark, #3C47E5);' +
         'box-shadow: 0px 0px 4px 0px #3B4EFF;'
       : ''}
-  margin-right: ${(props) => (props.noMargin ? '0px' : '24px')};
+  height: ${(props) => props.height};
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 `;
 
-const IconWrap = styled.div`
-  color: #04003661;
-  margin-bottom: 12px;
+const IconWrap = styled.div<{ isDisabled?: boolean }>`
+  margin-right: 8px;
+  ${(props) =>
+    props.isDisabled
+      ? 'color: var(--text-disabled, rgba(4, 0, 54, 0.38));'
+      : 'black'}
 `;
 
 const SharingOptionLabel = styled(Typography)<{ isDisabled?: boolean }>`
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 150%; /* 24px */
+  letter-spacing: 0.15px;
   ${(props) =>
     props.isDisabled
       ? 'color: var(--text-disabled, rgba(4, 0, 54, 0.38));'
@@ -411,15 +511,16 @@ const SharingOptionLabel = styled(Typography)<{ isDisabled?: boolean }>`
 `;
 
 const SharingOptionDescription = styled.div<{ isDisabled?: boolean }>`
-  margin-top: auto;
-  ${(props) =>
-    props.isDisabled
-      ? 'color: var(--text-disabled, rgba(4, 0, 54, 0.38));'
-      : ''}
+  color: var(--text-secondary, #68676e);
 `;
 
 const HeaderWrap = styled.div`
-  margin-bottom: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
+
+const HeaderTitleWrap = styled.div`
   display: flex;
   justify-content: center;
 `;
@@ -436,9 +537,7 @@ const BodyWrap = styled.div`
 
 const BodyContentWrap = styled.div`
   width: 680px;
-  padding: 48px;
-  padding-left: 32px;
-  padding-right: 32px;
+  padding: 48px 32px;
 `;
 
 const LeftPanel = styled.div`
@@ -475,12 +574,8 @@ const InputPreviewTextField = styled(TextField)`
 const SharingOptionsWrap = styled.div`
   display: flex;
   justify-content: space-between;
-`;
-
-const StorageOptionsWrap = styled.div`
-  margin-top: 48px;
-  display: flex;
-  flex-direction: column;
+  padding-top: 24px;
+  padding-bottom: 24px;
 `;
 
 const StorageOptionLabelWrap = styled.div<{

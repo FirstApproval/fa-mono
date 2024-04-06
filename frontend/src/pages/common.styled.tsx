@@ -52,6 +52,13 @@ export const CustomTab = styled(Tab)`
   color: var(--text-secondary, #68676e);
 `;
 
+export const RowElementSpaceBetween = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
 export const ColumnElement = styled.div`
   width: 100%;
   display: flex;
@@ -97,6 +104,11 @@ export const FlexWrapRow = styled.div`
   display: flex;
 `;
 
+export const FlexWrapRowAlignTop = styled.div`
+  display: flex;
+  align-items: start;
+`;
+
 export const ValidationError = styled.div`
   width: 100%;
   height: 48px;
@@ -121,7 +133,7 @@ export const PrefilledDetails = styled.div`
   background: var(--alert-info-fill, #e5f6fd);
 
   display: flex;
-  width: 500px;
+  min-width: 500px;
   padding: 6px 16px;
   align-items: flex-start;
   justify-content: start;

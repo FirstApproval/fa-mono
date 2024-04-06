@@ -31,6 +31,8 @@ class Publication(
     @Enumerated(STRING)
     var accessType: AccessType = OPEN,
     @Enumerated(STRING)
+    var useType: UseType? = null,
+    @Enumerated(STRING)
     var storageType: StorageType? = null,
     @Convert(converter = StringEncryptionConverter::class)
     var previewTitle: String? = null,
@@ -71,6 +73,7 @@ class Publication(
     @OneToMany(fetch = EAGER, cascade = [ALL], orphanRemoval = true, mappedBy = "publication")
     var authors: MutableList<Author> = mutableListOf(),
     var downloadsCount: Long = 0,
+    var collaboratorsCount: Long = 0,
     var viewsCount: Long = 0,
     var creationTime: ZonedDateTime = now(),
     var editingTime: ZonedDateTime = now(),
@@ -109,6 +112,11 @@ enum class AccessType {
 enum class LicenseType {
     ATTRIBUTION_NO_DERIVATIVES,
     ATTRIBUTION_NO_DERIVATIVES_NON_COMMERCIAL,
+}
+
+enum class UseType {
+    CITATION,
+    CO_AUTHORSHIP,
 }
 
 enum class StorageType {
