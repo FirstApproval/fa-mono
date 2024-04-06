@@ -16,7 +16,6 @@ import {
   Close,
   CloudOutlined,
   MessageOutlined,
-  MonetizationOnOutlined,
   Public,
   ViewInArOutlined
 } from '@mui/icons-material';
@@ -113,48 +112,39 @@ export const SharingOptionsPage = (props: {
         <BodyWrap>
           <BodyContentWrap>
             <HeaderWrap>
-              <Typography variant={'h5'}>Publishing</Typography>
-              <MarginLeftAuto>
-                <IconButton>
-                  <Close
-                    onClick={() => {
-                      routerStore.navigatePage(
-                        Page.PUBLICATION,
-                        routerStore.path,
-                        true
-                      );
-                    }}
-                  />
-                </IconButton>
-              </MarginLeftAuto>
+              <HeaderTitleWrap>
+                <Typography variant={'h5'}>Publishing</Typography>
+                <MarginLeftAuto>
+                  <IconButton>
+                    <Close
+                      onClick={() => {
+                        routerStore.navigatePage(
+                          Page.PUBLICATION,
+                          routerStore.path,
+                          true
+                        );
+                      }}
+                    />
+                  </IconButton>
+                </MarginLeftAuto>
+              </HeaderTitleWrap>
+              <HeightElement value={'24px'} />
+              <Typography variant={'h6'}>Access to your dataset</Typography>
             </HeaderWrap>
             <SharingOptionsWrap>
               <SharingOption
-                icon={<Public fontSize={'large'} />}
+                icon={<Public fontSize={'medium'} />}
                 label={'Open access'}
                 description={
-                  'All registered users can download your attached files instantly. '
+                  'All registered users can download your attached files instantly. Set the rules for your data use below.'
                 }
                 isSelected
               />
               <Tooltip title="Like science, we value openness and are excited to share what we're working on. New features currently in our 'lab', are being tested and perfected, so stay tuned.">
                 <SharingOption
-                  icon={<MessageOutlined fontSize={'large'} />}
+                  icon={<MessageOutlined fontSize={'medium'} />}
                   label={'On request'}
-                  description={
-                    'Other users must send a request with their intention cover letter, which you can approve or decline.'
-                  }
-                  isDisabled={true}
-                />
-              </Tooltip>
-              <Tooltip title="Like science, we value openness and are excited to share what we're working on. New features currently in our 'lab', are being tested and perfected, so stay tuned.">
-                <SharingOption
-                  icon={<MonetizationOnOutlined fontSize={'large'} />}
-                  label={<>{'Monetize or Co-Authorship'}</>}
-                  description={
-                    'Set a price for access or/and accept requests for co-authorship.'
-                  }
-                  noMargin={true}
+                  description={''}
                   isDisabled={true}
                 />
               </Tooltip>
@@ -309,17 +299,11 @@ const SharingOption = React.forwardRef<HTMLDivElement, SharingOptionsProps>(
         isSelected={isSelected}
         noMargin={noMargin}>
         <FlexWrapRow>
-          <IconWrap>{props.icon}</IconWrap>
-          {isDisabled && (
-            <MarginLeftAuto>
-              <SoonChip />
-            </MarginLeftAuto>
-          )}
+          <IconWrap isDisabled={isDisabled}>{props.icon}</IconWrap>
+          <SharingOptionLabel variant={'h6'} isDisabled={isDisabled}>
+            {label}
+          </SharingOptionLabel>
         </FlexWrapRow>
-
-        <SharingOptionLabel variant={'h6'} isDisabled={isDisabled}>
-          {label}
-        </SharingOptionLabel>
         <SharingOptionDescription isDisabled={isDisabled}>
           <Typography variant={'body2'}>{description}</Typography>
         </SharingOptionDescription>
@@ -383,9 +367,9 @@ const SharingOptionWrap = styled.div<{
   isSelected?: boolean;
 }>`
   cursor: pointer;
-  padding: 24px;
-  width: 189px;
-  height: 272px;
+  padding: 20px;
+  width: 370px;
+  height: 135px;
   border-radius: 8px;
   border: 1px solid var(--divider, #d2d2d6);
   ${(props) =>
@@ -398,9 +382,13 @@ const SharingOptionWrap = styled.div<{
   flex-direction: column;
 `;
 
-const IconWrap = styled.div`
-  color: #04003661;
-  margin-bottom: 12px;
+const IconWrap = styled.div<{ isDisabled?: boolean }>`
+  margin-top: 4px;
+  margin-right: 8px;
+  ${(props) =>
+    props.isDisabled
+      ? 'color: var(--text-disabled, rgba(4, 0, 54, 0.38));'
+      : 'black'}
 `;
 
 const SharingOptionLabel = styled(Typography)<{ isDisabled?: boolean }>`
@@ -412,14 +400,17 @@ const SharingOptionLabel = styled(Typography)<{ isDisabled?: boolean }>`
 
 const SharingOptionDescription = styled.div<{ isDisabled?: boolean }>`
   margin-top: auto;
-  ${(props) =>
-    props.isDisabled
-      ? 'color: var(--text-disabled, rgba(4, 0, 54, 0.38));'
-      : ''}
+  color: gray;
 `;
 
 const HeaderWrap = styled.div`
   margin-bottom: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
+
+const HeaderTitleWrap = styled.div`
   display: flex;
   justify-content: center;
 `;
