@@ -1,4 +1,4 @@
-import React, { type ReactElement, useState } from 'react';
+import React, { MouseEventHandler, type ReactElement, useState } from 'react';
 import styled from '@emotion/styled';
 import {
   Checkbox,
@@ -166,21 +166,18 @@ export const SharingOptionsPage = (props: {
                 description={
                   'Others may use your data, provided that they cite your dataset in their research.'
                 }
-                height={'128px'}
+                height={'168px'}
                 isSelected
               />
-              <Tooltip
-                title="Be credited as a co-author in journal publications when your data is vital to others'
-              research. You can accept or reject collaboration requests.">
-                <SharingOption
-                  icon={<AlternateEmail fontSize={'medium'} />}
-                  label={'Co-authorship requirement'}
-                  description={''}
-                  isDisabled={true}
-                  noMargin={true}
-                  height={'128px'}
-                />
-              </Tooltip>
+              <SharingOption
+                icon={<AlternateEmail fontSize={'medium'} />}
+                label={'Co-authorship requirement'}
+                description={
+                  "Be credited as a co-author in journal publications when your data is vital to others' research. You can accept or reject collaboration requests. "
+                }
+                noMargin={true}
+                height={'168px'}
+              />
             </SharingOptionsWrap>
             <SharingOptionSelectedDescription
               variant={'body2'}
@@ -192,6 +189,7 @@ export const SharingOptionsPage = (props: {
             <Typography variant={'h6'}>Your files storage</Typography>
             <SharingOptionsWrap>
               <SharingOption
+                onClick={() => setStorageType(StorageType.CLOUD_SECURE_STORAGE)}
                 icon={<CloudOutlined fontSize={'medium'} />}
                 label={'Cloud Secure Storage'}
                 description={
@@ -201,6 +199,7 @@ export const SharingOptionsPage = (props: {
                 isSelected
               />
               <SharingOption
+                onClick={() => setStorageType(StorageType.IPFS)}
                 icon={<ViewInArOutlined fontSize={'medium'} />}
                 label={'Decentralized Storage (IPFS)'}
                 height={'164px'}
@@ -349,17 +348,26 @@ interface SharingOptionsProps {
   noMargin?: boolean;
   isDisabled?: boolean;
   height: string;
+  onClick?: MouseEventHandler;
 }
 
 // eslint-disable-next-line react/display-name
 const SharingOption = React.forwardRef<HTMLDivElement, SharingOptionsProps>(
   (props: SharingOptionsProps, ref): ReactElement => {
-    const { label, description, isDisabled, isSelected, noMargin, height } =
-      props;
+    const {
+      label,
+      description,
+      isDisabled,
+      isSelected,
+      noMargin,
+      height,
+      onClick
+    } = props;
     return (
       <SharingOptionWrap
         {...props}
         ref={ref}
+        onClick={onClick}
         isSelected={isSelected}
         height={height}
         noMargin={noMargin}>
