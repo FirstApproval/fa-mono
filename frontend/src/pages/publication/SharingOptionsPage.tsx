@@ -6,7 +6,6 @@ import {
   FormControlLabel,
   FormGroup,
   IconButton,
-  Switch,
   TextField,
   Tooltip,
   Typography
@@ -181,6 +180,7 @@ export const SharingOptionsPage = (props: {
                 />
               </Tooltip>
             </SharingOptionsWrap>
+            <HeightElement value={'16px'} />
             <Typography variant={'h6'}>Your files storage</Typography>
             <SharingOptionsWrap>
               <SharingOption
@@ -259,7 +259,12 @@ export const SharingOptionsPage = (props: {
               {/*  } */}
               {/* /> */}
             </SharingOptionsWrap>
-            <PeerReviewSection />
+            <FairPeerReviewSection />
+            <NowAllTheWorksWrap variant={'body1'}>
+              Now all the works are undergoing pre-moderation. We are still
+              working to organize an honest peer review based on the quality of
+              the data, not on your outcomes. Stay tuned!
+            </NowAllTheWorksWrap>
             <FormGroup>
               <FormControlLabel
                 control={
@@ -371,17 +376,12 @@ const SharingOption = React.forwardRef<HTMLDivElement, SharingOptionsProps>(
   }
 );
 
-const PeerReviewSection = (): ReactElement => {
+const FairPeerReviewSection = (): ReactElement => {
   return (
-    <PeerReviewSectionWrap variant={'h6'} component={'div'}>
-      <>
-        Peer review
-        <MarginLeftAuto>
-          <Switch disabled={true} />
-          <SoonChip />
-        </MarginLeftAuto>
-      </>
-    </PeerReviewSectionWrap>
+    <FairPeerReviewSectionWrap variant={'h6'} component={'div'}>
+      <FairPeerReviewTitleWrap>Fair peer review</FairPeerReviewTitleWrap>
+      <SoonChip />
+    </FairPeerReviewSectionWrap>
   );
 };
 
@@ -409,17 +409,27 @@ const OnlyTheFilesYouUploadWrap = styled(Typography)`
   color: var(--text-secondary, #68676e);
 ` as typeof Typography;
 
-const PeerReviewSectionWrap = styled(Typography)`
+const FairPeerReviewSectionWrap = styled(Typography)`
   border-radius: 8px;
-  background: var(--grey-50, #f8f7fa);
   width: 100%;
   display: flex;
   align-items: center;
   padding: 8px 16px;
-  margin-top: 48px;
-  margin-bottom: 48px;
-
+  margin-top: 16px;
+  margin-bottom: 24px;
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
+` as typeof Typography;
+
+const FairPeerReviewTitleWrap = styled.div`
+  margin-right: 8px;
+`;
+
+const NowAllTheWorksWrap = styled(Typography)`
+  border: 1px solid var(--divider, #d2d2d6);
+  color: var(--text-disabled, rgba(4, 0, 54, 0.38));
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
 ` as typeof Typography;
 
 const SoonChipWrap = styled(Chip)`
@@ -450,7 +460,6 @@ const SharingOptionWrap = styled.div<{
         'box-shadow: 0px 0px 4px 0px #3B4EFF;'
       : ''}
   height: ${(props) => props.height};
-  margin-right: ${(props) => (props.noMargin ? '0px' : '24px')};
   display: flex;
   flex-direction: column;
   justify-content: space-between;
