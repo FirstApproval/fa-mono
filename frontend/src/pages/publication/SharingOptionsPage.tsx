@@ -167,7 +167,7 @@ export const SharingOptionsPage = (props: {
                   'Others may use your data, provided that they cite your dataset in their research.'
                 }
                 height={'168px'}
-                isSelected
+                isSelected={true}
               />
               <SharingOption
                 icon={<AlternateEmail fontSize={'medium'} />}
@@ -175,8 +175,8 @@ export const SharingOptionsPage = (props: {
                 description={
                   "Be credited as a co-author in journal publications when your data is vital to others' research. You can accept or reject collaboration requests. "
                 }
-                noMargin={true}
                 height={'168px'}
+                isSelected={true}
               />
             </SharingOptionsWrap>
             <SharingOptionSelectedDescription
@@ -196,7 +196,7 @@ export const SharingOptionsPage = (props: {
                   'Store dataset in our secure, centralized cloud system. Easy access and high-speed downloads.'
                 }
                 height={'164px'}
-                isSelected
+                isSelected={storageType === StorageType.CLOUD_SECURE_STORAGE}
               />
               <SharingOption
                 onClick={() => setStorageType(StorageType.IPFS)}
@@ -206,8 +206,8 @@ export const SharingOptionsPage = (props: {
                 description={
                   'Distribute dataset across a decentralized network for added resilience and permanence. Maximum dataset size 2GB '
                 }
-                noMargin={true}
                 isDisabled={isIpfsDisabled}
+                isSelected={storageType === StorageType.IPFS}
               />
               {/* <FormControlLabel */}
               {/*  value={StorageType.CLOUD_SECURE_STORAGE} */}
