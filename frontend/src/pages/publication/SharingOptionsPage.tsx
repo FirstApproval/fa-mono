@@ -129,8 +129,8 @@ export const SharingOptionsPage = (props: {
                 </MarginLeftAuto>
               </HeaderTitleWrap>
               <HeightElement value={'36px'} />
-              <Typography variant={'h6'}>Access to your dataset</Typography>
             </HeaderWrap>
+            <Typography variant={'h6'}>Access to your dataset</Typography>
             <SharingOptionsWrap>
               <SharingOption
                 icon={<Public fontSize={'medium'} />}
@@ -152,11 +152,13 @@ export const SharingOptionsPage = (props: {
                 />
               </Tooltip>
             </SharingOptionsWrap>
-            <OnlyTheFilesYouUploadWrap variant={'body2'} component={'div'}>
+            <SharingOptionSelectedDescription
+              variant={'body2'}
+              component={'div'}>
               Only the files you upload may be subject to access restrictions.
               Your data annotation text is always accessible to everyone.
-            </OnlyTheFilesYouUploadWrap>
-            <HeightElement value={'24px'} />
+            </SharingOptionSelectedDescription>
+            <Typography variant={'h6'}>Use of your dataset</Typography>
             <SharingOptionsWrap>
               <SharingOption
                 icon={<FormatQuoteIcon fontSize={'medium'} />}
@@ -180,7 +182,13 @@ export const SharingOptionsPage = (props: {
                 />
               </Tooltip>
             </SharingOptionsWrap>
-            <HeightElement value={'16px'} />
+            <SharingOptionSelectedDescription
+              variant={'body2'}
+              component={'div'}>
+              Co-authorship license is active for five years from the date of
+              publication. After that, the data becomes available under an open
+              CC BY-ND license.
+            </SharingOptionSelectedDescription>
             <Typography variant={'h6'}>Your files storage</Typography>
             <SharingOptionsWrap>
               <SharingOption
@@ -397,7 +405,7 @@ const ButtonWrap = styled(Button)`
   margin-top: 24px;
 `;
 
-const OnlyTheFilesYouUploadWrap = styled(Typography)`
+const SharingOptionSelectedDescription = styled(Typography)`
   border-radius: 4px;
   gap: 8px;
   background: var(--grey-50, #f8f7fa);
@@ -405,6 +413,7 @@ const OnlyTheFilesYouUploadWrap = styled(Typography)`
   display: flex;
   align-items: center;
   padding: 8px 16px;
+  margin-bottom: 24px;
 
   color: var(--text-secondary, #68676e);
 ` as typeof Typography;
