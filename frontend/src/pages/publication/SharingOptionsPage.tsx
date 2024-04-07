@@ -6,18 +6,17 @@ import {
   FormControlLabel,
   FormGroup,
   IconButton,
-  Radio,
   Switch,
   TextField,
   Tooltip,
   Typography
 } from '@mui/material';
 import {
+  ViewInArOutlined,
   Close,
   CloudOutlined,
   MessageOutlined,
-  Public,
-  ViewInArOutlined
+  Public
 } from '@mui/icons-material';
 import Button from '@mui/material/Button';
 import { routerStore } from '../../core/router';
@@ -128,7 +127,7 @@ export const SharingOptionsPage = (props: {
                   </IconButton>
                 </MarginLeftAuto>
               </HeaderTitleWrap>
-              <HeightElement value={'24px'} />
+              <HeightElement value={'36px'} />
               <Typography variant={'h6'}>Access to your dataset</Typography>
             </HeaderWrap>
             <SharingOptionsWrap>
@@ -138,6 +137,7 @@ export const SharingOptionsPage = (props: {
                 description={
                   'All registered users can download your attached files instantly. Set the rules for your data use below.'
                 }
+                height={'128px'}
                 isSelected
               />
               <Tooltip title="Like science, we value openness and are excited to share what we're working on. New features currently in our 'lab', are being tested and perfected, so stay tuned.">
@@ -146,70 +146,93 @@ export const SharingOptionsPage = (props: {
                   label={'On request'}
                   description={''}
                   isDisabled={true}
+                  noMargin={true}
+                  height={'128px'}
                 />
               </Tooltip>
             </SharingOptionsWrap>
-            <StorageOptionsWrap>
-              <Typography variant={'h6'}>
-                How would you like to store your dataset?
-              </Typography>
-              <FormControlLabel
-                value={StorageType.CLOUD_SECURE_STORAGE}
-                label={
-                  <FlexWrapColumn>
-                    <FlexWrapRowRadioLabel>
-                      <StorageOptionLabelWrap disabled={false}>
-                        Cloud Secure Storage
-                      </StorageOptionLabelWrap>
-                      <CloudOutlined />
-                    </FlexWrapRowRadioLabel>
-                    <StorageOptionDescription
-                      variant={'body1'}
-                      disabled={false}>
-                      Store dataset in our secure, centralized cloud system.
-                      Easy access and high-speed downloads.
-                    </StorageOptionDescription>
-                  </FlexWrapColumn>
+            <OnlyTheFilesYouUploadWrap variant={'body2'} component={'div'}>
+              Only the files you upload may be subject to access restrictions.
+              Your data annotation text is always accessible to everyone.
+            </OnlyTheFilesYouUploadWrap>
+            <HeightElement value={'24px'} />
+            <Typography variant={'h6'}>Your files storage</Typography>
+            <SharingOptionsWrap>
+              <SharingOption
+                icon={<CloudOutlined fontSize={'medium'} />}
+                label={'Cloud Secure Storage'}
+                description={
+                  'Store dataset in our secure, centralized cloud system. Easy access and high-speed downloads.'
                 }
-                control={
-                  <Radio
-                    checked={storageType === StorageType.CLOUD_SECURE_STORAGE}
-                    onChange={() =>
-                      setStorageType(StorageType.CLOUD_SECURE_STORAGE)
-                    }
-                  />
-                }
+                height={'164px'}
+                isSelected
               />
-              <FormControlLabel
-                disabled={isIpfsDisabled}
-                value={StorageType.IPFS}
-                labelPlacement={'end'}
-                label={
-                  <FlexWrapColumn>
-                    <FlexWrapRowRadioLabel>
-                      <StorageOptionLabelWrap disabled={isIpfsDisabled}>
-                        Decentralized Storage (IPFS)
-                      </StorageOptionLabelWrap>
-                      <ViewInArOutlined />
-                    </FlexWrapRowRadioLabel>
-                    <StorageOptionDescription
-                      variant={'body1'}
-                      disabled={isIpfsDisabled}>
-                      Distribute dataset across a decentralized network for
-                      added resilience and permanence. Maximum dataset size 2GB
-                    </StorageOptionDescription>
-                  </FlexWrapColumn>
+              <SharingOption
+                icon={<ViewInArOutlined fontSize={'medium'} />}
+                label={'Decentralized Storage (IPFS)'}
+                height={'164px'}
+                description={
+                  'Distribute dataset across a decentralized network for added resilience and permanence. Maximum dataset size 2GB '
                 }
-                control={
-                  <Radio
-                    checked={storageType === StorageType.IPFS}
-                    onChange={() => {
-                      setStorageType(StorageType.IPFS);
-                    }}
-                  />
-                }
+                noMargin={true}
               />
-            </StorageOptionsWrap>
+              {/* <FormControlLabel */}
+              {/*  value={StorageType.CLOUD_SECURE_STORAGE} */}
+              {/*  label={ */}
+              {/*    <FlexWrapColumn> */}
+              {/*      <FlexWrapRowRadioLabel> */}
+              {/*        <StorageOptionLabelWrap disabled={false}> */}
+              {/*          Cloud Secure Storage */}
+              {/*        </StorageOptionLabelWrap> */}
+              {/*        <CloudOutlined /> */}
+              {/*      </FlexWrapRowRadioLabel> */}
+              {/*      <StorageOptionDescription */}
+              {/*        variant={'body1'} */}
+              {/*        disabled={false}> */}
+              {/*        Store dataset in our secure, centralized cloud system. */}
+              {/*        Easy access and high-speed downloads. */}
+              {/*      </StorageOptionDescription> */}
+              {/*    </FlexWrapColumn> */}
+              {/*  } */}
+              {/*  control={ */}
+              {/*    <Radio */}
+              {/*      checked={storageType === StorageType.CLOUD_SECURE_STORAGE} */}
+              {/*      onChange={() => */}
+              {/*        setStorageType(StorageType.CLOUD_SECURE_STORAGE) */}
+              {/*      } */}
+              {/*    /> */}
+              {/*  } */}
+              {/* /> */}
+              {/* <FormControlLabel */}
+              {/*  disabled={isIpfsDisabled} */}
+              {/*  value={StorageType.IPFS} */}
+              {/*  labelPlacement={'end'} */}
+              {/*  label={ */}
+              {/*    <FlexWrapColumn> */}
+              {/*      <FlexWrapRowRadioLabel> */}
+              {/*        <StorageOptionLabelWrap disabled={isIpfsDisabled}> */}
+              {/*          Decentralized Storage (IPFS) */}
+              {/*        </StorageOptionLabelWrap> */}
+              {/*        <ViewInArOutlined /> */}
+              {/*      </FlexWrapRowRadioLabel> */}
+              {/*      <StorageOptionDescription */}
+              {/*        variant={'body1'} */}
+              {/*        disabled={isIpfsDisabled}> */}
+              {/*        Distribute dataset across a decentralized network for */}
+              {/*        added resilience and permanence. Maximum dataset size 2GB */}
+              {/*      </StorageOptionDescription> */}
+              {/*    </FlexWrapColumn> */}
+              {/*  } */}
+              {/*  control={ */}
+              {/*    <Radio */}
+              {/*      checked={storageType === StorageType.IPFS} */}
+              {/*      onChange={() => { */}
+              {/*        setStorageType(StorageType.IPFS); */}
+              {/*      }} */}
+              {/*    /> */}
+              {/*  } */}
+              {/* /> */}
+            </SharingOptionsWrap>
             <PeerReviewSection />
             <FormGroup>
               <FormControlLabel
@@ -286,17 +309,20 @@ interface SharingOptionsProps {
   isSelected?: boolean;
   noMargin?: boolean;
   isDisabled?: boolean;
+  height: string;
 }
 
 // eslint-disable-next-line react/display-name
 const SharingOption = React.forwardRef<HTMLDivElement, SharingOptionsProps>(
   (props: SharingOptionsProps, ref): ReactElement => {
-    const { label, description, isDisabled, isSelected, noMargin } = props;
+    const { label, description, isDisabled, isSelected, noMargin, height } =
+      props;
     return (
       <SharingOptionWrap
         {...props}
         ref={ref}
         isSelected={isSelected}
+        height={height}
         noMargin={noMargin}>
         <FlexWrapRow>
           <IconWrap isDisabled={isDisabled}>{props.icon}</IconWrap>
@@ -307,6 +333,11 @@ const SharingOption = React.forwardRef<HTMLDivElement, SharingOptionsProps>(
         <SharingOptionDescription isDisabled={isDisabled}>
           <Typography variant={'body2'}>{description}</Typography>
         </SharingOptionDescription>
+        {isDisabled && (
+          <FlexWrapRow>
+            <SoonChip />
+          </FlexWrapRow>
+        )}
       </SharingOptionWrap>
     );
   }
@@ -338,6 +369,18 @@ const ButtonWrap = styled(Button)`
   margin-top: 24px;
 `;
 
+const OnlyTheFilesYouUploadWrap = styled(Typography)`
+  border-radius: 4px;
+  gap: 8px;
+  background: var(--grey-50, #f8f7fa);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+
+  color: var(--text-secondary, #68676e);
+` as typeof Typography;
+
 const PeerReviewSectionWrap = styled(Typography)`
   border-radius: 8px;
   background: var(--grey-50, #f8f7fa);
@@ -365,11 +408,12 @@ const SoonChipWrap = styled(Chip)`
 const SharingOptionWrap = styled.div<{
   noMargin?: boolean;
   isSelected?: boolean;
+  height: string;
 }>`
   cursor: pointer;
-  padding: 20px;
-  width: 370px;
-  height: 135px;
+  padding: 16px;
+  width: 300px;
+  height: 128px;
   border-radius: 8px;
   border: 1px solid var(--divider, #d2d2d6);
   ${(props) =>
@@ -377,6 +421,7 @@ const SharingOptionWrap = styled.div<{
       ? 'border: 2px solid var(--primary-dark, #3C47E5);' +
         'box-shadow: 0px 0px 4px 0px #3B4EFF;'
       : ''}
+  height: ${(props) => props.height};
   margin-right: ${(props) => (props.noMargin ? '0px' : '24px')};
   display: flex;
   flex-direction: column;
@@ -404,7 +449,6 @@ const SharingOptionDescription = styled.div<{ isDisabled?: boolean }>`
 `;
 
 const HeaderWrap = styled.div`
-  margin-bottom: 48px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -427,9 +471,7 @@ const BodyWrap = styled.div`
 
 const BodyContentWrap = styled.div`
   width: 680px;
-  padding: 48px;
-  padding-left: 32px;
-  padding-right: 32px;
+  padding: 48px 32px;
 `;
 
 const LeftPanel = styled.div`
@@ -466,6 +508,8 @@ const InputPreviewTextField = styled(TextField)`
 const SharingOptionsWrap = styled.div`
   display: flex;
   justify-content: space-between;
+  padding-top: 24px;
+  padding-bottom: 24px;
 `;
 
 const StorageOptionsWrap = styled.div`
