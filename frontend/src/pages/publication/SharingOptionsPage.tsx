@@ -163,8 +163,8 @@ export const SharingOptionsPage = (props: {
             <Typography variant={'h6'}>Use of your dataset</Typography>
             <SharingOptionsWrap>
               <SharingOption
-                onClick={() => setUseType(UseType.CO_AUTHORSHIP)}
-                isSelected={useType === UseType.CO_AUTHORSHIP}
+                onClick={() => setUseType(UseType.CITATE)}
+                isSelected={useType === UseType.CITATE}
                 icon={<FormatQuoteIcon fontSize={'medium'} />}
                 label={'Citation is enough'}
                 description={
@@ -183,13 +183,15 @@ export const SharingOptionsPage = (props: {
                 height={'168px'}
               />
             </SharingOptionsWrap>
-            <SharingOptionSelectedDescription
-              variant={'body2'}
-              component={'div'}>
-              Co-authorship license is active for five years from the date of
-              publication. After that, the data becomes available under an open
-              CC BY-ND license.
-            </SharingOptionSelectedDescription>
+            {useType === UseType.CO_AUTHORSHIP && (
+              <SharingOptionSelectedDescription
+                variant={'body2'}
+                component={'div'}>
+                Co-authorship license is active for five years from the date of
+                publication. After that, the data becomes available under an
+                open CC BY-ND license.
+              </SharingOptionSelectedDescription>
+            )}
             <Typography variant={'h6'}>Your files storage</Typography>
             <SharingOptionsWrap>
               <SharingOption
