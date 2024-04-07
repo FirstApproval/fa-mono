@@ -25,7 +25,8 @@ import { publicationService } from '../../core/service';
 import {
   AccessType,
   LicenseType,
-  StorageType
+  StorageType,
+  UseType
 } from '../../apis/first-approval-api';
 import { Page } from '../../core/router/constants';
 import { FlexWrapColumn, FlexWrapRow, HeightElement } from '../common.styled';
@@ -55,6 +56,7 @@ export const SharingOptionsPage = (props: {
     understandAfterPublishingCannotBeEdited,
     setUnderstandAfterPublishingCannotBeEdited
   ] = useState(false);
+  const [useType, setUseType] = useState(UseType.CITATE);
   const [storageType, setStorageType] = useState(
     StorageType.CLOUD_SECURE_STORAGE
   );
@@ -161,22 +163,24 @@ export const SharingOptionsPage = (props: {
             <Typography variant={'h6'}>Use of your dataset</Typography>
             <SharingOptionsWrap>
               <SharingOption
+                onClick={() => setUseType(UseType.CO_AUTHORSHIP)}
+                isSelected={useType === UseType.CO_AUTHORSHIP}
                 icon={<FormatQuoteIcon fontSize={'medium'} />}
                 label={'Citation is enough'}
                 description={
                   'Others may use your data, provided that they cite your dataset in their research.'
                 }
                 height={'168px'}
-                isSelected={true}
               />
               <SharingOption
+                onClick={() => setUseType(UseType.CO_AUTHORSHIP)}
+                isSelected={useType === UseType.CO_AUTHORSHIP}
                 icon={<AlternateEmail fontSize={'medium'} />}
                 label={'Co-authorship requirement'}
                 description={
                   "Be credited as a co-author in journal publications when your data is vital to others' research. You can accept or reject collaboration requests. "
                 }
                 height={'168px'}
-                isSelected={true}
               />
             </SharingOptionsWrap>
             <SharingOptionSelectedDescription
@@ -190,16 +194,17 @@ export const SharingOptionsPage = (props: {
             <SharingOptionsWrap>
               <SharingOption
                 onClick={() => setStorageType(StorageType.CLOUD_SECURE_STORAGE)}
+                isSelected={storageType === StorageType.CLOUD_SECURE_STORAGE}
                 icon={<CloudOutlined fontSize={'medium'} />}
                 label={'Cloud Secure Storage'}
                 description={
                   'Store dataset in our secure, centralized cloud system. Easy access and high-speed downloads.'
                 }
                 height={'164px'}
-                isSelected={storageType === StorageType.CLOUD_SECURE_STORAGE}
               />
               <SharingOption
                 onClick={() => setStorageType(StorageType.IPFS)}
+                isSelected={storageType === StorageType.IPFS}
                 icon={<ViewInArOutlined fontSize={'medium'} />}
                 label={'Decentralized Storage (IPFS)'}
                 height={'164px'}
@@ -207,7 +212,6 @@ export const SharingOptionsPage = (props: {
                   'Distribute dataset across a decentralized network for added resilience and permanence. Maximum dataset size 2GB '
                 }
                 isDisabled={isIpfsDisabled}
-                isSelected={storageType === StorageType.IPFS}
               />
               {/* <FormControlLabel */}
               {/*  value={StorageType.CLOUD_SECURE_STORAGE} */}
@@ -318,6 +322,7 @@ export const SharingOptionsPage = (props: {
                 void publicationService
                   .submitPublication(publicationId, {
                     accessType: AccessType.OPEN,
+                    useType,
                     storageType,
                     previewTitle,
                     previewSubtitle,

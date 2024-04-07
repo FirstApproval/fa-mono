@@ -217,6 +217,7 @@ class PublicationService(
         }
         publication.status = READY_FOR_PUBLICATION
         publication.accessType = AccessType.valueOf(submitPublicationRequest.accessType.name)
+        publication.useType = UseType.valueOf(submitPublicationRequest.useType.name)
         publication.storageType = StorageType.valueOf(submitPublicationRequest.storageType.name)
         publication.licenseType = LicenseType.valueOf(submitPublicationRequest.licenseType.name)
         publication.previewTitle = submitPublicationRequest.previewTitle

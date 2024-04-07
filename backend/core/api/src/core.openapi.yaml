@@ -1925,6 +1925,8 @@ components:
       properties:
         accessType:
           $ref: '#/components/schemas/AccessType'
+        useType:
+          $ref: '#/components/schemas/UseType'
         storageType:
           $ref: '#/components/schemas/StorageType'
         licenseType:
@@ -2052,6 +2054,12 @@ components:
         - READY_FOR_PUBLICATION
         - MODERATION
         - PUBLISHED
+
+    UseType:
+      type: string
+      enum:
+        - CITATE
+        - CO_AUTHORSHIP
 
     StorageType:
       type: string
@@ -2304,6 +2312,8 @@ components:
           $ref: '#/components/schemas/AccessType'
         licenseType:
           $ref: '#/components/schemas/LicenseType'
+        useType:
+          $ref: '#/components/schemas/UseType'
         storageType:
           $ref: '#/components/schemas/StorageType'
         creationTime:
