@@ -27,7 +27,10 @@ export const CollaborationRequirementsDialog = (props: {
   return (
     <Dialog
       open={isOpen}
-      onClose={onClose}
+      onClose={() => {
+        setAgreeToTheFirstApprovalLicense(false);
+        onClose();
+      }}
       aria-labelledby="collaboration-requirements-dialog-title"
       aria-describedby="collaboration-requirements-dialog-description">
       <DialogContentWrap>
@@ -69,7 +72,10 @@ export const CollaborationRequirementsDialog = (props: {
             size={'large'}
             color={'primary'}
             variant="text"
-            onClick={onClose}>
+            onClick={() => {
+              setAgreeToTheFirstApprovalLicense(false);
+              onClose();
+            }}>
             Cancel
           </CancelButton>
           <WidthElement value={'24px'} />
@@ -77,6 +83,7 @@ export const CollaborationRequirementsDialog = (props: {
             color="primary"
             variant={'contained'}
             size={'large'}
+            disabled={!agreeToTheFirstApprovalLicense}
             onClick={onConfirm}>
             Download
           </ConfirmButton>
