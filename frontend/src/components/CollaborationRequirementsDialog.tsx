@@ -19,7 +19,7 @@ import collaborationRequirementsImage from '../assets/collaboration_requirements
 export const CollaborationRequirementsDialog = (props: {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: (agreeToTheFirstApprovalLicense: boolean) => void;
 }): ReactElement => {
   const { isOpen, onClose, onConfirm } = props;
   const [agreeToTheFirstApprovalLicense, setAgreeToTheFirstApprovalLicense] =
@@ -85,7 +85,7 @@ export const CollaborationRequirementsDialog = (props: {
             size={'large'}
             disabled={!agreeToTheFirstApprovalLicense}
             onClick={() => {
-              onConfirm();
+              onConfirm(agreeToTheFirstApprovalLicense);
               setAgreeToTheFirstApprovalLicense(false);
             }}>
             Download

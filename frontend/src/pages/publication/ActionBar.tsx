@@ -229,8 +229,8 @@ export const ActionBar = observer(
         <CollaborationRequirementsDialog
           isOpen={collaborationRequirementDialogOpen}
           onClose={() => setCollaborationRequirementDialogOpen(false)}
-          onConfirm={() => {
-            publicationPageStore.downloadFiles();
+          onConfirm={(agreeToTheFirstApprovalLicense: boolean) => {
+            publicationPageStore.downloadFiles(agreeToTheFirstApprovalLicense);
             setCollaborationRequirementDialogOpen(false);
           }}
         />
