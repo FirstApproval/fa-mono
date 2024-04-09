@@ -97,6 +97,11 @@ export const FlexWrapRow = styled.div`
   display: flex;
 `;
 
+export const FlexWrapRowAlignTop = styled.div`
+  display: flex;
+  align-items: start;
+`;
+
 export const ValidationError = styled.div`
   width: 100%;
   height: 48px;
