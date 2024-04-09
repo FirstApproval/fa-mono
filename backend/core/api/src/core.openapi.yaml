@@ -830,6 +830,12 @@ paths:
             maxLength: 7
           required: true
           description: Publication id
+        - in: query
+          name: agreeToTheFirstApprovalLicense
+          schema:
+            type: boolean
+          required: true
+          description: User agree to the First Approval License
       responses:
         200:
           description: Success

@@ -28,6 +28,8 @@ import org.springframework.http.MediaType.APPLICATION_PDF
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
+import java.lang.IllegalArgumentException
+import java.lang.IllegalStateException
 import org.firstapproval.backend.core.domain.publication.Publication as PublicationEntity
 
 @RestController
@@ -107,7 +109,10 @@ class PublicationController(
         return ok(PublicationStatus.valueOf(publication.status.name))
     }
 
-    override fun getDownloadLink(id: String): ResponseEntity<DownloadLinkResponse> {
+    override fun getDownloadLink(id: String, agreeToTheFirstApprovalLicense: Boolean): ResponseEntity<DownloadLinkResponse> {
+        if (!agreeToTheFirstApprovalLicense) {
+            throw IllegalArgumentException("User must agree to the First Approval License")
+        }
         val downloadLink = publicationService.getDownloadLinkForArchive(authHolderService.user, id)
         return ok(downloadLink)
     }

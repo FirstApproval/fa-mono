@@ -84,7 +84,10 @@ export const CollaborationRequirementsDialog = (props: {
             variant={'contained'}
             size={'large'}
             disabled={!agreeToTheFirstApprovalLicense}
-            onClick={onConfirm}>
+            onClick={() => {
+              onConfirm();
+              setAgreeToTheFirstApprovalLicense(false);
+            }}>
             Download
           </ConfirmButton>
         </FlexWrapRow>
