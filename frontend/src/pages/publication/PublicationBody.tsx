@@ -50,6 +50,7 @@ import { UploadStatusWindow } from './UploadStatusWindow';
 import { DatasetIsPreparingDialog } from './dialogs/DatasetIsPreparingDialog';
 import { PreliminaryResultsEditor } from './editors/PreliminaryResultsEditor';
 import { copyTextToClipboard } from '../../fire-browser/utils';
+import { CollaborationRequirementsDialog } from '../../components/CollaborationRequirementsDialog';
 
 export const PublicationBody = observer(
   (props: {
@@ -216,8 +217,8 @@ export const PublicationBody = observer(
               isReadonly={publicationStore.isReadonly}
               onArchiveDownload={() => {
                 if (authStore.token) {
-                  publicationPageStore.downloadFiles();
-                  publicationPageStore.isPasscodeDialogOpen = true;
+                  publicationPageStore.collaborationRequirementDialogOpen =
+                    true;
                 } else {
                   routerStore.navigatePage(Page.SIGN_UP);
                 }
@@ -348,6 +349,17 @@ export const PublicationBody = observer(
           onClose={() =>
             (publicationPageStore.isDataPreparingDialogOpen = false)
           }
+        />
+        <CollaborationRequirementsDialog
+          isOpen={publicationPageStore.collaborationRequirementDialogOpen}
+          onClose={() =>
+            (publicationPageStore.collaborationRequirementDialogOpen = false)
+          }
+          onConfirm={(agreeToTheFirstApprovalLicense: boolean) => {
+            publicationPageStore.downloadFiles(agreeToTheFirstApprovalLicense);
+            publicationPageStore.collaborationRequirementDialogOpen = false;
+            publicationPageStore.isPasscodeDialogOpen = true;
+          }}
         />
       </>
     );

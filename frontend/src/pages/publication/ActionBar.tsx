@@ -39,10 +39,6 @@ export const ActionBar = observer(
   }): ReactElement => {
     const { publicationStore, publicationPageStore } = props;
     const [showLinkCopiedAlert, setShowLinkCopiedAlert] = useState(false);
-    const [
-      collaborationRequirementDialogOpen,
-      setCollaborationRequirementDialogOpen
-    ] = useState(false);
 
     const getArchiveSizeTitle = (sizeBytes: number | null): string => {
       if (sizeBytes) {
@@ -101,7 +97,8 @@ export const ActionBar = observer(
                     variant="outlined"
                     onClick={() => {
                       if (authStore.token) {
-                        setCollaborationRequirementDialogOpen(true);
+                        publicationPageStore.collaborationRequirementDialogOpen =
+                          true;
                       } else {
                         sessionStorage.setItem(
                           PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY,
@@ -227,11 +224,14 @@ export const ActionBar = observer(
           </Snackbar>
         </div>
         <CollaborationRequirementsDialog
-          isOpen={collaborationRequirementDialogOpen}
-          onClose={() => setCollaborationRequirementDialogOpen(false)}
+          isOpen={publicationPageStore.collaborationRequirementDialogOpen}
+          onClose={() =>
+            (publicationPageStore.collaborationRequirementDialogOpen = false)
+          }
           onConfirm={(agreeToTheFirstApprovalLicense: boolean) => {
             publicationPageStore.downloadFiles(agreeToTheFirstApprovalLicense);
-            setCollaborationRequirementDialogOpen(false);
+            publicationPageStore.collaborationRequirementDialogOpen = false;
+            publicationPageStore.isPasscodeDialogOpen = true;
           }}
         />
       </>

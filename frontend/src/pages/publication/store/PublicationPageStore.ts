@@ -23,6 +23,7 @@ export class PublicationPageStore {
 
   sampleFilesEnabled = false;
   sampleFilesModalOpen = false;
+  collaborationRequirementDialogOpen = false;
 
   get sampleFilesHidden(): boolean {
     return this.fs.rootPathFiles === 0;
