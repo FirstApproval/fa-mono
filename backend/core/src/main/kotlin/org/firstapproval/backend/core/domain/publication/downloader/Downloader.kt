@@ -22,5 +22,12 @@ class Downloader (
     @OneToOne
     val user: User,
     @Type(JsonBinaryType::class)
-    var history: MutableList<ZonedDateTime>
+    var oldHistory: List<ZonedDateTime>? = emptyList(),
+    @Type(JsonBinaryType::class)
+    var history: MutableList<DownloadHistory> = mutableListOf()
+)
+
+class DownloadHistory (
+    var agreeToTheFirstApprovalLicense: Boolean,
+    var creationTime: ZonedDateTime
 )

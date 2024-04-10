@@ -23,6 +23,7 @@ import org.firstapproval.backend.core.domain.publication.authors.Author
 import org.firstapproval.backend.core.domain.publication.authors.AuthorRepository
 import org.firstapproval.backend.core.domain.publication.authors.AuthorWorkplace
 import org.firstapproval.backend.core.domain.publication.authors.toApiObject
+import org.firstapproval.backend.core.domain.publication.downloader.DownloadHistory
 import org.firstapproval.backend.core.domain.publication.downloader.Downloader
 import org.firstapproval.backend.core.domain.publication.downloader.DownloaderRepository
 import org.firstapproval.backend.core.domain.publication.file.PublicationFileRepository
@@ -188,13 +189,11 @@ class PublicationService(
         publicationRepository.saveAndFlush(publication)
     }
 
-    private fun addDownloadHistory(user: User, publication: Publication) {
-        val prevTry = downloaderRepository.getByUserAndPublication(user, publication)
-        if (prevTry != null) {
-            prevTry.history.add(now())
-        } else {
-            downloaderRepository.save(Downloader(publication = publication, user = user, history = mutableListOf(now())))
-        }
+    private fun addDownloadHistory(user: User, publication: Publication, agreeToTheFirstApprovalLicense: Boolean) {
+        val downloadHistory = DownloadHistory(agreeToTheFirstApprovalLicense, now())
+        val downloader = downloaderRepository.getByUserAndPublication(user, publication) ?: Downloader(publication = publication, user = user)
+        downloader.history.add(downloadHistory)
+        downloaderRepository.save(downloader)
     }
 
     @Transactional
@@ -231,7 +230,7 @@ class PublicationService(
     }
 
     @Transactional
-    fun getDownloadLinkForArchive(user: User, id: String): DownloadLinkResponse {
+    fun getDownloadLinkForArchive(user: User, id: String, agreeToTheFirstApprovalLicense: Boolean): DownloadLinkResponse {
         val publication = publicationRepository.findByIdAndIsBlockedIsFalse(id)
         val title = publication.title ?: id
         val link: DownloadLinkResponse = when (publication.storageType) {
@@ -247,7 +246,7 @@ class PublicationService(
             else -> throw IllegalArgumentException("Unexpected storage type: ${publication.storageType}")
         }
 
-        addDownloadHistory(user, publication)
+        addDownloadHistory(user, publication, agreeToTheFirstApprovalLicense)
         publication.downloadsCount += 1
         user.email?.let {
             notificationService.sendArchivePassword(it, title, publication.authorsNames, publication.archivePassword.require())

@@ -113,7 +113,7 @@ class PublicationController(
         if (!agreeToTheFirstApprovalLicense) {
             throw IllegalArgumentException("User must agree to the First Approval License")
         }
-        val downloadLink = publicationService.getDownloadLinkForArchive(authHolderService.user, id)
+        val downloadLink = publicationService.getDownloadLinkForArchive(authHolderService.user, id, agreeToTheFirstApprovalLicense)
         return ok(downloadLink)
     }
 
