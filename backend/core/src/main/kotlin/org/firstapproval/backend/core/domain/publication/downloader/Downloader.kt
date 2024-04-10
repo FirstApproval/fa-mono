@@ -10,9 +10,9 @@ import org.firstapproval.backend.core.domain.publication.Publication
 import org.firstapproval.backend.core.domain.user.User
 import org.hibernate.annotations.Type
 import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
 import java.util.*
 import java.util.UUID.randomUUID
+
 
 @Entity
 @Table(name = "downloaders")
@@ -32,13 +32,14 @@ class Downloader(
 
 class DownloadHistory(
     var agreeToTheFirstApprovalLicense: Boolean,
-    @field:JsonSerialize(using = ZonedDateTimeSerializer::class)
+    @JsonSerialize(using = ZonedDateTimeSerializer::class)
     var creationTime: ZonedDateTime = ZonedDateTime.now()
 )
 
+
 class ZonedDateTimeSerializer : JsonSerializer<ZonedDateTime>() {
-    override fun serialize(value: ZonedDateTime?, gen: JsonGenerator?, serializers: SerializerProvider?) {
-        gen?.writeString(value?.format(ISO_OFFSET_DATE_TIME))
+    override fun serialize(value: ZonedDateTime, gen: JsonGenerator, serializers: SerializerProvider?) {
+        val parseDate: String = value.toOffsetDateTime().toString() // parse here zoned date time
+        gen.writeString(parseDate)
     }
 }
-
