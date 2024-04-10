@@ -175,7 +175,7 @@ class PublicationService(
     }
 
     private fun addDownloadHistory(user: User, publication: Publication, agreeToTheFirstApprovalLicense: Boolean) {
-        val downloadHistory = DownloadHistory(agreeToTheFirstApprovalLicense, now())
+        val downloadHistory = DownloadHistory(agreeToTheFirstApprovalLicense)
         val downloader = downloaderRepository.getByUserAndPublication(user, publication)?.apply { this.lastDownloadTime = now() }
                 ?: Downloader(publication = publication, user = user)
         downloader.history.add(downloadHistory)

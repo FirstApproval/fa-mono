@@ -15,6 +15,8 @@ import org.hibernate.annotations.Type
 import java.sql.Timestamp
 import java.time.ZoneId.systemDefault
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
 import java.util.UUID
 import java.util.UUID.randomUUID
 
@@ -37,18 +39,19 @@ class Downloader(
 class DownloadHistory(
     var agreeToTheFirstApprovalLicense: Boolean,
     @Convert(converter = ZonedDateTimeConverter::class)
-    @Column(columnDefinition = "timestamp with time zone")
-    var creationTime: ZonedDateTime
+    @Column(columnDefinition = "text")
+    var creationTime: ZonedDateTime = ZonedDateTime.now()
 )
 
-@Converter(autoApply = true)
-class ZonedDateTimeConverter : AttributeConverter<ZonedDateTime, Timestamp> {
+@Converter
+class ZonedDateTimeConverter : AttributeConverter<ZonedDateTime, String> {
 
-    override fun convertToDatabaseColumn(attribute: ZonedDateTime?): Timestamp? {
-        return attribute?.let { Timestamp.from(it.toInstant()) }
+    override fun convertToDatabaseColumn(attribute: ZonedDateTime?): String? {
+        return attribute?.format(ISO_OFFSET_DATE_TIME)
     }
 
-    override fun convertToEntityAttribute(dbData: Timestamp?): ZonedDateTime? {
-        return dbData?.toInstant()?.atZone(systemDefault())
+    override fun convertToEntityAttribute(dbData: String?): ZonedDateTime? {
+        return dbData?.let { ZonedDateTime.parse(it, ISO_OFFSET_DATE_TIME) }
     }
 }
+
