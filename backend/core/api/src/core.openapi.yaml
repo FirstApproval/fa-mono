@@ -428,6 +428,34 @@ paths:
       operationId: getMyDraftPublications
       tags: [ publication ]
 
+  /api/user/downloaded-publications:
+    get:
+      summary: Get user publications
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: true
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          required: true
+          description: Page size
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicationsResponse'
+      security:
+        - TokenAuth: [ ]
+      operationId: getMyDownloadedPublications
+      tags: [ publication ]
+
   /api/user-publications/{username}:
     get:
       summary: Get user publications by username

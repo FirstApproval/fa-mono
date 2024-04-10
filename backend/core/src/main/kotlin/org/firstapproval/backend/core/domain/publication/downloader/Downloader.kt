@@ -24,7 +24,8 @@ class Downloader (
     @Type(JsonBinaryType::class)
     var oldHistory: List<ZonedDateTime>? = emptyList(),
     @Type(JsonBinaryType::class)
-    var history: MutableList<DownloadHistory> = mutableListOf()
+    var history: MutableList<DownloadHistory> = mutableListOf(),
+    var lastDownloadTime: ZonedDateTime = ZonedDateTime.now()
 )
 
 class DownloadHistory (

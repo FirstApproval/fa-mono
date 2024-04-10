@@ -65,6 +65,11 @@ class PublicationController(
         return ok().body(publications)
     }
 
+    override fun getMyDownloadedPublications(page: Int, pageSize: Int): ResponseEntity<PublicationsResponse> {
+        val publications = publicationService.getUserDownloadedPublications(authHolderService.user, setOf(PENDING), page, pageSize)
+        return ok().body(publications)
+    }
+
     override fun createPublication(): ResponseEntity<CreatePublicationResponse> {
         val pub = publicationService.create(authHolderService.user)
         return ok().body(CreatePublicationResponse(pub.id, PublicationStatus.valueOf(pub.status.name), pub.creationTime.toOffsetDateTime()))
