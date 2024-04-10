@@ -1,23 +1,17 @@
 package org.firstapproval.backend.core.domain.publication.downloader
 
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.JsonSerializer
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType
-import jakarta.persistence.AttributeConverter
-import jakarta.persistence.Column
-import jakarta.persistence.Convert
-import jakarta.persistence.Converter
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.OneToOne
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import org.firstapproval.backend.core.domain.publication.Publication
 import org.firstapproval.backend.core.domain.user.User
 import org.hibernate.annotations.Type
-import java.sql.Timestamp
-import java.time.ZoneId.systemDefault
 import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
-import java.util.UUID
+import java.util.*
 import java.util.UUID.randomUUID
 
 @Entity
@@ -38,20 +32,13 @@ class Downloader(
 
 class DownloadHistory(
     var agreeToTheFirstApprovalLicense: Boolean,
-    @Convert(converter = ZonedDateTimeConverter::class)
-    @Column(columnDefinition = "text")
+    @field:JsonSerialize(using = ZonedDateTimeSerializer::class)
     var creationTime: ZonedDateTime = ZonedDateTime.now()
 )
 
-@Converter
-class ZonedDateTimeConverter : AttributeConverter<ZonedDateTime, String> {
-
-    override fun convertToDatabaseColumn(attribute: ZonedDateTime?): String? {
-        return attribute?.format(ISO_OFFSET_DATE_TIME)
-    }
-
-    override fun convertToEntityAttribute(dbData: String?): ZonedDateTime? {
-        return dbData?.let { ZonedDateTime.parse(it, ISO_OFFSET_DATE_TIME) }
+class ZonedDateTimeSerializer : JsonSerializer<ZonedDateTime>() {
+    override fun serialize(value: ZonedDateTime?, gen: JsonGenerator?, serializers: SerializerProvider?) {
+        gen?.writeString(value?.format(ISO_OFFSET_DATE_TIME))
     }
 }
 
