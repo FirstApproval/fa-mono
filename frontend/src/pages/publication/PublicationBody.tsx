@@ -58,7 +58,6 @@ export const PublicationBody = observer(
     publicationStore: PublicationStore;
     researchAreaStore: ResearchAreaStore;
     publicationPageStore: PublicationPageStore;
-    openDownloadersDialog: () => void;
     fs: FileSystemFA;
     sfs: FileSystemFA;
   }): ReactElement => {
@@ -114,9 +113,9 @@ export const PublicationBody = observer(
               );
             }}
             openCollaboratorsDialog={() => {
-              downloadersStore.clearAndOpen(
+              collaboratorsStore.clearAndOpen(
                 props.publicationId,
-                publicationStore.downloadsCount
+                publicationStore.collaboratorsCount
               );
             }}
             publicationStore={publicationStore}
