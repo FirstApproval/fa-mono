@@ -29,7 +29,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
 import java.lang.IllegalArgumentException
-import java.lang.IllegalStateException
 import org.firstapproval.backend.core.domain.publication.Publication as PublicationEntity
 
 @RestController
@@ -84,9 +83,7 @@ class PublicationController(
         val pageResult = publicationService.search(text, limit, page)
         val dbModels = publicationService.findAllByIdIn(pageResult.content.map { it.id })
         return ok().body(
-            SearchPublicationsResponse()
-                .pageNum(pageResult.number)
-                .isLast(pageResult.isLast)
+            SearchPublicationsResponse(pageResult.number, pageResult.isLast)
                 .items(
                     pageResult.map { elasticModel ->
                         dbModels.firstOrNull { it.id == elasticModel.id }?.toApiObject(userService, doiProperties)

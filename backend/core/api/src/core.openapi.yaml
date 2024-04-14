@@ -754,6 +754,121 @@ paths:
       operationId: getPublicationDownloaders
       tags: [ publication ]
 
+  /api/publication/collaborators/{publicationId}:
+    get:
+      summary: Get publication
+      parameters:
+        - in: path
+          name: publicationId
+          schema:
+            type: string
+            maxLength: 7
+          required: true
+          description: Publication id
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: true
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          required: true
+          description: Page size
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCollaboratorsResponse'
+      security:
+        - TokenAuth: [ ]
+      operationId: getPublicationCollaborators
+      tags: [ collaborator ]
+
+  /api/collabortion/request-collaboration/{publicationId}:
+    post:
+      summary: Create a collaboration request
+      parameters:
+        - in: path
+          name: publicationId
+          schema:
+            type: string
+            maxLength: 7
+          required: true
+          description: Publication id
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: createCollaborationRequest
+      tags: [ collaboration-request ]
+
+  /api/collabortion/request/{collaborationRequestId}:
+    get:
+      summary: Retrieve a collaboration request
+      parameters:
+        - in: path
+          name: collaborationRequestId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Collaboration request id
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollaborationRequestInfo'
+      security:
+        - TokenAuth: [ ]
+      operationId: getCollaborationRequest
+      tags: [ collaboration-request ]
+
+  /api/collabortion/approve-request-collaboration/{collaborationRequestId}:
+    post:
+      summary: Approve a request for cooperation
+      parameters:
+        - in: path
+          name: collaborationRequestId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Collaboration request id
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: approveCollaborationRequest
+      tags: [ collaboration-request ]
+
+  /api/collabortion/reject-request-collaboration/{collaborationRequestId}:
+    post:
+      summary: Reject a request for cooperation
+      parameters:
+        - in: path
+          name: collaborationRequestId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Collaboration request id
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: rejectCollaborationRequest
+      tags: [ collaboration-request ]
+
   /api/publication/search:
     get:
       summary: Search publications
@@ -1002,7 +1117,7 @@ paths:
                 type: string
                 format: binary
       security:
-        - BasicAuth: [ ]
+        - PublicAuth: [ ]
       operationId: moderationDownloadPdf
       tags: [ moderation ]
 
@@ -2059,6 +2174,47 @@ components:
         - username
         - workplaces
 
+    CollaboratorInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userInfo:
+          $ref: '#/components/schemas/UserInfo'
+        creationTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - userInfo
+        - creationTime
+
+    CollaborationRequestInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userInfo:
+          $ref: '#/components/schemas/UserInfo'
+        publicationTitle:
+          type: string
+        publicationId:
+          type: string
+          maxLength: 7
+        creationTime:
+          type: string
+          format: date-time
+        approvalTime:
+          type: string
+          format: date-time
+        rejectionTime:
+          type: string
+          format: date-time
+        autoApproval:
+          type: boolean
+
     FullName:
       type: object
       properties:
@@ -2286,17 +2442,6 @@ components:
         - lastName
         - isConfirmed
 
-    Downloader:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-      required:
-        - email
-        - firstName
-        - lastName
-
     Organization:
       type: object
       properties:
@@ -2466,6 +2611,19 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserInfo'
+      required:
+        - downloaders
+        - isLastPage
+
+    GetCollaboratorsResponse:
+      type: object
+      properties:
+        isLastPage:
+          type: boolean
+        collaborators:
+          type: array
+          items:
+            $ref: '#/components/schemas/CollaboratorInfo'
       required:
         - downloaders
         - isLastPage
