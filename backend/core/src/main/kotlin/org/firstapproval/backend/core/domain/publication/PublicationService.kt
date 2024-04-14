@@ -190,6 +190,12 @@ class PublicationService(
     }
 
     @Transactional
+    fun incrementCollaboratorsCount(id: String) {
+        val publication = publicationRepository.getReferenceById(id)
+        publication.collaboratorsCount += 1
+    }
+
+    @Transactional
     fun submitPublication(
         user: User,
         id: String,
@@ -436,6 +442,7 @@ fun Publication.toApiObject(userService: UserService, doiProperties: DoiProperti
     publicationApiModel.authors = authors.map { it.toApiObject(userService.getProfileImage(it.user?.profileImage)) }
     publicationApiModel.viewsCount = viewsCount
     publicationApiModel.downloadsCount = downloadsCount
+    publicationApiModel.collaboratorsCount = collaboratorsCount
     publicationApiModel.status = PublicationStatusApiObject.valueOf(status.name)
     publicationApiModel.accessType = AccessTypeApiObject.valueOf(accessType.name)
     publicationApiModel.licenseType = licenseType.let { LicenseTypeApiObject.valueOf(it.name) }

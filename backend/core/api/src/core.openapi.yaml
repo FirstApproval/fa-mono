@@ -2562,6 +2562,9 @@ components:
         downloadsCount:
           type: integer
           format: int64
+        collaboratorsCount:
+          type: integer
+          format: int64
         total:
           type: number
           format: integer

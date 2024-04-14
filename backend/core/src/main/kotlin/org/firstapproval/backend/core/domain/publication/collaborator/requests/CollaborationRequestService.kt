@@ -3,6 +3,7 @@ package org.firstapproval.backend.core.domain.publication.collaborator.requests
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.PublicationRepository
+import org.firstapproval.backend.core.domain.publication.PublicationService
 import org.firstapproval.backend.core.domain.publication.collaborator.Collaborator
 import org.firstapproval.backend.core.domain.publication.collaborator.CollaboratorRepository
 import org.springframework.stereotype.Service
@@ -15,6 +16,7 @@ class CollaborationRequestService(
     private val collaborationRequestRepository: CollaborationRequestRepository,
     private val collaboratorRepository: CollaboratorRepository,
     private val publicationRepository: PublicationRepository,
+    private val publicationService: PublicationService,
     private val authHolderService: AuthHolderService
 ) {
     @Transactional
@@ -31,6 +33,7 @@ class CollaborationRequestService(
             )
         )
         collaborationRequest.approvalTime = ZonedDateTime.now()
+        publicationService.incrementCollaboratorsCount(collaborationRequest.publication.id)
     }
 
     @Transactional
