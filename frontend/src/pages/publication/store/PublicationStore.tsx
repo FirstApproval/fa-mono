@@ -73,6 +73,7 @@ export class PublicationStore {
   publicationTime: Date = new Date();
   viewsCount: number = 0;
   downloadsCount: number = 0;
+  collaboratorsCount: number = 0;
 
   licenseType: LicenseType | null = null;
   publicationStatus: PublicationStatus | null = null;
@@ -698,6 +699,9 @@ export class PublicationStore {
           }
           if (publication.downloadsCount) {
             this.downloadsCount = publication.downloadsCount;
+          }
+          if (publication.collaboratorsCount) {
+            this.collaboratorsCount = publication.collaboratorsCount;
           }
           if (publication.status) {
             this.publicationStatus = publication.status;

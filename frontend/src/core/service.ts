@@ -1,6 +1,7 @@
 import {
   AuthApi,
   AuthorApi,
+  CollaboratorApi,
   Configuration,
   FileApi,
   OrganizationApi,
@@ -45,3 +46,5 @@ export const organizationService = new OrganizationApi(configuration);
 export const reportService = new ReportApi(configuration);
 
 export const visitorService = new VisitorApi(configuration);
+
+export const collaboratorService = new CollaboratorApi(configuration);

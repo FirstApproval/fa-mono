@@ -7,8 +7,8 @@ import { PublicationPageStore } from './store/PublicationPageStore';
 import { FileSystemFA } from '../../fire-browser/FileSystemFA';
 import React, { ReactElement, useRef } from 'react';
 import { DraftText } from './DraftText';
-import { DateViewsDownloads } from './DateViewsDownloads';
-import { downloadersStore } from './store/downloadsStore';
+import { DateViewsDownloadsCollaborators } from './DateViewsDownloadsCollaborators';
+import { collaboratorsStore, downloadersStore } from './store/downloadsStore';
 import { HeightElement, TitleRowWrap } from '../common.styled';
 import { TitleEditor } from './editors/TitleEditor';
 import { Authors } from './Authors';
@@ -106,8 +106,14 @@ export const PublicationBody = observer(
       <>
         {publicationStore.isPreview && <DraftText />}
         {publicationStore.isView && (
-          <DateViewsDownloads
+          <DateViewsDownloadsCollaborators
             openDownloadersDialog={() => {
+              downloadersStore.clearAndOpen(
+                props.publicationId,
+                publicationStore.downloadsCount
+              );
+            }}
+            openCollaboratorsDialog={() => {
               downloadersStore.clearAndOpen(
                 props.publicationId,
                 publicationStore.downloadsCount
@@ -328,11 +334,17 @@ export const PublicationBody = observer(
               displayDivider={false}
             />
             <HeightElement value={'40px'} />
-            <DateViewsDownloads
+            <DateViewsDownloadsCollaborators
               openDownloadersDialog={() => {
                 downloadersStore.clearAndOpen(
                   props.publicationId,
                   publicationStore.downloadsCount
+                );
+              }}
+              openCollaboratorsDialog={() => {
+                collaboratorsStore.clearAndOpen(
+                  props.publicationId,
+                  publicationStore.collaboratorsCount
                 );
               }}
               publicationStore={publicationStore}

@@ -9,17 +9,19 @@ import { StyledMenuItem } from '../common.styled';
 import { IconButton, Tooltip, Typography } from '@mui/material';
 import WarningAmber from '@mui/icons-material/WarningAmber';
 import { ReportProblemDialog } from './ReportProblemDialog';
+import AlternateEmailOutlinedIcon from '@mui/icons-material/AlternateEmailOutlined';
 import MoreHoriz from '@mui/icons-material/MoreHoriz';
 import styled from '@emotion/styled';
 import { getContentLicensingAbbreviation } from '../../util/publicationUtils';
 import { routerStore } from '../../core/router';
 import { LicenseType } from '../../apis/first-approval-api';
 
-export const DateViewsDownloads = observer(
+export const DateViewsDownloadsCollaborators = observer(
   (props: {
     publicationStore: PublicationStore;
     displayLicense: boolean;
     openDownloadersDialog: () => void;
+    openCollaboratorsDialog: () => void;
   }): ReactElement => {
     const [utilAnchor, setUtilAnchor] = useState<null | HTMLElement>(null);
     const openUtilMenu = Boolean(utilAnchor);
@@ -77,6 +79,30 @@ export const DateViewsDownloads = observer(
               <img src={downloads} width={20} height={20} />
               <div style={{ marginLeft: '4px' }}>
                 {props.publicationStore.downloadsCount}
+              </div>
+            </div>
+          </Tooltip>
+          <Tooltip title="Number of collaborators">
+            <div
+              onClick={() => {
+                if (props.publicationStore.collaboratorsCount) {
+                  props.openCollaboratorsDialog();
+                }
+              }}
+              style={{
+                marginLeft: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                cursor: `${
+                  props.publicationStore.collaboratorsCount &&
+                  props.publicationStore.collaboratorsCount > 0
+                    ? 'pointer'
+                    : 'initial'
+                }`
+              }}>
+              <AlternateEmailOutlinedIcon />
+              <div style={{ marginLeft: '4px' }}>
+                {props.publicationStore.collaboratorsCount}
               </div>
             </div>
           </Tooltip>
