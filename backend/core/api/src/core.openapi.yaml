@@ -754,6 +754,29 @@ paths:
       operationId: getPublicationDownloaders
       tags: [ publication ]
 
+#  /api/publication/collaborators/check-user-is-collaborator/{publicationId}:
+#    get:
+#      summary: Check user is collaborator of publication
+#      parameters:
+#        - in: path
+#          name: publicationId
+#          schema:
+#            type: string
+#            maxLength: 7
+#          required: true
+#          description: Return true if user is collaborator of publication
+#      responses:
+#        200:
+#          description: Success
+#          content:
+#            'application/json':
+#              schema:
+#                type: boolean
+#      security:
+#        - TokenAuth: [ ]
+#      operationId: isUserCollaborator
+#      tags: [ collaborator ]
+
   /api/publication/collaborators/{publicationId}:
     get:
       summary: Get publication
@@ -2574,6 +2597,8 @@ components:
         sampleArchiveSize:
           type: integer
           format: int64
+        isUserCollaborator:
+          type: boolean
       required:
         - id
         - status

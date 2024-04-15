@@ -16,6 +16,7 @@ import org.firstapproval.backend.core.domain.publication.authors.Author
 import org.firstapproval.backend.core.domain.publication.authors.AuthorRepository
 import org.firstapproval.backend.core.domain.publication.authors.AuthorWorkplace
 import org.firstapproval.backend.core.domain.publication.authors.toApiObject
+import org.firstapproval.backend.core.domain.publication.collaborator.CollaboratorRepository
 import org.firstapproval.backend.core.domain.publication.downloader.DownloadHistory
 import org.firstapproval.backend.core.domain.publication.downloader.Downloader
 import org.firstapproval.backend.core.domain.publication.downloader.DownloaderRepository
@@ -53,6 +54,7 @@ import org.firstapproval.api.server.model.PublicationStatus as PublicationStatus
 @Service
 class PublicationService(
     private val publicationRepository: PublicationRepository,
+    private val collaboratorRepository: CollaboratorRepository,
     private val authorRepository: AuthorRepository,
     private val userRepository: UserRepository,
     private val userService: UserService,
@@ -177,7 +179,7 @@ class PublicationService(
     private fun addDownloadHistory(user: User, publication: Publication, agreeToTheFirstApprovalLicense: Boolean) {
         val downloadHistory = DownloadHistory(agreeToTheFirstApprovalLicense)
         val downloader = downloaderRepository.getByUserAndPublication(user, publication)?.apply { this.lastDownloadTime = now() }
-                ?: Downloader(publication = publication, user = user)
+            ?: Downloader(publication = publication, user = user)
         downloader.history.add(downloadHistory)
         downloaderRepository.save(downloader)
     }
@@ -314,7 +316,7 @@ class PublicationService(
             PageRequest.of(page, pageSize, Sort.by(DESC, "publicationTime"))
         )
         return PublicationsResponse()
-            .publications(publicationsPage.map { it.toApiObject(userService, doiProperties) }.toList())
+            .publications(publicationsPage.map { it.toApiObject(userService, doiProperties, collaboratorRepository) }.toList())
             .isLastPage(publicationsPage.isLast)
     }
 
@@ -327,7 +329,7 @@ class PublicationService(
             PageRequest.of(page, pageSize, Sort.by(DESC, "publicationTime"))
         )
         return PublicationsResponse()
-            .publications(publicationsPage.map { it.toApiObject(userService, doiProperties) }.toList())
+            .publications(publicationsPage.map { it.toApiObject(userService, doiProperties, collaboratorRepository) }.toList())
             .isLastPage(publicationsPage.isLast)
     }
 
@@ -343,7 +345,7 @@ class PublicationService(
             PageRequest.of(page, pageSize)
         )
         return PublicationsResponse(publicationsPage.isLast)
-            .publications(publicationsPage.map { it.toApiObject(userService, doiProperties) }.toList())
+            .publications(publicationsPage.map { it.toApiObject(userService, doiProperties, collaboratorRepository) }.toList())
     }
 
     @Transactional
@@ -361,7 +363,7 @@ class PublicationService(
         )
 
         return PublicationsResponse(publicationsPage.isLast)
-            .publications(publicationsPage.map { it.toApiObject(userService, doiProperties) }.toList())
+            .publications(publicationsPage.map { it.toApiObject(userService, doiProperties, collaboratorRepository) }.toList())
     }
 
     @Transactional
@@ -375,7 +377,14 @@ class PublicationService(
             downloaderRepository.findAllByUserId(user.id, PageRequest.of(page, pageSize, Sort.by(DESC, "lastDownloadTime")))
 
         return PublicationsResponse(downloadedPublicationsPage.isLast)
-            .publications(downloadedPublicationsPage.map { it.publication.toApiObject(userService, doiProperties) }.toList())
+            .publications(downloadedPublicationsPage.map {
+                it.publication.toApiObject(
+                    userService,
+                    doiProperties,
+                    collaboratorRepository,
+                    user
+                )
+            }.toList())
     }
 
     fun delete(id: String, user: User) {
@@ -411,7 +420,12 @@ class PublicationService(
     }
 }
 
-fun Publication.toApiObject(userService: UserService, doiProperties: DoiProperties) = PublicationApiObject().also { publicationApiModel ->
+fun Publication.toApiObject(
+    userService: UserService,
+    doiProperties: DoiProperties,
+    collaboratorRepository: CollaboratorRepository,
+    currentUser: User? = null
+) = PublicationApiObject().also { publicationApiModel ->
     publicationApiModel.id = id
     publicationApiModel.creator = UserInfo()
         .id(creator.id)
@@ -452,6 +466,7 @@ fun Publication.toApiObject(userService: UserService, doiProperties: DoiProperti
     publicationApiModel.archiveSize = archiveSize
     publicationApiModel.sampleArchiveSize = archiveSampleSize
     publicationApiModel.isNegative = isNegative
+    publicationApiModel.isUserCollaborator = currentUser?.let { collaboratorRepository.existsByUserIdAndPublicationId(it.id, id) }
 }
 
 fun Publication.toPublicationElastic() =

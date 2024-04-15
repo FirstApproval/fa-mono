@@ -7,4 +7,6 @@ import java.util.*
 
 interface CollaboratorRepository : JpaRepository<Collaborator, UUID> {
     fun findAllByPublicationId(publicationId: String, page: Pageable): Page<Collaborator>
+
+    fun existsByUserIdAndPublicationId(userId: UUID, publicationId: String): Boolean
 }
