@@ -812,6 +812,25 @@ paths:
       operationId: getPublicationCollaborators
       tags: [ collaborator ]
 
+  /api/collabortion/requests/{publicationId}:
+    post:
+      summary: Get collaboration requests
+      parameters:
+        - in: path
+          name: publicationId
+          schema:
+            type: string
+            maxLength: 7
+          required: true
+          description: Publication id
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: getCollaborationRequests
+      tags: [ collaboration-request ]
+
   /api/collabortion/request-collaboration/{publicationId}:
     post:
       summary: Create a collaboration request
@@ -2607,6 +2626,7 @@ components:
         - creationTime
         - editingTime
         - total
+        - isUserCollaborator
 
     PublicationsResponse:
       type: object

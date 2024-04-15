@@ -85,6 +85,7 @@ export class PublicationStore {
   characterCount: number = 0;
   isExceededLimit: boolean = false;
   displayLimitSnackbar: boolean = false;
+  isUserCollaborator: boolean = false;
 
   constructor(
     publicationId: string,
@@ -721,6 +722,7 @@ export class PublicationStore {
           }
           this.creator = publication.creator;
           this.characterCount = this.countCharacter();
+          this.isUserCollaborator = publication.isUserCollaborator;
         })
       )
       .finally(
