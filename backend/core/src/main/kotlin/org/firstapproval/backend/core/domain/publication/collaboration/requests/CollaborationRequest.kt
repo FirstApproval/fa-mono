@@ -1,5 +1,6 @@
 package org.firstapproval.backend.core.domain.publication.collaboration.requests
 
+import jakarta.persistence.CascadeType.REFRESH
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType.STRING
 import jakarta.persistence.Enumerated
@@ -22,7 +23,7 @@ import java.util.UUID.randomUUID
 class CollaborationRequest(
     @Id
     var id: UUID = randomUUID(),
-    @ManyToOne(fetch = EAGER)
+    @ManyToOne(fetch = EAGER, cascade = [REFRESH])
     val publication: Publication,
     @ManyToOne(fetch = EAGER)
     val user: User,

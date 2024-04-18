@@ -3,10 +3,13 @@ import React, { ReactElement } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import DialogTitle from '@mui/material/DialogTitle';
 import { AuthorElement } from './editors/element/AuthorElement';
-import { Close } from '@mui/icons-material';
-import { HeightElement, TitleRowWrap } from '../common.styled';
+import { Circle, Close } from '@mui/icons-material';
+import { HeightElement, RowElementSpaceBetween, TitleRowWrap } from '../common.styled';
 import { collaborationStore } from './store/downloadsStore';
-import { CollaborationRequestInfo } from '../../apis/first-approval-api';
+import {
+  CollaborationRequestInfo,
+  CollaborationRequestStatus
+} from '../../apis/first-approval-api';
 import styled from '@emotion/styled';
 
 export const CollaboratorsDialog = (props: {
@@ -48,13 +51,19 @@ export const CollaboratorsDialog = (props: {
           hasMore={!collaborationStore.collaborationRequestsIsLastPage}>
           {collaborationRequests.map((collaborationRequest, index) => (
             <>
-              <AuthorElement
-                key={index}
-                isReadonly={true}
-                useMarginBottom={false}
-                author={collaborationRequest.userInfo!}
-                shouldOpenInNewTab={true}
-              />
+              <RowElementSpaceBetween>
+                <AuthorElement
+                  key={index}
+                  isReadonly={true}
+                  useMarginBottom={false}
+                  author={collaborationRequest.userInfo!}
+                  shouldOpenInNewTab={true}
+                />
+                {collaborationRequest.status ===
+                  CollaborationRequestStatus.PENDING && (
+                  <Circle htmlColor={'blue'} />
+                )}
+              </RowElementSpaceBetween>
               <HeightElement value={'28px'} />
             </>
           ))}

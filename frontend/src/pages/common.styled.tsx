@@ -52,6 +52,12 @@ export const CustomTab = styled(Tab)`
   color: var(--text-secondary, #68676e);
 `;
 
+export const RowElementSpaceBetween = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+`;
+
 export const ColumnElement = styled.div`
   width: 100%;
   display: flex;
