@@ -5,7 +5,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { AuthorElement } from './editors/element/AuthorElement';
 import { Close } from '@mui/icons-material';
 import { HeightElement, TitleRowWrap } from '../common.styled';
-import { collaboratorsStore } from './store/downloadsStore';
+import { collaborationStore } from './store/downloadsStore';
 import { CollaboratorInfo, UserInfo } from '../../apis/first-approval-api';
 import styled from '@emotion/styled';
 
@@ -19,18 +19,18 @@ export const CollaboratorsDialog = (props: {
     <Dialog
       open={isOpen}
       onClose={() => {
-        collaboratorsStore.open = false;
+        collaborationStore.open = false;
       }}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description">
       <DialogContentWrap>
         <TitleRowWrap>
           <DialogTitleWrap>
-            {`${collaboratorsStore.collaboratorsCount} collaborators`}
+            {`${collaborationStore.collaboratorsCount} collaborators`}
           </DialogTitleWrap>
           <Close
             onClick={() => {
-              collaboratorsStore.open = false;
+              collaborationStore.open = false;
             }}
             style={{ cursor: 'pointer' }}
             htmlColor={'#68676E'}
@@ -39,11 +39,13 @@ export const CollaboratorsDialog = (props: {
         <HeightElement value={'32px'} />
         <InfiniteScroll
           pageStart={-1}
-          loadMore={(page) => collaboratorsStore.loadDownloaders(page)}
+          loadMore={(page) =>
+            collaborationStore.loadCollaborationRequests(page)
+          }
           initialLoad={true}
           loader={<div key="loading">Loading ...</div>}
           useWindow={false}
-          hasMore={!collaboratorsStore.collaboratorsIsLastPage}>
+          hasMore={!collaborationStore.collaborationRequestsIsLastPage}>
           {collaborators.map((downloader, index) => (
             <>
               <AuthorElement
@@ -57,7 +59,9 @@ export const CollaboratorsDialog = (props: {
             </>
           ))}
         </InfiniteScroll>
-        {collaboratorsStore.loadCollaboratorsLocked && <CircularProgress />}
+        {collaborationStore.loadCollaborationRequestsLocked && (
+          <CircularProgress />
+        )}
       </DialogContentWrap>
     </Dialog>
   );

@@ -16,7 +16,7 @@ import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.PublicationPdfService
 import org.firstapproval.backend.core.domain.publication.PublicationService
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
-import org.firstapproval.backend.core.domain.publication.collaborator.CollaboratorRepository
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestRepository
 import org.firstapproval.backend.core.domain.publication.downloader.DownloaderRepository
 import org.firstapproval.backend.core.domain.publication.toApiObject
 import org.firstapproval.backend.core.domain.user.UserService
@@ -37,7 +37,8 @@ class PublicationController(
     private val publicationService: PublicationService,
     private val userService: UserService,
     private val downloaderRepository: DownloaderRepository,
-    private val collaboratorRepository: CollaboratorRepository,
+//    private val collaboratorRepository: CollaboratorRepository,
+    private val collaborationRequestRepository: CollaborationRequestRepository,
     private val authHolderService: AuthHolderService,
     private val publicationPdfService: PublicationPdfService,
     private val doiProperties: DoiProperties
@@ -88,7 +89,7 @@ class PublicationController(
             SearchPublicationsResponse(pageResult.number, pageResult.isLast)
                 .items(
                     pageResult.map { elasticModel ->
-                        dbModels.firstOrNull { it.id == elasticModel.id }?.toApiObject(userService, doiProperties, collaboratorRepository)
+                        dbModels.firstOrNull { it.id == elasticModel.id }?.toApiObject(userService, doiProperties, collaborationRequestRepository)
                     }
                         .filterNotNull()
                         .toList()
@@ -98,13 +99,13 @@ class PublicationController(
 
     override fun getPublication(id: String): ResponseEntity<Publication> {
         val pub = publicationService.get(authHolderService.user, id)
-        val publicationResponse = pub.toApiObject(userService, doiProperties, collaboratorRepository, authHolderService.user)
+        val publicationResponse = pub.toApiObject(userService, doiProperties, collaborationRequestRepository, authHolderService.user)
         return ok().body(publicationResponse)
     }
 
     override fun getPublicationPublic(id: String): ResponseEntity<Publication> {
         val pub = publicationService.getPublished(id)
-        val publicationResponse = pub.toApiObject(userService, doiProperties, collaboratorRepository, authHolderService.user)
+        val publicationResponse = pub.toApiObject(userService, doiProperties, collaborationRequestRepository, authHolderService.user)
         return ok().body(publicationResponse)
     }
 

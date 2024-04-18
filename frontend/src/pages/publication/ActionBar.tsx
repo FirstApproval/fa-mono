@@ -21,7 +21,8 @@ import { ArchiveDownloader } from './ArchiveDownloader';
 import { CitateDialog } from './CitateDialog';
 import {
   PublicationContentStatus,
-  PublicationStatus
+  PublicationStatus,
+  UseType
 } from '../../apis/first-approval-api';
 import { PublicationPageStore } from './store/PublicationPageStore';
 import { Page } from '../../core/router/constants';
@@ -97,8 +98,14 @@ export const ActionBar = observer(
                     variant="outlined"
                     onClick={() => {
                       if (authStore.token) {
-                        publicationPageStore.collaborationRequirementDialogOpen =
-                          true;
+                        if (
+                          publicationStore.useType === UseType.CO_AUTHORSHIP
+                        ) {
+                          publicationPageStore.collaborationRequirementDialogOpen =
+                            true;
+                        } else {
+                          publicationPageStore.downloadFiles(false);
+                        }
                       } else {
                         sessionStorage.setItem(
                           PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY,
@@ -112,7 +119,11 @@ export const ActionBar = observer(
                       color={'primary'}
                       style={{ marginRight: '8px' }}
                     />
-                    <Box display={{ xs: 'none', lg: 'block' }}>
+                    <Box
+                      display={{
+                        xs: 'none',
+                        lg: 'block'
+                      }}>
                       <span>
                         {publicationPageStore.contentStatus ===
                         PublicationContentStatus.PREPARING
@@ -139,7 +150,11 @@ export const ActionBar = observer(
                         color={'inherit'}
                         style={{ marginRight: '8px' }}
                       />{' '}
-                      <Box display={{ xs: 'block', lg: 'block' }}>
+                      <Box
+                        display={{
+                          xs: 'block',
+                          lg: 'block'
+                        }}>
                         <span>Sample</span>
                       </Box>
                       <div style={{ marginRight: 4 }}></div>

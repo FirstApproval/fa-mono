@@ -29,7 +29,7 @@ import {
 } from '../../core/service';
 import { DownloadersDialog } from './DownloadersDialog';
 import { PublicationStatus } from '../../apis/first-approval-api';
-import { collaboratorsStore, downloadersStore } from './store/downloadsStore';
+import { collaborationStore, downloadersStore } from './store/downloadsStore';
 import { ConfirmationDialog } from '../../components/ConfirmationDialog';
 import { ContentLicensingDialog } from '../../components/ContentLicensingDialog';
 import { PublicationPageStore } from './store/PublicationPageStore';
@@ -201,8 +201,8 @@ export const PublicationPage: FunctionComponent = observer(() => {
         downloaders={downloadersStore.downloaders}
       />
       <CollaboratorsDialog
-        isOpen={collaboratorsStore.open}
-        collaborators={collaboratorsStore.collaborators}
+        isOpen={collaborationStore.open}
+        collaborators={collaborationStore.collaborationRequests}
       />
       <ConfirmationDialog
         isOpen={deleteDialogOpen}

@@ -776,10 +776,45 @@ paths:
 #        - TokenAuth: [ ]
 #      operationId: isUserCollaborator
 #      tags: [ collaborator ]
+#
+#  /api/publication/{publicationId}/collaboration-requests:
+#    get:
+#      summary: Get publication
+#      parameters:
+#        - in: path
+#          name: publicationId
+#          schema:
+#            type: string
+#            maxLength: 7
+#          required: true
+#          description: Publication id
+#        - in: query
+#          name: page
+#          schema:
+#            type: integer
+#          required: true
+#          description: Page number
+#        - in: query
+#          name: pageSize
+#          schema:
+#            type: integer
+#          required: true
+#          description: Page size
+#      responses:
+#        200:
+#          description: Success
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/GetCollaborationRequestsResponse'
+#      security:
+#        - TokenAuth: [ ]
+#      operationId: getPublicationCollaborators
+#      tags: [ collaborator ]
 
-  /api/publication/collaborators/{publicationId}:
-    get:
-      summary: Get publication
+  /api/collabortion/requests/{publicationId}:
+    post:
+      summary: Get collaboration requests
       parameters:
         - in: path
           name: publicationId
@@ -806,26 +841,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetCollaboratorsResponse'
-      security:
-        - TokenAuth: [ ]
-      operationId: getPublicationCollaborators
-      tags: [ collaborator ]
-
-  /api/collabortion/requests/{publicationId}:
-    post:
-      summary: Get collaboration requests
-      parameters:
-        - in: path
-          name: publicationId
-          schema:
-            type: string
-            maxLength: 7
-          required: true
-          description: Publication id
-      responses:
-        200:
-          description: Success
+                $ref: '#/components/schemas/GetCollaborationRequestsResponse'
       security:
         - TokenAuth: [ ]
       operationId: getCollaborationRequests
@@ -2238,6 +2254,8 @@ components:
         id:
           type: string
           format: uuid
+        status:
+          $ref: '#/components/schemas/CollaborationRequestStatus'
         userInfo:
           $ref: '#/components/schemas/UserInfo'
         publicationTitle:
@@ -2248,10 +2266,7 @@ components:
         creationTime:
           type: string
           format: date-time
-        approvalTime:
-          type: string
-          format: date-time
-        rejectionTime:
+        decisionTime:
           type: string
           format: date-time
         autoApproval:
@@ -2286,6 +2301,13 @@ components:
         - READY_FOR_PUBLICATION
         - MODERATION
         - PUBLISHED
+
+    CollaborationRequestStatus:
+      type: string
+      enum:
+        - APPROVED
+        - REJECTED
+        - PENDING
 
     UseType:
       type: string
@@ -2520,6 +2542,19 @@ components:
         - pageNum
         - isLast
 
+    GetCollaborationRequestsResponse:
+      type: object
+      properties:
+        isLastPage:
+          type: boolean
+        collaborationRequests:
+          type: array
+          items:
+            $ref: '#/components/schemas/CollaborationRequestInfo'
+      required:
+        - collaborationRequests
+        - isLastPage
+
     Publication:
       type: object
       properties:
@@ -2616,8 +2651,8 @@ components:
         sampleArchiveSize:
           type: integer
           format: int64
-        isUserCollaborator:
-          type: boolean
+        userCollaborationStatus:
+          $ref: '#/components/schemas/CollaborationRequestStatus'
       required:
         - id
         - status
@@ -2659,19 +2694,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserInfo'
-      required:
-        - downloaders
-        - isLastPage
-
-    GetCollaboratorsResponse:
-      type: object
-      properties:
-        isLastPage:
-          type: boolean
-        collaborators:
-          type: array
-          items:
-            $ref: '#/components/schemas/CollaboratorInfo'
       required:
         - downloaders
         - isLastPage

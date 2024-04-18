@@ -3,11 +3,13 @@ import { publicationService } from '../../../core/service';
 import _ from 'lodash';
 import {
   Author,
+  CollaborationRequestStatus,
   LicenseType,
   type Paragraph,
   PublicationEditRequest,
   PublicationStatus,
-  type UserInfo
+  type UserInfo,
+  UseType
 } from '../../../apis/first-approval-api';
 import { type FileSystemFA } from '../../../fire-browser/FileSystemFA';
 import { v4 as uuidv4 } from 'uuid';
@@ -85,7 +87,8 @@ export class PublicationStore {
   characterCount: number = 0;
   isExceededLimit: boolean = false;
   displayLimitSnackbar: boolean = false;
-  isUserCollaborator: boolean = false;
+  userCollaborationStatus: CollaborationRequestStatus | null = null;
+  useType: UseType | null = null;
 
   constructor(
     publicationId: string,
@@ -722,7 +725,8 @@ export class PublicationStore {
           }
           this.creator = publication.creator;
           this.characterCount = this.countCharacter();
-          this.isUserCollaborator = publication.isUserCollaborator;
+          this.userCollaborationStatus = publication.userCollaborationStatus!;
+          this.useType = publication.useType!;
         })
       )
       .finally(

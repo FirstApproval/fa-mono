@@ -1,5 +1,5 @@
 import { DownloadersStore } from './DownloadersStore';
-import { CollaboratorsStore } from './CollaboratorsStore';
+import { CollaborationStore } from './CollaborationStore';
 
 export const downloadersStore = new DownloadersStore();
-export const collaboratorsStore = new CollaboratorsStore();
+export const collaborationStore = new CollaborationStore();

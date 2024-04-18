@@ -21,7 +21,7 @@ export const DateViewsDownloadsCollaborators = observer(
     publicationStore: PublicationStore;
     displayLicense: boolean;
     openDownloadersDialog: () => void;
-    openCollaboratorsDialog: () => void;
+    openCollaborationRequestsDialog: () => void;
   }): ReactElement => {
     const [utilAnchor, setUtilAnchor] = useState<null | HTMLElement>(null);
     const openUtilMenu = Boolean(utilAnchor);
@@ -86,7 +86,7 @@ export const DateViewsDownloadsCollaborators = observer(
             <div
               onClick={() => {
                 if (props.publicationStore.collaboratorsCount) {
-                  props.openCollaboratorsDialog();
+                  props.openCollaborationRequestsDialog();
                 }
               }}
               style={{
