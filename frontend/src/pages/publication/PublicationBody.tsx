@@ -13,7 +13,10 @@ import { HeightElement, TitleRowWrap } from '../common.styled';
 import { TitleEditor } from './editors/TitleEditor';
 import { Authors } from './Authors';
 import { ResearchArea } from './research-area/ResearchArea';
-import { ActionBar, PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY } from "./ActionBar"
+import {
+  ActionBar,
+  PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY
+} from './ActionBar';
 import {
   AuthorsPlaceholder,
   DataDescriptionPlaceholder,
@@ -223,9 +226,7 @@ export const PublicationBody = observer(
               isReadonly={publicationStore.isReadonly}
               onArchiveDownload={() => {
                 if (authStore.token) {
-                  if (
-                    publicationStore.useType === UseType.CO_AUTHORSHIP
-                  ) {
+                  if (publicationStore.useType === UseType.CO_AUTHORSHIP) {
                     publicationPageStore.collaborationRequirementDialogOpen =
                       true;
                   } else {

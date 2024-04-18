@@ -49,7 +49,7 @@ class CollaborationRequestService(
     }
 
     @Transactional
-    fun findByUserIdAndPublicationId(userId: UUID, publicationId: String, page: Int, pageSize: Int): Page<CollaborationRequest> {
-        return collaborationRequestRepository.findByAndPublicationId(userId, publicationId, PageRequest.of(page, pageSize))
+    fun findByPublicationId(publicationId: String, page: Int, pageSize: Int): Page<CollaborationRequest> {
+        return collaborationRequestRepository.findByPublicationId(publicationId, PageRequest.of(page, pageSize))
     }
 }

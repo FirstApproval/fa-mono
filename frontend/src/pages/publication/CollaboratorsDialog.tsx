@@ -6,14 +6,14 @@ import { AuthorElement } from './editors/element/AuthorElement';
 import { Close } from '@mui/icons-material';
 import { HeightElement, TitleRowWrap } from '../common.styled';
 import { collaborationStore } from './store/downloadsStore';
-import { CollaboratorInfo, UserInfo } from '../../apis/first-approval-api';
+import { CollaborationRequestInfo } from '../../apis/first-approval-api';
 import styled from '@emotion/styled';
 
 export const CollaboratorsDialog = (props: {
   isOpen: boolean;
-  collaborators: CollaboratorInfo[];
+  collaborationRequests: CollaborationRequestInfo[];
 }): ReactElement => {
-  const { isOpen, collaborators } = props;
+  const { isOpen, collaborationRequests } = props;
 
   return (
     <Dialog
@@ -46,13 +46,13 @@ export const CollaboratorsDialog = (props: {
           loader={<div key="loading">Loading ...</div>}
           useWindow={false}
           hasMore={!collaborationStore.collaborationRequestsIsLastPage}>
-          {collaborators.map((downloader, index) => (
+          {collaborationRequests.map((collaborationRequest, index) => (
             <>
               <AuthorElement
                 key={index}
                 isReadonly={true}
                 useMarginBottom={false}
-                author={downloader.userInfo}
+                author={collaborationRequest.userInfo!}
                 shouldOpenInNewTab={true}
               />
               <HeightElement value={'28px'} />

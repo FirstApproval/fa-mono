@@ -202,7 +202,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
       />
       <CollaboratorsDialog
         isOpen={collaborationStore.open}
-        collaborators={collaborationStore.collaborationRequests}
+        collaborationRequests={collaborationStore.collaborationRequests}
       />
       <ConfirmationDialog
         isOpen={deleteDialogOpen}

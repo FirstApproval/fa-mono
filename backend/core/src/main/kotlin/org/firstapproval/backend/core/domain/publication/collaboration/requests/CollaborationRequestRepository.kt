@@ -8,5 +8,5 @@ import java.util.UUID
 interface CollaborationRequestRepository : JpaRepository<CollaborationRequest, UUID> {
 //    fun existsByUserIdAndPublicationIdAndStatus(userId: UUID, publicationId: String, status: CollaborationRequestStatus): Boolean
     fun findByUserIdAndPublicationId(userId: UUID, publicationId: String): CollaborationRequest?
-    fun findByAndPublicationId(userId: UUID, publicationId: String, page: Pageable): Page<CollaborationRequest>
+    fun findByPublicationId(publicationId: String, page: Pageable): Page<CollaborationRequest>
 }

@@ -2271,6 +2271,14 @@ components:
           format: date-time
         autoApproval:
           type: boolean
+      required:
+        - id
+        - status
+        - userInfo
+        - publicationTitle
+        - publicationId
+        - creationTime
+        - autoApproval
 
     FullName:
       type: object

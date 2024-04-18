@@ -3,7 +3,6 @@ package org.firstapproval.backend.core.web
 import org.firstapproval.api.server.CollaborationRequestApi
 import org.firstapproval.api.server.model.CollaborationRequestInfo
 import org.firstapproval.api.server.model.GetCollaborationRequestsResponse
-import org.firstapproval.api.server.model.GetCollaboratorsResponse
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestService
@@ -42,7 +41,7 @@ class CollaborationRequestController(
     }
 
     override fun getCollaborationRequests(publicationId: String, page: Int, pageSize: Int): ResponseEntity<GetCollaborationRequestsResponse> {
-        val result = collaborationRequestService.findByUserIdAndPublicationId(authHolderService.user.id, publicationId, page, pageSize)
+        val result = collaborationRequestService.findByPublicationId(publicationId, page, pageSize)
         val collaborationRequests = result
             .map { it.toApiObject(userService = userService) }
             .toList()
