@@ -24,6 +24,7 @@ import org.firstapproval.backend.core.domain.publication.authors.Author
 import org.firstapproval.backend.core.domain.publication.authors.AuthorRepository
 import org.firstapproval.backend.core.domain.publication.authors.AuthorWorkplace
 import org.firstapproval.backend.core.domain.publication.authors.toApiObject
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequest
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestRepository
 import org.firstapproval.backend.core.domain.publication.downloader.DownloadHistory
 import org.firstapproval.backend.core.domain.publication.downloader.Downloader
@@ -201,6 +202,10 @@ class PublicationService(
         publication.downloadsCount += 1
         if (agreeToTheFirstApprovalLicense) {
             publication.collaboratorsCount += 1
+            collaborationRequestRepository.save(CollaborationRequest(
+                publication = publication,
+                user = user
+            ))
         }
         downloaderRepository.save(downloader)
     }

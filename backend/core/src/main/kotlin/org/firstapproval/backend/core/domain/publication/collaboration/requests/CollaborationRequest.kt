@@ -1,6 +1,8 @@
 package org.firstapproval.backend.core.domain.publication.collaboration.requests
 
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType.STRING
+import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType.EAGER
 import jakarta.persistence.Id
 import jakarta.persistence.ManyToOne
@@ -24,6 +26,7 @@ class CollaborationRequest(
     val publication: Publication,
     @ManyToOne(fetch = EAGER)
     val user: User,
+    @Enumerated(STRING)
     var status: CollaborationRequestStatus = PENDING,
     val creationTime: ZonedDateTime = ZonedDateTime.now(),
     var decisionTime: ZonedDateTime? = null,
