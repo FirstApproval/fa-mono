@@ -6,7 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
 interface CollaborationRequestRepository : JpaRepository<CollaborationRequest, UUID> {
-//    fun existsByUserIdAndPublicationIdAndStatus(userId: UUID, publicationId: String, status: CollaborationRequestStatus): Boolean
     fun findByUserIdAndPublicationId(userId: UUID, publicationId: String): CollaborationRequest?
-    fun findByPublicationId(publicationId: String, page: Pageable): Page<CollaborationRequest>
+    fun findByPublicationIdAndStatusIn(
+        publicationId: String,
+        statuses: Collection<CollaborationRequestStatus>,
+        page: Pageable
+    ): Page<CollaborationRequest>
 }

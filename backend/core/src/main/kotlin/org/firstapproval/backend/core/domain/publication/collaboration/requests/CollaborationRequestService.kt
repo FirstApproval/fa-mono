@@ -1,14 +1,16 @@
 package org.firstapproval.backend.core.domain.publication.collaboration.requests
 
 import org.firstapproval.backend.core.config.security.AuthHolderService
-import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.PublicationRepository
 import org.firstapproval.backend.core.domain.publication.PublicationService
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.APPROVED
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.PENDING
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.REJECTED
 import org.firstapproval.backend.core.domain.user.User
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
+import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
@@ -55,6 +57,6 @@ class CollaborationRequestService(
 
     @Transactional
     fun findByPublicationId(publicationId: String, page: Int, pageSize: Int): Page<CollaborationRequest> {
-        return collaborationRequestRepository.findByPublicationId(publicationId, PageRequest.of(page, pageSize))
+        return collaborationRequestRepository.findByPublicationIdAndStatusIn(publicationId, setOf(PENDING, APPROVED),  PageRequest.of(page, pageSize, Sort.by(DESC, "status", "creationTime")))
     }
 }
