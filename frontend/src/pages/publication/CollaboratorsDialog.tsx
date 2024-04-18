@@ -4,7 +4,11 @@ import InfiniteScroll from 'react-infinite-scroller';
 import DialogTitle from '@mui/material/DialogTitle';
 import { AuthorElement } from './editors/element/AuthorElement';
 import { Circle, Close } from '@mui/icons-material';
-import { HeightElement, RowElementSpaceBetween, TitleRowWrap } from '../common.styled';
+import {
+  HeightElement,
+  RowElementSpaceBetween,
+  TitleRowWrap
+} from '../common.styled';
 import { collaborationStore } from './store/downloadsStore';
 import {
   CollaborationRequestInfo,
@@ -61,7 +65,13 @@ export const CollaboratorsDialog = (props: {
                 />
                 {collaborationRequest.status ===
                   CollaborationRequestStatus.PENDING && (
-                  <Circle htmlColor={'blue'} />
+                  <Circle
+                    sx={{
+                      width: '16px',
+                      height: '16px'
+                    }}
+                    htmlColor={'blue'}
+                  />
                 )}
               </RowElementSpaceBetween>
               <HeightElement value={'28px'} />

@@ -17,6 +17,7 @@ import org.firstapproval.backend.core.domain.user.toApiObject
 import java.time.ZonedDateTime
 import java.util.UUID
 import java.util.UUID.randomUUID
+import org.firstapproval.api.server.model.CollaborationRequestStatus as CollaborationRequestStatusApiObject
 
 @Entity
 @Table(name = "collaboration_requests")
@@ -42,6 +43,7 @@ enum class CollaborationRequestStatus {
 
 fun CollaborationRequest.toApiObject(userService: UserService) = CollaborationRequestInfo().also {
     it.id = id
+    it.status = CollaborationRequestStatusApiObject.valueOf(status.name)
     it.userInfo = user.toApiObject(userService)
     it.publicationTitle = publication.title
     it.publicationId = publication.id
