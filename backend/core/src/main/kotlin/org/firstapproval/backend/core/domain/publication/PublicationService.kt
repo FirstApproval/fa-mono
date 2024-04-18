@@ -198,6 +198,10 @@ class PublicationService(
         val downloader = downloaderRepository.getByUserAndPublication(user, publication)?.apply { this.lastDownloadTime = now() }
             ?: Downloader(publication = publication, user = user)
         downloader.history.add(downloadHistory)
+        publication.downloadsCount += 1
+        if (agreeToTheFirstApprovalLicense) {
+            publication.collaboratorsCount += 1
+        }
         downloaderRepository.save(downloader)
     }
 
@@ -206,12 +210,6 @@ class PublicationService(
         val publication = publicationRepository.getReferenceById(id)
         publication.viewsCount += 1
         publication.creator.viewsCount += 1
-    }
-
-    @Transactional
-    fun incrementCollaboratorsCount(id: String) {
-        val publication = publicationRepository.getReferenceById(id)
-        publication.collaboratorsCount += 1
     }
 
     @Transactional
@@ -258,7 +256,6 @@ class PublicationService(
         }
 
         addDownloadHistory(user, publication, agreeToTheFirstApprovalLicense)
-        publication.downloadsCount += 1
         user.email?.let {
             notificationService.sendArchivePassword(it, title, publication.authorsNames, publication.archivePassword.require())
         }

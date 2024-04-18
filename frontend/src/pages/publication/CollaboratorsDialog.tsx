@@ -26,7 +26,7 @@ export const CollaboratorsDialog = (props: {
       <DialogContentWrap>
         <TitleRowWrap>
           <DialogTitleWrap>
-            {`${collaborationStore.collaboratorsCount} collaborators`}
+            {`${collaborationStore.approvedCollaborationRequestCount} collaborators`}
           </DialogTitleWrap>
           <Close
             onClick={() => {

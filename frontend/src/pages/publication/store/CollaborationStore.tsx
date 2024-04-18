@@ -5,7 +5,7 @@ import { CollaborationRequestInfo } from '../../../apis/first-approval-api';
 export class CollaborationStore {
   open = false;
   publicationId: string = '';
-  collaboratorsCount: number = 0;
+  approvedCollaborationRequestCount: number = 0;
   collaborationRequests: CollaborationRequestInfo[] = [];
   collaborationRequestsIsLastPage = false;
 
@@ -38,12 +38,12 @@ export class CollaborationStore {
     collaboratorsCount: number | null | undefined
   ): void {
     this.publicationId = '';
-    this.collaboratorsCount = 0;
+    this.approvedCollaborationRequestCount = 0;
     this.collaborationRequests = [];
     this.collaborationRequestsIsLastPage = false;
 
     this.publicationId = publicationId;
-    this.collaboratorsCount = collaboratorsCount ?? 0;
+    this.approvedCollaborationRequestCount = collaboratorsCount ?? 0;
     this.open = true;
   }
 }
