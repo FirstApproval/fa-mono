@@ -98,6 +98,7 @@ export const ActionBar = observer(
                     variant="outlined"
                     onClick={() => {
                       if (authStore.token) {
+                        debugger;
                         if (
                           publicationStore.useType === UseType.CO_AUTHORSHIP
                         ) {

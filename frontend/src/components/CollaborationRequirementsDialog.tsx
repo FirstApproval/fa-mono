@@ -58,7 +58,12 @@ export const CollaborationRequirementsDialog = (props: {
                 setAgreeToTheFirstApprovalLicense(e.currentTarget.checked)
               }
             />
-            <IAgreeCheckboxTitle>
+            <IAgreeCheckboxTitle
+              onClick={(e) =>
+                setAgreeToTheFirstApprovalLicense(
+                  !agreeToTheFirstApprovalLicense
+                )
+              }>
               I Agree to the First Approval License, including sending a
               collaboration request to the dataset’s author(s) when required.
             </IAgreeCheckboxTitle>
@@ -145,4 +150,5 @@ const ConfirmButton = styled(Button)`
 
 export const IAgreeCheckboxTitle = styled.div`
   margin-top: 5px;
+  cursor: pointer;
 `;

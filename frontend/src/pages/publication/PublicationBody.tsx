@@ -226,6 +226,7 @@ export const PublicationBody = observer(
               isReadonly={publicationStore.isReadonly}
               onArchiveDownload={() => {
                 if (authStore.token) {
+                  debugger;
                   if (publicationStore.useType === UseType.CO_AUTHORSHIP) {
                     publicationPageStore.collaborationRequirementDialogOpen =
                       true;

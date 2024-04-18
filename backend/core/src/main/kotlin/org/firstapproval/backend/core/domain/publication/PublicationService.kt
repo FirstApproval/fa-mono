@@ -66,6 +66,7 @@ import org.firstapproval.api.server.model.Author as AuthorApiObject
 import org.firstapproval.api.server.model.LicenseType as LicenseTypeApiObject
 import org.firstapproval.api.server.model.Publication as PublicationApiObject
 import org.firstapproval.api.server.model.PublicationStatus as PublicationStatusApiObject
+import org.firstapproval.api.server.model.UseType as UseTypeApiObject
 
 @Service
 class PublicationService(
@@ -485,6 +486,7 @@ fun Publication.toApiObject(
     publicationApiModel.userCollaborationStatus =
         currentUser?.let { collaborationRequestRepository.findByUserIdAndPublicationId(it.id, id) }
             ?.let { CollaborationRequestStatus.valueOf(it.status.name) }
+    publicationApiModel.useType = useType?.let { UseTypeApiObject.valueOf(it.name) }
 }
 
 fun Publication.toPublicationElastic() =
