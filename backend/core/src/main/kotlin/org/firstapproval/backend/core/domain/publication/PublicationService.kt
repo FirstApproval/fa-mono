@@ -201,7 +201,6 @@ class PublicationService(
         downloader.history.add(downloadHistory)
         publication.downloadsCount += 1
         if (agreeToTheFirstApprovalLicense) {
-            publication.collaboratorsCount += 1
             collaborationRequestRepository.save(CollaborationRequest(
                 publication = publication,
                 user = user
