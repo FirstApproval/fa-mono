@@ -1,21 +1,15 @@
 package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.PublicationApi
-import org.firstapproval.api.server.model.CreatePublicationResponse
-import org.firstapproval.api.server.model.DownloadLinkResponse
-import org.firstapproval.api.server.model.GetDownloadersResponse
+import org.firstapproval.api.server.model.*
 import org.firstapproval.api.server.model.Publication
-import org.firstapproval.api.server.model.PublicationEditRequest
-import org.firstapproval.api.server.model.PublicationStatus
-import org.firstapproval.api.server.model.PublicationsResponse
-import org.firstapproval.api.server.model.SearchPublicationsResponse
-import org.firstapproval.api.server.model.SubmitPublicationRequest
 import org.firstapproval.backend.core.config.Properties.DoiProperties
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.PublicationPdfService
 import org.firstapproval.backend.core.domain.publication.PublicationService
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
+import org.firstapproval.backend.core.domain.publication.UseType
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestRepository
 import org.firstapproval.backend.core.domain.publication.downloader.DownloaderRepository
 import org.firstapproval.backend.core.domain.publication.toApiObject
@@ -29,7 +23,6 @@ import org.springframework.http.MediaType.APPLICATION_PDF
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
-import java.lang.IllegalArgumentException
 import org.firstapproval.backend.core.domain.publication.Publication as PublicationEntity
 
 @RestController
@@ -89,7 +82,8 @@ class PublicationController(
             SearchPublicationsResponse(pageResult.number, pageResult.isLast)
                 .items(
                     pageResult.map { elasticModel ->
-                        dbModels.firstOrNull { it.id == elasticModel.id }?.toApiObject(userService, doiProperties, collaborationRequestRepository)
+                        dbModels.firstOrNull { it.id == elasticModel.id }
+                            ?.toApiObject(userService, doiProperties, collaborationRequestRepository)
                     }
                         .filterNotNull()
                         .toList()
@@ -115,7 +109,8 @@ class PublicationController(
     }
 
     override fun getDownloadLink(id: String, agreeToTheFirstApprovalLicense: Boolean): ResponseEntity<DownloadLinkResponse> {
-        if (!agreeToTheFirstApprovalLicense) {
+        val pub = publicationService.getPublished(id)
+        if (pub.useType == UseType.CO_AUTHORSHIP && pub.creator.id != authHolderService.user.id && !agreeToTheFirstApprovalLicense) {
             throw IllegalArgumentException("User must agree to the First Approval License")
         }
         val downloadLink = publicationService.getDownloadLinkForArchive(authHolderService.user, id, agreeToTheFirstApprovalLicense)
