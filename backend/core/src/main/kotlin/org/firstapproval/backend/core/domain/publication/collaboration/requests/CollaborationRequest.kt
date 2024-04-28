@@ -31,14 +31,15 @@ class CollaborationRequest(
     val lastNameLegal: String,
     @Enumerated(STRING)
     val typeOfWork: TypeOfWork,
+    var authorResponse: String? = null,
     @ManyToOne(fetch = EAGER)
     val user: User,
     @Enumerated(STRING)
     var status: CollaborationRequestStatus = PENDING,
-    var description: String? = null,
+    val description: String? = null,
     val creationTime: ZonedDateTime = ZonedDateTime.now(),
     var decisionTime: ZonedDateTime? = null,
-    val autoApproval: Boolean? = false
+    var autoApproval: Boolean? = false
 )
 
 enum class CollaborationRequestStatus {

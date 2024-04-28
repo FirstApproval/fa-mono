@@ -24,13 +24,13 @@ class CollaborationRequestController(
     private val userService: UserService,
     private val authHolderService: AuthHolderService
 ) : CollaborationRequestApi {
-    override fun approveCollaborationRequest(collaborationRequestId: UUID): ResponseEntity<Void> {
-        collaborationRequestService.makeDecision(collaborationRequestId, APPROVED, authHolderService.user)
+    override fun approveCollaborationRequest(collaborationRequestId: UUID, authorResponse: String): ResponseEntity<Void> {
+        collaborationRequestService.makeDecision(collaborationRequestId, APPROVED, authorResponse, authHolderService.user)
         return ok().build()
     }
 
-    override fun rejectCollaborationRequest(collaborationRequestId: UUID): ResponseEntity<Void> {
-        collaborationRequestService.makeDecision(collaborationRequestId, REJECTED, authHolderService.user)
+    override fun rejectCollaborationRequest(collaborationRequestId: UUID, authorResponse: String): ResponseEntity<Void> {
+        collaborationRequestService.makeDecision(collaborationRequestId, REJECTED, authorResponse, authHolderService.user)
         return ok().build()
     }
 

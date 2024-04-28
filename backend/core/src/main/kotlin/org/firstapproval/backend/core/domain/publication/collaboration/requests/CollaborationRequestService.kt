@@ -19,7 +19,7 @@ class CollaborationRequestService(
     private val publicationRepository: PublicationRepository
 ) {
     @Transactional
-    fun makeDecision(collaborationRequestId: UUID, status: CollaborationRequestStatus, user: User) {
+    fun makeDecision(collaborationRequestId: UUID, status: CollaborationRequestStatus, authorResponse: String, user: User) {
         val collaborationRequest: CollaborationRequest = collaborationRequestRepository.getReferenceById(collaborationRequestId)
         if (collaborationRequest.publication.creator.id != user.id) {
             throw IllegalAccessException("Only the creator of the publication can approve or reject a collaboration request.")
@@ -30,6 +30,7 @@ class CollaborationRequestService(
 
         collaborationRequest.decisionTime = ZonedDateTime.now()
         collaborationRequest.status = status
+        collaborationRequest.authorResponse = authorResponse
 
         collaborationRequest.publication.collaboratorsCount += 1
     }
@@ -44,7 +45,7 @@ class CollaborationRequestService(
                 lastNameLegal = collaborationRequestRequest.lastNameLegal,
                 typeOfWork = TypeOfWork.valueOf(collaborationRequestRequest.typeOfWork.name),
                 description = collaborationRequestRequest.description,
-                user = user,
+                user = user
             )
         )
     }

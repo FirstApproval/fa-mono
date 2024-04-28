@@ -905,6 +905,11 @@ paths:
             format: uuid
           required: true
           description: Collaboration request id
+        - in: query
+          name: authorResponse
+          schema:
+            type: string
+          description: Author response to collaboration request
       responses:
         200:
           description: Success
@@ -924,6 +929,11 @@ paths:
             format: uuid
           required: true
           description: Collaboration request id
+        - in: query
+          name: authorResponse
+          schema:
+            type: string
+          description: Author response to collaboration request
       responses:
         200:
           description: Success
