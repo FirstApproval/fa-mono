@@ -15,7 +15,7 @@ export class CollaborationStore {
     makeAutoObservable(this);
   }
 
-  public loadCollaborationRequests(page: number): void {
+  loadCollaborationRequests(page: number): void {
     if (!this.loadCollaborationRequestsLocked) {
       this.loadCollaborationRequestsLocked = true;
       void collaborationRequestService
@@ -33,7 +33,7 @@ export class CollaborationStore {
     }
   }
 
-  public clearAndOpen(
+  clearAndOpen(
     publicationId: string,
     collaboratorsCount: number | null | undefined
   ): void {
@@ -45,5 +45,11 @@ export class CollaborationStore {
     this.publicationId = publicationId;
     this.approvedCollaborationRequestCount = collaboratorsCount ?? 0;
     this.open = true;
+  }
+
+  async confirmChangeEmail(collaborationRequest: CollaborationRequestInfo): Promise<any> {
+    return collaborationRequestService
+      .approveCollaborationRequest(collaborationRequest.id)
+      .then(() => {});
   }
 }

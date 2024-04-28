@@ -1,8 +1,7 @@
 import { CircularProgress, Dialog, DialogContent } from '@mui/material';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import DialogTitle from '@mui/material/DialogTitle';
-import { AuthorElement } from './editors/element/AuthorElement';
 import { Circle, Close } from '@mui/icons-material';
 import {
   HeightElement,
@@ -15,12 +14,22 @@ import {
   CollaborationRequestStatus
 } from '../../apis/first-approval-api';
 import styled from '@emotion/styled';
+import { CollaborationRequestDialog } from '../../components/CollaborationRequestDialog';
+import { routerStore } from '../../core/router';
+import { Page } from '../../core/router/constants';
+import { getAuthorLink } from '../../core/router/utils';
+import { AuthorElement } from './editors/element/AuthorElement';
 
 export const CollaboratorsDialog = (props: {
   isOpen: boolean;
   collaborationRequests: CollaborationRequestInfo[];
 }): ReactElement => {
   const { isOpen, collaborationRequests } = props;
+  const [collaborationRequestDialogOpen, setCollaborationRequestDialogOpen] =
+    useState(false);
+  const [collaborationRequest, setCollaborationRequest] =
+    useState<CollaborationRequestInfo | null>(null);
+  debugger;
 
   return (
     <Dialog
@@ -55,7 +64,21 @@ export const CollaboratorsDialog = (props: {
           hasMore={!collaborationStore.collaborationRequestsIsLastPage}>
           {collaborationRequests.map((collaborationRequest, index) => (
             <>
-              <RowElementSpaceBetween>
+              <RowElementSpaceBetween
+                onClick={() => {
+                  if (
+                    collaborationRequest.status ===
+                    CollaborationRequestStatus.PENDING
+                  ) {
+                    setCollaborationRequest(collaborationRequest);
+                    setCollaborationRequestDialogOpen(true);
+                  } else {
+                    routerStore.openInNewTab(
+                      Page.PROFILE +
+                        getAuthorLink(collaborationRequest.userInfo.username)
+                    );
+                  }
+                }}>
                 <AuthorElement
                   key={index}
                   isReadonly={true}
@@ -70,7 +93,7 @@ export const CollaboratorsDialog = (props: {
                       width: '16px',
                       height: '16px'
                     }}
-                    htmlColor={'blue'}
+                    htmlColor={'#3B4EFF'}
                   />
                 )}
               </RowElementSpaceBetween>
@@ -82,6 +105,16 @@ export const CollaboratorsDialog = (props: {
           <CircularProgress />
         )}
       </DialogContentWrap>
+      {collaborationRequest && (
+        <CollaborationRequestDialog
+          isOpen={collaborationRequestDialogOpen}
+          onClose={() => {
+            setCollaborationRequestDialogOpen(false);
+            setCollaborationRequest(null);
+          }}
+          collaborationRequest={collaborationRequest!}
+        />
+      )}
     </Dialog>
   );
 };

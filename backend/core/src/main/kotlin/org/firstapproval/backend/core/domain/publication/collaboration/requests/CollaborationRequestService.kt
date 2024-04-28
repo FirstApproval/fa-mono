@@ -1,11 +1,7 @@
 package org.firstapproval.backend.core.domain.publication.collaboration.requests
 
-import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.domain.publication.PublicationRepository
-import org.firstapproval.backend.core.domain.publication.PublicationService
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.APPROVED
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.PENDING
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.REJECTED
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.*
 import org.firstapproval.backend.core.domain.user.User
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -14,14 +10,12 @@ import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
-import java.util.UUID
+import java.util.*
 
 @Service
 class CollaborationRequestService(
     private val collaborationRequestRepository: CollaborationRequestRepository,
-    private val publicationRepository: PublicationRepository,
-    private val publicationService: PublicationService,
-    private val authHolderService: AuthHolderService
+    private val publicationRepository: PublicationRepository
 ) {
     @Transactional
     fun makeDecision(collaborationRequestId: UUID, status: CollaborationRequestStatus, user: User) {
@@ -51,12 +45,14 @@ class CollaborationRequestService(
     }
 
     @Transactional
-    fun get(id: UUID): CollaborationRequest {
-        return collaborationRequestRepository.getReferenceById(id)
-    }
+    fun get(id: UUID) = collaborationRequestRepository.getReferenceById(id)
 
     @Transactional
     fun findByPublicationId(publicationId: String, page: Int, pageSize: Int): Page<CollaborationRequest> {
-        return collaborationRequestRepository.findByPublicationIdAndStatusIn(publicationId, setOf(PENDING, APPROVED),  PageRequest.of(page, pageSize, Sort.by(DESC, "status", "creationTime")))
+        return collaborationRequestRepository.findByPublicationIdAndStatusIn(
+            publicationId,
+            setOf(PENDING, APPROVED),
+            PageRequest.of(page, pageSize, Sort.by(DESC, "status", "creationTime"))
+        )
     }
 }
