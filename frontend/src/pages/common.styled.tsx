@@ -133,7 +133,7 @@ export const PrefilledDetails = styled.div`
   background: var(--alert-info-fill, #e5f6fd);
 
   display: flex;
-  width: 500px;
+  min-width: 500px;
   padding: 6px 16px;
   align-items: flex-start;
   justify-content: start;

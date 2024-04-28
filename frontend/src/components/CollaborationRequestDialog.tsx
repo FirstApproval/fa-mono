@@ -6,13 +6,20 @@ import {
   Typography
 } from '@mui/material';
 import React, { ReactElement } from 'react';
-import { FlexWrapRow, HeightElement } from '../pages/common.styled';
+import {
+  FlexWrapRow,
+  HeightElement,
+  PrefilledDetails,
+  PrefilledDetailsText
+} from '../pages/common.styled';
 import styled from '@emotion/styled';
 import DialogActions from '@mui/material/DialogActions';
 import { AuthorElement } from '../pages/publication/editors/element/AuthorElement';
 import { collaborationRequestService } from '../core/service';
 import { collaborationStore } from '../pages/publication/store/downloadsStore';
 import { getDaysAgoString } from '../util/dateUtil';
+import { InfoOutlined } from '@mui/icons-material';
+import { C0288D1 } from '../ui-kit/colors';
 
 export const CollaborationRequestDialog = (props: {
   isOpen: boolean;
@@ -56,6 +63,14 @@ export const CollaborationRequestDialog = (props: {
           label="Write a response (optional)"
           variant="outlined"
         />
+        <PrefilledDetails>
+          <InfoOutlined htmlColor={C0288D1} sx={{ marginTop: '7px' }} />
+          <PrefilledDetailsText variant={'body2'}>
+            You have 30 days to respond to this Collaboration Request by its
+            acceptance or rejection. If you ignore the request, the Data User is
+            allowed to use your Dataset on citation-only basis.
+          </PrefilledDetailsText>
+        </PrefilledDetails>
       </DialogContentWrap>
       <ConfirmDialogActions>
         <FlexWrapRow>
