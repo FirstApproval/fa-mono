@@ -13,6 +13,8 @@ export class CollaborationStore {
   collaborationRequests: CollaborationRequestInfo[] = [];
   collaborationRequest: CollaborationRequestInfo | null = null;
   collaborationRequestsIsLastPage = false;
+  showAcceptOrRejectAlert = false;
+  collaborationRequestStatusForAlert: CollaborationRequestStatus | null = null;
   authorResponse = '';
 
   loadCollaborationRequestsLocked = false;
@@ -76,6 +78,11 @@ export class CollaborationStore {
         this.authorResponse,
         status
       )
-      .then(() => this.closeCollaborationRequest());
+      .then(() => {
+        this.closeCollaborationRequest();
+        this.collaborationRequestStatusForAlert = status;
+        debugger;
+        this.showAcceptOrRejectAlert = true;
+      });
   }
 }

@@ -1,4 +1,10 @@
-import { CircularProgress, Dialog, DialogContent } from '@mui/material';
+import {
+  Alert,
+  CircularProgress,
+  Dialog,
+  DialogContent,
+  Snackbar
+} from '@mui/material';
 import React, { ReactElement } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -102,6 +108,26 @@ export const CollaboratorsDialog = (props: {
           <CircularProgress />
         )}
       </DialogContentWrap>
+      <Snackbar
+        open={collaborationStore.showAcceptOrRejectAlert}
+        autoHideDuration={4000}
+        onClose={() => {
+          collaborationStore.showAcceptOrRejectAlert = false;
+        }}>
+        <Alert
+          severity={
+            collaborationStore.collaborationRequestStatusForAlert ===
+            CollaborationRequestStatus.ACCEPTED
+              ? 'success'
+              : 'warning'
+          }
+          sx={{ width: '100%' }}>
+          {collaborationStore.collaborationRequestStatusForAlert ===
+          CollaborationRequestStatus.ACCEPTED
+            ? 'Collaboration was accepted!'
+            : 'Collaboration was rejected!'}
+        </Alert>
+      </Snackbar>
     </Dialog>
   );
 };
