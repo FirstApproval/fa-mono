@@ -894,7 +894,7 @@ paths:
       operationId: getCollaborationRequest
       tags: [ collaboration-request ]
 
-  /api/collabortion/approve-request-collaboration/{collaborationRequestId}:
+  /api/collabortion/accept-request-collaboration/{collaborationRequestId}:
     post:
       summary: Approve a request for cooperation
       parameters:
@@ -915,7 +915,7 @@ paths:
           description: Success
       security:
         - TokenAuth: [ ]
-      operationId: approveCollaborationRequest
+      operationId: acceptCollaborationRequest
       tags: [ collaboration-request ]
 
   /api/collabortion/reject-request-collaboration/{collaborationRequestId}:

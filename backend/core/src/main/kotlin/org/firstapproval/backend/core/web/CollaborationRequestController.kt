@@ -1,10 +1,8 @@
 package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.CollaborationRequestApi
-import org.firstapproval.api.server.model.CollaborationRequest
 import org.firstapproval.api.server.model.CollaborationRequestInfo
 import org.firstapproval.api.server.model.CreateCollaborationRequest
-import org.firstapproval.api.server.model.CreateCollaborationRequestRequest
 import org.firstapproval.api.server.model.GetCollaborationRequestsResponse
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
@@ -24,7 +22,7 @@ class CollaborationRequestController(
     private val userService: UserService,
     private val authHolderService: AuthHolderService
 ) : CollaborationRequestApi {
-    override fun approveCollaborationRequest(collaborationRequestId: UUID, authorResponse: String): ResponseEntity<Void> {
+    override fun acceptCollaborationRequest(collaborationRequestId: UUID, authorResponse: String): ResponseEntity<Void> {
         collaborationRequestService.makeDecision(collaborationRequestId, APPROVED, authorResponse, authHolderService.user)
         return ok().build()
     }

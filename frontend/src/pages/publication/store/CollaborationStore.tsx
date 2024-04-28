@@ -61,12 +61,4 @@ export class CollaborationStore {
     this.approvedCollaborationRequestCount = collaboratorsCount ?? 0;
     this.collaboratorsDialogOpen = true;
   }
-
-  async approveCollaborationRequest(
-    collaborationRequest: CollaborationRequestInfo
-  ): Promise<any> {
-    return collaborationRequestService
-      .approveCollaborationRequest(collaborationRequest.id)
-      .then(() => this.closeCollaborationRequest());
-  }
 }
