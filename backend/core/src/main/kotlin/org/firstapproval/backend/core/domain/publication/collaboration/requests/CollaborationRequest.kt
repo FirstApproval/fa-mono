@@ -26,6 +26,8 @@ class CollaborationRequest(
     var id: UUID = randomUUID(),
     @ManyToOne(fetch = EAGER, cascade = [REFRESH])
     val publication: Publication,
+    val firstNameLegal: String,
+    val lastNameLegal: String,
     @ManyToOne(fetch = EAGER)
     val user: User,
     @Enumerated(STRING)

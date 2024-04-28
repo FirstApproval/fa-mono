@@ -200,12 +200,12 @@ class PublicationService(
             ?: Downloader(publication = publication, user = user)
         downloader.history.add(downloadHistory)
         publication.downloadsCount += 1
-        if (agreeToTheFirstApprovalLicense) {
-            collaborationRequestRepository.save(CollaborationRequest(
-                publication = publication,
-                user = user
-            ))
-        }
+//        if (agreeToTheFirstApprovalLicense) {
+//            collaborationRequestRepository.save(CollaborationRequest(
+//                publication = publication,
+//                user = user
+//            ))
+//        }
         downloaderRepository.save(downloader)
     }
 

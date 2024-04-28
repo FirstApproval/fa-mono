@@ -754,63 +754,63 @@ paths:
       operationId: getPublicationDownloaders
       tags: [ publication ]
 
-#  /api/publication/collaborators/check-user-is-collaborator/{publicationId}:
-#    get:
-#      summary: Check user is collaborator of publication
-#      parameters:
-#        - in: path
-#          name: publicationId
-#          schema:
-#            type: string
-#            maxLength: 7
-#          required: true
-#          description: Return true if user is collaborator of publication
-#      responses:
-#        200:
-#          description: Success
-#          content:
-#            'application/json':
-#              schema:
-#                type: boolean
-#      security:
-#        - TokenAuth: [ ]
-#      operationId: isUserCollaborator
-#      tags: [ collaborator ]
-#
-#  /api/publication/{publicationId}/collaboration-requests:
-#    get:
-#      summary: Get publication
-#      parameters:
-#        - in: path
-#          name: publicationId
-#          schema:
-#            type: string
-#            maxLength: 7
-#          required: true
-#          description: Publication id
-#        - in: query
-#          name: page
-#          schema:
-#            type: integer
-#          required: true
-#          description: Page number
-#        - in: query
-#          name: pageSize
-#          schema:
-#            type: integer
-#          required: true
-#          description: Page size
-#      responses:
-#        200:
-#          description: Success
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/GetCollaborationRequestsResponse'
-#      security:
-#        - TokenAuth: [ ]
-#      operationId: getPublicationCollaborators
-#      tags: [ collaborator ]
+  #  /api/publication/collaborators/check-user-is-collaborator/{publicationId}:
+  #    get:
+  #      summary: Check user is collaborator of publication
+  #      parameters:
+  #        - in: path
+  #          name: publicationId
+  #          schema:
+  #            type: string
+  #            maxLength: 7
+  #          required: true
+  #          description: Return true if user is collaborator of publication
+  #      responses:
+  #        200:
+  #          description: Success
+  #          content:
+  #            'application/json':
+  #              schema:
+  #                type: boolean
+  #      security:
+  #        - TokenAuth: [ ]
+  #      operationId: isUserCollaborator
+  #      tags: [ collaborator ]
+  #
+  #  /api/publication/{publicationId}/collaboration-requests:
+  #    get:
+  #      summary: Get publication
+  #      parameters:
+  #        - in: path
+  #          name: publicationId
+  #          schema:
+  #            type: string
+  #            maxLength: 7
+  #          required: true
+  #          description: Publication id
+  #        - in: query
+  #          name: page
+  #          schema:
+  #            type: integer
+  #          required: true
+  #          description: Page number
+  #        - in: query
+  #          name: pageSize
+  #          schema:
+  #            type: integer
+  #          required: true
+  #          description: Page size
+  #      responses:
+  #        200:
+  #          description: Success
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/GetCollaborationRequestsResponse'
+  #      security:
+  #        - TokenAuth: [ ]
+  #      operationId: getPublicationCollaborators
+  #      tags: [ collaborator ]
 
   /api/collabortion/requests/{publicationId}:
     post:
@@ -862,12 +862,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                description:
-                  type: string
-              required:
-                - description
+              $ref: '#/components/schemas/CreateCollaborationRequest'
       responses:
         200:
           description: Success
@@ -2264,6 +2259,12 @@ components:
         id:
           type: string
           format: uuid
+        firstNameLegal:
+          type: string
+        lastNameLegal:
+          type: string
+        typeOfWork:
+          type: string
         status:
           $ref: '#/components/schemas/CollaborationRequestStatus'
         userInfo:
@@ -2287,10 +2288,27 @@ components:
         - id
         - status
         - userInfo
+        - firstNameLegal
+        - lastNameLegal
         - publicationTitle
         - publicationId
         - creationTime
         - autoApproval
+
+    CreateCollaborationRequest:
+      type: object
+      properties:
+        firstNameLegal:
+          type: string
+        lastNameLegal:
+          type: string
+        typeOfWork:
+          type: string
+        description:
+          type: string
+      required:
+        - firstNameLegal
+        - lastNameLegal
 
     FullName:
       type: object

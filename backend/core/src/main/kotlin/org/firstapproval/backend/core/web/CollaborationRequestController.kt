@@ -1,7 +1,9 @@
 package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.CollaborationRequestApi
+import org.firstapproval.api.server.model.CollaborationRequest
 import org.firstapproval.api.server.model.CollaborationRequestInfo
+import org.firstapproval.api.server.model.CreateCollaborationRequest
 import org.firstapproval.api.server.model.CreateCollaborationRequestRequest
 import org.firstapproval.api.server.model.GetCollaborationRequestsResponse
 import org.firstapproval.backend.core.config.security.AuthHolderService
@@ -34,11 +36,11 @@ class CollaborationRequestController(
 
     override fun createCollaborationRequest(
         publicationId: String,
-        createCollaborationRequestRequest: CreateCollaborationRequestRequest
+        createCollaborationRequestRequest: CreateCollaborationRequest
     ): ResponseEntity<Void> {
         collaborationRequestService.createCollaborationRequest(
             publicationId,
-            createCollaborationRequestRequest.description,
+            createCollaborationRequestRequest,
             authHolderService.user
         )
         return ok().build()
