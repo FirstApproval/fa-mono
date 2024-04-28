@@ -39,6 +39,7 @@ import { Footer } from '../home/Footer';
 import { PublicationBody } from './PublicationBody';
 import { PublicationPageHeader } from './PublicationPageHeader';
 import { CollaboratorsDialog } from './CollaboratorsDialog';
+import { CollaborationRequestDialog } from '../../components/CollaborationRequestDialog';
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -201,8 +202,14 @@ export const PublicationPage: FunctionComponent = observer(() => {
         downloaders={downloadersStore.downloaders}
       />
       <CollaboratorsDialog
-        isOpen={collaborationStore.open}
+        isOpen={collaborationStore.collaboratorsDialogOpen}
         collaborationRequests={collaborationStore.collaborationRequests}
+      />
+      <CollaborationRequestDialog
+        isOpen={collaborationStore.collaborationRequestDialogOpen}
+        onClose={() => {
+          collaborationStore.closeCollaborationRequest();
+        }}
       />
       <ConfirmationDialog
         isOpen={deleteDialogOpen}

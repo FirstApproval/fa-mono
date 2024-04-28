@@ -3,18 +3,18 @@ import React, { ReactElement } from 'react';
 import { FlexWrapRow } from '../pages/common.styled';
 import styled from '@emotion/styled';
 import DialogActions from '@mui/material/DialogActions';
-import { CollaborationRequestInfo } from '../apis/first-approval-api';
 import { AuthorElement } from '../pages/publication/editors/element/AuthorElement';
 import { collaborationRequestService } from '../core/service';
+import { collaborationStore } from '../pages/publication/store/downloadsStore';
 
 export const CollaborationRequestDialog = (props: {
   isOpen: boolean;
   onClose: () => void;
-  collaborationRequest: CollaborationRequestInfo;
 }): ReactElement => {
-  const { isOpen, onClose, collaborationRequest } = props;
+  const { isOpen, onClose } = props;
+  const { collaborationRequest } = collaborationStore;
 
-  return (
+  return collaborationRequest ? (
     <Dialog
       open={isOpen}
       onClose={onClose}
@@ -28,7 +28,7 @@ export const CollaborationRequestDialog = (props: {
           <AuthorElement
             isReadonly={true}
             useMarginBottom={false}
-            author={collaborationRequest.userInfo!}
+            author={collaborationRequest!.userInfo!}
             shouldOpenInNewTab={true}
           />
         </DialogWidthWrap>
@@ -41,39 +41,46 @@ export const CollaborationRequestDialog = (props: {
             variant="text"
             onClick={async () =>
               collaborationRequestService
-                .rejectCollaborationRequest(collaborationRequest.id)
-                .then((response) => onClose())
+                .rejectCollaborationRequest(collaborationRequest!.id)
+                .then((response) =>
+                  collaborationStore.closeCollaborationRequest()
+                )
             }>
             Reject
           </RejectButton>
           <AcceptButton
             color="primary"
-            variant={'contained'}
+            variant="text"
             size={'large'}
             onClick={async () =>
               collaborationRequestService
-                .approveCollaborationRequest(collaborationRequest.id)
-                .then((response) => onClose())
+                .approveCollaborationRequest(collaborationRequest!.id)
+                .then((response) =>
+                  collaborationStore.closeCollaborationRequest()
+                )
             }>
             Accept
           </AcceptButton>
         </FlexWrapRow>
       </ConfirmDialogActions>
     </Dialog>
+  ) : (
+    <></>
   );
 };
 
 const DialogWidthWrap = styled(Typography)`
-  min-width: 600px;
-  max-height: 700px;
+  min-width: 336px;
 `;
 
 const DeleteDialogTitle = styled(Typography)`
   padding-top: 32px;
   padding-left: 32px;
+  padding-right: 32px;
 `;
 
 const DialogContentWrap = styled(DialogContent)`
+  min-width: 600px;
   padding-left: 32px !important;
   padding-right: 32px !important;
 `;
@@ -87,13 +94,13 @@ const ConfirmDialogActions = styled(DialogActions)`
 const RejectButton = styled(Button)`
   display: flex;
   height: 48px;
-  padding: 8px 11px;
+  padding: 8px 22px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   margin-right: 24px;
 
-  color: var(--primary-main, #3b4eff);
+  border: 1px solid;
 `;
 
 const AcceptButton = styled(Button)`
@@ -104,5 +111,5 @@ const AcceptButton = styled(Button)`
   justify-content: center;
   align-items: center;
 
-  color: var(--error-contrast, #fff);
+  border: 1px solid;
 `;

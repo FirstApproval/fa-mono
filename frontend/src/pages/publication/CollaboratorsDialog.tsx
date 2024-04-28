@@ -1,5 +1,5 @@
 import { CircularProgress, Dialog, DialogContent } from '@mui/material';
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Circle, Close } from '@mui/icons-material';
@@ -14,7 +14,6 @@ import {
   CollaborationRequestStatus
 } from '../../apis/first-approval-api';
 import styled from '@emotion/styled';
-import { CollaborationRequestDialog } from '../../components/CollaborationRequestDialog';
 import { routerStore } from '../../core/router';
 import { Page } from '../../core/router/constants';
 import { getAuthorLink } from '../../core/router/utils';
@@ -25,17 +24,13 @@ export const CollaboratorsDialog = (props: {
   collaborationRequests: CollaborationRequestInfo[];
 }): ReactElement => {
   const { isOpen, collaborationRequests } = props;
-  const [collaborationRequestDialogOpen, setCollaborationRequestDialogOpen] =
-    useState(false);
-  const [collaborationRequest, setCollaborationRequest] =
-    useState<CollaborationRequestInfo | null>(null);
   debugger;
 
   return (
     <Dialog
       open={isOpen}
       onClose={() => {
-        collaborationStore.open = false;
+        collaborationStore.collaboratorsDialogOpen = false;
       }}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description">
@@ -46,7 +41,7 @@ export const CollaboratorsDialog = (props: {
           </DialogTitleWrap>
           <Close
             onClick={() => {
-              collaborationStore.open = false;
+              collaborationStore.collaboratorsDialogOpen = false;
             }}
             style={{ cursor: 'pointer' }}
             htmlColor={'#68676E'}
@@ -65,13 +60,15 @@ export const CollaboratorsDialog = (props: {
           {collaborationRequests.map((collaborationRequest, index) => (
             <>
               <RowElementSpaceBetween
+                style={{ cursor: 'pointer' }}
                 onClick={() => {
                   if (
                     collaborationRequest.status ===
                     CollaborationRequestStatus.PENDING
                   ) {
-                    setCollaborationRequest(collaborationRequest);
-                    setCollaborationRequestDialogOpen(true);
+                    collaborationStore.openCollaborationRequest(
+                      collaborationRequest
+                    );
                   } else {
                     routerStore.openInNewTab(
                       Page.PROFILE +
@@ -105,16 +102,6 @@ export const CollaboratorsDialog = (props: {
           <CircularProgress />
         )}
       </DialogContentWrap>
-      {collaborationRequest && (
-        <CollaborationRequestDialog
-          isOpen={collaborationRequestDialogOpen}
-          onClose={() => {
-            setCollaborationRequestDialogOpen(false);
-            setCollaborationRequest(null);
-          }}
-          collaborationRequest={collaborationRequest!}
-        />
-      )}
     </Dialog>
   );
 };

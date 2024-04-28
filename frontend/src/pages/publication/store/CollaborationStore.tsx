@@ -3,10 +3,12 @@ import { collaborationRequestService } from '../../../core/service';
 import { CollaborationRequestInfo } from '../../../apis/first-approval-api';
 
 export class CollaborationStore {
-  open = false;
+  collaboratorsDialogOpen = false;
+  collaborationRequestDialogOpen = false;
   publicationId: string = '';
   approvedCollaborationRequestCount: number = 0;
   collaborationRequests: CollaborationRequestInfo[] = [];
+  collaborationRequest: CollaborationRequestInfo | null = null;
   collaborationRequestsIsLastPage = false;
 
   loadCollaborationRequestsLocked = false;
@@ -33,6 +35,18 @@ export class CollaborationStore {
     }
   }
 
+  closeCollaborationRequest(): void {
+    this.collaborationRequestDialogOpen = false;
+    this.collaborationRequest = null;
+  }
+
+  openCollaborationRequest(
+    collaborationRequest: CollaborationRequestInfo
+  ): void {
+    this.collaborationRequestDialogOpen = true;
+    this.collaborationRequest = collaborationRequest;
+  }
+
   clearAndOpen(
     publicationId: string,
     collaboratorsCount: number | null | undefined
@@ -44,12 +58,14 @@ export class CollaborationStore {
 
     this.publicationId = publicationId;
     this.approvedCollaborationRequestCount = collaboratorsCount ?? 0;
-    this.open = true;
+    this.collaboratorsDialogOpen = true;
   }
 
-  async confirmChangeEmail(collaborationRequest: CollaborationRequestInfo): Promise<any> {
+  async approveCollaborationRequest(
+    collaborationRequest: CollaborationRequestInfo
+  ): Promise<any> {
     return collaborationRequestService
       .approveCollaborationRequest(collaborationRequest.id)
-      .then(() => {});
+      .then(() => this.closeCollaborationRequest());
   }
 }
