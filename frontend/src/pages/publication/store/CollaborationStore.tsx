@@ -10,6 +10,7 @@ export class CollaborationStore {
   collaborationRequests: CollaborationRequestInfo[] = [];
   collaborationRequest: CollaborationRequestInfo | null = null;
   collaborationRequestsIsLastPage = false;
+  authorResponse = '';
 
   loadCollaborationRequestsLocked = false;
 

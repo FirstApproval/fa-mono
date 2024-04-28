@@ -1,4 +1,10 @@
-import { Button, Dialog, DialogContent, Typography } from '@mui/material';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  TextField,
+  Typography
+} from '@mui/material';
 import React, { ReactElement } from 'react';
 import { FlexWrapRow, HeightElement } from '../pages/common.styled';
 import styled from '@emotion/styled';
@@ -14,7 +20,8 @@ export const CollaborationRequestDialog = (props: {
 }): ReactElement => {
   const { isOpen, onClose } = props;
   const { collaborationRequest } = collaborationStore;
-  const daysAgo = getDaysAgoString(collaborationRequest!.creationTime!);
+  const daysAgo =
+    collaborationRequest && getDaysAgoString(collaborationRequest.creationTime);
 
   return collaborationRequest ? (
     <Dialog
@@ -38,6 +45,17 @@ export const CollaborationRequestDialog = (props: {
         </DialogDescriptionWrap>
         <HeightElement value={'12px'} />
         <DaysAgo variant={'body2'}>{daysAgo}</DaysAgo>
+        <FullWidthTextField
+          multiline={true}
+          minRows={4}
+          value={collaborationStore.authorResponse}
+          type={'email'}
+          onChange={(e) =>
+            (collaborationStore.authorResponse = e.currentTarget.value)
+          }
+          label="Write a response (optional)"
+          variant="outlined"
+        />
       </DialogContentWrap>
       <ConfirmDialogActions>
         <FlexWrapRow>
@@ -47,7 +65,10 @@ export const CollaborationRequestDialog = (props: {
             variant="text"
             onClick={async () =>
               collaborationRequestService
-                .rejectCollaborationRequest(collaborationRequest!.id)
+                .rejectCollaborationRequest(
+                  collaborationRequest!.id,
+                  collaborationStore.authorResponse
+                )
                 .then((response) =>
                   collaborationStore.closeCollaborationRequest()
                 )
@@ -60,7 +81,10 @@ export const CollaborationRequestDialog = (props: {
             size={'large'}
             onClick={async () =>
               collaborationRequestService
-                .approveCollaborationRequest(collaborationRequest!.id)
+                .approveCollaborationRequest(
+                  collaborationRequest!.id,
+                  collaborationStore.authorResponse
+                )
                 .then((response) =>
                   collaborationStore.closeCollaborationRequest()
                 )
@@ -122,4 +146,9 @@ const AcceptButton = styled(Button)`
 
 const DaysAgo = styled(Typography)`
   color: var(--text-secondary, #68676e);
+`;
+
+const FullWidthTextField = styled(TextField)`
+  width: 100%;
+  margin: 32px 0;
 `;
