@@ -5,7 +5,7 @@ import {
   TextField,
   Typography
 } from '@mui/material';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useState } from 'react';
 import {
   FlexWrapRow,
   HeightElement,
@@ -21,6 +21,7 @@ import { InfoOutlined } from '@mui/icons-material';
 import { C0288D1 } from '../ui-kit/colors';
 import { observer } from 'mobx-react-lite';
 import { CollaborationRequestStatus } from '../apis/first-approval-api';
+import { ConfirmationDialog } from './ConfirmationDialog';
 
 export const CollaborationRequestDialog = observer(
   (props: { isOpen: boolean; onClose: () => void }): ReactElement => {
@@ -29,6 +30,7 @@ export const CollaborationRequestDialog = observer(
     const daysAgo =
       collaborationRequest &&
       getDaysAgoString(collaborationRequest.creationTime);
+    const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
 
     return collaborationRequest ? (
       <Dialog
@@ -57,7 +59,6 @@ export const CollaborationRequestDialog = observer(
             minRows={4}
             value={collaborationStore.authorResponse}
             onChange={(e) => {
-              debugger;
               collaborationStore.authorResponse = e.currentTarget.value;
             }}
             label="Write a response (optional)"
@@ -78,12 +79,7 @@ export const CollaborationRequestDialog = observer(
               size={'large'}
               color="error"
               variant="text"
-              onClick={async () =>
-                collaborationStore.acceptOrRejectCollaborationRequest(
-                  collaborationRequest,
-                  CollaborationRequestStatus.REJECTED
-                )
-              }>
+              onClick={() => setConfirmationDialogOpen(true)}>
               Reject
             </RejectButton>
             <AcceptButton
@@ -100,6 +96,22 @@ export const CollaborationRequestDialog = observer(
             </AcceptButton>
           </FlexWrapRow>
         </ConfirmDialogActions>
+        <ConfirmationDialog
+          isOpen={confirmationDialogOpen}
+          onClose={() => setConfirmationDialogOpen(false)}
+          onConfirm={async () =>
+            collaborationStore.acceptOrRejectCollaborationRequest(
+              collaborationRequest,
+              CollaborationRequestStatus.REJECTED
+            )
+          }
+          text={`Are you sure you want to reject the offer to include you as a co-author in 
+                  ${collaborationRequest.firstNameLegal} ${collaborationRequest.lastNameLegal} work?\n
+                 If you reject the collaboration request, 
+                 ${collaborationRequest.firstNameLegal} ${collaborationRequest.lastNameLegal} 
+                 can still publish their work without including you as co-author, 
+                 but must cite your Dataset as a source.`}
+        />
       </Dialog>
     ) : (
       <></>

@@ -53,6 +53,7 @@ export const ConfirmationDialog = (props: {
 
 const DialogWidthWrap = styled(Typography)`
   max-width: 336px;
+  white-space: pre-line;
 `;
 
 const ConfirmDialogTitle = styled(Typography)`
