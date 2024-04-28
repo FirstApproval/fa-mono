@@ -20,99 +20,100 @@ import { collaborationStore } from '../pages/publication/store/downloadsStore';
 import { getDaysAgoString } from '../util/dateUtil';
 import { InfoOutlined } from '@mui/icons-material';
 import { C0288D1 } from '../ui-kit/colors';
+import { observer } from 'mobx-react-lite';
 
-export const CollaborationRequestDialog = (props: {
-  isOpen: boolean;
-  onClose: () => void;
-}): ReactElement => {
-  const { isOpen, onClose } = props;
-  const { collaborationRequest } = collaborationStore;
-  const daysAgo =
-    collaborationRequest && getDaysAgoString(collaborationRequest.creationTime);
+export const CollaborationRequestDialog = observer(
+  (props: { isOpen: boolean; onClose: () => void }): ReactElement => {
+    const { isOpen, onClose } = props;
+    const { collaborationRequest } = collaborationStore;
+    const daysAgo =
+      collaborationRequest &&
+      getDaysAgoString(collaborationRequest.creationTime);
 
-  return collaborationRequest ? (
-    <Dialog
-      open={isOpen}
-      onClose={onClose}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description">
-      <DeleteDialogTitle id="alert-dialog-title" variant={'h5'}>
-        Collaboration request
-      </DeleteDialogTitle>
-      <DialogContentWrap>
-        <AuthorElement
-          isReadonly={true}
-          useMarginBottom={false}
-          author={collaborationRequest!.userInfo!}
-          shouldOpenInNewTab={true}
-        />
-        <HeightElement value={'12px'} />
-        <DialogDescriptionWrap variant={'body'}>
-          {collaborationRequest.description}
-        </DialogDescriptionWrap>
-        <HeightElement value={'12px'} />
-        <DaysAgo variant={'body2'}>{daysAgo}</DaysAgo>
-        <FullWidthTextField
-          multiline={true}
-          minRows={4}
-          value={collaborationStore.authorResponse}
-          type={'email'}
-          onChange={(e) =>
-            (collaborationStore.authorResponse = e.currentTarget.value)
-          }
-          label="Write a response (optional)"
-          variant="outlined"
-        />
-        <PrefilledDetails>
-          <InfoOutlined htmlColor={C0288D1} sx={{ marginTop: '7px' }} />
-          <PrefilledDetailsText variant={'body2'}>
-            You have 30 days to respond to this Collaboration Request by its
-            acceptance or rejection. If you ignore the request, the Data User is
-            allowed to use your Dataset on citation-only basis.
-          </PrefilledDetailsText>
-        </PrefilledDetails>
-      </DialogContentWrap>
-      <ConfirmDialogActions>
-        <FlexWrapRow>
-          <RejectButton
-            size={'large'}
-            color="error"
-            variant="text"
-            onClick={async () =>
-              collaborationRequestService
-                .rejectCollaborationRequest(
-                  collaborationRequest!.id,
-                  collaborationStore.authorResponse
-                )
-                .then((response) =>
-                  collaborationStore.closeCollaborationRequest()
-                )
-            }>
-            Reject
-          </RejectButton>
-          <AcceptButton
-            color="primary"
-            variant="text"
-            size={'large'}
-            onClick={async () =>
-              collaborationRequestService
-                .approveCollaborationRequest(
-                  collaborationRequest!.id,
-                  collaborationStore.authorResponse
-                )
-                .then((response) =>
-                  collaborationStore.closeCollaborationRequest()
-                )
-            }>
-            Accept
-          </AcceptButton>
-        </FlexWrapRow>
-      </ConfirmDialogActions>
-    </Dialog>
-  ) : (
-    <></>
-  );
-};
+    return collaborationRequest ? (
+      <Dialog
+        open={isOpen}
+        onClose={onClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description">
+        <DeleteDialogTitle id="alert-dialog-title" variant={'h5'}>
+          Collaboration request
+        </DeleteDialogTitle>
+        <DialogContentWrap>
+          <AuthorElement
+            isReadonly={true}
+            useMarginBottom={false}
+            author={collaborationRequest!.userInfo!}
+            shouldOpenInNewTab={true}
+          />
+          <HeightElement value={'12px'} />
+          <DialogDescriptionWrap variant={'body'}>
+            {collaborationRequest.description}
+          </DialogDescriptionWrap>
+          <HeightElement value={'12px'} />
+          <DaysAgo variant={'body2'}>{daysAgo}</DaysAgo>
+          <FullWidthTextField
+            multiline={true}
+            minRows={4}
+            value={collaborationStore.authorResponse}
+            onChange={(e) => {
+              debugger;
+              collaborationStore.authorResponse = e.currentTarget.value;
+            }}
+            label="Write a response (optional)"
+            variant="outlined"
+          />
+          <PrefilledDetails>
+            <InfoOutlined htmlColor={C0288D1} sx={{ marginTop: '7px' }} />
+            <PrefilledDetailsText variant={'body2'}>
+              You have 30 days to respond to this Collaboration Request by its
+              acceptance or rejection. If you ignore the request, the Data User
+              is allowed to use your Dataset on citation-only basis.
+            </PrefilledDetailsText>
+          </PrefilledDetails>
+        </DialogContentWrap>
+        <ConfirmDialogActions>
+          <FlexWrapRow>
+            <RejectButton
+              size={'large'}
+              color="error"
+              variant="text"
+              onClick={async () =>
+                collaborationRequestService
+                  .rejectCollaborationRequest(
+                    collaborationRequest!.id,
+                    collaborationStore.authorResponse
+                  )
+                  .then((response) =>
+                    collaborationStore.closeCollaborationRequest()
+                  )
+              }>
+              Reject
+            </RejectButton>
+            <AcceptButton
+              color="primary"
+              variant="text"
+              size={'large'}
+              onClick={async () =>
+                collaborationRequestService
+                  .approveCollaborationRequest(
+                    collaborationRequest!.id,
+                    collaborationStore.authorResponse
+                  )
+                  .then((response) =>
+                    collaborationStore.closeCollaborationRequest()
+                  )
+              }>
+              Accept
+            </AcceptButton>
+          </FlexWrapRow>
+        </ConfirmDialogActions>
+      </Dialog>
+    ) : (
+      <></>
+    );
+  }
+);
 
 const DialogDescriptionWrap = styled(Typography)`
   margin-top: 120px !important;
