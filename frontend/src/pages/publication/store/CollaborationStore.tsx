@@ -1,6 +1,6 @@
 import { action, makeAutoObservable } from 'mobx';
 import { collaborationRequestService } from '../../../core/service';
-import { CollaborationRequestInfo } from '../../../apis/first-approval-api';
+import { CollaborationRequestInfo, CollaborationRequestStatus } from "../../../apis/first-approval-api"
 
 export class CollaborationStore {
   collaboratorsDialogOpen = false;
@@ -39,6 +39,7 @@ export class CollaborationStore {
   closeCollaborationRequest(): void {
     this.collaborationRequestDialogOpen = false;
     this.collaborationRequest = null;
+    this.authorResponse = '';
   }
 
   openCollaborationRequest(
@@ -60,5 +61,14 @@ export class CollaborationStore {
     this.publicationId = publicationId;
     this.approvedCollaborationRequestCount = collaboratorsCount ?? 0;
     this.collaboratorsDialogOpen = true;
+  }
+
+  async acceptOrRejectCollaborationRequest(
+    collaborationRequest: CollaborationRequestInfo,
+    status: CollaborationRequestStatus
+  ): Promise<any> {
+    return collaborationRequestService
+      .acceptOrRejectCollaborationRequest(collaborationRequest.id, this.authorResponse, status)
+      .then(() => this.closeCollaborationRequest());
   }
 }

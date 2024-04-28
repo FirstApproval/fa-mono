@@ -15,12 +15,12 @@ import {
 import styled from '@emotion/styled';
 import DialogActions from '@mui/material/DialogActions';
 import { AuthorElement } from '../pages/publication/editors/element/AuthorElement';
-import { collaborationRequestService } from '../core/service';
 import { collaborationStore } from '../pages/publication/store/downloadsStore';
 import { getDaysAgoString } from '../util/dateUtil';
 import { InfoOutlined } from '@mui/icons-material';
 import { C0288D1 } from '../ui-kit/colors';
 import { observer } from 'mobx-react-lite';
+import { CollaborationRequestStatus } from '../apis/first-approval-api';
 
 export const CollaborationRequestDialog = observer(
   (props: { isOpen: boolean; onClose: () => void }): ReactElement => {
@@ -79,14 +79,10 @@ export const CollaborationRequestDialog = observer(
               color="error"
               variant="text"
               onClick={async () =>
-                collaborationRequestService
-                  .rejectCollaborationRequest(
-                    collaborationRequest!.id,
-                    collaborationStore.authorResponse
-                  )
-                  .then((response) =>
-                    collaborationStore.closeCollaborationRequest()
-                  )
+                collaborationStore.acceptOrRejectCollaborationRequest(
+                  collaborationRequest,
+                  CollaborationRequestStatus.REJECTED
+                )
               }>
               Reject
             </RejectButton>
@@ -95,14 +91,10 @@ export const CollaborationRequestDialog = observer(
               variant="text"
               size={'large'}
               onClick={async () =>
-                collaborationRequestService
-                  .approveCollaborationRequest(
-                    collaborationRequest!.id,
-                    collaborationStore.authorResponse
-                  )
-                  .then((response) =>
-                    collaborationStore.closeCollaborationRequest()
-                  )
+                collaborationStore.acceptOrRejectCollaborationRequest(
+                  collaborationRequest,
+                  CollaborationRequestStatus.ACCEPTED
+                )
               }>
               Accept
             </AcceptButton>
