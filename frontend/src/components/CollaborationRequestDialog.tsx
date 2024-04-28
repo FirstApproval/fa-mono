@@ -1,11 +1,12 @@
 import { Button, Dialog, DialogContent, Typography } from '@mui/material';
 import React, { ReactElement } from 'react';
-import { FlexWrapRow } from '../pages/common.styled';
+import { FlexWrapRow, HeightElement } from '../pages/common.styled';
 import styled from '@emotion/styled';
 import DialogActions from '@mui/material/DialogActions';
 import { AuthorElement } from '../pages/publication/editors/element/AuthorElement';
 import { collaborationRequestService } from '../core/service';
 import { collaborationStore } from '../pages/publication/store/downloadsStore';
+import { getDaysAgoString } from '../util/dateUtil';
 
 export const CollaborationRequestDialog = (props: {
   isOpen: boolean;
@@ -13,6 +14,7 @@ export const CollaborationRequestDialog = (props: {
 }): ReactElement => {
   const { isOpen, onClose } = props;
   const { collaborationRequest } = collaborationStore;
+  const daysAgo = getDaysAgoString(collaborationRequest!.creationTime!);
 
   return collaborationRequest ? (
     <Dialog
@@ -24,14 +26,18 @@ export const CollaborationRequestDialog = (props: {
         Collaboration request
       </DeleteDialogTitle>
       <DialogContentWrap>
-        <DialogWidthWrap variant={'body'}>
-          <AuthorElement
-            isReadonly={true}
-            useMarginBottom={false}
-            author={collaborationRequest!.userInfo!}
-            shouldOpenInNewTab={true}
-          />
-        </DialogWidthWrap>
+        <AuthorElement
+          isReadonly={true}
+          useMarginBottom={false}
+          author={collaborationRequest!.userInfo!}
+          shouldOpenInNewTab={true}
+        />
+        <HeightElement value={'12px'} />
+        <DialogDescriptionWrap variant={'body'}>
+          {collaborationRequest.description}
+        </DialogDescriptionWrap>
+        <HeightElement value={'12px'} />
+        <DaysAgo variant={'body2'}>{daysAgo}</DaysAgo>
       </DialogContentWrap>
       <ConfirmDialogActions>
         <FlexWrapRow>
@@ -69,8 +75,8 @@ export const CollaborationRequestDialog = (props: {
   );
 };
 
-const DialogWidthWrap = styled(Typography)`
-  min-width: 336px;
+const DialogDescriptionWrap = styled(Typography)`
+  margin-top: 120px !important;
 `;
 
 const DeleteDialogTitle = styled(Typography)`
@@ -112,4 +118,8 @@ const AcceptButton = styled(Button)`
   align-items: center;
 
   border: 1px solid;
+`;
+
+const DaysAgo = styled(Typography)`
+  color: var(--text-secondary, #68676e);
 `;
