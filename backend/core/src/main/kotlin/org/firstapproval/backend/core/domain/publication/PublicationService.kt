@@ -485,7 +485,7 @@ fun Publication.toApiObject(
     publicationApiModel.isNegative = isNegative
     publicationApiModel.userCollaborationStatus =
         currentUser?.let { collaborationRequestRepository.findByUserIdAndPublicationId(it.id, id) }
-            ?.let { CollaborationRequestStatus.valueOf(it.collaborationRequestStatus.name) }
+            ?.let { CollaborationRequestStatus.valueOf(it.status.name) }
     publicationApiModel.useType = useType?.let { UseTypeApiObject.valueOf(it.name) }
 }
 

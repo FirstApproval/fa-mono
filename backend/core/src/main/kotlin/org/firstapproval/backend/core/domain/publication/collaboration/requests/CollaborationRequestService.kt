@@ -29,7 +29,7 @@ class CollaborationRequestService(
         }
 
         collaborationRequest.decisionTime = ZonedDateTime.now()
-        collaborationRequest.collaborationRequestStatus = collaborationRequestStatus
+        collaborationRequest.status = collaborationRequestStatus
         collaborationRequest.authorResponse = authorResponse
 
         collaborationRequest.publication.collaboratorsCount += 1
