@@ -30,6 +30,7 @@ class CollaborationRequest(
     val user: User,
     @Enumerated(STRING)
     var status: CollaborationRequestStatus = PENDING,
+    var description: String? = null,
     val creationTime: ZonedDateTime = ZonedDateTime.now(),
     var decisionTime: ZonedDateTime? = null,
     val autoApproval: Boolean? = false
@@ -47,6 +48,7 @@ fun CollaborationRequest.toApiObject(userService: UserService) = CollaborationRe
     it.userInfo = user.toApiObject(userService)
     it.publicationTitle = publication.title
     it.publicationId = publication.id
+    it.description = description
     it.creationTime = creationTime.toOffsetDateTime()
     it.decisionTime = decisionTime?.toOffsetDateTime()
 }

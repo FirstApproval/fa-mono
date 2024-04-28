@@ -858,6 +858,16 @@ paths:
             maxLength: 7
           required: true
           description: Publication id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+              required:
+                - description
       responses:
         200:
           description: Success
@@ -2263,6 +2273,8 @@ components:
         publicationId:
           type: string
           maxLength: 7
+        description:
+          type: string
         creationTime:
           type: string
           format: date-time

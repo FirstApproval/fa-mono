@@ -2,6 +2,7 @@ package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.CollaborationRequestApi
 import org.firstapproval.api.server.model.CollaborationRequestInfo
+import org.firstapproval.api.server.model.CreateCollaborationRequestRequest
 import org.firstapproval.api.server.model.GetCollaborationRequestsResponse
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
@@ -31,8 +32,15 @@ class CollaborationRequestController(
         return ok().build()
     }
 
-    override fun createCollaborationRequest(publicationId: String): ResponseEntity<Void> {
-        collaborationRequestService.createCollaborationRequest(publicationId, authHolderService.user)
+    override fun createCollaborationRequest(
+        publicationId: String,
+        createCollaborationRequestRequest: CreateCollaborationRequestRequest
+    ): ResponseEntity<Void> {
+        collaborationRequestService.createCollaborationRequest(
+            publicationId,
+            createCollaborationRequestRequest.description,
+            authHolderService.user
+        )
         return ok().build()
     }
 
@@ -40,7 +48,11 @@ class CollaborationRequestController(
         return ok(collaborationRequestService.get(collaborationRequestId).toApiObject(userService = userService))
     }
 
-    override fun getCollaborationRequests(publicationId: String, page: Int, pageSize: Int): ResponseEntity<GetCollaborationRequestsResponse> {
+    override fun getCollaborationRequests(
+        publicationId: String,
+        page: Int,
+        pageSize: Int
+    ): ResponseEntity<GetCollaborationRequestsResponse> {
         val result = collaborationRequestService.findByPublicationId(publicationId, page, pageSize)
         val collaborationRequests = result
             .map { it.toApiObject(userService = userService) }

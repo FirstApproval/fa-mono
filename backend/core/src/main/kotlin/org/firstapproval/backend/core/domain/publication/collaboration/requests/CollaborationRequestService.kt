@@ -34,11 +34,12 @@ class CollaborationRequestService(
     }
 
     @Transactional
-    fun createCollaborationRequest(publicationId: String, user: User) {
+    fun createCollaborationRequest(publicationId: String, description: String, user: User) {
         val publication = publicationRepository.getReferenceById(publicationId)
         collaborationRequestRepository.save(
             CollaborationRequest(
                 publication = publication,
+                description = description,
                 user = user,
             )
         )
