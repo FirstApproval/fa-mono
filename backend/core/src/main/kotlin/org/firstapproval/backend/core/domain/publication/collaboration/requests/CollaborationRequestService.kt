@@ -42,6 +42,7 @@ class CollaborationRequestService(
                 publication = publication,
                 firstNameLegal = collaborationRequestRequest.firstNameLegal,
                 lastNameLegal = collaborationRequestRequest.lastNameLegal,
+                typeOfWork = TypeOfWork.valueOf(collaborationRequestRequest.typeOfWork.name),
                 description = collaborationRequestRequest.description,
                 user = user,
             )

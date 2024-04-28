@@ -2264,7 +2264,7 @@ components:
         lastNameLegal:
           type: string
         typeOfWork:
-          type: string
+          $ref: '#/components/schemas/CollaborationRequestTypeOfWork'
         status:
           $ref: '#/components/schemas/CollaborationRequestStatus'
         userInfo:
@@ -2290,6 +2290,7 @@ components:
         - userInfo
         - firstNameLegal
         - lastNameLegal
+        - typeOfWork
         - publicationTitle
         - publicationId
         - creationTime
@@ -2303,12 +2304,13 @@ components:
         lastNameLegal:
           type: string
         typeOfWork:
-          type: string
+          $ref: '#/components/schemas/CollaborationRequestTypeOfWork'
         description:
           type: string
       required:
         - firstNameLegal
         - lastNameLegal
+        - typeOfWork
 
     FullName:
       type: object
@@ -2346,6 +2348,13 @@ components:
         - APPROVED
         - REJECTED
         - PENDING
+
+    CollaborationRequestTypeOfWork:
+      type: string
+      enum:
+        - ARTICLE
+        - DATASET
+        - OTHER_PUBLICATION
 
     UseType:
       type: string
