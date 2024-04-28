@@ -35,7 +35,7 @@ class CollaborationRequest(
     @ManyToOne(fetch = EAGER)
     val user: User,
     @Enumerated(STRING)
-    var status: CollaborationRequestStatus = PENDING,
+    var collaborationRequestStatus: CollaborationRequestStatus = PENDING,
     val description: String? = null,
     val creationTime: ZonedDateTime = ZonedDateTime.now(),
     var decisionTime: ZonedDateTime? = null,
@@ -43,7 +43,7 @@ class CollaborationRequest(
 )
 
 enum class CollaborationRequestStatus {
-    APPROVED,
+    ACCEPTED,
     REJECTED,
     PENDING
 }
@@ -56,7 +56,7 @@ enum class TypeOfWork {
 
 fun CollaborationRequest.toApiObject(userService: UserService) = CollaborationRequestInfo().also {
     it.id = id
-    it.status = CollaborationRequestStatusApiObject.valueOf(status.name)
+    it.status = CollaborationRequestStatusApiObject.valueOf(collaborationRequestStatus.name)
     it.userInfo = user.toApiObject(userService)
     it.publicationTitle = publication.title
     it.publicationId = publication.id

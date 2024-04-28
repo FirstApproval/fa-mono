@@ -2,19 +2,22 @@ package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.CollaborationRequestApi
 import org.firstapproval.api.server.model.CollaborationRequestInfo
+import org.firstapproval.api.server.model.CollaborationRequestStatus.ACCEPTED
+import org.firstapproval.api.server.model.CollaborationRequestStatus.REJECTED
 import org.firstapproval.api.server.model.CreateCollaborationRequest
 import org.firstapproval.api.server.model.GetCollaborationRequestsResponse
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestService
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.APPROVED
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.REJECTED
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.toApiObject
 import org.firstapproval.backend.core.domain.user.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
+import java.lang.IllegalArgumentException
+import java.util.*
+import org.firstapproval.api.server.model.CollaborationRequestStatus as CollaborationRequestStatusApiObject
 
 @RestController
 class CollaborationRequestController(
@@ -22,13 +25,22 @@ class CollaborationRequestController(
     private val userService: UserService,
     private val authHolderService: AuthHolderService
 ) : CollaborationRequestApi {
-    override fun acceptCollaborationRequest(collaborationRequestId: UUID, authorResponse: String): ResponseEntity<Void> {
-        collaborationRequestService.makeDecision(collaborationRequestId, APPROVED, authorResponse, authHolderService.user)
-        return ok().build()
-    }
 
-    override fun rejectCollaborationRequest(collaborationRequestId: UUID, authorResponse: String): ResponseEntity<Void> {
-        collaborationRequestService.makeDecision(collaborationRequestId, REJECTED, authorResponse, authHolderService.user)
+    override fun acceptOrRejectCollaborationRequest(
+        collaborationRequestId: UUID,
+        authorResponse: String,
+        status: CollaborationRequestStatusApiObject
+    ): ResponseEntity<Void> {
+        if (status !in arrayOf(ACCEPTED, REJECTED)) {
+            throw IllegalArgumentException("Status is $status. But must be '$ACCEPTED or $REJECTED")
+        }
+        collaborationRequestService.makeDecision(
+            collaborationRequestId,
+            CollaborationRequestStatus.valueOf(status.name),
+            authorResponse,
+            authHolderService.user
+        )
+
         return ok().build()
     }
 

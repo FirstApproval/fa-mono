@@ -24,7 +24,6 @@ import org.firstapproval.backend.core.domain.publication.authors.Author
 import org.firstapproval.backend.core.domain.publication.authors.AuthorRepository
 import org.firstapproval.backend.core.domain.publication.authors.AuthorWorkplace
 import org.firstapproval.backend.core.domain.publication.authors.toApiObject
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequest
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestRepository
 import org.firstapproval.backend.core.domain.publication.downloader.DownloadHistory
 import org.firstapproval.backend.core.domain.publication.downloader.Downloader
@@ -486,7 +485,7 @@ fun Publication.toApiObject(
     publicationApiModel.isNegative = isNegative
     publicationApiModel.userCollaborationStatus =
         currentUser?.let { collaborationRequestRepository.findByUserIdAndPublicationId(it.id, id) }
-            ?.let { CollaborationRequestStatus.valueOf(it.status.name) }
+            ?.let { CollaborationRequestStatus.valueOf(it.collaborationRequestStatus.name) }
     publicationApiModel.useType = useType?.let { UseTypeApiObject.valueOf(it.name) }
 }
 

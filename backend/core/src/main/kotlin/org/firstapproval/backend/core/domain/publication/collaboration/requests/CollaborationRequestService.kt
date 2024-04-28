@@ -19,17 +19,17 @@ class CollaborationRequestService(
     private val publicationRepository: PublicationRepository
 ) {
     @Transactional
-    fun makeDecision(collaborationRequestId: UUID, status: CollaborationRequestStatus, authorResponse: String, user: User) {
+    fun makeDecision(collaborationRequestId: UUID, collaborationRequestStatus: CollaborationRequestStatus, authorResponse: String, user: User) {
         val collaborationRequest: CollaborationRequest = collaborationRequestRepository.getReferenceById(collaborationRequestId)
         if (collaborationRequest.publication.creator.id != user.id) {
             throw IllegalAccessException("Only the creator of the publication can approve or reject a collaboration request.")
         }
-        if (status !in listOf(APPROVED, REJECTED)) {
-            throw IllegalArgumentException("Status must be APPROVED or REJECT, but status is $status.")
+        if (collaborationRequestStatus !in listOf(ACCEPTED, REJECTED)) {
+            throw IllegalArgumentException("Status must be APPROVED or REJECT, but status is $collaborationRequestStatus.")
         }
 
         collaborationRequest.decisionTime = ZonedDateTime.now()
-        collaborationRequest.status = status
+        collaborationRequest.collaborationRequestStatus = collaborationRequestStatus
         collaborationRequest.authorResponse = authorResponse
 
         collaborationRequest.publication.collaboratorsCount += 1
@@ -57,7 +57,7 @@ class CollaborationRequestService(
     fun findByPublicationId(publicationId: String, page: Int, pageSize: Int): Page<CollaborationRequest> {
         return collaborationRequestRepository.findByPublicationIdAndStatusIn(
             publicationId,
-            setOf(PENDING, APPROVED),
+            setOf(PENDING, ACCEPTED),
             PageRequest.of(page, pageSize, Sort.by(DESC, "status", "creationTime"))
         )
     }

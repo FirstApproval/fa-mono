@@ -9,7 +9,7 @@ interface CollaborationRequestRepository : JpaRepository<CollaborationRequest, U
     fun findByUserIdAndPublicationId(userId: UUID, publicationId: String): CollaborationRequest?
     fun findByPublicationIdAndStatusIn(
         publicationId: String,
-        statuses: Collection<CollaborationRequestStatus>,
+        collaborationRequestStatuses: Collection<CollaborationRequestStatus>,
         page: Pageable
     ): Page<CollaborationRequest>
 }

@@ -894,7 +894,7 @@ paths:
       operationId: getCollaborationRequest
       tags: [ collaboration-request ]
 
-  /api/collabortion/accept-request-collaboration/{collaborationRequestId}:
+  /api/collabortion/accept-or-reject-request-collaboration/{collaborationRequestId}:
     post:
       summary: Approve a request for cooperation
       parameters:
@@ -910,36 +910,17 @@ paths:
           schema:
             type: string
           description: Author response to collaboration request
-      responses:
-        200:
-          description: Success
-      security:
-        - TokenAuth: [ ]
-      operationId: acceptCollaborationRequest
-      tags: [ collaboration-request ]
-
-  /api/collabortion/reject-request-collaboration/{collaborationRequestId}:
-    post:
-      summary: Reject a request for cooperation
-      parameters:
-        - in: path
-          name: collaborationRequestId
-          schema:
-            type: string
-            format: uuid
-          required: true
-          description: Collaboration request id
         - in: query
-          name: authorResponse
+          name: status
           schema:
-            type: string
-          description: Author response to collaboration request
+            $ref: '#/components/schemas/CollaborationRequestStatus'
+          description: Decision of
       responses:
         200:
           description: Success
       security:
         - TokenAuth: [ ]
-      operationId: rejectCollaborationRequest
+      operationId: acceptOrRejectCollaborationRequest
       tags: [ collaboration-request ]
 
   /api/publication/search:
@@ -2355,7 +2336,7 @@ components:
     CollaborationRequestStatus:
       type: string
       enum:
-        - APPROVED
+        - ACCEPTED
         - REJECTED
         - PENDING
 
