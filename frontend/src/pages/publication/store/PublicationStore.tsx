@@ -88,6 +88,7 @@ export class PublicationStore {
   isExceededLimit: boolean = false;
   displayLimitSnackbar: boolean = false;
   userCollaborationStatus: CollaborationRequestStatus | null = null;
+  isDownloadedByUser: boolean = false;
   useType: UseType | null = null;
 
   constructor(
@@ -727,6 +728,7 @@ export class PublicationStore {
           this.characterCount = this.countCharacter();
           this.userCollaborationStatus = publication.userCollaborationStatus!;
           this.useType = publication.useType!;
+          this.isDownloadedByUser = publication.isDownloadedByUser;
         })
       )
       .finally(

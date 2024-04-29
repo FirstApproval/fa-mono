@@ -28,6 +28,7 @@ import { PublicationPageStore } from './store/PublicationPageStore';
 import { Page } from '../../core/router/constants';
 import { CircularProgressWrap } from '../common.styled';
 import { CollaborationRequirementsDialog } from '../../components/CollaborationRequirementsDialog';
+import { collaborationStore } from './store/downloadsStore';
 
 export const PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY =
   'requested_publication_id';
@@ -71,7 +72,10 @@ export const ActionBar = observer(
             container
             rowSpacing={2}
             spacing={2}
-            alignItems={{ xs: 'center', lg: 'space-between' }}>
+            alignItems={{
+              xs: 'center',
+              lg: 'space-between'
+            }}>
             <Grid item sm={6} md={8}>
               {publicationStore.publicationStatus ===
                 PublicationStatus.READY_FOR_PUBLICATION && (
@@ -228,16 +232,6 @@ export const ActionBar = observer(
             publicationTime={publicationStore.publicationTime}
             publicationTitle={publicationStore.title}
           />
-          <Snackbar
-            open={showLinkCopiedAlert}
-            autoHideDuration={4000}
-            onClose={() => {
-              setShowLinkCopiedAlert(false);
-            }}>
-            <Alert severity="success" sx={{ width: '100%' }}>
-              Link copied successfully!
-            </Alert>
-          </Snackbar>
         </div>
         <CollaborationRequirementsDialog
           isOpen={publicationPageStore.collaborationRequirementDialogOpen}
@@ -250,6 +244,16 @@ export const ActionBar = observer(
             publicationPageStore.isPasscodeDialogOpen = true;
           }}
         />
+        <Snackbar
+          open={showLinkCopiedAlert}
+          autoHideDuration={4000}
+          onClose={() => {
+            setShowLinkCopiedAlert(false);
+          }}>
+          <Alert severity="success" sx={{ width: '100%' }}>
+            Link copied successfully!
+          </Alert>
+        </Snackbar>
       </>
     );
   }
@@ -280,6 +284,27 @@ const PdfButtonWrap = styled(Button)`
 const ActionButtonWrap = styled(Button)`
   height: 36px;
   border: none;
+`;
+
+const UnderCollaborationRequirements = styled(Typography)`
+  display: flex;
+  height: 48px;
+  padding: 8px 22px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: var(--text-disabled, rgba(4, 0, 54, 0.38));
+`;
+
+const RequestCollaborationButton = styled(Button)`
+  display: flex;
+  height: 48px;
+  padding: 8px 22px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  border: 1px solid;
 `;
 
 // const DividerWrap = styled(Divider)<{ value?: string }>`

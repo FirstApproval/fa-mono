@@ -2,18 +2,21 @@ import { action, makeAutoObservable } from 'mobx';
 import { collaborationRequestService } from '../../../core/service';
 import {
   CollaborationRequestInfo,
-  CollaborationRequestStatus
+  CollaborationRequestStatus,
+  CollaborationRequestTypeOfWork
 } from '../../../apis/first-approval-api';
 
 export class CollaborationStore {
   collaboratorsDialogOpen = false;
   collaborationRequestDialogOpen = false;
+  createCollaborationRequestDialogOpen = false;
   publicationId: string = '';
   approvedCollaborationRequestCount: number = 0;
   collaborationRequests: CollaborationRequestInfo[] = [];
   collaborationRequest: CollaborationRequestInfo | null = null;
   collaborationRequestsIsLastPage = false;
   showAcceptOrRejectAlert = false;
+  collaborationRequestCreatedAlert = false;
   collaborationRequestStatusForAlert: CollaborationRequestStatus | null = null;
   authorResponse = '';
 
@@ -85,4 +88,27 @@ export class CollaborationStore {
         this.showAcceptOrRejectAlert = true;
       });
   }
+
+  async requestCollaboration(
+    publicationId: string,
+    firstNameLegal: string,
+    lastNameLegal: string,
+    typeOfWork: CollaborationRequestTypeOfWork,
+    description: string
+  ): Promise<any> {
+    return collaborationRequestService
+      .createCollaborationRequest(publicationId, {
+        firstNameLegal,
+        lastNameLegal,
+        typeOfWork,
+        description
+      })
+      .then(() => {
+        this.createCollaborationRequestDialogOpen = false;
+        this.collaborationRequestCreatedAlert = true;
+      });
+  }
+  // closeCreateCollaborationRequestDialog(): void {
+  //   this.createCollaborationRequestDialogOpen = false;
+  // }
 }

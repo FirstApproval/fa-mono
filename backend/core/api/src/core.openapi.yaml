@@ -2702,6 +2702,7 @@ components:
         - editingTime
         - total
         - isUserCollaborator
+        - isDownloadedByUser
 
     PublicationsResponse:
       type: object
