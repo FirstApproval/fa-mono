@@ -1,8 +1,15 @@
 package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.PublicationApi
-import org.firstapproval.api.server.model.*
+import org.firstapproval.api.server.model.CreatePublicationResponse
+import org.firstapproval.api.server.model.DownloadLinkResponse
+import org.firstapproval.api.server.model.GetDownloadersResponse
 import org.firstapproval.api.server.model.Publication
+import org.firstapproval.api.server.model.PublicationEditRequest
+import org.firstapproval.api.server.model.PublicationStatus
+import org.firstapproval.api.server.model.PublicationsResponse
+import org.firstapproval.api.server.model.SearchPublicationsResponse
+import org.firstapproval.api.server.model.SubmitPublicationRequest
 import org.firstapproval.backend.core.config.Properties.DoiProperties
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
@@ -83,7 +90,7 @@ class PublicationController(
                 .items(
                     pageResult.map { elasticModel ->
                         dbModels.firstOrNull { it.id == elasticModel.id }
-                            ?.toApiObject(userService, doiProperties, collaborationRequestRepository)
+                            ?.toApiObject(userService, doiProperties, collaborationRequestRepository, downloaderRepository)
                     }
                         .filterNotNull()
                         .toList()
@@ -93,13 +100,15 @@ class PublicationController(
 
     override fun getPublication(id: String): ResponseEntity<Publication> {
         val pub = publicationService.get(authHolderService.user, id)
-        val publicationResponse = pub.toApiObject(userService, doiProperties, collaborationRequestRepository, authHolderService.user)
+        val publicationResponse =
+            pub.toApiObject(userService, doiProperties, collaborationRequestRepository, downloaderRepository, authHolderService.user)
         return ok().body(publicationResponse)
     }
 
     override fun getPublicationPublic(id: String): ResponseEntity<Publication> {
         val pub = publicationService.getPublished(id)
-        val publicationResponse = pub.toApiObject(userService, doiProperties, collaborationRequestRepository, authHolderService.user)
+        val publicationResponse =
+            pub.toApiObject(userService, doiProperties, collaborationRequestRepository, downloaderRepository, authHolderService.user)
         return ok().body(publicationResponse)
     }
 

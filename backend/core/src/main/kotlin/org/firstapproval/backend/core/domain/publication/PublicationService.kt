@@ -1,23 +1,15 @@
 package org.firstapproval.backend.core.domain.publication
 
 import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
-import org.firstapproval.api.server.model.CollaborationRequestStatus
-import org.firstapproval.api.server.model.DownloadLinkResponse
-import org.firstapproval.api.server.model.Paragraph
+import org.firstapproval.api.server.model.*
 import org.firstapproval.api.server.model.PublicationContentStatus.AVAILABLE
 import org.firstapproval.api.server.model.PublicationContentStatus.PREPARING
-import org.firstapproval.api.server.model.PublicationEditRequest
-import org.firstapproval.api.server.model.PublicationsResponse
-import org.firstapproval.api.server.model.SubmitPublicationRequest
-import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.backend.core.config.Properties.DoiProperties
 import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.domain.organizations.OrganizationService
 import org.firstapproval.backend.core.domain.organizations.toApiObject
 import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
-import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
-import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
-import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
+import org.firstapproval.backend.core.domain.publication.PublicationStatus.*
 import org.firstapproval.backend.core.domain.publication.StorageType.CLOUD_SECURE_STORAGE
 import org.firstapproval.backend.core.domain.publication.StorageType.IPFS
 import org.firstapproval.backend.core.domain.publication.authors.Author
@@ -33,18 +25,10 @@ import org.firstapproval.backend.core.domain.publication.file.PublicationSampleF
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
 import org.firstapproval.backend.core.domain.user.UserService
-import org.firstapproval.backend.core.external.ipfs.DownloadLink
-import org.firstapproval.backend.core.external.ipfs.DownloadLinkRepository
+import org.firstapproval.backend.core.external.ipfs.*
 import org.firstapproval.backend.core.external.ipfs.IpfsClient.IpfsContentAvailability.ARCHIVE
 import org.firstapproval.backend.core.external.ipfs.IpfsClient.IpfsContentAvailability.INSTANT
-import org.firstapproval.backend.core.external.ipfs.IpfsStorageService
-import org.firstapproval.backend.core.external.ipfs.RestoreRequest
-import org.firstapproval.backend.core.external.ipfs.RestoreRequestRepository
-import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_FILES
-import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_SAMPLE_FILES
-import org.firstapproval.backend.core.external.s3.FILES
-import org.firstapproval.backend.core.external.s3.FileStorageService
-import org.firstapproval.backend.core.external.s3.SAMPLE_FILES
+import org.firstapproval.backend.core.external.s3.*
 import org.firstapproval.backend.core.infra.elastic.PublicationElastic
 import org.firstapproval.backend.core.infra.elastic.PublicationElasticRepository
 import org.firstapproval.backend.core.utils.allUniqueBy
@@ -59,7 +43,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
 import java.time.ZonedDateTime.now
-import java.util.UUID
+import java.util.*
 import java.util.UUID.randomUUID
 import org.firstapproval.api.server.model.AccessType as AccessTypeApiObject
 import org.firstapproval.api.server.model.Author as AuthorApiObject
@@ -333,7 +317,14 @@ class PublicationService(
             PageRequest.of(page, pageSize, Sort.by(DESC, "publicationTime"))
         )
         return PublicationsResponse()
-            .publications(publicationsPage.map { it.toApiObject(userService, doiProperties, collaborationRequestRepository) }.toList())
+            .publications(publicationsPage.map {
+                it.toApiObject(
+                    userService,
+                    doiProperties,
+                    collaborationRequestRepository,
+                    downloaderRepository
+                )
+            }.toList())
             .isLastPage(publicationsPage.isLast)
     }
 
@@ -346,7 +337,14 @@ class PublicationService(
             PageRequest.of(page, pageSize, Sort.by(DESC, "publicationTime"))
         )
         return PublicationsResponse()
-            .publications(publicationsPage.map { it.toApiObject(userService, doiProperties, collaborationRequestRepository) }.toList())
+            .publications(publicationsPage.map {
+                it.toApiObject(
+                    userService,
+                    doiProperties,
+                    collaborationRequestRepository,
+                    downloaderRepository
+                )
+            }.toList())
             .isLastPage(publicationsPage.isLast)
     }
 
@@ -362,7 +360,14 @@ class PublicationService(
             PageRequest.of(page, pageSize)
         )
         return PublicationsResponse(publicationsPage.isLast)
-            .publications(publicationsPage.map { it.toApiObject(userService, doiProperties, collaborationRequestRepository) }.toList())
+            .publications(publicationsPage.map {
+                it.toApiObject(
+                    userService,
+                    doiProperties,
+                    collaborationRequestRepository,
+                    downloaderRepository
+                )
+            }.toList())
     }
 
     @Transactional
@@ -380,7 +385,14 @@ class PublicationService(
         )
 
         return PublicationsResponse(publicationsPage.isLast)
-            .publications(publicationsPage.map { it.toApiObject(userService, doiProperties, collaborationRequestRepository) }.toList())
+            .publications(publicationsPage.map {
+                it.toApiObject(
+                    userService,
+                    doiProperties,
+                    collaborationRequestRepository,
+                    downloaderRepository
+                )
+            }.toList())
     }
 
     @Transactional
@@ -399,6 +411,7 @@ class PublicationService(
                     userService,
                     doiProperties,
                     collaborationRequestRepository,
+                    downloaderRepository,
                     user
                 )
             }.toList())
@@ -441,6 +454,7 @@ fun Publication.toApiObject(
     userService: UserService,
     doiProperties: DoiProperties,
     collaborationRequestRepository: CollaborationRequestRepository,
+    downloaderRepository: DownloaderRepository,
     currentUser: User? = null
 ) = PublicationApiObject().also { publicationApiModel ->
     publicationApiModel.id = id
@@ -486,6 +500,7 @@ fun Publication.toApiObject(
     publicationApiModel.userCollaborationStatus =
         currentUser?.let { collaborationRequestRepository.findByUserIdAndPublicationId(it.id, id) }
             ?.let { CollaborationRequestStatus.valueOf(it.status.name) }
+    publicationApiModel.isDownloadedByUser = currentUser?.let { downloaderRepository.existsByUserIdAndPublication(it.id, this) }
     publicationApiModel.useType = useType?.let { UseTypeApiObject.valueOf(it.name) }
 }
 

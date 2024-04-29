@@ -2691,6 +2691,8 @@ components:
           format: int64
         userCollaborationStatus:
           $ref: '#/components/schemas/CollaborationRequestStatus'
+        isDownloadedByUser:
+          type: boolean
       required:
         - id
         - status
