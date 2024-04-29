@@ -114,7 +114,7 @@ export const DateViewsDownloadsCollaborators = observer(
               variant="text"
               size={'small'}
               onClick={() =>
-                (collaborationStore.createCollaborationRequestDialogOpen = true)
+                (collaborationStore.openCreateCollaborationRequestDialog = true)
               }>
               Request collaboration
             </RequestCollaborationButton>

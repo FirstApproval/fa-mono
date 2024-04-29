@@ -55,6 +55,7 @@ import { PreliminaryResultsEditor } from './editors/PreliminaryResultsEditor';
 import { copyTextToClipboard } from '../../fire-browser/utils';
 import { CollaborationRequirementsDialog } from '../../components/CollaborationRequirementsDialog';
 import { UseType } from '../../apis/first-approval-api';
+import { CreateCollaborationRequestDialog } from '../../components/CreateCollaborationRequestDialog';
 
 export const PublicationBody = observer(
   (props: {
@@ -385,6 +386,10 @@ export const PublicationBody = observer(
             publicationPageStore.isPasscodeDialogOpen = true;
           }}
         />
+        <CreateCollaborationRequestDialog
+          onClose={() =>
+            (collaborationStore.openCreateCollaborationRequestDialog = false)
+          }></CreateCollaborationRequestDialog>
       </>
     );
   }

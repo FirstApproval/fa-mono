@@ -9,7 +9,7 @@ import {
 export class CollaborationStore {
   collaboratorsDialogOpen = false;
   collaborationRequestDialogOpen = false;
-  createCollaborationRequestDialogOpen = false;
+  openCreateCollaborationRequestDialog = false;
   publicationId: string = '';
   approvedCollaborationRequestCount: number = 0;
   collaborationRequests: CollaborationRequestInfo[] = [];
@@ -104,7 +104,7 @@ export class CollaborationStore {
         description
       })
       .then(() => {
-        this.createCollaborationRequestDialogOpen = false;
+        this.openCreateCollaborationRequestDialog = false;
         this.collaborationRequestCreatedAlert = true;
       });
   }
