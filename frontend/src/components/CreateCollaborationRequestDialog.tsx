@@ -36,6 +36,7 @@ export const CreateCollaborationRequestDialog = observer(
     const [typeOfWork, setTypeOfWork] = useState<
       CollaborationRequestTypeOfWorkKey | undefined
     >(undefined);
+    const [isFocused, setIsFocused] = useState(false);
 
     return (
       <Dialog
@@ -89,7 +90,19 @@ export const CreateCollaborationRequestDialog = observer(
             onChange={(e) => {
               collaborationStore.authorResponse = e.currentTarget.value;
             }}
-            label="Write a response (optional)"
+            fullWidth
+            InputLabelProps={{
+              shrink: isFocused,
+              style: {
+                whiteSpace: isFocused ? 'nowrap' : 'pre-line'
+              }
+            }}
+            InputProps={{
+              onFocus: () => setIsFocused(true),
+              onBlur: () => setIsFocused(false)
+            }}
+            label="Message to the author(s): short description of your Work,
+            intended use and anticipated date for the submission of your Work for publication..."
             variant="outlined"
           />
           <PrefilledDetails>
