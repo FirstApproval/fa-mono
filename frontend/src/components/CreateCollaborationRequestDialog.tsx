@@ -2,29 +2,40 @@ import {
   Button,
   Dialog,
   DialogContent,
+  FormControl,
+  InputLabel,
+  Select,
   TextField,
   Typography
 } from '@mui/material';
 import React, { ReactElement, useState } from 'react';
 import {
   FlexWrapRow,
-  HeightElement,
   PrefilledDetails,
   PrefilledDetailsText
 } from '../pages/common.styled';
 import styled from '@emotion/styled';
 import DialogActions from '@mui/material/DialogActions';
 import { collaborationStore } from '../pages/publication/store/downloadsStore';
-import { getDaysAgoString } from '../util/dateUtil';
 import { InfoOutlined } from '@mui/icons-material';
 import { C0288D1 } from '../ui-kit/colors';
 import { observer } from 'mobx-react-lite';
 import { ConfirmationDialog } from './ConfirmationDialog';
+import { CollaborationRequestTypeOfWork } from 'src/apis/first-approval-api';
+import MenuItem from '@mui/material/MenuItem';
+import _ from 'lodash';
 
 export const CreateCollaborationRequestDialog = observer(
   (props: { onClose: () => void }): ReactElement => {
     const { onClose } = props;
     const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    type CollaborationRequestTypeOfWorkKey =
+      keyof typeof CollaborationRequestTypeOfWork;
+    const [typeOfWork, setTypeOfWork] = useState<
+      CollaborationRequestTypeOfWorkKey | undefined
+    >(undefined);
 
     return (
       <Dialog
@@ -33,19 +44,44 @@ export const CreateCollaborationRequestDialog = observer(
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description">
         <DeleteDialogTitle id="alert-dialog-title" variant={'h5'}>
-          Collaboration request
+          Request collaboration
         </DeleteDialogTitle>
         <DialogContentWrap>
-          {/* <AuthorElement */}
-          {/*   isReadonly={true} */}
-          {/*   useMarginBottom={false} */}
-          {/*   author={collaborationRequest!.userInfo!} */}
-          {/*   shouldOpenInNewTab={true} */}
-          {/* /> */}
-          <HeightElement value={'12px'} />
-          <DialogDescriptionWrap variant={'body'}>{''}</DialogDescriptionWrap>
-          <HeightElement value={'12px'} />
-          {/* <DaysAgo variant={'body2'}>{daysAgo}</DaysAgo> */}
+          <RowElementSpaceBetween>
+            <FullWidthTextField
+              value={firstName}
+              onChange={(e) => {
+                setFirstName(e.currentTarget.value);
+              }}
+              label="First name (legal)"
+              variant="outlined"
+            />
+            <FullWidthTextField
+              value={lastName}
+              onChange={(e) => {
+                setFirstName(e.currentTarget.value);
+              }}
+              label="Last name (legal)"
+              variant="outlined"
+            />
+          </RowElementSpaceBetween>
+          <FormControl>
+            <InputLabel id="type-of-work-label">Type of work</InputLabel>
+            <Select
+              value={typeOfWork}
+              label="Type of work"
+              onChange={(event) => {
+                setTypeOfWork(
+                  event.target.value as CollaborationRequestTypeOfWork
+                );
+              }}>
+              {Object.keys(CollaborationRequestTypeOfWork).map((key) => (
+                <MenuItem key={key} value={key}>
+                  {_.capitalize(key.toLowerCase().replace('_', ' '))}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <FullWidthTextField
             multiline={true}
             minRows={4}
@@ -59,9 +95,10 @@ export const CreateCollaborationRequestDialog = observer(
           <PrefilledDetails>
             <InfoOutlined htmlColor={C0288D1} sx={{ marginTop: '7px' }} />
             <PrefilledDetailsText variant={'body2'}>
-              You have 30 days to respond to this Collaboration Request by its
-              acceptance or rejection. If you ignore the request, the Data User
-              is allowed to use your Dataset on citation-only basis.
+              The Data Author shall be allowed sufficient time to review draft
+              of your Work and you are not allowed to publish it without the
+              Data Author's consent. Please send the draft to the Data Author as
+              soon as possible.
             </PrefilledDetailsText>
           </PrefilledDetails>
         </DialogContentWrap>
@@ -111,6 +148,9 @@ const DialogContentWrap = styled(DialogContent)`
   min-width: 600px;
   padding-left: 32px !important;
   padding-right: 32px !important;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 `;
 
 const ConfirmDialogActions = styled(DialogActions)`
@@ -142,11 +182,14 @@ const AcceptButton = styled(Button)`
   border: 1px solid;
 `;
 
-const DaysAgo = styled(Typography)`
-  color: var(--text-secondary, #68676e);
-`;
-
 const FullWidthTextField = styled(TextField)`
   width: 100%;
-  margin: 32px 0;
+`;
+
+export const RowElementSpaceBetween = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 32px;
 `;
