@@ -2,7 +2,6 @@ import {
   ChonkyActions,
   FileAction,
   type FileActionHandler,
-  type FileArray,
   FileBrowser,
   FileContextMenu,
   type FileData,
@@ -160,7 +159,7 @@ export const FileBrowserFA = observer(
       } else if (data.id === ChonkyActions.CreateFolder.id) {
         setNewFolderDialogOpen(true);
       } else if (data.id === ChonkyActions.DeleteFiles.id) {
-        setFilesToDelete(data.state.selectedFiles.map((f) => f.id));
+        setFilesToDelete(data.state.selectedFiles.map((f) => f.fullPath));
         setDeleteDialogOpen(true);
       } else if (data.id === ChonkyActions.MoveFiles.id) {
         const fullPath: string = data.payload.destination.fullPath;
@@ -243,20 +242,54 @@ export const FileBrowserFA = observer(
       myFileActions.push(ChonkyActions.PreviewFilesModal);
     }
 
-    const [files, setFiles] = useState<FileArray>([]);
-
-    useEffect(() => {
-      setFiles(
-        props.fs.files.map((f) => ({
-          id: f.id,
-          fullPath: f.fullPath,
-          name: f.name,
-          isDir: f.isDirectory,
-          isLoading: f.isUploading,
-          note: f.note
-        }))
+    const inCurrentDirectory = (fullPath: string): boolean => {
+      if (!fullPath) return false;
+      return (
+        fullPath.substring(0, fullPath.lastIndexOf('/') + 1) ===
+        props.fs.currentPath
       );
-    }, [props.fs.files]);
+    };
+
+    const [files, setFiles] = useState<FileData[]>([]);
+    useEffect(() => {
+      props.fs.setListener(() => {
+        setFiles(
+          [...props.fs.files.values()]
+            .filter((f) => inCurrentDirectory(f.fullPath))
+            .map((f) => {
+              return {
+                id: f.fullPath,
+                fullPath: f.fullPath,
+                name: f.name,
+                isDir: f.isDirectory,
+                note: f.note
+              };
+            })
+        );
+      });
+      props.fs.uploadProgress.setListener(() => {
+        setFiles((prev) =>
+          prev.map((f: FileData) => {
+            const p = props.fs.uploadProgress.progressStatus.get(f.fullPath);
+            return {
+              ...f,
+              progress:
+                p && !p.isSuccess && !p.isFailed
+                  ? Math.min(
+                      Math.max(
+                        Math.floor(
+                          (p.progress.progress ? p.progress.progress : 1) * 100
+                        ),
+                        1
+                      ),
+                      99
+                    )
+                  : undefined
+            };
+          })
+        );
+      });
+    }, []);
 
     return (
       <>
