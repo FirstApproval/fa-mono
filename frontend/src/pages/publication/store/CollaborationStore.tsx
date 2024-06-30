@@ -89,7 +89,7 @@ export class CollaborationStore {
       });
   }
 
-  async requestCollaboration(
+  async createCollaborationRequest(
     publicationId: string,
     firstNameLegal: string,
     lastNameLegal: string,

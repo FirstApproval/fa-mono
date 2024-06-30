@@ -387,6 +387,7 @@ export const PublicationBody = observer(
           }}
         />
         <CreateCollaborationRequestDialog
+          publicationId={publicationStore.publicationId}
           onClose={() =>
             (collaborationStore.openCreateCollaborationRequestDialog = false)
           }></CreateCollaborationRequestDialog>

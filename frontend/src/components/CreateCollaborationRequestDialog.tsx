@@ -20,21 +20,22 @@ import { collaborationStore } from '../pages/publication/store/downloadsStore';
 import { InfoOutlined } from '@mui/icons-material';
 import { C0288D1 } from '../ui-kit/colors';
 import { observer } from 'mobx-react-lite';
-import { ConfirmationDialog } from './ConfirmationDialog';
 import { CollaborationRequestTypeOfWork } from 'src/apis/first-approval-api';
 import MenuItem from '@mui/material/MenuItem';
 import _ from 'lodash';
 
+type CollaborationRequestTypeOfWorkKey =
+  keyof typeof CollaborationRequestTypeOfWork;
+
 export const CreateCollaborationRequestDialog = observer(
-  (props: { onClose: () => void }): ReactElement => {
+  (props: { onClose: () => void; publicationId: string }): ReactElement => {
     const { onClose } = props;
-    const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
-    type CollaborationRequestTypeOfWorkKey =
-      keyof typeof CollaborationRequestTypeOfWork;
+    const [description, setDescription] = useState('');
+
     const [typeOfWork, setTypeOfWork] = useState<
-      CollaborationRequestTypeOfWorkKey | undefined
+      CollaborationRequestTypeOfWork | undefined
     >(undefined);
     const [isFocused, setIsFocused] = useState(false);
 
@@ -60,7 +61,7 @@ export const CreateCollaborationRequestDialog = observer(
             <FullWidthTextField
               value={lastName}
               onChange={(e) => {
-                setFirstName(e.currentTarget.value);
+                setLastName(e.currentTarget.value);
               }}
               label="Last name (legal)"
               variant="outlined"
@@ -88,7 +89,7 @@ export const CreateCollaborationRequestDialog = observer(
             minRows={4}
             value={collaborationStore.authorResponse}
             onChange={(e) => {
-              collaborationStore.authorResponse = e.currentTarget.value;
+              setDescription(e.currentTarget.value);
             }}
             fullWidth
             InputLabelProps={{
@@ -121,27 +122,38 @@ export const CreateCollaborationRequestDialog = observer(
               size={'large'}
               color="error"
               variant="text"
-              onClick={() => setConfirmationDialogOpen(true)}>
-              Reject
+              onClick={() =>
+                (collaborationStore.openCreateCollaborationRequestDialog =
+                  false)
+              }>
+              Cancel
             </RejectButton>
             <AcceptButton
               color="primary"
               variant="text"
               size={'large'}
-              onClick={() => {}}>
-              Accept
+              onClick={() => {
+                collaborationStore
+                  .createCollaborationRequest(
+                    props.publicationId,
+                    firstName,
+                    lastName,
+                    typeOfWork!,
+                    description
+                  )
+                  .then(() => {
+                    collaborationStore.openCreateCollaborationRequestDialog =
+                      false;
+                    setFirstName('');
+                    setLastName('');
+                    setDescription('');
+                    onClose();
+                  });
+              }}>
+              Send request
             </AcceptButton>
           </FlexWrapRow>
         </ConfirmDialogActions>
-        <ConfirmationDialog
-          isOpen={confirmationDialogOpen}
-          onClose={() => setConfirmationDialogOpen(false)}
-          onConfirm={() => {}}
-          text="Are you sure you want to reject the offer to include you as a co-author in
-            If you reject the collaboration request,
-            can still publish their work without including you as co-author,
-            but must cite your Dataset as a source."
-        />
       </Dialog>
     );
   }
@@ -180,8 +192,6 @@ const RejectButton = styled(Button)`
   justify-content: center;
   align-items: center;
   margin-right: 24px;
-
-  border: 1px solid;
 `;
 
 const AcceptButton = styled(Button)`
@@ -191,8 +201,6 @@ const AcceptButton = styled(Button)`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
-  border: 1px solid;
 `;
 
 const FullWidthTextField = styled(TextField)`
