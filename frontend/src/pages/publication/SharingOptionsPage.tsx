@@ -71,7 +71,7 @@ export const SharingOptionsPage = (props: {
     understandAfterPublishingCannotBeEdited,
     setUnderstandAfterPublishingCannotBeEdited
   ] = useState(false);
-  const [useType, setUseType] = useState(UseType.CITATE);
+  const [useType, setUseType] = useState(UseType.CITATION);
   const [storageType, setStorageType] = useState(
     props.dataCollectionType === DataCollectionType.AGING
       ? StorageType.IPFS
@@ -228,8 +228,8 @@ export const SharingOptionsPage = (props: {
             <Typography variant={'h6'}>Use of your dataset</Typography>
             <SharingOptionsContainer>
               <SharingOption
-                onClick={() => setUseType(UseType.CITATE)}
-                isSelected={useType === UseType.CITATE}
+                onClick={() => setUseType(UseType.CITATION)}
+                isSelected={useType === UseType.CITATION}
                 icon={<FormatQuoteIcon fontSize={'medium'} />}
                 label={'Citation is enough'}
                 description={
@@ -335,7 +335,7 @@ export const SharingOptionsPage = (props: {
               variant="contained"
               disabled={isPublicationNotValid}
               onClick={() => {
-                void publicationService
+                publicationService
                   .submitPublication(publicationId, {
                     accessType: AccessType.OPEN,
                     useType,

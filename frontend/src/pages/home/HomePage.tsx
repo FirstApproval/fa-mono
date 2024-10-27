@@ -67,6 +67,7 @@ export const HomePage: FunctionComponent = observer(() => {
         <HeaderComponent
           showAboutUsButton={true}
           showPublishButton={true}
+          showCollaborateButton={true}
           showLoginButton={true}
           showSignUpContainedButton={true}
         />

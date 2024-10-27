@@ -29,7 +29,11 @@ export enum Page {
   EMAIL,
   CHANGE_EMAIL_VERIFICATION,
 
-  CONTEST_PAGE
+  CONTEST_PAGE,
+
+  CHANGE_EMAIL_VERIFICATION,
+  COLLABORATIONS_PAGE,
+  COLLABORATIONS_CHAT
 }
 
 export const pathToOauthType: Record<string, OauthType> = {
@@ -55,3 +59,5 @@ export const emailChangeConfirmationPath = '/email-change-confirmation/';
 export const registrationConfirmationPath = '/registration-confirmation/';
 export const contestPath = '/contest';
 export const passwordChangeConfirmation = '/password-change-confirmation'
+export const collaborationPath = '/collaborations/';
+export const collaborationChatPath = '/collaborations/chat/';

@@ -9,6 +9,8 @@ import {EnterNamePage} from './pages/signup/EnterNamePage';
 import {SetPasswordPage} from './pages/signup/SetPasswordPage';
 import {LoadingPage} from './pages/LoadingPage';
 import {HomePage} from './pages/home/HomePage';
+import {CollaborationsPage} from './pages/collaborations/CollaborationsPage';
+import {ChatPage} from './pages/collaborations/chat/ChatPage';
 import {observer} from 'mobx-react-lite';
 import {SignUpStore} from './pages/signup/SignUpStore';
 import {EmailVerificationPage} from './pages/signup/EmailVerificationPage';
@@ -82,6 +84,12 @@ const App: FunctionComponent = observer(() => {
                   key={routerStore.key}
                   dataCollectionType={routerStore.payload.dataCollectionType}
                 />
+              )}
+              {page === Page.COLLABORATIONS_PAGE && (
+                <CollaborationsPage key={routerStore.key} />
+              )}
+              {page === Page.COLLABORATIONS_CHAT && (
+                <ChatPage key={routerStore.key} />
               )}
               {page === Page.PUBLICATION && (
                 <PublicationPage key={routerStore.key} />

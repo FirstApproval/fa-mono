@@ -20,7 +20,9 @@ import {
   shortAuthorPath,
   shortPublicationPath,
   signInPath,
-  signUpPath
+  signUpPath,
+  collaborationPath,
+  collaborationChatPath
 } from './constants';
 import {
   PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY,
@@ -154,6 +156,17 @@ export class RouterStore {
         );
         return;
       }
+
+      if (path.startsWith(collaborationChatPath)) {
+        this.navigatePage(Page.COLLABORATIONS_CHAT, path, true);
+        return;
+      }
+
+      if (path.startsWith(collaborationPath)) {
+        this.navigatePage(Page.COLLABORATIONS_PAGE, path, true);
+        return;
+      }
+
       if (path.startsWith(authorPath)) {
         this.navigatePage(Page.PROFILE, path, true);
         return;
