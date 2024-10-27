@@ -321,7 +321,7 @@ export const SharingOptionsPage = (props: {
                 previewSubtitle.length > MAX_PREVIEW_SUBTITLE_LENGTH
               }
               onClick={() => {
-                void publicationService
+                publicationService
                   .submitPublication(publicationId, {
                     accessType: AccessType.OPEN,
                     useType,

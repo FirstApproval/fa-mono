@@ -17,7 +17,8 @@ import {
   registrationConfirmationPath,
   shortAuthorPath,
   shortPublicationPath,
-  signUpPath
+  signUpPath,
+  collaboratePath
 } from './constants';
 import { PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY } from '../../pages/publication/ActionBar';
 import { routerStore } from '../router';
@@ -155,6 +156,11 @@ export class RouterStore {
       }
       if (path.startsWith('/profile')) {
         this.navigatePage(Page.PROFILE, path, true);
+        return;
+      }
+
+      if (path.startsWith('/collaborate')) {
+        this.navigatePage(Page.COLLABORATE_PAGE, path, true);
         return;
       }
 

@@ -5,7 +5,7 @@ import {
   DialogContent,
   Snackbar
 } from '@mui/material';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Circle, Close } from '@mui/icons-material';
@@ -30,7 +30,7 @@ export const CollaboratorsDialog = (props: {
   collaborationRequests: CollaborationRequestInfo[];
 }): ReactElement => {
   const { isOpen, collaborationRequests } = props;
-  debugger;
+  // debugger;
 
   return (
     <Dialog
@@ -67,6 +67,7 @@ export const CollaboratorsDialog = (props: {
             <>
               <RowElementSpaceBetween
                 style={{ cursor: 'pointer' }}
+                key={index}
                 onClick={() => {
                   if (
                     collaborationRequest.status ===
