@@ -1,28 +1,23 @@
 package org.firstapproval.backend.core.domain.publication
 
 import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
-import org.firstapproval.api.server.model.DownloadLinkResponse
-import org.firstapproval.api.server.model.Paragraph
+import org.firstapproval.api.server.model.*
 import org.firstapproval.api.server.model.PublicationContentStatus.AVAILABLE
 import org.firstapproval.api.server.model.PublicationContentStatus.PREPARING
-import org.firstapproval.api.server.model.PublicationEditRequest
-import org.firstapproval.api.server.model.PublicationsResponse
-import org.firstapproval.api.server.model.SubmitPublicationRequest
-import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.backend.core.config.Properties.DoiProperties
 import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.domain.organizations.OrganizationService
 import org.firstapproval.backend.core.domain.organizations.toApiObject
 import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
-import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
-import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
-import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
+import org.firstapproval.backend.core.domain.publication.PublicationStatus.*
 import org.firstapproval.backend.core.domain.publication.StorageType.CLOUD_SECURE_STORAGE
 import org.firstapproval.backend.core.domain.publication.StorageType.IPFS
 import org.firstapproval.backend.core.domain.publication.authors.Author
 import org.firstapproval.backend.core.domain.publication.authors.AuthorRepository
 import org.firstapproval.backend.core.domain.publication.authors.AuthorWorkplace
 import org.firstapproval.backend.core.domain.publication.authors.toApiObject
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestRepository
+import org.firstapproval.backend.core.domain.publication.downloader.DownloadHistory
 import org.firstapproval.backend.core.domain.publication.downloader.Downloader
 import org.firstapproval.backend.core.domain.publication.downloader.DownloaderRepository
 import org.firstapproval.backend.core.domain.publication.file.PublicationFileRepository
@@ -30,18 +25,10 @@ import org.firstapproval.backend.core.domain.publication.file.PublicationSampleF
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
 import org.firstapproval.backend.core.domain.user.UserService
-import org.firstapproval.backend.core.external.ipfs.DownloadLink
-import org.firstapproval.backend.core.external.ipfs.DownloadLinkRepository
+import org.firstapproval.backend.core.external.ipfs.*
 import org.firstapproval.backend.core.external.ipfs.IpfsClient.IpfsContentAvailability.ARCHIVE
 import org.firstapproval.backend.core.external.ipfs.IpfsClient.IpfsContentAvailability.INSTANT
-import org.firstapproval.backend.core.external.ipfs.IpfsStorageService
-import org.firstapproval.backend.core.external.ipfs.RestoreRequest
-import org.firstapproval.backend.core.external.ipfs.RestoreRequestRepository
-import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_FILES
-import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_SAMPLE_FILES
-import org.firstapproval.backend.core.external.s3.FILES
-import org.firstapproval.backend.core.external.s3.FileStorageService
-import org.firstapproval.backend.core.external.s3.SAMPLE_FILES
+import org.firstapproval.backend.core.external.s3.*
 import org.firstapproval.backend.core.infra.elastic.PublicationElastic
 import org.firstapproval.backend.core.infra.elastic.PublicationElasticRepository
 import org.firstapproval.backend.core.utils.allUniqueBy
@@ -56,17 +43,19 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
 import java.time.ZonedDateTime.now
-import java.util.UUID
+import java.util.*
 import java.util.UUID.randomUUID
 import org.firstapproval.api.server.model.AccessType as AccessTypeApiObject
 import org.firstapproval.api.server.model.Author as AuthorApiObject
 import org.firstapproval.api.server.model.LicenseType as LicenseTypeApiObject
 import org.firstapproval.api.server.model.Publication as PublicationApiObject
 import org.firstapproval.api.server.model.PublicationStatus as PublicationStatusApiObject
+import org.firstapproval.api.server.model.UseType as UseTypeApiObject
 
 @Service
 class PublicationService(
     private val publicationRepository: PublicationRepository,
+    private val collaborationRequestRepository: CollaborationRequestRepository,
     private val authorRepository: AuthorRepository,
     private val userRepository: UserRepository,
     private val userService: UserService,
@@ -188,13 +177,19 @@ class PublicationService(
         publicationRepository.saveAndFlush(publication)
     }
 
-    private fun addDownloadHistory(user: User, publication: Publication) {
-        val prevTry = downloaderRepository.getByUserAndPublication(user, publication)
-        if (prevTry != null) {
-            prevTry.history.add(now())
-        } else {
-            downloaderRepository.save(Downloader(publication = publication, user = user, history = mutableListOf(now())))
-        }
+    private fun addDownloadHistory(user: User, publication: Publication, agreeToTheFirstApprovalLicense: Boolean) {
+        val downloadHistory = DownloadHistory(agreeToTheFirstApprovalLicense)
+        val downloader = downloaderRepository.getByUserAndPublication(user, publication)?.apply { this.lastDownloadTime = now() }
+            ?: Downloader(publication = publication, user = user)
+        downloader.history.add(downloadHistory)
+        publication.downloadsCount += 1
+//        if (agreeToTheFirstApprovalLicense) {
+//            collaborationRequestRepository.save(CollaborationRequest(
+//                publication = publication,
+//                user = user
+//            ))
+//        }
+        downloaderRepository.save(downloader)
     }
 
     @Transactional
@@ -217,6 +212,7 @@ class PublicationService(
         }
         publication.status = READY_FOR_PUBLICATION
         publication.accessType = AccessType.valueOf(submitPublicationRequest.accessType.name)
+        publication.useType = UseType.valueOf(submitPublicationRequest.useType.name)
         publication.storageType = StorageType.valueOf(submitPublicationRequest.storageType.name)
         publication.licenseType = LicenseType.valueOf(submitPublicationRequest.licenseType.name)
         publication.previewTitle = submitPublicationRequest.previewTitle
@@ -230,7 +226,7 @@ class PublicationService(
     }
 
     @Transactional
-    fun getDownloadLinkForArchive(user: User, id: String): DownloadLinkResponse {
+    fun getDownloadLinkForArchive(user: User, id: String, agreeToTheFirstApprovalLicense: Boolean): DownloadLinkResponse {
         val publication = publicationRepository.findByIdAndIsBlockedIsFalse(id)
         val title = publication.title ?: id
         val link: DownloadLinkResponse = when (publication.storageType) {
@@ -246,8 +242,7 @@ class PublicationService(
             else -> throw IllegalArgumentException("Unexpected storage type: ${publication.storageType}")
         }
 
-        addDownloadHistory(user, publication)
-        publication.downloadsCount += 1
+        addDownloadHistory(user, publication, agreeToTheFirstApprovalLicense)
         user.email?.let {
             notificationService.sendArchivePassword(it, title, publication.authorsNames, publication.archivePassword.require())
         }
@@ -322,7 +317,14 @@ class PublicationService(
             PageRequest.of(page, pageSize, Sort.by(DESC, "publicationTime"))
         )
         return PublicationsResponse()
-            .publications(publicationsPage.map { it.toApiObject(userService, doiProperties) }.toList())
+            .publications(publicationsPage.map {
+                it.toApiObject(
+                    userService,
+                    doiProperties,
+                    collaborationRequestRepository,
+                    downloaderRepository
+                )
+            }.toList())
             .isLastPage(publicationsPage.isLast)
     }
 
@@ -335,7 +337,14 @@ class PublicationService(
             PageRequest.of(page, pageSize, Sort.by(DESC, "publicationTime"))
         )
         return PublicationsResponse()
-            .publications(publicationsPage.map { it.toApiObject(userService, doiProperties) }.toList())
+            .publications(publicationsPage.map {
+                it.toApiObject(
+                    userService,
+                    doiProperties,
+                    collaborationRequestRepository,
+                    downloaderRepository
+                )
+            }.toList())
             .isLastPage(publicationsPage.isLast)
     }
 
@@ -351,7 +360,14 @@ class PublicationService(
             PageRequest.of(page, pageSize)
         )
         return PublicationsResponse(publicationsPage.isLast)
-            .publications(publicationsPage.map { it.toApiObject(userService, doiProperties) }.toList())
+            .publications(publicationsPage.map {
+                it.toApiObject(
+                    userService,
+                    doiProperties,
+                    collaborationRequestRepository,
+                    downloaderRepository
+                )
+            }.toList())
     }
 
     @Transactional
@@ -368,9 +384,37 @@ class PublicationService(
             PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime"))
         )
 
-        return PublicationsResponse()
-            .publications(publicationsPage.map { it.toApiObject(userService, doiProperties) }.toList())
-            .isLastPage(publicationsPage.isLast)
+        return PublicationsResponse(publicationsPage.isLast)
+            .publications(publicationsPage.map {
+                it.toApiObject(
+                    userService,
+                    doiProperties,
+                    collaborationRequestRepository,
+                    downloaderRepository
+                )
+            }.toList())
+    }
+
+    @Transactional
+    fun getUserDownloadedPublications(
+        user: User,
+        statuses: Collection<PublicationStatus>,
+        page: Int,
+        pageSize: Int,
+    ): PublicationsResponse {
+        val downloadedPublicationsPage =
+            downloaderRepository.findAllByUserId(user.id, PageRequest.of(page, pageSize, Sort.by(DESC, "lastDownloadTime")))
+
+        return PublicationsResponse(downloadedPublicationsPage.isLast)
+            .publications(downloadedPublicationsPage.map {
+                it.publication.toApiObject(
+                    userService,
+                    doiProperties,
+                    collaborationRequestRepository,
+                    downloaderRepository,
+                    user
+                )
+            }.toList())
     }
 
     fun delete(id: String, user: User) {
@@ -406,7 +450,13 @@ class PublicationService(
     }
 }
 
-fun Publication.toApiObject(userService: UserService, doiProperties: DoiProperties) = PublicationApiObject().also { publicationApiModel ->
+fun Publication.toApiObject(
+    userService: UserService,
+    doiProperties: DoiProperties,
+    collaborationRequestRepository: CollaborationRequestRepository,
+    downloaderRepository: DownloaderRepository,
+    currentUser: User? = null
+) = PublicationApiObject().also { publicationApiModel ->
     publicationApiModel.id = id
     publicationApiModel.creator = UserInfo()
         .id(creator.id)
@@ -437,6 +487,7 @@ fun Publication.toApiObject(userService: UserService, doiProperties: DoiProperti
     publicationApiModel.authors = authors.map { it.toApiObject(userService.getProfileImage(it.user?.profileImage)) }
     publicationApiModel.viewsCount = viewsCount
     publicationApiModel.downloadsCount = downloadsCount
+    publicationApiModel.collaboratorsCount = collaboratorsCount
     publicationApiModel.status = PublicationStatusApiObject.valueOf(status.name)
     publicationApiModel.accessType = AccessTypeApiObject.valueOf(accessType.name)
     publicationApiModel.licenseType = licenseType.let { LicenseTypeApiObject.valueOf(it.name) }
@@ -446,6 +497,11 @@ fun Publication.toApiObject(userService: UserService, doiProperties: DoiProperti
     publicationApiModel.archiveSize = archiveSize
     publicationApiModel.sampleArchiveSize = archiveSampleSize
     publicationApiModel.isNegative = isNegative
+    publicationApiModel.userCollaborationStatus =
+        currentUser?.let { collaborationRequestRepository.findByUserIdAndPublicationId(it.id, id) }
+            ?.let { CollaborationRequestStatus.valueOf(it.status.name) }
+    publicationApiModel.isDownloadedByUser = currentUser?.let { downloaderRepository.existsByUserIdAndPublication(it.id, this) }
+    publicationApiModel.useType = useType?.let { UseTypeApiObject.valueOf(it.name) }
 }
 
 fun Publication.toPublicationElastic() =

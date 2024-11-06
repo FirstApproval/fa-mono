@@ -14,6 +14,7 @@ import { FALinkWrap } from './LinkWrap';
 interface HeaderComponentProps {
   showAboutUsButton?: boolean;
   showPublishButton?: boolean;
+  showCollaborateButton?: boolean;
   showLoginButton?: boolean;
   showSignUpContainedButton?: boolean;
   showSignUpOutlinedButton?: boolean;
@@ -24,6 +25,7 @@ export const HeaderComponent = (
   props: HeaderComponentProps = {
     showAboutUsButton: false,
     showPublishButton: false,
+    showCollaborateButton: false,
     showLoginButton: false,
     showSignUpContainedButton: false,
     showSignUpOutlinedButton: false,
@@ -32,6 +34,7 @@ export const HeaderComponent = (
 ): ReactElement => {
   const showSignUpButton =
     props.showSignUpContainedButton ?? props.showSignUpOutlinedButton;
+  console.log('props.showCollaborateButton:', props.showCollaborateButton);
 
   return (
     <Wrap>
@@ -93,6 +96,23 @@ export const HeaderComponent = (
                   Publish
                 </ButtonWrap>
               )}
+            </Box>
+            <Box
+              component={Grid}
+              item
+              xs={1}
+              display={{
+                xs: 'none',
+                md: 'block'
+              }}>
+              {/* {props.showCollaborateButton && ( */}
+              <ButtonWrap
+                href={'collaborate'}
+                variant="outlined"
+                size={'large'}>
+                Collaborate
+              </ButtonWrap>
+              {/* )} */}
             </Box>
             {!authStore.token && (
               <>

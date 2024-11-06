@@ -47,7 +47,7 @@ import {
   profileUsername
 } from 'src/core/router/utils';
 
-const tabs = [Tab.PUBLISHED, Tab.DRAFTS];
+const tabs = [Tab.PUBLISHED, Tab.DRAFTS, Tab.DOWNLOADED];
 
 export const ProfilePage: FunctionComponent = observer(() => {
   const [username] = useState(() => profileUsername());
@@ -111,6 +111,9 @@ export const ProfilePage: FunctionComponent = observer(() => {
     store.publications.get(Tab.PUBLISHED) ?? []
   );
   const notEmptyDrafts = notEmpty(store.publications.get(Tab.DRAFTS) ?? []);
+  const notEmptyDownloaded = notEmpty(
+    store.publications.get(Tab.DOWNLOADED) ?? []
+  );
 
   return (
     <>
@@ -183,13 +186,18 @@ export const ProfilePage: FunctionComponent = observer(() => {
                 <>
                   <HeightElement value={'40px'}></HeightElement>
                   <Tabs value={tabs.indexOf(tab)} onChange={handleChange}>
-                    {tabs.map((tab: Tab) => (
-                      <CustomTab
-                        key={tab}
-                        sx={{ textTransform: 'none' }}
-                        label={_.capitalize(tab.toString().toLowerCase())}
-                      />
-                    ))}
+                    {tabs
+                      .filter(
+                        (tab: Tab) =>
+                          tab !== Tab.DOWNLOADED || notEmptyDownloaded
+                      )
+                      .map((tab: Tab) => (
+                        <CustomTab
+                          key={tab}
+                          sx={{ textTransform: 'none' }}
+                          label={_.capitalize(tab.toString().toLowerCase())}
+                        />
+                      ))}
                   </Tabs>
                   <Divider style={{ marginTop: '-1.3px' }} />
                   <HeightElement value={'40px'}></HeightElement>
@@ -293,6 +301,18 @@ export const ProfilePage: FunctionComponent = observer(() => {
                           </EditProfileAndCreateDraftButtons>
                         </CenterColumnElement>
                       )}
+                    </TabContainer>
+                  )}
+                  {tab === Tab.DOWNLOADED && (
+                    <TabContainer>
+                      <PublicationsContainer>
+                        {mapPublications(
+                          store.publications.get(Tab.DOWNLOADED) ?? []
+                        )}
+                      </PublicationsContainer>
+                      {notEmptyDownloaded &&
+                        !store.publicationsLastPage.get(Tab.DOWNLOADED) &&
+                        loadMoreButton(Tab.DOWNLOADED)}
                     </TabContainer>
                   )}
                 </>

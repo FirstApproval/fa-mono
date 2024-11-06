@@ -17,7 +17,7 @@ export class ProfilePageStore {
   constructor(username: string | null) {
     makeAutoObservable(this);
 
-    for (const tab of [Tab.PUBLISHED, Tab.DRAFTS]) {
+    for (const tab of [Tab.PUBLISHED, Tab.DRAFTS, Tab.DOWNLOADED]) {
       this.publicationsLastPage.set(tab as Tab, false);
       this.publicationsPageNum.set(tab as Tab, 0);
     }
@@ -25,6 +25,7 @@ export class ProfilePageStore {
     void this.loadUser(username);
     if (authStore.token) {
       void this.load(Tab.DRAFTS);
+      void this.load(Tab.DOWNLOADED);
     }
   }
 
@@ -41,6 +42,13 @@ export class ProfilePageStore {
     } else if (tab === Tab.DRAFTS) {
       publicationsData = (
         await publicationService.getMyDraftPublications(
+          this.publicationsPageNum.get(tab)!,
+          20
+        )
+      ).data;
+    } else if (tab === Tab.DOWNLOADED) {
+      publicationsData = (
+        await publicationService.getMyDownloadedPublications(
           this.publicationsPageNum.get(tab)!,
           20
         )
@@ -80,5 +88,6 @@ export class ProfilePageStore {
 
 export enum Tab {
   PUBLISHED = 'PUBLISHED',
-  DRAFTS = 'DRAFTS'
+  DRAFTS = 'DRAFTS',
+  DOWNLOADED = 'DOWNLOADED'
 }
