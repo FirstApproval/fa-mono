@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   affiliationsPath,
   authorPath,
-  contactsPath,
+  contactsPath, contestPath,
   emailChangeConfirmationPath,
   emailPath,
   namePath,
@@ -105,6 +105,11 @@ export class RouterStore {
 
       if (window.location.pathname.startsWith(contactsPath)) {
         this.navigatePage(Page.CONTACTS_PAGE, path, true);
+        return;
+      }
+
+      if (window.location.pathname.startsWith(contestPath)) {
+        this.navigatePage(Page.CONTEST_PAGE, path, true);
         return;
       }
 

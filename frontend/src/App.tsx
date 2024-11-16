@@ -1,38 +1,39 @@
 import './App.css';
-import React, { type FunctionComponent, useState } from 'react';
-import { SignInPage } from './pages/login/SignInPage';
+import React, {type FunctionComponent, useState} from 'react';
+import {SignInPage} from './pages/login/SignInPage';
 import CssBaseline from '@mui/material/CssBaseline';
-import { ThemeProvider } from '@mui/material/styles';
-import { theme } from './ui-kit/theme';
-import { SignUpPage } from './pages/signup/SignUpPage';
-import { EnterNamePage } from './pages/signup/EnterNamePage';
-import { SetPasswordPage } from './pages/signup/SetPasswordPage';
-import { LoadingPage } from './pages/LoadingPage';
-import { HomePage } from './pages/home/HomePage';
-import { observer } from 'mobx-react-lite';
-import { SignUpStore } from './pages/signup/SignUpStore';
-import { EmailVerificationPage } from './pages/signup/EmailVerificationPage';
-import { routerStore } from './core/router';
-import { SignInStore } from './pages/login/SignInStore';
-import { RestorePasswordEmailPage } from './pages/restore/send-email/RestorePasswordEmailPage';
-import { RestorePasswordStore } from './pages/restore/send-email/RestorePasswordStore';
-import { PublicationPage } from './pages/publication/PublicationPage';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import { DndProvider } from 'react-dnd';
-import { ProfilePage } from './pages/user/ProfilePage';
-import { AccountPage } from './pages/user/AccountPage';
-import { ResetPasswordPage } from './pages/restore/set-password/RestorePasswordPage';
-import { SharingOptionsPage } from './pages/publication/SharingOptionsPage';
+import {ThemeProvider} from '@mui/material/styles';
+import {theme} from './ui-kit/theme';
+import {SignUpPage} from './pages/signup/SignUpPage';
+import {EnterNamePage} from './pages/signup/EnterNamePage';
+import {SetPasswordPage} from './pages/signup/SetPasswordPage';
+import {LoadingPage} from './pages/LoadingPage';
+import {HomePage} from './pages/home/HomePage';
+import {observer} from 'mobx-react-lite';
+import {SignUpStore} from './pages/signup/SignUpStore';
+import {EmailVerificationPage} from './pages/signup/EmailVerificationPage';
+import {routerStore} from './core/router';
+import {SignInStore} from './pages/login/SignInStore';
+import {RestorePasswordEmailPage} from './pages/restore/send-email/RestorePasswordEmailPage';
+import {RestorePasswordStore} from './pages/restore/send-email/RestorePasswordStore';
+import {PublicationPage} from './pages/publication/PublicationPage';
+import {HTML5Backend} from 'react-dnd-html5-backend';
+import {DndProvider} from 'react-dnd';
+import {ProfilePage} from './pages/user/ProfilePage';
+import {AccountPage} from './pages/user/AccountPage';
+import {ResetPasswordPage} from './pages/restore/set-password/RestorePasswordPage';
+import {SharingOptionsPage} from './pages/publication/SharingOptionsPage';
 import logo from '../src/assets/logo-black.svg';
 import developing from '../src/assets/developing.svg';
-import { Button } from '@mui/material';
+import {Button} from '@mui/material';
 import DesktopMacOutlinedIcon from '@mui/icons-material/DesktopMacOutlined';
 import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
-import { Page } from './core/router/constants';
-import { EnterAffiliationsPage } from './pages/signup/EnterAffiliationsPage';
-import { userStore } from './core/user';
-import { ContactsPage } from './pages/contacts/ContactsPage';
-import { EnterEmailPage } from './pages/signup/EnterEmailPage';
+import {Page} from './core/router/constants';
+import {EnterAffiliationsPage} from './pages/signup/EnterAffiliationsPage';
+import {userStore} from './core/user';
+import {ContactsPage} from './pages/contacts/ContactsPage';
+import {EnterEmailPage} from './pages/signup/EnterEmailPage';
+import {ContestPage} from "./pages/contest/ContestPage";
 
 const MOBILE_VERSION_NOT_SUPPORT_STORAGE_KEY = 'mobileVersionNotSupportShown';
 
@@ -99,6 +100,7 @@ const App: FunctionComponent = observer(() => {
                   }}
                 />
               )}
+              {page === Page.CONTEST_PAGE && <ContestPage/>}
               {page === Page.SIGN_UP && (
                 <SignUpPage
                   store={signUpStore}

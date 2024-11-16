@@ -73,6 +73,26 @@ export const HeaderComponent = (
           }}></Box>
         <FlexHeaderRight>
           <Stack direction="row" alignItems="center" spacing={2}>
+              <Box
+                  component={Grid}
+                  item
+                  xs={1}
+                  display={{
+                      xs: 'none',
+                      md: 'block'
+                  }}>
+                  <ButtonWrap
+                      href={userStore.getContestLink()}
+                      onClick={(e) => {
+                          e.preventDefault();
+                          userStore.goToContestPage();
+                      }}
+                      width={'200px'}
+                      variant="outlined"
+                      size={'large'}>
+                      Student competition
+                  </ButtonWrap>
+              </Box>
             <Box
               component={Grid}
               item
@@ -81,6 +101,7 @@ export const HeaderComponent = (
                 xs: 'none',
                 md: 'block'
               }}>
+
               {props.showPublishButton && (
                 <ButtonWrap
                   href={userStore.getCreatePublicationLink()}

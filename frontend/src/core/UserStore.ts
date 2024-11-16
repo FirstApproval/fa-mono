@@ -1,17 +1,14 @@
-import { makeAutoObservable, reaction, runInAction } from 'mobx';
-import { userService } from './service';
-import { type GetMeResponse, Workplace } from '../apis/first-approval-api';
-import { authStore } from './auth';
-import { routerStore } from './router';
-import {
-  IWorkplaceStore,
-  WorkplaceProps,
-  WorkplaceValidationState
-} from './WorkplaceProps';
-import { userStore } from './user';
-import { cloneDeep } from 'lodash';
+import {makeAutoObservable, reaction, runInAction} from 'mobx';
+import {userService} from './service';
+import {type GetMeResponse, Workplace} from '../apis/first-approval-api';
+import {authStore} from './auth';
+import {routerStore} from './router';
+import {IWorkplaceStore, WorkplaceProps, WorkplaceValidationState} from './WorkplaceProps';
+import {userStore} from './user';
+import {cloneDeep} from 'lodash';
 import {
   affiliationsPath,
+  contestPath,
   emailPath,
   namePath,
   Page,
@@ -118,6 +115,14 @@ export class UserStore implements IWorkplaceStore {
     } else {
       routerStore.navigatePage(Page.SIGN_UP);
     }
+  };
+
+  getContestLink = (): string => {
+    return contestPath;
+  };
+
+  goToContestPage = (): void => {
+    routerStore.navigatePage(Page.CONTEST_PAGE);
   };
 
   updateUser = async (
