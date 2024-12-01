@@ -219,6 +219,7 @@ class PublicationService(
         publication.accessType = AccessType.valueOf(submitPublicationRequest.accessType.name)
         publication.storageType = StorageType.valueOf(submitPublicationRequest.storageType.name)
         publication.licenseType = LicenseType.valueOf(submitPublicationRequest.licenseType.name)
+        publication.dataCollectionType = DataCollectionType.valueOf(submitPublicationRequest.dataCollectionType.name)
         publication.previewTitle = submitPublicationRequest.previewTitle
         publication.previewSubtitle = submitPublicationRequest.previewSubtitle
     }

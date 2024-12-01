@@ -1929,6 +1929,8 @@ components:
           $ref: '#/components/schemas/StorageType'
         licenseType:
           $ref: '#/components/schemas/LicenseType'
+        dataCollectionType:
+          $ref: '#/components/schemas/DataCollectionType'
         previewTitle:
           type: string
           maxLength: 200
@@ -2080,6 +2082,13 @@ components:
         - ATTRIBUTION_NO_DERIVATIVES_NON_COMMERCIAL
         - DUMMY
 
+    DataCollectionType:
+      type: string
+      enum:
+        - GENERAL
+        - AGING
+        - STUDENT
+
     UserUpdateRequest:
       type: object
       properties:
@@ -2166,6 +2175,8 @@ components:
           type: boolean
         licenseType:
           $ref: '#/components/schemas/PublicationLicenseTypeValue'
+        dataCollectionType:
+          $ref: '#/components/schemas/PublicationDataCollectionTypeValue'
         characterCount:
           type: number
 
@@ -2185,6 +2196,14 @@ components:
           type: boolean
         value:
           $ref: '#/components/schemas/LicenseType'
+
+    PublicationDataCollectionTypeValue:
+      type: object
+      properties:
+        edited:
+          type: boolean
+        value:
+          $ref: '#/components/schemas/DataCollectionType'
 
     PublicationStringArrayValue:
       type: object
@@ -2304,6 +2323,8 @@ components:
           $ref: '#/components/schemas/AccessType'
         licenseType:
           $ref: '#/components/schemas/LicenseType'
+        dataCollectionType:
+          $ref: '#/components/schemas/DataCollectionType'
         storageType:
           $ref: '#/components/schemas/StorageType'
         creationTime:

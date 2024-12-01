@@ -90,6 +90,8 @@ class Publication(
     var licenseType: LicenseType = ATTRIBUTION_NO_DERIVATIVES,
     var characterCount: Long = 0,
     var isBlocked: Boolean = false,
+    @Enumerated(STRING)
+    var dataCollectionType: DataCollectionType? = null,
 ) {
     val authorsNames: String
         get() = authors.joinToString(postfix = ".") { it.lastName + " " + it.firstName }
@@ -114,4 +116,10 @@ enum class LicenseType {
 enum class StorageType {
     CLOUD_SECURE_STORAGE,
     IPFS,
+}
+
+enum class DataCollectionType {
+    GENERAL,
+    AGING,
+    STUDENT,
 }
