@@ -7,14 +7,15 @@ import java.util.*
 interface UserRepository : JpaRepository<User, UUID> {
     fun findByUsername(email: String?): User?
     fun findByEmailIn(emails: Collection<String>): List<User>
-    fun findByEmail(email: String): User?
-
+    @Query("select u from User u where (:email is not null and u.email = :email)")
+    fun findByEmail(email: String?): User?
     @Query(
         nativeQuery = true,
-        value = "select * from users u left join external_ids o on u.id = o.user_id " +
-                "where (:email is not null and email = :email) or (o.external_id = :externalId and o.type = :#{#type.name})"
+        value = "select * from users u join external_ids o on u.id = o.user_id " +
+            "where (o.external_id = :externalId and o.type = :#{#type.name})"
     )
-    fun findByEmailOrExternalIdAndType(email: String? = null, externalId: String, type: OauthType): User?
+    fun findByExternalIdAndType(externalId: String, type: OauthType): User?
+
     fun existsByEmail(email: String): Boolean
     fun existsByUsername(username: String): Boolean
     fun findByEmailAndPasswordIsNull(email: String): User?

@@ -30,5 +30,5 @@ data class GoogleProfile(
     val given_name: String,
     val family_name: String?,
     val picture: String,
-    val locale: String
+    val locale: String?
 )

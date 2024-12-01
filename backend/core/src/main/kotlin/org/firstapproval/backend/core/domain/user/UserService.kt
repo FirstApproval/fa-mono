@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
 import java.io.ByteArrayInputStream
 import java.time.ZonedDateTime.now
-import java.util.UUID
+import java.util.*
 import java.util.UUID.fromString
 import java.util.UUID.randomUUID
 import javax.naming.LimitExceededException
@@ -69,11 +69,10 @@ class UserService(
 
     @Transactional(isolation = REPEATABLE_READ)
     fun oauthSaveOrUpdate(oauthUser: OauthUser, utmSource: String?): User {
-        val user = userRepository.findByEmailOrExternalIdAndType(
-            email = oauthUser.email,
+        val user = userRepository.findByExternalIdAndType(
             externalId = oauthUser.externalId,
             type = oauthUser.type
-        )
+        ) ?: userRepository.findByEmail(email = oauthUser.email)
 
         if (user != null) {
             user.externalIds[oauthUser.type] = oauthUser.externalId
@@ -85,6 +84,7 @@ class UserService(
         val savedUser = userRepository.save(
             User(
                 id = id,
+                // if userByUsername exists need to use id as username to avoid collisions
                 username = if (userByUsername != null) id.toString() else oauthUser.username,
                 externalIds = mutableMapOf(oauthUser.type to oauthUser.externalId),
                 email = oauthUser.email,
