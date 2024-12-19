@@ -8,6 +8,7 @@ import {userStore} from './user';
 import {cloneDeep} from 'lodash';
 import {
   affiliationsPath,
+  chooseDataCollectionPath,
   contestPath,
   emailPath,
   namePath,
@@ -81,21 +82,6 @@ export class UserStore implements IWorkplaceStore {
     });
   }
 
-  createPublication = async (): Promise<void> => {
-    const user = userStore.user;
-    if (!user?.isNameConfirmed) {
-      routerStore.navigatePage(Page.NAME, namePath, true);
-    } else if (!user?.isWorkplacesConfirmed || !user?.workplaces?.length) {
-      routerStore.navigatePage(Page.AFFILIATIONS, affiliationsPath, true, {
-        isRegistration: false
-      });
-    } else if (!user?.email) {
-      routerStore.navigatePage(Page.EMAIL, emailPath, true);
-    } else {
-      routerStore.navigatePage(Page.PUBLICATION, publicationPath);
-    }
-  };
-
   getCreatePublicationLink = (): string => {
     if (authStore.token) {
       const workplaces = userStore.user?.workplaces;
@@ -110,10 +96,24 @@ export class UserStore implements IWorkplaceStore {
   };
 
   goToCreatePublication = (): void => {
-    if (authStore.token) {
-      void userStore.createPublication();
-    } else {
+    if (!authStore.token) {
       routerStore.navigatePage(Page.SIGN_UP);
+    }
+
+    const user = userStore.user;
+    if (!user?.isNameConfirmed) {
+      routerStore.navigatePage(Page.NAME, namePath, true);
+    } else if (!user?.isWorkplacesConfirmed || !user?.workplaces?.length) {
+      routerStore.navigatePage(Page.AFFILIATIONS, affiliationsPath, true, {
+        isRegistration: false
+      });
+    } else if (!user?.email) {
+      routerStore.navigatePage(Page.EMAIL, emailPath, true);
+    } else {
+      routerStore.navigatePage(
+        Page.CHOOSE_DATA_COLLECTION_PAGE,
+        chooseDataCollectionPath
+      );
     }
   };
 

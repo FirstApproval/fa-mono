@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import { LoadingButton } from '@mui/lab';
 import { CircularProgress, Tab, Typography } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
+import {C040036, C04003661} from "../ui-kit/colors"
 
 export const Parent = styled.div`
   width: 100%;
@@ -58,11 +59,13 @@ export const ColumnElement = styled.div`
   flex-direction: column;
 `;
 
-export const TitleRowWrap = styled.div`
+export const TitleRowWrap = styled.div<{
+  height?: string;
+}>`
   width: 100%;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  height: ${(props) => props.height ?? 'auto'};
 `;
 
 export const SpaceBetween = styled.div`
@@ -132,4 +135,24 @@ export const PrefilledDetailsText = styled(Typography)`
   color: var(--alert-info-content, #014361);
   padding-top: 8px;
   padding-bottom: 8px;
+`;
+
+export const FlexWrapRowRadioLabel = styled.span`
+  margin-top: 27.5px;
+  display: flex;
+`;
+
+export const OptionLabelWrap = styled.div<{
+  disabled: boolean;
+}>`
+  /* components/alert-title */
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 150%; /* 24px */
+  letter-spacing: 0.15px;
+
+  margin-right: 8px;
+  color: ${(props) => (props.disabled ? C04003661 : C040036)};
 `;

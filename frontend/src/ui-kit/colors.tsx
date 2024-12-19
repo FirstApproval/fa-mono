@@ -6,6 +6,7 @@ export const C014361 = '#014361';
 
 export const C68676E = '#68676E';
 export const C040036 = '#040036';
+export const C04003661 = '#04003661';
 
 export const Color_68676E = styled.div`
   color: var(--text-primary, ${C68676E});

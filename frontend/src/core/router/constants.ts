@@ -10,6 +10,7 @@ export enum Page {
 
   CONTACTS_PAGE,
 
+  CHOOSE_DATA_COLLECTION_PAGE,
   PUBLICATION,
   SHARING_OPTIONS,
 
@@ -37,8 +38,10 @@ export const pathToOauthType: Record<string, OauthType> = {
   '/linkedin-callback': OauthType.LINKEDIN,
   '/orcid-callback': OauthType.ORCID
 };
+export const chooseDataCollectionPath = '/choose-data-collection'
 export const shortPublicationPath = '/p/';
 export const publicationPath = '/publication/';
+export const signInPath = '/sign_in';
 export const signUpPath = '/sign_up';
 export const namePath = '/name';
 export const emailPath = '/e-mail';
@@ -51,3 +54,4 @@ export const accountPath = '/account/';
 export const emailChangeConfirmationPath = '/email-change-confirmation/';
 export const registrationConfirmationPath = '/registration-confirmation/';
 export const contestPath = '/contest';
+export const passwordChangeConfirmation = '/password-change-confirmation'

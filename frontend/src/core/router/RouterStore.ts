@@ -1,5 +1,4 @@
 import { authStore } from '../auth';
-import { userStore } from '../user';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { createBrowserHistory } from 'history';
 import { authService, userService, visitorService } from '../service';
@@ -7,16 +6,20 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   affiliationsPath,
   authorPath,
-  contactsPath, contestPath,
+  chooseDataCollectionPath,
+  contactsPath,
+  contestPath,
   emailChangeConfirmationPath,
   emailPath,
   namePath,
   Page,
+  passwordChangeConfirmation,
   pathToOauthType,
   publicationPath,
   registrationConfirmationPath,
   shortAuthorPath,
   shortPublicationPath,
+  signInPath,
   signUpPath
 } from './constants';
 import { PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY } from '../../pages/publication/ActionBar';
@@ -81,12 +84,12 @@ export class RouterStore {
         });
       }
 
-      if (path.startsWith('/email-change-confirmation')) {
+      if (path.startsWith(emailChangeConfirmationPath)) {
         this.navigatePage(Page.CHANGE_EMAIL_VERIFICATION, path, true);
         return;
       }
 
-      if (path.startsWith('/sign_in')) {
+      if (path.startsWith(signInPath)) {
         authStore.token = undefined;
         this.navigatePage(Page.SIGN_IN, path, true);
         return;
@@ -118,18 +121,22 @@ export class RouterStore {
         return;
       }
 
-      if (path.startsWith('/registration-confirmation')) {
+      if (path.startsWith(registrationConfirmationPath)) {
         authStore.token = undefined;
         this.navigatePage(Page.EMAIL_VERIFICATION, path, true);
         return;
       }
 
-      if (path.startsWith('/password-change-confirmation')) {
+      if (path.startsWith(passwordChangeConfirmation)) {
         authStore.token = undefined;
         this.navigatePage(Page.RESET_PASSWORD, path, true);
         return;
       }
 
+      if (path.startsWith(chooseDataCollectionPath)) {
+        this.navigatePage(Page.CHOOSE_DATA_COLLECTION_PAGE, path, true);
+        return;
+      }
       if (path.startsWith(publicationPath)) {
         this.navigatePage(Page.PUBLICATION, path, true);
         return;
@@ -251,6 +258,8 @@ export class RouterStore {
     this.setPage(value, path);
     this.setPayload(payload);
   };
+
+  back = (): void => window.history.back();
 
   goHome = (): void => {
     this.navigatePage(Page.HOME_PAGE);

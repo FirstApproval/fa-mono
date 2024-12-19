@@ -38,6 +38,7 @@ import { ResearchAreaStore } from './research-area/ResearchAreaStore';
 import { Footer } from '../home/Footer';
 import { PublicationBody } from './PublicationBody';
 import { PublicationPageHeader } from './PublicationPageHeader';
+import { chooseDataCollectionPath, Page } from "../../core/router/constants"
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -71,7 +72,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
 
   useEffect(() => {
     if (!publicationStore.publicationId) {
-      publicationStore.createPublication().then();
+      routerStore.navigatePage(Page.CHOOSE_DATA_COLLECTION_PAGE, chooseDataCollectionPath);
     }
 
     if (

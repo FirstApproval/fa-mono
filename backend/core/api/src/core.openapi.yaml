@@ -388,6 +388,11 @@ paths:
   /api/publication:
     post:
       summary: Create publication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePublicationRequest'
       responses:
         200:
           description: Success
@@ -1899,6 +1904,14 @@ components:
         - confirmationToken
         - code
 
+    CreatePublicationRequest:
+      type: object
+      properties:
+        dataCollectionType:
+          $ref: '#/components/schemas/DataCollectionType'
+      required:
+        - dataCollectionType
+
     CreatePublicationResponse:
       type: object
       properties:
@@ -1929,8 +1942,6 @@ components:
           $ref: '#/components/schemas/StorageType'
         licenseType:
           $ref: '#/components/schemas/LicenseType'
-        dataCollectionType:
-          $ref: '#/components/schemas/DataCollectionType'
         previewTitle:
           type: string
           maxLength: 200

@@ -1,6 +1,7 @@
 package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.PublicationApi
+import org.firstapproval.api.server.model.CreatePublicationRequest
 import org.firstapproval.api.server.model.CreatePublicationResponse
 import org.firstapproval.api.server.model.DownloadLinkResponse
 import org.firstapproval.api.server.model.GetDownloadersResponse
@@ -13,6 +14,7 @@ import org.firstapproval.api.server.model.SubmitPublicationRequest
 import org.firstapproval.backend.core.config.Properties.DoiProperties
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
+import org.firstapproval.backend.core.domain.publication.DataCollectionType
 import org.firstapproval.backend.core.domain.publication.PublicationPdfService
 import org.firstapproval.backend.core.domain.publication.PublicationService
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
@@ -63,8 +65,11 @@ class PublicationController(
         return ok().body(publications)
     }
 
-    override fun createPublication(): ResponseEntity<CreatePublicationResponse> {
-        val pub = publicationService.create(authHolderService.user)
+    override fun createPublication(createPublicationRequest: CreatePublicationRequest): ResponseEntity<CreatePublicationResponse> {
+        val pub = publicationService.create(
+            user = authHolderService.user,
+            dataCollectionType = DataCollectionType.valueOf(createPublicationRequest.dataCollectionType.name)
+        )
         return ok().body(CreatePublicationResponse(pub.id, PublicationStatus.valueOf(pub.status.name), pub.creationTime.toOffsetDateTime()))
     }
 

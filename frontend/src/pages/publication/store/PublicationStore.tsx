@@ -16,7 +16,6 @@ import { routerStore } from '../../../core/router';
 import { authStore } from '../../../core/auth';
 import {
   Page,
-  publicationPath,
   shortPublicationPath
 } from '../../../core/router/constants';
 
@@ -563,20 +562,6 @@ export class PublicationStore {
       routerStore.navigatePage(Page.PROFILE, '/profile/drafts');
     }
   };
-
-  async createPublication(): Promise<void> {
-    this.isLoading = true;
-    const response = await publicationService.createPublication();
-    this.publicationId = response.data.id;
-    this.loadInitialState();
-    await this.fs.initialize(this.publicationId);
-    await this.sfs.initialize(this.publicationId);
-    routerStore.navigatePage(
-      Page.PUBLICATION,
-      `${publicationPath}${this.publicationId}`,
-      true
-    );
-  }
 
   async editPublication(
     publicationEditRequest: PublicationEditRequest

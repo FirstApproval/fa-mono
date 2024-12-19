@@ -60,6 +60,7 @@ import java.util.UUID
 import java.util.UUID.randomUUID
 import org.firstapproval.api.server.model.AccessType as AccessTypeApiObject
 import org.firstapproval.api.server.model.Author as AuthorApiObject
+import org.firstapproval.api.server.model.DataCollectionType as DataCollectionTypeApiObject
 import org.firstapproval.api.server.model.LicenseType as LicenseTypeApiObject
 import org.firstapproval.api.server.model.Publication as PublicationApiObject
 import org.firstapproval.api.server.model.PublicationStatus as PublicationStatusApiObject
@@ -84,8 +85,14 @@ class PublicationService(
     private val doiProperties: DoiProperties
 ) {
     @Transactional
-    fun create(user: User): Publication {
-        val publication = publicationRepository.save(Publication(id = generateCode(), creator = user))
+    fun create(user: User, dataCollectionType: DataCollectionType): Publication {
+        val publication = publicationRepository.save(
+            Publication(
+                id = generateCode(),
+                creator = user,
+                dataCollectionType = dataCollectionType
+            )
+        )
         publication.authors =
             authorRepository.saveAll(
                 mutableListOf(
@@ -151,6 +158,9 @@ class PublicationService(
             if (methodDescription?.edited == true) publication.methodDescription = methodDescription.value
             if (predictedGoals?.edited == true) publication.predictedGoals = predictedGoals.value
             if (licenseType?.edited == true) publication.licenseType = LicenseType.valueOf(licenseType.value.name)
+            if (dataCollectionType?.edited == true) {
+                publication.dataCollectionType = DataCollectionType.valueOf(dataCollectionType.value.name)
+            }
             if (authors?.edited == true) {
                 val unconfirmedPublicationAuthors = authors.values.map { authorApiObject ->
                     val authorUser = if (authorApiObject.isConfirmed) authorApiObject.user.require().let {
@@ -219,7 +229,6 @@ class PublicationService(
         publication.accessType = AccessType.valueOf(submitPublicationRequest.accessType.name)
         publication.storageType = StorageType.valueOf(submitPublicationRequest.storageType.name)
         publication.licenseType = LicenseType.valueOf(submitPublicationRequest.licenseType.name)
-        publication.dataCollectionType = DataCollectionType.valueOf(submitPublicationRequest.dataCollectionType.name)
         publication.previewTitle = submitPublicationRequest.previewTitle
         publication.previewSubtitle = submitPublicationRequest.previewSubtitle
     }
@@ -447,6 +456,7 @@ fun Publication.toApiObject(userService: UserService, doiProperties: DoiProperti
     publicationApiModel.archiveSize = archiveSize
     publicationApiModel.sampleArchiveSize = archiveSampleSize
     publicationApiModel.isNegative = isNegative
+    publicationApiModel.dataCollectionType = DataCollectionTypeApiObject.valueOf(dataCollectionType.name)
 }
 
 fun Publication.toPublicationElastic() =

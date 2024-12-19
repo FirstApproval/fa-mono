@@ -91,7 +91,7 @@ class Publication(
     var characterCount: Long = 0,
     var isBlocked: Boolean = false,
     @Enumerated(STRING)
-    var dataCollectionType: DataCollectionType? = null,
+    var dataCollectionType: DataCollectionType,
 ) {
     val authorsNames: String
         get() = authors.joinToString(postfix = ".") { it.lastName + " " + it.firstName }

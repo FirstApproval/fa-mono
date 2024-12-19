@@ -34,6 +34,7 @@ import {userStore} from './core/user';
 import {ContactsPage} from './pages/contacts/ContactsPage';
 import {EnterEmailPage} from './pages/signup/EnterEmailPage';
 import {ContestPage} from "./pages/contest/ContestPage";
+import {ChooseDataCollectionPage} from "./pages/publication/ChooseDataCollection"
 
 const MOBILE_VERSION_NOT_SUPPORT_STORAGE_KEY = 'mobileVersionNotSupportShown';
 
@@ -75,6 +76,9 @@ const App: FunctionComponent = observer(() => {
               {page === Page.HOME_PAGE && <HomePage key={routerStore.key} />}
               {page === Page.CONTACTS_PAGE && (
                 <ContactsPage key={routerStore.key} />
+              )}
+              {page === Page.CHOOSE_DATA_COLLECTION_PAGE && (
+                <ChooseDataCollectionPage key={routerStore.key} />
               )}
               {page === Page.PUBLICATION && (
                 <PublicationPage key={routerStore.key} />
