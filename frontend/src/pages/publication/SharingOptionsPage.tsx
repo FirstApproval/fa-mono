@@ -173,6 +173,7 @@ export const SharingOptionsPage = (props: {
                 }
               />
               <SharingOption
+                isDisabled={props.dataCollectionType === DataCollectionType.STUDENT}
                 onClick={() => setUseType(UseType.CO_AUTHORSHIP)}
                 isSelected={useType === UseType.CO_AUTHORSHIP}
                 icon={<AlternateEmail fontSize={'medium'} />}
@@ -314,7 +315,7 @@ const SharingOption = React.forwardRef<HTMLDivElement, SharingOptionsProps>(
       <SharingOptionWrap
         {...props}
         ref={ref}
-        onClick={onClick}
+        onClick={isDisabled ? () => {} : onClick}
         isSelected={isSelected}
         noMargin={noMargin}>
         <>
@@ -329,7 +330,7 @@ const SharingOption = React.forwardRef<HTMLDivElement, SharingOptionsProps>(
           </SharingOptionDescription>
         </>
         {isDisabled && (
-          <FlexWrapRow>
+          <FlexWrapRow style={{marginTop: '10px'}}>
             <SoonChip />
           </FlexWrapRow>
         )}

@@ -8,12 +8,14 @@ import org.firstapproval.api.server.model.PublicationContentStatus.PREPARING
 import org.firstapproval.api.server.model.PublicationEditRequest
 import org.firstapproval.api.server.model.PublicationsResponse
 import org.firstapproval.api.server.model.SubmitPublicationRequest
+import org.firstapproval.api.server.model.UseType.CO_AUTHORSHIP
 import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.backend.core.config.Properties.DoiProperties
 import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.domain.organizations.OrganizationService
 import org.firstapproval.backend.core.domain.organizations.toApiObject
 import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
+import org.firstapproval.backend.core.domain.publication.DataCollectionType.STUDENT
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
@@ -225,6 +227,9 @@ class PublicationService(
         checkPublicationCreator(user, publication)
         if (publication.status == PUBLISHED) {
             throw IllegalArgumentException()
+        }
+        if (publication.dataCollectionType == STUDENT && submitPublicationRequest.useType == CO_AUTHORSHIP) {
+            throw IllegalArgumentException("Co-authorship is not allowed for student data collection ")
         }
         publication.status = READY_FOR_PUBLICATION
         publication.accessType = AccessType.valueOf(submitPublicationRequest.accessType.name)
