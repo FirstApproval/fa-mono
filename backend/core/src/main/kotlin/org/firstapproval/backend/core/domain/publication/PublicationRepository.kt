@@ -15,9 +15,8 @@ interface PublicationRepository : JpaRepository<Publication, String> {
         accessType: AccessType
     ): List<Publication>
 
-    fun findAllByStatusInAndAccessTypeAndCreatorIdAndIsBlockedIsFalse(
+    fun findAllByStatusInAndCreatorIdAndIsBlockedIsFalse(
         publicationStatuses: Collection<PublicationStatus>,
-        accessType: AccessType,
         creatorId: UUID,
         page: Pageable
     ): Page<Publication>

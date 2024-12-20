@@ -373,9 +373,8 @@ class PublicationService(
         page: Int,
         pageSize: Int,
     ): PublicationsResponse {
-        val publicationsPage = publicationRepository.findAllByStatusInAndAccessTypeAndCreatorIdAndIsBlockedIsFalse(
+        val publicationsPage = publicationRepository.findAllByStatusInAndCreatorIdAndIsBlockedIsFalse(
             statuses,
-            OPEN,
             user.id,
             PageRequest.of(page, pageSize, Sort.by(DESC, "creationTime"))
         )

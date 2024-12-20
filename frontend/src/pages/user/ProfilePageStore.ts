@@ -33,14 +33,13 @@ export class ProfilePageStore {
   }
 
   public async load(tab: Tab, username?: string): Promise<void> {
-    let publicationsData: PublicationsResponse;
     const statuses =
       tab === Tab.DRAFTS
         ? [PublicationStatus.PENDING]
         : [PublicationStatus.PUBLISHED, PublicationStatus.MODERATION];
     const isCurrentUserProfilePage =
       !username || this.userStore?.user?.username === username;
-    publicationsData = (
+    const publicationsData = (
       isCurrentUserProfilePage
         ? await publicationService.getMyPublications(
             this.publicationsPageNum.get(tab)!,
@@ -53,6 +52,8 @@ export class ProfilePageStore {
             20
           )
     ).data;
+
+    debugger;
 
     const newPublicationArray = [
       ...(this.publications.get(tab) ?? []),

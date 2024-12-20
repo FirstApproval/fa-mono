@@ -108,6 +108,7 @@ enum class PublicationStatus {
 
 enum class AccessType {
     OPEN,
+    PERSONAL_SHARE
 }
 
 enum class LicenseType {

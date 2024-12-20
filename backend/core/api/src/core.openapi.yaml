@@ -2094,10 +2094,8 @@ components:
     AccessType:
       type: string
       enum:
-        - CLOSED
         - OPEN
         - PERSONAL_SHARE
-        - MONETIZE_OR_CO_AUTHORSHIP
 
     LicenseType:
       type: string
