@@ -121,7 +121,7 @@ class PublicationService(
     }
 
     @Transactional(readOnly = true)
-    fun findAllByIdIn(ids: List<String>) = publicationRepository.findAllByIdInAndStatusAndIsBlockedIsFalse(ids, PUBLISHED)
+    fun findAllByIdIn(ids: List<String>) = publicationRepository.findAllByIdInAndStatusAndIsBlockedIsFalseAndAccessType(ids, PUBLISHED, OPEN)
 
     @Transactional
     fun edit(user: User, id: String, request: PublicationEditRequest) {
@@ -352,12 +352,14 @@ class PublicationService(
     @Transactional
     fun getAuthorsPublications(
         user: User,
+        currentUser: User,
         page: Int,
         pageSize: Int,
     ): PublicationsResponse {
         val publicationsPage = publicationRepository.findAllByConfirmedAuthorUsernameAndIsBlockedIsFalse(
             setOf(PUBLISHED, READY_FOR_PUBLICATION),
             user.id,
+            currentUser.id,
             PageRequest.of(page, pageSize)
         )
         return PublicationsResponse(publicationsPage.isLast)

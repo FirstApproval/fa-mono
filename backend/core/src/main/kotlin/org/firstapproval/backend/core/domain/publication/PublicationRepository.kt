@@ -9,7 +9,11 @@ import java.util.UUID
 interface PublicationRepository : JpaRepository<Publication, String> {
     fun findAllByStatusOrderByCreationTime(publicationStatus: PublicationStatus): List<Publication>
 
-    fun findAllByIdInAndStatusAndIsBlockedIsFalse(ids: List<String>, publicationStatus: PublicationStatus): List<Publication>
+    fun findAllByIdInAndStatusAndIsBlockedIsFalseAndAccessType(
+        ids: List<String>,
+        publicationStatus: PublicationStatus,
+        accessType: AccessType
+    ): List<Publication>
 
     fun findAllByStatusInAndAccessTypeAndCreatorIdAndIsBlockedIsFalse(
         publicationStatuses: Collection<PublicationStatus>,
@@ -18,10 +22,14 @@ interface PublicationRepository : JpaRepository<Publication, String> {
         page: Pageable
     ): Page<Publication>
 
-    @Query("select p from Publication p join p.authors a where a.isConfirmed = true and a.user.id = :userId and p.status in :publicationStatuses and p.isBlocked = false")
+    @Query(
+        "select p from Publication p join p.authors a where a.isConfirmed = true and a.user.id = :userId " +
+            "and p.status in :publicationStatuses and p.isBlocked = false and (p.accessType = 'OPEN' or p.creator.id = :currentUserId)"
+    )
     fun findAllByConfirmedAuthorUsernameAndIsBlockedIsFalse(
         publicationStatuses: Collection<PublicationStatus>,
         userId: UUID,
+        currentUserId: UUID,
         page: Pageable
     ): Page<Publication>
 

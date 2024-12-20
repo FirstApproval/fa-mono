@@ -56,7 +56,12 @@ class PublicationController(
         pageSize: Int
     ): ResponseEntity<PublicationsResponse> {
         val user = userService.getPublicUserProfile(username)
-        val publications = publicationService.getAuthorsPublications(user, page, pageSize)
+        val publications = publicationService.getAuthorsPublications(
+            user = user,
+            currentUser = authHolderService.user,
+            page = page,
+            pageSize = pageSize
+        )
         return ok().body(publications)
     }
 
