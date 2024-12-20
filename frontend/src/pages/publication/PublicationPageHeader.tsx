@@ -155,6 +155,7 @@ export const PublicationPageHeader = observer(
                                   { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }
                                 ).substring(0, 300),
                                 licenseType: publicationStore.licenseType,
+                                dataCollectionType: publicationStore.dataCollectionType,
                                 filesSize: await fs.getPublicationFilesSize()
                               }
                             );

@@ -3,6 +3,7 @@ import { publicationService } from '../../../core/service';
 import _ from 'lodash';
 import {
   Author,
+  DataCollectionType,
   LicenseType,
   type Paragraph,
   PublicationEditRequest,
@@ -74,6 +75,7 @@ export class PublicationStore {
   downloadsCount: number = 0;
 
   licenseType: LicenseType | null = null;
+  dataCollectionType: DataCollectionType | null = null;
   publicationStatus: PublicationStatus | null = null;
 
   archiveSize: number | null = null;
@@ -689,6 +691,9 @@ export class PublicationStore {
           }
           if (publication.licenseType) {
             this.licenseType = publication.licenseType;
+          }
+          if (publication.dataCollectionType) {
+            this.dataCollectionType = publication.dataCollectionType;
           }
           this.setAuthorNames();
 

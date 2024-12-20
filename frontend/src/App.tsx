@@ -88,6 +88,7 @@ const App: FunctionComponent = observer(() => {
                   publicationTitle={routerStore.payload.publicationTitle}
                   publicationSummary={routerStore.payload.publicationSummary}
                   licenseType={routerStore.payload.licenseType}
+                  dataCollectionType={routerStore.payload.dataCollectionType}
                   filesSize={routerStore.payload.filesSize}
                 />
               )}

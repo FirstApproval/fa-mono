@@ -25,11 +25,17 @@ import { routerStore } from '../../core/router';
 import { publicationService } from '../../core/service';
 import {
   AccessType,
+  DataCollectionType,
   LicenseType,
   StorageType
 } from '../../apis/first-approval-api';
 import { Page } from '../../core/router/constants';
-import { FlexWrapColumn, FlexWrapRow, FlexWrapRowRadioLabel, HeightElement } from "../common.styled"
+import {
+  FlexWrapColumn,
+  FlexWrapRow,
+  FlexWrapRowRadioLabel,
+  HeightElement
+} from '../common.styled';
 import { ContentLicensingDialog } from '../../components/ContentLicensingDialog';
 import { getContentLicensingAbbreviation } from '../../util/publicationUtils';
 
@@ -41,6 +47,7 @@ export const SharingOptionsPage = (props: {
   publicationTitle: string;
   publicationSummary: string;
   licenseType: LicenseType;
+  dataCollectionType: DataCollectionType;
   filesSize: number;
 }): ReactElement => {
   const [isIpfsDisabled] = useState(props.filesSize > MAX_FILES_SIZE);
@@ -56,9 +63,11 @@ export const SharingOptionsPage = (props: {
     understandAfterPublishingCannotBeEdited,
     setUnderstandAfterPublishingCannotBeEdited
   ] = useState(false);
+  debugger;
   const [storageType, setStorageType] = useState(
-    StorageType.CLOUD_SECURE_STORAGE
+    props.dataCollectionType === DataCollectionType.AGING ? StorageType.IPFS : StorageType.CLOUD_SECURE_STORAGE
   );
+  const [accessType, setAccessType] = useState(AccessType.OPEN)
   const [contentLicensingDialogOpen, setContentLicensingDialogOpen] =
     useState(false);
 
@@ -132,25 +141,26 @@ export const SharingOptionsPage = (props: {
               <SharingOption
                 icon={<Public fontSize={'large'} />}
                 label={'Open access'}
+                isSelected={accessType === AccessType.OPEN}
+                onClick={() => setAccessType(AccessType.OPEN)}
                 description={
                   'All registered users can download your attached files instantly. '
                 }
-                isSelected
               />
-              <Tooltip title="Like science, we value openness and are excited to share what we're working on. New features currently in our 'lab', are being tested and perfected, so stay tuned.">
-                <SharingOption
-                  icon={<MessageOutlined fontSize={'large'} />}
-                  label={'On request'}
-                  description={
-                    'Other users must send a request with their intention cover letter, which you can approve or decline.'
-                  }
-                  isDisabled={true}
-                />
-              </Tooltip>
+              <SharingOption
+                icon={<MessageOutlined fontSize={'large'} />}
+                label={'Personal share'}
+                isSelected={accessType === AccessType.PERSONAL_SHARE}
+                onClick={() => setAccessType(AccessType.PERSONAL_SHARE)}
+                description={
+                  'Access is via a personal link. The dataset will not be published but will receive a reserved DOI and can later be converted into a publication.'
+                }
+              />
               <Tooltip title="Like science, we value openness and are excited to share what we're working on. New features currently in our 'lab', are being tested and perfected, so stay tuned.">
                 <SharingOption
                   icon={<MonetizationOnOutlined fontSize={'large'} />}
                   label={<>{'Monetize or Co-Authorship'}</>}
+                  isSelected={accessType === AccessType.MONETIZE_OR_CO_AUTHORSHIP}
                   description={
                     'Set a price for access or/and accept requests for co-authorship.'
                   }
@@ -296,17 +306,27 @@ interface SharingOptionsProps {
   isSelected?: boolean;
   noMargin?: boolean;
   isDisabled?: boolean;
+  onClick?: () => void
 }
 
 // eslint-disable-next-line react/display-name
 const SharingOption = React.forwardRef<HTMLDivElement, SharingOptionsProps>(
   (props: SharingOptionsProps, ref): ReactElement => {
-    const { label, description, isDisabled, isSelected, noMargin } = props;
+    const {
+      label,
+      description,
+      isDisabled,
+      isSelected,
+      noMargin,
+      onClick
+    } = props;
+
     return (
       <SharingOptionWrap
         {...props}
         ref={ref}
         isSelected={isSelected}
+        onClick={onClick}
         noMargin={noMargin}>
         <FlexWrapRow>
           <IconWrap>{props.icon}</IconWrap>
@@ -385,7 +405,7 @@ const SharingOptionWrap = styled.div<{
   cursor: pointer;
   padding: 24px;
   width: 189px;
-  height: 272px;
+  height: 292px;
   border-radius: 8px;
   border: 1px solid var(--divider, #d2d2d6);
   ${(props) =>
@@ -411,7 +431,7 @@ const SharingOptionLabel = styled(Typography)<{ isDisabled?: boolean }>`
 `;
 
 const SharingOptionDescription = styled.div<{ isDisabled?: boolean }>`
-  margin-top: auto;
+  margin-top: 6px;
   ${(props) =>
     props.isDisabled
       ? 'color: var(--text-disabled, rgba(4, 0, 54, 0.38));'

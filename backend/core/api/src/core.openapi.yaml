@@ -2083,7 +2083,7 @@ components:
       enum:
         - CLOSED
         - OPEN
-        - ON_REQUEST
+        - PERSONAL_SHARE
         - MONETIZE_OR_CO_AUTHORSHIP
 
     LicenseType:
