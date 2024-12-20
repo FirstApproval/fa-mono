@@ -64,6 +64,7 @@ import org.firstapproval.api.server.model.DataCollectionType as DataCollectionTy
 import org.firstapproval.api.server.model.LicenseType as LicenseTypeApiObject
 import org.firstapproval.api.server.model.Publication as PublicationApiObject
 import org.firstapproval.api.server.model.PublicationStatus as PublicationStatusApiObject
+import org.firstapproval.api.server.model.UseType as UseTypeApiObject
 
 @Service
 class PublicationService(
@@ -229,6 +230,7 @@ class PublicationService(
         publication.accessType = AccessType.valueOf(submitPublicationRequest.accessType.name)
         publication.storageType = StorageType.valueOf(submitPublicationRequest.storageType.name)
         publication.licenseType = LicenseType.valueOf(submitPublicationRequest.licenseType.name)
+        publication.useType = UseType.valueOf(submitPublicationRequest.useType.name)
         publication.previewTitle = submitPublicationRequest.previewTitle
         publication.previewSubtitle = submitPublicationRequest.previewSubtitle
     }
@@ -457,6 +459,7 @@ fun Publication.toApiObject(userService: UserService, doiProperties: DoiProperti
     publicationApiModel.sampleArchiveSize = archiveSampleSize
     publicationApiModel.isNegative = isNegative
     publicationApiModel.dataCollectionType = DataCollectionTypeApiObject.valueOf(dataCollectionType.name)
+    publicationApiModel.useType = useType?.let { UseTypeApiObject.valueOf(it.name) }
 }
 
 fun Publication.toPublicationElastic() =
