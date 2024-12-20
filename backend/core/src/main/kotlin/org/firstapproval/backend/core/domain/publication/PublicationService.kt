@@ -352,14 +352,12 @@ class PublicationService(
     @Transactional
     fun getAuthorsPublications(
         user: User,
-        currentUser: User,
         page: Int,
         pageSize: Int,
     ): PublicationsResponse {
         val publicationsPage = publicationRepository.findAllByConfirmedAuthorUsernameAndIsBlockedIsFalse(
             setOf(PUBLISHED, READY_FOR_PUBLICATION),
             user.id,
-            currentUser.id,
             PageRequest.of(page, pageSize)
         )
         return PublicationsResponse(publicationsPage.isLast)

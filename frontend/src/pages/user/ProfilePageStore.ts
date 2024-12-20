@@ -3,9 +3,11 @@ import { publicationService, userService } from '../../core/service';
 import {
   type Publication,
   PublicationsResponse,
+  PublicationStatus,
   type UserInfo
 } from '../../apis/first-approval-api';
 import { authStore } from '../../core/auth';
+import { UserStore } from '../../core/UserStore';
 
 export class ProfilePageStore {
   isLoadingPublications = false;
@@ -13,9 +15,11 @@ export class ProfilePageStore {
   publicationsPageNum = new Map<Tab, number>();
   publications = new Map<Tab, Publication[]>();
   user?: UserInfo;
+  userStore: UserStore;
 
-  constructor(username: string | null) {
+  constructor(username: string | null, userStore: UserStore) {
     makeAutoObservable(this);
+    this.userStore = userStore;
 
     for (const tab of [Tab.PUBLISHED, Tab.DRAFTS]) {
       this.publicationsLastPage.set(tab as Tab, false);
@@ -30,24 +34,25 @@ export class ProfilePageStore {
 
   public async load(tab: Tab, username?: string): Promise<void> {
     let publicationsData: PublicationsResponse;
-    if (tab === Tab.PUBLISHED) {
-      publicationsData = (
-        await publicationService.getUserPublications(
-          username!,
-          this.publicationsPageNum.get(tab)!,
-          20
-        )
-      ).data;
-    } else if (tab === Tab.DRAFTS) {
-      publicationsData = (
-        await publicationService.getMyDraftPublications(
-          this.publicationsPageNum.get(tab)!,
-          20
-        )
-      ).data;
-    } else {
-      throw Error('Unexpected tab');
-    }
+    const statuses =
+      tab === Tab.DRAFTS
+        ? [PublicationStatus.PENDING]
+        : [PublicationStatus.PUBLISHED, PublicationStatus.MODERATION];
+    const isCurrentUserProfilePage =
+      !username || this.userStore?.user?.username === username;
+    publicationsData = (
+      isCurrentUserProfilePage
+        ? await publicationService.getMyPublications(
+            this.publicationsPageNum.get(tab)!,
+            20,
+            statuses
+          )
+        : await publicationService.getUserPublications(
+            username!,
+            this.publicationsPageNum.get(tab)!,
+            20
+          )
+    ).data;
 
     const newPublicationArray = [
       ...(this.publications.get(tab) ?? []),

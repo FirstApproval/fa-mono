@@ -421,6 +421,11 @@ paths:
             type: integer
           required: true
           description: Page size
+        - in: query
+          name: statuses
+          schema:
+            items:
+              $ref: '#/components/schemas/PublicationStatus'
       responses:
         200:
           description: Success
@@ -430,7 +435,7 @@ paths:
                 $ref: '#/components/schemas/PublicationsResponse'
       security:
         - TokenAuth: [ ]
-      operationId: getMyDraftPublications
+      operationId: getMyPublications
       tags: [ publication ]
 
   /api/user-publications/{username}:

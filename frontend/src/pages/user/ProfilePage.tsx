@@ -53,7 +53,7 @@ export const ProfilePage: FunctionComponent = observer(() => {
   const [username] = useState(() => profileUsername());
   const [tabFromPath] = useState(() => profileTab()?.toUpperCase() as Tab);
   const [tab, setTab] = React.useState<Tab>(tabFromPath ?? Tab.PUBLISHED);
-  const [store] = useState(() => new ProfilePageStore(username));
+  const [store] = useState(() => new ProfilePageStore(username, userStore));
   const user = (username ? store : userStore).user!;
 
   useEffect(() => {

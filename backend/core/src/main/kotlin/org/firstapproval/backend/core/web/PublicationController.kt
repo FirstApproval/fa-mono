@@ -31,6 +31,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
 import org.firstapproval.backend.core.domain.publication.Publication as PublicationEntity
+import org.firstapproval.backend.core.domain.publication.PublicationStatus as PublicationStatusEntity
 
 @RestController
 class PublicationController(
@@ -58,15 +59,19 @@ class PublicationController(
         val user = userService.getPublicUserProfile(username)
         val publications = publicationService.getAuthorsPublications(
             user = user,
-            currentUser = authHolderService.user,
             page = page,
             pageSize = pageSize
         )
         return ok().body(publications)
     }
 
-    override fun getMyDraftPublications(page: Int, pageSize: Int): ResponseEntity<PublicationsResponse> {
-        val publications = publicationService.getCreatorPublications(authHolderService.user, setOf(PENDING), page, pageSize)
+    override fun getMyPublications(page: Int, pageSize: Int, statuses: List<PublicationStatus>): ResponseEntity<PublicationsResponse> {
+        val publications = publicationService.getCreatorPublications(
+            user = authHolderService.user,
+            statuses = statuses.map { PublicationStatusEntity.valueOf(it.name) },
+            page = page,
+            pageSize = pageSize
+        )
         return ok().body(publications)
     }
 

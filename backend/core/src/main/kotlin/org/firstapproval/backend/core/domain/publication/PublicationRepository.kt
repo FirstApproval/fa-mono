@@ -24,12 +24,11 @@ interface PublicationRepository : JpaRepository<Publication, String> {
 
     @Query(
         "select p from Publication p join p.authors a where a.isConfirmed = true and a.user.id = :userId " +
-            "and p.status in :publicationStatuses and p.isBlocked = false and (p.accessType = 'OPEN' or p.creator.id = :currentUserId)"
+            "and p.status in :publicationStatuses and p.isBlocked = false and p.accessType = 'OPEN'"
     )
     fun findAllByConfirmedAuthorUsernameAndIsBlockedIsFalse(
         publicationStatuses: Collection<PublicationStatus>,
         userId: UUID,
-        currentUserId: UUID,
         page: Pageable
     ): Page<Publication>
 
