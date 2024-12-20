@@ -28,7 +28,6 @@ export const ChooseDataCollectionPage: FunctionComponent = observer(() => {
   useEffect(() => {});
 
   const createPublication = () => {
-    debugger;
     publicationService.createPublication({dataCollectionType}).then(response =>
       routerStore.navigatePage(Page.PUBLICATION, `${publicationPath}/${response.data.id}`)
     );

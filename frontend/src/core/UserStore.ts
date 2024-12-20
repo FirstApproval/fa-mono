@@ -88,7 +88,7 @@ export class UserStore implements IWorkplaceStore {
       if (!workplaces?.length) {
         return affiliationsPath;
       } else {
-        return publicationPath;
+        return chooseDataCollectionPath;
       }
     } else {
       return signUpPath;

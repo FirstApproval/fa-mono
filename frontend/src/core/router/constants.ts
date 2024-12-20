@@ -40,7 +40,7 @@ export const pathToOauthType: Record<string, OauthType> = {
 };
 export const chooseDataCollectionPath = '/choose-data-collection'
 export const shortPublicationPath = '/p/';
-export const publicationPath = '/publication/';
+export const publicationPath = '/publication';
 export const signInPath = '/sign_in';
 export const signUpPath = '/sign_up';
 export const namePath = '/name';
