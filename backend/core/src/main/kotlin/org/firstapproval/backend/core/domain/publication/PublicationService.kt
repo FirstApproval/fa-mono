@@ -249,6 +249,7 @@ class PublicationService(
     @Transactional
     fun getDownloadLinkForArchive(user: User, id: String): DownloadLinkResponse {
         val publication = publicationRepository.findByIdAndIsBlockedIsFalse(id)
+        checkStatusPublished(publication)
         val title = publication.title ?: id
         val link: DownloadLinkResponse = when (publication.storageType) {
             CLOUD_SECURE_STORAGE -> {
