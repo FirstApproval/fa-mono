@@ -1,25 +1,19 @@
 package org.firstapproval.backend.core.domain.publication
 
-import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
+import org.firstapproval.backend.core.domain.publication.PublicationStatus.MODERATION
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.domain.user.User
 import org.springframework.security.access.AccessDeniedException
 
 fun checkAccessToPublication(user: User?, publication: Publication) {
-    if (publication.accessType != OPEN || publication.status == PENDING) {
-        checkPublicationCreator(user!!, publication)
-    }
+    if (publication.status in listOf(PENDING, MODERATION)) checkPublicationCreator(user!!, publication)
 }
 
-fun checkStatusAndAccessType(publication: Publication) {
-    if (publication.accessType != OPEN || publication.status == PENDING) {
-        throw AccessDeniedException("Access denied")
-    }
+fun checkStatusPublished(publication: Publication) {
+    if (publication.status != PUBLISHED) throw AccessDeniedException("Access denied")
 }
 
 fun checkPublicationCreator(user: User, publication: Publication) {
-    if (user.id != publication.creator.id) {
-        throw AccessDeniedException("Access denied")
-    }
+    if (user.id != publication.creator.id) throw AccessDeniedException("Access denied")
 }

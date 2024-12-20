@@ -274,7 +274,7 @@ class PublicationService(
 
     @Transactional
     fun getIpfsDownloadLink(pub: Publication, user: User): DownloadLinkResponse {
-        checkStatusAndAccessType(pub)
+        checkStatusPublished(pub)
         val contentId = pub.contentId.require()
         return (downloadLinkRepository.findByPublicationIdAndExpirationTimeGreaterThan(pub.id, now().plusSeconds(30))
             ?.let { DownloadLinkResponse(it.url, pub.archivePassword, AVAILABLE) }
@@ -327,7 +327,7 @@ class PublicationService(
     @Transactional(readOnly = true)
     fun getPublished(id: String): Publication {
         val publication = publicationRepository.findByIdAndIsBlockedIsFalse(id)
-        checkStatusAndAccessType(publication)
+        checkStatusPublished(publication)
         return publication
     }
 

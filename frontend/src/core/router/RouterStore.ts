@@ -144,7 +144,7 @@ export class RouterStore {
       if (path.startsWith(shortPublicationPath)) {
         this.navigatePage(
           Page.PUBLICATION,
-          path.replace(shortPublicationPath, publicationPath),
+          path.replace(shortPublicationPath, `${publicationPath}/`),
           true
         );
         return;
