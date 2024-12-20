@@ -117,7 +117,7 @@ enum class LicenseType {
 }
 
 enum class UseType {
-    CITATION,
+    CITATE,
     CO_AUTHORSHIP,
 }
 

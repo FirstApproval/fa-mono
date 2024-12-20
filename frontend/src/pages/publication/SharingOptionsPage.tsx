@@ -266,7 +266,7 @@ export const SharingOptionsPage = (props: {
               onClick={() => {
                 void publicationService
                   .submitPublication(publicationId, {
-                    accessType: AccessType.OPEN,
+                    accessType,
                     useType,
                     storageType,
                     previewTitle,
