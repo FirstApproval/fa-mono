@@ -178,6 +178,7 @@ export const SharingOptionsPage = (props: {
                 isSelected={useType === UseType.CO_AUTHORSHIP}
                 icon={<AlternateEmail fontSize={'medium'} />}
                 label={'Co-authorship requirement'}
+                disabledChipLabel={'Not for competition'}
                 description={
                   "Be credited as a co-author in journal publications when your data is vital to others' research. You can accept or reject collaboration requests. "
                 }
@@ -297,6 +298,7 @@ interface SharingOptionsProps {
   noMargin?: boolean;
   isDisabled?: boolean;
   onClick?: MouseEventHandler;
+  disabledChipLabel?: string;
 }
 
 // eslint-disable-next-line react/display-name
@@ -308,7 +310,8 @@ const SharingOption = React.forwardRef<HTMLDivElement, SharingOptionsProps>(
       isDisabled,
       isSelected,
       noMargin,
-      onClick
+      onClick,
+      disabledChipLabel = 'soon'
     } = props;
 
     return (
@@ -331,7 +334,7 @@ const SharingOption = React.forwardRef<HTMLDivElement, SharingOptionsProps>(
         </>
         {isDisabled && (
           <FlexWrapRow style={{marginTop: '10px'}}>
-            <SoonChip />
+            <DisabledChip label={disabledChipLabel} sx={{ backgroundColor: 'inherit' }} />
           </FlexWrapRow>
         )}
       </SharingOptionWrap>
@@ -343,16 +346,14 @@ const FairPeerReviewSection = (): ReactElement => {
   return (
     <FairPeerReviewSectionWrap variant={'h6'} component={'div'}>
       <FairPeerReviewTitleWrap>Fair peer review</FairPeerReviewTitleWrap>
-      <SoonChip />
+      <DisabledChip label={'soon'} sx={{ backgroundColor: 'inherit' }} />
     </FairPeerReviewSectionWrap>
   );
 };
 
-const SoonChip = (): ReactElement => {
+const DisabledChip = (props: {label: string, sx?: any}): ReactElement => {
   return (
-    <SoonChipWrap
-      label={'soon'}
-      sx={{ backgroundColor: 'inherit' }}></SoonChipWrap>
+    <ChipWrap {...props} />
   );
 };
 
@@ -396,7 +397,7 @@ const NowAllTheWorksWrap = styled(Typography)`
   margin-bottom: 24px;
 ` as typeof Typography;
 
-const SoonChipWrap = styled(Chip)`
+const ChipWrap = styled(Chip)`
   border-radius: 100px;
   border: 1px solid var(--primary-main, #3b4eff);
   color: var(--primary-main, #3b4eff);
