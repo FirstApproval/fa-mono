@@ -69,7 +69,7 @@ const RecommendedPublicationContent = (props: {
       <NameWrap
         variant={'h6'}
         component={'a'}
-        href={`${publicationPath}${publication.id}`}>
+        href={`${publicationPath}/${publication.id}`}>
         {previewTitle?.slice(0, 120)}
         {previewTitle && previewTitle.length > 80 ? '...' : ''}
       </NameWrap>

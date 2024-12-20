@@ -116,7 +116,7 @@ export const PublicationSection = (props: {
   return (
     <>
       <Link
-        href={`${publicationPath}${publication.id}`}
+        href={`${publicationPath}/${publication.id}`}
         underline={'none'}
         color={'#040036'}>
         <AuthorsWrap>

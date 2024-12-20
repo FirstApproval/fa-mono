@@ -201,7 +201,7 @@ export class RouterStore {
       sessionStorage.removeItem(PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY);
       routerStore.navigatePage(
         Page.PUBLICATION,
-        `${publicationPath}${requestedPublication}`,
+        `${publicationPath}/${requestedPublication}`,
         true
       );
     }
