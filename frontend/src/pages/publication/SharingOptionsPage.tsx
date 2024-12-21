@@ -149,6 +149,7 @@ export const SharingOptionsPage = (props: {
                 icon={<MessageOutlined fontSize={'medium'} />}
                 label={'Personal share'}
                 isSelected={accessType === AccessType.PERSONAL_SHARE}
+                isDisabled={true}
                 onClick={() => setAccessType(AccessType.PERSONAL_SHARE)}
                 description={
                   'Access is via a personal link. The dataset will not be published but will receive a reserved DOI and can later be converted into a publication.'
