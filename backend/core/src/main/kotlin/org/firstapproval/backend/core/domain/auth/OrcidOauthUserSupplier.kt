@@ -3,11 +3,12 @@ package org.firstapproval.backend.core.domain.auth
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.firstapproval.backend.core.config.Properties.OauthProperties
 import org.firstapproval.backend.core.domain.user.OauthType.ORCID
 import org.springframework.stereotype.Component
 
 @Component
-class OrcidOauthUserSupplier : OauthUserSupplier() {
+class OrcidOauthUserSupplier(oauthProperties: OauthProperties) : OauthUserSupplier(oauthProperties) {
     override var oauthType = ORCID
 
     override fun getOauthUser(code: String): OauthUser {

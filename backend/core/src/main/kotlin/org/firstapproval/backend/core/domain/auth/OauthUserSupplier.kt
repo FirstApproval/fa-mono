@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import org.firstapproval.backend.core.config.DEFAULT_REST_TEMPLATE
 import org.firstapproval.backend.core.config.Properties.OauthProperties
 import org.firstapproval.backend.core.config.Properties.OauthProperties.OauthProviderProperties
-import org.firstapproval.backend.core.config.security.JwtService
 import org.firstapproval.backend.core.domain.user.OauthType
 import org.firstapproval.backend.core.utils.require
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,16 +16,10 @@ import org.springframework.http.HttpMethod.POST
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 
-abstract class OauthUserSupplier {
+abstract class OauthUserSupplier(open val oauthProperties: OauthProperties) {
     @Autowired
     @Qualifier(DEFAULT_REST_TEMPLATE)
     lateinit var restTemplate: RestTemplate
-
-    @Autowired
-    lateinit var oauthProperties: OauthProperties
-
-    @Autowired
-    lateinit var jwtService: JwtService
 
     abstract var oauthType: OauthType
 
