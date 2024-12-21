@@ -45,6 +45,7 @@ export const EnterEmailPage: FunctionComponent<EnterEmailPageProps> = observer(
             .then((exist) => {
               if (exist) {
                 setUsedEmail(true);
+                props.userStore.isSubmitting = false;
               } else {
                 void userService
                   .changeEmail({
