@@ -53,8 +53,6 @@ export class ProfilePageStore {
           )
     ).data;
 
-    debugger;
-
     const newPublicationArray = [
       ...(this.publications.get(tab) ?? []),
       ...(publicationsData.publications ?? [])
