@@ -1,8 +1,8 @@
 import styled from '@emotion/styled';
 import { LoadingButton } from '@mui/lab';
-import { CircularProgress, Tab, Typography } from '@mui/material';
+import { CircularProgress, Tab, TextField, Typography } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
-import {C040036, C04003661} from "../ui-kit/colors"
+import {C040036, C04003661} from '../ui-kit/colors';
 
 export const Parent = styled.div`
   width: 100%;
@@ -75,6 +75,10 @@ export const SpaceBetween = styled.div`
   align-items: center;
 `;
 
+export const SpaceBetweenColumn = styled(SpaceBetween)`
+  flex-direction: column;
+`;
+
 export const StyledMenuItem = styled(MenuItem)`
   &:hover {
     background-color: transparent;
@@ -98,6 +102,10 @@ export const FlexWrapColumn = styled.div`
 
 export const FlexWrapRow = styled.div`
   display: flex;
+`;
+
+export const FullWidthTextField = styled(TextField)`
+  width: 100%;
 `;
 
 export const ValidationError = styled.div`

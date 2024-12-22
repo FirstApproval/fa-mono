@@ -254,6 +254,7 @@ class PublicationService(
         publication.useType = UseType.valueOf(submitPublicationRequest.useType.name)
         publication.previewTitle = submitPublicationRequest.previewTitle
         publication.previewSubtitle = submitPublicationRequest.previewSubtitle
+        publication.isFairPeerReview = submitPublicationRequest.isPeerReviewEnabled
     }
 
     fun search(text: String, limit: Int, pageNum: Int): Page<PublicationElastic> {
