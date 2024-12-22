@@ -10,6 +10,7 @@ import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
 import org.firstapproval.backend.core.domain.publication.LicenseType.ATTRIBUTION_NO_DERIVATIVES
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
 import org.firstapproval.backend.core.domain.publication.authors.Author
+import org.firstapproval.backend.core.domain.publication.reviewers.Reviewer
 import org.firstapproval.backend.core.domain.user.User
 import org.hibernate.annotations.ColumnTransformer
 import org.hibernate.annotations.Fetch
@@ -72,6 +73,9 @@ class Publication(
     @Fetch(value = SELECT)
     @OneToMany(fetch = EAGER, cascade = [ALL], orphanRemoval = true, mappedBy = "publication")
     var authors: MutableList<Author> = mutableListOf(),
+    @Fetch(value = SELECT)
+    @OneToMany(fetch = EAGER, cascade = [ALL], orphanRemoval = true, mappedBy = "publication")
+    var reviewers: MutableList<Reviewer> = mutableListOf(),
     var downloadsCount: Long = 0,
     var viewsCount: Long = 0,
     var creationTime: ZonedDateTime = now(),
