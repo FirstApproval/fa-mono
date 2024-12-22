@@ -26,13 +26,23 @@ import {
   AccessType,
   DataCollectionType,
   LicenseType,
+  Reviewer,
   StorageType,
   UseType
 } from '../../apis/first-approval-api';
 import { Page } from '../../core/router/constants';
-import { FlexWrapColumn, FlexWrapRow, HeightElement } from '../common.styled';
+import {
+  FlexWrapColumn,
+  FlexWrapRow,
+  FullWidthTextField,
+  HeightElement,
+  SpaceBetweenColumn
+} from '../common.styled';
 import { ContentLicensingDialog } from '../../components/ContentLicensingDialog';
 import { getContentLicensingAbbreviation } from '../../util/publicationUtils';
+import { range } from 'lodash';
+import { validateEmail } from '../../util/emailUtil';
+import { isNonEmptyString } from '../../util/stringUtils';
 
 const MAX_PREVIEW_LENGTH = 200;
 const MAX_PREVIEW_SUBTITLE_LENGTH = 300;
@@ -60,14 +70,48 @@ export const SharingOptionsPage = (props: {
   ] = useState(false);
   const [useType, setUseType] = useState(UseType.CITATE);
   const [storageType, setStorageType] = useState(
-    props.dataCollectionType === DataCollectionType.AGING ? StorageType.IPFS : StorageType.CLOUD_SECURE_STORAGE
+    props.dataCollectionType === DataCollectionType.AGING
+      ? StorageType.IPFS
+      : StorageType.CLOUD_SECURE_STORAGE
   );
-  const [accessType, setAccessType] = useState(AccessType.OPEN)
+  const [accessType, setAccessType] = useState(AccessType.OPEN);
   const [contentLicensingDialogOpen, setContentLicensingDialogOpen] =
     useState(false);
-  const [isPeerReviewEnabled, setIsPeerReviewEnabled] = useState(false)
+  const [isPeerReviewEnabled, setIsPeerReviewEnabled] = useState(false);
+  const [reviewers, setReviewers] = useState<Reviewer[]>(
+    range(0, 5).map((index) => ({
+      email: '',
+      firstName: '',
+      lastName: ''
+    }))
+  );
 
   const licenseTypeAbbreviation = getContentLicensingAbbreviation(licenseType);
+
+  const notValidReviewers = reviewers.filter((reviewer) => {
+    const hasFilled = Object.values(reviewer).some((value) => !!value);
+    const hasEmpty = Object.values(reviewer).some((value) => !value);
+    return (hasFilled && hasEmpty) || (reviewer.email && !validateEmail(reviewer.email));
+  });
+  const getValidReviewers = () =>
+    reviewers.filter(
+      (reviewer) =>
+        Object.values(reviewer).some((value) => !!value) &&
+        validateEmail(reviewer.email)
+    );
+  console.log('not valid reviewers length: ' + notValidReviewers.length);
+
+  const reviewersNotValid = notValidReviewers.length === 0;
+
+  const isPublicationNotValid =
+    !confirmThatAllAuthorsAgree ||
+    !understandAfterPublishingCannotBeEdited ||
+    !previewTitle ||
+    previewTitle.length > MAX_PREVIEW_LENGTH ||
+    !previewSubtitle ||
+    previewSubtitle.length > MAX_PREVIEW_SUBTITLE_LENGTH ||
+    (isPeerReviewEnabled && !reviewersNotValid);
+
   return (
     <Container>
       <LeftPanel>
@@ -154,7 +198,8 @@ export const SharingOptionsPage = (props: {
                 isDisabled={true}
                 onClick={() => setAccessType(AccessType.PERSONAL_SHARE)}
                 description={
-                  'Access is via a personal link. The dataset will not be published but will receive a reserved DOI and can later be converted into a publication.'
+                  'Access is via a personal link. The dataset will not be published but will receive ' +
+                  'a reserved DOI and can later be converted into a publication.'
                 }
               />
             </SharingOptionsContainer>
@@ -176,14 +221,17 @@ export const SharingOptionsPage = (props: {
                 }
               />
               <SharingOption
-                isDisabled={props.dataCollectionType === DataCollectionType.STUDENT}
+                isDisabled={
+                  props.dataCollectionType === DataCollectionType.STUDENT
+                }
                 onClick={() => setUseType(UseType.CO_AUTHORSHIP)}
                 isSelected={useType === UseType.CO_AUTHORSHIP}
                 icon={<AlternateEmail fontSize={'medium'} />}
                 label={'Co-authorship requirement'}
                 disabledChipLabel={'Not for competition'}
                 description={
-                  "Be credited as a co-author in journal publications when your data is vital to others' research. You can accept or reject collaboration requests. "
+                  "Be credited as a co-author in journal publications when your data is vital to others' research. " +
+                  'You can accept or reject collaboration requests.'
                 }
               />
             </SharingOptionsContainer>
@@ -220,14 +268,24 @@ export const SharingOptionsPage = (props: {
             </SharingOptionsContainer>
             <FairPeerReviewSection
               isPeerReviewEnabled={isPeerReviewEnabled}
-              setIsPeerReviewEnabled={enabled => setIsPeerReviewEnabled(enabled)}
+              setIsPeerReviewEnabled={(enabled) =>
+                setIsPeerReviewEnabled(enabled)
+              }
             />
             <NowAllTheWorksWrap variant={'body1'}>
-              {isPeerReviewEnabled ?
-                'Peer review will be performed based on FAIR principles' :
-                'Publication will be performed after editorial check in the format of a specialized aging data repository publication.'
-              }
+              {isPeerReviewEnabled
+                ? 'Peer review will be performed based on FAIR principles'
+                : 'Publication will be performed after editorial check in the format of a specialized aging data repository publication.'}
             </NowAllTheWorksWrap>
+            {isPeerReviewEnabled && (
+              <>
+                <ReviewersSection
+                  reviewers={reviewers}
+                  setReviewers={setReviewers}
+                />
+                <HeightElement value="24px" />
+              </>
+            )}
             <FormGroup>
               <FormControlLabel
                 control={
@@ -262,14 +320,7 @@ export const SharingOptionsPage = (props: {
             </FormGroup>
             <ButtonWrap
               variant="contained"
-              disabled={
-                !confirmThatAllAuthorsAgree ||
-                !understandAfterPublishingCannotBeEdited ||
-                !previewTitle ||
-                previewTitle.length > MAX_PREVIEW_LENGTH ||
-                !previewSubtitle ||
-                previewSubtitle.length > MAX_PREVIEW_SUBTITLE_LENGTH
-              }
+              disabled={isPublicationNotValid}
               onClick={() => {
                 void publicationService
                   .submitPublication(publicationId, {
@@ -278,7 +329,9 @@ export const SharingOptionsPage = (props: {
                     storageType,
                     previewTitle,
                     previewSubtitle,
-                    licenseType
+                    licenseType,
+                    isPeerReviewEnabled,
+                    reviewers: getValidReviewers()
                   })
                   .then(() => {
                     routerStore.navigatePage(
@@ -340,8 +393,11 @@ const SharingOption = React.forwardRef<HTMLDivElement, SharingOptionsProps>(
           </SharingOptionDescription>
         </>
         {isDisabled && (
-          <FlexWrapRow style={{marginTop: '10px'}}>
-            <DisabledChip label={disabledChipLabel} sx={{ backgroundColor: 'inherit' }} />
+          <FlexWrapRow style={{ marginTop: '10px' }}>
+            <DisabledChip
+              label={disabledChipLabel}
+              sx={{ backgroundColor: 'inherit' }}
+            />
           </FlexWrapRow>
         )}
       </SharingOptionWrap>
@@ -364,10 +420,133 @@ const FairPeerReviewSection = (props: {
   );
 };
 
-const DisabledChip = (props: {label: string, sx?: any}): ReactElement => {
+const ReviewersSection = (props: {
+  reviewers: Reviewer[];
+  setReviewers: React.Dispatch<React.SetStateAction<Reviewer[]>>;
+}): ReactElement => {
+  const updateReviewer = (index: number, updatedReviewer: Reviewer) => {
+    props.setReviewers((prevReviewers) =>
+      prevReviewers.map((reviewer, i) =>
+        i === index ? { ...updatedReviewer } : reviewer
+      )
+    );
+  };
   return (
-    <ChipWrap {...props} />
+    <SpaceBetweenColumn>
+      {props.reviewers.map((reviewer, index) => (
+        <ul
+          style={{
+            listStyleType: 'none',
+            paddingLeft: '0',
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginLeft: '-25px',
+            marginBottom: 0,
+            color: '#727171'
+            // color: '#8d8b91f'
+          }}>
+          <li
+            style={{
+              fontWeight: '500',
+              fontSize: '18px',
+              display: 'inline-block',
+              marginRight: '10px'
+            }}>
+            {index + 1}
+          </li>
+          <li>
+            <ReviewerElement
+              index={index}
+              reviewer={reviewer}
+              updateReviewer={updateReviewer}
+            />
+          </li>
+        </ul>
+      ))}
+    </SpaceBetweenColumn>
   );
+};
+
+const ReviewerElement = (props: {
+  index: number;
+  reviewer: Reviewer;
+  updateReviewer: (index: number, reviewers: Reviewer) => void;
+}): ReactElement => {
+  const { reviewer, index, updateReviewer } = props;
+  const [touched, setTouched] = useState({
+    email: false,
+    lastName: false,
+    firstName: false
+  });
+  return (
+    <ReviewerRow>
+      <FullWidthTextField
+        value={reviewer.email}
+        label={
+          !validateEmail(reviewer.email) && touched.email
+            ? 'Invalid email'
+            : 'Email'
+        }
+        error={!validateEmail(reviewer.email) && touched.email}
+        onChange={(e) => {
+          reviewer.email = e.currentTarget.value;
+          updateReviewer(index, reviewer);
+        }}
+        onBlur={() =>
+          setTouched({
+            ...touched,
+            email: true
+          })
+        }
+        variant="outlined"
+      />
+      <FullWidthTextField
+        value={reviewer.firstName}
+        label={
+          !isNonEmptyString(reviewer.firstName) && touched.firstName
+            ? 'Invalid first name'
+            : 'First name'
+        }
+        error={!isNonEmptyString(reviewer.firstName) && touched.firstName}
+        onChange={(e) => {
+          reviewer.firstName = e.currentTarget.value;
+          updateReviewer(index, reviewer);
+        }}
+        onBlur={() =>
+          setTouched({
+            ...touched,
+            firstName: true
+          })
+        }
+        variant="outlined"
+      />
+      <FullWidthTextField
+        value={reviewer.lastName}
+        label={
+          !isNonEmptyString(reviewer.lastName) && touched.lastName
+            ? 'Invalid last name'
+            : 'Last name'
+        }
+        error={!isNonEmptyString(reviewer.lastName) && touched.lastName}
+        onChange={(e) => {
+          reviewer.lastName = e.currentTarget.value;
+          updateReviewer(index, reviewer);
+        }}
+        onBlur={() =>
+          setTouched({
+            ...touched,
+            lastName: true
+          })
+        }
+        variant="outlined"
+      />
+    </ReviewerRow>
+  );
+};
+
+const DisabledChip = (props: { label: string; sx?: any }): ReactElement => {
+  return <ChipWrap {...props} />;
 };
 
 const ButtonWrap = styled(Button)`
@@ -425,7 +604,7 @@ const SharingOptionsContainer = styled.div`
   display: flex;
   gap: 16px;
   padding: 24px 0;
-`
+`;
 
 const SharingOptionWrap = styled.div<{
   noMargin?: boolean;
@@ -437,10 +616,10 @@ const SharingOptionWrap = styled.div<{
   border-radius: 8px;
   border: 1px solid var(--divider, #d2d2d6);
   ${(props) =>
-          props.isSelected
-                  ? 'border: 2px solid var(--primary-dark, #3C47E5);' +
-                  'box-shadow: 0px 0px 4px 0px #3B4EFF;'
-                  : ''}
+    props.isSelected
+      ? 'border: 2px solid var(--primary-dark, #3C47E5);' +
+        'box-shadow: 0px 0px 4px 0px #3B4EFF;'
+      : ''}
   display: flex;
   flex-direction: column;
 `;
@@ -448,9 +627,9 @@ const SharingOptionWrap = styled.div<{
 const IconWrap = styled.div<{ isDisabled?: boolean }>`
   margin-right: 8px;
   ${(props) =>
-          props.isDisabled
-                  ? 'color: var(--text-disabled, rgba(4, 0, 54, 0.38));'
-                  : 'black'}
+    props.isDisabled
+      ? 'color: var(--text-disabled, rgba(4, 0, 54, 0.38));'
+      : 'black'}
 `;
 
 const SharingOptionLabel = styled(Typography)<{ isDisabled?: boolean }>`
@@ -461,9 +640,9 @@ const SharingOptionLabel = styled(Typography)<{ isDisabled?: boolean }>`
   line-height: 150%; /* 24px */
   letter-spacing: 0.15px;
   ${(props) =>
-          props.isDisabled
-                  ? 'color: var(--text-disabled, rgba(4, 0, 54, 0.38));'
-                  : ''}
+    props.isDisabled
+      ? 'color: var(--text-disabled, rgba(4, 0, 54, 0.38));'
+      : ''}
 `;
 
 const SharingOptionDescription = styled.div<{ isDisabled?: boolean }>`
@@ -559,4 +738,12 @@ export const Container = styled.div`
   display: flex;
   height: 100vh;
   width: 100%;
+`;
+
+export const ReviewerRow = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 8px;
 `;

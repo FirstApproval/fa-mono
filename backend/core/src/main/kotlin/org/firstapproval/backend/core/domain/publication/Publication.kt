@@ -73,9 +73,6 @@ class Publication(
     @Fetch(value = SELECT)
     @OneToMany(fetch = EAGER, cascade = [ALL], orphanRemoval = true, mappedBy = "publication")
     var authors: MutableList<Author> = mutableListOf(),
-    @Fetch(value = SELECT)
-    @OneToMany(fetch = EAGER, cascade = [ALL], orphanRemoval = true, mappedBy = "publication")
-    var reviewers: MutableList<Reviewer> = mutableListOf(),
     var downloadsCount: Long = 0,
     var viewsCount: Long = 0,
     var creationTime: ZonedDateTime = now(),
@@ -98,6 +95,10 @@ class Publication(
     var isBlocked: Boolean = false,
     @Enumerated(STRING)
     var dataCollectionType: DataCollectionType,
+    var isFairPeerReview: Boolean = false,
+    @Fetch(value = SELECT)
+    @OneToMany(fetch = EAGER, cascade = [ALL], orphanRemoval = true, mappedBy = "publication")
+    var reviewers: MutableList<Reviewer> = mutableListOf(),
 ) {
     val authorsNames: String
         get() = authors.joinToString(postfix = ".") { it.lastName + " " + it.firstName }

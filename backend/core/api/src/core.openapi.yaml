@@ -1955,6 +1955,8 @@ components:
         previewSubtitle:
           type: string
           maxLength: 300
+        isPeerReviewEnabled:
+          type: boolean
         reviewers:
           items:
             $ref: '#/components/schemas/Reviewer'
@@ -2301,8 +2303,6 @@ components:
           type: string
         lastName:
           type: string
-        user:
-          $ref: '#/components/schemas/UserInfo'
       required:
         - email
         - firstName
