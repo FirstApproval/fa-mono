@@ -6,6 +6,7 @@ import {
   FormControlLabel,
   FormGroup,
   IconButton,
+  Switch,
   TextField,
   Typography
 } from '@mui/material';
@@ -64,6 +65,7 @@ export const SharingOptionsPage = (props: {
   const [accessType, setAccessType] = useState(AccessType.OPEN)
   const [contentLicensingDialogOpen, setContentLicensingDialogOpen] =
     useState(false);
+  const [isPeerReviewEnabled, setIsPeerReviewEnabled] = useState(false)
 
   const licenseTypeAbbreviation = getContentLicensingAbbreviation(licenseType);
   return (
@@ -216,11 +218,15 @@ export const SharingOptionsPage = (props: {
                 isDisabled={isIpfsDisabled}
               />
             </SharingOptionsContainer>
-            <FairPeerReviewSection />
+            <FairPeerReviewSection
+              isPeerReviewEnabled={isPeerReviewEnabled}
+              setIsPeerReviewEnabled={enabled => setIsPeerReviewEnabled(enabled)}
+            />
             <NowAllTheWorksWrap variant={'body1'}>
-              Now all the works are undergoing pre-moderation. We are still
-              working to organize an honest peer review based on the quality of
-              the data, not on your outcomes. Stay tuned!
+              {isPeerReviewEnabled ?
+                'Peer review will be performed based on FAIR principles' :
+                'Publication will be performed after editorial check in the format of a specialized aging data repository publication.'
+              }
             </NowAllTheWorksWrap>
             <FormGroup>
               <FormControlLabel
@@ -343,11 +349,17 @@ const SharingOption = React.forwardRef<HTMLDivElement, SharingOptionsProps>(
   }
 );
 
-const FairPeerReviewSection = (): ReactElement => {
+const FairPeerReviewSection = (props: {
+  isPeerReviewEnabled: boolean;
+  setIsPeerReviewEnabled: (isPeerReviewEnabled: boolean) => void;
+}): ReactElement => {
   return (
     <FairPeerReviewSectionWrap variant={'h6'} component={'div'}>
       <FairPeerReviewTitleWrap>Fair peer review</FairPeerReviewTitleWrap>
-      <DisabledChip label={'soon'} sx={{ backgroundColor: 'inherit' }} />
+      <Switch
+        checked={props.isPeerReviewEnabled}
+        onClick={() => props.setIsPeerReviewEnabled(!props.isPeerReviewEnabled)}
+      />
     </FairPeerReviewSectionWrap>
   );
 };
@@ -380,7 +392,7 @@ const FairPeerReviewSectionWrap = styled(Typography)`
   width: 100%;
   display: flex;
   align-items: center;
-  padding: 8px 16px;
+  padding: 8px 16px 8px 0;
   margin-top: 16px;
   margin-bottom: 24px;
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));

@@ -29,6 +29,7 @@ import org.firstapproval.backend.core.domain.publication.downloader.Downloader
 import org.firstapproval.backend.core.domain.publication.downloader.DownloaderRepository
 import org.firstapproval.backend.core.domain.publication.file.PublicationFileRepository
 import org.firstapproval.backend.core.domain.publication.file.PublicationSampleFileRepository
+import org.firstapproval.backend.core.domain.publication.reviewers.Reviewer
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
 import org.firstapproval.backend.core.domain.user.UserService
@@ -124,7 +125,8 @@ class PublicationService(
     }
 
     @Transactional(readOnly = true)
-    fun findAllByIdIn(ids: List<String>) = publicationRepository.findAllByIdInAndStatusAndIsBlockedIsFalseAndAccessType(ids, PUBLISHED, OPEN)
+    fun findAllByIdIn(ids: List<String>) =
+        publicationRepository.findAllByIdInAndStatusAndIsBlockedIsFalseAndAccessType(ids, PUBLISHED, OPEN)
 
     @Transactional
     fun edit(user: User, id: String, request: PublicationEditRequest) {
@@ -231,6 +233,20 @@ class PublicationService(
         if (publication.dataCollectionType == STUDENT && submitPublicationRequest.useType == CO_AUTHORSHIP) {
             throw IllegalArgumentException("Co-authorship is not allowed for student data collection ")
         }
+
+        val reviewers = submitPublicationRequest.reviewers.map { reviewer ->
+            Reviewer(
+                publication = publication,
+                email = reviewer.email,
+                firstName = reviewer.firstName,
+                lastName = reviewer.lastName,
+            )
+        }
+
+        publication.reviewers.clear()
+        publicationRepository.saveAndFlush(publication)
+        publication.reviewers.addAll(reviewers)
+
         publication.status = READY_FOR_PUBLICATION
         publication.accessType = AccessType.valueOf(submitPublicationRequest.accessType.name)
         publication.storageType = StorageType.valueOf(submitPublicationRequest.storageType.name)

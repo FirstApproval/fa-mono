@@ -23,7 +23,6 @@ import org.firstapproval.backend.core.utils.EMAIL_CONFIRMATION_CODE_LENGTH
 import org.firstapproval.backend.core.utils.generateCode
 import org.firstapproval.backend.core.utils.require
 import org.firstapproval.backend.core.web.errors.RecordConflictException
-import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -52,7 +51,6 @@ class UserService(
     private val authorizationLimitRepository: AuthorizationLimitRepository,
     private val frontendProperties: FrontendProperties,
     private val notificationService: NotificationService,
-    private val emailSender: JavaMailSender,
     private val authorRepository: AuthorRepository,
     private val fileStorageService: FileStorageService,
     private val transactionTemplate: TransactionTemplate,
