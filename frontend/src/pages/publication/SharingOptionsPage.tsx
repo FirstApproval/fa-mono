@@ -77,7 +77,9 @@ export const SharingOptionsPage = (props: {
   const [accessType, setAccessType] = useState(AccessType.OPEN);
   const [contentLicensingDialogOpen, setContentLicensingDialogOpen] =
     useState(false);
-  const [isPeerReviewEnabled, setIsPeerReviewEnabled] = useState(false);
+  const [isPeerReviewEnabled, setIsPeerReviewEnabled] = useState(
+    props.dataCollectionType === DataCollectionType.STUDENT
+  );
   const [reviewers, setReviewers] = useState<Reviewer[]>(
     range(0, 5).map((index) => ({
       email: '',
@@ -91,7 +93,10 @@ export const SharingOptionsPage = (props: {
   const notValidReviewers = reviewers.filter((reviewer) => {
     const hasFilled = Object.values(reviewer).some((value) => !!value);
     const hasEmpty = Object.values(reviewer).some((value) => !value);
-    return (hasFilled && hasEmpty) || (reviewer.email && !validateEmail(reviewer.email));
+    return (
+      (hasFilled && hasEmpty) ||
+      (reviewer.email && !validateEmail(reviewer.email))
+    );
   });
   const getValidReviewers = () =>
     reviewers.filter(
@@ -267,6 +272,7 @@ export const SharingOptionsPage = (props: {
               />
             </SharingOptionsContainer>
             <FairPeerReviewSection
+              disabled={props.dataCollectionType !== DataCollectionType.STUDENT}
               isPeerReviewEnabled={isPeerReviewEnabled}
               setIsPeerReviewEnabled={(enabled) =>
                 setIsPeerReviewEnabled(enabled)
@@ -406,6 +412,7 @@ const SharingOption = React.forwardRef<HTMLDivElement, SharingOptionsProps>(
 );
 
 const FairPeerReviewSection = (props: {
+  disabled: boolean;
   isPeerReviewEnabled: boolean;
   setIsPeerReviewEnabled: (isPeerReviewEnabled: boolean) => void;
 }): ReactElement => {
@@ -413,6 +420,7 @@ const FairPeerReviewSection = (props: {
     <FairPeerReviewSectionWrap variant={'h6'} component={'div'}>
       <FairPeerReviewTitleWrap>Fair peer review</FairPeerReviewTitleWrap>
       <Switch
+        disabled={props.disabled}
         checked={props.isPeerReviewEnabled}
         onClick={() => props.setIsPeerReviewEnabled(!props.isPeerReviewEnabled)}
       />
