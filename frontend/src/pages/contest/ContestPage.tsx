@@ -14,23 +14,15 @@ import contest2 from 'src/assets/contest-2.svg';
 import contest3 from 'src/assets/contest-3.svg';
 import {routerStore} from "../../core/router";
 import {Page} from "../../core/router/constants";
-import {Box, Button, Grid} from "@mui/material";
+import {Box, Button, Grid, Link} from "@mui/material";
 
 interface ContestPageProps {
 }
 
 export const ContestPage: FunctionComponent<ContestPageProps> = observer((props: ContestPageProps) => {
 
-        function goToInformationLetter() {
-            window.open('https://google.com', '_blank');
-        }
-
-        function goToGuidelines() {
-            window.open('https://google.com', '_blank');
-        }
-
         function applyNow() {
-            routerStore.navigatePage(Page.SIGN_UP);
+            routerStore.navigatePage(Page.CHOOSE_DATA_COLLECTION_PAGE);
         }
 
         return (
@@ -255,38 +247,49 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         <img src={contest1} style={{marginRight: 8, marginLeft: 16}}/>
                                         Submission deadline: 28 Feb 2025
                                     </div>
-                                    <div style={{
-                                        width: 480,
-                                        height: 80,
-                                        marginBottom: 6,
-                                        backgroundColor: '#F8F7FA',
-                                        fontFamily: 'Roboto',
-                                        fontSize: 24,
-                                        fontWeight: 500,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        borderRadius: 8,
-                                        cursor: 'pointer',
-                                    }} onClick={goToInformationLetter}>
-                                        <img src={contest2} style={{marginRight: 8, marginLeft: 16}}/>
-                                        Information Letter
-                                    </div>
-                                    <div style={{
-                                        width: 480,
-                                        height: 80,
-                                        backgroundColor: '#F8F7FA',
-                                        fontFamily: 'Roboto',
-                                        fontSize: 24,
-                                        fontWeight: 500,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        borderRadius: 8,
-                                        cursor: 'pointer',
-                                    }} onClick={goToGuidelines}>
-                                        <img src={contest3} style={{marginRight: 8, marginLeft: 16}}/>
-                                        Guidelines
-                                        <img src={contestRightTop} style={{marginLeft: 8}}/>
-                                    </div>
+                                    <Link
+                                        color="inherit"
+                                        href={'https://docs.google.com/document/d/1qkKKMeW1OjavRftz1QqDhpxT36JxupTEvIQ4Eyoli0c'}
+                                        target={'_blank'}>
+                                        <div style={{
+                                            width: 480,
+                                            height: 80,
+                                            marginBottom: 6,
+                                            backgroundColor: '#F8F7FA',
+                                            fontFamily: 'Roboto',
+                                            fontSize: 24,
+                                            fontWeight: 500,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            borderRadius: 8,
+                                            cursor: 'pointer',
+                                        }}>
+                                            <img src={contest2} style={{marginRight: 8, marginLeft: 16}}/>
+                                            Privacy Policy
+                                            <img src={contestRightTop} style={{marginLeft: 8}}/>
+                                        </div>
+                                    </Link>
+                                    <Link
+                                        color="inherit"
+                                        href={'https://docs.google.com/document/d/1Cq5OTm_gODN3JUjZCBzid2eY_kmKn9AwVhDc1klmva0'}
+                                        target={'_blank'}>
+                                        <div style={{
+                                            width: 480,
+                                            height: 80,
+                                            backgroundColor: '#F8F7FA',
+                                            fontFamily: 'Roboto',
+                                            fontSize: 24,
+                                            fontWeight: 500,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            borderRadius: 8,
+                                            cursor: 'pointer',
+                                        }}>
+                                            <img src={contest3} style={{marginRight: 8, marginLeft: 16}}/>
+                                            Guidelines
+                                            <img src={contestRightTop} style={{marginLeft: 8}}/>
+                                        </div>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
@@ -327,38 +330,49 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         <img src={contest1} style={{marginRight: 8, marginLeft: 16}}/>
                                         Submission deadline: 28 Feb 2025
                                     </div>
-                                    <div style={{
-                                        width: '100%',
-                                        height: 80,
-                                        marginBottom: 6,
-                                        backgroundColor: '#F8F7FA',
-                                        fontFamily: 'Roboto',
-                                        fontSize: 16,
-                                        fontWeight: 500,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        borderRadius: 8,
-                                        cursor: 'pointer',
-                                    }} onClick={goToInformationLetter}>
-                                        <img src={contest2} style={{marginRight: 8, marginLeft: 16}}/>
-                                        Information Letter
-                                    </div>
-                                    <div style={{
-                                        width: '100%',
-                                        height: 80,
-                                        backgroundColor: '#F8F7FA',
-                                        fontFamily: 'Roboto',
-                                        fontSize: 16,
-                                        fontWeight: 500,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        borderRadius: 8,
-                                        cursor: 'pointer',
-                                    }} onClick={goToGuidelines}>
-                                        <img src={contest3} style={{marginRight: 8, marginLeft: 16}}/>
-                                        Guidelines
-                                        <img src={contestRightTop} style={{marginLeft: 8}}/>
-                                    </div>
+                                    <Link
+                                        color="inherit"
+                                        href={'https://docs.google.com/document/d/1qkKKMeW1OjavRftz1QqDhpxT36JxupTEvIQ4Eyoli0c'}
+                                        target={'_blank'}>
+                                        <div style={{
+                                            width: '100%',
+                                            height: 80,
+                                            marginBottom: 6,
+                                            backgroundColor: '#F8F7FA',
+                                            fontFamily: 'Roboto',
+                                            fontSize: 16,
+                                            fontWeight: 500,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            borderRadius: 8,
+                                            cursor: 'pointer',
+                                        }}>
+                                            <img src={contest2} style={{marginRight: 8, marginLeft: 16}}/>
+                                            Privacy Policy
+                                            <img src={contestRightTop} style={{marginLeft: 8}}/>
+                                        </div>
+                                    </Link>
+                                    <Link
+                                        color="inherit"
+                                        href={'https://docs.google.com/document/d/1Cq5OTm_gODN3JUjZCBzid2eY_kmKn9AwVhDc1klmva0'}
+                                        target={'_blank'}>
+                                        <div style={{
+                                            width: '100%',
+                                            height: 80,
+                                            backgroundColor: '#F8F7FA',
+                                            fontFamily: 'Roboto',
+                                            fontSize: 16,
+                                            fontWeight: 500,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            borderRadius: 8,
+                                            cursor: 'pointer',
+                                        }}>
+                                            <img src={contest3} style={{marginRight: 8, marginLeft: 16}}/>
+                                            Guidelines
+                                            <img src={contestRightTop} style={{marginLeft: 8}}/>
+                                        </div>
+                                    </Link>
                                 </div>
                                 <div>
                                     <div style={{
