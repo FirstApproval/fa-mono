@@ -24,6 +24,7 @@ import { C0288D1, C68676E } from '../../ui-kit/colors';
 
 interface EnterAffiliationsPageProps {
   isRegistration: boolean;
+  onContinueClick: () => void
 }
 
 export const EnterAffiliationsPage = observer(
@@ -93,7 +94,7 @@ export const EnterAffiliationsPage = observer(
                   return userStore
                     .updateUser(workplaces, false, true)
                     .then(() => {
-                      routerStore.navigatePage(Page.HOME_PAGE);
+                      props.onContinueClick();
                       return true;
                     });
                 }
