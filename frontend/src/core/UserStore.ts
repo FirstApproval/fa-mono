@@ -97,7 +97,8 @@ export class UserStore implements IWorkplaceStore {
 
   goToCreatePublication = (): void => {
     if (!authStore.token) {
-      routerStore.navigatePage(Page.SIGN_UP);
+      routerStore.navigatePage(Page.SIGN_UP, signUpPath);
+      return;
     }
 
     const user = userStore.user;
