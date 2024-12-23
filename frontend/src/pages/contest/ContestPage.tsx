@@ -1334,9 +1334,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                             backgroundColor: 'rgba(60,71,229,0.12)'
                                         }}
                                         variant="text"
-                                        onClick={() => {
-                                            routerStore.navigatePage(Page.SIGN_UP);
-                                        }}
+                                        onClick={applyNow}
                                         size={'large'}>
                                         Apply now <img src={contestRightBlue} style={{marginBottom: 4, marginLeft: 8}}/>
                                     </Button>
