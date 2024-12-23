@@ -13,13 +13,17 @@ import {
 } from '../apis/first-approval-api';
 import { SampleFileServiceAdapter } from './SampleFileServiceAdapter';
 import { authStore } from './auth';
+import { routerStore } from './router'
+import { Page, signUpPath } from './router/constants'
 
 const configuration: Configuration = new Configuration({
   accessToken: async () => {
     if (authStore.token) {
       return authStore.token;
     } else {
-      throw Error('No auth token set');
+      console.error('No auth token set');
+      routerStore.navigatePage(Page.SIGN_UP, signUpPath);
+      return '';
     }
   }
 });
