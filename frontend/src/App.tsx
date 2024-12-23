@@ -78,7 +78,10 @@ const App: FunctionComponent = observer(() => {
                 <ContactsPage key={routerStore.key} />
               )}
               {page === Page.CHOOSE_DATA_COLLECTION_PAGE && (
-                <ChooseDataCollectionPage key={routerStore.key} />
+                <ChooseDataCollectionPage
+                  key={routerStore.key}
+                  dataCollectionType={routerStore.payload.dataCollectionType}
+                />
               )}
               {page === Page.PUBLICATION && (
                 <PublicationPage key={routerStore.key} />
@@ -166,6 +169,7 @@ const App: FunctionComponent = observer(() => {
               {page === Page.AFFILIATIONS && (
                 <EnterAffiliationsPage
                   isRegistration={routerStore.payload.isRegistration}
+                  onContinueClick={() => void routerStore.navigateAfterLogin()}
                 />
               )}
               {page === Page.SIGN_UP_PASSWORD && (

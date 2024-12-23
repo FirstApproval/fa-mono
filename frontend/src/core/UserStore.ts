@@ -1,9 +1,17 @@
 import {makeAutoObservable, reaction, runInAction} from 'mobx';
 import {userService} from './service';
-import {type GetMeResponse, Workplace} from '../apis/first-approval-api';
+import {
+  DataCollectionType,
+  type GetMeResponse,
+  Workplace
+} from '../apis/first-approval-api';
 import {authStore} from './auth';
 import {routerStore} from './router';
-import {IWorkplaceStore, WorkplaceProps, WorkplaceValidationState} from './WorkplaceProps';
+import {
+  IWorkplaceStore,
+  WorkplaceProps,
+  WorkplaceValidationState
+} from './WorkplaceProps';
 import {userStore} from './user';
 import {cloneDeep} from 'lodash';
 import {
@@ -13,9 +21,9 @@ import {
   emailPath,
   namePath,
   Page,
-  publicationPath,
   signUpPath
 } from './router/constants';
+import { PUBLISHING_DATA_COLLECTION_TYPE_SESSION_KEY } from "../pages/publication/ActionBar"
 
 export class UserStore implements IWorkplaceStore {
   user: GetMeResponse | undefined = undefined;
@@ -95,27 +103,37 @@ export class UserStore implements IWorkplaceStore {
     }
   };
 
-  goToCreatePublication = (): void => {
+  goToCreatePublication = (dataCollectionType?: DataCollectionType): void => {
     if (!authStore.token) {
+      sessionStorage.setItem(
+        PUBLISHING_DATA_COLLECTION_TYPE_SESSION_KEY,
+        dataCollectionType ?? DataCollectionType.GENERAL
+      );
       routerStore.navigatePage(Page.SIGN_UP, signUpPath);
       return;
     }
 
-    const user = userStore.user;
-    if (!user?.isNameConfirmed) {
-      routerStore.navigatePage(Page.NAME, namePath, true);
-    } else if (!user?.isWorkplacesConfirmed || !user?.workplaces?.length) {
-      routerStore.navigatePage(Page.AFFILIATIONS, affiliationsPath, true, {
-        isRegistration: false
-      });
-    } else if (!user?.email) {
-      routerStore.navigatePage(Page.EMAIL, emailPath, true);
-    } else {
-      routerStore.navigatePage(
-        Page.CHOOSE_DATA_COLLECTION_PAGE,
-        chooseDataCollectionPath
-      );
-    }
+    userService.getMe().then((response) => {
+      const user = response.data;
+      if (!user?.isNameConfirmed) {
+        routerStore.navigatePage(Page.NAME, namePath, true);
+      } else if (!user?.isWorkplacesConfirmed || !user?.workplaces?.length) {
+        routerStore.navigatePage(Page.AFFILIATIONS, affiliationsPath, true, {
+          isRegistration: false
+        });
+      } else if (!user?.email) {
+        routerStore.navigatePage(Page.EMAIL, emailPath, true);
+      } else {
+        routerStore.navigatePage(
+          Page.CHOOSE_DATA_COLLECTION_PAGE,
+          chooseDataCollectionPath,
+          false,
+          {
+            dataCollectionType
+          }
+        );
+      }
+    });
   };
 
   getContestLink = (): string => {
@@ -123,7 +141,7 @@ export class UserStore implements IWorkplaceStore {
   };
 
   goToContestPage = (): void => {
-    routerStore.navigatePage(Page.CONTEST_PAGE);
+    routerStore.navigatePage(Page.CONTEST_PAGE, contestPath);
   };
 
   updateUser = async (

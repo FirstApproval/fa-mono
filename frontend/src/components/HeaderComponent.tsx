@@ -8,7 +8,7 @@ import { BetaDialogWithButton } from './BetaDialogWithButton';
 import { authStore } from '../core/auth';
 import { userStore } from '../core/user';
 import { UserMenu } from './UserMenu';
-import { Page } from '../core/router/constants';
+import { Page, signInPath } from '../core/router/constants';
 import { FALinkWrap } from './LinkWrap';
 
 interface HeaderComponentProps {
@@ -82,7 +82,6 @@ export const HeaderComponent = (
                       md: 'block'
                   }}>
                   <ButtonWrap
-                      href={userStore.getContestLink()}
                       onClick={(e) => {
                           e.preventDefault();
                           userStore.goToContestPage();
@@ -129,7 +128,7 @@ export const HeaderComponent = (
                     <ButtonWrap
                       variant="outlined"
                       onClick={() => {
-                        routerStore.navigatePage(Page.SIGN_IN);
+                        routerStore.navigatePage(Page.SIGN_IN, signInPath);
                       }}
                       size={'large'}>
                       Log in
@@ -148,7 +147,7 @@ export const HeaderComponent = (
                     <Button
                       variant="outlined"
                       onClick={() => {
-                        routerStore.navigatePage(Page.SIGN_IN);
+                        routerStore.navigatePage(Page.SIGN_IN, signInPath);
                       }}>
                       Log in
                     </Button>

@@ -10,7 +10,7 @@ import { routerStore } from '../core/router';
 import styled from '@emotion/styled';
 import { Edit, Logout, SettingsOutlined } from '@mui/icons-material';
 import { HeightElement, StyledMenuItem } from '../pages/common.styled';
-import { Page } from '../core/router/constants';
+import { Page, signInPath } from '../core/router/constants';
 import { UserElement } from './UserElement';
 
 export const UserMenu = observer((): ReactElement => {
@@ -30,7 +30,7 @@ export const UserMenu = observer((): ReactElement => {
       <ButtonWrap
         variant="outlined"
         onClick={() => {
-          routerStore.navigatePage(Page.SIGN_IN);
+          routerStore.navigatePage(Page.SIGN_IN, signInPath);
         }}
         size={'medium'}>
         Log in

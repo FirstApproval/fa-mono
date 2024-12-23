@@ -22,8 +22,13 @@ import {
   signInPath,
   signUpPath
 } from './constants';
-import { PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY } from '../../pages/publication/ActionBar';
+import {
+  PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY,
+  PUBLISHING_DATA_COLLECTION_TYPE_SESSION_KEY
+} from '../../pages/publication/ActionBar';
 import { routerStore } from '../router';
+import { userStore } from '../user';
+import { DataCollectionType } from '../../apis/first-approval-api';
 
 export const VISIT_MARK_KEY = 'visit-mark';
 export const UTM_SOURCE_KEY = 'utm_source';
@@ -199,12 +204,24 @@ export class RouterStore {
     );
     if (requestedPublication) {
       sessionStorage.removeItem(PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY);
+      sessionStorage.removeItem(PUBLISHING_DATA_COLLECTION_TYPE_SESSION_KEY);
       routerStore.navigatePage(
         Page.PUBLICATION,
         `${publicationPath}/${requestedPublication}`,
         true
       );
+      return;
     }
+
+    const requestedDataCollectionType = sessionStorage.getItem(
+      PUBLISHING_DATA_COLLECTION_TYPE_SESSION_KEY
+    );
+    if (requestedDataCollectionType) {
+      const dataCollectionType = DataCollectionType[requestedDataCollectionType as keyof typeof DataCollectionType]
+      userStore.goToCreatePublication(dataCollectionType)
+      return;
+    }
+
     const userData = (await userService.getMe()).data;
     if (!userData.isNameConfirmed) {
       this.navigatePage(Page.NAME, namePath, true);

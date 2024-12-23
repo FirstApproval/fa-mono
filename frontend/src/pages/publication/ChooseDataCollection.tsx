@@ -17,158 +17,174 @@ import { FormControlLabel, Radio, Typography } from '@mui/material';
 import { DataCollectionType } from '../../apis/first-approval-api';
 import styled from '@emotion/styled';
 import { LoadingButton } from '@mui/lab';
-import { publicationService } from "../../core/service"
-import { Page, publicationPath } from "../../core/router/constants"
+import { publicationService } from '../../core/service'
+import { Page, publicationPath } from '../../core/router/constants'
+import { PUBLISHING_DATA_COLLECTION_TYPE_SESSION_KEY } from './ActionBar'
 
-export const ChooseDataCollectionPage: FunctionComponent = observer(() => {
-  const [dataCollectionType, setDataCollectionType] = useState(
-    DataCollectionType.GENERAL
-  );
-
-  useEffect(() => {});
-
-  const createPublication = () => {
-    publicationService.createPublication({dataCollectionType}).then(response =>
-      routerStore.navigatePage(Page.PUBLICATION, `${publicationPath}/${response.data.id}`)
+interface ChooseDataCollectionPageProps {
+  dataCollectionType: DataCollectionType
+}
+export const ChooseDataCollectionPage: FunctionComponent<ChooseDataCollectionPageProps> =
+  observer((props: ChooseDataCollectionPageProps) => {
+    const [dataCollectionType, setDataCollectionType] = useState(
+      props.dataCollectionType ?? DataCollectionType.GENERAL
     );
-  }
 
-  return (
-    <>
-      <Helmet>
-        <meta name="description" content={'Choose Data Collection'} />
-      </Helmet>
-      <Parent>
-        <FlexBodyCenter>
-          <Body>
-            <HeightElement value={'70px'} />
-            <TitleRowWrap height={'130px'}>
-              <Header style={{ alignSelf: 'flex-end' }}>
-                Choose data collection
-              </Header>
-              <Close
-                fontSize={'large'}
-                onClick={() => routerStore.back()}
-                style={{
-                  cursor: 'pointer',
-                  alignSelf: 'flex-start'
-                }}
-                htmlColor={C68676E}
-              />
-            </TitleRowWrap>
-            <DataCollectionTypeWrap>
-              <OptionFormControlLabel
-                value={DataCollectionType.GENERAL}
-                label={
-                  <FlexWrapColumn style={{ marginLeft: '10px' }}>
-                    <FlexWrapRow style={{ alignItems: 'center' }}>
-                      <Typography variant={'h6'}>
-                        General First Approval collection
-                      </Typography>
-                      <InfoOutlined
-                        htmlColor={C04003661}
-                        sx={{
-                          width: 24,
-                          height: 24,
-                          marginLeft: '12px'
-                        }}
-                      />
-                    </FlexWrapRow>
-                    <OptionDescription variant={'body2'}>
-                      All types of datasets. No submission deadlines
-                    </OptionDescription>
-                  </FlexWrapColumn>
-                }
-                control={
-                  <Radio
-                    checked={dataCollectionType === DataCollectionType.GENERAL}
-                    onChange={() =>
-                      setDataCollectionType(DataCollectionType.GENERAL)
-                    }
-                  />
-                }
-              />
-              <HeightElement value={'16px'} />
-              <OptionFormControlLabel
-                value={DataCollectionType.AGING}
-                label={
-                  <FlexWrapColumn style={{ marginLeft: '10px' }}>
-                    <FlexWrapRow style={{ alignItems: 'center' }}>
-                      <Typography variant={'h6'}>
-                        Aging data collection
-                      </Typography>
-                      <InfoOutlined
-                        htmlColor={C04003661}
-                        sx={{
-                          width: 24,
-                          height: 24,
-                          marginLeft: '12px'
-                        }}
-                      />
-                    </FlexWrapRow>
-                    <OptionDescription variant={'body2'}>
-                      No submission deadlines. Peer reviewed datasets in the
-                      fields of aging research
-                    </OptionDescription>
-                  </FlexWrapColumn>
-                }
-                control={
-                  <Radio
-                    checked={dataCollectionType === DataCollectionType.AGING}
-                    onChange={() =>
-                      setDataCollectionType(DataCollectionType.AGING)
-                    }
-                  />
-                }
-              />
-              <HeightElement value={'16px'} />
-              <OptionFormControlLabel
-                value={DataCollectionType.STUDENT}
-                label={
-                  <FlexWrapColumn style={{ marginLeft: '10px' }}>
-                    <FlexWrapRow style={{ alignItems: 'center' }}>
-                      <Typography variant={'h6'}>
-                        Student data competition
-                      </Typography>
-                      <InfoOutlined
-                        htmlColor={C04003661}
-                        sx={{
-                          width: 24,
-                          height: 24,
-                          marginLeft: '12px'
-                        }}
-                      />
-                    </FlexWrapRow>
-                    <OptionDescription variant={'body2'}>
-                      Datasets generated by students.
-                    </OptionDescription>
-                  </FlexWrapColumn>
-                }
-                control={
-                  <Radio
-                    checked={dataCollectionType === DataCollectionType.STUDENT}
-                    onChange={() =>
-                      setDataCollectionType(DataCollectionType.STUDENT)
-                    }
-                  />
-                }
-              />
-            </DataCollectionTypeWrap>
-            <HeightElement value="26px" />
-            <LoadingButton
-              disabled={!dataCollectionType}
-              variant="contained"
-              size={'large'}
-              endIcon={<ArrowForward />}
-              onClick={() => createPublication()}>
-              Continue
-            </LoadingButton>
-          </Body>
-        </FlexBodyCenter>
-      </Parent>
-    </>
-  );
-});
+    useEffect(() => {
+      sessionStorage.removeItem(PUBLISHING_DATA_COLLECTION_TYPE_SESSION_KEY);
+    }, []);
+
+    const createPublication = () => {
+      publicationService
+        .createPublication({ dataCollectionType })
+        .then((response) =>
+          routerStore.navigatePage(
+            Page.PUBLICATION,
+            `${publicationPath}/${response.data.id}`
+          )
+        );
+    };
+
+    return (
+      <>
+        <Helmet>
+          <meta name="description" content={'Choose Data Collection'} />
+        </Helmet>
+        <Parent>
+          <FlexBodyCenter>
+            <Body>
+              <HeightElement value={'70px'} />
+              <TitleRowWrap height={'130px'}>
+                <Header style={{ alignSelf: 'flex-end' }}>
+                  Choose data collection
+                </Header>
+                <Close
+                  fontSize={'large'}
+                  onClick={() => routerStore.goHome()}
+                  style={{
+                    cursor: 'pointer',
+                    alignSelf: 'flex-start'
+                  }}
+                  htmlColor={C68676E}
+                />
+              </TitleRowWrap>
+              <DataCollectionTypeWrap>
+                <OptionFormControlLabel
+                  value={DataCollectionType.GENERAL}
+                  label={
+                    <FlexWrapColumn style={{ marginLeft: '10px' }}>
+                      <FlexWrapRow style={{ alignItems: 'center' }}>
+                        <Typography variant={'h6'}>
+                          General First Approval collection
+                        </Typography>
+                        <InfoOutlined
+                          htmlColor={C04003661}
+                          sx={{
+                            width: 24,
+                            height: 24,
+                            marginLeft: '12px'
+                          }}
+                        />
+                      </FlexWrapRow>
+                      <OptionDescription variant={'body2'}>
+                        All types of datasets. No submission deadlines
+                      </OptionDescription>
+                    </FlexWrapColumn>
+                  }
+                  control={
+                    <Radio
+                      checked={
+                        dataCollectionType === DataCollectionType.GENERAL
+                      }
+                      onChange={() =>
+                        setDataCollectionType(DataCollectionType.GENERAL)
+                      }
+                    />
+                  }
+                />
+                <HeightElement value={'16px'} />
+                <OptionFormControlLabel
+                  value={DataCollectionType.AGING}
+                  label={
+                    <FlexWrapColumn style={{ marginLeft: '10px' }}>
+                      <FlexWrapRow style={{ alignItems: 'center' }}>
+                        <Typography variant={'h6'}>
+                          Aging data collection
+                        </Typography>
+                        <InfoOutlined
+                          htmlColor={C04003661}
+                          sx={{
+                            width: 24,
+                            height: 24,
+                            marginLeft: '12px'
+                          }}
+                        />
+                      </FlexWrapRow>
+                      <OptionDescription variant={'body2'}>
+                        No submission deadlines. Peer reviewed datasets in the
+                        fields of aging research
+                      </OptionDescription>
+                    </FlexWrapColumn>
+                  }
+                  control={
+                    <Radio
+                      checked={dataCollectionType === DataCollectionType.AGING}
+                      onChange={() =>
+                        setDataCollectionType(DataCollectionType.AGING)
+                      }
+                    />
+                  }
+                />
+                <HeightElement value={'16px'} />
+                <OptionFormControlLabel
+                  value={DataCollectionType.STUDENT}
+                  label={
+                    <FlexWrapColumn style={{ marginLeft: '10px' }}>
+                      <FlexWrapRow style={{ alignItems: 'center' }}>
+                        <Typography variant={'h6'}>
+                          Student data competition
+                        </Typography>
+                        <InfoOutlined
+                          htmlColor={C04003661}
+                          sx={{
+                            width: 24,
+                            height: 24,
+                            marginLeft: '12px'
+                          }}
+                        />
+                      </FlexWrapRow>
+                      <OptionDescription variant={'body2'}>
+                        Datasets generated by students.
+                      </OptionDescription>
+                    </FlexWrapColumn>
+                  }
+                  control={
+                    <Radio
+                      checked={
+                        dataCollectionType === DataCollectionType.STUDENT
+                      }
+                      onChange={() =>
+                        setDataCollectionType(DataCollectionType.STUDENT)
+                      }
+                    />
+                  }
+                />
+              </DataCollectionTypeWrap>
+              <HeightElement value="26px" />
+              <LoadingButton
+                disabled={!dataCollectionType}
+                variant="contained"
+                size={'large'}
+                endIcon={<ArrowForward />}
+                onClick={() => createPublication()}>
+                Continue
+              </LoadingButton>
+            </Body>
+          </FlexBodyCenter>
+        </Parent>
+      </>
+    );
+  });
 
 export const Body = styled.div`
   width: 688px;

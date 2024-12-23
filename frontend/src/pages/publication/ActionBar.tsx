@@ -29,6 +29,8 @@ import { CircularProgressWrap } from '../common.styled';
 
 export const PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY =
   'requested_publication_id';
+export const PUBLISHING_DATA_COLLECTION_TYPE_SESSION_KEY =
+  'publishing_data_collection_type';
 
 export const ActionBar = observer(
   (props: {

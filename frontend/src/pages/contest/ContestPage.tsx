@@ -1,7 +1,7 @@
 import React, {type FunctionComponent} from 'react';
 import {observer} from 'mobx-react-lite';
 import {HeaderComponent} from '../../components/HeaderComponent';
-import {Footer} from "../home/Footer";
+import {Footer} from '../home/Footer';
 import contestEnvelope from 'src/assets/contest-envelope.svg';
 import contestRight from 'src/assets/contest-right.svg';
 import contestRightTop from 'src/assets/contest-right-top.svg';
@@ -12,18 +12,17 @@ import contestTopImage from 'src/assets/contest-top-image.svg';
 import contest1 from 'src/assets/contest-1.svg';
 import contest2 from 'src/assets/contest-2.svg';
 import contest3 from 'src/assets/contest-3.svg';
-import {routerStore} from "../../core/router";
-import {Page} from "../../core/router/constants";
-import {Box, Button, Grid, Link} from "@mui/material";
+import {routerStore} from '../../core/router';
+import {Page} from '../../core/router/constants';
+import {Box, Button, Grid, Link} from '@mui/material';
+import {userStore} from '../../core/user';
+import {DataCollectionType} from '../../apis/first-approval-api';
 
-interface ContestPageProps {
-}
+interface ContestPageProps {}
 
 export const ContestPage: FunctionComponent<ContestPageProps> = observer((props: ContestPageProps) => {
 
-        function applyNow() {
-            routerStore.navigatePage(Page.CHOOSE_DATA_COLLECTION_PAGE);
-        }
+        const applyNow = () => userStore.goToCreatePublication(DataCollectionType.STUDENT);
 
         return (
             <>
