@@ -2,23 +2,24 @@ const execSync = require('child_process').execSync;
 
 const command = process.argv[2];
 const url = process.argv[3];
-const noDeps = process.argv[4] === 'no-deps';
+const apiFile = process.argv[4]
+const noDeps = process.argv[5] === 'no-deps';
 
 const commands = {
-  api: () => scripts.api(url),
+  api: (url, apiFile) => scripts.api(url, apiFile),
   build: () => {
     !noDeps && run('npm install');
-    scripts.api(url);
+    scripts.api(url, apiFile);
     scripts.build();
   },
   start: () => {
-    scripts.api(url);
+    scripts.api(url, apiFile);
     scripts.start();
   }
 };
 
 const scripts = {
-  api: (url) => generateApi(url),
+  api: (url, apiFile) => generateApi(url, apiFile),
   build: () => build(),
   start: () => start()
 };
@@ -45,11 +46,11 @@ function start() {
   run('react-scripts start');
 }
 
-function generateApi(url) {
+function generateApi(url, apiFile) {
   execSync(
     'openapi-generator-cli generate' +
       ' -g typescript-axios ' +
-      ' -i ../backend/core/api/src/core.openapi.yaml ' +
+      ` -i ${apiFile} ` +
       ' -o src/apis/first-approval-api ' +
       ` --server-variables=URL=${url} ` +
       ' --additional-properties=stringEnums=true,enumPropertyNaming=original,removeEnumValuePrefix=false,serviceSuffix=ApiService',
