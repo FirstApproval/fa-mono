@@ -9,7 +9,7 @@ jobs:
     name: Build, Push to GHCR and deploy
     runs-on: ubuntu-latest
     strategy:
-      matrix: { dir: [ 'frontend' ] }
+      matrix: { dir: [ 'backend', 'frontend' ] }
     steps:
       - name: Check out code
         uses: actions/checkout@v3
