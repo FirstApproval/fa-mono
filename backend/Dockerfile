@@ -20,4 +20,4 @@ COPY core/src/main/resources/*.properties ./
 
 USER www-data
 
-ENTRYPOINT java -jar -Dspring.jmx.enabled=false -Dspring.config.location=file:/app/ core.jar
+ENTRYPOINT ["java", "-Dspring.profiles.active=dev", "-jar", "core.jar"]
