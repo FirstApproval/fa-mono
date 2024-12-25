@@ -1,4 +1,4 @@
-name: CI
+name: ESLINT
 on: workflow_dispatch
 jobs:
   eslint:
