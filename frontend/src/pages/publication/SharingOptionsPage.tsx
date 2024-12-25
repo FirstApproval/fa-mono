@@ -198,13 +198,11 @@ export const SharingOptionsPage = (props: {
               />
               <SharingOption
                 icon={<MessageOutlined fontSize={'medium'} />}
-                label={'Personal share'}
+                label={'Direct Share'}
                 isSelected={accessType === AccessType.PERSONAL_SHARE}
-                isDisabled={true}
                 onClick={() => setAccessType(AccessType.PERSONAL_SHARE)}
                 description={
-                  'Access is via a personal link. The dataset will not be published but will receive ' +
-                  'a reserved DOI and can later be converted into a publication.'
+                  'The dataset will not be published but will receive a reserved DOI and will be accessible through a direct link.'
                 }
               />
             </SharingOptionsContainer>
