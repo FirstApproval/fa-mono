@@ -78,7 +78,7 @@ export const SharingOptionsPage = (props: {
   const [contentLicensingDialogOpen, setContentLicensingDialogOpen] =
     useState(false);
   const [isPeerReviewEnabled, setIsPeerReviewEnabled] = useState(
-    props.dataCollectionType === DataCollectionType.STUDENT
+    props.dataCollectionType === DataCollectionType.AGING
   );
   const [reviewers, setReviewers] = useState<Reviewer[]>(
     range(0, 5).map((index) => ({
@@ -201,6 +201,7 @@ export const SharingOptionsPage = (props: {
                 label={'Direct Share'}
                 isSelected={accessType === AccessType.PERSONAL_SHARE}
                 onClick={() => setAccessType(AccessType.PERSONAL_SHARE)}
+                isDisabled={true}
                 description={
                   'The dataset will not be published but will receive a reserved DOI and will be accessible through a direct link.'
                 }
