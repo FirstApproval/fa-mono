@@ -24,7 +24,9 @@ jobs:
           fi
 
           echo "SERVER=${{ github.event.inputs.environment == 'dev' && 'dev.firstapproval.io' || 'firstapproval.io' }}" >> $GITHUB_ENV
-          echo "DOCKERFILE=${{ matrix.dir == 'frontend' && 'Dockerfile-github' || 'Dockerfile-${{ matrix.dir }}-github' }}" >> $GITHUB_ENV 
+          echo "DOCKERFILE=${{ matrix_dir == 'frontend' && 'Dockerfile' || 'Dockerfile-${{ matrix_dir }}-github' }}" >> $GITHUB_ENV
+        env:
+          matrix_dir: ${{ matrix.dir }}
 
       - name: Check out code
         uses: actions/checkout@v3
