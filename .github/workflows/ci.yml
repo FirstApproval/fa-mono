@@ -1,0 +1,123 @@
+name: CI/CD DEV. Build, Push to GHCR and deploy
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: false
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
+jobs:
+  build-and-push:
+    name: Build, Push to GHCR and deploy
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: { dir: [ 'backend', 'frontend' ] }
+    steps:
+      - name: Set Environment Variables
+        run: |
+          echo "Environment input: ${{ github.event.inputs.environment }}"
+          echo "Event name: ${{ github.event_name }}"
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            ENVIRONMENT="dev"
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            ENVIRONMENT="${{ github.event.inputs.environment }}"
+          fi
+          
+          echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
+          
+          if [[ ! "$ENVIRONMENT" =~ ^(dev|prod)$ ]]; then
+            echo "Environment: $ENVIRONMENT"
+            echo "Error: Invalid environment. Must be 'dev' or 'prod'."
+            exit 1
+          fi
+
+          if [[ "$ENVIRONMENT" == "dev" ]]; then
+            echo "SERVER=dev.firstapproval.io" >> $GITHUB_ENV
+          else
+            echo "SERVER=firstapproval.io" >> $GITHUB_ENV
+          fi
+
+          if [[ "${{ matrix.dir }}" == "frontend" ]]; then
+            echo "DOCKERFILE=Dockerfile-github" >> $GITHUB_ENV
+          else
+            echo "DOCKERFILE=Dockerfile-$ENVIRONMENT-github" >> $GITHUB_ENV
+          fi
+
+      - name: Show environment value
+        run: |
+          echo "The environment is: ${{ env.ENVIRONMENT }}"
+          echo "The server is: $SERVER"
+
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Check if there are changes in ${{ matrix.dir }}
+        run: |
+          if [[ "${{ matrix.dir }}" == "frontend" && ! $(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^frontend/') ]]; then
+            echo "No changes in frontend. Skipping..."
+            exit 0
+          elif [[ "${{ matrix.dir }}" == "backend" && ! $(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^backend/') ]]; then
+            echo "No changes in backend. Skipping..."
+            exit 0
+          fi
+          echo "Processing ${matrix.dir}..."  
+
+      - name: Copy file
+        run: |
+          cp backend/core/api/src/core.openapi.yaml frontend/core.openapi.yaml
+        if: ${{ matrix.dir == 'frontend' }}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.GHCR_ACTOR }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
+      - name: Build Docker image
+        run: |
+          if [[ "$ENVIRONMENT" == "prod" ]]; then
+            IMAGE_TAG="ghcr.io/firstapproval/fa-mono-${{ matrix.dir }}-prod"
+          else
+            IMAGE_TAG="ghcr.io/firstapproval/fa-mono-${{ matrix.dir }}"
+          fi
+          docker buildx build --platform linux/amd64 -f $DOCKERFILE -t $IMAGE_TAG . && docker push $IMAGE_TAG
+        working-directory: ${{ matrix.dir }}
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+
+          if [[ "${{ env.ENVIRONMENT }}" == "prod" ]]; then
+            echo "${{ secrets.PROD_SERVER_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          else
+            echo "${{ secrets.DEV_SERVER_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          fi
+
+          chmod 600 ~/.ssh/id_rsa
+          ssh-agent bash -c 'echo "SSH agent started" && ssh-add ~/.ssh/id_rsa'
+          ssh-keyscan -H $SERVER >> ~/.ssh/known_hosts  
+
+      - name: Pull image
+        run: |
+          echo "Pulling the backend image..."
+          ssh ubuntu@$SERVER "docker compose pull $matrix_dir"
+        env:
+          matrix_dir: ${{ matrix.dir }}
+
+      - name: Deploy image
+        run: |
+          echo "Deploying the ${{ matrix.dir }} image..."
+          ssh ubuntu@$SERVER "docker compose up -d $matrix_dir --force-recreate"
+        env:
+          matrix_dir: ${{ matrix.dir }}
