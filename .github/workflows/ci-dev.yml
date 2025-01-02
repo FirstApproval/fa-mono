@@ -24,12 +24,27 @@ jobs:
           fi
 
           echo "SERVER=${{ github.event.inputs.environment == 'dev' && 'dev.firstapproval.io' || 'firstapproval.io' }}" >> $GITHUB_ENV
-          echo "DOCKERFILE=${{ matrix_dir == 'frontend' && 'Dockerfile' || 'Dockerfile-${{ matrix_dir }}-github' }}" >> $GITHUB_ENV
+          if [[ "${{ matrix.dir }}" == "frontend" ]]; then
+            echo "DOCKERFILE=Dockerfile" >> $GITHUB_ENV
+          else
+            echo "DOCKERFILE=Dockerfile-${{ matrix.dir }}-github" >> $GITHUB_ENV
+          fi
         env:
           matrix_dir: ${{ matrix.dir }}
 
       - name: Check out code
         uses: actions/checkout@v3
+
+      - name: Check if there are changes in ${{ matrix.dir }}
+        run: |
+          if [[ "${{ matrix.dir }}" == "frontend" && ! $(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^frontend/') ]]; then
+            echo "No changes in frontend. Skipping..."
+            exit 0
+          elif [[ "${{ matrix.dir }}" == "backend" && ! $(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^backend/') ]]; then
+            echo "No changes in backend. Skipping..."
+            exit 0
+          fi
+          echo "Processing ${matrix.dir}..."  
 
       - name: Copy file
         run: |
