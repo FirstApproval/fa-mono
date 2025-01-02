@@ -18,16 +18,13 @@ jobs:
     steps:
       - name: Set Environment Variables
         run: |
-          if [[ "${{ github.event.inputs.environment }}" == "dev" ]]; then
-            echo "DOCKERFILE=Dockerfile-dev-github" >> $GITHUB_ENV
-            echo "SERVER=dev.firstapproval.io" >> $GITHUB_ENV
-          elif [[ "${{ github.event.inputs.environment }}" == "prod" ]]; then
-            echo "DOCKERFILE=Dockerfile-prod-github" >> $GITHUB_ENV
-            echo "SERVER=firstapproval.io" >> $GITHUB_ENV
-          else
+          if [[ ! "${{ github.event.inputs.environment }}" =~ ^(dev|prod)$ ]]; then
             echo "Error: Invalid environment. Must be 'dev' or 'prod'."
             exit 1
-          fi  
+          fi
+
+          echo "SERVER=${{ github.event.inputs.environment == 'dev' && 'dev.firstapproval.io' || 'firstapproval.io' }}" >> $GITHUB_ENV
+          echo "DOCKERFILE=${{ matrix.dir == 'frontend' && 'Dockerfile-github' || 'Dockerfile-${{ matrix.dir }}-github' }}" >> $GITHUB_ENV 
 
       - name: Check out code
         uses: actions/checkout@v3
