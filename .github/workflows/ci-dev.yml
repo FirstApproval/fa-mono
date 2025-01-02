@@ -19,11 +19,9 @@ jobs:
       - name: Set Environment Variables
         run: |
           if [[ "${{ github.event.inputs.environment }}" == "dev" ]]; then
-            echo "ENVIRONMENT=dev" >> $GITHUB_ENV
             echo "DOCKERFILE=Dockerfile-dev-github" >> $GITHUB_ENV
             echo "SERVER=dev.firstapproval.io" >> $GITHUB_ENV
           elif [[ "${{ github.event.inputs.environment }}" == "prod" ]]; then
-            echo "ENVIRONMENT=prod" >> $GITHUB_ENV
             echo "DOCKERFILE=Dockerfile-prod-github" >> $GITHUB_ENV
             echo "SERVER=firstapproval.io" >> $GITHUB_ENV
           else
