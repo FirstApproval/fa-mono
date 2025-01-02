@@ -27,10 +27,8 @@ jobs:
           if [[ "${{ matrix.dir }}" == "frontend" ]]; then
             echo "DOCKERFILE=Dockerfile" >> $GITHUB_ENV
           else
-            echo "DOCKERFILE=Dockerfile-${{ matrix.dir }}-github" >> $GITHUB_ENV
+            echo "DOCKERFILE=Dockerfile-${{ github.event.inputs.environment }}-github" >> $GITHUB_ENV
           fi
-        env:
-          matrix_dir: ${{ matrix.dir }}
 
       - name: Check out code
         uses: actions/checkout@v3
