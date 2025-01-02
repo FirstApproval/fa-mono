@@ -25,7 +25,7 @@ jobs:
 
           echo "SERVER=${{ github.event.inputs.environment == 'dev' && 'dev.firstapproval.io' || 'firstapproval.io' }}" >> $GITHUB_ENV
           if [[ "${{ matrix.dir }}" == "frontend" ]]; then
-            echo "DOCKERFILE=Dockerfile" >> $GITHUB_ENV
+            echo "DOCKERFILE=Dockerfile-github" >> $GITHUB_ENV
           else
             echo "DOCKERFILE=Dockerfile-${{ github.event.inputs.environment }}-github" >> $GITHUB_ENV
           fi
