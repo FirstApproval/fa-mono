@@ -244,7 +244,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         cursor: 'pointer',
                                     }}>
                                         <img src={contest1} style={{marginRight: 8, marginLeft: 16}}/>
-                                        Submission deadline: 28 Feb 2025
+                                        Submission deadline: 15 May 2025
                                     </div>
                                     <Link
                                         color="inherit"
@@ -327,7 +327,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         cursor: 'pointer',
                                     }}>
                                         <img src={contest1} style={{marginRight: 8, marginLeft: 16}}/>
-                                        Submission deadline: 28 Feb 2025
+                                        Submission deadline: 15 May 2025
                                     </div>
                                     <Link
                                         color="inherit"
