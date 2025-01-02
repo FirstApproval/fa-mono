@@ -22,12 +22,10 @@ jobs:
             echo "ENVIRONMENT=dev" >> $GITHUB_ENV
             echo "DOCKERFILE=Dockerfile-dev-github" >> $GITHUB_ENV
             echo "SERVER=dev.firstapproval.io" >> $GITHUB_ENV
-            echo "SSH_PRIVATE_KEY=${{ secrets.DEV_SERVER_SSH_PRIVATE_KEY }}" >> $GITHUB_ENV
           elif [[ "${{ github.event.inputs.environment }}" == "prod" ]]; then
             echo "ENVIRONMENT=prod" >> $GITHUB_ENV
             echo "DOCKERFILE=Dockerfile-prod-github" >> $GITHUB_ENV
             echo "SERVER=firstapproval.io" >> $GITHUB_ENV
-            echo "SSH_PRIVATE_KEY=${{ secrets.PROD_SERVER_SSH_PRIVATE_KEY }}" >> $GITHUB_ENV
           else
             echo "Error: Invalid environment. Must be 'dev' or 'prod'."
             exit 1
@@ -54,6 +52,8 @@ jobs:
         working-directory: ${{ matrix.dir }}
 
       - name: Set up SSH key
+        env:
+          SSH_PRIVATE_KEY: ${{ github.event.inputs.environment == 'dev' && secrets.DEV_SERVER_SSH_PRIVATE_KEY || secrets.PROD_SERVER_SSH_PRIVATE_KEY }}
         run: |
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
