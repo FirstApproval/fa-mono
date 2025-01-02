@@ -4,6 +4,11 @@ on:
     branches:
       - master
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment (dev or prod)'
+        required: true
+        default: 'dev'
 jobs:
   build-and-push:
     name: Build, Push to GHCR and deploy
@@ -11,6 +16,23 @@ jobs:
     strategy:
       matrix: { dir: [ 'backend', 'frontend' ] }
     steps:
+      - name: Set Environment Variables
+        run: |
+          if [[ "${{ github.event.inputs.environment }}" == "dev" ]]; then
+            echo "ENVIRONMENT=dev" >> $GITHUB_ENV
+            echo "DOCKERFILE=Dockerfile-dev-github" >> $GITHUB_ENV
+            echo "SERVER=dev.firstapproval.io" >> $GITHUB_ENV
+            echo "SSH_PRIVATE_KEY=${{ secrets.DEV_SERVER_SSH_PRIVATE_KEY }}" >> $GITHUB_ENV
+          elif [[ "${{ github.event.inputs.environment }}" == "prod" ]]; then
+            echo "ENVIRONMENT=prod" >> $GITHUB_ENV
+            echo "DOCKERFILE=Dockerfile-prod-github" >> $GITHUB_ENV
+            echo "SERVER=firstapproval.io" >> $GITHUB_ENV
+            echo "SSH_PRIVATE_KEY=${{ secrets.PROD_SERVER_SSH_PRIVATE_KEY }}" >> $GITHUB_ENV
+          else
+            echo "Error: Invalid environment. Must be 'dev' or 'prod'."
+            exit 1
+          fi  
+
       - name: Check out code
         uses: actions/checkout@v3
 
@@ -28,19 +50,16 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker buildx build --platform linux/amd64 -f Dockerfile-dev-github -t ghcr.io/firstapproval/fa-mono-${{ matrix.dir }} . && docker push ghcr.io/firstapproval/fa-mono-${{ matrix.dir }}
+          docker buildx build --platform linux/amd64 -f $DOCKERFILE -t ghcr.io/firstapproval/fa-mono-${{ matrix.dir }} . && docker push ghcr.io/firstapproval/fa-mono-${{ matrix.dir }}
         working-directory: ${{ matrix.dir }}
 
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.DEV_SERVER_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-agent bash -c 'echo "SSH agent started" && ssh-add ~/.ssh/id_rsa'
           ssh-keyscan dev.firstapproval.io >> ~/.ssh/known_hosts  
-
-      - name: Login to server
-        run: ssh ubuntu@dev.firstapproval.io "echo 'Successfully connected to the server!'"
 
       - name: Pull image
         run: |
@@ -52,6 +71,6 @@ jobs:
       - name: Deploy image
         run: |
           echo "Deploying the ${{ matrix.dir }} image..."
-          ssh ubuntu@dev.firstapproval.io "docker compose up -d $matrix_dir --force-recreate"
+          ssh ubuntu@$SERVER "docker compose up -d $matrix_dir --force-recreate"
         env:
           matrix_dir: ${{ matrix.dir }}
