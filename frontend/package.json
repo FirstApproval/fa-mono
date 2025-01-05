@@ -38,7 +38,7 @@
     "test": "jest",
     "api": "node build-scripts.js api",
     "lint-fix": "eslint src/**/*.{ts,tsx} --quiet --fix",
-    "start-local": "DANGEROUSLY_DISABLE_HOST_CHECK=true node build-scripts.js start http://localhost:3000",
+    "start-local": "DANGEROUSLY_DISABLE_HOST_CHECK=true node build-scripts.js start http://localhost:3000 ../backend/core/api/src/core.openapi.yaml",
     "api-local": "node build-scripts.js api http://localhost:3000 ../backend/core/api/src/core.openapi.yaml",
     "build-local": "node build-scripts.js build http://localhost:3000 ../backend/core/api/src/core.openapi.yaml",
     "api-dev": "node build-scripts.js api https://app.dev.firstapproval.io core.openapi.yaml",
