@@ -20,4 +20,7 @@ COPY core/src/main/resources/*.properties ./
 
 USER www-data
 
-ENTRYPOINT ["java", "-Dspring.profiles.active=dev", "-jar", "core.jar"]
+ARG ENVIRONMENT
+ENV PROFILE=${ENVIRONMENT}
+RUN echo "ENVIRONMENT is set to ${PROFILE}"
+ENTRYPOINT ["java", "-Dspring.profiles.active=${PROFILE}", "-jar", "core.jar"]

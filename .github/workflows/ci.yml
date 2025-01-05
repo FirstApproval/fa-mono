@@ -47,12 +47,6 @@ jobs:
             echo "SERVER=firstapproval.io" >> $GITHUB_ENV
           fi
 
-          if [[ "${{ matrix.dir }}" == "frontend" ]]; then
-            echo "DOCKERFILE=Dockerfile-github" >> $GITHUB_ENV
-          else
-            echo "DOCKERFILE=Dockerfile-$ENVIRONMENT-github" >> $GITHUB_ENV
-          fi
-
       - name: Show environment value
         run: |
           echo "The environment is: ${{ env.ENVIRONMENT }}"
@@ -60,17 +54,6 @@ jobs:
 
       - name: Check out code
         uses: actions/checkout@v3
-
-      - name: Check if there are changes in ${{ matrix.dir }}
-        run: |
-          if [[ "${{ matrix.dir }}" == "frontend" && ! $(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^frontend/') ]]; then
-            echo "No changes in frontend. Skipping..."
-            exit 0
-          elif [[ "${{ matrix.dir }}" == "backend" && ! $(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^backend/') ]]; then
-            echo "No changes in backend. Skipping..."
-            exit 0
-          fi
-          echo "Processing ${matrix.dir}..."  
 
       - name: Copy file
         run: |
@@ -86,12 +69,19 @@ jobs:
 
       - name: Build Docker image
         run: |
-          if [[ "$ENVIRONMENT" == "prod" ]]; then
+          echo "The environment is: $ENVIRONMENT"
+    
+          if [[ ${{ env.ENVIRONMENT }} == "prod" ]]; then
             IMAGE_TAG="ghcr.io/firstapproval/fa-mono-${{ matrix.dir }}-prod"
           else
             IMAGE_TAG="ghcr.io/firstapproval/fa-mono-${{ matrix.dir }}"
           fi
-          docker buildx build --platform linux/amd64 -f $DOCKERFILE -t $IMAGE_TAG . && docker push $IMAGE_TAG
+          echo "The image tag is: $IMAGE_TAG"
+          docker buildx build \
+            --build-arg ENVIRONMENT=$ENVIRONMENT \
+            --platform linux/amd64 \
+            -f Dockerfile-github \
+            -t $IMAGE_TAG . && docker push $IMAGE_TAG
         working-directory: ${{ matrix.dir }}
 
       - name: Set up SSH key
