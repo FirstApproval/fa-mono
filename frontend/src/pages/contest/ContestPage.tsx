@@ -264,7 +264,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                             cursor: 'pointer',
                                         }}>
                                             <img src={contest2} style={{marginRight: 8, marginLeft: 16}}/>
-                                            Privacy Policy
+                                            Information letter
                                             <img src={contestRightTop} style={{marginLeft: 8}}/>
                                         </div>
                                     </Link>
@@ -347,7 +347,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                             cursor: 'pointer',
                                         }}>
                                             <img src={contest2} style={{marginRight: 8, marginLeft: 16}}/>
-                                            Privacy Policy
+                                            Information letter
                                             <img src={contestRightTop} style={{marginLeft: 8}}/>
                                         </div>
                                     </Link>
