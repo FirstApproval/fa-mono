@@ -98,6 +98,12 @@ jobs:
           ssh-agent bash -c 'echo "SSH agent started" && ssh-add ~/.ssh/id_rsa'
           ssh-keyscan -H $SERVER >> ~/.ssh/known_hosts  
 
+      - name: Login to server
+        run: |
+          echo "Login to server..."
+          ssh ubuntu@$SERVER
+          echo "Successfully login to server."
+
       - name: Pull image
         run: |
           echo "Pulling the backend image..."
