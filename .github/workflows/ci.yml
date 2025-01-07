@@ -117,3 +117,8 @@ jobs:
           ssh ubuntu@$SERVER "docker compose up -d $matrix_dir --force-recreate"
         env:
           matrix_dir: ${{ matrix.dir }}
+
+      - name: Verify application startup after deployment
+        run: |
+          ssh ubuntu@$SERVER "timeout 30s docker compose logs backend -f | grep -q 'Started FirstApprovalApplicationKt'"
+        if: ${{ matrix.dir == 'backend' }}
