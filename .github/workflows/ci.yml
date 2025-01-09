@@ -1,4 +1,4 @@
-name: CI/CD DEV. Build, Push to GHCR and deploy
+name: CI/CD. Build, Push to GHCR and deploy
 on:
   push:
     branches:
@@ -42,7 +42,7 @@ jobs:
           fi
 
           if [[ "$ENVIRONMENT" == "dev" ]]; then
-            echo "SERVER=dev.firstapproval.io" >> $GITHUB_ENV
+            echo "SERVER=app.dev.firstapproval.io" >> $GITHUB_ENV
           else
             echo "SERVER=firstapproval.io" >> $GITHUB_ENV
           fi
@@ -98,12 +98,6 @@ jobs:
           ssh-agent bash -c 'echo "SSH agent started" && ssh-add ~/.ssh/id_rsa'
           ssh-keyscan -H $SERVER >> ~/.ssh/known_hosts  
 
-      - name: Login to server
-        run: |
-          echo "Login to server..."
-          ssh ubuntu@$SERVER
-          echo "Successfully login to server."
-
       - name: Pull image
         run: |
           echo "Pulling the backend image..."
@@ -113,12 +107,38 @@ jobs:
 
       - name: Deploy image
         run: |
-          echo "Deploying the ${{ matrix.dir }} image..."
+          echo "Deploying the $matrix_dir image..."
           ssh ubuntu@$SERVER "docker compose up -d $matrix_dir --force-recreate"
         env:
           matrix_dir: ${{ matrix.dir }}
 
-      - name: Verify application startup after deployment
+      - name: Verify backend startup after deployment
         run: |
           ssh ubuntu@$SERVER "timeout 30s docker compose logs backend -f | grep -q 'Started FirstApprovalApplicationKt'"
         if: ${{ matrix.dir == 'backend' }}
+
+      - name: Verify frontend is accessible
+        run: |
+          sleep 20
+          URL="https://$SERVER"
+          echo "Checking if frontend is accessible at $URL and contains the text 'First Approval'..."
+          for i in {1..10}; do
+            RESPONSE=$(curl -s -w "%{http_code}" -o response.html "$URL")
+            HTTP_CODE=$(tail -n1 <<< "$RESPONSE")
+            if [[ "$HTTP_CODE" == "200" ]]; then
+              CONTENT=$(cat response.html)
+              if echo "$CONTENT" | grep -q "First Approval"; then
+              echo "Frontend is accessible and contains the expected text!"
+              exit 0
+            fi
+              echo "Frontend is accessible, but the expected text was not found."
+            else
+              echo "HTTP status code: $HTTP_CODE. Response body:"
+              cat response.html
+            fi
+              echo "Attempt $i: Frontend is not yet accessible or does not contain the expected text. Waiting..."
+              sleep 5
+          done
+          echo "Error: Frontend is not accessible or does not contain the expected text."
+          exit 1
+        if: ${{ matrix.dir == 'frontend' }}
