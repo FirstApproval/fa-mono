@@ -4,24 +4,24 @@ import { Card, CardContent, Typography, Button } from '@mui/material';
 import AvatarNameBox from './elements/AvatarNameBox';
 import { HeightElement } from '../common.styled';
 
-export enum CollabRequestBoxStatus {
+export enum CollaborationRequestBoxStatus {
   NEW,
   APPROVED,
   DECLINED
 }
 
-function getBorderColor(status: CollabRequestBoxStatus): string {
+function getBorderColor(status: CollaborationRequestBoxStatus): string {
   switch (status) {
-    case CollabRequestBoxStatus.NEW:
+    case CollaborationRequestBoxStatus.NEW:
       return '#3b4eff';
     default:
       return '#d2d2d6';
   }
 }
 
-function getBGColor(status: CollabRequestBoxStatus): string {
+function getBGColor(status: CollaborationRequestBoxStatus): string {
   switch (status) {
-    case CollabRequestBoxStatus.NEW:
+    case CollaborationRequestBoxStatus.NEW:
       return '#f7f8ff';
     default:
       return '#fff';
@@ -61,20 +61,19 @@ const BoxyIcon = styled.span`
   margin-left: 8px;
   font-size: 16px;
 `;
-// export default BoxyButton;
 
-function getButtonText(status: CollabRequestBoxStatus): string {
+function getButtonText(status: CollaborationRequestBoxStatus): string {
   switch (status) {
-    case CollabRequestBoxStatus.NEW:
+    case CollaborationRequestBoxStatus.NEW:
       return 'Answer';
-    case CollabRequestBoxStatus.APPROVED:
+    case CollaborationRequestBoxStatus.APPROVED:
       return 'Approved';
-    case CollabRequestBoxStatus.DECLINED:
+    case CollaborationRequestBoxStatus.DECLINED:
       return 'Declined';
   }
 }
 
-export const CollabRequestBox = ({
+export const CollaborationRequestBox = ({
   avatar,
   name,
   status,
@@ -83,30 +82,30 @@ export const CollabRequestBox = ({
 }: {
   avatar: string;
   name: string;
-  status: CollabRequestBoxStatus;
+  status: CollaborationRequestBoxStatus;
   onClick: () => void;
   children: ReactNode;
 }): ReactElement => {
   return (
     <StyledCard
-      borderColor={getBorderColor(status)}
-      bgColor={getBGColor(status)}>
+      bordercolor={getBorderColor(status)}
+      bgcolor={getBGColor(status)}>
       <CardContent sx={{ paddingBottom: '16px !important' }}>
         <AvatarNameBox avatar={avatar} name={name} />
         <HeightElement value={'12px'} />
         <Typography variant="h6">{children}</Typography>
         <HeightElement value={'12px'} />
-        {status === CollabRequestBoxStatus.NEW && (
+        {status === CollaborationRequestBoxStatus.NEW && (
           <BoxyButton onClick={onClick} variant="contained" icon>
             {getButtonText(status)}
           </BoxyButton>
         )}
-        {status === CollabRequestBoxStatus.APPROVED && (
+        {status === CollaborationRequestBoxStatus.APPROVED && (
           <BoxyButton onClick={onClick} green variant="outlined">
             {getButtonText(status)}
           </BoxyButton>
         )}
-        {status === CollabRequestBoxStatus.DECLINED && (
+        {status === CollaborationRequestBoxStatus.DECLINED && (
           <BoxyButton onClick={onClick} red variant="outlined">
             {getButtonText(status)}
           </BoxyButton>
@@ -117,12 +116,12 @@ export const CollabRequestBox = ({
 };
 
 const StyledCard = styled(Card)<{
-  borderColor: string;
-  bgColor: string;
+  bordercolor: string;
+  bgcolor: string;
 }>`
   box-shadow: none;
-  border: 1px solid ${(props) => props.borderColor};
+  border: 1px solid ${(props) => props.bordercolor};
   border-radius: 4px;
-  background-color: ${(props) => props.bgColor};
+  background-color: ${(props) => props.bgcolor};
   padding: 0;
 `;

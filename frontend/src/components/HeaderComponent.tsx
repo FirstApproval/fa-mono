@@ -8,7 +8,7 @@ import { BetaDialogWithButton } from './BetaDialogWithButton';
 import { authStore } from '../core/auth';
 import { userStore } from '../core/user';
 import { UserMenu } from './UserMenu';
-import { Page } from '../core/router/constants';
+import { Page, collaborationPath } from '../core/router/constants';
 import { FALinkWrap } from './LinkWrap';
 
 interface HeaderComponentProps {
@@ -19,6 +19,7 @@ interface HeaderComponentProps {
   showSignUpContainedButton?: boolean;
   showSignUpOutlinedButton?: boolean;
   showLoginOutlinedButton?: boolean;
+  showBottomStyleGap?: boolean;
 }
 
 export const HeaderComponent = (
@@ -29,15 +30,15 @@ export const HeaderComponent = (
     showLoginButton: false,
     showSignUpContainedButton: false,
     showSignUpOutlinedButton: false,
-    showLoginOutlinedButton: false
+    showLoginOutlinedButton: false,
+    showBottomStyleGap: true
   }
 ): ReactElement => {
   const showSignUpButton =
     props.showSignUpContainedButton ?? props.showSignUpOutlinedButton;
-  console.log('props.showCollaborateButton:', props.showCollaborateButton);
 
   return (
-    <Wrap>
+    <Wrap showBottomStyleGap={props.showBottomStyleGap}>
       <FlexHeader>
         <Grid item xs={12}>
           <FALinkWrap link={'/'}>
@@ -105,14 +106,17 @@ export const HeaderComponent = (
                 xs: 'none',
                 md: 'block'
               }}>
-              {/* {props.showCollaborateButton && ( */}
-              <ButtonWrap
-                href={'collaborate'}
-                variant="outlined"
-                size={'large'}>
-                Collaborate
-              </ButtonWrap>
-              {/* )} */}
+              {props.showCollaborateButton && (
+                <ButtonWrap
+                  href={collaborationPath}
+                  onClick={() => {
+                    routerStore.navigatePage(Page.COLLABORATIONS_PAGE);
+                  }}
+                  variant="outlined"
+                  size={'large'}>
+                  Collaborate
+                </ButtonWrap>
+              )}
             </Box>
             {!authStore.token && (
               <>
@@ -182,7 +186,11 @@ export const HeaderComponent = (
   );
 };
 
-export const Wrap = styled.div`
+interface WrapProps {
+  showBottomStyleGap?: boolean;
+}
+
+export const Wrap = styled.div<WrapProps>`
   display: flex;
   padding: 8px 24px;
   margin-bottom: 32px;
@@ -190,7 +198,8 @@ export const Wrap = styled.div`
 
   @media (min-width: 768px) {
     padding: 12px 32px;
-    margin-bottom: 80px;
+    margin-bottom: ${({ showBottomStyleGap }) =>
+      showBottomStyleGap ? '80px' : 0};
   }
 `;
 

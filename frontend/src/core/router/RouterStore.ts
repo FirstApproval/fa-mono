@@ -18,7 +18,8 @@ import {
   shortAuthorPath,
   shortPublicationPath,
   signUpPath,
-  collaboratePath
+  collaborationPath,
+  collaborationChatPath
 } from './constants';
 import { PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY } from '../../pages/publication/ActionBar';
 import { routerStore } from '../router';
@@ -138,6 +139,17 @@ export class RouterStore {
         );
         return;
       }
+
+      if (path.startsWith(collaborationChatPath)) {
+        this.navigatePage(Page.COLLABORATIONS_CHAT, path, true);
+        return;
+      }
+
+      if (path.startsWith(collaborationPath)) {
+        this.navigatePage(Page.COLLABORATIONS_PAGE, path, true);
+        return;
+      }
+
       if (path.startsWith(authorPath)) {
         this.navigatePage(Page.PROFILE, path, true);
         return;
@@ -156,11 +168,6 @@ export class RouterStore {
       }
       if (path.startsWith('/profile')) {
         this.navigatePage(Page.PROFILE, path, true);
-        return;
-      }
-
-      if (path.startsWith('/collaborate')) {
-        this.navigatePage(Page.COLLABORATE_PAGE, path, true);
         return;
       }
 
