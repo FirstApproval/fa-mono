@@ -80,11 +80,27 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         marginBottom: 24,
                                         marginRight: 120,
                                     }}>
-                                        First Approval is excited to announce a competition for student datasets
-                                        to promote new scientific practices in publishing data within the fields
-                                        of biology, biotechnology, and biomedicine. This competition aims to train
-                                        students in the art of data publication, encourage the reuse of scientific data,
-                                        and introduce them to decentralized solutions in science.
+                                        First Approval is pleased to announce a student dataset competition aimed at
+                                        promoting innovative scientific practices in data publication across the fields
+                                        of biology, biotechnology, and biomedicine. The objectives of this competition
+                                        include training students in the principles and techniques of data publication,
+                                        fostering the reuse of scientific data, and introducing decentralized solutions
+                                        to the scientific community.
+                                    </div>
+                                    <div style={{
+                                        fontFamily: 'Roboto',
+                                        fontSize: 20,
+                                        fontWeight: 400,
+                                        marginBottom: 24,
+                                        marginRight: 120,
+                                    }}>
+                                        A central focus of the competition will be the evaluation of raw scientific
+                                        data from experiments. Submissions will be evaluated by a panel of experts for
+                                        completeness of annotation, data accuracy, novelty and quality of the
+                                        experimental design, and potential for reuse. The competition’s mission is to
+                                        identify and reward exceptional datasets, highlighting experiments distinguished
+                                        by their high quality, innovative methodologies, and exemplary experimental
+                                        design.
                                     </div>
                                     <Button
                                         style={{
@@ -158,12 +174,26 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         fontWeight: 400,
                                         marginBottom: 24,
                                     }}>
-                                        First Approval is excited to announce a competition for student datasets
-                                        to promote new scientific practices in publishing data within the fields
-                                        of biology, biotechnology, and biomedicine. This competition aims to train
-                                        students in the art of data publication, encourage the reuse of scientific
-                                        data,
-                                        and introduce them to decentralized solutions in science.
+                                        First Approval is pleased to announce a student dataset competition aimed at
+                                        promoting innovative scientific practices in data publication across the fields
+                                        of biology, biotechnology, and biomedicine. The objectives of this competition
+                                        include training students in the principles and techniques of data publication,
+                                        fostering the reuse of scientific data, and introducing decentralized solutions
+                                        to the scientific community.
+                                    </div>
+                                    <div style={{
+                                        fontFamily: 'Roboto',
+                                        fontSize: 16,
+                                        fontWeight: 400,
+                                        marginBottom: 24,
+                                    }}>
+                                        A central focus of the competition will be the evaluation of raw scientific
+                                        data from experiments. Submissions will be evaluated by a panel of experts for
+                                        completeness of annotation, data accuracy, novelty and quality of the
+                                        experimental design, and potential for reuse. The competition’s mission is to
+                                        identify and reward exceptional datasets, highlighting experiments distinguished
+                                        by their high quality, innovative methodologies, and exemplary experimental
+                                        design.
                                     </div>
                                     <Button
                                         style={{
@@ -207,9 +237,29 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                             <div style={{
                                 display: 'flex',
                                 justifyContent: 'space-between',
-                                alignItems: 'center',
+                                alignItems: 'start',
                             }}>
                                 <div style={{width: '50%'}}>
+                                    <div style={{
+                                        fontFamily: 'Roboto',
+                                        fontSize: 24,
+                                        fontWeight: 600,
+                                        marginBottom: 24,
+                                    }}>
+                                        About First Approval
+                                    </div>
+                                    <div style={{
+                                        fontFamily: 'Roboto',
+                                        fontSize: 20,
+                                        fontWeight: 400,
+                                        marginBottom: 32
+                                    }}>
+                                        First Approval is an innovative platform for scientific data publishing,
+                                        sharing, and collaboration. It offers convenient and rapid data annotation,
+                                        decentralized storage, and enhanced reliability for data preservation and
+                                        protection. Additionally, it provides incentives to authors for sharing their
+                                        datasets.
+                                    </div>
                                     <div style={{
                                         fontFamily: 'Roboto',
                                         fontSize: 24,
@@ -224,9 +274,28 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         fontWeight: 400,
                                     }}>
                                         To participate, you must be an undergraduate, graduate, or PhD student.
-                                        Participants are required to publish their original dataset on the First
-                                        Approval platform in the fields of biology, biotechnology, or biomedicine by the
-                                        submission deadline.
+                                        Participants are required to submit their original dataset for publication on
+                                        the First Approval platform by the submission deadline. All datasets in the
+                                        fields of biology, biotechnology, or biomedicine are eligible for the
+                                        competition, particularly those in the following areas:
+                                        <ul>
+                                            <li>Molecular Biology and Biochemistry</li>
+                                            <li>Genetics</li>
+                                            <li>Cell Biology and Histology</li>
+                                            <li>Physiology</li>
+                                            <li>Biophysics</li>
+                                            <li>Neuroscience</li>
+                                            <li>Embryology</li>
+                                            <li>Biomedical Research</li>
+                                            <li>Biotechnology</li>
+                                            <li>Omics Technologies</li>
+                                            <li>Behavioral Science</li>
+                                            <li>Aging</li>
+                                            <li>Zoology and Entomology</li>
+                                            <li>Botany</li>
+                                            <li>Virology and Parasitology</li>
+                                            <li>Ecology</li>
+                                        </ul>
                                     </div>
                                 </div>
                                 <div>
@@ -380,6 +449,26 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         fontWeight: 600,
                                         marginBottom: 24,
                                     }}>
+                                        About First Approval
+                                    </div>
+                                    <div style={{
+                                        fontFamily: 'Roboto',
+                                        fontSize: 16,
+                                        fontWeight: 400,
+                                        marginBottom: 32
+                                    }}>
+                                        First Approval is an innovative platform for scientific data publishing,
+                                        sharing, and collaboration. It offers convenient and rapid data annotation,
+                                        decentralized storage, and enhanced reliability for data preservation and
+                                        protection. Additionally, it provides incentives to authors for sharing their
+                                        datasets.
+                                    </div>
+                                    <div style={{
+                                        fontFamily: 'Roboto',
+                                        fontSize: 24,
+                                        fontWeight: 600,
+                                        marginBottom: 24,
+                                    }}>
                                         Eligibility
                                     </div>
                                     <div style={{
@@ -388,10 +477,28 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         fontWeight: 400,
                                     }}>
                                         To participate, you must be an undergraduate, graduate, or PhD student.
-                                        Participants are required to publish their original dataset on the First
-                                        Approval platform in the fields of biology, biotechnology, or
-                                        biomedicine by the
-                                        submission deadline.
+                                        Participants are required to submit their original dataset for publication on
+                                        the First Approval platform by the submission deadline. All datasets in the
+                                        fields of biology, biotechnology, or biomedicine are eligible for the
+                                        competition, particularly those in the following areas:
+                                        <ul>
+                                            <li>Molecular Biology and Biochemistry</li>
+                                            <li>Genetics</li>
+                                            <li>Cell Biology and Histology</li>
+                                            <li>Physiology</li>
+                                            <li>Biophysics</li>
+                                            <li>Neuroscience</li>
+                                            <li>Embryology</li>
+                                            <li>Biomedical Research</li>
+                                            <li>Biotechnology</li>
+                                            <li>Omics Technologies</li>
+                                            <li>Behavioral Science</li>
+                                            <li>Aging</li>
+                                            <li>Zoology and Entomology</li>
+                                            <li>Botany</li>
+                                            <li>Virology and Parasitology</li>
+                                            <li>Ecology</li>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
@@ -434,6 +541,19 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                     comprehensive annotations that fully
                                     explain the process of data acquisition and the specifics of the conducted
                                     experiments.
+                                </li>
+                                <li style={{
+                                    fontFamily: 'Roboto',
+                                    fontSize: 20,
+                                    fontWeight: 400,
+                                    marginBottom: 16,
+                                }}>
+                                    <span style={{fontWeight: 500}}>Eligible Data:</span> Submissions may include any
+                                    form of raw and processed scientific data, covering both original datasets and
+                                    those replicating previously published experiments. Negative data that fail to
+                                    confirm initial hypotheses are also welcome. By accepting such a broad range of
+                                    data types, the competition seeks to encourage rigorous scientific discourse and
+                                    foster greater transparency in research.
                                 </li>
                                 <li style={{
                                     fontFamily: 'Roboto',
@@ -512,6 +632,19 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         fontWeight: 400,
                                         marginBottom: 16,
                                     }}>
+                                        <span style={{fontWeight: 500}}>Eligible Data:</span> Submissions may include any
+                                        form of raw and processed scientific data, covering both original datasets and
+                                        those replicating previously published experiments. Negative data that fail to
+                                        confirm initial hypotheses are also welcome. By accepting such a broad range of
+                                        data types, the competition seeks to encourage rigorous scientific discourse and
+                                        foster greater transparency in research.
+                                    </li>
+                                    <li style={{
+                                        fontFamily: 'Roboto',
+                                        fontSize: 16,
+                                        fontWeight: 400,
+                                        marginBottom: 16,
+                                    }}>
                                         <span style={{fontWeight: 500}}>Types of Data:</span> We welcome the publication
                                         of
                                         original data, including data
@@ -572,11 +705,11 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                 fontWeight: 400,
                                 marginBottom: 16,
                             }}>
-                                Prizes will be awarded in three main categories:
+                                A total prize fund of $7,500 will be awarded across three main categories:
                                 <span style={{
                                     fontWeight: 500,
                                     marginLeft: 4
-                                }}>undergraduate, graduate, and PhD students.</span>
+                                }}>Undergraduate, Graduate, and PhD students. <br/><br/> The prizes in each category are as follows:</span>
                             </div>
                             <div style={{
                                 fontFamily: 'Roboto',
@@ -618,7 +751,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                 paddingLeft: 12,
                                 width: 500,
                             }}>
-                                Third Place: $300
+                                Third Place: $200
                             </div>
                             <div style={{
                                 fontFamily: 'Roboto',
@@ -634,6 +767,14 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                             }}>
                                 Fourth to Tenth Place: Each will receive $100
                             </div>
+                            <div style={{
+                                fontFamily: 'Roboto',
+                                fontSize: 20,
+                                fontWeight: 500,
+                                marginBottom: 16,
+                            }}>
+                                Additional special prizes include:
+                            </div>
                             <ul style={{marginLeft: '-24px'}}>
                                 <li style={{
                                     fontFamily: 'Roboto',
@@ -641,7 +782,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                     fontWeight: 400,
                                     marginBottom: 16,
                                 }}>
-                                    Additional single prize for Best Negative Dataset: $500
+                                    Best Negative Dataset: $500
                                 </li>
                                 <li style={{
                                     fontFamily: 'Roboto',
@@ -649,7 +790,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                     fontWeight: 400,
                                     marginBottom: 16,
                                 }}>
-                                    Additional single prize for Best Replication Dataset: $500
+                                    Best Replication Dataset: $500
                                 </li>
                                 <li style={{
                                     fontFamily: 'Roboto',
@@ -657,7 +798,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                     fontWeight: 400,
                                     marginBottom: 32,
                                 }}>
-                                    Additional special prizes from partner organizations may be added to the prize pool.
+                                    Special prizes from partner organizations may be added to the prize pool.
                                 </li>
                             </ul>
                             <div style={{
@@ -704,8 +845,8 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                     fontWeight: 400,
                                     marginBottom: 16,
                                 }}>
-                                    Prizes will be awarded in three main categories:
-                                    <span style={{fontWeight: 500, marginLeft: 4}}>undergraduate, graduate, and PhD students.</span>
+                                    A total prize fund of $7,500 will be awarded across three main categories:
+                                    <span style={{fontWeight: 500, marginLeft: 4}}>Undergraduate, Graduate, and PhD students. <br/><br/> The prizes in each category are as follows:</span>
                                 </div>
                                 <div style={{
                                     fontFamily: 'Roboto',
@@ -747,7 +888,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                     paddingLeft: 12,
                                     width: '100%',
                                 }}>
-                                    Third Place: $300
+                                    Third Place: $200
                                 </div>
                                 <div style={{
                                     fontFamily: 'Roboto',
@@ -763,6 +904,14 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                 }}>
                                     Fourth to Tenth Place: Each will receive $100
                                 </div>
+                                <div style={{
+                                    fontFamily: 'Roboto',
+                                    fontSize: 16,
+                                    fontWeight: 500,
+                                    marginBottom: 16,
+                                }}>
+                                    Additional special prizes include:
+                                </div>
                                 <ul style={{marginLeft: '-24px'}}>
                                     <li style={{
                                         fontFamily: 'Roboto',
@@ -770,7 +919,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         fontWeight: 400,
                                         marginBottom: 16,
                                     }}>
-                                        Additional single prize for Best Negative Dataset: $500
+                                        Best Negative Dataset: $500
                                     </li>
                                     <li style={{
                                         fontFamily: 'Roboto',
@@ -778,7 +927,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         fontWeight: 400,
                                         marginBottom: 16,
                                     }}>
-                                        Additional single prize for Best Replication Dataset: $500
+                                        Best Replication Dataset: $500
                                     </li>
                                     <li style={{
                                         fontFamily: 'Roboto',
@@ -786,8 +935,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         fontWeight: 400,
                                         marginBottom: 32,
                                     }}>
-                                        Additional special prizes from partner organizations may be added to the
-                                        prize pool.
+                                        Special prizes from partner organizations may be added to the prize pool.
                                     </li>
                                 </ul>
                                 <div style={{
@@ -1211,17 +1359,14 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                 fontWeight: 400,
                             }}>
                                 <span style={{fontWeight: 500}}>Open Longevity</span>, a US nonprofit organization
-                                focused on accelerating aging research, has confirmed its information and volunteer
-                                support. They may assist in organizing efforts, finding judges in the field of aging
-                                research, and promoting the competition in institutions related to longevity.
+                                focused on accelerating aging research.
                             </div>
                             <div style={{
                                 fontFamily: 'Roboto',
                                 fontSize: 20,
                                 fontWeight: 400,
                             }}>
-                                We are continuing discussions with representatives from major universities and research
-                                institutes to ensure a diverse and highly qualified panel.
+                                Additional partners will be announced soon.
                             </div>
                         </div>
                     </Box>
@@ -1259,18 +1404,14 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                     fontWeight: 400,
                                 }}>
                                     <span style={{fontWeight: 500}}>Open Longevity</span>, a US nonprofit organization
-                                    focused on accelerating aging research, has confirmed its information and volunteer
-                                    support. They may assist in organizing efforts, finding judges in the field of aging
-                                    research, and promoting the competition in institutions related to longevity.
+                                    focused on accelerating aging research.
                                 </div>
                                 <div style={{
                                     fontFamily: 'Roboto',
                                     fontSize: 16,
                                     fontWeight: 400,
                                 }}>
-                                    We are continuing discussions with representatives from major universities and
-                                    research
-                                    institutes to ensure a diverse and highly qualified panel.
+                                    Additional partners will be announced soon.
                                 </div>
                             </div>
                         </Box>
