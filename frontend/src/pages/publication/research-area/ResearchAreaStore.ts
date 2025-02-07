@@ -18,6 +18,10 @@ export class ResearchAreaStore {
     return this.publicationStore.researchAreas;
   }
 
+  get isStudentDataCollection(): boolean {
+    return this.publicationStore.isStudentDataCollection;
+  }
+
   get isDialogOpened(): boolean {
     return this.dialogOpened;
   }
@@ -57,7 +61,7 @@ export class ResearchAreaStore {
   }
 
   private unselectElement(element: ResearchAreaElement): void {
-    researchAreaElementsWithParent(element.text).forEach((child) => {
+    researchAreaElementsWithParent(element.text, this.isStudentDataCollection).forEach((child) => {
       this.unselectElement(child);
     });
     this.publicationStore.researchAreas =

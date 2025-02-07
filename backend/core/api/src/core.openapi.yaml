@@ -2117,6 +2117,13 @@ components:
         - AGING
         - STUDENT
 
+    AcademicLevel:
+      type: string
+      enum:
+        - UNDERGRADUATE_STUDENT
+        - GRADUATE_STUDENT
+        - PHD_STUDENT
+
     UserUpdateRequest:
       type: object
       properties:
@@ -2173,6 +2180,8 @@ components:
           $ref: '#/components/schemas/Authors'
         title:
           $ref: '#/components/schemas/PublicationStringValue'
+        academicLevel:
+          $ref: '#/components/schemas/AcademicLevel'
         researchAreas:
           $ref: '#/components/schemas/PublicationStringArrayValue'
         description:
@@ -2197,10 +2206,18 @@ components:
           $ref: '#/components/schemas/PublicationStringValue'
         predictedGoals:
           $ref: '#/components/schemas/PublicationStringValue'
-        negativeData:
-          $ref: '#/components/schemas/PublicationStringValue'
         isNegative:
           type: boolean
+        negativeData:
+          $ref: '#/components/schemas/PublicationStringValue'
+        isReplicationOfPreviousExperiments:
+          type: boolean
+        replicationOfPreviousExperimentsData:
+          $ref: '#/components/schemas/PublicationStringValue'
+        isPreviouslyPublishedDataset:
+          type: boolean
+        previouslyPublishedDatasetData:
+          $ref: '#/components/schemas/PublicationStringValue'
         licenseType:
           $ref: '#/components/schemas/PublicationLicenseTypeValue'
         dataCollectionType:
@@ -2398,6 +2415,8 @@ components:
         doiLink:
           type: string
           maxLength: 300
+        academicLevel:
+          $ref: '#/components/schemas/AcademicLevel'
         researchAreas:
           $ref: '#/components/schemas/StringArray'
         grantOrganizations:
@@ -2435,6 +2454,16 @@ components:
           maxLength: 32768
         isNegative:
           type: boolean
+        isReplicationOfPreviousExperiments:
+          type: boolean
+        replicationOfPreviousExperimentsData:
+          type: string
+          maxLength: 32768
+        isPreviouslyPublishedDataset:
+          type: boolean
+        previouslyPublishedDatasetData:
+          type: string
+          maxLength: 32768
         viewsCount:
           type: integer
           format: int64

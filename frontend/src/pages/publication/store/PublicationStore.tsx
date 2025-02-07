@@ -2,6 +2,7 @@ import { action, makeAutoObservable, reaction } from 'mobx';
 import { publicationService } from '../../../core/service';
 import _ from 'lodash';
 import {
+  AcademicLevel,
   Author,
   DataCollectionType,
   LicenseType,
@@ -26,6 +27,7 @@ export const MAX_CHARACTER_COUNT = 60000;
 export type ParagraphWithId = Paragraph & { id: string };
 export type Section =
   | 'title'
+  | 'academicLevel'
   | 'summary'
   | 'goals'
   | 'method'
@@ -49,7 +51,9 @@ export class PublicationStore {
 
   title = '';
   doiLink = '';
+  academicLevel: AcademicLevel | undefined = undefined;
   researchAreas: Paragraph[] = [];
+  isStudentDataCollection: boolean = false;
 
   creator: UserInfo | undefined;
 
@@ -69,6 +73,10 @@ export class PublicationStore {
   tags = new Set<string>();
   isNegative = false;
   negativeData = '';
+  isReplicationOfPreviousExperiments = false;
+  replicationOfPreviousExperimentsData = '';
+  isPreviouslyPublishedDataset = false;
+  previouslyPublishedDatasetData = '';
 
   publicationTime: Date = new Date();
   viewsCount: number = 0;
@@ -135,6 +143,19 @@ export class PublicationStore {
   get isPublishing(): boolean {
     return this.publicationStatus === PublicationStatus.READY_FOR_PUBLICATION;
   }
+
+  updateAcademicLevel(academicLevel: AcademicLevel): void {
+    this.academicLevel = academicLevel;
+    this.savingStatus = SavingStatusState.SAVING;
+    void this.updateAcademicLevelRequest();
+  }
+
+  updateAcademicLevelRequest = _.throttle(async () => {
+    await this.editPublication({
+      academicLevel: this.academicLevel,
+    });
+    this.savingStatus = SavingStatusState.SAVED;
+  }, EDIT_THROTTLE_MS);
 
   addGrantingOrganization(idx: number): void {
     const newValue = [...this.grantingOrganizations];
@@ -428,10 +449,11 @@ export class PublicationStore {
     this.savingStatus = SavingStatusState.SAVED;
   }, EDIT_THROTTLE_MS);
 
-  updateNegativeData(newValue: string): void {
-    this.negativeData = newValue;
+  updateData(field: keyof this, newValue: string): void {
+    // @ts-ignore
+    this[field] = newValue;
     this.savingStatus = SavingStatusState.SAVING;
-    void this.doUpdateNegativeData();
+    void this.doUpdateData(field);
   }
 
   copyPublicationLinkToClipboard = async (): Promise<void> => {
@@ -444,10 +466,10 @@ export class PublicationStore {
     }
   };
 
-  doUpdateNegativeData = _.throttle(async () => {
+  doUpdateData = _.throttle(async (field: keyof this) => {
     await this.editPublication({
-      negativeData: {
-        value: this.negativeData,
+      [field]: {
+        value: this[field],
         edited: true
       }
     });
@@ -513,8 +535,11 @@ export class PublicationStore {
     void this.updateRelatedArticles();
   };
 
-  invertNegativeData = (): void => {
-    this.isNegative = !this.isNegative;
+  invertBoolean<K extends keyof this>(field: K): void {
+    if (typeof this[field] === "boolean") {
+      // @ts-ignore
+      this[field] = !this[field];
+    }
     this.savingStatus = SavingStatusState.SAVING;
     void this.doUpdateIsNegativeData();
   };
@@ -524,6 +549,9 @@ export class PublicationStore {
 
     if (this.title.length === 0) {
       result.push('title');
+    }
+    if (!this.academicLevel && this.isStudentDataCollection) {
+      result.push('academicLevel');
     }
     if (this.summary.length === 0) {
       result.push('summary');
@@ -629,6 +657,9 @@ export class PublicationStore {
           if (publication.title) {
             this.title = publication.title;
           }
+          if (publication.academicLevel) {
+            this.academicLevel = publication.academicLevel;
+          }
           if (publication.researchAreas) {
             this.researchAreas = publication.researchAreas;
           }
@@ -695,6 +726,7 @@ export class PublicationStore {
           if (publication.dataCollectionType) {
             this.dataCollectionType = publication.dataCollectionType;
           }
+          this.isStudentDataCollection = publication.dataCollectionType === DataCollectionType.STUDENT;
           this.setAuthorNames();
 
           if (publication.negativeData?.length) {

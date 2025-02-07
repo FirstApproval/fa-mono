@@ -66,6 +66,7 @@ import org.firstapproval.api.server.model.Author as AuthorApiObject
 import org.firstapproval.api.server.model.DataCollectionType as DataCollectionTypeApiObject
 import org.firstapproval.api.server.model.LicenseType as LicenseTypeApiObject
 import org.firstapproval.api.server.model.Publication as PublicationApiObject
+import org.firstapproval.api.server.model.AcademicLevel as AcademicLevelApiObject
 import org.firstapproval.api.server.model.PublicationStatus as PublicationStatusApiObject
 import org.firstapproval.api.server.model.UseType as UseTypeApiObject
 
@@ -150,6 +151,12 @@ class PublicationService(
             if (title?.edited == true) publication.title = title.value
             if (negativeData?.edited == true) publication.negativeData = negativeData.value
             if (isNegative != null) publication.isNegative = isNegative
+            if (isReplicationOfPreviousExperiments != null) publication.isReplicationOfPreviousExperiments =
+                isReplicationOfPreviousExperiments
+            if (replicationOfPreviousExperimentsData != null) publication.replicationOfPreviousExperimentsData =
+                replicationOfPreviousExperimentsData.value
+            if (isPreviouslyPublishedDataset != null) publication.isPreviouslyPublishedDataset = isPreviouslyPublishedDataset
+            if (previouslyPublishedDatasetData != null) publication.previouslyPublishedDatasetData = previouslyPublishedDatasetData.value
             if (description?.edited == true) publication.description = description.value
             if (researchAreas?.edited == true) publication.researchAreas = researchAreas.values.map { it.text }
             if (grantOrganizations?.edited == true) publication.grantOrganizations = grantOrganizations.values.map { it.text }
@@ -162,6 +169,7 @@ class PublicationService(
             if (methodTitle?.edited == true) publication.methodTitle = methodTitle.value
             if (methodDescription?.edited == true) publication.methodDescription = methodDescription.value
             if (predictedGoals?.edited == true) publication.predictedGoals = predictedGoals.value
+            if (academicLevel != null) publication.academicLevel = AcademicLevel.valueOf(academicLevel.name)
             if (licenseType?.edited == true) publication.licenseType = LicenseType.valueOf(licenseType.value.name)
             if (dataCollectionType?.edited == true) {
                 publication.dataCollectionType = DataCollectionType.valueOf(dataCollectionType.value.name)
@@ -471,6 +479,7 @@ fun Publication.toApiObject(userService: UserService, doiProperties: DoiProperti
     publicationApiModel.authors = authors.map { it.toApiObject(userService.getProfileImage(it.user?.profileImage)) }
     publicationApiModel.viewsCount = viewsCount
     publicationApiModel.downloadsCount = downloadsCount
+    publicationApiModel.academicLevel = academicLevel?.let { AcademicLevelApiObject.valueOf(it.name) }
     publicationApiModel.status = PublicationStatusApiObject.valueOf(status.name)
     publicationApiModel.accessType = AccessTypeApiObject.valueOf(accessType.name)
     publicationApiModel.licenseType = licenseType.let { LicenseTypeApiObject.valueOf(it.name) }
@@ -480,6 +489,10 @@ fun Publication.toApiObject(userService: UserService, doiProperties: DoiProperti
     publicationApiModel.archiveSize = archiveSize
     publicationApiModel.sampleArchiveSize = archiveSampleSize
     publicationApiModel.isNegative = isNegative
+    publicationApiModel.isReplicationOfPreviousExperiments = isReplicationOfPreviousExperiments
+    publicationApiModel.replicationOfPreviousExperimentsData = replicationOfPreviousExperimentsData
+    publicationApiModel.isPreviouslyPublishedDataset = isPreviouslyPublishedDataset
+    publicationApiModel.previouslyPublishedDatasetData = previouslyPublishedDatasetData
     publicationApiModel.dataCollectionType = DataCollectionTypeApiObject.valueOf(dataCollectionType.name)
     publicationApiModel.useType = useType?.let { UseTypeApiObject.valueOf(it.name) }
 }

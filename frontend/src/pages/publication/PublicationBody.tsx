@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { DialogContent, Tooltip } from '@mui/material';
+import { DialogContent, RadioGroup, Tooltip } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 import { PublicationStore } from './store/PublicationStore';
 import { ResearchAreaStore } from './research-area/ResearchAreaStore';
@@ -41,7 +41,7 @@ import { Page } from '../../core/router/constants';
 import { FileBrowserFA } from '../../fire-browser/FileBrowserFA';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Close } from '@mui/icons-material';
+import { Close, Label } from "@mui/icons-material"
 import { AuthorsEditor } from './editors/AuthorsEditor';
 import { GrantingOrganizationsEditor } from './editors/GrantingOrganizationsEditor';
 import { RelatedPublicationsEditor } from './editors/RelatedPublicationsEditor';
@@ -50,6 +50,8 @@ import { UploadStatusWindow } from './UploadStatusWindow';
 import { DatasetIsPreparingDialog } from './dialogs/DatasetIsPreparingDialog';
 import { PreliminaryResultsEditor } from './editors/PreliminaryResultsEditor';
 import { copyTextToClipboard } from '../../fire-browser/utils';
+import { AcademicLevelElement } from "./academic-level/AcademicLevelElement"
+import { AcademicLevelPlaceholder } from './academic-level/AcademicLevelPlaceholder';
 
 export const PublicationBody = observer(
   (props: {
@@ -70,6 +72,7 @@ export const PublicationBody = observer(
     } = props;
 
     const {
+      openAcademicLevel,
       openSummary,
       openExperimentGoals,
       openMethod,
@@ -83,6 +86,7 @@ export const PublicationBody = observer(
       openGrantingOrganizations,
       openRelatedArticles,
       openTags,
+      academicLevelEnabled,
       summaryEnabled,
       experimentGoalsEnabled,
       methodEnabled,
@@ -141,6 +145,19 @@ export const PublicationBody = observer(
         )}
 
         <HeightElement value={'24px'} />
+
+        {academicLevelEnabled &&
+          !publicationStore.isReadonly &&
+          publicationStore.isStudentDataCollection && (
+            <AcademicLevelElement publicationStore={publicationStore} />
+          )
+        }
+
+        {!academicLevelEnabled &&
+          !publicationStore.isReadonly &&
+          publicationStore.isStudentDataCollection && (
+            <AcademicLevelPlaceholder onClick={openAcademicLevel} />
+          )}
 
         <ResearchArea researchAreaStore={researchAreaStore} />
 

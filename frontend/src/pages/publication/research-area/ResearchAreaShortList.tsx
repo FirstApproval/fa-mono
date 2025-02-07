@@ -8,6 +8,7 @@ import { Typography } from '@mui/material';
 
 export interface ResearchAreaShortListProps {
   researchAreas: Paragraph[];
+  isStudentDataCollection: boolean;
 }
 
 export const ResearchAreaShortList = observer(
@@ -27,7 +28,7 @@ export const ResearchAreaShortList = observer(
                     paddingTop: 4,
                     marginRight: 4
                   }}>
-                  {researchAreaIcon(researchArea.text)}
+                  {researchAreaIcon(researchArea.text, props.isStudentDataCollection)}
                 </div>
                 {researchArea.text}
               </div>

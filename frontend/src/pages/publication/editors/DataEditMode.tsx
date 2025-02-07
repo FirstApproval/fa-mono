@@ -4,47 +4,53 @@ import { observer } from 'mobx-react-lite';
 import { EditorProps } from './types';
 import React, { ReactElement } from 'react';
 import WarningIcon from '@mui/icons-material/Warning';
+import { PublicationStore } from "../store/PublicationStore"
 
-export const NegativeDataEditMode = observer(
+export const DataEditMode = observer(
   (props: EditorProps): ReactElement => {
     const { publicationStore } = props;
+    const booleanFieldValue = publicationStore[props.booleanField!!]
+    const textFieldValue = publicationStore[props.textField!!]
     return (
       <Wrapper>
-        <NegativeDataAllWrapper>
-          <NegativeDataWrapper>
-            <NegativeDataHeaderWrapper>
-              {!publicationStore.isNegative && (
+        <DataAllWrapper>
+          <DataWrapper>
+            <DataHeaderWrapper>
+              {!booleanFieldValue && (
                 <>
                   <WarningIcon
                     htmlColor={'#a8a8b4'}
                     style={{ marginRight: '5px' }}
                   />
-                  <NegativeDataHeaderDisabled variant={'h6'}>
-                    My data is negative
-                  </NegativeDataHeaderDisabled>
+                  <DataHeaderDisabled variant={'h6'}>
+                    {props.header}
+                  </DataHeaderDisabled>
                 </>
               )}
-              {publicationStore.isNegative && (
-                <NegativeDataHeaderEnabled variant={'h6'}>
-                  My data is negative
-                </NegativeDataHeaderEnabled>
+              {booleanFieldValue && (
+                <DataHeaderEnabled variant={'h6'}>
+                  {props.header}
+                </DataHeaderEnabled>
               )}
-            </NegativeDataHeaderWrapper>
+            </DataHeaderWrapper>
             <Switch
-              checked={publicationStore.isNegative}
-              onClick={publicationStore.invertNegativeData}
+              checked={publicationStore[props.booleanField!!] as boolean}
+              onClick={() => publicationStore.invertBoolean(props.booleanField!!)}
             />
-          </NegativeDataWrapper>
-          {publicationStore.isNegative && (
+          </DataWrapper>
+          {booleanFieldValue && (
             <FullWidthInput
               autoFocus={!publicationStore.disableAutofocus}
-              value={publicationStore.negativeData}
-              onChange={(e) => {
-                publicationStore.updateNegativeData(e.currentTarget.value);
-              }}
+              value={textFieldValue}
+              onChange={(e) =>
+                publicationStore.updateData(
+                  props.textField as keyof PublicationStore,
+                  e.currentTarget.value
+                )
+              }
               disableUnderline={true}
               multiline={true}
-              placeholder="Why your data didn't confirm the initial hypothesis or expectations"
+              placeholder={props.textFieldPlaceHolder}
               minRows={1}
               maxRows={4}
               inputProps={{
@@ -59,27 +65,27 @@ export const NegativeDataEditMode = observer(
               }}
             />
           )}
-        </NegativeDataAllWrapper>
+        </DataAllWrapper>
       </Wrapper>
     );
   }
 );
 
-const NegativeDataHeaderEnabled = styled(Typography)`
+const DataHeaderEnabled = styled(Typography)`
   padding-top: 4px;
 `;
 
-const NegativeDataHeaderDisabled = styled(Typography)`
+const DataHeaderDisabled = styled(Typography)`
   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
 `;
 
-const NegativeDataHeaderWrapper = styled.div`
+const DataHeaderWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
 `;
 
-const NegativeDataWrapper = styled.div`
+const DataWrapper = styled.div`
   display: flex;
   justify-content: space-between;
 `;
@@ -88,7 +94,7 @@ const Wrapper = styled.div`
   margin-top: 32px;
 `;
 
-const NegativeDataAllWrapper = styled.div`
+const DataAllWrapper = styled.div`
   border: 1px solid #d2d2d6;
   padding: 16px;
   border-radius: 4px;

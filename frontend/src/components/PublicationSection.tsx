@@ -2,6 +2,7 @@ import React, { type ReactElement, useState } from 'react';
 import styled from '@emotion/styled';
 import { Avatar, Divider, IconButton, Link, Typography } from '@mui/material';
 import {
+  DataCollectionType,
   type Publication,
   PublicationStatus
 } from '../apis/first-approval-api';
@@ -155,6 +156,10 @@ export const PublicationSection = (props: {
                 {publication.researchAreas && (
                   <ResearchAreaShortList
                     researchAreas={publication.researchAreas}
+                    isStudentDataCollection={
+                      publication.dataCollectionType ===
+                      DataCollectionType.STUDENT
+                    }
                   />
                 )}
               </div>
