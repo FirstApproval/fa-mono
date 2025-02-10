@@ -271,7 +271,7 @@ export const SharingOptionsPage = (props: {
               />
             </SharingOptionsContainer>
             <FairPeerReviewSection
-              disabled={props.dataCollectionType !== DataCollectionType.STUDENT}
+              disabled={props.dataCollectionType !== DataCollectionType.AGING}
               isPeerReviewEnabled={isPeerReviewEnabled}
               setIsPeerReviewEnabled={(enabled) =>
                 setIsPeerReviewEnabled(enabled)

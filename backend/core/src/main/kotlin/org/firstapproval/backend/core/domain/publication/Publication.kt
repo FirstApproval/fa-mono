@@ -41,6 +41,8 @@ class Publication(
     var previewSubtitle: String? = null,
     @Convert(converter = StringEncryptionConverter::class)
     var title: String? = null,
+    @Enumerated(STRING)
+    var academicLevel: AcademicLevel? = null,
     @ColumnTransformer(write = "?::text")
     @Convert(converter = StringListEncryptionConverter::class)
     var researchAreas: List<String>? = null,
@@ -86,6 +88,10 @@ class Publication(
     var isFeatured: Boolean = false,
     var isNegative: Boolean = false,
     var negativeData: String? = null,
+    var isReplicationOfPreviousExperiments: Boolean = false,
+    var replicationOfPreviousExperimentsData: String? = null,
+    var isPreviouslyPublishedDataset: Boolean = false,
+    var previouslyPublishedDatasetData: String? = null,
     var filesCount: Long? = null,
     var foldersCount: Long? = null,
     var hash: String? = null,
@@ -135,4 +141,10 @@ enum class DataCollectionType {
     GENERAL,
     AGING,
     STUDENT,
+}
+
+enum class AcademicLevel {
+    UNDERGRADUATE_STUDENT,
+    GRADUATE_STUDENT,
+    PHD_STUDENT,
 }

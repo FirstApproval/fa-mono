@@ -11,6 +11,7 @@ import {
   TitlePlaceholder
 } from './ContentPlaceholder';
 import { PublicationPageStore } from './store/PublicationPageStore';
+import { AcademicLevelPlaceholder } from "./academic-level/AcademicLevelPlaceholder"
 
 export const ValidationDialog = (props: {
   publicationPageStore: PublicationPageStore;
@@ -33,6 +34,13 @@ export const ValidationDialog = (props: {
       <DialogContentWrap>
         {errors.includes('title') && (
           <TitlePlaceholder
+            onClick={() => {
+              onClose();
+            }}
+          />
+        )}
+        {errors.includes('academicLevel') && (
+          <AcademicLevelPlaceholder
             onClick={() => {
               onClose();
             }}

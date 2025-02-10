@@ -6,6 +6,7 @@ import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLI
 import org.firstapproval.backend.core.infra.pdf.PdfService
 import org.springframework.stereotype.Service
 import org.thymeleaf.context.Context
+import java.lang.String.format
 import java.text.DecimalFormat
 
 @Service
@@ -24,41 +25,47 @@ class PublicationPdfService(
 
     private fun generateThymeleafContext(publication: Publication): Context {
         val context = Context()
-        val model: MutableMap<String, Any> = HashMap()
-        model["doiLink"] = String.format(doiProperties.linkTemplate, publication.id)
-        model["isPreview"] = publication.status != PUBLISHED
-        model["isNegative"] = publication.isNegative
-        model["url"] = url(publication)
-        model["title"] = title(publication)
-        model["authors"] = authorNames(publication)
-        model["publishDate"] = publishDate(publication)
-        model["description"] = description(publication)
-        model["hash"] = hash(publication)
-        model["files"] = files(publication)
-        model["experimentGoals"] = experimentGoals(publication)
-        if (publication.isNegative && !publication.negativeData.isNullOrEmpty()) {
-            model["negativeData"] = negativeData(publication)
-        }
-        model["method"] = method(publication)
-        model["dataDescription"] = dataDescription(publication)
-        if (!publication.software.isNullOrEmpty()) {
-            model["software"] = software(publication)
-        }
-        if (!publication.preliminaryResults.isNullOrEmpty()) {
-            model["preliminaryResults"] = preliminaryResults(publication)
-        }
-        model["authorsDescription"] = authorsDescriptions(publication)
-        if (!publication.grantOrganizations.isNullOrEmpty()) {
-            model["grantingOrganizations"] = grantingOrganizations(publication)
-        }
-        if (!publication.primaryArticles.isNullOrEmpty()) {
-            model["primaryArticles"] = primaryArticles(publication)
-        }
-        if (!publication.relatedArticles.isNullOrEmpty()) {
-            model["relatedArticles"] = relatedArticles(publication)
-        }
+
+        val model = mutableMapOf(
+            "doiLink" to format(doiProperties.linkTemplate, publication.id),
+            "isPreview" to (publication.status != PUBLISHED),
+            "url" to url(publication),
+            "title" to getDescriptionOrDraft(publication.title, "Draft. No title yet."),
+            "authors" to getDescriptionOrDraft(publication.authorsNames, "Draft. No authors yet."),
+            "publishDate" to getDescriptionOrDraft(
+                publication.publicationTime?.toLocalDate()?.toString().takeIf { publication.status != PUBLISHED },
+                "Draft. No description yet."
+            ),
+            "description" to getDescriptionOrDraft(publication.description, "Draft. No description yet."),
+            "hash" to hash(publication),
+            "files" to files(publication),
+            "experimentGoals" to experimentGoals(publication),
+            "isNegative" to publication.isNegative,
+            "isReplicationOfPreviousExperiments" to publication.isReplicationOfPreviousExperiments,
+            "isPreviouslyPublishedDataset" to publication.isPreviouslyPublishedDataset,
+            "method" to getDescriptionOrDraft(publication.methodDescription, "Draft. No method description yet."),
+            "dataDescription" to getDescriptionOrDraft(publication.dataDescription, "Draft. No data description yet."),
+            "authorsDescription" to authorsDescriptions(publication)
+        )
+
+        publication.negativeData?.takeIf { publication.isNegative && it.isNotEmpty() }?.let { model["negativeData"] = it }
+        publication.replicationOfPreviousExperimentsData?.takeIf { publication.isReplicationOfPreviousExperiments && it.isNotEmpty() }
+            ?.let { model["replicationOfPreviousExperimentsData"] = it }
+        publication.previouslyPublishedDatasetData?.takeIf { publication.isPreviouslyPublishedDataset && it.isNotEmpty() }
+            ?.let { model["previouslyPublishedDatasetData"] = it }
+
+        publication.software?.takeIf { it.isNotBlank() }?.let { model["software"] = it }
+        publication.preliminaryResults?.takeIf { it.isNotBlank() }?.let { model["preliminaryResults"] = it }
+        model.addIfNotEmpty("grantingOrganizations", publication.grantOrganizations)
+        model.addIfNotEmpty("primaryArticles", publication.primaryArticles)
+        model.addIfNotEmpty("relatedArticles", publication.relatedArticles)
+
         context.setVariables(prepareModel(model))
         return context
+    }
+
+    private fun MutableMap<String, Any>.addIfNotEmpty(key: String, collection: Collection<Any>?) {
+        collection?.takeIf { it.isNotEmpty() }?.let { put(key, it) }
     }
 
     private fun prepareModel(model: MutableMap<String, Any>) = model.map { (k, v) ->
@@ -75,43 +82,10 @@ class PublicationPdfService(
         return "${frontendProperties.url}/publication/${publication.id}"
     }
 
-    private fun title(publication: Publication): String {
-        return if (publication.title.isNullOrEmpty()) {
-            "Draft. No title yet."
-        } else {
-            publication.title!!
-        }
-    }
-
-    private fun authorNames(publication: Publication): String {
-        if (publication.authors.isEmpty()) {
-            return "Draft. No authors yet."
-        }
-        return publication.authorsNames
-    }
-
-    private fun publishDate(publication: Publication): String {
-        return if (publication.status != PUBLISHED) {
-            "Dataset is not published yet."
-        } else {
-            publication.publicationTime!!.toLocalDate().toString()
-        }
-    }
-
-    private fun description(publication: Publication): String {
-        return if (publication.description.isNullOrEmpty()) {
-            return "Draft. No description yet."
-        } else {
-            publication.description!!
-        }
-    }
-
-    private fun hash(publication: Publication): String {
-        return if (publication.status == PUBLISHED) {
-            "Unique archive cryptographic hash: SHA-256: ${publication.hash}"
-        } else {
+    private fun hash(publication: Publication): String = when (publication.status) {
+        PUBLISHED -> "Unique archive cryptographic hash: SHA-256: ${publication.hash}"
+        else ->
             "Dataset is not published yet, information about dataset unique archive cryptographic hash will be available after publication."
-        }
     }
 
     private fun files(publication: Publication): String {
@@ -133,41 +107,10 @@ class PublicationPdfService(
         }
     }
 
-    private fun experimentGoals(publication: Publication): String {
-        return if (publication.predictedGoals.isNullOrEmpty()) {
-            "Draft. No predicted goals yet."
-        } else {
-            publication.predictedGoals!!
-        }
-    }
+    private fun experimentGoals(publication: Publication) =
+        getDescriptionOrDraft(publication.predictedGoals, "Draft. No predicted goals yet.")
 
-    private fun negativeData(publication: Publication): String {
-        return publication.negativeData!!
-    }
-
-    private fun method(publication: Publication): String {
-        return if (publication.methodDescription.isNullOrEmpty()) {
-            "Draft. No method description yet."
-        } else {
-            publication.methodDescription!!
-        }
-    }
-
-    private fun dataDescription(publication: Publication): String {
-        return if (publication.dataDescription.isNullOrEmpty()) {
-            "Draft. No data description yet."
-        } else {
-            publication.dataDescription!!
-        }
-    }
-
-    private fun preliminaryResults(publication: Publication): String {
-        return publication.preliminaryResults!!
-    }
-
-    private fun software(publication: Publication): String {
-        return publication.software!!
-    }
+    private fun getDescriptionOrDraft(description: String?, draftMessage: String) = description?.takeIf { it.isNotEmpty() } ?: draftMessage
 
     private fun authorsDescriptions(publication: Publication): List<AuthorDescription> {
         return (
@@ -175,21 +118,8 @@ class PublicationPdfService(
                 .map {
                     AuthorDescription(((it.user?.lastName ?: it.lastName) + " " + (it.user?.firstName
                         ?: it.firstName)),
-                        (it.workplaces.joinToString(", ") { workplace -> "${workplace.organization.name} ${workplace.organizationDepartment ?: ""}" }
-                            ?: ""))
+                        it.workplaces.joinToString(", ") { workplace -> "${workplace.organization.name} ${workplace.organizationDepartment ?: ""}" })
                 })
-    }
-
-    private fun grantingOrganizations(publication: Publication): List<String> {
-        return publication.grantOrganizations!!
-    }
-
-    private fun primaryArticles(publication: Publication): List<String> {
-        return publication.primaryArticles!!
-    }
-
-    private fun relatedArticles(publication: Publication): List<String> {
-        return publication.relatedArticles!!
     }
 }
 

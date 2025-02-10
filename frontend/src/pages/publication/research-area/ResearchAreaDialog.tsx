@@ -60,7 +60,7 @@ export const ResearchAreaDialog = observer(
           </DialogTitle>
           <DialogContent style={{ padding: 0 }}>
             <DialogContentWrap>
-              {researchAreaElementsWithLevel(ResearchAreaLevel.L1).map(
+              {researchAreaElementsWithLevel(ResearchAreaLevel.L1, props.researchAreaStore.isStudentDataCollection).map(
                 (element) => {
                   return (
                     <Flex key={element.text} direction={FlexDirection.column}>
@@ -114,7 +114,7 @@ const ResearchAreaDialogElement = observer(
             </ResearchAreaDialogSelectedElementWrap>
             {props.element.hasChildren && <HeightElement value={'8px'} />}
             {props.element.hasChildren &&
-              researchAreaElementsWithParent(props.element.text).map(
+              researchAreaElementsWithParent(props.element.text, props.researchAreaStore.isStudentDataCollection).map(
                 (element) => {
                   return (
                     <ResearchAreaDialogElementContainer

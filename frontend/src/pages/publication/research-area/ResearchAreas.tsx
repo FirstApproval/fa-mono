@@ -5,6 +5,7 @@ import energyEngineeringAndMaterialsScience from '../asset/energyEngineeringAndM
 import agriculture from '../asset/agricultural.svg';
 import biochemistry from '../asset/biochemistry.svg';
 import business from '../asset/business.svg';
+import bullet from '../asset/bullet.svg';
 import chemicalEngineering from '../asset/chemicalEngineering.svg';
 import chemistry from '../asset/chemistry.svg';
 import computerScience from '../asset/computerScience.svg';
@@ -352,6 +353,16 @@ export const Veterinary = (): ReactElement => {
   );
 };
 
+export const BulletPoint = (): ReactElement => (
+  <img
+    src={bullet}
+    style={{
+      width: 24,
+      height: 24
+    }}
+  />
+);
+
 export interface ResearchAreaElement {
   level: ResearchAreaLevel;
   parent?: string;
@@ -365,6 +376,26 @@ export enum ResearchAreaLevel {
   L2 = 'Level2',
   L3 = 'Level3'
 }
+
+const studentResearchAreas = [
+  'Molecular Biology and Biochemistry',
+  'Genetics',
+  'Cell Biology and Histology',
+  'Anatomy and Physiology',
+  'Biophysics',
+  'Immunology',
+  'Neuroscience',
+  'Developmental biology',
+  'Biomedical Research',
+  'Biotechnology',
+  'Omics Technologies',
+  'Aging',
+  'Zoology',
+  'Botany and Mycology',
+  'Microbiology',
+  'Ecology',
+  'Behavioral Science'
+];
 
 const elements: ResearchAreaElement[] = [
   {
@@ -1997,20 +2028,40 @@ const elements: ResearchAreaElement[] = [
   }
 ];
 
+const studentElements: ResearchAreaElement[] = studentResearchAreas.map(
+  (researchAreaName) => ({
+    level: ResearchAreaLevel.L1,
+    hasChildren: false,
+    text: researchAreaName,
+    icon: <BulletPoint />
+  })
+);
+
 export const researchAreaElementsWithLevel = (
-  level: ResearchAreaLevel
+  level: ResearchAreaLevel,
+  isStudentDataCollection: boolean
 ): ResearchAreaElement[] => {
-  return elements.filter((r) => r.level === level);
+  return (isStudentDataCollection ? studentElements : elements).filter(
+    (r) => r.level === level
+  );
 };
 
 export const researchAreaElementsWithParent = (
-  parent: string
+  parent: string,
+  isStudentDataCollection: boolean
 ): ResearchAreaElement[] => {
-  return elements.filter((r) => r.parent === parent);
+  return (isStudentDataCollection ? studentElements : elements).filter(
+    (r) => r.parent === parent
+  );
 };
 
-export const researchAreaIcon = (text: string): ReactElement => {
-  const element = elements.find((r) => r.text === text);
+export const researchAreaIcon = (
+  text: string,
+  isStudentDataCollection: boolean
+): ReactElement => {
+  const element = (isStudentDataCollection ? studentElements : elements).find(
+    (r) => r.text === text
+  );
   if (element) {
     return element.icon;
   } else {

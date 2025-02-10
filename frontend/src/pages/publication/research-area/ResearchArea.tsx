@@ -17,6 +17,7 @@ export const ResearchArea = observer(
         {props.researchAreaStore.publicationStore.isReadonly && (
           <ResearchAreaList
             researchAreas={props.researchAreaStore.researchAreas}
+            isStudentDataCollection={props.researchAreaStore.isStudentDataCollection}
           />
         )}
 
@@ -34,6 +35,7 @@ export const ResearchArea = observer(
               onClick={props.researchAreaStore.openDialog}>
               <ResearchAreaList
                 researchAreas={props.researchAreaStore.researchAreas}
+                isStudentDataCollection={props.researchAreaStore.isStudentDataCollection}
               />
             </CursorPointer>
           )}

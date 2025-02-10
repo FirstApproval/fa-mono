@@ -84,9 +84,8 @@ export const ActionBar = observer(
             {publicationStore.publicationStatus ===
               PublicationStatus.MODERATION && (
               <FlexWrapRow>
-                <CircularProgressWrap size={24} />
                 <Typography variant={'body2'}>
-                  Moderation... This may take up to one day. Please wait.
+                  Congratulations! Your dataset has been submitted for the editor's review. You will be notified about the next steps in the publication process.
                 </Typography>
               </FlexWrapRow>
             )}

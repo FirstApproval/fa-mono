@@ -3,11 +3,13 @@ import { makeAutoObservable, reaction } from 'mobx';
 import { PublicationStore } from './PublicationStore';
 import { FileSystemFA } from '../../../fire-browser/FileSystemFA';
 import { FileData } from '@first-approval/chonky/dist/types/file.types';
-import { PublicationContentStatus } from '../../../apis/first-approval-api';
+import { PublicationContentStatus } from "../../../apis/first-approval-api"
 import { authStore } from '../../../core/auth';
 
 export class PublicationPageStore {
   summaryEnabled = false;
+
+  academicLevelEnabled = false;
 
   experimentGoalsEnabled = false;
 
@@ -62,6 +64,17 @@ export class PublicationPageStore {
       },
       { fireImmediately: true }
     );
+
+    reaction(
+      () => publicationStore.academicLevel,
+      (academicLevel) => {
+        if (academicLevel) {
+          this.openAcademicLevel();
+        }
+      },
+      { fireImmediately: true }
+    );
+
 
     reaction(
       () => publicationStore.method,
@@ -262,6 +275,10 @@ export class PublicationPageStore {
 
   openSummary = (): void => {
     this.summaryEnabled = true;
+  };
+
+  openAcademicLevel = (): void => {
+    this.academicLevelEnabled = true;
   };
 
   openExperimentGoals = (): void => {

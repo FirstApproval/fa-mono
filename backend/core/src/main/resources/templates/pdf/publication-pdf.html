@@ -159,7 +159,7 @@
             word-wrap: break-word;
         }
 
-        .negative-data-title {
+        .background-and-aims-boolean-data-title {
             font: normal 600 12px "Roboto", sans-serif;
             margin-bottom: 2px;
         }
@@ -268,10 +268,26 @@
         </div>
 
         <div th:if='${isNegative}' class='negative-data-content'>
-            <div class='negative-data-title'>
+            <div class="background-and-aims-boolean-data-title">
                 The data is negative
             </div>
             <div th:text='${negativeData}'>
+            </div>
+        </div>
+
+        <div th:if='${isReplicationOfPreviousExperiments}' class='negative-data-content'>
+            <div class="background-and-aims-boolean-data-title">
+                Replication of Previous Experimentse
+            </div>
+            <div th:text='${replicationOfPreviousExperimentsData}'>
+            </div>
+        </div>
+
+        <div th:if='${isPreviouslyPublishedDataset}' class='negative-data-content'>
+            <div class="background-and-aims-boolean-data-title">
+                Previously Published Dataset
+            </div>
+            <div th:text='${previouslyPublishedDatasetData}'>
             </div>
         </div>
 

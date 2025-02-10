@@ -1,5 +1,6 @@
 import predicted_goals from './asset/predicted_goals.svg';
 import method from './asset/method.svg';
+import academic from './asset/academic.svg';
 import data_description from './asset/data_description.svg';
 import preliminary_results from './asset/preliminary_results.svg';
 import software from './asset/software.svg';
@@ -16,6 +17,10 @@ import { Title } from '@mui/icons-material';
 
 export const TitleIcon = (): ReactElement => {
   return <Title fontSize={'small'} />;
+};
+
+export const AcademicIcon = (): ReactElement => {
+  return <img src={academic} />;
 };
 
 export const SearchIcon = (): ReactElement => {

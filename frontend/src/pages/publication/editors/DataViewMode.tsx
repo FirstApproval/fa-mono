@@ -4,14 +4,14 @@ import React, { ReactElement } from 'react';
 import styled from '@emotion/styled';
 import { Typography } from '@mui/material';
 
-export const NegativeDataViewMode = observer(
+export const DataViewMode = observer(
   (props: EditorProps): ReactElement => {
-    const { publicationStore } = props;
+    const { publicationStore, header } = props;
     return (
       <Wrapper>
         <NegativeDataViewWrapper>
           <NegativeDataHeaderEnabled variant={'h6'}>
-            The data is negative
+            {header}
           </NegativeDataHeaderEnabled>
           <NegativeDataTextViewMode variant={'body'} component={'div'}>
             {publicationStore.negativeData}
