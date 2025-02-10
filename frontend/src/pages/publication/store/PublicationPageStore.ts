@@ -68,8 +68,7 @@ export class PublicationPageStore {
     reaction(
       () => publicationStore.academicLevel,
       (academicLevel) => {
-        const academicLevelAbsent = !academicLevel;
-        if (academicLevelAbsent) {
+        if (academicLevel) {
           this.openAcademicLevel();
         }
       },
