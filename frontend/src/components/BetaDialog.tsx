@@ -44,7 +44,7 @@ export const BetaDialog = (props: {
             onClick={props.onClose}>
             Email us to info@firstapproval.io
           </FullWidthButton>
-          <TitleRowWrap style={{ paddingTop: '6px', paddingBottom: '6px' }}>
+          <TitleRowWrap style={{ paddingTop: '6px', paddingBottom: '6px', alignItems: 'center' }}>
             <Divider
               style={{ width: '45%', marginRight: '5px' }}
               color={'#D2D2D6'}
