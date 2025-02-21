@@ -8,6 +8,7 @@ import {
   IconButton,
   Switch,
   TextField,
+  Tooltip,
   Typography
 } from '@mui/material';
 import {
@@ -47,6 +48,8 @@ import { isNonEmptyString } from '../../util/stringUtils';
 const MAX_PREVIEW_LENGTH = 200;
 const MAX_PREVIEW_SUBTITLE_LENGTH = 300;
 const MAX_FILES_SIZE = 2_147_483_648;
+const NOT_FOR_COMPETITION_CHIP_LABEL = 'Not for competition';
+const ONLY_FOR_AGING_CHIP_LABEL = 'Only for aging data collection';
 
 export const SharingOptionsPage = (props: {
   publicationTitle: string;
@@ -170,17 +173,19 @@ export const SharingOptionsPage = (props: {
               <HeaderTitleWrap>
                 <Typography variant={'h5'}>Publishing</Typography>
                 <MarginLeftAuto>
-                  <IconButton>
-                    <Close
-                      onClick={() => {
-                        routerStore.navigatePage(
-                          Page.PUBLICATION,
-                          routerStore.path,
-                          true
-                        );
-                      }}
-                    />
-                  </IconButton>
+                  <Tooltip title={'Back to dataset'}>
+                    <IconButton>
+                      <Close
+                        onClick={() => {
+                          routerStore.navigatePage(
+                            Page.PUBLICATION,
+                            routerStore.path,
+                            true
+                          );
+                        }}
+                      />
+                    </IconButton>
+                  </Tooltip>
                 </MarginLeftAuto>
               </HeaderTitleWrap>
               <HeightElement value={'36px'} />
@@ -201,9 +206,14 @@ export const SharingOptionsPage = (props: {
                 label={'Direct Share'}
                 isSelected={accessType === AccessType.PERSONAL_SHARE}
                 onClick={() => setAccessType(AccessType.PERSONAL_SHARE)}
-                isDisabled={true}
                 description={
                   'The dataset will not be published but will receive a reserved DOI and will be accessible through a direct link.'
+                }
+                isDisabled={true}
+                disabledChipLabel={
+                  props.dataCollectionType === DataCollectionType.STUDENT
+                    ? NOT_FOR_COMPETITION_CHIP_LABEL
+                    : 'Soon'
                 }
               />
             </SharingOptionsContainer>
@@ -232,7 +242,7 @@ export const SharingOptionsPage = (props: {
                 isSelected={useType === UseType.CO_AUTHORSHIP}
                 icon={<AlternateEmail fontSize={'medium'} />}
                 label={'Co-authorship requirement'}
-                disabledChipLabel={'Not for competition'}
+                disabledChipLabel={NOT_FOR_COMPETITION_CHIP_LABEL}
                 description={
                   "Be credited as a co-author in journal publications when your data is vital to others' research. " +
                   'You can accept or reject collaboration requests.'
@@ -272,6 +282,11 @@ export const SharingOptionsPage = (props: {
             </SharingOptionsContainer>
             <FairPeerReviewSection
               disabled={props.dataCollectionType !== DataCollectionType.AGING}
+              disabledChipLabel={
+                props.dataCollectionType === DataCollectionType.STUDENT
+                  ? NOT_FOR_COMPETITION_CHIP_LABEL
+                  : ONLY_FOR_AGING_CHIP_LABEL
+              }
               isPeerReviewEnabled={isPeerReviewEnabled}
               setIsPeerReviewEnabled={(enabled) =>
                 setIsPeerReviewEnabled(enabled)
@@ -346,7 +361,7 @@ export const SharingOptionsPage = (props: {
                     );
                   });
               }}>
-              Publish now for free
+              Submit
             </ButtonWrap>
           </BodyContentWrap>
         </BodyWrap>
@@ -412,6 +427,7 @@ const SharingOption = React.forwardRef<HTMLDivElement, SharingOptionsProps>(
 
 const FairPeerReviewSection = (props: {
   disabled: boolean;
+  disabledChipLabel: string;
   isPeerReviewEnabled: boolean;
   setIsPeerReviewEnabled: (isPeerReviewEnabled: boolean) => void;
 }): ReactElement => {
@@ -423,6 +439,12 @@ const FairPeerReviewSection = (props: {
         checked={props.isPeerReviewEnabled}
         onClick={() => props.setIsPeerReviewEnabled(!props.isPeerReviewEnabled)}
       />
+      {props.disabled  &&
+        <DisabledChip
+        label={props.disabledChipLabel}
+        sx={{ backgroundColor: 'inherit' }}
+      />
+      }
     </FairPeerReviewSectionWrap>
   );
 };

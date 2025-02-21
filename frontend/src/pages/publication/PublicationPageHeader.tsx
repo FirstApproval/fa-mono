@@ -136,6 +136,7 @@ export const PublicationPageHeader = observer(
                         disabled={fs.activeUploads > 0 || sfs.activeUploads > 0}
                         variant="contained"
                         size={'medium'}
+                        width={publicationStore.isStudentDataCollection ? '180px' : '90px'}
                         onClick={async () => {
                           if (publicationStore.isExceededLimit) {
                             setOpenLimitSnackbar(true);
@@ -161,7 +162,7 @@ export const PublicationPageHeader = observer(
                             );
                           }
                         }}>
-                        Publish
+                        {publicationStore.isStudentDataCollection ? 'Publishing conditions' : 'Publish'}
                       </ButtonWrap>
                     )}
                     <ButtonWrap
@@ -194,7 +195,7 @@ export const PublicationPageHeader = observer(
                       {nextViewMode}
                     </ButtonWrap>
                     <ButtonWrap
-                      marginright="0px"
+                      marginRight="0px"
                       variant="outlined"
                       size={'medium'}
                       onClick={handleClick}>
@@ -274,9 +275,9 @@ const FlexHeader = styled.div`
   z-index: 10;
 `;
 
-const ButtonWrap = styled(Button)<{ marginright?: string }>`
-  margin-right: ${(props) => props.marginright ?? '24px'};
-  width: 90px;
+const ButtonWrap = styled(Button)<{ marginRight?: string, width?: string }>`
+  margin-right: ${(props) => props.marginRight ?? '24px'};
+  width: ${(props) => props.width ?? '90px'};
   height: 36px;
 `;
 
