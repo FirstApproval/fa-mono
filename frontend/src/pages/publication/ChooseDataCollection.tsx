@@ -78,7 +78,15 @@ export const ChooseDataCollectionPage: FunctionComponent<ChooseDataCollectionPag
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}>
-                <InfoOutlined htmlColor={C04003661} sx={{ width: 24, height: 24, marginLeft: '12px', cursor: 'pointer' }} />
+                <InfoOutlined htmlColor={C04003661}
+                              sx={{
+                                width: 24,
+                                height: 24,
+                                marginLeft: '12px',
+                                marginBottom: '3px',
+                                cursor: 'pointer',
+                                verticalAlign: 'middle' }}
+                />
               </Link>
             </FlexWrapRow>
             <OptionDescription variant={'body2'}>{description}</OptionDescription>
