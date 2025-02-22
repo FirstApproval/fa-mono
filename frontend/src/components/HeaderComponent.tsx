@@ -10,6 +10,7 @@ import { userStore } from '../core/user';
 import { UserMenu } from './UserMenu';
 import { Page, signInPath } from '../core/router/constants';
 import { FALinkWrap } from './LinkWrap';
+import { DataCollectionType } from '../apis/first-approval-api';
 
 interface HeaderComponentProps {
   showAboutUsButton?: boolean;
@@ -18,6 +19,7 @@ interface HeaderComponentProps {
   showSignUpContainedButton?: boolean;
   showSignUpOutlinedButton?: boolean;
   showLoginOutlinedButton?: boolean;
+  isStudentCompetition?: boolean
 }
 
 export const HeaderComponent = (
@@ -27,7 +29,8 @@ export const HeaderComponent = (
     showLoginButton: false,
     showSignUpContainedButton: false,
     showSignUpOutlinedButton: false,
-    showLoginOutlinedButton: false
+    showLoginOutlinedButton: false,
+    isStudentCompetition: false,
   }
 ): ReactElement => {
   const showSignUpButton =
@@ -81,6 +84,7 @@ export const HeaderComponent = (
                       xs: 'none',
                       md: 'block'
                   }}>
+                {!props.isStudentCompetition &&
                   <ButtonWrap
                       onClick={(e) => {
                           e.preventDefault();
@@ -91,6 +95,7 @@ export const HeaderComponent = (
                       size={'large'}>
                       Student competition
                   </ButtonWrap>
+                }
               </Box>
             <Box
               component={Grid}
@@ -100,17 +105,17 @@ export const HeaderComponent = (
                 xs: 'none',
                 md: 'block'
               }}>
-
               {props.showPublishButton && (
                 <ButtonWrap
                   href={userStore.getCreatePublicationLink()}
                   onClick={(e) => {
                     e.preventDefault();
-                    userStore.goToCreatePublication();
+                    userStore.goToCreatePublication(props.isStudentCompetition ? DataCollectionType.STUDENT : undefined);
                   }}
                   variant="outlined"
+                  width={props.isStudentCompetition ? '125px' : '85px'}
                   size={'large'}>
-                  Publish
+                  {props.isStudentCompetition ? 'Apply now' : 'Publish'}
                 </ButtonWrap>
               )}
             </Box>

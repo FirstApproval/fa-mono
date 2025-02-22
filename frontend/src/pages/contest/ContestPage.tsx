@@ -26,7 +26,11 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
 
         return (
             <>
-                <HeaderComponent showLoginOutlinedButton={true}/>
+                <HeaderComponent
+                  showLoginOutlinedButton={true}
+                  showPublishButton={true}
+                  isStudentCompetition={true}
+                />
                 {/*Student Biological Data Competition block desktop*/}
                 <div>
                     <Box
