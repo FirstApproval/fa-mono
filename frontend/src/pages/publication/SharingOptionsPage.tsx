@@ -49,7 +49,7 @@ const MAX_PREVIEW_LENGTH = 200;
 const MAX_PREVIEW_SUBTITLE_LENGTH = 300;
 const MAX_FILES_SIZE = 2_147_483_648;
 const NOT_FOR_COMPETITION_CHIP_LABEL = 'Not for competition';
-const ONLY_FOR_AGING_CHIP_LABEL = 'Only for aging data collection';
+const SOON_CHIP_LABEL = 'Soon';
 
 export const SharingOptionsPage = (props: {
   publicationTitle: string;
@@ -213,7 +213,7 @@ export const SharingOptionsPage = (props: {
                 disabledChipLabel={
                   props.dataCollectionType === DataCollectionType.STUDENT
                     ? NOT_FOR_COMPETITION_CHIP_LABEL
-                    : 'Soon'
+                    : SOON_CHIP_LABEL
                 }
               />
             </SharingOptionsContainer>
@@ -285,7 +285,7 @@ export const SharingOptionsPage = (props: {
               disabledChipLabel={
                 props.dataCollectionType === DataCollectionType.STUDENT
                   ? NOT_FOR_COMPETITION_CHIP_LABEL
-                  : ONLY_FOR_AGING_CHIP_LABEL
+                  : SOON_CHIP_LABEL
               }
               isPeerReviewEnabled={isPeerReviewEnabled}
               setIsPeerReviewEnabled={(enabled) =>
@@ -391,7 +391,7 @@ const SharingOption = React.forwardRef<HTMLDivElement, SharingOptionsProps>(
       isSelected,
       noMargin,
       onClick,
-      disabledChipLabel = 'soon'
+      disabledChipLabel = SOON_CHIP_LABEL
     } = props;
 
     return (
