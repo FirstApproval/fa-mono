@@ -21,6 +21,7 @@ import {DataCollectionType} from '../../apis/first-approval-api';
 interface ContestPageProps {}
 
 export const ContestPage: FunctionComponent<ContestPageProps> = observer((props: ContestPageProps) => {
+        const submissionDeadlineText = 'Submission deadline: 15 September 2025';
 
         const applyNow = () => userStore.goToCreatePublication(DataCollectionType.STUDENT);
 
@@ -304,7 +305,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                 </div>
                                 <div>
                                     <div style={{
-                                        width: 480,
+                                        width: 540,
                                         height: 80,
                                         marginBottom: 6,
                                         backgroundColor: '#F8F7FA',
@@ -317,14 +318,14 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         cursor: 'pointer',
                                     }}>
                                         <img src={contest1} style={{marginRight: 8, marginLeft: 16}}/>
-                                        Submission deadline: 15 September 2025
+                                        {submissionDeadlineText}
                                     </div>
                                     <Link
                                         color="inherit"
                                         href={'https://docs.google.com/document/d/1qkKKMeW1OjavRftz1QqDhpxT36JxupTEvIQ4Eyoli0c'}
                                         target={'_blank'}>
                                         <div style={{
-                                            width: 480,
+                                            width: 540,
                                             height: 80,
                                             marginBottom: 6,
                                             backgroundColor: '#F8F7FA',
@@ -346,7 +347,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         href={'https://docs.google.com/document/d/1Cq5OTm_gODN3JUjZCBzid2eY_kmKn9AwVhDc1klmva0'}
                                         target={'_blank'}>
                                         <div style={{
-                                            width: 480,
+                                            width: 540,
                                             height: 80,
                                             backgroundColor: '#F8F7FA',
                                             fontFamily: 'Roboto',
@@ -381,7 +382,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                 xl: 'none',
                             }}>
                             <div style={{
-                                paddingLeft: 20,
+                                paddingLeft: 0,
                                 paddingRight: 20,
                                 marginBottom: 40,
                             }}>
@@ -400,7 +401,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         cursor: 'pointer',
                                     }}>
                                         <img src={contest1} style={{marginRight: 8, marginLeft: 16}}/>
-                                        Submission deadline: 15 September 2025
+                                        {submissionDeadlineText}
                                     </div>
                                     <Link
                                         color="inherit"
