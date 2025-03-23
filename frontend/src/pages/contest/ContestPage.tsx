@@ -12,11 +12,195 @@ import contestTopImage from 'src/assets/contest-top-image.svg';
 import contest1 from 'src/assets/contest-1.svg';
 import contest2 from 'src/assets/contest-2.svg';
 import contest3 from 'src/assets/contest-3.svg';
-import {routerStore} from '../../core/router';
-import {Page} from '../../core/router/constants';
-import {Box, Button, Grid, Link} from '@mui/material';
-import {userStore} from '../../core/user';
-import {DataCollectionType} from '../../apis/first-approval-api';
+import AlexanderPanchin from 'src/assets/contest/organizing-сommittee/AlexanderPanchin.png';
+import AnastasiaEgorova from 'src/assets/contest/organizing-сommittee/AnastasiaEgorova.png';
+import AnastasiaShubina from 'src/assets/contest/organizing-сommittee/AnastasiaShubina.png';
+import ElenaArzumanyan from 'src/assets/contest/organizing-сommittee/ElenaArzumanyan.png';
+import EugenKhomula from 'src/assets/contest/organizing-сommittee/EugenKhomula.png';
+import EvgenyAkkuratov from 'src/assets/contest/organizing-сommittee/EvgenyAkkuratov.png';
+import MariaPorokh from 'src/assets/contest/organizing-сommittee/MariaPorokh.png';
+import MikhailBatin from 'src/assets/contest/organizing-сommittee/MikhailBatin.png';
+import TatyanaLopatina from 'src/assets/contest/organizing-сommittee/TatyanaLopatina.png';
+import TimofeyGlinin from 'src/assets/contest/organizing-сommittee/TimofeyGlinin.png';
+import TylerHilsabeck from 'src/assets/contest/organizing-сommittee/TylerHilsabeck.png';
+import AlexandraStolzing from 'src/assets/contest/judges/AlexandraStolzing.png';
+import AnchaBaranova from 'src/assets/contest/judges/AnchaBaranova.png';
+import PeterLydsky from 'src/assets/contest/judges/PeterLydsky.png';
+import StanislovasJanakuskas from 'src/assets/contest/judges/StanislovasJanakuskas.png';
+import ThomasStoeger from 'src/assets/contest/judges/ThomasStoeger.png';
+import { routerStore } from '../../core/router';
+import { Page } from '../../core/router/constants';
+import { Box, Button, Grid, Link } from '@mui/material';
+import styled from '@emotion/styled';
+import { userStore } from '../../core/user';
+import { DataCollectionType } from '../../apis/first-approval-api';
+import { css } from '@emotion/react';
+
+export interface ExpertElement {
+    logo: string;
+    name: string;
+    title: string;
+    url?: string;
+}
+
+const organizationCommittee: ExpertElement[] = [
+    {
+        logo: TimofeyGlinin,
+        name: "Timofey Glinin",
+        title: "PhD, First Approval, CA",
+        url: "https://www.linkedin.com/in/timofey-glinin"
+    },
+    {
+        logo: AlexanderPanchin,
+        name: "Alexander Panchin",
+        title: "First Approval, CA",
+        url: "https://www.linkedin.com/in/alexander-panchin-2b303945"
+    },
+    {
+        logo: AnastasiaEgorova,
+        name: "Anastasia Egorova",
+        title: "Open Longevity, CA",
+        url: "https://www.linkedin.com/in/anastasia-egorova-60580397"
+    },
+      {
+        logo: AnastasiaShubina,
+        name: "Anastasia Shubina",
+        title: "First Approval, CA",
+        url: "https://www.linkedin.com/in/anastasia-n-shubina"
+    },
+    {
+        logo: ElenaArzumanyan,
+        name: "Elena Arzumanyan",
+        title: "PhD, Natera, CA",
+        url: "https://www.linkedin.com/in/elena-a-096ba5234"
+    },
+      {
+        logo: EugenKhomula,
+        name: "Eugen Khomula",
+        title: "PhD, UCSF, CA",
+        url: "https://www.linkedin.com/in/eugen-khomula"
+    },
+    {
+        logo: EvgenyAkkuratov,
+        name: "Evgeny Akkuratov",
+        title: "PhD, Stowers Institute for Medical Research, MO",
+        url: "https://www.stowers.org/people/evgeny-akkuratov"
+    },
+    {
+        logo: MariaPorokh,
+        name: "Maria Porokh",
+        title: "PhD, First Approval",
+        url: "https://www.linkedin.com/in/maria-porokh-97a7a1121"
+    },
+    {
+        logo: MikhailBatin,
+        name: "Mikhail Batin",
+        title: "Open Longevity, CA",
+        url: "https://www.linkedin.com/in/mikhail-batin-02a56a45"
+    },
+    {
+        logo: TatyanaLopatina,
+        name: "Tatyana Lopatina",
+        title: "UCSF, CA",
+        url: "https://www.linkedin.com/in/tatiana-lopatina-19286a32"
+    },
+    {
+        logo: TylerHilsabeck,
+        name: "Tyler Hilsabeck",
+        title: "PhD, Salk Institute for Biological Studies, CA",
+        url: "https://www.linkedin.com/in/tyler-hilsabeck"
+    }
+]
+
+const judges: ExpertElement[] = [
+    {
+        logo: AnchaBaranova,
+        name: "Ancha Baranova",
+        title: "Professor of Systems Biology, George Mason University, VA, USA.",
+    },
+    {
+        logo: PeterLydsky,
+        name: "Peter Lydsky",
+        title: "Assistant Professor at City University of Hong Kong, China.",
+    },
+    {
+        logo: AlexandraStolzing,
+        name: "Alexandra Stolzing",
+        title: "Professor for Biogerontological Engineering, Loughborough University, UK.",
+    },
+    {
+        logo: ThomasStoeger,
+        name: "Thomas Stoeger",
+        title: "Assistant Professor at the Feinberg School of Medicine Northwestern University, IL, USA.",
+    },
+    {
+        logo: StanislovasJanakuskas,
+        name: "Stanislovas Janakuskas",
+        title: "Research Assistant Professor at Albert Einstein College of medicine, NY, USA.",
+    },
+]
+
+const Expert = ({ logo, name, title, url }: ExpertElement) => {
+  const ExpertContainer = styled.a`
+    display: flex;
+    flex-direction: column;  
+    align-items: flex-start;
+    background: #fff;
+    padding: 8px 0 8px 8px;
+
+    text-decoration: none;
+
+    @media (max-width: 1300px) {
+      border: none;
+      padding: 8px 0;
+    }
+  `;
+
+  const ExpertLogo = styled.img`
+      width: 80px;
+      height: 80px;
+      margin-right: 16px;
+      margin-bottom: 4px;
+      filter: grayscale(100%);
+      border-radius: 50%;
+      object-fit: cover; /* Обрежет изображение, чтобы оно заполняло круг */
+
+      @media (max-width: 1300px) {
+          width: 64px;
+          height: 64px;
+      }
+  `;
+
+  const ExpertNameContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;  
+  `;
+
+  const ExpertName = styled.div`
+    ${font24px};
+    white-space: nowrap;  
+
+    @media (max-width: 1300px) {
+      ${font16px};
+    }
+  `;
+
+  const ExpertTitle = styled.div`
+    ${font16px};
+    ${colorDim};
+  `;
+
+  return (
+    <ExpertContainer href={url} target={'_blank'}>
+      <ExpertLogo src={logo} />
+      <ExpertNameContainer>
+        <ExpertName>{name}</ExpertName>
+        <ExpertTitle>{title}</ExpertTitle>
+      </ExpertNameContainer>
+    </ExpertContainer>
+  );
+};
 
 interface ContestPageProps {}
 
@@ -85,12 +269,11 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         marginBottom: 24,
                                         marginRight: 120,
                                     }}>
-                                        First Approval is pleased to announce a student dataset competition aimed at
-                                        promoting innovative scientific practices in data publication across the fields
-                                        of biology, biotechnology, and biomedicine. The objectives of this competition
-                                        include training students in the principles and techniques of data publication,
-                                        fostering the reuse of scientific data, and introducing decentralized solutions
-                                        to the scientific community.
+                                        The Student Biological Data Competition is an international contest dedicated to scientific
+                                        datasets in biology, biotechnology, and biomedicine. This first-of-its-kind competition directly
+                                        evaluates the quality of scientific datasets and their annotation, aiming to promote
+                                        Open Data practices among students. A central focus of the competition is the evaluation of scientific data
+                                        from experiments.
                                     </div>
                                     <div style={{
                                         fontFamily: 'Roboto',
@@ -99,13 +282,11 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         marginBottom: 24,
                                         marginRight: 120,
                                     }}>
-                                        A central focus of the competition will be the evaluation of raw scientific
-                                        data from experiments. Submissions will be evaluated by a panel of experts for
-                                        completeness of annotation, data accuracy, novelty and quality of the
-                                        experimental design, and potential for reuse. The competition’s mission is to
-                                        identify and reward exceptional datasets, highlighting experiments distinguished
-                                        by their high quality, innovative methodologies, and exemplary experimental
-                                        design.
+                                        The competition is open in three categories for Bachelor’s, Master’s, and PhD students.
+                                        Submissions will be evaluated by a panel of experts based on completeness of annotation, data
+                                        accuracy, novelty and quality of experimental design, and potential for reuse.
+                                        Participants will have the opportunity to gain recognition from an independent panel of top academic and
+                                        industry experts in their fields and will receive a data publication on the First Approval platform.
                                     </div>
                                     <Button
                                         style={{
@@ -578,7 +759,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                     fontSize: 20,
                                     fontWeight: 400,
                                 }}>
-                                    <span style={{fontWeight: 500}}>Orginality:</span> The dataset must not have been
+                                    <span style={{fontWeight: 500}}>Originality:</span> The dataset must not have been
                                     previously published on any
                                     other repository.
                                     However, we will accept its submission if the volume of data has been increased
@@ -663,7 +844,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         fontSize: 16,
                                         fontWeight: 400,
                                     }}>
-                                        <span style={{fontWeight: 500}}>Orginality:</span> The dataset must not have
+                                        <span style={{fontWeight: 500}}>Originality:</span> The dataset must not have
                                         been
                                         previously published on any
                                         other repository.
@@ -787,7 +968,8 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                     fontWeight: 400,
                                     marginBottom: 16,
                                 }}>
-                                    Best Negative Dataset: $500
+                                    Best Negative Dataset: $300 – awarded to a dataset that challenges the original
+                                    hypothesis by producing non-confirmatory results.
                                 </li>
                                 <li style={{
                                     fontFamily: 'Roboto',
@@ -795,7 +977,8 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                     fontWeight: 400,
                                     marginBottom: 16,
                                 }}>
-                                    Best Replication Dataset: $500
+                                    Best Replication Dataset: $300 – awarded to a dataset that successfully reproduces
+                                    the findings of a previous experiment.
                                 </li>
                                 <li style={{
                                     fontFamily: 'Roboto',
@@ -1254,6 +1437,14 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                 }}>
                                     <span style={{fontWeight: 500}}>Detailed Guidelines</span> will be available soon.
                                 </li>
+                                <li style={{
+                                    fontFamily: 'Roboto',
+                                    fontSize: 20,
+                                    fontWeight: 400,
+                                    marginBottom: 12,
+                                }}>
+                                    <span style={{fontWeight: 500}}>Submission is free of charge</span>
+                                </li>
                             </ul>
                         </div>
                     </Box>
@@ -1374,277 +1565,603 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                 Additional partners will be announced soon.
                             </div>
                         </div>
-                    </Box>
+
+            <div
+              style={{
+                paddingLeft: 128,
+                paddingRight: 128,
+                marginBottom: 80
+              }}>
+              <div
+                style={{
+                  marginBottom: 24,
+                  fontFamily: 'Roboto',
+                  fontSize: 24,
+                  fontWeight: 600
+                }}>
+                Our Mission
+              </div>
+              <div
+                style={{
+                  fontFamily: 'Roboto',
+                  fontSize: 20,
+                  fontWeight: 400
+                }}>
+                We aim to introduce Open Data practices to student researchers,
+                promoting high-quality data annotation and well-designed
+                experiments. In the scientific world, publishing research papers
+                is prioritized, while the preparation, annotation, and
+                publication of scientific data receive far less attention. This
+                competition seeks to recognize and reward outstanding datasets,
+                highlighting experiments distinguished by their high quality,
+                innovative methodologies, and exemplary design. Alongside new
+                and original datasets, we also welcome Negative Datasets—those
+                that do not confirm the original hypothesis—and Replicative
+                Datasets, which successfully reproduce previous experiments.
+              </div>
+
+              <div
+                style={{
+                  fontFamily: 'Roboto',
+                  fontSize: 20,
+                  fontWeight: 400
+                }}>
+                We believe that such practices will foster the reuse of
+                scientific data, enhance reproducibility, and improve data
+                quality.
+              </div>
+            </div>
+            <div
+              style={{
+                  paddingLeft: 128,
+                  paddingRight: 128,
+                  marginBottom: 80
+              }}>
+                <div
+                  style={{
+                      marginBottom: 24,
+                      fontFamily: 'Roboto',
+                      fontSize: 24,
+                      fontWeight: 600
+                  }}>
+                    The Judges
                 </div>
-                {/*Partners block mobile*/}
-                <div>
-                    <div>
-                        <Box
-                            component={Grid}
-                            item
-                            display={{
-                                xs: 'block',
-                                s: 'block',
-                                md: 'none',
-                                lg: 'none',
-                                xl: 'none',
-                            }}>
-                            <div style={{
-                                paddingLeft: 20,
-                                paddingRight: 20,
-                                marginBottom: 40,
-                            }}>
-                                <div style={{
-                                    marginBottom: 24,
-                                    fontFamily: 'Roboto',
-                                    fontSize: 24,
-                                    fontWeight: 600,
-                                }}>
-                                    Partners
-                                </div>
-                                <div style={{
-                                    marginBottom: 12,
-                                    fontFamily: 'Roboto',
-                                    fontSize: 16,
-                                    fontWeight: 400,
-                                }}>
-                                    <span style={{fontWeight: 500}}>Open Longevity</span>, a US nonprofit organization
-                                    focused on accelerating aging research.
-                                </div>
-                                <div style={{
-                                    fontFamily: 'Roboto',
-                                    fontSize: 16,
-                                    fontWeight: 400,
-                                }}>
-                                    Additional partners will be announced soon.
-                                </div>
-                            </div>
-                        </Box>
-                    </div>
+                <div
+                  style={{
+                      fontFamily: 'Roboto',
+                      fontSize: 20,
+                      fontWeight: 400,
+                      marginBottom: 30
+                  }}>
+                    Dozens of academics from around the world volunteer in our judging process,
+                    selecting winners based on the quality of the work.
                 </div>
-                {/*Unleash data potential block desktop*/}
-                <div>
-                    <Box
-                        component={Grid}
-                        item
-                        display={{
-                            xs: 'none',
-                            s: 'none',
-                            md: 'block',
-                            lg: 'block',
-                            xl: 'block',
-                        }}>
-                        <div style={{
-                            paddingLeft: 128,
-                            paddingRight: 128,
-                            marginBottom: 80,
-                        }}>
-                            <div style={{
-                                width: '100%',
-                                height: 290,
-                                borderRadius: 8,
-                                backgroundColor: '#F8F7FA',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                            }}>
-                                <div style={{
-                                    marginLeft: 96,
-                                }}>
-                                    <div style={{
-                                        marginBottom: 24,
-                                        fontFamily: 'Roboto',
-                                        fontSize: 34,
-                                        fontWeight: 600,
-                                    }}>
-                                        Unleash your data's potential
-                                    </div>
-                                    <div style={{
-                                        marginBottom: 32,
-                                        fontFamily: 'Roboto',
-                                        fontSize: 20,
-                                        fontWeight: 400,
-                                        width: 320,
-                                    }}>
-                                        Share your datasets and let them fuel new scientific breakthroughs
-                                    </div>
-                                    <Button
-                                        style={{
-                                            display: 'flex',
-                                            height: 40,
-                                            width: 200,
-                                            padding: 8,
-                                            justifyContent: 'center',
-                                            alignItems: 'flex-end',
-                                            color: '#3C47E5',
-                                            backgroundColor: 'rgba(60,71,229,0.12)'
-                                        }}
-                                        variant="text"
-                                        onClick={applyNow}
-                                        size={'large'}>
-                                        Apply now <img src={contestRightBlue} style={{marginBottom: 4, marginLeft: 8}}/>
-                                    </Button>
-                                </div>
-                                <img src={contestUnleash} height={290} style={{marginRight: 16}}/>
-                            </div>
-                        </div>
-                    </Box>
+                <Grid container spacing={2} justifyContent="start">
+                    {judges.map((expert, index) => (
+                      <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
+                          <Expert
+                            logo={expert.logo}
+                            name={expert.name}
+                            title={expert.title}
+                            url={expert.url}
+                          />
+                      </Grid>
+                    ))}
+                </Grid>
+            </div>
+            <div
+              style={{
+                  paddingLeft: 128,
+                  paddingRight: 128,
+                  marginBottom: 80
+              }}>
+                <div
+                  style={{
+                      marginBottom: 24,
+                      fontFamily: 'Roboto',
+                      fontSize: 24,
+                      fontWeight: 600
+                  }}>
+                    The organizing committee
                 </div>
-                {/*Unleash data potential block mobile*/}
-                <div>
-                    <Box
-                        component={Grid}
-                        item
-                        display={{
-                            xs: 'block',
-                            s: 'block',
-                            md: 'none',
-                            lg: 'none',
-                            xl: 'none',
-                        }}>
-                        <div style={{
-                            paddingLeft: 20,
-                            paddingRight: 20,
-                            marginBottom: 40,
-                        }}>
-                            <div style={{
-                                width: '100%',
-                                borderRadius: 8,
-                                backgroundColor: '#F8F7FA',
-                            }}>
-                                <div style={{
-                                    padding: 24,
-                                    fontFamily: 'Roboto',
-                                    fontSize: 24,
-                                    fontWeight: 600,
-                                }}>
-                                    Unleash your data's potential
-                                </div>
-                                <div style={{
-                                    paddingLeft: 24,
-                                    paddingRight: 24,
-                                    paddingBottom: 24,
-                                    fontFamily: 'Roboto',
-                                    fontSize: 16,
-                                    fontWeight: 400,
-                                    width: 320,
-                                }}>
-                                    Share your datasets and let them fuel new scientific breakthroughs
-                                </div>
-                                <img src={contestUnleashMobile} width={'100%'}/>
-                            </div>
-                        </div>
-                    </Box>
+                <div
+                  style={{
+                      fontFamily: 'Roboto',
+                      fontSize: 20,
+                      fontWeight: 400,
+                      marginBottom: 30
+                  }}>
+                    The Organizing Committee of the Student Data Competition includes dozens of scientists from around the world,
+                    as well as international academics, lecturers, and industry experts
                 </div>
-                {/*Sign up block desktop*/}
-                <Box
-                    component={Grid}
-                    item
-                    display={{
-                        xs: 'none',
-                        s: 'none',
-                        md: 'block',
-                        lg: 'block',
-                        xl: 'block',
+                <Grid container spacing={2} justifyContent="flex-start">
+                    {organizationCommittee.map((expert, index) => (
+                      <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
+                          <Expert
+                            logo={expert.logo}
+                            name={expert.name}
+                            title={expert.title}
+                            url={expert.url}
+                          />
+                      </Grid>
+                    ))}
+                </Grid>
+            </div>
+          </Box>
+        </div>
+        {/*Partners block mobile*/}
+        <div>
+          <div>
+            <Box
+              component={Grid}
+              item
+              display={{
+                xs: 'block',
+                s: 'block',
+                md: 'none',
+                lg: 'none',
+                xl: 'none'
+              }}>
+              <div
+                style={{
+                  paddingLeft: 20,
+                  paddingRight: 20,
+                  marginBottom: 40
+                }}>
+                <div
+                  style={{
+                    marginBottom: 24,
+                    fontFamily: 'Roboto',
+                    fontSize: 24,
+                    fontWeight: 600
+                  }}>
+                  Partners
+                </div>
+                <div
+                  style={{
+                    marginBottom: 12,
+                    fontFamily: 'Roboto',
+                    fontSize: 16,
+                    fontWeight: 400
+                  }}>
+                  <span style={{ fontWeight: 500 }}>Open Longevity</span>, a US
+                  nonprofit organization focused on accelerating aging research.
+                </div>
+                <div
+                  style={{
+                    fontFamily: 'Roboto',
+                    fontSize: 16,
+                    fontWeight: 400
+                  }}>
+                  Additional partners will be announced soon.
+                </div>
+              </div>
+
+              <div
+                style={{
+                  paddingLeft: 20,
+                  paddingRight: 20,
+                  marginBottom: 40
+                }}>
+                <div
+                  style={{
+                    marginBottom: 24,
+                    fontFamily: 'Roboto',
+                    fontSize: 24,
+                    fontWeight: 600
+                  }}>
+                  Our Mission
+                </div>
+                <div
+                  style={{
+                    fontFamily: 'Roboto',
+                    fontSize: 16,
+                    fontWeight: 400
+                  }}>
+                  We aim to introduce Open Data practices to student
+                  researchers, promoting high-quality data annotation and
+                  well-designed experiments. In the scientific world, publishing
+                  research papers is prioritized, while the preparation,
+                  annotation, and publication of scientific data receive far
+                  less attention. This competition seeks to recognize and reward
+                  outstanding datasets, highlighting experiments distinguished
+                  by their high quality, innovative methodologies, and exemplary
+                  design. Alongside new and original datasets, we also welcome
+                  Negative Datasets—those that do not confirm the original
+                  hypothesis—and Replicative Datasets, which successfully
+                  reproduce previous experiments.
+                </div>
+                <div
+                  style={{
+                    fontFamily: 'Roboto',
+                    fontSize: 16,
+                    fontWeight: 400
+                  }}>
+                  We believe that such practices will foster the reuse of
+                  scientific data, enhance reproducibility, and improve data
+                  quality.
+                </div>
+              </div>
+            </Box>
+          </div>
+        </div>
+        {/*Unleash data potential block desktop*/}
+        <div>
+          <Box
+            component={Grid}
+            item
+            display={{
+              xs: 'none',
+              s: 'none',
+              md: 'block',
+              lg: 'block',
+              xl: 'block'
+            }}>
+            <div
+              style={{
+                paddingLeft: 128,
+                paddingRight: 128,
+                marginBottom: 80
+              }}>
+              <div
+                style={{
+                  width: '100%',
+                  height: 290,
+                  borderRadius: 8,
+                  backgroundColor: '#F8F7FA',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
+                }}>
+                <div
+                  style={{
+                    marginLeft: 96
+                  }}>
+                  <div
+                    style={{
+                      marginBottom: 24,
+                      fontFamily: 'Roboto',
+                      fontSize: 34,
+                      fontWeight: 600
                     }}>
-                    <div style={{
-                        height: 274,
-                        width: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: '#F8F7FA'
+                    Unleash your data's potential
+                  </div>
+                  <div
+                    style={{
+                      marginBottom: 32,
+                      fontFamily: 'Roboto',
+                      fontSize: 20,
+                      fontWeight: 400,
+                      width: 320
                     }}>
-                        <img src={contestEnvelope}/>
-                        <div>
-                            <div style={{
-                                marginLeft: 64,
-                                marginBottom: 24,
-                                fontFamily: 'Roboto',
-                                fontSize: 34,
-                                fontWeight: 600,
-                                letterSpacing: '0.25px',
-                            }}>
-                                Stay informed on the latest news and updates. Sign up now!
-                            </div>
-                            <div>
-                                <Button
-                                    style={{
-                                        marginLeft: 64,
-                                        display: 'flex',
-                                        height: 40,
-                                        width: 120,
-                                        padding: 8,
-                                        justifyContent: 'center',
-                                        alignItems: 'flex-end',
-                                        color: '#fff'
-                                    }}
-                                    variant="contained"
-                                    onClick={() => {
-                                        routerStore.navigatePage(Page.SIGN_UP);
-                                    }}
-                                    size={'large'}>
-                                    Sign up <img src={contestRight} style={{marginBottom: 4, marginLeft: 8}}/>
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                </Box>
-                {/*Sign up block mobile*/}
-                <Box
-                    component={Grid}
-                    item
-                    display={{
-                        xs: 'block',
-                        s: 'block',
-                        md: 'none',
-                        lg: 'none',
-                        xl: 'none',
-                    }}>
-                    <div style={{
-                        height: 324,
-                        width: '100%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        backgroundColor: '#F8F7FA',
-                        padding: 24
-                    }}>
-                        <img src={contestEnvelope} width={70} height={70}/>
-                        <div>
-                            <div style={{
-                                marginTop: 24,
-                                marginBottom: 24,
-                                fontFamily: 'Roboto',
-                                fontSize: 24,
-                                fontWeight: 600,
-                            }}>
-                                Stay informed on the latest news and updates. Sign up now!
-                            </div>
-                            <div>
-                                <Button
-                                    style={{
-                                        display: 'flex',
-                                        height: 40,
-                                        width: '100%',
-                                        padding: 8,
-                                        justifyContent: 'center',
-                                        alignItems: 'flex-end',
-                                        color: '#fff'
-                                    }}
-                                    variant="contained"
-                                    onClick={() => {
-                                        routerStore.navigatePage(Page.SIGN_UP);
-                                    }}
-                                    size={'large'}>
-                                    Sign up <img src={contestRight} style={{marginBottom: 4, marginLeft: 8}}/>
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                </Box>
-                <Footer/>
-            </>
-        );
-    }
+                    Share your datasets and let them fuel new scientific
+                    breakthroughs
+                  </div>
+                  <Button
+                    style={{
+                      display: 'flex',
+                      height: 40,
+                      width: 200,
+                      padding: 8,
+                      justifyContent: 'center',
+                      alignItems: 'flex-end',
+                      color: '#3C47E5',
+                      backgroundColor: 'rgba(60,71,229,0.12)'
+                    }}
+                    variant="text"
+                    onClick={applyNow}
+                    size={'large'}>
+                    Apply now{' '}
+                    <img
+                      src={contestRightBlue}
+                      style={{
+                        marginBottom: 4,
+                        marginLeft: 8
+                      }}
+                    />
+                  </Button>
+                </div>
+                <img
+                  src={contestUnleash}
+                  height={290}
+                  style={{ marginRight: 16 }}
+                />
+              </div>
+            </div>
+          </Box>
+        </div>
+        {/*Unleash data potential block mobile*/}
+        <div>
+          <Box
+            component={Grid}
+            item
+            display={{
+              xs: 'block',
+              s: 'block',
+              md: 'none',
+              lg: 'none',
+              xl: 'none'
+            }}>
+            <div
+              style={{
+                paddingLeft: 20,
+                paddingRight: 20,
+                marginBottom: 40
+              }}>
+              <div
+                style={{
+                  width: '100%',
+                  borderRadius: 8,
+                  backgroundColor: '#F8F7FA'
+                }}>
+                <div
+                  style={{
+                    padding: 24,
+                    fontFamily: 'Roboto',
+                    fontSize: 24,
+                    fontWeight: 600
+                  }}>
+                  Unleash your data's potential
+                </div>
+                <div
+                  style={{
+                    paddingLeft: 24,
+                    paddingRight: 24,
+                    paddingBottom: 24,
+                    fontFamily: 'Roboto',
+                    fontSize: 16,
+                    fontWeight: 400,
+                    width: 320
+                  }}>
+                  Share your datasets and let them fuel new scientific
+                  breakthroughs
+                </div>
+                <img src={contestUnleashMobile} width={'100%'} />
+              </div>
+            </div>
+          </Box>
+        </div>
+        {/*Sign up block desktop*/}
+        <Box
+          component={Grid}
+          item
+          display={{
+            xs: 'none',
+            s: 'none',
+            md: 'block',
+            lg: 'block',
+            xl: 'block'
+          }}>
+          <div
+            style={{
+              height: 274,
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: '#F8F7FA'
+            }}>
+            <img src={contestEnvelope} />
+            <div>
+              <div
+                style={{
+                  marginLeft: 64,
+                  marginBottom: 24,
+                  fontFamily: 'Roboto',
+                  fontSize: 34,
+                  fontWeight: 600,
+                  letterSpacing: '0.25px'
+                }}>
+                Stay informed on the latest news and updates. Sign up now!
+              </div>
+              <div>
+                <Button
+                  style={{
+                    marginLeft: 64,
+                    display: 'flex',
+                    height: 40,
+                    width: 120,
+                    padding: 8,
+                    justifyContent: 'center',
+                    alignItems: 'flex-end',
+                    color: '#fff'
+                  }}
+                  variant="contained"
+                  onClick={() => {
+                    routerStore.navigatePage(Page.SIGN_UP);
+                  }}
+                  size={'large'}>
+                  Sign up{' '}
+                  <img
+                    src={contestRight}
+                    style={{
+                      marginBottom: 4,
+                      marginLeft: 8
+                    }}
+                  />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Box>
+        {/*Sign up block mobile*/}
+        <Box
+          component={Grid}
+          item
+          display={{
+            xs: 'block',
+            s: 'block',
+            md: 'none',
+            lg: 'none',
+            xl: 'none'
+          }}>
+          <div
+            style={{
+              height: 324,
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              backgroundColor: '#F8F7FA',
+              padding: 24
+            }}>
+            <img src={contestEnvelope} width={70} height={70} />
+            <div>
+              <div
+                style={{
+                  marginTop: 24,
+                  marginBottom: 24,
+                  fontFamily: 'Roboto',
+                  fontSize: 24,
+                  fontWeight: 600
+                }}>
+                Stay informed on the latest news and updates. Sign up now!
+              </div>
+              <div>
+                <Button
+                  style={{
+                    display: 'flex',
+                    height: 40,
+                    width: '100%',
+                    padding: 8,
+                    justifyContent: 'center',
+                    alignItems: 'flex-end',
+                    color: '#fff'
+                  }}
+                  variant="contained"
+                  onClick={() => {
+                    routerStore.navigatePage(Page.SIGN_UP);
+                  }}
+                  size={'large'}>
+                  Sign up{' '}
+                  <img
+                    src={contestRight}
+                    style={{
+                      marginBottom: 4,
+                      marginLeft: 8
+                    }}
+                  />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Box>
+        <Footer />
+      </>
+    );
+  }
 );
+
+const VerticalDivider = styled.div<{
+    height?: string;
+    mobileHeight?: string;
+}>`
+  height: ${(props) => props.height ?? '0'};
+
+  @media (max-width: 1300px) {
+    height: ${(props) => props.mobileHeight ?? '0'};
+  }
+`;
+
+const ExpertsRow = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+`;
+
+const font34px = css`
+  font-feature-settings: 'clig' off, 'liga' off;
+  font-family: Roboto, serif;
+  font-size: 34px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 123.5%; /* 41.99px */
+  letter-spacing: 0.25px;
+`;
+
+const font16px = css`
+  font-feature-settings: 'clig' off, 'liga' off;
+  font-family: Roboto, serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 154%; /* 24.64px */
+  letter-spacing: 0.15px;
+`;
+
+const ExpertsTitle = styled.div`
+  width: 600px;
+  ${font34px};
+
+  @media (max-width: 1300px) {
+    width: 100%;
+    ${font16px};
+  }
+`;
+
+const ExpertsColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: calc(100vw - 32px);
+`;
+
+const OnlyMobile = styled.div`
+  @media (min-width: 500px) {
+    display: none;
+  }
+`;
+
+const OnlyDesktop = styled.div`
+  @media (max-width: 1300px) {
+    display: none;
+  }
+`;
+
+const font12px = css`
+  font-feature-settings: 'clig' off, 'liga' off;
+  font-family: Roboto, serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 166%; /* 19.92px */
+  letter-spacing: 0.4px;
+`;
+
+const font20px = css`
+  font-feature-settings: 'clig' off, 'liga' off;
+  font-family: Roboto, serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 160%; /* 32px */
+  letter-spacing: 0.15px;
+`;
+
+const font24px = css`
+  text-align: center;
+  font-feature-settings: 'clig' off, 'liga' off;
+  font-family: Roboto, serif;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 154%; /* 36.96px */
+`;
+
+const ExpertsContent = styled.div`
+  width: 1169px;
+  margin: 160px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @media (max-width: 1300px) {
+    width: calc(100% - 32px);
+    margin: 56px 16px;
+  }
+`;
+
+const colorDim = css`
+  color: rgba(4, 0, 54, 0.38);
+`;
+
