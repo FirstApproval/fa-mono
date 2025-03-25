@@ -7,6 +7,7 @@ import mu.KotlinLogging.logger
 import org.firstapproval.backend.core.config.Properties.S3Properties
 import software.amazon.awssdk.core.ResponseInputStream
 import software.amazon.awssdk.core.sync.ResponseTransformer
+import software.amazon.awssdk.services.s3.model.ChecksumAlgorithm.SHA256
 import software.amazon.awssdk.services.s3.presigner.S3Presigner
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest
 import java.io.InputStream
@@ -37,10 +38,6 @@ class FileStorageService(private val s3Client: S3Client, private val s3Propertie
     ) {
         val metadata = mutableMapOf("x-amz-storage-class" to s3Properties.bucketStorageClass)
 
-        if (sha256HexBase64 != null) {
-            metadata["x-amz-sdk-checksum-algorithm"] = "SHA256"
-        }
-
         if (contentLength > LARGE_FILE_SIZE) {
             uploadLargeFile(bucketName, id, contentLength, sha256HexBase64, data)
         } else {
@@ -49,6 +46,7 @@ class FileStorageService(private val s3Client: S3Client, private val s3Propertie
                 .key(id)
                 .metadata(metadata)
                 .checksumSHA256(sha256HexBase64)
+                .checksumAlgorithm(SHA256)
                 .build()
 
             s3Client.putObject(putRequest, RequestBody.fromInputStream(data, contentLength))
