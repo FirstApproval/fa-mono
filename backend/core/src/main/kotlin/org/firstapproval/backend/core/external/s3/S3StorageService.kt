@@ -1,37 +1,23 @@
 package org.firstapproval.backend.core.external.s3
 
-import com.amazonaws.services.s3.AmazonS3
-import com.amazonaws.services.s3.model.AbortMultipartUploadRequest
-import com.amazonaws.services.s3.model.CompleteMultipartUploadRequest
-import com.amazonaws.services.s3.model.DeleteObjectsRequest
-import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion
-import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest
-import com.amazonaws.services.s3.model.InitiateMultipartUploadRequest
-import com.amazonaws.services.s3.model.ObjectMetadata
-import com.amazonaws.services.s3.model.PartETag
-import com.amazonaws.services.s3.model.ResponseHeaderOverrides
-import com.amazonaws.services.s3.model.S3Object
-import com.amazonaws.services.s3.model.UploadPartRequest
+import software.amazon.awssdk.core.sync.RequestBody
+import software.amazon.awssdk.services.s3.S3Client
+import software.amazon.awssdk.services.s3.model.*
 import mu.KotlinLogging.logger
 import org.firstapproval.backend.core.config.Properties.S3Properties
-import java.io.ByteArrayInputStream
+import software.amazon.awssdk.core.ResponseInputStream
+import software.amazon.awssdk.core.sync.ResponseTransformer
+import software.amazon.awssdk.services.s3.presigner.S3Presigner
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest
 import java.io.InputStream
 import java.security.MessageDigest
-import java.util.Base64
-import java.util.Date
-import java.util.UUID
+import java.time.Duration
+import java.util.*
 
-const val FILES = "files"
-const val SAMPLE_FILES = "sample-files"
-const val ARCHIVED_PUBLICATION_FILES = "archived-publication-files"
-const val ARCHIVED_PUBLICATION_SAMPLE_FILES = "archived-publication-sample-files"
-const val PROFILE_IMAGES = "profile-images"
-const val REPORT_FILES = "report-files"
+const val LARGE_FILE_SIZE = 50 * 1024 * 1024L
+const val BATCH_SIZE = 10 * 1024 * 1024
 
-private const val LARGE_FILE_SIZE = 50 * 1024 * 1024L
-private const val BATCH_SIZE = 10 * 1024 * 1024
-
-class FileStorageService(private val amazonS3: AmazonS3, private val s3Properties: S3Properties) {
+class FileStorageService(private val s3Client: S3Client, private val s3Properties: S3Properties, private val s3Presigner: S3Presigner) {
 
     private val log = logger {}
 
@@ -42,85 +28,144 @@ class FileStorageService(private val amazonS3: AmazonS3, private val s3Propertie
         contentLength: Long,
         sha256HexBase64: String? = null
     ) {
-        val metadata = ObjectMetadata()
-        metadata.apply {
-            this.contentLength = contentLength
+        val metadata = mutableMapOf("x-amz-storage-class" to s3Properties.bucketStorageClass)
+
+        if (sha256HexBase64 != null) {
+            metadata["x-amz-sdk-checksum-algorithm"] = "SHA256"
+            metadata["x-amz-checksum-sha256"] = sha256HexBase64
         }
-        metadata.setHeader("x-amz-storage-class", s3Properties.bucketStorageClass)
 
         if (contentLength > LARGE_FILE_SIZE) {
-            uploadLargeFile(bucketName + s3Properties.bucketPostfix, id, contentLength, sha256HexBase64, data)
+            uploadLargeFile(bucketName, id, contentLength, sha256HexBase64, data)
         } else {
-            if (sha256HexBase64 != null) {
-                metadata.setHeader("x-amz-sdk-checksum-algorithm", "SHA256")
-                metadata.setHeader("x-amz-checksum-sha256", sha256HexBase64)
-            }
-            amazonS3.putObject(bucketName + s3Properties.bucketPostfix, id, data, metadata)
+            val putRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(id)
+                .metadata(metadata)
+                .build()
+
+            s3Client.putObject(putRequest, RequestBody.fromInputStream(data, contentLength))
         }
     }
 
-    fun delete(bucketName: String, id: UUID) = amazonS3.deleteObject(bucketName + s3Properties.bucketPostfix, id.toString())
+    fun delete(bucketName: String, id: UUID) {
+        val deleteRequest = DeleteObjectRequest.builder()
+            .bucket(bucketName)
+            .key(id.toString())
+            .build()
 
-    fun deleteByIds(bucketName: String, ids: List<UUID>) {
-        val request = DeleteObjectsRequest(bucketName + s3Properties.bucketPostfix)
-        request.keys = ids.map { KeyVersion(it.toString()) }
-        amazonS3.deleteObjects(request)
+        s3Client.deleteObject(deleteRequest)
     }
 
-    fun get(bucketName: String, id: String): S3Object = amazonS3.getObject(bucketName + s3Properties.bucketPostfix, id)
+    fun deleteByIds(bucketName: String, ids: List<UUID>) {
+        val deleteObjectsRequest = DeleteObjectsRequest.builder()
+            .bucket(bucketName)
+            .delete(
+                Delete.builder()
+                    .objects(ids.map { ObjectIdentifier.builder().key(it.toString()).build() })
+                    .build()
+            )
+            .build()
+
+        s3Client.deleteObjects(deleteObjectsRequest)
+    }
+
+    fun get(bucketName: String, id: String): ResponseInputStream<GetObjectResponse> =
+        s3Client.getObject(
+            GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key(id)
+                .build(),
+            ResponseTransformer.toInputStream()
+        )
 
     fun createBucketIfNotExist(bucketName: String) {
-        if (!amazonS3.doesBucketExistV2(bucketName + s3Properties.bucketPostfix)) {
-            amazonS3.createBucket(bucketName + s3Properties.bucketPostfix)
-            log.info { "bucket $bucketName created" }
+        val bucket = bucketName + s3Properties.bucketPostfix
+        if (!s3Client.listBuckets().buckets().any { it.name() == bucket }) {
+            s3Client.createBucket(CreateBucketRequest.builder().bucket(bucket).build())
+            log.info { "Bucket $bucketName created" }
         }
     }
 
     fun generateTemporaryDownloadLink(bucketName: String, id: String, contentDisposition: String): String {
-        val expiration = Date(System.currentTimeMillis() + s3Properties.downloadLinkTtl.toMillis())
-        val generatePresignedUrlRequest = GeneratePresignedUrlRequest(bucketName + s3Properties.bucketPostfix, id)
-            .withExpiration(expiration)
-            .withResponseHeaders(ResponseHeaderOverrides().withContentDisposition("attachment; filename=\"$contentDisposition\""))
-        val url = amazonS3.generatePresignedUrl(generatePresignedUrlRequest)
-        return url.toString()
+        val presignRequest = GetObjectPresignRequest.builder()
+            .signatureDuration(Duration.ofMillis(s3Properties.downloadLinkTtl.toMillis()))
+            .getObjectRequest { builder ->
+                builder.bucket(bucketName).key(id)
+                    .responseContentDisposition("attachment; filename=\"$contentDisposition\"")
+            }
+            .build()
+
+        val presignedUrl = s3Presigner.presignGetObject(presignRequest)
+        return presignedUrl.url().toString()
     }
 
     private fun uploadLargeFile(bucketName: String, key: String, contentLength: Long, sha256HexBase64: String?, inputStream: InputStream) {
-        val initRequest = InitiateMultipartUploadRequest(bucketName, key)
-        initRequest.objectMetadata = ObjectMetadata()
-        initRequest.objectMetadata.contentLength = contentLength
-        val initResponse = amazonS3.initiateMultipartUpload(initRequest)
+        val createRequest = CreateMultipartUploadRequest.builder()
+            .bucket(bucketName)
+            .key(key)
+            .build()
+
+        val initResponse = s3Client.createMultipartUpload(createRequest)
 
         var bytesRead: Int
         val data = ByteArray(BATCH_SIZE)
         var pageNumber = 1
-        val partETags = mutableListOf<PartETag>()
+        val completedParts = mutableListOf<CompletedPart>()
         val md = MessageDigest.getInstance("SHA-256")
+
         try {
             inputStream.use { stream ->
                 while (stream.read(data).also { bytesRead = it } != -1) {
-                    val uploadRequest = UploadPartRequest().withUploadId(initResponse.uploadId)
-                        .withBucketName(bucketName)
-                        .withKey(key)
-                        .withInputStream(ByteArrayInputStream(data, 0, bytesRead))  // <= Оптимизировано
-                        .withPartSize(bytesRead.toLong())
-                        .withPartNumber(pageNumber)
-                    val uploadResult = amazonS3.uploadPart(uploadRequest)
-                    partETags.add(uploadResult.partETag)
+                    val uploadRequest = UploadPartRequest.builder()
+                        .bucket(bucketName)
+                        .key(key)
+                        .uploadId(initResponse.uploadId())
+                        .partNumber(pageNumber)
+                        .contentLength(bytesRead.toLong())
+                        .build()
+
+                    val uploadResult = s3Client.uploadPart(uploadRequest, RequestBody.fromBytes(data.copyOf(bytesRead)))
+                    completedParts.add(
+                        CompletedPart.builder()
+                            .partNumber(pageNumber)
+                            .eTag(uploadResult.eTag())
+                            .build()
+                    )
+
                     md.update(data, 0, bytesRead)
                     pageNumber++
                 }
+
                 val sha256HexBase64OfFile = Base64.getEncoder().encodeToString(md.digest())
                 if (sha256HexBase64 != null && sha256HexBase64OfFile != sha256HexBase64) {
-                    amazonS3.abortMultipartUpload(AbortMultipartUploadRequest(bucketName, key, initResponse.uploadId))
+                    s3Client.abortMultipartUpload(
+                        AbortMultipartUploadRequest.builder()
+                            .bucket(bucketName)
+                            .key(key)
+                            .uploadId(initResponse.uploadId())
+                            .build()
+                    )
                 } else {
-                    val completeRequest = CompleteMultipartUploadRequest(bucketName, key, initResponse.uploadId, partETags)
-                    amazonS3.completeMultipartUpload(completeRequest)
+                    val completeRequest = CompleteMultipartUploadRequest.builder()
+                        .bucket(bucketName)
+                        .key(key)
+                        .uploadId(initResponse.uploadId())
+                        .multipartUpload { it.parts(completedParts) }
+                        .build()
+
+                    s3Client.completeMultipartUpload(completeRequest)
                 }
             }
         } catch (e: Exception) {
             log.error(e) { "Error during multipart upload" }
-            amazonS3.abortMultipartUpload(AbortMultipartUploadRequest(bucketName, key, initResponse.uploadId))
+            s3Client.abortMultipartUpload(
+                AbortMultipartUploadRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .uploadId(initResponse.uploadId())
+                    .build()
+            )
             throw e
         }
     }
