@@ -103,7 +103,7 @@ class UserService(
     }
 
     fun getProfileImage(id: String?): ByteArray? {
-        return if (id != null) fileStorageService.get(PROFILE_IMAGES, id).objectContent.readAllBytes() else null
+        return if (id != null) fileStorageService.get(PROFILE_IMAGES, id).readAllBytes() else null
     }
 
     @Transactional
