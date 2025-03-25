@@ -164,7 +164,7 @@ class ArchiveService(
                         foldersCount++
                     }
                     if (!it.isDir) {
-                        val inputStream = fileStorageService.get(FILES, it.id.toString()).objectContent
+                        val inputStream = fileStorageService.get(FILES, it.id.toString())
                         val zipParams = ZipParameters()
                         zipParams.fileNameInZip = it.fullPath
                         zipParams.isEncryptFiles = true
@@ -248,7 +248,7 @@ class ArchiveService(
                         foldersCount++
                     }
                     if (!it.isDir) {
-                        val inputStream = fileStorageService.get(SAMPLE_FILES, it.id.toString()).objectContent
+                        val inputStream = fileStorageService.get(SAMPLE_FILES, it.id.toString())
                         val zipParms = ZipParameters()
                         zipParms.fileNameInZip = it.fullPath
                         zipOutputStream.putNextEntry(zipParms)

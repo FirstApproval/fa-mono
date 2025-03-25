@@ -14,6 +14,13 @@ import java.security.MessageDigest
 import java.time.Duration
 import java.util.*
 
+const val FILES = "files"
+const val SAMPLE_FILES = "sample-files"
+const val ARCHIVED_PUBLICATION_FILES = "archived-publication-files"
+const val ARCHIVED_PUBLICATION_SAMPLE_FILES = "archived-publication-sample-files"
+const val PROFILE_IMAGES = "profile-images"
+const val REPORT_FILES = "report-files"
+
 const val LARGE_FILE_SIZE = 50 * 1024 * 1024L
 const val BATCH_SIZE = 10 * 1024 * 1024
 
@@ -58,6 +65,7 @@ class FileStorageService(private val s3Client: S3Client, private val s3Propertie
     }
 
     fun deleteByIds(bucketName: String, ids: List<UUID>) {
+        if (ids.isEmpty()) return
         val deleteObjectsRequest = DeleteObjectsRequest.builder()
             .bucket(bucketName)
             .delete(
@@ -139,6 +147,7 @@ class FileStorageService(private val s3Client: S3Client, private val s3Propertie
 
                 val sha256HexBase64OfFile = Base64.getEncoder().encodeToString(md.digest())
                 if (sha256HexBase64 != null && sha256HexBase64OfFile != sha256HexBase64) {
+                    log.error { "SHA-256 mismatch: expected $sha256HexBase64, got $sha256HexBase64OfFile" }
                     s3Client.abortMultipartUpload(
                         AbortMultipartUploadRequest.builder()
                             .bucket(bucketName)
