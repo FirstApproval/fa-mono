@@ -2,10 +2,11 @@ import { sha256 } from 'js-sha256';
 
 export async function calculateSHA256(file: File): Promise<string> {
   return sha256ForFileByParts(file);
-}
-
-function toBase64(bytes: Uint8Array): string {
-  return btoa(String.fromCharCode(...bytes));
+  // if (file.size > 100 * 1024 * 1024) {
+  //   return sha256ForFileByParts(file);
+  // } else {
+  //   return sha256ForFile(file);
+  // }
 }
 
 export async function sha256ForFileByParts(file: File): Promise<string> {
@@ -24,7 +25,8 @@ export async function sha256ForFileByParts(file: File): Promise<string> {
         if (start + chunkSize < file.size) {
           calculateChunk(start + chunkSize);
         } else {
-          resolve(toBase64(new Uint8Array(hash.digest())));
+          const hashArray = Array.from(new Uint8Array(hash.arrayBuffer()));
+          resolve(btoa(String.fromCharCode(...hashArray)));
         }
       };
       reader.readAsArrayBuffer(blob);

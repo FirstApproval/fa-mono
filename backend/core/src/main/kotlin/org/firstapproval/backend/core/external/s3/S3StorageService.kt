@@ -39,7 +39,6 @@ class FileStorageService(private val s3Client: S3Client, private val s3Propertie
 
         if (sha256HexBase64 != null) {
             metadata["x-amz-sdk-checksum-algorithm"] = "SHA256"
-            metadata["x-amz-checksum-sha256"] = sha256HexBase64
         }
 
         if (contentLength > LARGE_FILE_SIZE) {
@@ -49,6 +48,7 @@ class FileStorageService(private val s3Client: S3Client, private val s3Propertie
                 .bucket(bucketName)
                 .key(id)
                 .metadata(metadata)
+                .checksumSHA256(sha256HexBase64)
                 .build()
 
             s3Client.putObject(putRequest, RequestBody.fromInputStream(data, contentLength))
