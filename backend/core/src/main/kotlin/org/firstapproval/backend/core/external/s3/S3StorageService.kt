@@ -99,16 +99,15 @@ class FileStorageService(private val amazonS3: AmazonS3, private val s3Propertie
         try {
             inputStream.use { stream ->
                 while (stream.read(data).also { bytesRead = it } != -1) {
-                    val trimmed = data.copyOfRange(0, bytesRead)
                     val uploadRequest = UploadPartRequest().withUploadId(initResponse.uploadId)
                         .withBucketName(bucketName)
                         .withKey(key)
-                        .withInputStream(ByteArrayInputStream(trimmed))
-                        .withPartSize(trimmed.size.toLong())
+                        .withInputStream(ByteArrayInputStream(data, 0, bytesRead))  // <= Оптимизировано
+                        .withPartSize(bytesRead.toLong())
                         .withPartNumber(pageNumber)
                     val uploadResult = amazonS3.uploadPart(uploadRequest)
                     partETags.add(uploadResult.partETag)
-                    md.update(data, 0, bytesRead);
+                    md.update(data, 0, bytesRead)
                     pageNumber++
                 }
                 val sha256HexBase64OfFile = Base64.getEncoder().encodeToString(md.digest())
