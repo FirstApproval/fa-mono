@@ -162,7 +162,7 @@ export const PublicationPageHeader = observer(
                             );
                           }
                         }}>
-                        {publicationStore.isStudentDataCollection ? 'Publishing conditions' : 'Publish'}
+                        {publicationStore.isStudentDataCollection ? 'Finalize Submission' : 'Publish'}
                       </ButtonWrap>
                     )}
                     <ButtonWrap
