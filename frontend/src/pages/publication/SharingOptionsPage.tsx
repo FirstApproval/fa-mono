@@ -28,7 +28,7 @@ import {
   DataCollectionType,
   LicenseType,
   StorageType,
-  StorageType,
+  Reviewer,
   UseType
 } from '../../apis/first-approval-api';
 import { Page } from '../../core/router/constants';
@@ -337,8 +337,6 @@ export const SharingOptionsPage = (props: {
               onClick={() => {
                 publicationService
                   .submitPublication(publicationId, {
-                    accessType: AccessType.OPEN,
-                    useType,
                     accessType,
                     useType,
                     storageType,

@@ -34,7 +34,6 @@ export const HeaderComponent = (
     showSignUpOutlinedButton: false,
     showLoginOutlinedButton: false,
     isStudentCompetition: false,
-    showLoginOutlinedButton: false,
     showBottomStyleGap: true
   }
 ): ReactElement => {

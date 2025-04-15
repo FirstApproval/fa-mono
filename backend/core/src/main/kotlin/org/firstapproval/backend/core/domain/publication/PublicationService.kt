@@ -28,6 +28,7 @@ import org.firstapproval.backend.core.domain.publication.downloader.Downloader
 import org.firstapproval.backend.core.domain.publication.downloader.DownloaderRepository
 import org.firstapproval.backend.core.domain.publication.file.PublicationFileRepository
 import org.firstapproval.backend.core.domain.publication.file.PublicationSampleFileRepository
+import org.firstapproval.backend.core.domain.publication.reviewers.Reviewer
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
 import org.firstapproval.backend.core.domain.user.UserService

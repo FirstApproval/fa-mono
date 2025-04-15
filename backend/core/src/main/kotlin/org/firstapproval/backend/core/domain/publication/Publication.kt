@@ -10,6 +10,7 @@ import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
 import org.firstapproval.backend.core.domain.publication.LicenseType.ATTRIBUTION_NO_DERIVATIVES
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
 import org.firstapproval.backend.core.domain.publication.authors.Author
+import org.firstapproval.backend.core.domain.publication.reviewers.Reviewer
 import org.firstapproval.backend.core.domain.user.User
 import org.hibernate.annotations.ColumnTransformer
 import org.hibernate.annotations.Fetch
@@ -30,8 +31,6 @@ class Publication(
     var status: PublicationStatus = PENDING,
     @Enumerated(STRING)
     var accessType: AccessType = OPEN,
-    @Enumerated(STRING)
-    var useType: UseType? = null,
     @Enumerated(STRING)
     var useType: UseType? = null,
     @Enumerated(STRING)

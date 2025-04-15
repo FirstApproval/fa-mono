@@ -43,10 +43,10 @@ export class ProfilePageStore {
     let publicationsData: PublicationsResponse;
 
       if (tab === Tab.DOWNLOADED) {
-        publicationsData = await publicationService.getMyDownloadedPublications(
+        publicationsData = (await publicationService.getMyDownloadedPublications(
           this.publicationsPageNum.get(tab)!,
           20
-        ).data
+        )).data
       } else {
         publicationsData = (
           isCurrentUserProfilePage
