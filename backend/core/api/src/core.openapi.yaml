@@ -438,6 +438,39 @@ paths:
       operationId: getMyPublications
       tags: [ publication ]
 
+  /api/user/publications-short-info:
+    get:
+      summary: Get user publications
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: true
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          required: true
+          description: Page size
+        - in: query
+          name: statuses
+          schema:
+            items:
+              $ref: '#/components/schemas/PublicationStatus'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicationsShortInfoResponse'
+      security:
+        - TokenAuth: [ ]
+      operationId: getMyPublicationsShortInfo
+      tags: [ publication ]
+
   /api/user/downloaded-publications:
     get:
       summary: Get user publications
@@ -2677,6 +2710,34 @@ components:
         - collaborationRequests
         - isLastPage
 
+    PublicationShortInfo:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          $ref: '#/components/schemas/PublicationStatus'
+        publicationTime:
+          type: string
+          format: date-time
+        title:
+          type: string
+          maxLength: 32768
+        description:
+          type: string
+          maxLength: 32768
+        viewsCount:
+          type: integer
+          format: int64
+        downloadsCount:
+          type: integer
+          format: int64
+        collaboratorsCount:
+          type: integer
+          format: int64
+        useType:
+          $ref: '#/components/schemas/UseType'
+
     Publication:
       type: object
       properties:
@@ -2803,6 +2864,18 @@ components:
         - total
         - isUserCollaborator
         - isDownloadedByUser
+
+    PublicationsShortInfoResponse:
+      type: object
+      properties:
+        isLastPage:
+          type: boolean
+        publications:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicationShortInfo'
+      required:
+        - isLastPage
 
     PublicationsResponse:
       type: object

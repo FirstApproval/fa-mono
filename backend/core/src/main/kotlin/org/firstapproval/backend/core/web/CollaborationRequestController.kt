@@ -65,7 +65,7 @@ class CollaborationRequestController(
         page: Int,
         pageSize: Int
     ): ResponseEntity<GetCollaborationRequestsResponse> {
-        val result = collaborationRequestService.findByPublicationId(publicationId, page, pageSize)
+        val result = collaborationRequestService.findByPublicationId(publicationId, page, pageSize, authHolderService.user)
         val collaborationRequests = result
             .map { it.toApiObject(userService = userService) }
             .toList()

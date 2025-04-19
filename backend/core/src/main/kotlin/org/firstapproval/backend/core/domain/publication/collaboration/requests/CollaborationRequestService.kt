@@ -2,6 +2,7 @@ package org.firstapproval.backend.core.domain.publication.collaboration.requests
 
 import org.firstapproval.api.server.model.CreateCollaborationRequest
 import org.firstapproval.backend.core.domain.publication.PublicationRepository
+import org.firstapproval.backend.core.domain.publication.checkPublicationCreator
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationMessageRepository
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessage
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.Create
@@ -83,7 +84,9 @@ class CollaborationRequestService(
     fun get(id: UUID) = collaborationRequestRepository.getReferenceById(id)
 
     @Transactional
-    fun findByPublicationId(publicationId: String, page: Int, pageSize: Int): Page<CollaborationRequest> {
+    fun findByPublicationId(publicationId: String, page: Int, pageSize: Int, user: User): Page<CollaborationRequest> {
+        val publication = publicationRepository.getReferenceById(publicationId)
+        checkPublicationCreator(user, publication)
         return collaborationRequestRepository.findByPublicationIdAndStatusIn(
             publicationId,
             setOf(PENDING, ACCEPTED),

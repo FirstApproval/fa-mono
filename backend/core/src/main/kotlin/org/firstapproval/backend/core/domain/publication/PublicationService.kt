@@ -1,11 +1,14 @@
 package org.firstapproval.backend.core.domain.publication
 
 import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
-import org.firstapproval.api.server.model.*
+import org.firstapproval.api.server.model.CollaborationRequestStatus
+import org.firstapproval.api.server.model.DownloadLinkResponse
+import org.firstapproval.api.server.model.Paragraph
 import org.firstapproval.api.server.model.PublicationContentStatus.AVAILABLE
 import org.firstapproval.api.server.model.PublicationContentStatus.PREPARING
 import org.firstapproval.api.server.model.PublicationEditRequest
 import org.firstapproval.api.server.model.PublicationsResponse
+import org.firstapproval.api.server.model.PublicationsShortInfoResponse
 import org.firstapproval.api.server.model.SubmitPublicationRequest
 import org.firstapproval.api.server.model.UseType.CO_AUTHORSHIP
 import org.firstapproval.api.server.model.UserInfo
@@ -15,7 +18,9 @@ import org.firstapproval.backend.core.domain.organizations.OrganizationService
 import org.firstapproval.backend.core.domain.organizations.toApiObject
 import org.firstapproval.backend.core.domain.publication.AccessType.OPEN
 import org.firstapproval.backend.core.domain.publication.DataCollectionType.STUDENT
-import org.firstapproval.backend.core.domain.publication.PublicationStatus.*
+import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
+import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
+import org.firstapproval.backend.core.domain.publication.PublicationStatus.READY_FOR_PUBLICATION
 import org.firstapproval.backend.core.domain.publication.StorageType.CLOUD_SECURE_STORAGE
 import org.firstapproval.backend.core.domain.publication.StorageType.IPFS
 import org.firstapproval.backend.core.domain.publication.authors.Author
@@ -32,10 +37,18 @@ import org.firstapproval.backend.core.domain.publication.reviewers.Reviewer
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserRepository
 import org.firstapproval.backend.core.domain.user.UserService
-import org.firstapproval.backend.core.external.ipfs.*
+import org.firstapproval.backend.core.external.ipfs.DownloadLink
+import org.firstapproval.backend.core.external.ipfs.DownloadLinkRepository
 import org.firstapproval.backend.core.external.ipfs.IpfsClient.IpfsContentAvailability.ARCHIVE
 import org.firstapproval.backend.core.external.ipfs.IpfsClient.IpfsContentAvailability.INSTANT
-import org.firstapproval.backend.core.external.s3.*
+import org.firstapproval.backend.core.external.ipfs.IpfsStorageService
+import org.firstapproval.backend.core.external.ipfs.RestoreRequest
+import org.firstapproval.backend.core.external.ipfs.RestoreRequestRepository
+import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_FILES
+import org.firstapproval.backend.core.external.s3.ARCHIVED_PUBLICATION_SAMPLE_FILES
+import org.firstapproval.backend.core.external.s3.FILES
+import org.firstapproval.backend.core.external.s3.FileStorageService
+import org.firstapproval.backend.core.external.s3.SAMPLE_FILES
 import org.firstapproval.backend.core.infra.elastic.PublicationElastic
 import org.firstapproval.backend.core.infra.elastic.PublicationElasticRepository
 import org.firstapproval.backend.core.utils.allUniqueBy
@@ -49,15 +62,17 @@ import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
+import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
-import java.util.*
+import java.util.UUID
 import java.util.UUID.randomUUID
+import org.firstapproval.api.server.model.AcademicLevel as AcademicLevelApiObject
 import org.firstapproval.api.server.model.AccessType as AccessTypeApiObject
 import org.firstapproval.api.server.model.Author as AuthorApiObject
 import org.firstapproval.api.server.model.DataCollectionType as DataCollectionTypeApiObject
 import org.firstapproval.api.server.model.LicenseType as LicenseTypeApiObject
 import org.firstapproval.api.server.model.Publication as PublicationApiObject
-import org.firstapproval.api.server.model.AcademicLevel as AcademicLevelApiObject
+import org.firstapproval.api.server.model.PublicationShortInfo as PublicationShortInfoApiObject
 import org.firstapproval.api.server.model.PublicationStatus as PublicationStatusApiObject
 import org.firstapproval.api.server.model.UseType as UseTypeApiObject
 
@@ -148,7 +163,8 @@ class PublicationService(
             if (replicationOfPreviousExperimentsData?.edited == true) publication.replicationOfPreviousExperimentsData =
                 replicationOfPreviousExperimentsData.value
             if (isPreviouslyPublishedDataset != null) publication.isPreviouslyPublishedDataset = isPreviouslyPublishedDataset
-            if (previouslyPublishedDatasetData?.edited == true) publication.previouslyPublishedDatasetData = previouslyPublishedDatasetData.value
+            if (previouslyPublishedDatasetData?.edited == true) publication.previouslyPublishedDatasetData =
+                previouslyPublishedDatasetData.value
             if (description?.edited == true) publication.description = description.value
             if (researchAreas?.edited == true) publication.researchAreas = researchAreas.values.map { it.text }
             if (grantOrganizations?.edited == true) publication.grantOrganizations = grantOrganizations.values.map { it.text }
@@ -440,6 +456,25 @@ class PublicationService(
     }
 
     @Transactional
+    fun getCreatorPublicationsShortInfo(
+        user: User,
+        statuses: Collection<PublicationStatus>,
+        page: Int,
+        pageSize: Int,
+    ): PublicationsShortInfoResponse {
+        val publicationsPage = publicationRepository.findAllShortInfosByStatusInAndCreatorIdAndIsBlockedIsFalse(
+            statuses,
+            user.id,
+            PageRequest.of(page, pageSize, Sort.by(DESC, "publicationTime"))
+        )
+
+        return PublicationsShortInfoResponse(publicationsPage.isLast)
+            .publications(publicationsPage.map {
+                it.toApiObject()
+            }.toList() )
+    }
+
+    @Transactional
     fun getUserDownloadedPublications(
         user: User,
         statuses: Collection<PublicationStatus>,
@@ -594,4 +629,29 @@ fun Author.toApiObject(profileImage: ByteArray?) = AuthorApiObject().also {
             .profileImage(profileImage)
     }
     it.workplaces = workplaces.map { workplace -> workplace.toApiObject() }
+}
+
+class PublicationShortInfo(
+    var id: String,
+    var title: String,
+    var description: String? = null,
+    var status: PublicationStatus,
+    var publicationTime: ZonedDateTime? = null,
+    var viewsCount: Long,
+    var downloadsCount: Long,
+    var collaboratorsCount: Long,
+    var useType: UseType
+)
+
+fun PublicationShortInfo.toApiObject(
+) = PublicationShortInfoApiObject().also {
+    it.id = id
+    it.title = title
+    it.description = description
+    it.publicationTime = publicationTime?.toOffsetDateTime()
+    it.viewsCount = viewsCount
+    it.downloadsCount = downloadsCount
+    it.collaboratorsCount = collaboratorsCount
+    it.status = PublicationStatusApiObject.valueOf(status.name)
+    it.useType = useType.let { UseTypeApiObject.valueOf(it.name) }
 }

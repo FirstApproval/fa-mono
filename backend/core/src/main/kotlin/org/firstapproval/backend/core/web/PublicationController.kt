@@ -9,6 +9,7 @@ import org.firstapproval.api.server.model.Publication
 import org.firstapproval.api.server.model.PublicationEditRequest
 import org.firstapproval.api.server.model.PublicationStatus
 import org.firstapproval.api.server.model.PublicationsResponse
+import org.firstapproval.api.server.model.PublicationsShortInfoResponse
 import org.firstapproval.api.server.model.SearchPublicationsResponse
 import org.firstapproval.api.server.model.SubmitPublicationRequest
 import org.firstapproval.backend.core.config.Properties.DoiProperties
@@ -71,6 +72,20 @@ class PublicationController(
 
     override fun getMyPublications(page: Int, pageSize: Int, statuses: List<PublicationStatus>): ResponseEntity<PublicationsResponse> {
         val publications = publicationService.getCreatorPublications(
+            user = authHolderService.user,
+            statuses = statuses.map { PublicationStatusEntity.valueOf(it.name) },
+            page = page,
+            pageSize = pageSize
+        )
+        return ok().body(publications)
+    }
+
+    override fun getMyPublicationsShortInfo(
+        page: Int,
+        pageSize: Int,
+        statuses: MutableList<PublicationStatus>
+    ): ResponseEntity<PublicationsShortInfoResponse> {
+        val publications = publicationService.getCreatorPublicationsShortInfo(
             user = authHolderService.user,
             statuses = statuses.map { PublicationStatusEntity.valueOf(it.name) },
             page = page,

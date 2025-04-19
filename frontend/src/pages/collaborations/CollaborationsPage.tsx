@@ -21,7 +21,6 @@ import {
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import { FlexWrapColumn, HeightElement } from '../common.styled';
 import { TextSizeTruncation } from '../../util/stylesUtil';
-import { set } from 'lodash';
 import NoPublicationsImage from '../../assets/no-publications.svg';
 
 export const CollaborationsPage = (): ReactElement => {

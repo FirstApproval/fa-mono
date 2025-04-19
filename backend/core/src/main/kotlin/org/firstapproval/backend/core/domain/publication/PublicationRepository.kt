@@ -15,8 +15,31 @@ interface PublicationRepository : JpaRepository<Publication, String> {
         accessType: AccessType
     ): List<Publication>
 
+    @Query("""
+    SELECT new org.firstapproval.backend.core.domain.publication.PublicationShortInfo(
+                                    p.id,
+                                    p.title,
+                                    p.description,
+                                    p.status,
+                                    p.publicationTime,
+                                    p.viewsCount,
+                                    p.downloadsCount,
+                                    p.collaboratorsCount,
+                                    p.useType) 
+    FROM Publication p
+    WHERE p.status IN :statuses
+      AND p.creator.id = :creatorId
+      AND p.isBlocked = false
+    """)
+    fun findAllShortInfosByStatusInAndCreatorIdAndIsBlockedIsFalse(
+        statuses: Collection<PublicationStatus>,
+        creatorId: UUID,
+        page: Pageable
+    ): Page<PublicationShortInfo>
+
+
     fun findAllByStatusInAndCreatorIdAndIsBlockedIsFalse(
-        publicationStatuses: Collection<PublicationStatus>,
+        statuses: Collection<PublicationStatus>,
         creatorId: UUID,
         page: Pageable
     ): Page<Publication>
