@@ -1,4 +1,4 @@
-import { useState, type ReactElement } from 'react';
+import { useState, type ReactElement, useEffect } from "react"
 import styled from '@emotion/styled';
 import { HeaderComponent } from '../../components/HeaderComponent';
 import { Helmet } from 'react-helmet';
@@ -22,12 +22,56 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import { FlexWrapColumn, HeightElement } from '../common.styled';
 import { TextSizeTruncation } from '../../util/stylesUtil';
 import NoPublicationsImage from '../../assets/no-publications.svg';
+import { collaborationsPageStore } from '../publication/store/downloadsStore';
+import { PublicationShortInfo } from "../../apis/first-approval-api"
+import { observer } from "mobx-react-lite"
 
-export const CollaborationsPage = (): ReactElement => {
+export const CollaborationsPage = observer((): ReactElement => {
   const [fetchedContents, setFetchedContents] = useState(true);
+
+  // useEffect(() => {
+  //   collaborationsPageStore.;
+  // }, []);
   const goToChat = (chatId: number): void => {
     routerStore.navigatePage(Page.COLLABORATIONS_CHAT, `chat/${chatId}`);
   };
+
+  function mapToListItem(publicationInfo: PublicationShortInfo) {
+    debugger;
+    return (
+      <ListItemButton
+        sx={{
+          width: '100%',
+          borderRadius: '8px'
+        }}
+        onClick={() => setFetchedContents(false)}>
+        <ListItemText
+          primary={TextSizeTruncation(
+            publicationInfo.title!!,
+            26
+          )}
+          sx={{
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          }}
+        />
+        <ListItemIcon
+          sx={{
+            minWidth: 'auto',
+            marginLeft: 'auto'
+          }}>
+          <FiberManualRecordIcon
+            sx={{
+              fontSize: 18,
+              color: 'primary.main'
+            }}
+          />
+        </ListItemIcon>
+      </ListItemButton>
+    );
+  }
+
   return (
     <>
       <Helmet>
@@ -49,71 +93,22 @@ export const CollaborationsPage = (): ReactElement => {
                 <FlexWrapColumn>
                   <LeftPanelHeader variant={'h6'}>My datasets</LeftPanelHeader>
                   <List sx={{ width: '100%' }}>
-                    <ListItemButton
-                      sx={{ width: '100%', borderRadius: '8px' }}
-                      onClick={() => setFetchedContents(false)}>
-                      <ListItemText
-                        primary={TextSizeTruncation(
-                          'Lorem ipsum dolor sit amet consectetur adipiscing elit',
-                          26
-                        )}
-                        sx={{
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis'
-                        }}
-                      />
-                      <ListItemIcon
-                        sx={{
-                          minWidth: 'auto',
-                          marginLeft: 'auto'
-                        }}>
-                        <FiberManualRecordIcon
-                          sx={{ fontSize: 18, color: 'primary.main' }}
-                        />
-                      </ListItemIcon>
-                    </ListItemButton>
+                    {collaborationsPageStore.myPublications?.map(
+                      (publicationInfo) => {
+                        return mapToListItem(publicationInfo);
+                      }
+                    )}
                   </List>
                   <HeightElement value={'10px'} />
                   <LeftPanelHeader variant={'h6'}>
                     Downloaded datasets
                   </LeftPanelHeader>
                   <List sx={{ width: '100%' }}>
-                    <ListItemButton sx={{ width: '100%', borderRadius: '8px' }}>
-                      <ListItemText
-                        primary={TextSizeTruncation(
-                          'Lorem ipsum dolor sit amet consectetur adipiscing elit',
-                          26
-                        )}
-                        sx={{
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis'
-                        }}
-                      />
-                      <ListItemIcon
-                        sx={{
-                          minWidth: 'auto',
-                          marginLeft: 'auto'
-                        }}>
-                        <FiberManualRecordIcon
-                          sx={{ fontSize: 18, color: 'primary.main' }}
-                        />
-                      </ListItemIcon>
-                    </ListItemButton>
-                    <ListItemButton sx={{ width: '100%', borderRadius: '8px' }}>
-                      <ListItemText
-                        primary={TextSizeTruncation(
-                          'Lorem ipsum dolor sit amet consectetur adipiscing elit',
-                          26
-                        )}
-                        sx={{
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis'
-                        }}
-                      />
-                    </ListItemButton>
+                    {collaborationsPageStore.downloadedPublications?.map(
+                      (publicationInfo) => {
+                        return mapToListItem(publicationInfo);
+                      }
+                    )}
                   </List>
                 </FlexWrapColumn>
               </LeftPanel>
@@ -204,7 +199,7 @@ export const CollaborationsPage = (): ReactElement => {
       </Parent>
     </>
   );
-};
+});
 
 const HeaderBorderColorFix = styled.div`
   position: relative;
