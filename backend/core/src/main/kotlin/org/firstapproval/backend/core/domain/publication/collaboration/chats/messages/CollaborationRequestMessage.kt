@@ -10,6 +10,7 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.CollaborationRequestChat
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationRequestFile
+import org.firstapproval.backend.core.domain.user.User
 import org.hibernate.annotations.Type
 import java.time.ZonedDateTime
 import java.util.UUID
@@ -23,6 +24,9 @@ class CollaborationRequestMessage(
 
     @ManyToOne(fetch = EAGER)
     val chat: CollaborationRequestChat,
+
+    @ManyToOne(fetch = EAGER)
+    val user: User,
 
     val type: MessageType,
 

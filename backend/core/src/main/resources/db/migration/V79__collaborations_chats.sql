@@ -12,6 +12,7 @@ CREATE TABLE collaboration_request_messages
 (
     id             UUID PRIMARY KEY,
     chat_id        UUID      NOT NULL REFERENCES collaboration_requests_chats (id) ON DELETE CASCADE,
+    user_id        UUID      REFERENCES users (id),
     type           TEXT      NOT NULL,
     text           TEXT,
     payload        JSONB,
