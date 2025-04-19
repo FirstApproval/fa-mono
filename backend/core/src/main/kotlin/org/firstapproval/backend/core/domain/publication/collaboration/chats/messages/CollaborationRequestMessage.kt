@@ -1,15 +1,19 @@
 package org.firstapproval.backend.core.domain.publication.collaboration.chats.messages
 
+import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType.STRING
+import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType.EAGER
 import jakarta.persistence.Id
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.CollaborationRequestChat
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationRequestFile
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequest
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.TypeOfWork
 import org.firstapproval.backend.core.domain.user.User
 import org.hibernate.annotations.Type
 import java.time.ZonedDateTime
@@ -23,17 +27,18 @@ class CollaborationRequestMessage(
     val id: UUID = randomUUID(),
 
     @ManyToOne(fetch = EAGER)
-    val chat: CollaborationRequestChat,
+    val collaborationRequest: CollaborationRequest,
 
     @ManyToOne(fetch = EAGER)
     val user: User,
 
+    @Enumerated(STRING)
     val type: MessageType,
 
     val text: String? = null,
 
     @Type(JsonBinaryType::class)
-    val payload: Map<String, Any>,
+    val payload: MessagePayload? = null,
 
     val sequenceIndex: Int,
 
@@ -43,9 +48,26 @@ class CollaborationRequestMessage(
     val files: List<CollaborationRequestFile> = mutableListOf()
 )
 
-enum class MessageType {
-    START,
-    SECOND_STAGE_ACCEPT,
-    SECOND_STAGE_DECLINE,
-    FINAL
+enum class MessageType(ordinal: Int) {
+    CREATE(1),
+    ACCEPT_OR_REJECT_COLLABORATION_REQUEST(2)
+//    START,
+//    SECOND_STAGE_ACCEPT,
+//    SECOND_STAGE_DECLINE,
+//    FINAL
 }
+
+@JsonSubTypes(
+    value = [
+        JsonSubTypes.Type(value = Create::class, name = "CREATE")
+    ]
+)
+interface MessagePayload
+
+class Create(
+    val firstNameLegal: String,
+    val lastNameLegal: String,
+    val typeOfWork: TypeOfWork,
+    val description: String
+) : MessagePayload
+
