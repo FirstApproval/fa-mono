@@ -5,6 +5,7 @@ CREATE TABLE collaboration_requests
     user_id          UUID REFERENCES users (id)        NOT NULL,
     status           TEXT                              NOT NULL,
     creation_time    TIMESTAMP                         NOT NULL,
+    isFinished       BOOLEAN NOT NULL DEFAULT FALSE,
     decision_time    TIMESTAMP,
     auto_approval    BOOLEAN,
     description      TEXT,
