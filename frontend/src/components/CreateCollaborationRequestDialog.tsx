@@ -87,15 +87,15 @@ export const CreateCollaborationRequestDialog = observer(
           <FullWidthTextField
             multiline={true}
             minRows={4}
-            value={collaborationStore.authorResponse}
+            value={description}
             onChange={(e) => {
               setDescription(e.currentTarget.value);
             }}
             fullWidth
             InputLabelProps={{
-              shrink: isFocused,
+              shrink: (isFocused || description.length > 0),
               style: {
-                whiteSpace: isFocused ? 'nowrap' : 'pre-line'
+                whiteSpace: (isFocused || description.length > 0) ? 'nowrap' : 'pre-line'
               }
             }}
             InputProps={{
