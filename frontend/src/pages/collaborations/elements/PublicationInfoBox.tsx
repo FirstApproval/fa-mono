@@ -1,12 +1,13 @@
-import React, { type ReactElement, useState } from 'react';
+import React, { type ReactElement } from 'react';
 import { observer } from 'mobx-react-lite';
 import Moment from 'react-moment';
 import views from './../../../assets/views.svg';
 import downloads from './../../../assets/downloads.svg';
-import { Button, Tooltip, Typography } from '@mui/material';
+import { Tooltip, Typography } from '@mui/material';
 import AlternateEmailOutlinedIcon from '@mui/icons-material/AlternateEmailOutlined';
 import styled from '@emotion/styled';
 import { PublicationShortInfo } from '../../../apis/first-approval-api';
+import { HeightElement } from "../../common.styled"
 
 export const PublicationInfoBox = observer(
   (props: {
@@ -75,10 +76,14 @@ export const PublicationInfoBox = observer(
                     : 'initial'
                 }`
               }}>
-              <AlternateEmailOutlinedIcon />
+              <AlternateEmailOutlinedIcon htmlColor={'#9c9c9f'} />
               <div style={{ marginLeft: '4px' }}>{collaboratorsCount}</div>
             </div>
           </Tooltip>
+        </FlexWrapRow>
+        <HeightElement value={'4px'}/>
+        <FlexWrapRow>
+          <TitleWrap>{title}</TitleWrap>
         </FlexWrapRow>
       </FlexWrapRowSpaceBetween>
     );
@@ -87,8 +92,9 @@ export const PublicationInfoBox = observer(
 
 export const FlexWrapRowSpaceBetween = styled(Typography)`
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   color: #68676e;
 ` as typeof Typography;
 
@@ -97,3 +103,9 @@ export const FlexWrapRow = styled.div`
   align-items: center;
   height: 100%;
 `;
+
+export const TitleWrap = styled(Typography)`
+  font-weight: 500;
+  font-family: Roboto;
+  color: var(--text-secondary, #68676e);
+` as typeof Typography;

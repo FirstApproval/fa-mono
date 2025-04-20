@@ -164,7 +164,7 @@ const Container = styled.div`
 
 const DatasetStatsWrapper = styled.div`
   border: 1px solid #d2d2d6;
-  padding: 20px 24px;
+  padding: 16px 24px;
   border-radius: 8px;
 `;
 
