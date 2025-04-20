@@ -3,19 +3,14 @@ import { observer } from 'mobx-react-lite';
 import Moment from 'react-moment';
 import views from './../../../assets/views.svg';
 import downloads from './../../../assets/downloads.svg';
-import Menu from '@mui/material/Menu';
-import { Button, IconButton, Tooltip, Typography } from '@mui/material';
-import WarningAmber from '@mui/icons-material/WarningAmber';
+import { Button, Tooltip, Typography } from '@mui/material';
 import AlternateEmailOutlinedIcon from '@mui/icons-material/AlternateEmailOutlined';
-import MoreHoriz from '@mui/icons-material/MoreHoriz';
 import styled from '@emotion/styled';
-import { StyledMenuItem } from "../../common.styled"
-import { ReportProblemDialog } from "../../publication/ReportProblemDialog"
-import { PublicationShortInfo } from "../../../apis/first-approval-api"
+import { PublicationShortInfo } from '../../../apis/first-approval-api';
 
 export const PublicationInfoBox = observer(
   (props: {
-    publicationInfo: PublicationShortInfo
+    publicationInfo: PublicationShortInfo;
     // openDownloadersDialog: () => void;
     // openCollaborationRequestsDialog: () => void;
   }): ReactElement => {
@@ -28,6 +23,8 @@ export const PublicationInfoBox = observer(
       collaboratorsCount,
       publicationTime
     } = publicationInfo;
+
+    debugger;
 
     const [utilAnchor, setUtilAnchor] = useState<null | HTMLElement>(null);
     const openUtilMenu = Boolean(utilAnchor);
@@ -47,9 +44,7 @@ export const PublicationInfoBox = observer(
     return (
       <FlexWrapRowSpaceBetween variant={'body2'} component={'div'}>
         <FlexWrapRow>
-          <Moment format={'D MMMM YYYY'}>
-            {publicationTime}
-          </Moment>
+          <Moment format={'D MMMM YYYY'}>{publicationTime}</Moment>
           <div
             style={{
               marginLeft: '24px',
@@ -57,9 +52,7 @@ export const PublicationInfoBox = observer(
               alignItems: 'center'
             }}>
             <img src={views} width={20} height={20} />
-            <div style={{ marginLeft: '4px' }}>
-              {viewsCount}
-            </div>
+            <div style={{ marginLeft: '4px' }}>{viewsCount}</div>
           </div>
           <Tooltip title="Number of downloads">
             <div
@@ -73,16 +66,11 @@ export const PublicationInfoBox = observer(
                 display: 'flex',
                 alignItems: 'center',
                 cursor: `${
-                  downloadsCount &&
-                  downloadsCount > 0
-                    ? 'pointer'
-                    : 'initial'
+                  downloadsCount && downloadsCount > 0 ? 'pointer' : 'initial'
                 }`
               }}>
               <img src={downloads} width={20} height={20} />
-              <div style={{ marginLeft: '4px' }}>
-                {downloadsCount}
-              </div>
+              <div style={{ marginLeft: '4px' }}>{downloadsCount}</div>
             </div>
           </Tooltip>
           <Tooltip title="Number of collaborators">
@@ -97,62 +85,14 @@ export const PublicationInfoBox = observer(
                 display: 'flex',
                 alignItems: 'center',
                 cursor: `${
-                  collaboratorsCount &&
-                  collaboratorsCount > 0
+                  collaboratorsCount && collaboratorsCount > 0
                     ? 'pointer'
                     : 'initial'
                 }`
               }}>
               <AlternateEmailOutlinedIcon />
-              <div style={{ marginLeft: '4px' }}>
-                {collaboratorsCount}
-              </div>
+              <div style={{ marginLeft: '4px' }}>{collaboratorsCount}</div>
             </div>
-          </Tooltip>
-          <UnderCollaborationRequirements variant={"body2"}>
-            Under collaboration requirements
-          </UnderCollaborationRequirements>
-          <Menu
-            anchorEl={utilAnchor}
-            id="user-menu"
-            onClose={handleUtilMenuClose}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right'
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right'
-            }}
-            MenuListProps={{
-              'aria-labelledby': 'user-button'
-            }}
-            open={openUtilMenu}>
-            <StyledMenuItem
-              onClick={() => {
-                handleUtilMenuClose();
-                setReportProblemOpened(true);
-              }}>
-              <WarningAmber style={{ marginRight: 16 }}></WarningAmber>
-              Report problem
-            </StyledMenuItem>
-          </Menu>
-          <ReportProblemDialog
-            isOpen={reportProblemOpened}
-            publicationId={publicationInfo.id!!}
-            setIsOpen={(value) =>
-              setReportProblemOpened(value)
-            }></ReportProblemDialog>
-          <Tooltip title="More">
-            <IconButton
-              onClick={handleUtilMenuClick}
-              size="small"
-              sx={{ ml: 3 }}
-              aria-controls={openUtilMenu ? 'user-menu' : undefined}
-              aria-haspopup="true"
-              aria-expanded={openUtilMenu ? 'true' : undefined}>
-              <MoreHoriz htmlColor={'#68676E'} />
-            </IconButton>
           </Tooltip>
         </FlexWrapRow>
       </FlexWrapRowSpaceBetween>
