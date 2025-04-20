@@ -1,10 +1,10 @@
 import { observer } from "mobx-react-lite"
 import { ReactElement, useEffect } from "react"
 import { Button, Typography } from "@mui/material"
+import styled from '@emotion/styled';
 import { HeightElement } from "../common.styled"
 import { DateViewsDownloadsCollaborators } from "../publication/DateViewsDownloadsCollaborators"
 import { CollaborationRequestBox, CollaborationRequestBoxStatus } from "./CollaborationRequestBox"
-import styled from "@emotion/styled/dist/emotion-styled.cjs"
 import { routerStore } from "../../core/router"
 import { Page } from "../../core/router/constants"
 import { collaborationStore } from '../publication/store/downloadsStore';
@@ -15,9 +15,7 @@ export const PublicationCollaborationsPage = observer((props: { publicationInfo:
   useEffect(() => {
     collaborationStore.clearAndOpen(publicationInfo.id, publicationInfo.collaboratorsCount);
   }, []);
-  const goToChat = (chatId: number): void => {
-    routerStore.navigatePage(Page.COLLABORATIONS_CHAT, `chat/${chatId}`);
-  };
+  const goToChat = (chatId: number) => routerStore.navigatePage(Page.COLLABORATIONS_CHAT, `chat/${chatId}`);
 
   return (
     <>

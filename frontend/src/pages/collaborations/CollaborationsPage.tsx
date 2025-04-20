@@ -35,9 +35,7 @@ export const CollaborationsPage = observer((): ReactElement => {
   // useEffect(() => {
   //   collaborationsPageStore.;
   // }, []);
-  const goToChat = (chatId: number): void => {
-    routerStore.navigatePage(Page.COLLABORATIONS_CHAT, `chat/${chatId}`);
-  };
+  const goToChat = (chatId: number) => routerStore.navigatePage(Page.COLLABORATIONS_CHAT, `chat/${chatId}`);
 
   function mapToListItem(publicationInfo: PublicationShortInfo) {
     debugger;
