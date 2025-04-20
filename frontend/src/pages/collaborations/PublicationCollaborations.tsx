@@ -28,7 +28,7 @@ export const PublicationCollaborationsPage = observer((props: { publicationInfo:
         avatar={'PL'}
         name={`${collaborationRequestInfo?.userInfo?.firstName} ${collaborationRequestInfo?.userInfo?.lastName}`}
         status={CollaborationRequestBoxStatus.NEW}>
-        {collaborationRequestInfo.publicationTitle}
+        {collaborationRequestInfo.description}
       </CollaborationRequestBox>
     );
   }
