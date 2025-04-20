@@ -2403,9 +2403,9 @@ components:
     CollaborationRequestStatus:
       type: string
       enum:
-        - ACCEPTED
-        - REJECTED
-        - PENDING
+        - APPROVED
+        - DECLINED
+        - NEW
 
     CollaborationRequestTypeOfWork:
       type: string

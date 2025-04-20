@@ -2,8 +2,8 @@ package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.CollaborationRequestApi
 import org.firstapproval.api.server.model.CollaborationRequestInfo
-import org.firstapproval.api.server.model.CollaborationRequestStatus.ACCEPTED
-import org.firstapproval.api.server.model.CollaborationRequestStatus.REJECTED
+import org.firstapproval.api.server.model.CollaborationRequestStatus.APPROVED
+import org.firstapproval.api.server.model.CollaborationRequestStatus.DECLINED
 import org.firstapproval.api.server.model.CreateCollaborationRequest
 import org.firstapproval.api.server.model.GetCollaborationRequestsResponse
 import org.firstapproval.backend.core.config.security.AuthHolderService
@@ -31,8 +31,8 @@ class CollaborationRequestController(
         authorResponse: String,
         status: CollaborationRequestStatusApiObject
     ): ResponseEntity<Void> {
-        if (status !in arrayOf(ACCEPTED, REJECTED)) {
-            throw IllegalArgumentException("Status is $status. But must be '$ACCEPTED or $REJECTED")
+        if (status !in arrayOf(APPROVED, DECLINED)) {
+            throw IllegalArgumentException("Status is $status. But must be '$APPROVED or $DECLINED")
         }
         collaborationRequestService.makeDecision(
             collaborationRequestId,

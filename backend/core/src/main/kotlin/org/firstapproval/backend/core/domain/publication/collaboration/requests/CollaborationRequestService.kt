@@ -7,9 +7,9 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessage
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.Create
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.MessageType
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.ACCEPTED
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.PENDING
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.REJECTED
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.APPROVED
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.NEW
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.DECLINED
 import org.firstapproval.backend.core.domain.user.User
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -37,7 +37,7 @@ class CollaborationRequestService(
         if (collaborationRequest.publication.creator.id != user.id) {
             throw IllegalAccessException("Only the creator of the publication can approve or reject a collaboration request.")
         }
-        if (collaborationRequestStatus !in listOf(ACCEPTED, REJECTED)) {
+        if (collaborationRequestStatus !in listOf(APPROVED, DECLINED)) {
             throw IllegalArgumentException("Status must be APPROVED or REJECT, but status is $collaborationRequestStatus.")
         }
 
@@ -89,7 +89,7 @@ class CollaborationRequestService(
         checkPublicationCreator(user, publication)
         return collaborationRequestRepository.findByPublicationIdAndStatusIn(
             publicationId,
-            setOf(PENDING, ACCEPTED),
+            setOf(NEW, APPROVED),
             PageRequest.of(page, pageSize, Sort.by(DESC, "status", "creationTime"))
         )
     }

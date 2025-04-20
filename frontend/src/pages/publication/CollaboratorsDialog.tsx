@@ -71,7 +71,7 @@ export const CollaboratorsDialog = (props: {
                 onClick={() => {
                   if (
                     collaborationRequest.status ===
-                    CollaborationRequestStatus.PENDING
+                    CollaborationRequestStatus.NEW
                   ) {
                     collaborationStore.openCollaborationRequest(
                       collaborationRequest
@@ -91,7 +91,7 @@ export const CollaboratorsDialog = (props: {
                   shouldOpenInNewTab={true}
                 />
                 {collaborationRequest.status ===
-                  CollaborationRequestStatus.PENDING && (
+                  CollaborationRequestStatus.NEW && (
                   <Circle
                     sx={{
                       width: '16px',
@@ -118,13 +118,13 @@ export const CollaboratorsDialog = (props: {
         <Alert
           severity={
             collaborationStore.collaborationRequestStatusForAlert ===
-            CollaborationRequestStatus.ACCEPTED
+            CollaborationRequestStatus.APPROVED
               ? 'success'
               : 'warning'
           }
           sx={{ width: '100%' }}>
           {collaborationStore.collaborationRequestStatusForAlert ===
-          CollaborationRequestStatus.ACCEPTED
+          CollaborationRequestStatus.APPROVED
             ? 'Collaboration was accepted!'
             : 'Collaboration was rejected!'}
         </Alert>

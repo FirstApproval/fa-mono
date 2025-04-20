@@ -30,7 +30,7 @@ export class CollaborationStore {
     if (!this.loadCollaborationRequestsLocked) {
       this.loadCollaborationRequestsLocked = true;
       void collaborationRequestService
-        .getCollaborationRequests(this.publicationId, page, 15)
+        .getCollaborationRequests(this.publicationId, page, 100)
         .then(
           action((response) => {
             this.collaborationRequests = [

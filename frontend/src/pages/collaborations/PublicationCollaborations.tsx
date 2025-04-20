@@ -17,8 +17,21 @@ export const PublicationCollaborationsPage = observer((props: { publicationInfo:
   const { publicationInfo } = props;
   useEffect(() => {
     collaborationStore.clearAndOpen(publicationInfo.id, publicationInfo.collaboratorsCount);
+    collaborationStore.loadCollaborationRequests(0);
   }, []);
   const goToChat = (chatId: number) => routerStore.navigatePage(Page.COLLABORATIONS_CHAT, `chat/${chatId}`);
+
+  function mapToCollaborationRequestBox() {
+    return (
+      <CollaborationRequestBox
+        onClick={() => goToChat(1)}
+        avatar={'PL'}
+        name={'Peter Lidsky'}
+        status={CollaborationRequestBoxStatus.NEW}>
+        Mice brain control/ex fertilization RNA-seq data
+      </CollaborationRequestBox>
+    );
+  }
 
   return (
     <>
@@ -54,31 +67,32 @@ export const PublicationCollaborationsPage = observer((props: { publicationInfo:
           <HeightElement value={'36px'} />
           <Typography variant={'h6'}>Received requests</Typography>
           <HeightElement value={'12px'} />
-          <CollaborationRequestBox
-            onClick={() => goToChat(1)}
-            avatar={'PL'}
-            name={'Peter Lidsky'}
-            status={CollaborationRequestBoxStatus.NEW}>
-            Mice brain control/ex fertilization RNA-seq data
-          </CollaborationRequestBox>
-          <HeightElement value={'24px'} />
-          <CollaborationRequestBox
-            onClick={() => goToChat(2)}
-            avatar={'MP'}
-            name={'Maria Petrova '}
-            status={CollaborationRequestBoxStatus.APPROVED}>
-            DNA damage in mice bone marrow cells after acute treatment
-            by restraint and olfactory stressors
-          </CollaborationRequestBox>
-          <HeightElement value={'24px'} />
-          <CollaborationRequestBox
-            onClick={() => goToChat(3)}
-            avatar={'MP'}
-            name={'John D. Gearhart'}
-            status={CollaborationRequestBoxStatus.DECLINED}>
-            Independent Evolution of RNA Structures in BRD2 and BRD3
-            Genes Governs Control of Unproductive Splicing
-          </CollaborationRequestBox>
+          {mapToCollaborationRequestBox()}
+          {/* <CollaborationRequestBox */}
+          {/*   onClick={() => goToChat(1)} */}
+          {/*   avatar={'PL'} */}
+          {/*   name={'Peter Lidsky'} */}
+          {/*   status={CollaborationRequestBoxStatus.NEW}> */}
+          {/*   Mice brain control/ex fertilization RNA-seq data */}
+          {/* </CollaborationRequestBox> */}
+          {/* <HeightElement value={'24px'} /> */}
+          {/* <CollaborationRequestBox */}
+          {/*   onClick={() => goToChat(2)} */}
+          {/*   avatar={'MP'} */}
+          {/*   name={'Maria Petrova '} */}
+          {/*   status={CollaborationRequestBoxStatus.APPROVED}> */}
+          {/*   DNA damage in mice bone marrow cells after acute treatment */}
+          {/*   by restraint and olfactory stressors */}
+          {/* </CollaborationRequestBox> */}
+          {/* <HeightElement value={'24px'} /> */}
+          {/* <CollaborationRequestBox */}
+          {/*   onClick={() => goToChat(3)} */}
+          {/*   avatar={'MP'} */}
+          {/*   name={'John D. Gearhart'} */}
+          {/*   status={CollaborationRequestBoxStatus.DECLINED}> */}
+          {/*   Independent Evolution of RNA Structures in BRD2 and BRD3 */}
+          {/*   Genes Governs Control of Unproductive Splicing */}
+          {/* </CollaborationRequestBox> */}
         </BodyContentWrap>
       </BodyWrap>
     </>

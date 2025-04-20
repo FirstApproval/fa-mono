@@ -89,7 +89,7 @@ export const CollaborationRequestDialog = observer(
               onClick={async () =>
                 collaborationStore.acceptOrRejectCollaborationRequest(
                   collaborationRequest,
-                  CollaborationRequestStatus.ACCEPTED
+                  CollaborationRequestStatus.APPROVED
                 )
               }>
               Accept
@@ -102,7 +102,7 @@ export const CollaborationRequestDialog = observer(
           onConfirm={async () =>
             collaborationStore.acceptOrRejectCollaborationRequest(
               collaborationRequest,
-              CollaborationRequestStatus.REJECTED
+              CollaborationRequestStatus.DECLINED
             )
           }
           text={`Are you sure you want to reject the offer to include you as a co-author in 

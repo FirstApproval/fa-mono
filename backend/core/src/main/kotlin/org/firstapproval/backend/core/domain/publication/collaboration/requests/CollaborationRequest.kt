@@ -14,7 +14,7 @@ import org.firstapproval.api.server.model.CollaborationRequestInfo
 import org.firstapproval.api.server.model.CollaborationRequestTypeOfWork
 import org.firstapproval.backend.core.domain.publication.Publication
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessage
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.PENDING
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.NEW
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.toApiObject
@@ -38,7 +38,7 @@ class CollaborationRequest(
     @ManyToOne(fetch = EAGER)
     val user: User,
     @Enumerated(STRING)
-    var status: CollaborationRequestStatus = PENDING,
+    var status: CollaborationRequestStatus = NEW,
     val description: String? = null,
     val creationTime: ZonedDateTime = ZonedDateTime.now(),
     var decisionTime: ZonedDateTime? = null,
@@ -49,9 +49,9 @@ class CollaborationRequest(
 )
 
 enum class CollaborationRequestStatus {
-    ACCEPTED,
-    REJECTED,
-    PENDING
+    APPROVED,
+    DECLINED,
+    NEW
 }
 
 enum class TypeOfWork {
