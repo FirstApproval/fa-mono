@@ -1,8 +1,8 @@
 import React, { type ReactElement, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import Moment from 'react-moment';
-import views from './asset/views.svg';
-import downloads from './asset/downloads.svg';
+import views from './../../../assets/views.svg';
+import downloads from './../../../assets/downloads.svg';
 import Menu from '@mui/material/Menu';
 import { Button, IconButton, Tooltip, Typography } from '@mui/material';
 import WarningAmber from '@mui/icons-material/WarningAmber';
@@ -13,19 +13,16 @@ import { StyledMenuItem } from "../../common.styled"
 import { ReportProblemDialog } from "../../publication/ReportProblemDialog"
 import { PublicationShortInfo } from "../../../apis/first-approval-api"
 
-export const DateViewsDownloadsCollaborators = observer(
+export const PublicationInfoBox = observer(
   (props: {
     publicationInfo: PublicationShortInfo
-    openDownloadersDialog: () => void;
-    openCollaborationRequestsDialog: () => void;
+    // openDownloadersDialog: () => void;
+    // openCollaborationRequestsDialog: () => void;
   }): ReactElement => {
-    const {
-      publicationInfo,
-      openDownloadersDialog,
-      openCollaborationRequestsDialog
-    } = props;
+    const { publicationInfo } = props;
 
     const {
+      title,
       viewsCount,
       downloadsCount,
       collaboratorsCount,
@@ -68,7 +65,7 @@ export const DateViewsDownloadsCollaborators = observer(
             <div
               onClick={() => {
                 if (downloadsCount) {
-                  props.openDownloadersDialog();
+                  // props.openDownloadersDialog();
                 }
               }}
               style={{
@@ -92,7 +89,7 @@ export const DateViewsDownloadsCollaborators = observer(
             <div
               onClick={() => {
                 if (collaboratorsCount) {
-                  props.openCollaborationRequestsDialog();
+                  // props.openCollaborationRequestsDialog();
                 }
               }}
               style={{

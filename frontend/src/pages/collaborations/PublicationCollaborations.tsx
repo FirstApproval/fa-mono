@@ -1,14 +1,17 @@
-import { observer } from "mobx-react-lite"
-import { ReactElement, useEffect } from "react"
-import { Button, Typography } from "@mui/material"
+import { observer } from 'mobx-react-lite';
+import { ReactElement, useEffect } from 'react';
+import { Button, Typography } from '@mui/material';
 import styled from '@emotion/styled';
-import { HeightElement } from "../common.styled"
-import { DateViewsDownloadsCollaborators } from "../publication/DateViewsDownloadsCollaborators"
-import { CollaborationRequestBox, CollaborationRequestBoxStatus } from "./CollaborationRequestBox"
-import { routerStore } from "../../core/router"
-import { Page } from "../../core/router/constants"
+import { HeightElement } from '../common.styled';
+import {
+  CollaborationRequestBox,
+  CollaborationRequestBoxStatus
+} from './CollaborationRequestBox';
+import { routerStore } from '../../core/router';
+import { Page } from '../../core/router/constants';
 import { collaborationStore } from '../publication/store/downloadsStore';
-import { PublicationShortInfo } from "../../apis/first-approval-api"
+import { PublicationShortInfo } from '../../apis/first-approval-api';
+import { PublicationInfoBox } from './elements/PublicationInfoBox';
 
 export const PublicationCollaborationsPage = observer((props: { publicationInfo: PublicationShortInfo}): ReactElement => {
   const { publicationInfo } = props;
@@ -44,11 +47,8 @@ export const PublicationCollaborationsPage = observer((props: { publicationInfo:
             upcoming publications.
           </div>
           <DatasetStatsWrapper>
-            <DateViewsDownloadsCollaborators
-              openDownloadersDialog={() => false}
-              openCollaborationRequestsDialog={() => false}
-              displayLicense={false}
-              publicationStore={false as any}
+            <PublicationInfoBox
+              publicationInfo={publicationInfo}
             />
           </DatasetStatsWrapper>
           <HeightElement value={'36px'} />
