@@ -1,12 +1,7 @@
 import { useState, type ReactElement, useEffect } from "react"
 import styled from '@emotion/styled';
 import { HeaderComponent } from '../../components/HeaderComponent';
-import { Helmet } from 'react-helmet';
-import { DateViewsDownloadsCollaborators } from '../publication/DateViewsDownloadsCollaborators';
-import {
-  CollaborationRequestBox,
-  CollaborationRequestBoxStatus
-} from './CollaborationRequestBox';
+import { Helmet } from 'react-helmet';;
 import { routerStore } from '../../core/router';
 import { Page } from '../../core/router/constants';
 
@@ -45,7 +40,7 @@ export const CollaborationsPage = observer((): ReactElement => {
           width: '100%',
           borderRadius: '8px'
         }}
-        onClick={() => setFetchedContents(false)}>
+        onClick={() => setPublicationInfo(publicationInfo)}>
         <ListItemText
           primary={TextSizeTruncation(
             publicationInfo.title!!,
@@ -154,32 +149,6 @@ const Parent = styled.div`
   width: 100%;
   padding-bottom: 40px;
   min-height: calc(100vh - 104px);
-`;
-
-const HeaderWrap = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-`;
-
-const HeaderTitleWrap = styled.div`
-  display: flex;
-  justify-content: center;
-`;
-
-const MarginLeftAuto = styled.div`
-  margin-left: auto;
-`;
-
-const BodyWrap = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const BodyContentWrap = styled.div`
-  width: 680px;
-  padding: 48px 32px;
 `;
 
 const LeftPanel = styled.div`
