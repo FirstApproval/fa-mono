@@ -31,15 +31,20 @@ export const PublicationInfoBox = observer(
       <FlexWrapRowSpaceBetween variant={'body2'} component={'div'}>
         <FlexWrapRow>
           <Moment format={'D MMMM YYYY'}>{publicationTime}</Moment>
-          <div
-            style={{
-              marginLeft: '24px',
-              display: 'flex',
-              alignItems: 'center'
-            }}>
-            <img src={views} width={20} height={20} />
-            <div style={{ marginLeft: '4px' }}>{viewsCount}</div>
-          </div>
+          <Tooltip title="Number of views">
+            <div
+              style={{
+                marginLeft: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                cursor: `${
+                  viewsCount && viewsCount > 0 ? 'pointer' : 'initial'
+                }`
+              }}>
+              <img src={views} width={20} height={20} />
+              <div style={{ marginLeft: '4px' }}>{viewsCount}</div>
+            </div>
+          </Tooltip>
           <Tooltip title="Number of downloads">
             <div
               onClick={() => {
@@ -81,7 +86,7 @@ export const PublicationInfoBox = observer(
             </div>
           </Tooltip>
         </FlexWrapRow>
-        <HeightElement value={'4px'}/>
+        <HeightElement value={'4px'} />
         <FlexWrapRow>
           <TitleWrap>{title}</TitleWrap>
         </FlexWrapRow>

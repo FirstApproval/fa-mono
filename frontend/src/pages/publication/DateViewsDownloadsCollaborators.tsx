@@ -49,17 +49,19 @@ export const DateViewsDownloadsCollaborators = observer(
           <Moment format={'D MMMM YYYY'}>
             {publicationStore.publicationTime}
           </Moment>
-          <div
-            style={{
-              marginLeft: '24px',
-              display: 'flex',
-              alignItems: 'center'
-            }}>
-            <img src={views} width={20} height={20} />
-            <div style={{ marginLeft: '4px' }}>
-              {publicationStore.viewsCount}
+          <Tooltip title="Number of views">
+            <div
+              style={{
+                marginLeft: '24px',
+                display: 'flex',
+                alignItems: 'center'
+              }}>
+              <img src={views} width={20} height={20} />
+              <div style={{ marginLeft: '4px' }}>
+                {publicationStore.viewsCount}
+              </div>
             </div>
-          </div>
+          </Tooltip>
           <Tooltip title="Number of downloads">
             <div
               onClick={() => {
