@@ -25,8 +25,6 @@ export const PublicationInfoBox = observer(
       publicationTime
     } = publicationInfo;
 
-    debugger;
-
     return (
       <FlexWrapRowSpaceBetween variant={'body2'} component={'div'}>
         <FlexWrapRow>
