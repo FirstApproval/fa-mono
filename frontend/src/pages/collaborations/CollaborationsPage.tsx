@@ -25,9 +25,12 @@ import NoPublicationsImage from '../../assets/no-publications.svg';
 import { collaborationsPageStore } from '../publication/store/downloadsStore';
 import { PublicationShortInfo } from "../../apis/first-approval-api"
 import { observer } from "mobx-react-lite"
+import { PublicationCollaborationsPage } from "./PublicationCollaborations"
 
 export const CollaborationsPage = observer((): ReactElement => {
   const [fetchedContents, setFetchedContents] = useState(true);
+  const [publicationInfo, setPublicationInfo] =
+    useState(collaborationsPageStore.myPublications?.[0]);
 
   // useEffect(() => {
   //   collaborationsPageStore.;
@@ -109,68 +112,7 @@ export const CollaborationsPage = observer((): ReactElement => {
                 </FlexWrapColumn>
               </LeftPanel>
               <RightPanel>
-                <BodyWrap>
-                  <BodyContentWrap>
-                    <HeaderWrap>
-                      <HeaderTitleWrap>
-                        <Typography variant={'h5'}>
-                          Collaboration dashboard
-                        </Typography>
-                        <MarginLeftAuto />
-                      </HeaderTitleWrap>
-                      <HeightElement value={'36px'} />
-                    </HeaderWrap>
-                    <div
-                      style={{
-                        marginBottom: '24px',
-                        color: '#68676E',
-                        fontSize: '16px',
-                        fontWeight: '400',
-                        lineHeight: '150%',
-                        letterSpacing: '0.15px'
-                      }}>
-                      This page helps you manage collaboration requests from
-                      data users who plan to reuse/include your data in their
-                      upcoming publications.
-                    </div>
-                    <DatasetStatsWrapper>
-                      <DateViewsDownloadsCollaborators
-                        openDownloadersDialog={() => false}
-                        openCollaborationRequestsDialog={() => false}
-                        displayLicense={false}
-                        publicationStore={false as any}
-                      />
-                    </DatasetStatsWrapper>
-                    <HeightElement value={'36px'} />
-                    <Typography variant={'h6'}>Received requests</Typography>
-                    <HeightElement value={'12px'} />
-                    <CollaborationRequestBox
-                      onClick={() => goToChat(1)}
-                      avatar={'PL'}
-                      name={'Peter Lidsky'}
-                      status={CollaborationRequestBoxStatus.NEW}>
-                      Mice brain control/ex fertilization RNA-seq data
-                    </CollaborationRequestBox>
-                    <HeightElement value={'24px'} />
-                    <CollaborationRequestBox
-                      onClick={() => goToChat(2)}
-                      avatar={'MP'}
-                      name={'Maria Petrova '}
-                      status={CollaborationRequestBoxStatus.APPROVED}>
-                      DNA damage in mice bone marrow cells after acute treatment
-                      by restraint and olfactory stressors
-                    </CollaborationRequestBox>
-                    <HeightElement value={'24px'} />
-                    <CollaborationRequestBox
-                      onClick={() => goToChat(3)}
-                      avatar={'MP'}
-                      name={'John D. Gearhart'}
-                      status={CollaborationRequestBoxStatus.DECLINED}>
-                      Independent Evolution of RNA Structures in BRD2 and BRD3
-                      Genes Governs Control of Unproductive Splicing
-                    </CollaborationRequestBox>
-                  </BodyContentWrap>
-                </BodyWrap>
+                { publicationInfo ? <PublicationCollaborationsPage publicationInfo={publicationInfo} /> : <></> }
               </RightPanel>
             </>
           ) : (

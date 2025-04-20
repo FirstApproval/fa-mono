@@ -58,8 +58,8 @@ export class CollaborationStore {
   }
 
   clearAndOpen(
-    publicationId: string,
-    collaboratorsCount: number | null | undefined
+    publicationId: string = '',
+    collaboratorsCount?: number | null | undefined
   ): void {
     this.publicationId = '';
     this.approvedCollaborationRequestCount = 0;
@@ -68,7 +68,7 @@ export class CollaborationStore {
 
     this.publicationId = publicationId;
     this.approvedCollaborationRequestCount = collaboratorsCount ?? 0;
-    this.collaboratorsDialogOpen = true;
+    // this.collaboratorsDialogOpen = true;
   }
 
   async acceptOrRejectCollaborationRequest(
