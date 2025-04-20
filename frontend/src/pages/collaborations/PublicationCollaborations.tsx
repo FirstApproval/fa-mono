@@ -10,7 +10,7 @@ import {
 import { routerStore } from '../../core/router';
 import { Page } from '../../core/router/constants';
 import { collaborationStore } from '../publication/store/downloadsStore';
-import { PublicationShortInfo } from '../../apis/first-approval-api';
+import { CollaborationRequestInfo, PublicationShortInfo } from "../../apis/first-approval-api"
 import { PublicationInfoBox } from './elements/PublicationInfoBox';
 
 export const PublicationCollaborationsPage = observer((props: { publicationInfo: PublicationShortInfo}): ReactElement => {
@@ -19,16 +19,16 @@ export const PublicationCollaborationsPage = observer((props: { publicationInfo:
     collaborationStore.clearAndOpen(publicationInfo.id, publicationInfo.collaboratorsCount);
     collaborationStore.loadCollaborationRequests(0);
   }, []);
-  const goToChat = (chatId: number) => routerStore.navigatePage(Page.COLLABORATIONS_CHAT, `chat/${chatId}`);
+  const goToChat = (chatId: string) => routerStore.navigatePage(Page.COLLABORATIONS_CHAT, `chat/${chatId}`);
 
-  function mapToCollaborationRequestBox() {
+  function mapToCollaborationRequestBox(collaborationRequestInfo: CollaborationRequestInfo) {
     return (
       <CollaborationRequestBox
-        onClick={() => goToChat(1)}
+        onClick={() => goToChat(collaborationRequestInfo.id)}
         avatar={'PL'}
-        name={'Peter Lidsky'}
+        name={`${collaborationRequestInfo?.userInfo?.firstName} ${collaborationRequestInfo?.userInfo?.lastName}`}
         status={CollaborationRequestBoxStatus.NEW}>
-        Mice brain control/ex fertilization RNA-seq data
+        {collaborationRequestInfo.publicationTitle}
       </CollaborationRequestBox>
     );
   }
@@ -67,7 +67,9 @@ export const PublicationCollaborationsPage = observer((props: { publicationInfo:
           <HeightElement value={'36px'} />
           <Typography variant={'h6'}>Received requests</Typography>
           <HeightElement value={'12px'} />
-          {mapToCollaborationRequestBox()}
+          <>
+            {collaborationStore.collaborationRequests.map(mapToCollaborationRequestBox)}
+          </>
           {/* <CollaborationRequestBox */}
           {/*   onClick={() => goToChat(1)} */}
           {/*   avatar={'PL'} */}
