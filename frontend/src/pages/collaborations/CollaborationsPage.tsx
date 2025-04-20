@@ -94,9 +94,7 @@ export const CollaborationsPage = observer((): ReactElement => {
                   <LeftPanelHeader variant={'h6'}>My datasets</LeftPanelHeader>
                   <List sx={{ width: '100%' }}>
                     {collaborationsPageStore.myPublications?.map(
-                      (publicationInfo) => {
-                        return mapToListItem(publicationInfo);
-                      }
+                      (publicationInfo) => mapToListItem(publicationInfo)
                     )}
                   </List>
                   <HeightElement value={'10px'} />
@@ -105,9 +103,7 @@ export const CollaborationsPage = observer((): ReactElement => {
                   </LeftPanelHeader>
                   <List sx={{ width: '100%' }}>
                     {collaborationsPageStore.downloadedPublications?.map(
-                      (publicationInfo) => {
-                        return mapToListItem(publicationInfo);
-                      }
+                      (publicationInfo) => mapToListItem(publicationInfo)
                     )}
                   </List>
                 </FlexWrapColumn>
