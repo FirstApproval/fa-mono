@@ -4,7 +4,7 @@ import {
   PublicationShortInfo,
   PublicationStatus
 } from "../../../apis/first-approval-api"
-import { action, makeAutoObservable } from "mobx"
+import { makeAutoObservable } from "mobx"
 
 export class CollaborationsPageStore {
   isLoading = false;
@@ -12,10 +12,15 @@ export class CollaborationsPageStore {
   isLastPageMyPublications = false;
   downloadedPublications?: PublicationShortInfo[];
   isLastPageMyDownloadedPublications = false;
+  selectedPublication?: PublicationShortInfo;
 
   constructor() {
     makeAutoObservable(this);
     this.loadInitialState();
+  }
+
+  selectPublication(publicationInfo: PublicationShortInfo): void {
+    this.selectedPublication = publicationInfo;
   }
 
   private loadInitialState(): void {

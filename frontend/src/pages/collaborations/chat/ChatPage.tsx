@@ -16,8 +16,9 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 // import Button from '@mui/material/Button';
 import { FlexWrapColumn, HeightElement } from '../../common.styled';
 import { TextSizeTruncation } from '../../../util/stylesUtil';
+import { observer } from "mobx-react-lite"
 
-export const ChatPage = (): ReactElement => {
+export const ChatPage = observer((): ReactElement => {
   return (
     <>
       <Helmet>
@@ -118,7 +119,7 @@ export const ChatPage = (): ReactElement => {
       </Parent>
     </>
   );
-};
+});
 
 const HeaderBorderColorFix = styled.div`
   position: relative;

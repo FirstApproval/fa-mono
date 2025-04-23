@@ -1,72 +1,19 @@
-import { useState, type ReactElement, useEffect } from "react"
+import { type ReactElement } from 'react';
 import styled from '@emotion/styled';
 import { HeaderComponent } from '../../components/HeaderComponent';
-import { Helmet } from 'react-helmet';;
-import { routerStore } from '../../core/router';
-import { Page } from '../../core/router/constants';
-
-import {
-  Typography,
-  List,
-  ListItemButton,
-  ListItemText,
-  ListItemIcon,
-  Button
-} from '@mui/material';
-import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
-import { FlexWrapColumn, HeightElement } from '../common.styled';
-import { TextSizeTruncation } from '../../util/stylesUtil';
+import { Helmet } from 'react-helmet';
+import { Button } from '@mui/material';
 import NoPublicationsImage from '../../assets/no-publications.svg';
 import { collaborationsPageStore } from '../publication/store/downloadsStore';
-import { PublicationShortInfo } from "../../apis/first-approval-api"
-import { observer } from "mobx-react-lite"
-import { PublicationCollaborationsPage } from "./PublicationCollaborations"
+import { observer } from 'mobx-react-lite';
+import { PublicationCollaborationsPage } from './PublicationCollaborations';
+import { LeftPanelPublicationsPage } from './LeftPanelPublications';
 
 export const CollaborationsPage = observer((): ReactElement => {
-  const [fetchedContents, setFetchedContents] = useState(true);
-  const [publicationInfo, setPublicationInfo] =
-    useState(collaborationsPageStore.myPublications?.[0]);
-
-  // useEffect(() => {
-  //   collaborationsPageStore.;
-  // }, []);
-  const goToChat = (chatId: number) => routerStore.navigatePage(Page.COLLABORATIONS_CHAT, `chat/${chatId}`);
-
-  function mapToListItem(publicationInfo: PublicationShortInfo) {
-    debugger;
-    return (
-      <ListItemButton
-        sx={{
-          width: '100%',
-          borderRadius: '8px'
-        }}
-        onClick={() => setPublicationInfo(publicationInfo)}>
-        <ListItemText
-          primary={TextSizeTruncation(
-            publicationInfo.title!!,
-            26
-          )}
-          sx={{
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis'
-          }}
-        />
-        <ListItemIcon
-          sx={{
-            minWidth: 'auto',
-            marginLeft: 'auto'
-          }}>
-          <FiberManualRecordIcon
-            sx={{
-              fontSize: 18,
-              color: 'primary.main'
-            }}
-          />
-        </ListItemIcon>
-      </ListItemButton>
-    );
-  }
+  const { myPublications, downloadedPublications, selectedPublication } =
+    collaborationsPageStore;
+  const hasPublications =
+    (myPublications?.length ?? 0) + (downloadedPublications?.length ?? 0) > 0;
 
   return (
     <>
@@ -83,29 +30,17 @@ export const CollaborationsPage = observer((): ReactElement => {
           />
         </HeaderBorderColorFix>
         <Container>
-          {fetchedContents ? (
+          {hasPublications ? (
             <>
-              <LeftPanel>
-                <FlexWrapColumn>
-                  <LeftPanelHeader variant={'h6'}>My datasets</LeftPanelHeader>
-                  <List sx={{ width: '100%' }}>
-                    {collaborationsPageStore.myPublications?.map(
-                      (publicationInfo) => mapToListItem(publicationInfo)
-                    )}
-                  </List>
-                  <HeightElement value={'10px'} />
-                  <LeftPanelHeader variant={'h6'}>
-                    Downloaded datasets
-                  </LeftPanelHeader>
-                  <List sx={{ width: '100%' }}>
-                    {collaborationsPageStore.downloadedPublications?.map(
-                      (publicationInfo) => mapToListItem(publicationInfo)
-                    )}
-                  </List>
-                </FlexWrapColumn>
-              </LeftPanel>
+              <LeftPanelPublicationsPage />
               <RightPanel>
-                { publicationInfo ? <PublicationCollaborationsPage publicationInfo={publicationInfo} /> : <></> }
+                {selectedPublication ? (
+                  <PublicationCollaborationsPage
+                    publicationInfo={selectedPublication}
+                  />
+                ) : (
+                  <></>
+                )}
               </RightPanel>
             </>
           ) : (
@@ -134,6 +69,7 @@ export const CollaborationsPage = observer((): ReactElement => {
 
 const HeaderBorderColorFix = styled.div`
   position: relative;
+
   &:after {
     content: '';
     position: absolute;
@@ -163,12 +99,6 @@ const LeftPanel = styled.div`
   padding: 22px;
 `;
 
-const LeftPanelHeader = styled(Typography)`
-  color: var(--text-disabled, rgba(4, 0, 54, 0.38));
-  font-size: 0.8rem;
-  padding-left: 16px;
-`;
-
 const RightPanel = styled.div`
   display: flex;
   flex-direction: column;
@@ -191,6 +121,7 @@ const DatasetStatsWrapper = styled.div`
 const StyledButton = styled(Button)`
   margin-right: 0.75rem;
   margin-bottom: 0.75rem;
+
   &:hover {
     background: rgb(0 0 0 / 4%);
     border-color: #040036;
