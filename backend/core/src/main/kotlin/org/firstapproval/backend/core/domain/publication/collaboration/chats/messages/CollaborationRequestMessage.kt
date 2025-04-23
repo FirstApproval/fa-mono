@@ -15,10 +15,14 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.fil
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequest
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.TypeOfWork
 import org.firstapproval.backend.core.domain.user.User
+import org.firstapproval.backend.core.domain.user.UserService
+import org.firstapproval.backend.core.domain.user.toApiObject
 import org.hibernate.annotations.Type
 import java.time.ZonedDateTime
 import java.util.UUID
 import java.util.UUID.randomUUID
+import org.firstapproval.api.server.model.CollaborationMessageType as CollaborationMessageTypeApiObject
+import org.firstapproval.api.server.model.CollaborationRequestMessage as CollaborationRequestMessageApiObject
 
 @Entity
 @Table(name = "collaboration_request_messages")
@@ -71,3 +75,11 @@ class Create(
     val description: String
 ) : MessagePayload
 
+fun CollaborationRequestMessage.toApiObject(userService: UserService) = CollaborationRequestMessageApiObject(
+    this.id,
+    user.toApiObject(userService),
+    CollaborationMessageTypeApiObject.valueOf(type.toString()),
+    text,
+    payload,
+    creationTime.toOffsetDateTime()
+)

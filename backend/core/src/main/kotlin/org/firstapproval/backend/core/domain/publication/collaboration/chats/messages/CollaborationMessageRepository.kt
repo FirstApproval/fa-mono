@@ -3,4 +3,6 @@ package org.firstapproval.backend.core.domain.publication.collaboration.chats.me
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
-interface CollaborationMessageRepository : JpaRepository<CollaborationRequestMessage, UUID>
+interface CollaborationMessageRepository : JpaRepository<CollaborationRequestMessage, UUID> {
+    fun findAllByCollaborationRequestIdOrderByCreationTimeDesc(collaborationRequestId: UUID): List<CollaborationRequestMessage>
+}

@@ -972,6 +972,29 @@ paths:
       operationId: acceptOrRejectCollaborationRequest
       tags: [ collaboration-request ]
 
+  /api/collabortion/requests/messages/{collaborationRequestId}:
+    get:
+      summary: Get collaboration request messages
+      parameters:
+        - in: path
+          name: collaborationRequestId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Collaboration request id
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCollaborationRequestMessagesResponse'
+      security:
+        - TokenAuth: [ ]
+      operationId: getCollaborationRequestMessages
+      tags: [ collaboration-request-message ]
+
   /api/publication/search:
     get:
       summary: Search publications
@@ -2719,6 +2742,47 @@ components:
       required:
         - collaborationRequests
         - isLastPage
+
+    GetCollaborationRequestMessagesResponse:
+      type: object
+      properties:
+        collaborationRequestMessages:
+          type: array
+          items:
+            $ref: '#/components/schemas/CollaborationRequestMessage'
+      required:
+        - collaborationRequestMessages
+
+    CollaborationRequestMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userInfo:
+          $ref: '#/components/schemas/UserInfo'
+        type:
+          $ref: '#/components/schemas/CollaborationMessageType'
+        text:
+          type: string
+        payload:
+          type: object
+        creationTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - userInfo
+        - type
+        - text
+        - payload
+        - creationTime
+
+    CollaborationMessageType:
+      type: string
+      enum:
+        - CREATE
+        - ACCEPT_OR_REJECT_COLLABORATION_REQUEST
 
     PublicationShortInfo:
       type: object
