@@ -19,6 +19,7 @@ interface PublicationRepository : JpaRepository<Publication, String> {
     SELECT new org.firstapproval.backend.core.domain.publication.PublicationShortInfo(
                                     p.id,
                                     p.title,
+                                    p.creator,
                                     p.description,
                                     p.status,
                                     p.publicationTime,

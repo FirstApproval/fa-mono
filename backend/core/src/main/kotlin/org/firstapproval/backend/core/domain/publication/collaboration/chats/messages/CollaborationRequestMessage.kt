@@ -11,6 +11,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
+import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationRequestFile
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequest
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.TypeOfWork
@@ -75,9 +76,11 @@ class Create(
     val description: String
 ) : MessagePayload
 
-fun CollaborationRequestMessage.toApiObject(userService: UserService) = CollaborationRequestMessageApiObject(
+fun CollaborationRequestMessage.toApiObject(userService: UserService) = toApiObject(user.toApiObject(userService))
+
+fun CollaborationRequestMessage.toApiObject(userInfo: UserInfo) = CollaborationRequestMessageApiObject(
     this.id,
-    user.toApiObject(userService),
+    userInfo.takeIf { this.user.id === userInfo.id } ?: throw IllegalArgumentException("UserInfo id doesn't match with user.id"),
     CollaborationMessageTypeApiObject.valueOf(type.toString()),
     text,
     payload,

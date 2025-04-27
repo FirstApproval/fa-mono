@@ -1,0 +1,35 @@
+package org.firstapproval.backend.core.web
+
+import org.firstapproval.api.server.CollaborationRequestChatApi
+import org.firstapproval.api.server.model.CollaborationChatResponse
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationMessageRepository
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.toApiObject
+import org.firstapproval.backend.core.domain.user.UserService
+import org.firstapproval.backend.core.domain.user.toApiObject
+import org.springframework.http.ResponseEntity
+import org.springframework.http.ResponseEntity.ok
+import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
+
+@RestController
+class CollaborationRequestChatController(
+    private val collaborationRequestMessageRepository: CollaborationMessageRepository,
+    private val userService: UserService
+) : CollaborationRequestChatApi {
+    override fun getCollaborationChat(collaborationRequestId: UUID): ResponseEntity<CollaborationChatResponse> {
+        val messages = collaborationRequestMessageRepository.findAllByCollaborationRequestIdOrderByCreationTimeDesc(collaborationRequestId)
+        val collaborationRequest = messages.map { it.collaborationRequest }.distinct().single()
+        val publicationCreator = collaborationRequest.publication.creator.toApiObject(userService)
+        val collaborationRequestCreator = collaborationRequest.user.toApiObject(userService)
+        val response = CollaborationChatResponse(
+            publicationCreator,
+            collaborationRequestCreator,
+            messages.map {
+                val messageAuthor =
+                    if (it.user.id === collaborationRequestCreator.id) collaborationRequestCreator else publicationCreator
+                it.toApiObject(messageAuthor)
+            }
+        )
+        return ok(response)
+    }
+}

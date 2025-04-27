@@ -470,7 +470,7 @@ class PublicationService(
 
         return PublicationsShortInfoResponse(publicationsPage.isLast)
             .publications(publicationsPage.map {
-                it.toApiObject()
+                it.toApiObject(userService)
             }.toList() )
     }
 
@@ -634,6 +634,7 @@ fun Author.toApiObject(profileImage: ByteArray?) = AuthorApiObject().also {
 class PublicationShortInfo(
     var id: String,
     var title: String,
+    var creator: User,
     var description: String? = null,
     var status: PublicationStatus,
     var publicationTime: ZonedDateTime? = null,
@@ -643,10 +644,18 @@ class PublicationShortInfo(
     var useType: UseType
 )
 
-fun PublicationShortInfo.toApiObject(
-) = PublicationShortInfoApiObject().also {
+fun PublicationShortInfo.toApiObject(userService: UserService) = PublicationShortInfoApiObject().also {
     it.id = id
     it.title = title
+    it.creator = UserInfo()
+        .id(creator.id)
+        .firstName(creator.firstName)
+        .lastName(creator.lastName)
+        .middleName(creator.middleName)
+        .email(creator.email)
+        .username(creator.username)
+        .workplaces(creator.workplaces.map { it.toApiObject() })
+        .profileImage(userService.getProfileImage(creator.profileImage))
     it.description = description
     it.publicationTime = publicationTime?.toOffsetDateTime()
     it.viewsCount = viewsCount

@@ -972,9 +972,9 @@ paths:
       operationId: acceptOrRejectCollaborationRequest
       tags: [ collaboration-request ]
 
-  /api/collabortion/requests/messages/{collaborationRequestId}:
+  /api/collabortion/requests/chat/{collaborationRequestId}:
     get:
-      summary: Get collaboration request messages
+      summary: Get collaboration request chat (including messages)
       parameters:
         - in: path
           name: collaborationRequestId
@@ -989,11 +989,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetCollaborationRequestMessagesResponse'
+                $ref: '#/components/schemas/CollaborationChatResponse'
       security:
         - TokenAuth: [ ]
-      operationId: getCollaborationRequestMessages
-      tags: [ collaboration-request-message ]
+      operationId: getCollaborationChat
+      tags: [ collaboration-request-chat ]
 
   /api/publication/search:
     get:
@@ -2743,15 +2743,21 @@ components:
         - collaborationRequests
         - isLastPage
 
-    GetCollaborationRequestMessagesResponse:
+    CollaborationChatResponse:
       type: object
       properties:
-        collaborationRequestMessages:
+        publicationCreator:
+          $ref: '#/components/schemas/UserInfo'
+        collaborationRequestCreator:
+          $ref: '#/components/schemas/UserInfo'
+        messages:
           type: array
           items:
             $ref: '#/components/schemas/CollaborationRequestMessage'
       required:
-        - collaborationRequestMessages
+        - publicationCreator
+        - collaborationRequestCreator
+        - messages
 
     CollaborationRequestMessage:
       type: object
@@ -2791,6 +2797,8 @@ components:
           type: string
         status:
           $ref: '#/components/schemas/PublicationStatus'
+        creator:
+          $ref: '#/components/schemas/UserInfo'
         publicationTime:
           type: string
           format: date-time
