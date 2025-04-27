@@ -19,10 +19,10 @@ export const ChatPage = observer((): ReactElement => {
   );
 
   // const publicationShortInfo } = props;
-  const interlocutorName = extractInterlocutorName(
+  const interlocutorName = (collaborationChatStore.collaborationRequestCreator && extractInterlocutorName(
     collaborationChatStore.collaborationRequestCreator!!,
     collaborationChatStore.publicationCreator!!
-  );
+  )) ?? '';
   return (
     <>
       <Helmet>
