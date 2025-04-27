@@ -3,32 +3,25 @@ import styled from '@emotion/styled';
 import { HeaderComponent } from '../../../components/HeaderComponent';
 import { Helmet } from 'react-helmet';
 import BreadCrumbs from '../BreadCrumbs';
-
 import Chat from './Chat';
 import { Typography } from '@mui/material';
-// import Button from '@mui/material/Button';
 import { observer } from 'mobx-react-lite';
 import { LeftPanelPublicationsPage } from '../LeftPanelPublications';
-import {
-  CollaborationRequestInfo,
-  PublicationShortInfo
-} from '../../../apis/first-approval-api';
+import { UserInfo } from '../../../apis/first-approval-api';
 import { userStore } from '../../../core/user';
 import { routerStore } from '../../../core/router';
-import { collaborationStore } from "../../publication/store/downloadsStore"
-import { PublicationStore } from "../../publication/store/PublicationStore"
-import { CollaborationChatStore } from "../../publication/store/CollaborationChatStore"
+import { CollaborationChatStore } from '../../publication/store/CollaborationChatStore';
 
 export const ChatPage = observer((): ReactElement => {
   const [collaborationRequestId] = useState(() => routerStore.lastPathSegment);
-  const [publicationStore] = useState(
+  const [collaborationChatStore] = useState(
     () => new CollaborationChatStore(collaborationRequestId)
   );
 
   // const publicationShortInfo } = props;
   const interlocutorName = extractInterlocutorName(
-    collaborationRequestInfo,
-    publicationShortInfo
+    collaborationChatStore.collaborationRequestCreator!!,
+    collaborationChatStore.publicationCreator!!
   );
   return (
     <>
@@ -53,7 +46,7 @@ export const ChatPage = observer((): ReactElement => {
             <BreadCrumbs name={interlocutorName} />
             <BodyWrap>
               <BodyContentWrap>
-                <Chat />
+                <Chat collaborationChatStore={collaborationChatStore}/>
               </BodyContentWrap>
             </BodyWrap>
           </RightPanel>
@@ -64,13 +57,13 @@ export const ChatPage = observer((): ReactElement => {
 });
 
 function extractInterlocutorName(
-  collaborationRequestInfo: CollaborationRequestInfo,
-  publicationShortInfo: PublicationShortInfo
+  collaborationRequestCreator: UserInfo,
+  publicationCreator: UserInfo
 ) {
   const interlocutorUser =
-    collaborationRequestInfo.userInfo.id === userStore.user!!.id
-      ? publicationShortInfo.creator
-      : collaborationRequestInfo.userInfo;
+    collaborationRequestCreator.id === userStore.user!!.id
+      ? publicationCreator
+      : collaborationRequestCreator;
   return `${interlocutorUser!!.firstName} ${interlocutorUser!!.lastName}`;
 }
 

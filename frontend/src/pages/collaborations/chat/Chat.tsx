@@ -10,10 +10,493 @@ import sendImage from '../../../assets/fa-send.svg';
 import fileIcon from '../../../assets/file-icon.svg';
 import timetableImage from '../../../assets/fa-timetable.svg';
 import highfiveImage from '../../../assets/fa-highfive.svg';
+import { CollaborationChatStore } from "../../publication/store/CollaborationChatStore"
 
-import Markdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import DOMPurify from 'dompurify';
+type ChatProps = {
+  collaborationChatStore: CollaborationChatStore;
+};
+
+const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: CollaborationChatStore }) => {
+  const [stage, setStage] = useState(Stage.Default);
+  const [showDeclineModal, setShowDeclineModal] = useState(false);
+  const [showCollabModal, setShowCollabModal] = useState(false);
+  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [showCollabHelpStep1Modal, setShowCollabHelpStep1Modal] =
+    useState(false);
+  const [showCollabHelpStep2Modal, setShowCollabHelpStep2Modal] =
+    useState(false);
+  const [showCollabHelpStep3Modal, setShowCollabHelpStep3Modal] =
+    useState(false);
+
+  useEffect(() => {
+    const faCollabHelp = (event: MouseEvent): void => {
+      const target = (event.target as HTMLElement).closest<HTMLElement>(
+        '#fa-collab-helper-step1, #fa-collab-helper-step2, #fa-collab-helper-step3'
+      );
+
+      if (target) {
+        const step = target.id.split('-')[3];
+        switch (step) {
+          case 'step1':
+            setShowCollabHelpStep1Modal(true);
+            break;
+          case 'step2':
+            setShowCollabHelpStep2Modal(true);
+            break;
+          case 'step3':
+            setShowCollabHelpStep3Modal(true);
+            break;
+          default:
+            break;
+        }
+      }
+    };
+
+    window.addEventListener('click', faCollabHelp);
+
+    return () => {
+      window.removeEventListener('click', faCollabHelp);
+    };
+  }, []);
+
+  const handleNeedHelp: () => void = () => alert('Help is Needed');
+  const handleEmailDataUser: () => void = () => alert('Email data user');
+  const handleShowCollabModal: () => void = () => setShowCollabModal(true);
+
+  const handleAskDataUser: () => void = () => {
+    Messages.push({
+      id: 404,
+      name: 'Me Myself',
+      avatar: 'MM',
+      text: 'You will have 2 weeks to read the article and decide whether to accept or decline co-authorship. You can ask questions or provide your suggestions to the author via private messages. We recommend starting this process well in advance. If you do not approve the request within 2 weeks, you will lose the opportunity for co-authorship in this article. If you decline, the data user will simply cite your dataset.'
+    });
+    setStage(Stage.DataUserAsked);
+  };
+
+  const handleShowCommentModal: () => void = () => setShowCommentModal(true);
+  const handleCloseCommentModal: () => void = () => setShowCommentModal(false);
+  const handleComment: (e: any) => void = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const comment = formData.get('comment');
+    Messages.push({
+      id: 1001,
+      name: 'Me Myself',
+      avatar: 'MM',
+      text: comment as string
+    });
+    Messages.push({
+      id: 1001,
+      name: 'Assistant',
+      avatar: 'FA',
+      text: (
+        <p>
+          The manuscript was approved. You may use this log to continue
+          discussions with data user according your collaboration.
+        </p>
+      )
+    });
+    setStage(Stage.ManuscriptApproved);
+    handleCloseCommentModal();
+  };
+
+  const handleDecline: () => void = () => setShowDeclineModal(true);
+  const handleCloseDeclineModal: () => void = () => setShowDeclineModal(false);
+  const handleDownloadAction: () => void = () => {
+    alert('Download');
+  };
+
+  const handleDeclineAction: () => void = () => {
+    Messages.push({
+      id: 404,
+      name: 'Me Myself',
+      avatar: 'MM',
+      text: 'Decline, citation is enough'
+    });
+    Messages.push({
+      id: 405,
+      name: 'Assistant',
+      avatar: 'FA',
+      text: [
+        <>
+          <p>
+            Thank you for the reply. The data user will be required to cite your
+            dataset, but will not specify you as a co-author.
+          </p>
+          <p>You can write us feedback to improve the platform 💬</p>
+        </>
+      ]
+    });
+    setStage(Stage.Declined);
+    setShowDeclineModal(false);
+  };
+
+  const handleApproveManuscriptWithComments: () => void = () => {
+    handleShowCommentModal();
+  };
+  const handleApproveManuscript: () => void = () => {
+    Messages.push({
+      id: 444,
+      name: 'Me Myself',
+      avatar: 'MM',
+      text: 'Approve manuscript.'
+    });
+    setStage(Stage.ManuscriptApproved);
+  };
+
+  const handleCollaborate: () => void = () => {
+    Messages.push({
+      id: 123123,
+      name: 'Assistant',
+      avatar: 'FA',
+      text: [
+        <>
+          If you’re interested in this Dataset and considering publishing your
+          future work together with the Data Author(s), First Approval will make
+          the collaboration process easier. Let me guide you through it before
+          you agree to work on the publication together. The FA collaboration
+          process has 3 steps.
+          <div
+            id="fa-collab-helper-box"
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              gap: '16px'
+            }}>
+            <div
+              id="fa-collab-helper-step1"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                border: '1px solid #dedede',
+                borderRadius: '8px'
+              }}>
+              <img src={sendImage} />
+              <div style={{ padding: '8px 16px 0' }}>
+                <span
+                  style={{
+                    background: '#dedede',
+                    padding: '5px',
+                    borderRadius: '3px',
+                    fontSize: '11px'
+                  }}>
+                  Step 1
+                </span>
+                <p>Send collaboration request to all dataset authors</p>
+              </div>
+            </div>
+            <div
+              id="fa-collab-helper-step2"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                border: '1px solid #dedede',
+                borderRadius: '8px'
+              }}>
+              <img src={timetableImage} />
+              <div style={{ padding: '8px 16px 0' }}>
+                <span
+                  style={{
+                    background: '#dedede',
+                    padding: '5px',
+                    borderRadius: '3px',
+                    fontSize: '11px'
+                  }}>
+                  Step 2
+                </span>
+                <p>
+                  Dataset author(s) confirm the collaboration (maximum 30 days)
+                </p>
+              </div>
+            </div>
+            <div
+              id="fa-collab-helper-step3"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                border: '1px solid #dedede',
+                borderRadius: '8px'
+              }}>
+              <img src={highfiveImage} />
+              <div style={{ padding: '8px 16px 0' }}>
+                <span
+                  style={{
+                    background: '#dedede',
+                    padding: '5px',
+                    borderRadius: '3px',
+                    fontSize: '11px'
+                  }}>
+                  Step 3
+                </span>
+                <p>
+                  Discuss and confirm with author(s) the details of your
+                  publication before submission
+                </p>
+              </div>
+            </div>
+          </div>
+        </>
+      ]
+    });
+    setStage(Stage.ManuscriptApproved);
+  };
+
+  const handlePublicationFormMsg: () => void = () => {
+    Messages.push({
+      id: 1009,
+      name: 'Assistant',
+      avatar: 'FA',
+      text: (
+        <>
+          <Typography>
+            Thank you! Now, propose a potential name and type of publication,
+            and specify the details of the research in which you would like to
+            use the dataset to ensure that Dataset Authors are well-informed
+            about ideas for future collaborative publications, please.
+          </Typography>
+          <Box
+            component="form"
+            sx={{
+              maxWidth: '600px',
+              mx: 'auto',
+              p: 3,
+              borderRadius: 2,
+              boxShadow: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2
+            }}>
+            <TextField
+              fullWidth
+              label="Potential title of your publication in collaboration"
+              variant="outlined"
+            />
+            <TextField
+              fullWidth
+              label="Type of your publication in collaboration"
+              variant="outlined"
+              defaultValue="Journal Article"
+            />
+            <TextField
+              fullWidth
+              multiline
+              minRows={4}
+              label="Details of the research"
+              variant="outlined"
+            />
+            <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+              <Button variant="outlined">Done. What's next?</Button>
+              <Button variant="text">Back</Button>
+            </Box>
+          </Box>
+        </>
+      )
+    });
+    setStage(Stage.PublicationInfoReceived);
+  };
+
+  const handleAuthorInfoFormMsg: () => void = () => {
+    Messages.push({
+      id: 123123,
+      name: 'Assistant',
+      avatar: 'FA',
+      text: (
+        <>
+          Awesome! Please verify the spelling of your name and affiliation, as
+          this information will be used in the agreement.
+          <HeightElement value={'2rem'} />
+          <Box
+            component="form"
+            sx={{
+              p: 3,
+              borderRadius: 2,
+              border: '1px solid #dedede',
+              maxWidth: '600px',
+              margin: 'auto',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2
+            }}>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField fullWidth label="First name" variant="outlined" />
+              <TextField fullWidth label="Last name" variant="outlined" />
+            </Box>
+
+            <TextField fullWidth label="Organization name" variant="outlined" />
+
+            <TextField fullWidth label="Department (opt.)" variant="outlined" />
+
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="Address (opt.)"
+                variant="outlined"
+                sx={{ flex: 7 }} // 80%
+              />
+              <TextField
+                label="Postal code (opt.)"
+                variant="outlined"
+                sx={{ flex: 3 }} // 20%
+              />
+            </Box>
+
+            <Link href="#" underline="hover" variant="body2">
+              + Add affiliation
+            </Link>
+
+            <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Button onClick={handlePublicationFormMsg} variant="outlined">
+                I confirm that provided info is real
+              </Button>
+              <Typography component={Link} href="#" variant="body2">
+                Back
+              </Typography>
+            </Box>
+          </Box>
+        </>
+      )
+    });
+    setStage(Stage.AuthorInfoReceived);
+  };
+
+  const handleApproveCollaboration: () => void = () => {
+    Messages.push({
+      id: 333,
+      name: 'Me Myself',
+      avatar: 'MM',
+      text: 'Approve collaboration.'
+    });
+    Messages.push({
+      id: 334,
+      name: 'Assistant',
+      avatar: 'FA',
+      text: 'UPD: Peter Lidsky notified you that he plans to send you the final version of the article in two weeks.'
+    });
+    Messages.push({
+      id: 335,
+      name: 'Assistant',
+      avatar: 'FA',
+      text: (
+        <>
+          UPD: Peter Lidsky attached a preview of the manuscript of their
+          publication:
+          <p
+            style={{
+              borderRadius: '0.5rem',
+              backgroundColor: 'rgb(243, 242, 245)',
+              padding: '10px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              width: '100%',
+              gap: '8px',
+              maxWidth: '100%'
+            }}>
+            <img src={fileIcon} /> My manuscript.pdf
+          </p>
+          You will have 2 weeks to read the article and decide whether to accept
+          or decline co-authorship. You can ask questions or provide your
+          suggestions to the author via private messages. We recommend starting
+          this process well in advance. If you do not approve the request within
+          2 weeks, you will lose the opportunity for co-authorship in this
+          article. If you decline, the data user will simply cite your dataset.
+        </>
+      )
+    });
+    setStage(Stage.CollaborationApproved);
+  };
+
+  return (
+    <>
+      <Global
+        styles={css`
+          #fa-collab-helper-box {
+            & div:hover {
+              background: #f7f8ff;
+              cursor: pointer;
+            }
+          }
+        `}
+      />
+      <div>
+        {Messages.map((message) => (
+          <React.Fragment key={message.id}>
+            <Message name={message.name} avatar={message.avatar}>
+              {message.text}
+            </Message>
+            <HeightElement value={'32px'} />
+          </React.Fragment>
+        ))}
+        {stage === Stage.Default && (
+          <UserOptions
+            stage={stage}
+            onNeedHelp={handleShowCollabModal}
+            onApproveCollaboration={handleApproveCollaboration}
+            onEmailDataUser={handleEmailDataUser}
+            onDecline={handleDecline}
+            onCollaborate={handleCollaborate}
+          />
+        )}
+        {stage === Stage.CollaborationApproved && (
+          <UserOptions
+            stage={stage}
+            onNeedHelp={handleNeedHelp}
+            onFormMsg={handleAuthorInfoFormMsg}
+            onAskDataUser={handleAskDataUser}
+            onDecline={handleDecline}
+          />
+        )}
+        {stage === Stage.DataUserAsked && (
+          <UserOptions
+            stage={stage}
+            onNeedHelp={handleNeedHelp}
+            onApproveManuscript={handleApproveManuscript}
+            onApproveManuscriptWithComments={
+              handleApproveManuscriptWithComments
+            }
+            onAskDataUser={handleEmailDataUser}
+            onDecline={handleDecline}
+          />
+        )}
+        {stage === Stage.ManuscriptApproved && (
+          <UserOptions
+            stage={stage}
+            onNeedHelp={handleNeedHelp}
+            onAskDataUser={handleEmailDataUser}
+          />
+        )}
+        {stage === Stage.Declined && (
+          <UserOptions stage={stage} onNeedHelp={handleNeedHelp} />
+        )}
+        <DeclineModal
+          open={showDeclineModal}
+          handleClose={handleCloseDeclineModal}
+          handleAction={handleDeclineAction}
+        />
+        <CommentsModal
+          open={showCommentModal}
+          handleClose={handleCloseDeclineModal}
+          handleAction={handleComment}
+        />
+        <CollaborationRequirementsModal
+          open={showCollabModal}
+          handleClose={() => setShowCollabModal(false)}
+          handleAction={handleDownloadAction}
+        />
+        <Step1Modal
+          open={showCollabHelpStep1Modal}
+          handleClose={() => setShowCollabHelpStep1Modal(false)}
+        />
+        <Step2Modal
+          open={showCollabHelpStep2Modal}
+          handleClose={() => setShowCollabHelpStep2Modal(false)}
+        />
+        <Step3Modal
+          open={showCollabHelpStep3Modal}
+          handleClose={() => setShowCollabHelpStep3Modal(false)}
+        />
+      </div>
+    </>
+  );
+};
 
 interface MessageType {
   id: number;
@@ -545,488 +1028,6 @@ const Step3Modal = ({
         </p>
       </StyledBox>
     </Modal>
-  );
-};
-
-const Chat: React.FC = () => {
-  const [stage, setStage] = useState(Stage.Default);
-  const [showDeclineModal, setShowDeclineModal] = useState(false);
-  const [showCollabModal, setShowCollabModal] = useState(false);
-  const [showCommentModal, setShowCommentModal] = useState(false);
-  const [showCollabHelpStep1Modal, setShowCollabHelpStep1Modal] =
-    useState(false);
-  const [showCollabHelpStep2Modal, setShowCollabHelpStep2Modal] =
-    useState(false);
-  const [showCollabHelpStep3Modal, setShowCollabHelpStep3Modal] =
-    useState(false);
-
-  useEffect(() => {
-    const faCollabHelp = (event: MouseEvent): void => {
-      const target = (event.target as HTMLElement).closest<HTMLElement>(
-        '#fa-collab-helper-step1, #fa-collab-helper-step2, #fa-collab-helper-step3'
-      );
-
-      if (target) {
-        const step = target.id.split('-')[3];
-        switch (step) {
-          case 'step1':
-            setShowCollabHelpStep1Modal(true);
-            break;
-          case 'step2':
-            setShowCollabHelpStep2Modal(true);
-            break;
-          case 'step3':
-            setShowCollabHelpStep3Modal(true);
-            break;
-          default:
-            break;
-        }
-      }
-    };
-
-    window.addEventListener('click', faCollabHelp);
-
-    return () => {
-      window.removeEventListener('click', faCollabHelp);
-    };
-  }, []);
-
-  const handleNeedHelp: () => void = () => alert('Help is Needed');
-  const handleEmailDataUser: () => void = () => alert('Email data user');
-  const handleShowCollabModal: () => void = () => setShowCollabModal(true);
-
-  const handleAskDataUser: () => void = () => {
-    Messages.push({
-      id: 404,
-      name: 'Me Myself',
-      avatar: 'MM',
-      text: 'You will have 2 weeks to read the article and decide whether to accept or decline co-authorship. You can ask questions or provide your suggestions to the author via private messages. We recommend starting this process well in advance. If you do not approve the request within 2 weeks, you will lose the opportunity for co-authorship in this article. If you decline, the data user will simply cite your dataset.'
-    });
-    setStage(Stage.DataUserAsked);
-  };
-
-  const handleShowCommentModal: () => void = () => setShowCommentModal(true);
-  const handleCloseCommentModal: () => void = () => setShowCommentModal(false);
-  const handleComment: (e: any) => void = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const comment = formData.get('comment');
-    Messages.push({
-      id: 1001,
-      name: 'Me Myself',
-      avatar: 'MM',
-      text: comment as string
-    });
-    Messages.push({
-      id: 1001,
-      name: 'Assistant',
-      avatar: 'FA',
-      text: (
-        <p>
-          The manuscript was approved. You may use this log to continue
-          discussions with data user according your collaboration.
-        </p>
-      )
-    });
-    setStage(Stage.ManuscriptApproved);
-    handleCloseCommentModal();
-  };
-
-  const handleDecline: () => void = () => setShowDeclineModal(true);
-  const handleCloseDeclineModal: () => void = () => setShowDeclineModal(false);
-  const handleDownloadAction: () => void = () => {
-    alert('Download');
-  };
-
-  const handleDeclineAction: () => void = () => {
-    Messages.push({
-      id: 404,
-      name: 'Me Myself',
-      avatar: 'MM',
-      text: 'Decline, citation is enough'
-    });
-    Messages.push({
-      id: 405,
-      name: 'Assistant',
-      avatar: 'FA',
-      text: [
-        <>
-          <p>
-            Thank you for the reply. The data user will be required to cite your
-            dataset, but will not specify you as a co-author.
-          </p>
-          <p>You can write us feedback to improve the platform 💬</p>
-        </>
-      ]
-    });
-    setStage(Stage.Declined);
-    setShowDeclineModal(false);
-  };
-
-  const handleApproveManuscriptWithComments: () => void = () => {
-    handleShowCommentModal();
-  };
-  const handleApproveManuscript: () => void = () => {
-    Messages.push({
-      id: 444,
-      name: 'Me Myself',
-      avatar: 'MM',
-      text: 'Approve manuscript.'
-    });
-    setStage(Stage.ManuscriptApproved);
-  };
-
-  const handleCollaborate: () => void = () => {
-    Messages.push({
-      id: 123123,
-      name: 'Assistant',
-      avatar: 'FA',
-      text: [
-        <>
-          If you’re interested in this Dataset and considering publishing your
-          future work together with the Data Author(s), First Approval will make
-          the collaboration process easier. Let me guide you through it before
-          you agree to work on the publication together. The FA collaboration
-          process has 3 steps.
-          <div
-            id="fa-collab-helper-box"
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              gap: '16px'
-            }}>
-            <div
-              id="fa-collab-helper-step1"
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                border: '1px solid #dedede',
-                borderRadius: '8px'
-              }}>
-              <img src={sendImage} />
-              <div style={{ padding: '8px 16px 0' }}>
-                <span
-                  style={{
-                    background: '#dedede',
-                    padding: '5px',
-                    borderRadius: '3px',
-                    fontSize: '11px'
-                  }}>
-                  Step 1
-                </span>
-                <p>Send collaboration request to all dataset authors</p>
-              </div>
-            </div>
-            <div
-              id="fa-collab-helper-step2"
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                border: '1px solid #dedede',
-                borderRadius: '8px'
-              }}>
-              <img src={timetableImage} />
-              <div style={{ padding: '8px 16px 0' }}>
-                <span
-                  style={{
-                    background: '#dedede',
-                    padding: '5px',
-                    borderRadius: '3px',
-                    fontSize: '11px'
-                  }}>
-                  Step 2
-                </span>
-                <p>
-                  Dataset author(s) confirm the collaboration (maximum 30 days)
-                </p>
-              </div>
-            </div>
-            <div
-              id="fa-collab-helper-step3"
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                border: '1px solid #dedede',
-                borderRadius: '8px'
-              }}>
-              <img src={highfiveImage} />
-              <div style={{ padding: '8px 16px 0' }}>
-                <span
-                  style={{
-                    background: '#dedede',
-                    padding: '5px',
-                    borderRadius: '3px',
-                    fontSize: '11px'
-                  }}>
-                  Step 3
-                </span>
-                <p>
-                  Discuss and confirm with author(s) the details of your
-                  publication before submission
-                </p>
-              </div>
-            </div>
-          </div>
-        </>
-      ]
-    });
-    setStage(Stage.ManuscriptApproved);
-  };
-
-  const handlePublicationFormMsg: () => void = () => {
-    Messages.push({
-      id: 1009,
-      name: 'Assistant',
-      avatar: 'FA',
-      text: (
-        <>
-          <Typography>
-            Thank you! Now, propose a potential name and type of publication,
-            and specify the details of the research in which you would like to
-            use the dataset to ensure that Dataset Authors are well-informed
-            about ideas for future collaborative publications, please.
-          </Typography>
-          <Box
-            component="form"
-            sx={{
-              maxWidth: '600px',
-              mx: 'auto',
-              p: 3,
-              borderRadius: 2,
-              boxShadow: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 2
-            }}>
-            <TextField
-              fullWidth
-              label="Potential title of your publication in collaboration"
-              variant="outlined"
-            />
-            <TextField
-              fullWidth
-              label="Type of your publication in collaboration"
-              variant="outlined"
-              defaultValue="Journal Article"
-            />
-            <TextField
-              fullWidth
-              multiline
-              minRows={4}
-              label="Details of the research"
-              variant="outlined"
-            />
-            <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-              <Button variant="outlined">Done. What's next?</Button>
-              <Button variant="text">Back</Button>
-            </Box>
-          </Box>
-        </>
-      )
-    });
-    setStage(Stage.PublicationInfoReceived);
-  };
-
-  const handleAuthorInfoFormMsg: () => void = () => {
-    Messages.push({
-      id: 123123,
-      name: 'Assistant',
-      avatar: 'FA',
-      text: (
-        <>
-          Awesome! Please verify the spelling of your name and affiliation, as
-          this information will be used in the agreement.
-          <HeightElement value={'2rem'} />
-          <Box
-            component="form"
-            sx={{
-              p: 3,
-              borderRadius: 2,
-              border: '1px solid #dedede',
-              maxWidth: '600px',
-              margin: 'auto',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 2
-            }}>
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <TextField fullWidth label="First name" variant="outlined" />
-              <TextField fullWidth label="Last name" variant="outlined" />
-            </Box>
-
-            <TextField fullWidth label="Organization name" variant="outlined" />
-
-            <TextField fullWidth label="Department (opt.)" variant="outlined" />
-
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <TextField
-                label="Address (opt.)"
-                variant="outlined"
-                sx={{ flex: 7 }} // 80%
-              />
-              <TextField
-                label="Postal code (opt.)"
-                variant="outlined"
-                sx={{ flex: 3 }} // 20%
-              />
-            </Box>
-
-            <Link href="#" underline="hover" variant="body2">
-              + Add affiliation
-            </Link>
-
-            <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Button onClick={handlePublicationFormMsg} variant="outlined">
-                I confirm that provided info is real
-              </Button>
-              <Typography component={Link} href="#" variant="body2">
-                Back
-              </Typography>
-            </Box>
-          </Box>
-        </>
-      )
-    });
-    setStage(Stage.AuthorInfoReceived);
-  };
-
-  const handleApproveCollaboration: () => void = () => {
-    Messages.push({
-      id: 333,
-      name: 'Me Myself',
-      avatar: 'MM',
-      text: 'Approve collaboration.'
-    });
-    Messages.push({
-      id: 334,
-      name: 'Assistant',
-      avatar: 'FA',
-      text: 'UPD: Peter Lidsky notified you that he plans to send you the final version of the article in two weeks.'
-    });
-    Messages.push({
-      id: 335,
-      name: 'Assistant',
-      avatar: 'FA',
-      text: (
-        <>
-          UPD: Peter Lidsky attached a preview of the manuscript of their
-          publication:
-          <p
-            style={{
-              borderRadius: '0.5rem',
-              backgroundColor: 'rgb(243, 242, 245)',
-              padding: '10px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              width: '100%',
-              gap: '8px',
-              maxWidth: '100%'
-            }}>
-            <img src={fileIcon} /> My manuscript.pdf
-          </p>
-          You will have 2 weeks to read the article and decide whether to accept
-          or decline co-authorship. You can ask questions or provide your
-          suggestions to the author via private messages. We recommend starting
-          this process well in advance. If you do not approve the request within
-          2 weeks, you will lose the opportunity for co-authorship in this
-          article. If you decline, the data user will simply cite your dataset.
-        </>
-      )
-    });
-    setStage(Stage.CollaborationApproved);
-  };
-
-  return (
-    <>
-      <Global
-        styles={css`
-          #fa-collab-helper-box {
-            & div:hover {
-              background: #f7f8ff;
-              cursor: pointer;
-            }
-          }
-        `}
-      />
-      <div>
-        {Messages.map((message) => (
-          <React.Fragment key={message.id}>
-            <Message name={message.name} avatar={message.avatar}>
-              {message.text}
-            </Message>
-            <HeightElement value={'32px'} />
-          </React.Fragment>
-        ))}
-        {stage === Stage.Default && (
-          <UserOptions
-            stage={stage}
-            onNeedHelp={handleShowCollabModal}
-            onApproveCollaboration={handleApproveCollaboration}
-            onEmailDataUser={handleEmailDataUser}
-            onDecline={handleDecline}
-            onCollaborate={handleCollaborate}
-          />
-        )}
-        {stage === Stage.CollaborationApproved && (
-          <UserOptions
-            stage={stage}
-            onNeedHelp={handleNeedHelp}
-            onFormMsg={handleAuthorInfoFormMsg}
-            onAskDataUser={handleAskDataUser}
-            onDecline={handleDecline}
-          />
-        )}
-        {stage === Stage.DataUserAsked && (
-          <UserOptions
-            stage={stage}
-            onNeedHelp={handleNeedHelp}
-            onApproveManuscript={handleApproveManuscript}
-            onApproveManuscriptWithComments={
-              handleApproveManuscriptWithComments
-            }
-            onAskDataUser={handleEmailDataUser}
-            onDecline={handleDecline}
-          />
-        )}
-        {stage === Stage.ManuscriptApproved && (
-          <UserOptions
-            stage={stage}
-            onNeedHelp={handleNeedHelp}
-            onAskDataUser={handleEmailDataUser}
-          />
-        )}
-        {stage === Stage.Declined && (
-          <UserOptions stage={stage} onNeedHelp={handleNeedHelp} />
-        )}
-        <DeclineModal
-          open={showDeclineModal}
-          handleClose={handleCloseDeclineModal}
-          handleAction={handleDeclineAction}
-        />
-        <CommentsModal
-          open={showCommentModal}
-          handleClose={handleCloseDeclineModal}
-          handleAction={handleComment}
-        />
-        <CollaborationRequirementsModal
-          open={showCollabModal}
-          handleClose={() => setShowCollabModal(false)}
-          handleAction={handleDownloadAction}
-        />
-        <Step1Modal
-          open={showCollabHelpStep1Modal}
-          handleClose={() => setShowCollabHelpStep1Modal(false)}
-        />
-        <Step2Modal
-          open={showCollabHelpStep2Modal}
-          handleClose={() => setShowCollabHelpStep2Modal(false)}
-        />
-        <Step3Modal
-          open={showCollabHelpStep3Modal}
-          handleClose={() => setShowCollabHelpStep3Modal(false)}
-        />
-      </div>
-    </>
   );
 };
 

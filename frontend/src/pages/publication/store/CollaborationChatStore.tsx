@@ -1,24 +1,30 @@
-import { action, makeAutoObservable } from 'mobx';
-import { collaborationRequestService } from '../../../core/service';
+import { makeAutoObservable } from 'mobx';
+import { collaborationRequestChatService } from '../../../core/service';
 import {
-  CollaborationRequestInfo,
   CollaborationRequestMessage,
-  CollaborationRequestStatus,
-  CollaborationRequestTypeOfWork,
-  PublicationShortInfo
-} from "../../../apis/first-approval-api"
+  UserInfo
+} from '../../../apis/first-approval-api';
 
 export class CollaborationChatStore {
-  collaborationRequestId: string;
-  collaborationRequest: CollaborationRequestInfo;
-  publicationInfo: PublicationShortInfo;
-  messages: CollaborationRequestMessage [];
+  collaborationRequestId: string = '';
+  collaborationRequestCreator: UserInfo | null = null;
+  publicationCreator: UserInfo | null = null;
+  messages: CollaborationRequestMessage[] = [];
 
   constructor(collaborationRequestId: string) {
     makeAutoObservable(this);
+    this.loadInitialState(collaborationRequestId);
   }
 
   private loadInitialState(collaborationRequestId: string): void {
     this.collaborationRequestId = collaborationRequestId;
+    collaborationRequestChatService
+      .getCollaborationChat(collaborationRequestId)
+      .then((response) => {
+        const data = response.data;
+        this.publicationCreator = data.publicationCreator;
+        this.collaborationRequestCreator = data.collaborationRequestCreator;
+        this.messages = data.messages;
+      });
   }
 }

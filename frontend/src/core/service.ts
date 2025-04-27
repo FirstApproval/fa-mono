@@ -1,7 +1,7 @@
 import {
   AuthApi,
   AuthorApi,
-  CollaborationRequestApi,
+  CollaborationRequestApi, CollaborationRequestChatApi,
   Configuration,
   FileApi,
   OrganizationApi,
@@ -11,7 +11,7 @@ import {
   SampleFileApi,
   UserApi,
   VisitorApi
-} from '../apis/first-approval-api';
+} from "../apis/first-approval-api"
 import { SampleFileServiceAdapter } from './SampleFileServiceAdapter';
 import { authStore } from './auth';
 import { routerStore } from './router'
@@ -52,5 +52,9 @@ export const reportService = new ReportApi(configuration);
 export const visitorService = new VisitorApi(configuration);
 
 export const collaborationRequestService = new CollaborationRequestApi(
+  configuration
+);
+
+export const collaborationRequestChatService = new CollaborationRequestChatApi(
   configuration
 );
