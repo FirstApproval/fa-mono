@@ -1,24 +1,35 @@
-import { type ReactElement } from 'react';
+import { type ReactElement, useState } from 'react';
 import styled from '@emotion/styled';
 import { HeaderComponent } from '../../../components/HeaderComponent';
 import { Helmet } from 'react-helmet';
 import BreadCrumbs from '../BreadCrumbs';
 
 import Chat from './Chat';
-import {
-  Typography,
-  List,
-  ListItemButton,
-  ListItemText,
-  ListItemIcon
-} from '@mui/material';
-import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import { Typography } from '@mui/material';
 // import Button from '@mui/material/Button';
-import { FlexWrapColumn, HeightElement } from '../../common.styled';
-import { TextSizeTruncation } from '../../../util/stylesUtil';
-import { observer } from "mobx-react-lite"
+import { observer } from 'mobx-react-lite';
+import { LeftPanelPublicationsPage } from '../LeftPanelPublications';
+import {
+  CollaborationRequestInfo,
+  PublicationShortInfo
+} from '../../../apis/first-approval-api';
+import { userStore } from '../../../core/user';
+import { routerStore } from '../../../core/router';
+import { collaborationStore } from "../../publication/store/downloadsStore"
+import { PublicationStore } from "../../publication/store/PublicationStore"
+import { CollaborationChatStore } from "../../publication/store/CollaborationChatStore"
 
 export const ChatPage = observer((): ReactElement => {
+  const [collaborationRequestId] = useState(() => routerStore.lastPathSegment);
+  const [publicationStore] = useState(
+    () => new CollaborationChatStore(collaborationRequestId)
+  );
+
+  // const publicationShortInfo } = props;
+  const interlocutorName = extractInterlocutorName(
+    collaborationRequestInfo,
+    publicationShortInfo
+  );
   return (
     <>
       <Helmet>
@@ -37,78 +48,9 @@ export const ChatPage = observer((): ReactElement => {
           />
         </HeaderBorderColorFix>
         <Container>
-          <LeftPanel>
-            <FlexWrapColumn>
-              <LeftPanelHeader variant={'h6'}>My datasets</LeftPanelHeader>
-              <List sx={{ width: '100%' }}>
-                <ListItemButton sx={{ width: '100%', borderRadius: '8px' }}>
-                  <ListItemText
-                    primary={TextSizeTruncation(
-                      'Lorem ipsum dolor sit amet consectetur adipiscing elit',
-                      26
-                    )}
-                    sx={{
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis'
-                    }}
-                  />
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 'auto',
-                      marginLeft: 'auto'
-                    }}>
-                    <FiberManualRecordIcon
-                      sx={{ fontSize: 18, color: 'primary.main' }}
-                    />
-                  </ListItemIcon>
-                </ListItemButton>
-              </List>
-              <HeightElement value={'10px'} />
-              <LeftPanelHeader variant={'h6'}>
-                Downloaded datasets
-              </LeftPanelHeader>
-              <List sx={{ width: '100%' }}>
-                <ListItemButton sx={{ width: '100%', borderRadius: '8px' }}>
-                  <ListItemText
-                    primary={TextSizeTruncation(
-                      'Lorem ipsum dolor sit amet consectetur adipiscing elit',
-                      26
-                    )}
-                    sx={{
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis'
-                    }}
-                  />
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 'auto',
-                      marginLeft: 'auto'
-                    }}>
-                    <FiberManualRecordIcon
-                      sx={{ fontSize: 18, color: 'primary.main' }}
-                    />
-                  </ListItemIcon>
-                </ListItemButton>
-                <ListItemButton sx={{ width: '100%', borderRadius: '8px' }}>
-                  <ListItemText
-                    primary={TextSizeTruncation(
-                      'Lorem ipsum dolor sit amet consectetur adipiscing elit',
-                      26
-                    )}
-                    sx={{
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis'
-                    }}
-                  />
-                </ListItemButton>
-              </List>
-            </FlexWrapColumn>
-          </LeftPanel>
+          <LeftPanelPublicationsPage />
           <RightPanel>
-            <BreadCrumbs name={'Peter Lidsky'} />
+            <BreadCrumbs name={interlocutorName} />
             <BodyWrap>
               <BodyContentWrap>
                 <Chat />
@@ -121,8 +63,20 @@ export const ChatPage = observer((): ReactElement => {
   );
 });
 
+function extractInterlocutorName(
+  collaborationRequestInfo: CollaborationRequestInfo,
+  publicationShortInfo: PublicationShortInfo
+) {
+  const interlocutorUser =
+    collaborationRequestInfo.userInfo.id === userStore.user!!.id
+      ? publicationShortInfo.creator
+      : collaborationRequestInfo.userInfo;
+  return `${interlocutorUser!!.firstName} ${interlocutorUser!!.lastName}`;
+}
+
 const HeaderBorderColorFix = styled.div`
   position: relative;
+
   &:after {
     content: '';
     position: absolute;

@@ -19,7 +19,11 @@ export const PublicationCollaborationsPage = observer((props: { publicationInfo:
     collaborationStore.clearAndOpen(publicationInfo.id, publicationInfo.collaboratorsCount);
     collaborationStore.loadCollaborationRequests(0);
   }, []);
-  const goToChat = (chatId: string) => routerStore.navigatePage(Page.COLLABORATIONS_CHAT, `chat/${chatId}`);
+  const goToChat = (collaborationRequestId: string) => routerStore.navigatePage(
+    Page.COLLABORATIONS_CHAT,
+    `chat/${collaborationRequestId}`,
+    true
+  );
 
   function mapToCollaborationRequestBox(collaborationRequestInfo: CollaborationRequestInfo) {
     return (
