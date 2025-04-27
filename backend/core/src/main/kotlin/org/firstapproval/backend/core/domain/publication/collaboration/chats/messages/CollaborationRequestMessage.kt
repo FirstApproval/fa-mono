@@ -1,8 +1,10 @@
 package org.firstapproval.backend.core.domain.publication.collaboration.chats.messages
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType
 import jakarta.persistence.CascadeType
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType.STRING
 import jakarta.persistence.Enumerated
@@ -13,6 +15,7 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationRequestFile
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.MessageType.CREATE
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequest
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.TypeOfWork
 import org.firstapproval.backend.core.domain.user.User
@@ -43,6 +46,7 @@ class CollaborationRequestMessage(
     val text: String? = null,
 
     @Type(JsonBinaryType::class)
+    @Column(columnDefinition = "jsonb")
     val payload: MessagePayload? = null,
 
     val sequenceIndex: Int,
@@ -55,25 +59,28 @@ class CollaborationRequestMessage(
 
 enum class MessageType(ordinal: Int) {
     CREATE(1),
-    ACCEPT_OR_REJECT_COLLABORATION_REQUEST(2)
-//    START,
-//    SECOND_STAGE_ACCEPT,
-//    SECOND_STAGE_DECLINE,
-//    FINAL
 }
 
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.PROPERTY,
+    property = "type"
+)
 @JsonSubTypes(
     value = [
         JsonSubTypes.Type(value = Create::class, name = "CREATE")
     ]
 )
-interface MessagePayload
+interface MessagePayload {
+    var type: MessageType
+}
 
 class Create(
     val firstNameLegal: String,
     val lastNameLegal: String,
     val typeOfWork: TypeOfWork,
-    val description: String
+    val description: String,
+    override var type: MessageType = CREATE,
 ) : MessagePayload
 
 fun CollaborationRequestMessage.toApiObject(userService: UserService) = toApiObject(user.toApiObject(userService))
