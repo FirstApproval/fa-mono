@@ -11,12 +11,14 @@ import fileIcon from '../../../assets/file-icon.svg';
 import timetableImage from '../../../assets/fa-timetable.svg';
 import highfiveImage from '../../../assets/fa-highfive.svg';
 import { CollaborationChatStore } from "../../publication/store/CollaborationChatStore"
+import { getFullName, renderProfileImage } from "../../../util/userUtil"
 
 type ChatProps = {
   collaborationChatStore: CollaborationChatStore;
 };
 
 const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: CollaborationChatStore }) => {
+  const { collaborationChatStore } = props;
   const [stage, setStage] = useState(Stage.Default);
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [showCollabModal, setShowCollabModal] = useState(false);
@@ -417,14 +419,17 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
         `}
       />
       <div>
-        {Messages.map((message) => (
-          <React.Fragment key={message.id}>
-            <Message name={message.name} avatar={message.avatar}>
-              {message.text}
-            </Message>
-            <HeightElement value={'32px'} />
-          </React.Fragment>
-        ))}
+        {collaborationChatStore.messages.map((message) => {
+          const fullName = getFullName(message.userInfo);
+          return (
+            <React.Fragment key={message.id}>
+              <Message name={fullName} avatar={renderProfileImage(message.userInfo.profileImage)}>
+                {message.text}
+              </Message>
+              <HeightElement value={'32px'} />
+            </React.Fragment>
+          );
+        })}
         {stage === Stage.Default && (
           <UserOptions
             stage={stage}
