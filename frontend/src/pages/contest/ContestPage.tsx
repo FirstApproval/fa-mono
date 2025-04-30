@@ -507,7 +507,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                     </div>
                                     <Link
                                         color="inherit"
-                                        href={'https://docs.google.com/document/d/1qkKKMeW1OjavRftz1QqDhpxT36JxupTEvIQ4Eyoli0c'}
+                                        href={'/docs/information-letter.pdf'}
                                         target={'_blank'}>
                                         <div style={{
                                             width: 540,
@@ -529,7 +529,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                     </Link>
                                     <Link
                                         color="inherit"
-                                        href={'https://docs.google.com/document/d/1Cq5OTm_gODN3JUjZCBzid2eY_kmKn9AwVhDc1klmva0'}
+                                        href={'/docs/Guide_Stud-Bio-Data_2025.pdf'}
                                         target={'_blank'}>
                                         <div style={{
                                             width: 540,
@@ -1439,7 +1439,14 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                     fontWeight: 400,
                                     marginBottom: 12,
                                 }}>
-                                    <span style={{fontWeight: 500}}>Detailed Guidelines</span> will be available soon.
+                                <LinkWrap
+                                  color="inherit"
+                                  href={'/docs/privacy_policy.pdf'}
+                                  target={'_blank'}>
+                                    <span style={{ fontWeight: 500 }}>
+                                      Link for Detailed Guidelines
+                                    </span>
+                                </LinkWrap>
                                 </li>
                                 <li style={{
                                     fontFamily: 'Roboto',
@@ -1519,8 +1526,14 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         fontWeight: 400,
                                         marginBottom: 12,
                                     }}>
-                                        <span style={{fontWeight: 500}}>Detailed Guidelines</span> will be available
-                                        soon.
+                                    <LinkWrap
+                                        color="inherit"
+                                        href={'/docs/Guide_Stud-Bio-Data_2025.pdf.pdf'}
+                                        target={'_blank'}>
+                                        <span style={{fontWeight: 500}}>
+                                          Link for Detailed Guidelines
+                                        </span>
+                                    </LinkWrap>
                                     </li>
                                 </ul>
                             </div>
@@ -2169,3 +2182,6 @@ const colorDim = css`
   color: rgba(4, 0, 54, 0.38);
 `;
 
+const LinkWrap = styled(Link)`
+    cursor: pointer;
+`;
