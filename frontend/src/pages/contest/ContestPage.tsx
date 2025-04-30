@@ -46,67 +46,67 @@ export interface ExpertElement {
 const organizationCommittee: ExpertElement[] = [
     {
         logo: TimofeyGlinin,
-        name: "Timofey Glinin",
+        name: "Timofey\nGlinin",
         title: "PhD, First Approval, CA",
         url: "https://www.linkedin.com/in/timofey-glinin"
     },
     {
         logo: AlexanderPanchin,
-        name: "Alexander Panchin",
+        name: "Alexander\nPanchin",
         title: "First Approval, CA",
         url: "https://www.linkedin.com/in/alexander-panchin-2b303945"
     },
     {
         logo: AnastasiaEgorova,
-        name: "Anastasia Egorova",
+        name: "Anastasia\nEgorova",
         title: "Open Longevity, CA",
         url: "https://www.linkedin.com/in/anastasia-egorova-60580397"
     },
       {
         logo: AnastasiaShubina,
-        name: "Anastasia Shubina",
+        name: "Anastasia\nShubina",
         title: "First Approval, CA",
         url: "https://www.linkedin.com/in/anastasia-n-shubina"
     },
     {
         logo: ElenaArzumanyan,
-        name: "Elena Arzumanyan",
+        name: "Elena\nArzumanyan",
         title: "PhD, Natera, CA",
         url: "https://www.linkedin.com/in/elena-a-096ba5234"
     },
       {
         logo: EugenKhomula,
-        name: "Eugen Khomula",
+        name: "Eugen\nKhomula",
         title: "PhD, UCSF, CA",
         url: "https://www.linkedin.com/in/eugen-khomula"
     },
     {
         logo: EvgenyAkkuratov,
-        name: "Evgeny Akkuratov",
+        name: "Evgeny\nAkkuratov",
         title: "PhD, Stowers Institute for Medical Research, MO",
         url: "https://www.stowers.org/people/evgeny-akkuratov"
     },
     {
         logo: MariaPorokh,
-        name: "Maria Porokh",
+        name: "Maria\nPorokh",
         title: "PhD, First Approval",
         url: "https://www.linkedin.com/in/maria-porokh-97a7a1121"
     },
     {
         logo: MikhailBatin,
-        name: "Mikhail Batin",
+        name: "Mikhail\nBatin",
         title: "Open Longevity, CA",
         url: "https://www.linkedin.com/in/mikhail-batin-02a56a45"
     },
     {
         logo: TatyanaLopatina,
-        name: "Tatyana Lopatina",
+        name: "Tatyana\nLopatina",
         title: "UCSF, CA",
         url: "https://www.linkedin.com/in/tatiana-lopatina-19286a32"
     },
     {
         logo: TylerHilsabeck,
-        name: "Tyler Hilsabeck",
+        name: "Tyler\nHilsabeck",
         title: "PhD, Salk Institute for Biological Studies, CA",
         url: "https://www.linkedin.com/in/tyler-hilsabeck"
     }
@@ -115,27 +115,27 @@ const organizationCommittee: ExpertElement[] = [
 const judges: ExpertElement[] = [
     {
         logo: AnchaBaranova,
-        name: "Ancha Baranova",
+        name: "Ancha\nBaranova",
         title: "Professor of Systems Biology, George Mason University, VA, USA.",
     },
     {
         logo: PeterLydsky,
-        name: "Peter Lydsky",
+        name: "Peter\nLydsky",
         title: "Assistant Professor at City University of Hong Kong, China.",
     },
     {
         logo: AlexandraStolzing,
-        name: "Alexandra Stolzing",
+        name: "Alexandra\nStolzing",
         title: "Professor for Biogerontological Engineering, Loughborough University, UK.",
     },
     {
         logo: ThomasStoeger,
-        name: "Thomas Stoeger",
+        name: "Thomas\nStoeger",
         title: "Assistant Professor at the Feinberg School of Medicine Northwestern University, IL, USA.",
     },
     {
         logo: StanislovasJanakuskas,
-        name: "Stanislovas Janakuskas",
+        name: "Stanislovas\nJanakuskas",
         title: "Research Assistant Professor at Albert Einstein College of medicine, NY, USA.",
     },
 ]
@@ -179,10 +179,14 @@ const Expert = ({ logo, name, title, url }: ExpertElement) => {
 
   const ExpertName = styled.div`
     ${font24px};
-    white-space: nowrap;  
-
+    white-space: nowrap;
+    text-align: start;
+      
     @media (max-width: 1300px) {
       ${font16px};
+    }
+    @media (max-width: 1500px) {
+      white-space: pre-line;
     }
   `;
 
