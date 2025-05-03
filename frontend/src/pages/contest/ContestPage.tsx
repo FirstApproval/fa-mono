@@ -567,7 +567,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                 xl: 'none',
                             }}>
                             <div style={{
-                                paddingLeft: 0,
+                                paddingLeft: 20,
                                 paddingRight: 20,
                                 marginBottom: 40,
                             }}>
