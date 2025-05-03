@@ -53,7 +53,7 @@ const App: FunctionComponent = observer(() => {
     );
 
   const showMobileNotSupporting =
-    window.innerWidth < 960 && !mobileVersionNowSupportShown;
+    window.innerWidth < 960 && !mobileVersionNowSupportShown && page != Page.CONTEST_PAGE;
 
   return (
     <>
