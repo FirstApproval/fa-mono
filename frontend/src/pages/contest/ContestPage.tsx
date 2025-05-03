@@ -185,7 +185,7 @@ const Expert = ({ logo, name, title, url }: ExpertElement) => {
     @media (max-width: 1300px) {
       ${font16px};
     }
-    @media (max-width: 1500px) {
+    @media (max-width: 1500px) and (min-width: 960px) {
       white-space: pre-line;
     }
   `;
@@ -1798,6 +1798,82 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                   scientific data, enhance reproducibility, and improve data
                   quality.
                 </div>
+              </div>
+              <div
+                style={{
+                    paddingLeft: 20,
+                    paddingRight: 20,
+                    marginBottom: 40
+                }}>
+                  <div
+                    style={{
+                        marginBottom: 24,
+                        fontFamily: 'Roboto',
+                        fontSize: 24,
+                        fontWeight: 600
+                    }}>
+                      The Judges
+                  </div>
+                  <div
+                    style={{
+                        fontFamily: 'Roboto',
+                        fontSize: 16,
+                        fontWeight: 400,
+                        marginBottom: 30
+                    }}>
+                      Dozens of academics from around the world volunteer in our judging process,
+                      selecting winners based on the quality of the work.
+                  </div>
+                  <Grid container spacing={2} justifyContent="start">
+                      {judges.map((expert, index) => (
+                        <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
+                            <Expert
+                              logo={expert.logo}
+                              name={expert.name}
+                              title={expert.title}
+                              url={expert.url}
+                            />
+                        </Grid>
+                      ))}
+                  </Grid>
+              </div>
+              <div
+                style={{
+                    paddingLeft: 20,
+                    paddingRight: 20,
+                    marginBottom: 40
+                }}>
+                  <div
+                    style={{
+                        marginBottom: 24,
+                        fontFamily: 'Roboto',
+                        fontSize: 24,
+                        fontWeight: 600
+                    }}>
+                      The organizing committee
+                  </div>
+                  <div
+                    style={{
+                        fontFamily: 'Roboto',
+                        fontSize: 16,
+                        fontWeight: 400,
+                        marginBottom: 30
+                    }}>
+                      The Organizing Committee of the Student Data Competition includes dozens of scientists from around the world,
+                      as well as international academics, lecturers, and industry experts
+                  </div>
+                  <Grid container spacing={2} justifyContent="start">
+                      {organizationCommittee.map((expert, index) => (
+                        <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
+                            <Expert
+                              logo={expert.logo}
+                              name={expert.name}
+                              title={expert.title}
+                              url={expert.url}
+                            />
+                        </Grid>
+                      ))}
+                  </Grid>
               </div>
             </Box>
           </div>
