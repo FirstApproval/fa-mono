@@ -4,7 +4,6 @@ on:
     branches:
       - master
     paths:
-      - 'frontend/**'
       - 'backend/**'
   workflow_dispatch:
     inputs:
@@ -20,8 +19,6 @@ jobs:
   build-and-push:
     name: Build, Push to GHCR and deploy
     runs-on: ubuntu-latest
-    strategy:
-      matrix: { dir: [ 'backend', 'frontend' ] }
     steps:
       - name: Set Environment Variables
         run: |
@@ -55,11 +52,6 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
-      - name: Copy file
-        run: |
-          cp backend/core/api/src/core.openapi.yaml frontend/core.openapi.yaml
-        if: ${{ matrix.dir == 'frontend' }}
-
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
         with:
@@ -72,9 +64,9 @@ jobs:
           echo "The environment is: $ENVIRONMENT"
     
           if [[ ${{ env.ENVIRONMENT }} == "prod" ]]; then
-            IMAGE_TAG="ghcr.io/firstapproval/fa-mono-${{ matrix.dir }}-prod"
+            IMAGE_TAG="ghcr.io/firstapproval/fa-mono-backend-prod"
           else
-            IMAGE_TAG="ghcr.io/firstapproval/fa-mono-${{ matrix.dir }}"
+            IMAGE_TAG="ghcr.io/firstapproval/fa-mono-backend"
           fi
           echo "The image tag is: $IMAGE_TAG"
           docker buildx build \
@@ -82,7 +74,7 @@ jobs:
             --platform linux/amd64 \
             -f Dockerfile-github \
             -t $IMAGE_TAG . && docker push $IMAGE_TAG
-        working-directory: ${{ matrix.dir }}
+        working-directory: backend
 
       - name: Set up SSH key
         run: |
@@ -101,44 +93,13 @@ jobs:
       - name: Pull image
         run: |
           echo "Pulling the backend image..."
-          ssh ubuntu@$SERVER "docker compose pull $matrix_dir"
-        env:
-          matrix_dir: ${{ matrix.dir }}
+          ssh ubuntu@$SERVER "docker compose pull backend"
 
       - name: Deploy image
         run: |
-          echo "Deploying the $matrix_dir image..."
-          ssh ubuntu@$SERVER "docker compose up -d $matrix_dir --force-recreate"
-        env:
-          matrix_dir: ${{ matrix.dir }}
+          echo "Deploying the backend image..."
+          ssh ubuntu@$SERVER "docker compose up -d backend --force-recreate"
 
       - name: Verify backend startup after deployment
         run: |
           ssh ubuntu@$SERVER "timeout 30s docker compose logs backend -f | grep -q 'Started FirstApprovalApplicationKt'"
-        if: ${{ matrix.dir == 'backend' }}
-
-      - name: Verify frontend is accessible
-        run: |
-          sleep 20
-          URL="https://$SERVER"
-          echo "Checking if frontend is accessible at $URL and contains the text 'First Approval'..."
-          for i in {1..10}; do
-            RESPONSE=$(curl -s -w "%{http_code}" -o response.html "$URL")
-            HTTP_CODE=$(tail -n1 <<< "$RESPONSE")
-            if [[ "$HTTP_CODE" == "200" ]]; then
-              CONTENT=$(cat response.html)
-              if echo "$CONTENT" | grep -q "First Approval"; then
-              echo "Frontend is accessible and contains the expected text!"
-              exit 0
-            fi
-              echo "Frontend is accessible, but the expected text was not found."
-            else
-              echo "HTTP status code: $HTTP_CODE. Response body:"
-              cat response.html
-            fi
-              echo "Attempt $i: Frontend is not yet accessible or does not contain the expected text. Waiting..."
-              sleep 5
-          done
-          echo "Error: Frontend is not accessible or does not contain the expected text."
-          exit 1
-        if: ${{ matrix.dir == 'frontend' }}

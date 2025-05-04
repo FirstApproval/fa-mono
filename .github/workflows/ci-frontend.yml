@@ -1,0 +1,130 @@
+name: CI/CD. Build, Push to GHCR and deploy
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'frontend/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: false
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
+jobs:
+  build-and-push:
+    name: Build, Push to GHCR and deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set Environment Variables
+        run: |
+          echo "Environment input: ${{ github.event.inputs.environment }}"
+          echo "Event name: ${{ github.event_name }}"
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            ENVIRONMENT="dev"
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            ENVIRONMENT="${{ github.event.inputs.environment }}"
+          fi
+          
+          echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
+          
+          if [[ ! "$ENVIRONMENT" =~ ^(dev|prod)$ ]]; then
+            echo "Environment: $ENVIRONMENT"
+            echo "Error: Invalid environment. Must be 'dev' or 'prod'."
+            exit 1
+          fi
+
+          if [[ "$ENVIRONMENT" == "dev" ]]; then
+            echo "SERVER=app.dev.firstapproval.io" >> $GITHUB_ENV
+          else
+            echo "SERVER=firstapproval.io" >> $GITHUB_ENV
+          fi
+
+      - name: Show environment value
+        run: |
+          echo "The environment is: ${{ env.ENVIRONMENT }}"
+          echo "The server is: $SERVER"
+
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Copy file
+        run: |
+          cp backend/core/api/src/core.openapi.yaml frontend/core.openapi.yaml
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.GHCR_ACTOR }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
+      - name: Build Docker image
+        run: |
+          echo "The environment is: $ENVIRONMENT"
+    
+          if [[ ${{ env.ENVIRONMENT }} == "prod" ]]; then
+            IMAGE_TAG="ghcr.io/firstapproval/fa-mono-frontend-prod"
+          else
+            IMAGE_TAG="ghcr.io/firstapproval/fa-mono-frontend"
+          fi
+          echo "The image tag is: $IMAGE_TAG"
+          docker buildx build \
+            --build-arg ENVIRONMENT=$ENVIRONMENT \
+            --platform linux/amd64 \
+            -f Dockerfile-github \
+            -t $IMAGE_TAG . && docker push $IMAGE_TAG
+        working-directory: frontend
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+
+          if [[ "${{ env.ENVIRONMENT }}" == "prod" ]]; then
+            echo "${{ secrets.PROD_SERVER_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          else
+            echo "${{ secrets.DEV_SERVER_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          fi
+
+          chmod 600 ~/.ssh/id_rsa
+          ssh-agent bash -c 'echo "SSH agent started" && ssh-add ~/.ssh/id_rsa'
+          ssh-keyscan -H $SERVER >> ~/.ssh/known_hosts  
+
+      - name: Pull image
+        run: |
+          echo "Pulling the backend image..."
+          ssh ubuntu@$SERVER "docker compose pull frontend"
+
+      - name: Deploy image
+        run: |
+          echo "Deploying the frontend image..."
+          ssh ubuntu@$SERVER "docker compose up -d frontend --force-recreate"
+
+      - name: Verify frontend is accessible
+        run: |
+          sleep 20
+          URL="https://$SERVER"
+          echo "Checking if frontend is accessible at $URL and contains the text 'First Approval'..."
+          for i in {1..10}; do
+            RESPONSE=$(curl -s -w "%{http_code}" -o response.html "$URL")
+            HTTP_CODE=$(tail -n1 <<< "$RESPONSE")
+            if [[ "$HTTP_CODE" == "200" ]]; then
+              CONTENT=$(cat response.html)
+              if echo "$CONTENT" | grep -q "First Approval"; then
+              echo "Frontend is accessible and contains the expected text!"
+              exit 0
+            fi
+              echo "Frontend is accessible, but the expected text was not found."
+            else
+              echo "HTTP status code: $HTTP_CODE. Response body:"
+              cat response.html
+            fi
+              echo "Attempt $i: Frontend is not yet accessible or does not contain the expected text. Waiting..."
+              sleep 5
+          done
+          echo "Error: Frontend is not accessible or does not contain the expected text."
+          exit 1
