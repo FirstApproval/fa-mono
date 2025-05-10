@@ -21,7 +21,12 @@ class AuthController(
 ) : AuthApi {
 
     override fun authorizeOauth(request: AuthorizeOauthRequest): ResponseEntity<AuthorizeResponse> {
-        val token = tokenService.exchangeOauthToken(request.code, OauthType.valueOf(request.type.toString()), request.utmSource)
+        val token = tokenService.exchangeOauthToken(
+            code = request.code,
+            type = OauthType.valueOf(request.type.toString()),
+            utmSource = request.utmSource,
+            initialReferrer = request.initialReferrer
+        )
         return ok(AuthorizeResponse().token(token))
     }
 

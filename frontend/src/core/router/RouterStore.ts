@@ -34,6 +34,7 @@ import { DataCollectionType } from '../../apis/first-approval-api';
 
 export const VISIT_MARK_KEY = 'visit-mark';
 export const UTM_SOURCE_KEY = 'utm_source';
+export const REFERRER = 'initialReferrer';
 
 const history = createBrowserHistory();
 
@@ -82,9 +83,13 @@ export class RouterStore {
       if (utmSource) {
         localStorage.setItem(UTM_SOURCE_KEY, utmSource);
       }
+      const referrer = document.referrer;
+      if (referrer && !localStorage.getItem(REFERRER)) {
+        localStorage.setItem(REFERRER, referrer);
+      }
 
       if (localStorage.getItem(VISIT_MARK_KEY) !== 'true') {
-        void visitorService.saveVisitor(utmSource).then((response) => {
+        void visitorService.saveVisitor(utmSource, referrer).then((response) => {
           if (response.status === 200) {
             localStorage.setItem(VISIT_MARK_KEY, 'true');
           }
@@ -193,7 +198,8 @@ export class RouterStore {
           .authorizeOauth({
             code: authCode,
             type: authType,
-            utmSource: localStorage.getItem(UTM_SOURCE_KEY) ?? undefined
+            utmSource: localStorage.getItem(UTM_SOURCE_KEY) ?? undefined,
+            initialReferrer: localStorage.getItem(REFERRER) ?? undefined
           })
           .then(async (response) => {
             authStore.token = response.data.token;

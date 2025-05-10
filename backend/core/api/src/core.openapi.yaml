@@ -17,6 +17,12 @@ paths:
             type: string
           required: false
           description: UTM source
+        - in: query
+          name: initialReferrer
+          schema:
+            type: string
+          required: false
+          description: Initial referrer
       responses:
         200:
           description: Success
@@ -2002,6 +2008,8 @@ components:
           minLength: 8
         utmSource:
           type: string
+        initialReferrer:
+          type: string
       required:
         - email
         - password
@@ -2089,6 +2097,8 @@ components:
         type:
           $ref: '#/components/schemas/OauthType'
         utmSource:
+          type: string
+        initialReferrer:
           type: string
       required:
         - code

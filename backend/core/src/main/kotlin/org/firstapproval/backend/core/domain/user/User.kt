@@ -44,6 +44,7 @@ class User(
     var isNameConfirmed: Boolean = false,
     var isWorkplacesConfirmed: Boolean = false,
     var utmSource: String? = null,
+    var initialReferrer: String? = null,
 ) {
     val workplacesNames: String
         get() = workplaces.filter { it.organization.moderated }
