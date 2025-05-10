@@ -59,6 +59,13 @@ class CollaborationRequestMessage(
 
 enum class MessageType(ordinal: Int) {
     CREATE(1),
+    DEFAULT(2),
+    COLLABORATION_APPROVED(3),
+    DATA_USER_ASKED(4),
+    MANUSCRIPT_APPROVED(5),
+    DECLINED(6),
+    AUTHOR_INFO_RECEIVED(7),
+    PUBLICATION_INFO_RECEIVED(8)
 }
 
 @JsonTypeInfo(
@@ -68,7 +75,14 @@ enum class MessageType(ordinal: Int) {
 )
 @JsonSubTypes(
     value = [
-        JsonSubTypes.Type(value = Create::class, name = "CREATE")
+        JsonSubTypes.Type(value = Create::class, name = "CREATE"),
+        JsonSubTypes.Type(value = Create::class, name = "DEFAULT"),
+        JsonSubTypes.Type(value = Create::class, name = "COLLABORATION_APPROVED"),
+        JsonSubTypes.Type(value = Create::class, name = "DATA_USER_ASKED"),
+        JsonSubTypes.Type(value = Create::class, name = "MANUSCRIPT_APPROVED"),
+        JsonSubTypes.Type(value = Create::class, name = "DECLINED"),
+        JsonSubTypes.Type(value = Create::class, name = "AUTHOR_INFO_RECEIVED"),
+        JsonSubTypes.Type(value = Create::class, name = "PUBLICATION_INFO_RECEIVED"),
     ]
 )
 interface MessagePayload {

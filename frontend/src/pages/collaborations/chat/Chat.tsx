@@ -19,7 +19,7 @@ type ChatProps = {
 
 const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: CollaborationChatStore }) => {
   const { collaborationChatStore } = props;
-  const [stage, setStage] = useState(Stage.Default);
+  const [stage, setStage] = useState(Stage.DEFAULT);
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [showCollabModal, setShowCollabModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
@@ -72,7 +72,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
       avatar: 'MM',
       text: 'You will have 2 weeks to read the article and decide whether to accept or decline co-authorship. You can ask questions or provide your suggestions to the author via private messages. We recommend starting this process well in advance. If you do not approve the request within 2 weeks, you will lose the opportunity for co-authorship in this article. If you decline, the data user will simply cite your dataset.'
     });
-    setStage(Stage.DataUserAsked);
+    setStage(Stage.DATA_USER_ASKED);
   };
 
   const handleShowCommentModal: () => void = () => setShowCommentModal(true);
@@ -98,7 +98,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
         </p>
       )
     });
-    setStage(Stage.ManuscriptApproved);
+    setStage(Stage.MANUSCRIPT_APPROVED);
     handleCloseCommentModal();
   };
 
@@ -129,7 +129,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
         </>
       ]
     });
-    setStage(Stage.Declined);
+    setStage(Stage.DECLINED);
     setShowDeclineModal(false);
   };
 
@@ -143,7 +143,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
       avatar: 'MM',
       text: 'Approve manuscript.'
     });
-    setStage(Stage.ManuscriptApproved);
+    setStage(Stage.MANUSCRIPT_APPROVED);
   };
 
   const handleCollaborate: () => void = () => {
@@ -240,7 +240,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
         </>
       ]
     });
-    setStage(Stage.ManuscriptApproved);
+    setStage(Stage.MANUSCRIPT_APPROVED);
   };
 
   const handlePublicationFormMsg: () => void = () => {
@@ -294,7 +294,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
         </>
       )
     });
-    setStage(Stage.PublicationInfoReceived);
+    setStage(Stage.PUBLICATION_INFO_RECEIVED);
   };
 
   const handleAuthorInfoFormMsg: () => void = () => {
@@ -357,7 +357,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
         </>
       )
     });
-    setStage(Stage.AuthorInfoReceived);
+    setStage(Stage.AUTHOR_INFO_RECEIVED);
   };
 
   const handleApproveCollaboration: () => void = () => {
@@ -403,7 +403,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
         </>
       )
     });
-    setStage(Stage.CollaborationApproved);
+    setStage(Stage.COLLABORATION_APPROVED);
   };
 
   return (
@@ -430,7 +430,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
             </React.Fragment>
           );
         })}
-        {stage === Stage.Default && (
+        {stage === Stage.DEFAULT && (
           <UserOptions
             stage={stage}
             onNeedHelp={handleShowCollabModal}
@@ -440,7 +440,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
             onCollaborate={handleCollaborate}
           />
         )}
-        {stage === Stage.CollaborationApproved && (
+        {stage === Stage.COLLABORATION_APPROVED && (
           <UserOptions
             stage={stage}
             onNeedHelp={handleNeedHelp}
@@ -449,7 +449,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
             onDecline={handleDecline}
           />
         )}
-        {stage === Stage.DataUserAsked && (
+        {stage === Stage.DATA_USER_ASKED && (
           <UserOptions
             stage={stage}
             onNeedHelp={handleNeedHelp}
@@ -461,14 +461,14 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
             onDecline={handleDecline}
           />
         )}
-        {stage === Stage.ManuscriptApproved && (
+        {stage === Stage.MANUSCRIPT_APPROVED && (
           <UserOptions
             stage={stage}
             onNeedHelp={handleNeedHelp}
             onAskDataUser={handleEmailDataUser}
           />
         )}
-        {stage === Stage.Declined && (
+        {stage === Stage.DECLINED && (
           <UserOptions stage={stage} onNeedHelp={handleNeedHelp} />
         )}
         <DeclineModal
@@ -599,13 +599,13 @@ const Message = ({
 };
 
 enum Stage {
-  Default,
-  CollaborationApproved,
-  DataUserAsked,
-  ManuscriptApproved,
-  Declined,
-  AuthorInfoReceived,
-  PublicationInfoReceived
+  DEFAULT = "DEFAULT",
+  COLLABORATION_APPROVED= "COLLABORATION_APPROVED",
+  DATA_USER_ASKED = "DATA_USER_ASKED",
+  MANUSCRIPT_APPROVED = "MANUSCRIPT_APPROVED",
+  DECLINED = "DECLINED",
+  AUTHOR_INFO_RECEIVED = "AUTHOR_INFO_RECEIVED",
+  PUBLICATION_INFO_RECEIVED = "PUBLICATION_INFO_RECEIVED"
 }
 interface UserOptionsProps {
   stage: Stage;
