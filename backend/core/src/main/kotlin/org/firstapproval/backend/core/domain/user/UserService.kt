@@ -66,7 +66,7 @@ class UserService(
     fun getPublicUserProfile(username: String): User = userRepository.findByUsername(username).require()
 
     @Transactional(isolation = REPEATABLE_READ)
-    fun oauthSaveOrUpdate(oauthUser: OauthUser, utmSource: String?): User {
+    fun oauthSaveOrUpdate(oauthUser: OauthUser, utmSource: String?, initialReferrer: String?): User {
         val user = userRepository.findByExternalIdAndType(
             externalId = oauthUser.externalId,
             type = oauthUser.type
@@ -90,7 +90,8 @@ class UserService(
                 lastName = oauthUser.lastName ?: "",
                 middleName = oauthUser.middleName,
                 fullName = oauthUser.fullName,
-                utmSource = utmSource
+                utmSource = utmSource,
+                initialReferrer = initialReferrer
             )
         )
         migratePublicationOfUnconfirmedUser(savedUser)
@@ -114,11 +115,12 @@ class UserService(
                 null
             } else {
                 newAttemptForRegistration(
-                    registrationRequest.email,
-                    registrationRequest.password,
-                    registrationRequest.firstName,
-                    registrationRequest.lastName,
-                    registrationRequest.utmSource
+                    email = registrationRequest.email,
+                    password = registrationRequest.password,
+                    firstName = registrationRequest.firstName,
+                    lastName = registrationRequest.lastName,
+                    utmSource = registrationRequest.utmSource,
+                    initialReferrer = registrationRequest.initialReferrer
                 )
             }
         }
@@ -150,7 +152,12 @@ class UserService(
         return prevTry.id
     }
 
-    private fun newAttemptForRegistration(email: String, password: String, firstName: String, lastName: String, utmSource: String?): UUID {
+    private fun newAttemptForRegistration(email: String,
+                                          password: String,
+                                          firstName: String,
+                                          lastName: String,
+                                          utmSource: String?,
+                                          initialReferrer: String?): UUID {
         if (userRepository.existsByEmail(email)) {
             throw RecordConflictException("user already exists")
         }
@@ -164,7 +171,8 @@ class UserService(
                 code = code,
                 firstName = firstName,
                 lastName = lastName,
-                utmSource = utmSource
+                utmSource = utmSource,
+                initialReferrer = initialReferrer
             )
         )
         // TODO CREATE LINK
@@ -191,6 +199,7 @@ class UserService(
                 firstName = emailRegistrationConfirmation.firstName,
                 lastName = emailRegistrationConfirmation.lastName,
                 utmSource = emailRegistrationConfirmation.utmSource,
+                initialReferrer = emailRegistrationConfirmation.initialReferrer,
                 username = if (userByUsername != null) userId.toString() else username,
                 isNameConfirmed = true
             )

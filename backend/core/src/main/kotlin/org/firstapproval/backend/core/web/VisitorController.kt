@@ -14,9 +14,10 @@ import org.springframework.web.context.request.ServletRequestAttributes
 class VisitorController(
     private val visitorRepository: VisitorRepository,
 ) : VisitorApi {
-    override fun saveVisitor(utmSource: String?): ResponseEntity<Void> {
+    override fun saveVisitor(utmSource: String?, initialReferrer: String?): ResponseEntity<Void> {
         val request = (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)!!.request
-        val visitor = Visitor(ip = request.remoteAddr, utmSource = utmSource)
+        val ip = request.getHeader("X-Forwarded-For")?.split(",")?.firstOrNull() ?: request.remoteAddr
+        val visitor = Visitor(ip = ip, utmSource = utmSource, initialReferrer = initialReferrer)
         visitorRepository.save(visitor)
         return ok().build()
     }
