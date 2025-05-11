@@ -1,4 +1,4 @@
-name: CI/CD. Build, Push to GHCR and deploy
+name: Backend CI/CD. Build, Push to GHCR and deploy
 on:
   push:
     branches:
