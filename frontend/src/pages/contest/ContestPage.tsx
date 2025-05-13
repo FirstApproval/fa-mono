@@ -1,4 +1,4 @@
-import React, {type FunctionComponent} from 'react';
+import React, {type FunctionComponent, useEffect} from 'react'
 import {observer} from 'mobx-react-lite';
 import {HeaderComponent} from '../../components/HeaderComponent';
 import {Footer} from '../home/Footer';
@@ -35,6 +35,7 @@ import styled from '@emotion/styled';
 import { userStore } from '../../core/user';
 import { DataCollectionType } from '../../apis/first-approval-api';
 import { css } from '@emotion/react';
+import { INTRO_VIEWED } from "../../core/router/RouterStore"
 
 export interface ExpertElement {
     logo: string;
@@ -209,6 +210,7 @@ const Expert = ({ logo, name, title, url }: ExpertElement) => {
 interface ContestPageProps {}
 
 export const ContestPage: FunctionComponent<ContestPageProps> = observer((props: ContestPageProps) => {
+        useEffect(() => localStorage.setItem(INTRO_VIEWED, 'true'));
         const submissionDeadlineText = 'Submission deadline: 15 September 2025';
 
         const applyNow = () => userStore.goToCreatePublication(DataCollectionType.STUDENT);
