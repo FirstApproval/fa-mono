@@ -59,6 +59,7 @@ class CollaborationRequestMessage(
 
 enum class MessageType(ordinal: Int) {
     CREATE(1),
+    ASSISTANT_CREATE(1),
     DEFAULT(2),
     COLLABORATION_APPROVED(3),
     DATA_USER_ASKED(4),

@@ -78,6 +78,24 @@ class CollaborationRequestService(
                 sequenceIndex = 0
             )
         )
+
+        val fullNameRequestCreator = "${collaborationRequestRequest.firstNameLegal} ${collaborationRequestRequest.lastNameLegal}"
+        collaborationMessageRepository.save(
+            CollaborationRequestMessage(
+                collaborationRequest = collaboration,
+                type = MessageType.ASSISTANT_CREATE,
+                user = user,
+                text = "$fullNameRequestCreator plans to use your dataset in his research and wants to include you " +
+                    "as a co-author of his article.\n" +
+                    "This is First Approval collaboration agreement pre-filled by $fullNameRequestCreator :" +
+                    "By approving to the collaboration, you oblige data user to include you as a co-author.\n" +
+                    "The data user will also be required to provide a 14-day notice before sending you " +
+                    "the final version of the article.\n" +
+                    "By declining a collaboration, you oblige data user to simply quote your dataset, " +
+                    "without specifying you as a co-author.",
+                sequenceIndex = 1
+            )
+        )
     }
 
     @Transactional
