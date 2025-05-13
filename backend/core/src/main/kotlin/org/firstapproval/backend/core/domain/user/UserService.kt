@@ -99,9 +99,13 @@ class UserService(
     }
 
     @Transactional
-    fun get(id: UUID) = userRepository.getReferenceById(id)
+    fun get(id: UUID): User {
+        return userRepository.findById(id).orElseThrow()
+    }
 
-    fun getProfileImage(id: String?) = if (id != null) fileStorageService.get(PROFILE_IMAGES, id).readAllBytes() else null
+    fun getProfileImage(id: String?): ByteArray? {
+        return if (id != null) fileStorageService.get(PROFILE_IMAGES, id).objectContent.readAllBytes() else null
+    }
 
     @Transactional
     fun startUserRegistration(registrationRequest: RegistrationRequest): UUID? {
