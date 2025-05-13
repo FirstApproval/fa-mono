@@ -32,6 +32,7 @@ import { routerStore } from '../router';
 import { userStore } from '../user';
 import { DataCollectionType } from '../../apis/first-approval-api';
 
+export const INTRO_VIEWED = 'intro_viewed';
 export const VISIT_MARK_KEY = 'visit-mark';
 export const UTM_SOURCE_KEY = 'utm_source';
 export const REFERRER = 'initialReferrer';
