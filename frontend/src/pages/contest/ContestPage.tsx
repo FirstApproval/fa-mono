@@ -779,9 +779,132 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                         </div>
                     </Box>
                 </div>
+                {/*What constitutes a scientific dataset block desktop*/}
+                <div>
+                    <Box
+                      component={Grid}
+                      item
+                      display={{
+                          xs: 'none',
+                          s: 'none',
+                          md: 'block',
+                          lg: 'block',
+                          xl: 'block',
+                      }}>
+                        <div style={{
+                            paddingLeft: 128,
+                            paddingRight: 128,
+                            marginBottom: 80,
+                        }}>
+                            <div style={{
+                                fontFamily: 'Roboto',
+                                fontSize: 24,
+                                fontWeight: 600,
+                                marginBottom: 16,
+                            }}>
+                                What constitutes a scientific dataset?
+                            </div>
+                            <div style={{
+                                fontFamily: 'Roboto',
+                                fontSize: 20,
+                                fontWeight: 400,
+                            }}>
+                                A scientific dataset consists of the raw or processed data obtained from a completed biological
+                                experiment, supplemented by comprehensive annotation (metadata) that describe the experimental design,
+                                methodologies, background context, and objectives. For this competition, datasets of any size and
+                                in any discipline‑standard file format are admissible (e.g., HPLC chromatograms,
+                                next‑generation sequencing reads, light‑microscopy images, or structured spreadsheets).
+                            </div>
+                        </div>
+                    </Box>
+                </div>
                 {/*Submission Requirements block mobile*/}
                 <div>
-                    <div>
+                    <Box
+                        component={Grid}
+                        item
+                        display={{
+                            xs: 'block',
+                            s: 'block',
+                            md: 'none',
+                            lg: 'none',
+                            xl: 'none',
+                        }}>
+                        <div style={{
+                            paddingLeft: 20,
+                            paddingRight: 20,
+                            marginBottom: 40,
+                        }}>
+                            <div style={{
+                                fontFamily: 'Roboto',
+                                fontSize: 24,
+                                fontWeight: 600,
+                                marginBottom: 16,
+                            }}>
+                                Submission Requirements
+                            </div>
+                            <ul>
+                                <li style={{
+                                    fontFamily: 'Roboto',
+                                    fontSize: 16,
+                                    fontWeight: 400,
+                                    marginBottom: 16,
+                                }}>
+                                    <span style={{fontWeight: 500}}>Detailed Annotation:</span> The dataset must
+                                    include
+                                    comprehensive annotations that fully
+                                    explain the process of data acquisition and the specifics of the conducted
+                                    experiments.
+                                </li>
+                                <li style={{
+                                    fontFamily: 'Roboto',
+                                    fontSize: 16,
+                                    fontWeight: 400,
+                                    marginBottom: 16,
+                                }}>
+                                    <span style={{fontWeight: 500}}>Eligible Data:</span> Submissions may include any
+                                    form of raw and processed scientific data, covering both original datasets and
+                                    those replicating previously published experiments. Negative data that fail to
+                                    confirm initial hypotheses are also welcome. By accepting such a broad range of
+                                    data types, the competition seeks to encourage rigorous scientific discourse and
+                                    foster greater transparency in research.
+                                </li>
+                                <li style={{
+                                    fontFamily: 'Roboto',
+                                    fontSize: 16,
+                                    fontWeight: 400,
+                                    marginBottom: 16,
+                                }}>
+                                    <span style={{fontWeight: 500}}>Types of Data:</span> We welcome the publication
+                                    of
+                                    original data, including data
+                                    that
+                                    replicate previously published experiments, as well as negative data that do not
+                                    confirm
+                                    initial hypotheses.
+                                </li>
+                                <li style={{
+                                    fontFamily: 'Roboto',
+                                    fontSize: 16,
+                                    fontWeight: 400,
+                                }}>
+                                    <span style={{fontWeight: 500}}>Originality:</span> The dataset must not have
+                                    been
+                                    previously published on any
+                                    other repository.
+                                    However, we will accept its submission if the volume of data has been increased
+                                    compared
+                                    to the previous publication and if the prior annotation was insufficient for
+                                    reuse. In
+                                    this case, a reference to the previously published version of the dataset is
+                                    mandatory.
+                                </li>
+                            </ul>
+                        </div>
+                    </Box>
+                </div>
+                {/*What constitutes a scientific dataset block mobile*/}
+                <div>
                         <Box
                             component={Grid}
                             item
@@ -803,69 +926,22 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                     fontWeight: 600,
                                     marginBottom: 16,
                                 }}>
-                                    Submission Requirements
+                                    What constitutes a scientific dataset?
                                 </div>
-                                <ul>
-                                    <li style={{
-                                        fontFamily: 'Roboto',
-                                        fontSize: 16,
-                                        fontWeight: 400,
-                                        marginBottom: 16,
-                                    }}>
-                                        <span style={{fontWeight: 500}}>Detailed Annotation:</span> The dataset must
-                                        include
-                                        comprehensive annotations that fully
-                                        explain the process of data acquisition and the specifics of the conducted
-                                        experiments.
-                                    </li>
-                                    <li style={{
-                                        fontFamily: 'Roboto',
-                                        fontSize: 16,
-                                        fontWeight: 400,
-                                        marginBottom: 16,
-                                    }}>
-                                        <span style={{fontWeight: 500}}>Eligible Data:</span> Submissions may include any
-                                        form of raw and processed scientific data, covering both original datasets and
-                                        those replicating previously published experiments. Negative data that fail to
-                                        confirm initial hypotheses are also welcome. By accepting such a broad range of
-                                        data types, the competition seeks to encourage rigorous scientific discourse and
-                                        foster greater transparency in research.
-                                    </li>
-                                    <li style={{
-                                        fontFamily: 'Roboto',
-                                        fontSize: 16,
-                                        fontWeight: 400,
-                                        marginBottom: 16,
-                                    }}>
-                                        <span style={{fontWeight: 500}}>Types of Data:</span> We welcome the publication
-                                        of
-                                        original data, including data
-                                        that
-                                        replicate previously published experiments, as well as negative data that do not
-                                        confirm
-                                        initial hypotheses.
-                                    </li>
-                                    <li style={{
-                                        fontFamily: 'Roboto',
-                                        fontSize: 16,
-                                        fontWeight: 400,
-                                    }}>
-                                        <span style={{fontWeight: 500}}>Originality:</span> The dataset must not have
-                                        been
-                                        previously published on any
-                                        other repository.
-                                        However, we will accept its submission if the volume of data has been increased
-                                        compared
-                                        to the previous publication and if the prior annotation was insufficient for
-                                        reuse. In
-                                        this case, a reference to the previously published version of the dataset is
-                                        mandatory.
-                                    </li>
-                                </ul>
+                                <div style={{
+                                    fontFamily: 'Roboto',
+                                    fontSize: 16,
+                                    fontWeight: 400,
+                                }}>
+                                    A scientific dataset consists of the raw or processed data obtained from a completed biological
+                                    experiment, supplemented by comprehensive annotation (metadata) that describe the experimental design,
+                                    methodologies, background context, and objectives. For this competition, datasets of any size and
+                                    in any discipline‑standard file format are admissible (e.g., HPLC chromatograms,
+                                    next‑generation sequencing reads, light‑microscopy images, or structured spreadsheets).
+                                </div>
                             </div>
                         </Box>
                     </div>
-                </div>
                 {/*Prizes block desktop*/}
                 <div>
                     <Box
@@ -1182,8 +1258,8 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                 This publication will be a valuable addition to each participant’s CV, highlighting their
                                 technical expertise.
                                 The records will become publicly available once the competition has concluded.
-                                Depositing a dataset with First Approval does not impede subsequent publication
-                                of related work in a journal.
+                                Depositing a dataset with First Approval <span style={{fontWeight: 500}}>does not</span> impede
+                                subsequent publication of related work in a journal.
                                 The repository record is recognised as a formal research output and can be cited in
                                 the Data Availability or Methods section of a peer‑reviewed manuscript.
                             </div>
@@ -1227,8 +1303,8 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                     This publication will be a valuable addition to each participant’s CV, highlighting their
                                     technical expertise.
                                     The records will become publicly available once the competition has concluded.
-                                    Depositing a dataset with First Approval does not impede subsequent publication
-                                    of related work in a journal.
+                                    Depositing a dataset with First Approval <span style={{fontWeight: 500}}>does not</span> impede
+                                    subsequent publication of related work in a journal.
                                     The repository record is recognised as a formal research output and can be cited in
                                     the Data Availability or Methods section of a peer‑reviewed manuscript.
                                 </div>
