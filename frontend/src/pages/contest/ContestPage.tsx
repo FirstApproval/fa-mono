@@ -1176,11 +1176,16 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                 fontSize: 20,
                                 fontWeight: 400,
                             }}>
-                                All participants will receive a first-authored Open Access data publication with a DOI,
-                                published in a dedicated collection of biological, biotechnological, or biomedical data.
-                                This will serve as a valuable addition to the participants' resumes, showcasing their
-                                qualified skills. Publications will become publicly available after the competition
-                                concludes and the winners are announced.
+                                All participants whose datasets pass our initial curation for compliance with
+                                scientific data‑publishing standards will receive a first‑authored, open‑access data publication with a
+                                DOI, issued as part of a dedicated collection of biological, biotechnological, or biomedical datasets.
+                                This publication will be a valuable addition to each participant’s CV, highlighting their
+                                technical expertise.
+                                The records will become publicly available once the competition has concluded.
+                                Depositing a dataset with First Approval does not impede subsequent publication
+                                of related work in a journal.
+                                The repository record is recognised as a formal research output and can be cited in
+                                the Data Availability or Methods section of a peer‑reviewed manuscript.
                             </div>
                         </div>
                     </Box>
@@ -1216,14 +1221,16 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                     fontSize: 16,
                                     fontWeight: 400,
                                 }}>
-                                    All participants will receive a first-authored Open Access data publication with a
-                                    DOI,
-                                    published in a dedicated collection of biological, biotechnological, or biomedical
-                                    data.
-                                    This will serve as a valuable addition to the participants' resumes, showcasing
-                                    their
-                                    qualified skills. Publications will become publicly available after the competition
-                                    concludes and the winners are announced.
+                                    All participants whose datasets pass our initial curation for compliance with
+                                    scientific data‑publishing standards will receive a first‑authored, open‑access data publication with a
+                                    DOI, issued as part of a dedicated collection of biological, biotechnological, or biomedical datasets.
+                                    This publication will be a valuable addition to each participant’s CV, highlighting their
+                                    technical expertise.
+                                    The records will become publicly available once the competition has concluded.
+                                    Depositing a dataset with First Approval does not impede subsequent publication
+                                    of related work in a journal.
+                                    The repository record is recognised as a formal research output and can be cited in
+                                    the Data Availability or Methods section of a peer‑reviewed manuscript.
                                 </div>
                             </div>
                         </Box>
