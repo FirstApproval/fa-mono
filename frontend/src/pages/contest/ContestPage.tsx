@@ -36,6 +36,7 @@ import { userStore } from '../../core/user';
 import { DataCollectionType } from '../../apis/first-approval-api';
 import { css } from '@emotion/react';
 import { INTRO_VIEWED } from "../../core/router/RouterStore"
+import { Helmet } from "react-helmet"
 
 export interface ExpertElement {
     logo: string;
@@ -212,11 +213,21 @@ interface ContestPageProps {}
 export const ContestPage: FunctionComponent<ContestPageProps> = observer((props: ContestPageProps) => {
         useEffect(() => localStorage.setItem(INTRO_VIEWED, 'true'));
         const submissionDeadlineText = 'Submission deadline: 15 September 2025';
+        const metaDescription = 'First Approval is pleased to invite students to participate in the Student Biological Data Competition. ' +
+          'This unique initiative is aimed at encouraging the next generation of scientists to publish high-quality data in biology, ' +
+          'biotechnology, and biomedicine. The competition directly evaluates the quality of scientific datasets and their annotation, ' +
+          'aiming to…';
 
         const applyNow = () => userStore.goToCreatePublication(DataCollectionType.STUDENT);
 
         return (
             <>
+                <Helmet>
+                    <title>Participate in the First Approval Student Biological Data Competition</title>
+                    <meta property="og:title" content="Participate in the First Approval Student Biological Data Competition"/>
+                    <meta property="og:description" content={metaDescription} />
+                    <meta name="description" content={metaDescription} />
+                </Helmet>
                 <HeaderComponent
                   showLoginOutlinedButton={true}
                   showPublishButton={true}
