@@ -1,4 +1,5 @@
 import { observer } from 'mobx-react-lite';
+import { userStore } from "../../core/user";
 import { ReactElement, useEffect } from 'react';
 import { Button, Typography } from '@mui/material';
 import styled from '@emotion/styled';
@@ -17,7 +18,9 @@ export const PublicationCollaborationsPage = observer((props: { publicationInfo:
   const { publicationInfo } = props;
   useEffect(() => {
     collaborationStore.clearAndOpen(publicationInfo.id, publicationInfo.collaboratorsCount);
-    collaborationStore.loadCollaborationRequests(0);
+    if (publicationInfo.creator!!.id === userStore.user!!.id) {
+      collaborationStore.loadCollaborationRequests(0);
+    }
     // collaborationStore.loadCollaborationRequests(0);
   }, []);
   const goToChat = (collaborationRequestId: string) => routerStore.navigatePage(
