@@ -18,6 +18,7 @@ export const PublicationCollaborationsPage = observer((props: { publicationInfo:
   useEffect(() => {
     collaborationStore.clearAndOpen(publicationInfo.id, publicationInfo.collaboratorsCount);
     collaborationStore.loadCollaborationRequests(0);
+    // collaborationStore.loadCollaborationRequests(0);
   }, []);
   const goToChat = (collaborationRequestId: string) => routerStore.navigatePage(
     Page.COLLABORATIONS_CHAT,

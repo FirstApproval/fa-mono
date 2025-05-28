@@ -44,6 +44,24 @@ export class CollaborationStore {
     }
   }
 
+  // loadMyPublications(page: number): void {
+  //   if (!this.loadCollaborationRequestsLocked) {
+  //     this.loadCollaborationRequestsLocked = true;
+  //     void collaborationRequestService
+  //       .getPublicationCollaborationRequests(this.publicationId, page, 100)
+  //       .then(
+  //         action((response) => {
+  //           this.collaborationRequests = [
+  //             ...this.collaborationRequests,
+  //             ...(response.data.collaborationRequests ?? [])
+  //           ];
+  //           this.collaborationRequestsIsLastPage = response.data.isLastPage;
+  //           this.loadCollaborationRequestsLocked = false;
+  //         })
+  //       );
+  //   }
+  // }
+
   closeCollaborationRequest(): void {
     this.collaborationRequestDialogOpen = false;
     this.collaborationRequest = null;

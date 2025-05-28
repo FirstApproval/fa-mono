@@ -18,7 +18,7 @@ import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.DataCollectionType
 import org.firstapproval.backend.core.domain.publication.PublicationPdfService
 import org.firstapproval.backend.core.domain.publication.PublicationService
-import org.firstapproval.backend.core.domain.publication.PublicationStatus.PENDING
+import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.domain.publication.UseType
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestRepository
 import org.firstapproval.backend.core.domain.publication.downloader.DownloaderRepository
@@ -95,7 +95,7 @@ class PublicationController(
     }
 
     override fun getMyDownloadedPublications(page: Int, pageSize: Int): ResponseEntity<PublicationsResponse> {
-        val publications = publicationService.getUserDownloadedPublications(authHolderService.user, setOf(PENDING), page, pageSize)
+        val publications = publicationService.getUserDownloadedPublications(authHolderService.user, setOf(PUBLISHED), page, pageSize)
         return ok().body(publications)
     }
 
