@@ -12,6 +12,7 @@ import org.firstapproval.backend.core.domain.publication.collaboration.requests.
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.toApiObject
 import org.firstapproval.backend.core.domain.user.UserService
+import org.firstapproval.backend.core.domain.user.toApiObject
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
@@ -69,6 +70,16 @@ class CollaborationRequestController(
         val collaborationRequests = result
             .map { it.toApiObject(userService = userService) }
             .toList()
+
+        return ok(GetCollaborationRequestsResponse(result.isLast, collaborationRequests))
+    }
+
+    override fun getMyCollaborationRequests(page: Int, pageSize: Int): ResponseEntity<GetCollaborationRequestsResponse> {
+        val result = collaborationRequestService.getByUser(authHolderService.user.id)
+
+        val userInfo = authHolderService.user.toApiObject(userService)
+
+        val collaborationRequests = result.map { it.toApiObject(userInfo) }.toList()
 
         return ok(GetCollaborationRequestsResponse(result.isLast, collaborationRequests))
     }

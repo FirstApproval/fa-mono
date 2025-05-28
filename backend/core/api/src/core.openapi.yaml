@@ -896,6 +896,34 @@ paths:
       operationId: getPublicationCollaborationRequests
       tags: [ collaboration-request ]
 
+  /api/collabortion/requests:
+    post:
+      summary: Get collaboration requests
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: true
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          required: true
+          description: Page size
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCollaborationRequestsResponse'
+      security:
+        - TokenAuth: [ ]
+      operationId: getMyCollaborationRequests
+      tags: [ collaboration-request ]
+
   /api/collabortion/request-collaboration/{publicationId}:
     post:
       summary: Create a collaboration request

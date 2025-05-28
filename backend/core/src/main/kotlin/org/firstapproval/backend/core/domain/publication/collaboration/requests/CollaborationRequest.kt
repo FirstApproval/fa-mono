@@ -12,6 +12,7 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import org.firstapproval.api.server.model.CollaborationRequestInfo
 import org.firstapproval.api.server.model.CollaborationRequestTypeOfWork
+import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.backend.core.domain.publication.Publication
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessage
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.NEW
@@ -60,10 +61,12 @@ enum class TypeOfWork {
     OTHER_PUBLICATION
 }
 
-fun CollaborationRequest.toApiObject(userService: UserService) = CollaborationRequestInfo().also {
+fun CollaborationRequest.toApiObject(userService: UserService) = toApiObject(user.toApiObject(userService))
+
+fun CollaborationRequest.toApiObject(userInfo: UserInfo) = CollaborationRequestInfo().also {
     it.id = id
     it.status = CollaborationRequestStatusApiObject.valueOf(status.name)
-    it.userInfo = user.toApiObject(userService)
+    it.userInfo = userInfo
     it.publicationTitle = publication.title
     it.publicationId = publication.id
     it.firstNameLegal = firstNameLegal

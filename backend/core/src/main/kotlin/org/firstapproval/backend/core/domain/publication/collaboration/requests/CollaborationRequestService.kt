@@ -103,6 +103,9 @@ class CollaborationRequestService(
     fun get(id: UUID) = collaborationRequestRepository.getReferenceById(id)
 
     @Transactional
+    fun getByUser(userId: UUID) = collaborationRequestRepository.findByUserId(userId)
+
+    @Transactional
     fun findByPublicationId(publicationId: String, page: Int, pageSize: Int, user: User): Page<CollaborationRequest> {
         val publication = publicationRepository.findByIdAndStatus(publicationId, PUBLISHED)
         checkPublicationCreator(user, publication)
