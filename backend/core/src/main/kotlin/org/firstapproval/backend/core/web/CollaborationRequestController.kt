@@ -60,7 +60,7 @@ class CollaborationRequestController(
         return ok(collaborationRequestService.get(collaborationRequestId).toApiObject(userService = userService))
     }
 
-    override fun getCollaborationRequests(
+    override fun getPublicationCollaborationRequests(
         publicationId: String,
         page: Int,
         pageSize: Int

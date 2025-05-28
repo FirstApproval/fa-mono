@@ -69,4 +69,6 @@ interface PublicationRepository : JpaRepository<Publication, String> {
     ): Page<Publication>
 
     fun findByIdAndIsBlockedIsFalse(id: String): Publication
+
+    fun findByIdAndStatus(id: String, status: PublicationStatus): Publication
 }

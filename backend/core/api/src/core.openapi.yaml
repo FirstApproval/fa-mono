@@ -893,7 +893,7 @@ paths:
                 $ref: '#/components/schemas/GetCollaborationRequestsResponse'
       security:
         - TokenAuth: [ ]
-      operationId: getCollaborationRequests
+      operationId: getPublicationCollaborationRequests
       tags: [ collaboration-request ]
 
   /api/collabortion/request-collaboration/{publicationId}:

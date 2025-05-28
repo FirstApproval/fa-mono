@@ -2,6 +2,7 @@ package org.firstapproval.backend.core.domain.publication.collaboration.requests
 
 import org.firstapproval.api.server.model.CreateCollaborationRequest
 import org.firstapproval.backend.core.domain.publication.PublicationRepository
+import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.domain.publication.checkPublicationCreator
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationMessageRepository
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessage
@@ -103,11 +104,11 @@ class CollaborationRequestService(
 
     @Transactional
     fun findByPublicationId(publicationId: String, page: Int, pageSize: Int, user: User): Page<CollaborationRequest> {
-        val publication = publicationRepository.getReferenceById(publicationId)
+        val publication = publicationRepository.findByIdAndStatus(publicationId, PUBLISHED)
         checkPublicationCreator(user, publication)
         return collaborationRequestRepository.findByPublicationIdAndStatusIn(
             publicationId,
-            setOf(NEW, APPROVED),
+            setOf(NEW, APPROVED, DECLINED),
             PageRequest.of(page, pageSize, Sort.by(DESC, "status", "creationTime"))
         )
     }
