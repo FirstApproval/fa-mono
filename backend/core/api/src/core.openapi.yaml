@@ -997,7 +997,7 @@ paths:
           description: Success
       security:
         - TokenAuth: [ ]
-      operationId: acceptOrRejectCollaborationRequest
+      operationId: acceptOrDeclineCollaborationRequest
       tags: [ collaboration-request ]
 
   /api/collabortion/requests/chat/{collaborationRequestId}:

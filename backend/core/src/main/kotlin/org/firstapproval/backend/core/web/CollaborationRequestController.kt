@@ -27,7 +27,7 @@ class CollaborationRequestController(
     private val authHolderService: AuthHolderService
 ) : CollaborationRequestApi {
 
-    override fun acceptOrRejectCollaborationRequest(
+    override fun acceptOrDeclineCollaborationRequest(
         collaborationRequestId: UUID,
         authorResponse: String,
         status: CollaborationRequestStatusApiObject
@@ -75,7 +75,7 @@ class CollaborationRequestController(
     }
 
     override fun getMyCollaborationRequests(page: Int, pageSize: Int): ResponseEntity<GetCollaborationRequestsResponse> {
-        val result = collaborationRequestService.getByUser(authHolderService.user.id)
+        val result = collaborationRequestService.getByUser(authHolderService.user.id, page, pageSize)
 
         val userInfo = authHolderService.user.toApiObject(userService)
 

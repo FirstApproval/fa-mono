@@ -87,7 +87,7 @@ export const CollaborationRequestDialog = observer(
               variant="text"
               size={'large'}
               onClick={async () =>
-                collaborationStore.acceptOrRejectCollaborationRequest(
+                collaborationStore.acceptOrDeclineCollaborationRequest(
                   collaborationRequest,
                   CollaborationRequestStatus.APPROVED
                 )
@@ -100,7 +100,7 @@ export const CollaborationRequestDialog = observer(
           isOpen={confirmationDialogOpen}
           onClose={() => setConfirmationDialogOpen(false)}
           onConfirm={async () =>
-            collaborationStore.acceptOrRejectCollaborationRequest(
+            collaborationStore.acceptOrDeclineCollaborationRequest(
               collaborationRequest,
               CollaborationRequestStatus.DECLINED
             )

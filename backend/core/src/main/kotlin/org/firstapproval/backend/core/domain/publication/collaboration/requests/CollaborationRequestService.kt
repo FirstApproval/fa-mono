@@ -103,7 +103,10 @@ class CollaborationRequestService(
     fun get(id: UUID) = collaborationRequestRepository.getReferenceById(id)
 
     @Transactional
-    fun getByUser(userId: UUID) = collaborationRequestRepository.findByUserId(userId)
+    fun getByUser(userId: UUID, page: Int, pageSize: Int) =
+        collaborationRequestRepository.findByUserId(
+            userId, PageRequest.of(page, pageSize, Sort.by(DESC, "status", "creationTime"))
+        )
 
     @Transactional
     fun findByPublicationId(publicationId: String, page: Int, pageSize: Int, user: User): Page<CollaborationRequest> {

@@ -30,7 +30,7 @@ export class CollaborationStore {
     if (!this.loadCollaborationRequestsLocked) {
       this.loadCollaborationRequestsLocked = true;
       void collaborationRequestService
-        .getCollaborationRequests(this.publicationId, page, 100)
+        .getPublicationCollaborationRequests(this.publicationId, page, 100)
         .then(
           action((response) => {
             this.collaborationRequests = [
@@ -71,12 +71,12 @@ export class CollaborationStore {
     // this.collaboratorsDialogOpen = true;
   }
 
-  async acceptOrRejectCollaborationRequest(
+  async acceptOrDeclineCollaborationRequest(
     collaborationRequest: CollaborationRequestInfo,
     status: CollaborationRequestStatus
   ): Promise<any> {
     return collaborationRequestService
-      .acceptOrRejectCollaborationRequest(
+      .acceptOrDeclineCollaborationRequest(
         collaborationRequest.id,
         this.authorResponse,
         status
