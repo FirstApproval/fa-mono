@@ -475,6 +475,11 @@ class PublicationService(
     }
 
     @Transactional
+    fun getUserPublicationByIdAndStatus(publicationId: String, user: User): Publication {
+        return getPublished(publicationId).also { checkPublicationCreator(user, it) }
+    }
+
+    @Transactional
     fun getUserDownloadedPublications(
         user: User,
         statuses: Collection<PublicationStatus>,

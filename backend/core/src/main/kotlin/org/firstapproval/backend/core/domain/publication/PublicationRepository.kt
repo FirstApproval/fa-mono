@@ -1,5 +1,6 @@
 package org.firstapproval.backend.core.domain.publication
 
+import org.firstapproval.backend.core.domain.user.User
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
@@ -70,5 +71,7 @@ interface PublicationRepository : JpaRepository<Publication, String> {
 
     fun findByIdAndIsBlockedIsFalse(id: String): Publication
 
-    fun findByIdAndStatus(id: String, status: PublicationStatus): Publication
+//    fun findByIdAndStatus(id: String, status: PublicationStatus): Publication
+//    fun existsByIdAndStatusAndCreator(id: String, status: PublicationStatus, creator: User)
+//    fun findByIdAndStatusAndCreator(id: String, status: PublicationStatus, creator: User): Publication
 }

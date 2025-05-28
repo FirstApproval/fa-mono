@@ -2,8 +2,7 @@ package org.firstapproval.backend.core.domain.publication.collaboration.requests
 
 import org.firstapproval.api.server.model.CreateCollaborationRequest
 import org.firstapproval.backend.core.domain.publication.PublicationRepository
-import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
-import org.firstapproval.backend.core.domain.publication.checkPublicationCreator
+import org.firstapproval.backend.core.domain.publication.PublicationService
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationMessageRepository
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessage
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.Create
@@ -25,6 +24,7 @@ import java.util.UUID
 class CollaborationRequestService(
     private val collaborationRequestRepository: CollaborationRequestRepository,
     private val publicationRepository: PublicationRepository,
+    private val publicationService: PublicationService,
     private val collaborationMessageRepository: CollaborationMessageRepository,
 ) {
     @Transactional
@@ -107,10 +107,9 @@ class CollaborationRequestService(
 
     @Transactional
     fun findByPublicationId(publicationId: String, page: Int, pageSize: Int, user: User): Page<CollaborationRequest> {
-        val publication = publicationRepository.findByIdAndStatus(publicationId, PUBLISHED)
-        checkPublicationCreator(user, publication)
+        val publication = publicationService.getUserPublicationByIdAndStatus(publicationId, user)
         return collaborationRequestRepository.findByPublicationIdAndStatusIn(
-            publicationId,
+            publication.id,
             setOf(NEW, APPROVED, DECLINED),
             PageRequest.of(page, pageSize, Sort.by(DESC, "status", "creationTime"))
         )
