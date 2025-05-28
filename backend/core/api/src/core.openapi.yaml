@@ -2816,6 +2816,7 @@ components:
       type: string
       enum:
         - CREATE
+        - ASSISTANT_CREATE
         - ACCEPT_OR_REJECT_COLLABORATION_REQUEST
 
     PublicationShortInfo:

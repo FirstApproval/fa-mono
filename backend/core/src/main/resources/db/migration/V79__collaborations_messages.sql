@@ -2,7 +2,7 @@
 CREATE TABLE collaboration_request_messages
 (
     id                       UUID PRIMARY KEY,
-    collaboration_request_id UUID      NOT NULL UNIQUE REFERENCES collaboration_requests (id) ON DELETE CASCADE,
+    collaboration_request_id UUID      NOT NULL REFERENCES collaboration_requests (id) ON DELETE CASCADE,
     is_finished              BOOLEAN DEFAULT FALSE,
     user_id                  UUID REFERENCES users (id),
     type                     TEXT      NOT NULL,

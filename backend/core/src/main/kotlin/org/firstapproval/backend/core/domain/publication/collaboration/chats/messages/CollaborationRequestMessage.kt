@@ -15,6 +15,7 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationRequestFile
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.MessageType.ASSISTANT_CREATE
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.MessageType.CREATE
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequest
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.TypeOfWork
@@ -77,6 +78,7 @@ enum class MessageType(ordinal: Int) {
 @JsonSubTypes(
     value = [
         JsonSubTypes.Type(value = Create::class, name = "CREATE"),
+        JsonSubTypes.Type(value = AssistantCreate::class, name = "ASSISTANT_CREATE"),
         JsonSubTypes.Type(value = Create::class, name = "DEFAULT"),
         JsonSubTypes.Type(value = Create::class, name = "COLLABORATION_APPROVED"),
         JsonSubTypes.Type(value = Create::class, name = "DATA_USER_ASKED"),
@@ -96,6 +98,10 @@ class Create(
     val typeOfWork: TypeOfWork,
     val description: String,
     override var type: MessageType = CREATE,
+) : MessagePayload
+
+class AssistantCreate(
+    override var type: MessageType = ASSISTANT_CREATE,
 ) : MessagePayload
 
 fun CollaborationRequestMessage.toApiObject(userService: UserService) = toApiObject(user.toApiObject(userService))
