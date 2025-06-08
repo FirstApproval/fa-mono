@@ -19,7 +19,7 @@ type ChatProps = {
 
 const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: CollaborationChatStore }) => {
   const { collaborationChatStore } = props;
-  const [stage, setStage] = useState(Stage.DEFAULT);
+  const [stage, setStage] = useState(Stage.CREATE_REQUEST);
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [showCollabModal, setShowCollabModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
@@ -64,6 +64,11 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
   const handleNeedHelp: () => void = () => alert('Help is Needed');
   const handleEmailDataUser: () => void = () => alert('Email data user');
   const handleShowCollabModal: () => void = () => setShowCollabModal(true);
+  const handleCitation: () => void = () => {
+  };
+
+  const handleReachOutToAuthor: () => void = () => {
+  };
 
   const handleAskDataUser: () => void = () => {
     Messages.push({
@@ -420,16 +425,24 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
       />
       <div>
         {collaborationChatStore.messages.map((message) => {
-          const fullName = getFullName(message.userInfo);
+          const fullName = message.isAssistant ? 'Assistant' : getFullName(message.userInfo!!);
           return (
             <React.Fragment key={message.id}>
-              <Message name={fullName} avatar={renderProfileImage(message.userInfo.profileImage)}>
+              <Message name={fullName} avatar={renderProfileImage(message.userInfo?.profileImage)}>
                 {message.text}
               </Message>
               <HeightElement value={'32px'} />
             </React.Fragment>
           );
         })}
+        {stage === Stage.CREATE_REQUEST && (
+          <UserOptions
+            stage={stage}
+            onNeedHelp={handleShowCollabModal}
+            citation={handleCitation}
+            reachOutToTheAuthor={handleReachOutToAuthor}
+          />
+        )}
         {stage === Stage.DEFAULT && (
           <UserOptions
             stage={stage}
@@ -598,7 +611,8 @@ const Message = ({
   );
 };
 
-enum Stage {
+export enum Stage {
+  CREATE_REQUEST = "CREATE_REQUEST",
   DEFAULT = "DEFAULT",
   COLLABORATION_APPROVED= "COLLABORATION_APPROVED",
   DATA_USER_ASKED = "DATA_USER_ASKED",
@@ -609,7 +623,9 @@ enum Stage {
 }
 interface UserOptionsProps {
   stage: Stage;
-  onNeedHelp: () => void;
+  onNeedHelp?: () => void;
+  citation?: () => void;
+  reachOutToTheAuthor?: () => void;
   onApproveCollaboration?: () => void;
   onApproveManuscript?: () => void;
   onApproveManuscriptWithComments?: () => void;
@@ -623,6 +639,8 @@ interface UserOptionsProps {
 const UserOptions = ({
   stage,
   onNeedHelp,
+  citation,
+  reachOutToTheAuthor,
   onApproveCollaboration,
   onApproveManuscript,
   onApproveManuscriptWithComments,

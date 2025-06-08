@@ -37,6 +37,7 @@ import {ContactsPage} from './pages/contacts/ContactsPage';
 import {EnterEmailPage} from './pages/signup/EnterEmailPage';
 import {ContestPage} from "./pages/contest/ContestPage";
 import {ChooseDataCollectionPage} from "./pages/publication/ChooseDataCollection"
+import { NewCollaborationChatPage } from "./pages/collaborations/chat/NewCollaborationChatPage"
 
 const MOBILE_VERSION_NOT_SUPPORT_STORAGE_KEY = 'mobileVersionNotSupportShown';
 
@@ -90,6 +91,9 @@ const App: FunctionComponent = observer(() => {
               )}
               {page === Page.COLLABORATIONS_CHAT && (
                 <ChatPage key={routerStore.key} />
+              )}
+              {page === Page.NEW_COLLABORATIONS_CHAT && (
+                <NewCollaborationChatPage key={routerStore.key} />
               )}
               {page === Page.PUBLICATION && (
                 <PublicationPage key={routerStore.key} />

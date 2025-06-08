@@ -13,7 +13,7 @@ export class CollaborationsPageStore {
   downloadedPublications?: PublicationShortInfo[];
   isLastPageMyDownloadedPublications = false;
   selectedPublication?: PublicationShortInfo;
-  downloadedPublication?: PublicationShortInfo;
+  selectedPublicationType?: PublicationType;
 
   constructor() {
     makeAutoObservable(this);
@@ -21,13 +21,13 @@ export class CollaborationsPageStore {
   }
 
   selectMyPublication(publicationInfo: PublicationShortInfo): void {
-    this.downloadedPublication = undefined;
     this.selectedPublication = publicationInfo;
+    this.selectedPublicationType = PublicationType.MY;
   }
 
   selectDownloadedPublication(publicationInfo: PublicationShortInfo): void {
-    this.selectedPublication = undefined;
-    this.downloadedPublication = publicationInfo;
+    this.selectedPublication = publicationInfo;
+    this.selectedPublicationType = PublicationType.DOWNLOADED;
   }
 
   private loadInitialState(): void {
@@ -43,4 +43,9 @@ export class CollaborationsPageStore {
       this.isLoading = false;
     })
   }
+}
+
+enum PublicationType {
+  MY = "MY",
+  DOWNLOADED = "DOWNLOADED",
 }

@@ -107,10 +107,13 @@ class AssistantCreate(
 fun CollaborationRequestMessage.toApiObject(userService: UserService) = toApiObject(user.toApiObject(userService))
 
 fun CollaborationRequestMessage.toApiObject(userInfo: UserInfo) = CollaborationRequestMessageApiObject(
-    this.id,
-    userInfo.takeIf { this.user.id === userInfo.id } ?: throw IllegalArgumentException("UserInfo id doesn't match with user.id"),
     CollaborationMessageTypeApiObject.valueOf(type.toString()),
     text,
-    payload,
-    creationTime.toOffsetDateTime()
-)
+    false
+).also {
+    it.id = this.id
+    it.userInfo = userInfo.takeIf { this.user.id === userInfo.id }
+        ?: throw IllegalArgumentException("UserInfo id doesn't match with user.id")
+    it.payload = payload
+    it.creationTime = creationTime.toOffsetDateTime()
+}

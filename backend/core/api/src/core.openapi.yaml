@@ -2801,16 +2801,15 @@ components:
           type: string
         payload:
           type: object
+        isAssistant:
+          type: boolean
         creationTime:
           type: string
           format: date-time
       required:
-        - id
-        - userInfo
         - type
         - text
-        - payload
-        - creationTime
+        - isAssistant
 
     CollaborationMessageType:
       type: string

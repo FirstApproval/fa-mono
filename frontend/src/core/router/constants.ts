@@ -32,7 +32,8 @@ export enum Page {
   CONTEST_PAGE,
 
   COLLABORATIONS_PAGE,
-  COLLABORATIONS_CHAT
+  COLLABORATIONS_CHAT,
+  NEW_COLLABORATIONS_CHAT
 }
 
 export const pathToOauthType: Record<string, OauthType> = {
