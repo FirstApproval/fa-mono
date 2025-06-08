@@ -8,6 +8,8 @@ import { collaborationsPageStore } from '../publication/store/downloadsStore';
 import { observer } from 'mobx-react-lite';
 import { PublicationCollaborationsPage } from './PublicationCollaborations';
 import { LeftPanelPublicationsPage } from './LeftPanelPublications';
+import { routerStore } from "../../core/router"
+import { Page } from "../../core/router/constants"
 
 export const CollaborationsPage = observer((): ReactElement => {
   const { myPublications, downloadedPublications, selectedPublication } =

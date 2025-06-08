@@ -7,52 +7,65 @@ import styled from '@emotion/styled';
 import { PublicationShortInfo } from "../../apis/first-approval-api"
 import { TextSizeTruncation } from "../../util/stylesUtil"
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord"
-import { CollaborationsPageStore } from "../publication/store/CollaborationsPageStore"
+// import { CollaborationsPageStore } from "../publication/store/CollaborationsPageStore"
+import { routerStore } from "../../core/router"
+import { Page } from "../../core/router/constants"
 
 export const LeftPanelPublicationsPage = observer((): ReactElement => {
+  // const goToChat = (collaborationRequestId: string) => routerStore.navigatePage(
+  //   Page.COLLABORATIONS_CHAT,
+  //   `chat/${collaborationRequestId}`,
+  //   true
+  // );
+
   return (
     <LeftPanel>
       <FlexWrapColumn>
         {collaborationsPageStore.myPublications &&
           mapPublications(
             collaborationsPageStore.myPublications,
-            'My datasets'
+            'My datasets',
+            true
           )}
         <HeightElement value={'10px'} />
         {collaborationsPageStore.downloadedPublications &&
           mapPublications(
             collaborationsPageStore.downloadedPublications,
-            'Downloaded datasets'
+            'Downloaded datasets',
+            false
           )}
       </FlexWrapColumn>
     </LeftPanel>
   );
 });
 
-function mapPublications(publications: PublicationShortInfo[], header: string) {
+function mapPublications(publications: PublicationShortInfo[], header: string, isMyPublication: boolean) {
   return (<>
     <LeftPanelHeader variant={'h6'}>{header}</LeftPanelHeader>
     <List sx={{ width: '100%' }}>
       {publications?.map(
-        (publicationInfo) => mapToListItem(publicationInfo, collaborationsPageStore)
+        (publicationInfo) => mapToListItem(publicationInfo, isMyPublication)
       )}
     </List>
   </>);
 }
 
-function mapToListItem(publicationInfo: PublicationShortInfo, collaborationsPageStore: CollaborationsPageStore) {
+function mapToListItem(publicationInfo: PublicationShortInfo, isMyPublication: boolean) {
   return (
     <ListItemButton
       sx={{
         width: '100%',
         borderRadius: '8px'
       }}
-      onClick={() => collaborationsPageStore.selectPublication(publicationInfo)}>
+      onClick={() => {
+        if (isMyPublication) {
+          collaborationsPageStore.selectMyPublication(publicationInfo);
+        } else {
+          collaborationsPageStore.selectDownloadedPublication(publicationInfo);
+        }
+      }}>
       <ListItemText
-        primary={TextSizeTruncation(
-          publicationInfo.title!!,
-          26
-        )}
+        primary={TextSizeTruncation(publicationInfo.title!!, 26)}
         sx={{
           whiteSpace: 'nowrap',
           overflow: 'hidden',

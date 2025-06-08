@@ -13,14 +13,21 @@ export class CollaborationsPageStore {
   downloadedPublications?: PublicationShortInfo[];
   isLastPageMyDownloadedPublications = false;
   selectedPublication?: PublicationShortInfo;
+  downloadedPublication?: PublicationShortInfo;
 
   constructor() {
     makeAutoObservable(this);
     this.loadInitialState();
   }
 
-  selectPublication(publicationInfo: PublicationShortInfo): void {
+  selectMyPublication(publicationInfo: PublicationShortInfo): void {
+    this.downloadedPublication = undefined;
     this.selectedPublication = publicationInfo;
+  }
+
+  selectDownloadedPublication(publicationInfo: PublicationShortInfo): void {
+    this.selectedPublication = undefined;
+    this.downloadedPublication = publicationInfo;
   }
 
   private loadInitialState(): void {
