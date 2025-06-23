@@ -22,8 +22,9 @@ import {
   signInPath,
   signUpPath,
   collaborationPath,
-  collaborationChatPath
-} from './constants';
+  collaborationChatPath,
+  newCollaborationChatPath
+} from './constants'
 import {
   PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY,
   PUBLISHING_DATA_COLLECTION_TYPE_SESSION_KEY
@@ -165,6 +166,11 @@ export class RouterStore {
 
       if (path.startsWith(collaborationChatPath)) {
         this.navigatePage(Page.COLLABORATIONS_CHAT, path, true);
+        return;
+      }
+
+      if (path.startsWith(newCollaborationChatPath)) {
+        this.navigatePage(Page.NEW_COLLABORATIONS_CHAT, path, true);
         return;
       }
 

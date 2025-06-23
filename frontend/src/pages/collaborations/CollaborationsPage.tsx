@@ -8,14 +8,25 @@ import { collaborationsPageStore } from '../publication/store/downloadsStore';
 import { observer } from 'mobx-react-lite';
 import { PublicationCollaborationsPage } from './PublicationCollaborations';
 import { LeftPanelPublicationsPage } from './LeftPanelPublications';
+import { PublicationType } from "../publication/store/CollaborationsPageStore"
 import { routerStore } from "../../core/router"
 import { Page } from "../../core/router/constants"
 
 export const CollaborationsPage = observer((): ReactElement => {
-  const { myPublications, downloadedPublications, selectedPublication } =
-    collaborationsPageStore;
+  const {
+    myPublications,
+    downloadedPublications,
+    selectedPublication,
+    selectedPublicationType
+  } = collaborationsPageStore;
   const hasPublications =
     (myPublications?.length ?? 0) + (downloadedPublications?.length ?? 0) > 0;
+
+  const goToChat = (collaborationRequestId: string) => routerStore.navigatePage(
+    Page.NEW_COLLABORATIONS_CHAT,
+    `chat/${collaborationRequestId}`,
+    true
+  );
 
   return (
     <>
@@ -36,13 +47,12 @@ export const CollaborationsPage = observer((): ReactElement => {
             <>
               <LeftPanelPublicationsPage />
               <RightPanel>
-                {selectedPublication ? (
-                  <PublicationCollaborationsPage
-                    publicationInfo={selectedPublication}
-                  />
-                ) : (
-                  <></>
-                )}
+                {selectedPublication &&
+                  selectedPublicationType === PublicationType.MY && (
+                    <PublicationCollaborationsPage
+                      publicationInfo={selectedPublication}
+                    />
+                  )}
               </RightPanel>
             </>
           ) : (
@@ -112,12 +122,6 @@ const Container = styled.div`
   display: flex;
   height: 100vh;
   width: 100%;
-`;
-
-const DatasetStatsWrapper = styled.div`
-  border: 1px solid #d2d2d6;
-  padding: 20px 24px;
-  border-radius: 8px;
 `;
 
 const StyledButton = styled(Button)`

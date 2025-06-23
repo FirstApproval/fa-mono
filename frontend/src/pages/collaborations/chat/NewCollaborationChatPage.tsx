@@ -1,19 +1,25 @@
-import { type ReactElement, useState } from 'react';
 import styled from '@emotion/styled';
+import React, { type ReactElement, useEffect, useState } from 'react';
 import { HeaderComponent } from '../../../components/HeaderComponent';
 import { Helmet } from 'react-helmet';
 import BreadCrumbs from '../BreadCrumbs';
-import Chat from './Chat';
 import { Typography } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 import { LeftPanelPublicationsPage } from '../LeftPanelPublications';
-import { UserInfo } from '../../../apis/first-approval-api';
+import { Publication, UserInfo } from "../../../apis/first-approval-api"
 import { userStore } from '../../../core/user';
 import { routerStore } from '../../../core/router';
-import { CollaborationChatStore } from '../../publication/store/CollaborationChatStore';
+// import { NewCollaborationChatStore } from '../../publication/store/NewCollaborationChatStore';
+import { publicationService } from "../../../core/service"
 
 export const NewCollaborationChatPage = observer((): ReactElement => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
+  let publication: Publication;
+  useEffect(() => {
+    publicationService.getPublication(publicationId).then(response => {
+      publication = response.data;
+    })
+  })
 
   // const publicationShortInfo } = props;
   // const interlocutorName = (collaborationChatStore.collaborationRequestCreator && extractInterlocutorName(
@@ -43,6 +49,7 @@ export const NewCollaborationChatPage = observer((): ReactElement => {
             <BreadCrumbs name={'Assistant'} />
             <BodyWrap>
               <BodyContentWrap>
+                {/* <Chat collaborationChatStore={collaborationChatStore}/> */}
               </BodyContentWrap>
             </BodyWrap>
           </RightPanel>

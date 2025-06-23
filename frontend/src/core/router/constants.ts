@@ -61,3 +61,4 @@ export const contestPath = '/contest';
 export const passwordChangeConfirmation = '/password-change-confirmation'
 export const collaborationPath = '/collaborations/';
 export const collaborationChatPath = '/collaborations/chat/';
+export const newCollaborationChatPath = '/collaborations/new/chat';

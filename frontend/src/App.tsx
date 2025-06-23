@@ -37,7 +37,7 @@ import {ContactsPage} from './pages/contacts/ContactsPage';
 import {EnterEmailPage} from './pages/signup/EnterEmailPage';
 import {ContestPage} from "./pages/contest/ContestPage";
 import {ChooseDataCollectionPage} from "./pages/publication/ChooseDataCollection"
-import { NewCollaborationChatPage } from "./pages/collaborations/chat/NewCollaborationChatPage"
+import {NewCollaborationChatPage} from "./pages/collaborations/chat/NewCollaborationChatPage"
 
 const MOBILE_VERSION_NOT_SUPPORT_STORAGE_KEY = 'mobileVersionNotSupportShown';
 

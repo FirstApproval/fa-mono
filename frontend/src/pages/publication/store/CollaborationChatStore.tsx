@@ -13,20 +13,21 @@ export class CollaborationChatStore {
   collaborationRequestCreator: UserInfo | undefined = undefined;
   publicationCreator: UserInfo | undefined = undefined;
   messages: CollaborationRequestMessage[] = [];
-  publication: Publication;
+  publication?: Publication;
 
-  constructor(collaborationRequestId: string, stage: Stage, publication: Publication) {
+  constructor(collaborationRequestId: string, stage?: Stage, publication?: Publication) {
     makeAutoObservable(this);
-    this.publication = publication;
-    this.publicationCreator = publication.creator;
+
     if (stage === Stage.CREATE_REQUEST) {
+      this.publication = publication;
+      this.publicationCreator = publication?.creator;
       this.collaborationRequestCreator = userStore.user;
       this.messages = [
         {
           id: '',
           type: CollaborationMessageType.CREATE,
           isAssistant: true,
-          text: `The dataset "${publication.title}" was downloaded.\n\n` +
+          text: `The dataset "${publication?.title}" was downloaded.\n\n` +
             'This dataset was published in open access by the author(s).\n' +
             'If you reuse it in your work, it is enough for you to cite this dataset.'
         }
@@ -42,9 +43,10 @@ export class CollaborationChatStore {
       .getCollaborationChat(collaborationRequestId)
       .then((response) => {
         const data = response.data;
-        // this.publicationCreator = data.publicationCreator;
+        this.publicationCreator = data.publicationCreator;
         this.collaborationRequestCreator = data.collaborationRequestCreator;
         this.messages = data.messages;
+
       });
   }
 }
