@@ -3,12 +3,12 @@ import React, { type ReactElement, useEffect, useState } from 'react';
 import { HeaderComponent } from '../../../components/HeaderComponent';
 import { Helmet } from 'react-helmet';
 import BreadCrumbs from '../BreadCrumbs';
-import { Typography } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 import { LeftPanelPublicationsPage } from '../LeftPanelPublications';
 import { UserInfo } from "../../../apis/first-approval-api"
 import { routerStore } from '../../../core/router';
 import { DownloadedPublicationCollaborationChatStore } from '../../publication/store/DownloadedPublicationCollaborationChatStore';
+import Chat from "./Chat"
 
 export const DownloadedCollaborationChatPage = observer((): ReactElement => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -41,7 +41,7 @@ export const DownloadedCollaborationChatPage = observer((): ReactElement => {
             <BreadCrumbs name={interlocutorName} />
             <BodyWrap>
               <BodyContentWrap>
-                {/* <Chat collaborationChatStore={collaborationChatStore}/> */}
+                <Chat collaborationChatStore={downloadedPublicationChatStore}/>
               </BodyContentWrap>
             </BodyWrap>
           </RightPanel>
@@ -86,23 +86,23 @@ const BodyContentWrap = styled.div`
   padding: 48px 32px;
 `;
 
-const LeftPanel = styled.div`
-  flex: 22%;
-  display: flex;
-  max-width: 300px;
-  flex-direction: column;
-  align-items: start;
-  border-right: 1px solid #d2d2d6;
-
-  justify-content: space-between;
-  padding: 22px;
-`;
-
-const LeftPanelHeader = styled(Typography)`
-  color: var(--text-disabled, rgba(4, 0, 54, 0.38));
-  font-size: 0.8rem;
-  padding-left: 16px;
-`;
+// const LeftPanel = styled.div`
+//   flex: 22%;
+//   display: flex;
+//   max-width: 300px;
+//   flex-direction: column;
+//   align-items: start;
+//   border-right: 1px solid #d2d2d6;
+//
+//   justify-content: space-between;
+//   padding: 22px;
+// `;
+//
+// const LeftPanelHeader = styled(Typography)`
+//   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
+//   font-size: 0.8rem;
+//   padding-left: 16px;
+// `;
 
 const RightPanel = styled.div`
   display: flex;

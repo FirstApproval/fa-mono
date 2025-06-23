@@ -10,14 +10,14 @@ import sendImage from '../../../assets/fa-send.svg';
 import fileIcon from '../../../assets/file-icon.svg';
 import timetableImage from '../../../assets/fa-timetable.svg';
 import highfiveImage from '../../../assets/fa-highfive.svg';
-import { CollaborationChatStore } from "../../publication/store/CollaborationChatStore"
+import { CollaborationChatInterface } from '../../publication/store/CollaborationChatStore';
 import { getFullName, renderProfileImage } from "../../../util/userUtil"
 
 type ChatProps = {
-  collaborationChatStore: CollaborationChatStore;
+  collaborationChatStore: CollaborationChatInterface;
 };
 
-const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: CollaborationChatStore }) => {
+const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: CollaborationChatInterface }) => {
   const { collaborationChatStore } = props;
   const [stage, setStage] = useState(Stage.CREATE_REQUEST);
   const [showDeclineModal, setShowDeclineModal] = useState(false);
@@ -426,9 +426,10 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
       <div>
         {collaborationChatStore.messages.map((message) => {
           const fullName = message.isAssistant ? 'Assistant' : getFullName(message.userInfo!!);
+          const avatar = message.isAssistant ? 'FA' : renderProfileImage(message.userInfo?.profileImage);
           return (
             <React.Fragment key={message.id}>
-              <Message name={fullName} avatar={renderProfileImage(message.userInfo?.profileImage)}>
+              <Message name={fullName} avatar={avatar}>
                 {message.text}
               </Message>
               <HeightElement value={'32px'} />
@@ -595,17 +596,6 @@ const Message = ({
       <HeightElement value={'12px'} />
       <Typography variant={'body'}>
         {children}
-        {/* {Array.isArray(children) ? (
-          children.map((c, i) => (
-            <Markdown rehypePlugins={[rehypeRaw]} key={i}>
-              {DOMPurify.sanitize(c)}
-            </Markdown>
-          ))
-        ) : (
-          <Markdown rehypePlugins={[rehypeRaw]}>
-            {DOMPurify.sanitize(children)}
-          </Markdown>
-        )} */}
       </Typography>
     </div>
   );
@@ -1085,6 +1075,7 @@ const StyledDeclineButton = styled(Button)`
   margin-bottom: 0.75rem;
   color: #d32f2f;
   border-color: #d32f2f;
+
   &:hover {
     border-color: #d32f2f;
     background: rgb(255 78 255 / 4%);

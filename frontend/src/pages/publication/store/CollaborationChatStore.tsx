@@ -8,7 +8,7 @@ import {
 import { Stage } from "../../collaborations/chat/Chat"
 import { userStore } from "../../../core/user"
 
-export class CollaborationChatStore {
+export class CollaborationChatStore implements CollaborationChatInterface {
   collaborationRequestId: string = '';
   collaborationRequestCreator: UserInfo | undefined = undefined;
   publicationCreator: UserInfo | undefined = undefined;
@@ -49,4 +49,12 @@ export class CollaborationChatStore {
 
       });
   }
+}
+
+export interface CollaborationChatInterface {
+  collaborationRequestId: string;
+  collaborationRequestCreator: UserInfo | undefined;
+  publicationCreator: UserInfo | undefined;
+  messages: CollaborationRequestMessage[];
+  publication?: Publication;
 }
