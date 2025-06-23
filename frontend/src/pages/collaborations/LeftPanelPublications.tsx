@@ -7,16 +7,8 @@ import styled from '@emotion/styled';
 import { PublicationShortInfo } from "../../apis/first-approval-api"
 import { TextSizeTruncation } from "../../util/stylesUtil"
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord"
-import { routerStore } from "../../core/router"
-import { Page } from "../../core/router/constants"
 
 export const LeftPanelPublicationsPage = observer((): ReactElement => {
-  // const goToChat = (collaborationRequestId: string) => routerStore.navigatePage(
-  //   Page.NEW_COLLABORATIONS_CHAT,
-  //   `new/chat/${collaborationRequestId}`,
-  //   true
-  // );
-
   return (
     <LeftPanel>
       <FlexWrapColumn>

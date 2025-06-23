@@ -6,26 +6,18 @@ import BreadCrumbs from '../BreadCrumbs';
 import { Typography } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 import { LeftPanelPublicationsPage } from '../LeftPanelPublications';
-import { Publication, UserInfo } from "../../../apis/first-approval-api"
-import { userStore } from '../../../core/user';
+import { UserInfo } from "../../../apis/first-approval-api"
 import { routerStore } from '../../../core/router';
-// import { NewCollaborationChatStore } from '../../publication/store/NewCollaborationChatStore';
-import { publicationService } from "../../../core/service"
+import { DownloadedPublicationCollaborationChatStore } from '../../publication/store/DownloadedPublicationCollaborationChatStore';
 
-export const NewCollaborationChatPage = observer((): ReactElement => {
+export const DownloadedCollaborationChatPage = observer((): ReactElement => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
-  let publication: Publication;
-  useEffect(() => {
-    publicationService.getPublication(publicationId).then(response => {
-      publication = response.data;
-    })
-  })
+  const [downloadedPublicationChatStore] = useState(new DownloadedPublicationCollaborationChatStore(publicationId));
 
-  // const publicationShortInfo } = props;
-  // const interlocutorName = (collaborationChatStore.collaborationRequestCreator && extractInterlocutorName(
-  //   collaborationChatStore.collaborationRequestCreator!!,
-  //   collaborationChatStore.publicationCreator!!
-  // )) ?? '';
+  const interlocutorName = (downloadedPublicationChatStore.publication && extractInterlocutorName(
+    downloadedPublicationChatStore.publication?.creator!!
+  )) ?? '';
+
   return (
     <>
       <Helmet>
@@ -46,7 +38,7 @@ export const NewCollaborationChatPage = observer((): ReactElement => {
         <Container>
           <LeftPanelPublicationsPage />
           <RightPanel>
-            <BreadCrumbs name={'Assistant'} />
+            <BreadCrumbs name={interlocutorName} />
             <BodyWrap>
               <BodyContentWrap>
                 {/* <Chat collaborationChatStore={collaborationChatStore}/> */}
@@ -59,15 +51,8 @@ export const NewCollaborationChatPage = observer((): ReactElement => {
   );
 });
 
-function extractInterlocutorName(
-  collaborationRequestCreator: UserInfo,
-  publicationCreator: UserInfo
-) {
-  const interlocutorUser =
-    collaborationRequestCreator.id === userStore.user!!.id
-      ? publicationCreator
-      : collaborationRequestCreator;
-  return `${interlocutorUser!!.firstName} ${interlocutorUser!!.lastName}`;
+function extractInterlocutorName(publicationCreator: UserInfo) {
+  return `${publicationCreator.firstName} ${publicationCreator.lastName}`;
 }
 
 const HeaderBorderColorFix = styled.div`

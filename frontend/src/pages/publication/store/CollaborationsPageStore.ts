@@ -6,7 +6,7 @@ import {
 } from "../../../apis/first-approval-api"
 import { makeAutoObservable } from "mobx"
 import { routerStore } from "../../../core/router"
-import { newCollaborationChatPath, Page } from "../../../core/router/constants"
+import { downloadedPublicationCollaborationChatPath, Page } from "../../../core/router/constants"
 import { collaborationsPageStore } from "./downloadsStore"
 
 export class CollaborationsPageStore {
@@ -25,8 +25,8 @@ export class CollaborationsPageStore {
 
   goToChat(publicationId: string) {
     routerStore.navigatePage(
-      Page.NEW_COLLABORATIONS_CHAT,
-      `${newCollaborationChatPath}/${publicationId}`,
+      Page.DOWNLOADED_PUBLICATION_COLLABORATIONS_CHAT,
+      `${downloadedPublicationCollaborationChatPath}/${publicationId}`,
       true
     );
   }
@@ -37,8 +37,6 @@ export class CollaborationsPageStore {
   }
 
   selectDownloadedPublication(publicationInfo: PublicationShortInfo): void {
-    // this.selectedPublication = publicationInfo;
-    // this.selectedPublicationType = PublicationType.DOWNLOADED;
     collaborationsPageStore.goToChat(publicationInfo.id!!);
   }
 

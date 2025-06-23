@@ -6,19 +6,20 @@ import {
   UserInfo
 } from '../../../apis/first-approval-api';
 import { userStore } from '../../../core/user';
+import { publicationService } from "../../../core/service"
 
-export class NewCollaborationChatStore {
+export class DownloadedPublicationCollaborationChatStore {
   collaborationRequestId: string = '';
   collaborationRequestCreator: UserInfo | undefined = undefined;
-  publicationCreator: UserInfo | undefined = undefined;
   messages: CollaborationRequestMessage[] = [];
   publication?: Publication;
 
-  constructor(collaborationRequestId: string, publication: Publication) {
+  constructor(publicationId: string) {
     makeAutoObservable(this);
 
-    this.publication = publication;
-    this.publicationCreator = publication?.creator;
+    publicationService.getPublication(publicationId).then(response => {
+      this.publication = response.data;
+    });
     this.collaborationRequestCreator = userStore.user;
     this.messages = [
       {
@@ -26,7 +27,7 @@ export class NewCollaborationChatStore {
         type: CollaborationMessageType.CREATE,
         isAssistant: true,
         text:
-          `The dataset "${publication?.title}" was downloaded.\n\n` +
+          `The dataset "${this.publication?.title}" was downloaded.\n\n` +
           'This dataset was published in open access by the author(s).\n' +
           'If you reuse it in your work, it is enough for you to cite this dataset.'
       }

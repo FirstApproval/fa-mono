@@ -23,7 +23,7 @@ export const CollaborationsPage = observer((): ReactElement => {
     (myPublications?.length ?? 0) + (downloadedPublications?.length ?? 0) > 0;
 
   const goToChat = (collaborationRequestId: string) => routerStore.navigatePage(
-    Page.NEW_COLLABORATIONS_CHAT,
+    Page.DOWNLOADED_PUBLICATION_COLLABORATIONS_CHAT,
     `chat/${collaborationRequestId}`,
     true
   );

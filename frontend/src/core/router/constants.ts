@@ -33,7 +33,7 @@ export enum Page {
 
   COLLABORATIONS_PAGE,
   COLLABORATIONS_CHAT,
-  NEW_COLLABORATIONS_CHAT
+  DOWNLOADED_PUBLICATION_COLLABORATIONS_CHAT
 }
 
 export const pathToOauthType: Record<string, OauthType> = {
@@ -61,4 +61,4 @@ export const contestPath = '/contest';
 export const passwordChangeConfirmation = '/password-change-confirmation'
 export const collaborationPath = '/collaborations/';
 export const collaborationChatPath = '/collaborations/chat/';
-export const newCollaborationChatPath = '/collaborations/new/chat';
+export const downloadedPublicationCollaborationChatPath = '/collaborations/downloaded/chat';
