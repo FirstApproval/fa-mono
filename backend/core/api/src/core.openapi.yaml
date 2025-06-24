@@ -991,13 +991,42 @@ paths:
           name: status
           schema:
             $ref: '#/components/schemas/CollaborationRequestStatus'
-          description: Decision of
+          description: Collaboration request status
       responses:
         200:
           description: Success
       security:
         - TokenAuth: [ ]
       operationId: acceptOrDeclineCollaborationRequest
+      tags: [ collaboration-request ]
+
+  /api/collabortion/select-use-type/{collaborationRequestId}:
+    post:
+      summary: Select collaboration use type
+      parameters:
+        - in: path
+          name: collaborationRequestId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Collaboration request id
+        - in: query
+          name: useType
+          schema:
+            $ref: '#/components/schemas/UseType'
+          required: true
+          description: Use type - CITATION or CO_AUTHORSHIP
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollaborationChatResponse'
+      security:
+        - TokenAuth: [ ]
+      operationId: selectUseType
       tags: [ collaboration-request ]
 
   /api/collabortion/requests/chat/{collaborationRequestId}:
@@ -2816,7 +2845,8 @@ components:
       enum:
         - ASSISTANT_CREATE
         - ACCEPT_OR_REJECT_COLLABORATION_REQUEST
-        - CREATE_REQUEST,
+        - CREATE_REQUEST
+        - SELECT_USE_TYPE
         - DEFAULT
         - COLLABORATION_APPROVED
         - DATA_USER_ASKED
