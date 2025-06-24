@@ -12,6 +12,7 @@ import timetableImage from '../../../assets/fa-timetable.svg';
 import highfiveImage from '../../../assets/fa-highfive.svg';
 import { CollaborationChatInterface } from '../../publication/store/CollaborationChatStore';
 import { getFullName, renderProfileImage } from "../../../util/userUtil"
+import { CollaborationMessageType } from 'src/apis/first-approval-api';
 
 type ChatProps = {
   collaborationChatStore: CollaborationChatInterface;
@@ -19,7 +20,7 @@ type ChatProps = {
 
 const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: CollaborationChatInterface }) => {
   const { collaborationChatStore } = props;
-  const [stage, setStage] = useState(Stage.CREATE_REQUEST);
+  const [stage, setStage] = useState(CollaborationMessageType.CREATE_REQUEST);
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [showCollabModal, setShowCollabModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
@@ -77,7 +78,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
       avatar: 'MM',
       text: 'You will have 2 weeks to read the article and decide whether to accept or decline co-authorship. You can ask questions or provide your suggestions to the author via private messages. We recommend starting this process well in advance. If you do not approve the request within 2 weeks, you will lose the opportunity for co-authorship in this article. If you decline, the data user will simply cite your dataset.'
     });
-    setStage(Stage.DATA_USER_ASKED);
+    setStage(CollaborationMessageType.DATA_USER_ASKED);
   };
 
   const handleShowCommentModal: () => void = () => setShowCommentModal(true);
@@ -103,7 +104,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
         </p>
       )
     });
-    setStage(Stage.MANUSCRIPT_APPROVED);
+    setStage(CollaborationMessageType.MANUSCRIPT_APPROVED);
     handleCloseCommentModal();
   };
 
@@ -134,7 +135,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
         </>
       ]
     });
-    setStage(Stage.DECLINED);
+    setStage(CollaborationMessageType.DECLINED);
     setShowDeclineModal(false);
   };
 
@@ -148,7 +149,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
       avatar: 'MM',
       text: 'Approve manuscript.'
     });
-    setStage(Stage.MANUSCRIPT_APPROVED);
+    setStage(CollaborationMessageType.MANUSCRIPT_APPROVED);
   };
 
   const handleCollaborate: () => void = () => {
@@ -245,7 +246,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
         </>
       ]
     });
-    setStage(Stage.MANUSCRIPT_APPROVED);
+    setStage(CollaborationMessageType.MANUSCRIPT_APPROVED);
   };
 
   const handlePublicationFormMsg: () => void = () => {
@@ -299,7 +300,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
         </>
       )
     });
-    setStage(Stage.PUBLICATION_INFO_RECEIVED);
+    setStage(CollaborationMessageType.PUBLICATION_INFO_RECEIVED);
   };
 
   const handleAuthorInfoFormMsg: () => void = () => {
@@ -362,7 +363,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
         </>
       )
     });
-    setStage(Stage.AUTHOR_INFO_RECEIVED);
+    setStage(CollaborationMessageType.AUTHOR_INFO_RECEIVED);
   };
 
   const handleApproveCollaboration: () => void = () => {
@@ -408,7 +409,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
         </>
       )
     });
-    setStage(Stage.COLLABORATION_APPROVED);
+    setStage(CollaborationMessageType.COLLABORATION_APPROVED);
   };
 
   return (
@@ -436,7 +437,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
             </React.Fragment>
           );
         })}
-        {stage === Stage.CREATE_REQUEST && (
+        {stage === CollaborationMessageType.CREATE_REQUEST && (
           <UserOptions
             stage={stage}
             onNeedHelp={handleShowCollabModal}
@@ -444,7 +445,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
             reachOutToTheAuthor={handleReachOutToAuthor}
           />
         )}
-        {stage === Stage.DEFAULT && (
+        {stage === CollaborationMessageType.DEFAULT && (
           <UserOptions
             stage={stage}
             onNeedHelp={handleShowCollabModal}
@@ -454,7 +455,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
             onCollaborate={handleCollaborate}
           />
         )}
-        {stage === Stage.COLLABORATION_APPROVED && (
+        {stage === CollaborationMessageType.COLLABORATION_APPROVED && (
           <UserOptions
             stage={stage}
             onNeedHelp={handleNeedHelp}
@@ -463,7 +464,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
             onDecline={handleDecline}
           />
         )}
-        {stage === Stage.DATA_USER_ASKED && (
+        {stage === CollaborationMessageType.DATA_USER_ASKED && (
           <UserOptions
             stage={stage}
             onNeedHelp={handleNeedHelp}
@@ -475,14 +476,14 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
             onDecline={handleDecline}
           />
         )}
-        {stage === Stage.MANUSCRIPT_APPROVED && (
+        {stage === CollaborationMessageType.MANUSCRIPT_APPROVED && (
           <UserOptions
             stage={stage}
             onNeedHelp={handleNeedHelp}
             onAskDataUser={handleEmailDataUser}
           />
         )}
-        {stage === Stage.DECLINED && (
+        {stage === CollaborationMessageType.DECLINED && (
           <UserOptions stage={stage} onNeedHelp={handleNeedHelp} />
         )}
         <DeclineModal
@@ -601,18 +602,9 @@ const Message = ({
   );
 };
 
-export enum Stage {
-  CREATE_REQUEST = "CREATE_REQUEST",
-  DEFAULT = "DEFAULT",
-  COLLABORATION_APPROVED= "COLLABORATION_APPROVED",
-  DATA_USER_ASKED = "DATA_USER_ASKED",
-  MANUSCRIPT_APPROVED = "MANUSCRIPT_APPROVED",
-  DECLINED = "DECLINED",
-  AUTHOR_INFO_RECEIVED = "AUTHOR_INFO_RECEIVED",
-  PUBLICATION_INFO_RECEIVED = "PUBLICATION_INFO_RECEIVED"
-}
+
 interface UserOptionsProps {
-  stage: Stage;
+  stage: CollaborationMessageType;
   onNeedHelp?: () => void;
   citation?: () => void;
   reachOutToTheAuthor?: () => void;

@@ -26,8 +26,7 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
 
       this.messages = [
         {
-          id: '',
-          type: CollaborationMessageType.CREATE,
+          type: CollaborationMessageType.CREATE_REQUEST,
           isAssistant: true,
           text:
             `The dataset "${this.publication?.title}" was downloaded.\n\n` +

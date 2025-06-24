@@ -2814,9 +2814,16 @@ components:
     CollaborationMessageType:
       type: string
       enum:
-        - CREATE
         - ASSISTANT_CREATE
         - ACCEPT_OR_REJECT_COLLABORATION_REQUEST
+        - CREATE_REQUEST,
+        - DEFAULT
+        - COLLABORATION_APPROVED
+        - DATA_USER_ASKED
+        - MANUSCRIPT_APPROVED
+        - DECLINED
+        - AUTHOR_INFO_RECEIVED
+        - PUBLICATION_INFO_RECEIVED
 
     PublicationShortInfo:
       type: object

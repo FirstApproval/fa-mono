@@ -5,7 +5,6 @@ import {
   CollaborationRequestMessage, Publication,
   UserInfo
 } from "../../../apis/first-approval-api"
-import { Stage } from "../../collaborations/chat/Chat"
 import { userStore } from "../../../core/user"
 
 export class CollaborationChatStore implements CollaborationChatInterface {
@@ -15,17 +14,17 @@ export class CollaborationChatStore implements CollaborationChatInterface {
   messages: CollaborationRequestMessage[] = [];
   publication?: Publication;
 
-  constructor(collaborationRequestId: string, stage?: Stage, publication?: Publication) {
+  constructor(collaborationRequestId: string, stage?: CollaborationMessageType, publication?: Publication) {
     makeAutoObservable(this);
 
-    if (stage === Stage.CREATE_REQUEST) {
+    if (stage === CollaborationMessageType.CREATE_REQUEST) {
       this.publication = publication;
       this.publicationCreator = publication?.creator;
       this.collaborationRequestCreator = userStore.user;
       this.messages = [
         {
           id: '',
-          type: CollaborationMessageType.CREATE,
+          type: CollaborationMessageType.CREATE_REQUEST,
           isAssistant: true,
           text: `The dataset "${publication?.title}" was downloaded.\n\n` +
             'This dataset was published in open access by the author(s).\n' +
