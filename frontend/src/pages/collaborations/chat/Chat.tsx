@@ -670,12 +670,26 @@ const UserOptions = ({
             Email data user
           </StyledButton>
         )}
-        <StyledButton variant="outlined" onClick={onFormMsg}>
-          Ask First Approval
-        </StyledButton>
-        <StyledApproveButton variant="outlined" onClick={onCollaborate}>
-          I’d like to collaborate! Tell me more
-        </StyledApproveButton>
+        {onFormMsg && (
+          <StyledButton variant="outlined" onClick={onFormMsg}>
+            Ask First Approval
+          </StyledButton>
+        )}
+        {onCollaborate && (
+          <StyledApproveButton variant="outlined" onClick={onCollaborate}>
+            I’d like to collaborate! Tell me more
+          </StyledApproveButton>
+        )}
+        {citation && (
+          <StyledApproveButton variant="outlined" onClick={citation}>
+          Citation
+          </StyledApproveButton>
+        )}
+        {reachOutToTheAuthor && (
+          <StyledApproveButton variant="outlined" onClick={reachOutToTheAuthor}>
+          I want to reach out to the author(s)
+          </StyledApproveButton>
+        )}
       </ButtonsWrapper>
     </div>
   );
