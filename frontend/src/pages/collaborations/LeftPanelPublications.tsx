@@ -9,36 +9,45 @@ import { TextSizeTruncation } from "../../util/stylesUtil"
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord"
 
 export const LeftPanelPublicationsPage = observer((): ReactElement => {
+  debugger;
   return (
     <LeftPanel>
       <FlexWrapColumn>
-        {collaborationsPageStore.myPublications &&
-          mapPublications(
-            collaborationsPageStore.myPublications,
+        {mapPublications(
             'My datasets',
-            true
+            true,
+            collaborationsPageStore.myPublications,
           )}
-        <HeightElement value={'10px'} />
-        {collaborationsPageStore.downloadedPublications &&
-          mapPublications(
-            collaborationsPageStore.downloadedPublications,
-            'Downloaded datasets',
-            false
-          )}
+        <HeightElement value="10px" />
+        {collaborationsPageStore.downloadedPublications && (
+          <>
+            {mapPublications(
+              'Downloaded • FA License',
+              false,
+              collaborationsPageStore.openAccessDownloadedPublications
+            )}
+            <HeightElement value="8px"/>
+            {mapPublications(
+              'Downloaded • Open access',
+              false,
+              collaborationsPageStore.openAccessDownloadedPublications
+            )}
+          </>
+        )}
       </FlexWrapColumn>
     </LeftPanel>
   );
 });
 
-function mapPublications(publications: PublicationShortInfo[], header: string, isMyPublication: boolean) {
-  return (<>
+function mapPublications(header: string, isMyPublication: boolean, publications?: PublicationShortInfo[]) {
+  return publications?.length ? (<>
     <LeftPanelHeader variant={'h6'}>{header}</LeftPanelHeader>
     <List sx={{ width: '100%' }}>
       {publications?.map(
         (publicationInfo) => mapToListItem(publicationInfo, isMyPublication)
       )}
     </List>
-  </>);
+  </>) : <></>;
 }
 
 function mapToListItem(publicationInfo: PublicationShortInfo, isMyPublication: boolean) {

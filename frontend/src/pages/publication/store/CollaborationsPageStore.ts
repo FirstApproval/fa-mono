@@ -2,7 +2,8 @@ import { publicationService } from '../../../core/service';
 import { forkJoin, from } from 'rxjs';
 import {
   PublicationShortInfo,
-  PublicationStatus
+  PublicationStatus,
+  UseType
 } from "../../../apis/first-approval-api"
 import { makeAutoObservable } from "mobx"
 import { routerStore } from "../../../core/router"
@@ -14,6 +15,8 @@ export class CollaborationsPageStore {
   myPublications?: PublicationShortInfo[];
   isLastPageMyPublications = false;
   downloadedPublications?: PublicationShortInfo[];
+  openAccessDownloadedPublications: PublicationShortInfo[] = [];
+  collaborationRequirementsDownloadedPublications: PublicationShortInfo[] = [];
   isLastPageMyDownloadedPublications = false;
   selectedPublication?: PublicationShortInfo;
   selectedPublicationType?: PublicationType;
@@ -54,7 +57,12 @@ export class CollaborationsPageStore {
           myDownloadedPublicationsResponse.data.publications;
         this.isLastPageMyDownloadedPublications =
           myDownloadedPublicationsResponse.data.isLastPage;
-        debugger;
+
+        this.openAccessDownloadedPublications =
+          this.downloadedPublications!!.filter(p => p.useType === UseType.CITATION)
+        this.collaborationRequirementsDownloadedPublications =
+          this.downloadedPublications!!.filter(p => p.useType === UseType.CO_AUTHORSHIP)
+
         this.isLoading = false;
       }
     );

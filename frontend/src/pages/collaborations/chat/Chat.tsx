@@ -86,7 +86,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
 
   const handleReachOutToAuthor: () => void = () => {
     const mappedAuthors = collaborationChatStore.publication!!.authors!!
-      .map(author => `${author.firstName} ${author.lastName} - ` + (author.email ?? 'no email'))
+      .map(author => `• ${author.firstName} ${author.lastName} - ` + (author.email ?? 'no email'))
 
     collaborationChatStore.messages.push({
       id: '',
