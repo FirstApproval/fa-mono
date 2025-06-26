@@ -1,5 +1,7 @@
 package org.firstapproval.backend.core.domain.publication.collaboration.requests
 
+import org.firstapproval.backend.core.domain.publication.Publication
+import org.firstapproval.backend.core.domain.user.User
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
@@ -13,4 +15,5 @@ interface CollaborationRequestRepository : JpaRepository<CollaborationRequest, U
         collaborationRequestStatuses: Collection<CollaborationRequestStatus>,
         page: Pageable
     ): Page<CollaborationRequest>
+    fun existsByPublicationAndUser(publication: Publication, user: User): Boolean
 }

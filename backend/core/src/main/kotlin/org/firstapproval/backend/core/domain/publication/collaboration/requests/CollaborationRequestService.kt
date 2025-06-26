@@ -1,12 +1,14 @@
 package org.firstapproval.backend.core.domain.publication.collaboration.requests
 
 import org.firstapproval.api.server.model.CreateCollaborationRequest
+import org.firstapproval.backend.core.domain.publication.Publication
 import org.firstapproval.backend.core.domain.publication.PublicationRepository
 import org.firstapproval.backend.core.domain.publication.PublicationService
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationMessageRepository
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessage
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.Create
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.MessageType
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.MessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.APPROVED
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.NEW
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.DECLINED
@@ -53,6 +55,38 @@ class CollaborationRequestService(
     fun createCollaborationRequest(publicationId: String, collaborationRequestRequest: CreateCollaborationRequest, user: User) {
         val publication = publicationRepository.getReferenceById(publicationId)
         val typeOfWork = TypeOfWork.valueOf(collaborationRequestRequest.typeOfWork.name)
+        createIfAbsent(publication, collaborationRequestRequest, typeOfWork, user)
+    }
+
+    @Transactional
+    fun get(id: UUID) = collaborationRequestRepository.getReferenceById(id)
+
+    @Transactional
+    fun getByUser(userId: UUID, page: Int, pageSize: Int) =
+        collaborationRequestRepository.findByUserId(
+            userId, PageRequest.of(page, pageSize, Sort.by(DESC, "status", "creationTime"))
+        )
+
+    @Transactional
+    fun findByPublicationId(publicationId: String, page: Int, pageSize: Int, user: User): Page<CollaborationRequest> {
+        val publication = publicationService.getUserPublicationByIdAndStatus(publicationId, user)
+        return collaborationRequestRepository.findByPublicationIdAndStatusIn(
+            publication.id,
+            setOf(NEW, APPROVED, DECLINED),
+            PageRequest.of(page, pageSize, Sort.by(DESC, "status", "creationTime"))
+        )
+    }
+
+    private fun createIfAbsent(
+        publication: Publication,
+        collaborationRequestRequest: CreateCollaborationRequest,
+        typeOfWork: TypeOfWork,
+        user: User
+    ) {
+        if (collaborationRequestRepository.existsByPublicationAndUser(publication, user)) {
+            return
+        }
+
         val collaboration = collaborationRequestRepository.save(
             CollaborationRequest(
                 publication = publication,
@@ -80,6 +114,18 @@ class CollaborationRequestService(
             )
         )
 
+        collaborationMessageRepository.save(
+            CollaborationRequestMessage(
+                collaborationRequest = collaboration,
+                type = AGREE_TO_THE_TERMS_OF_COLLABORATION,
+                user = user,
+                text = "I agree to the terms of the First Approval Collaboration License, " +
+                    "including sending a Collaboration Request to the Data Author(s).",
+                sequenceIndex = 0
+            )
+        )
+
+
         val fullNameRequestCreator = "${collaborationRequestRequest.firstNameLegal} ${collaborationRequestRequest.lastNameLegal}"
         collaborationMessageRepository.save(
             CollaborationRequestMessage(
@@ -96,25 +142,6 @@ class CollaborationRequestService(
                     "without specifying you as a co-author.",
                 sequenceIndex = 1
             )
-        )
-    }
-
-    @Transactional
-    fun get(id: UUID) = collaborationRequestRepository.getReferenceById(id)
-
-    @Transactional
-    fun getByUser(userId: UUID, page: Int, pageSize: Int) =
-        collaborationRequestRepository.findByUserId(
-            userId, PageRequest.of(page, pageSize, Sort.by(DESC, "status", "creationTime"))
-        )
-
-    @Transactional
-    fun findByPublicationId(publicationId: String, page: Int, pageSize: Int, user: User): Page<CollaborationRequest> {
-        val publication = publicationService.getUserPublicationByIdAndStatus(publicationId, user)
-        return collaborationRequestRepository.findByPublicationIdAndStatusIn(
-            publication.id,
-            setOf(NEW, APPROVED, DECLINED),
-            PageRequest.of(page, pageSize, Sort.by(DESC, "status", "creationTime"))
         )
     }
 }
