@@ -1000,15 +1000,14 @@ paths:
       operationId: acceptOrDeclineCollaborationRequest
       tags: [ collaboration-request ]
 
-  /api/collabortion/select-use-type/{collaborationRequestId}:
+  /api/collabortion/select-use-type/{publicationId}:
     post:
       summary: Select collaboration use type
       parameters:
         - in: path
-          name: collaborationRequestId
+          name: publicationId
           schema:
             type: string
-            format: uuid
           required: true
           description: Collaboration request id
         - in: query

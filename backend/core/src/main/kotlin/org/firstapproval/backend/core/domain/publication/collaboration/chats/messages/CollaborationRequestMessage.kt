@@ -96,7 +96,7 @@ class Create(
     val firstNameLegal: String,
     val lastNameLegal: String,
     val typeOfWork: TypeOfWork,
-    val description: String,
+    val description: String?,
     override var type: MessageType = CREATE,
 ) : MessagePayload
 

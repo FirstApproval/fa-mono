@@ -1,6 +1,8 @@
 package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.PublicationApi
+import org.firstapproval.api.server.model.CollaborationRequestTypeOfWork.ARTICLE
+import org.firstapproval.api.server.model.CreateCollaborationRequest
 import org.firstapproval.api.server.model.CreatePublicationRequest
 import org.firstapproval.api.server.model.CreatePublicationResponse
 import org.firstapproval.api.server.model.DownloadLinkResponse
@@ -21,6 +23,7 @@ import org.firstapproval.backend.core.domain.publication.PublicationService
 import org.firstapproval.backend.core.domain.publication.PublicationStatus.PUBLISHED
 import org.firstapproval.backend.core.domain.publication.UseType
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestRepository
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestService
 import org.firstapproval.backend.core.domain.publication.downloader.DownloaderRepository
 import org.firstapproval.backend.core.domain.publication.toApiObject
 import org.firstapproval.backend.core.domain.user.UserService
@@ -41,8 +44,8 @@ class PublicationController(
     private val publicationService: PublicationService,
     private val userService: UserService,
     private val downloaderRepository: DownloaderRepository,
-//    private val collaboratorRepository: CollaboratorRepository,
     private val collaborationRequestRepository: CollaborationRequestRepository,
+    private val collaborationRequestService: CollaborationRequestService,
     private val authHolderService: AuthHolderService,
     private val publicationPdfService: PublicationPdfService,
     private val doiProperties: DoiProperties
@@ -149,8 +152,20 @@ class PublicationController(
 
     override fun getDownloadLink(id: String, agreeToTheFirstApprovalLicense: Boolean): ResponseEntity<DownloadLinkResponse> {
         val pub = publicationService.getPublished(id)
-        if (pub.useType == UseType.CO_AUTHORSHIP && pub.creator.id != authHolderService.user.id && !agreeToTheFirstApprovalLicense) {
-            throw IllegalArgumentException("User must agree to the First Approval License")
+        if (pub.useType == UseType.CO_AUTHORSHIP && pub.creator.id != authHolderService.user.id) {
+            if (!agreeToTheFirstApprovalLicense) {
+                throw IllegalArgumentException("User must agree to the First Approval License")
+            }
+
+            collaborationRequestService.createCollaborationRequest(
+                id,
+                CreateCollaborationRequest(
+                    authHolderService.user.firstName,
+                    authHolderService.user.lastName,
+                    ARTICLE
+                ),
+                authHolderService.user
+            )
         }
         val downloadLink = publicationService.getDownloadLinkForArchive(authHolderService.user, id, agreeToTheFirstApprovalLicense)
         return ok(downloadLink)
