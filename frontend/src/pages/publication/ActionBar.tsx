@@ -28,7 +28,6 @@ import { PublicationPageStore } from './store/PublicationPageStore';
 import { Page } from '../../core/router/constants';
 import { CircularProgressWrap } from '../common.styled';
 import { CollaborationRequirementsDialog } from '../../components/CollaborationRequirementsDialog';
-import { collaborationStore } from './store/downloadsStore';
 
 export const PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY =
   'requested_publication_id';

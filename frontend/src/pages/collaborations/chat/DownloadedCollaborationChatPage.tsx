@@ -86,24 +86,6 @@ const BodyContentWrap = styled.div`
   padding: 48px 32px;
 `;
 
-// const LeftPanel = styled.div`
-//   flex: 22%;
-//   display: flex;
-//   max-width: 300px;
-//   flex-direction: column;
-//   align-items: start;
-//   border-right: 1px solid #d2d2d6;
-//
-//   justify-content: space-between;
-//   padding: 22px;
-// `;
-//
-// const LeftPanelHeader = styled(Typography)`
-//   color: var(--text-disabled, rgba(4, 0, 54, 0.38));
-//   font-size: 0.8rem;
-//   padding-left: 16px;
-// `;
-
 const RightPanel = styled.div`
   display: flex;
   flex-direction: column;

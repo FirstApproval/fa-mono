@@ -31,6 +31,22 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
   const [showCollabHelpStep3Modal, setShowCollabHelpStep3Modal] =
     useState(false);
 
+  // const interlocutorName = (collaborationChatStore.collaborationRequestCreator && extractInterlocutorName(
+  //   collaborationChatStore.collaborationRequestCreator!!,
+  //   collaborationChatStore.publicationCreator!!
+  // )) ?? '';
+  //
+  // function extractInterlocutorName(
+  //   collaborationRequestCreator: UserInfo,
+  //   publicationCreator: UserInfo
+  // ) {
+  //   const interlocutorUser =
+  //     collaborationRequestCreator.id === userStore.user!!.id
+  //       ? publicationCreator
+  //       : collaborationRequestCreator;
+  //   return `${interlocutorUser!!.firstName} ${interlocutorUser!!.lastName}`;
+  // }
+
   useEffect(() => {
     const faCollabHelp = (event: MouseEvent): void => {
       const target = (event.target as HTMLElement).closest<HTMLElement>(
@@ -69,6 +85,16 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
   };
 
   const handleReachOutToAuthor: () => void = () => {
+    const mappedAuthors = collaborationChatStore.publication!!.authors!!
+      .map(author => `${author.firstName} ${author.lastName} - ` + (author.email ?? 'no email'))
+
+    collaborationChatStore.messages.push({
+      id: '',
+      type: CollaborationMessageType.REACH_OUT_AUTHORS,
+      isAssistant: true,
+      text: 'While we are working on the FA chat feature, you can contact the authors using their emails: \n' + mappedAuthors
+    });
+    setStage(CollaborationMessageType.REACH_OUT_AUTHORS);
   };
 
   const handleAskDataUser: () => void = () => {
@@ -476,6 +502,11 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
             onDecline={handleDecline}
           />
         )}
+        {stage === CollaborationMessageType.REACH_OUT_AUTHORS && (
+          <UserOptions
+            stage={stage}
+          />
+        )}
         {stage === CollaborationMessageType.MANUSCRIPT_APPROVED && (
           <UserOptions
             stage={stage}
@@ -595,7 +626,7 @@ const Message = ({
     <div>
       <AvatarNameBox avatar={avatar} name={name} />
       <HeightElement value={'12px'} />
-      <Typography variant={'body'}>
+      <Typography variant={'body'} style={{whiteSpace: 'pre-line'}}>
         {children}
       </Typography>
     </div>
@@ -690,6 +721,11 @@ const UserOptions = ({
           I want to reach out to the author(s)
           </StyledApproveButton>
         )}
+        {/* {onNeedHelp && ( */}
+        {/*   <StyledApproveButton variant="outlined" onClick={onNeedHelp}> */}
+        {/*   I need help */}
+        {/*   </StyledApproveButton> */}
+        {/* )} */}
       </ButtonsWrapper>
     </div>
   );
