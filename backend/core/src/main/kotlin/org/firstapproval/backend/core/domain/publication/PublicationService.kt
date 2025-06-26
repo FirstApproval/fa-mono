@@ -1,6 +1,7 @@
 package org.firstapproval.backend.core.domain.publication
 
 import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
+import org.firstapproval.api.server.model.AuthorShortInfo
 import org.firstapproval.api.server.model.CollaborationRequestStatus
 import org.firstapproval.api.server.model.DownloadLinkResponse
 import org.firstapproval.api.server.model.Paragraph
@@ -634,6 +635,12 @@ fun Author.toApiObject(profileImage: ByteArray?) = AuthorApiObject().also {
             .profileImage(profileImage)
     }
     it.workplaces = workplaces.map { workplace -> workplace.toApiObject() }
+}
+
+fun Author.toShortInfoApiObject() = AuthorShortInfo().also {
+    it.firstName = firstName
+    it.lastName = lastName
+    it.email = email
 }
 
 class PublicationShortInfo(

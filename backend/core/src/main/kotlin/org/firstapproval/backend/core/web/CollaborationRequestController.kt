@@ -1,6 +1,7 @@
 package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.CollaborationRequestApi
+import org.firstapproval.api.server.model.AuthorShortInfo
 import org.firstapproval.api.server.model.CollaborationChatResponse
 import org.firstapproval.api.server.model.CollaborationRequestInfo
 import org.firstapproval.api.server.model.CollaborationRequestStatus.APPROVED
@@ -10,9 +11,12 @@ import org.firstapproval.api.server.model.GetCollaborationRequestsResponse
 import org.firstapproval.api.server.model.UseType
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
+import org.firstapproval.backend.core.domain.publication.PublicationRepository
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestService
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.toApiObject
+import org.firstapproval.backend.core.domain.publication.toApiObject
+import org.firstapproval.backend.core.domain.publication.toShortInfoApiObject
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.toApiObject
 import org.springframework.http.ResponseEntity
@@ -26,7 +30,8 @@ import org.firstapproval.api.server.model.CollaborationRequestStatus as Collabor
 class CollaborationRequestController(
     private val collaborationRequestService: CollaborationRequestService,
     private val userService: UserService,
-    private val authHolderService: AuthHolderService
+    private val authHolderService: AuthHolderService,
+    private val publicationRepository: PublicationRepository,
 ) : CollaborationRequestApi {
 
     override fun acceptOrDeclineCollaborationRequest(
@@ -85,7 +90,12 @@ class CollaborationRequestController(
 
         return ok(GetCollaborationRequestsResponse(result.isLast, collaborationRequests))
     }
-//    override fun selectUseType(publicationId: String, useType: UseType): ResponseEntity<CollaborationChatResponse> {
+
+    override fun getPublicationAuthors(publicationId: String): ResponseEntity<MutableList<AuthorShortInfo>> {
+        val authors = publicationRepository.getReferenceById(publicationId).authors.map { it.toShortInfoApiObject() }.toMutableList()
+        return ok(authors)
+    }
+    //    override fun selectUseType(publicationId: String, useType: UseType): ResponseEntity<CollaborationChatResponse> {
 //        collaborationRequestService.selectUseType(publicationId, useType, authHolderService.user)
 //    }
 }

@@ -1028,6 +1028,29 @@ paths:
       operationId: selectUseType
       tags: [ collaboration-request ]
 
+  /api/collabortion/publication/{publicationId}/authors:
+    get:
+      summary: Select publication authors
+      parameters:
+        - in: path
+          name: publicationId
+          schema:
+            type: string
+          required: true
+          description: Collaboration request id
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthorShortInfo'
+      security:
+        - TokenAuth: [ ]
+      operationId: getPublicationAuthors
+      tags: [ collaboration-request ]
+
   /api/collabortion/requests/chat/{collaborationRequestId}:
     get:
       summary: Get collaboration request chat (including messages)
@@ -2721,6 +2744,20 @@ components:
         - firstName
         - lastName
         - isConfirmed
+
+    AuthorShortInfo:
+      type: object
+      properties:
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+      required:
+        - email
+        - firstName
+        - lastName
 
     Reviewer:
       type: object
