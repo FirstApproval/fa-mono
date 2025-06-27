@@ -94,7 +94,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
       isAssistant: true,
       text: 'While we are working on the FA chat feature, you can contact the authors using their emails: \n' + mappedAuthors
     });
-    setStage(CollaborationMessageType.REACH_OUT_AUTHORS);
+    setStage(CollaborationMessageType.ONLY_CITATION);
   };
 
   const handleAskDataUser: () => void = () => {
@@ -502,9 +502,15 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
             onDecline={handleDecline}
           />
         )}
-        {stage === CollaborationMessageType.REACH_OUT_AUTHORS && (
+        {/* {stage === CollaborationMessageType.REACH_OUT_AUTHORS && ( */}
+        {/*   <UserOptions */}
+        {/*     stage={stage} */}
+        {/*   /> */}
+        {/* )} */}
+        {stage === CollaborationMessageType.ONLY_CITATION && (
           <UserOptions
             stage={stage}
+            citation={handleCitation}
           />
         )}
         {stage === CollaborationMessageType.MANUSCRIPT_APPROVED && (
