@@ -22,15 +22,15 @@ export const LeftPanelPublicationsPage = observer((): ReactElement => {
         {collaborationsPageStore.downloadedPublications && (
           <>
             {mapPublications(
-              'Downloaded • FA License',
+              'Downloaded • Open access',
               false,
               collaborationsPageStore.openAccessDownloadedPublications
             )}
             <HeightElement value="8px"/>
             {mapPublications(
-              'Downloaded • Open access',
+              'Downloaded • FA License',
               false,
-              collaborationsPageStore.openAccessDownloadedPublications
+              collaborationsPageStore.collaborationRequirementsDownloadedPublications
             )}
           </>
         )}

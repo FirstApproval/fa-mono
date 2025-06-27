@@ -36,22 +36,6 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
   const [showCollabHelpStep3Modal, setShowCollabHelpStep3Modal] =
     useState(false);
 
-  // const interlocutorName = (collaborationChatStore.collaborationRequestCreator && extractInterlocutorName(
-  //   collaborationChatStore.collaborationRequestCreator!!,
-  //   collaborationChatStore.publicationCreator!!
-  // )) ?? '';
-  //
-  // function extractInterlocutorName(
-  //   collaborationRequestCreator: UserInfo,
-  //   publicationCreator: UserInfo
-  // ) {
-  //   const interlocutorUser =
-  //     collaborationRequestCreator.id === userStore.user!!.id
-  //       ? publicationCreator
-  //       : collaborationRequestCreator;
-  //   return `${interlocutorUser!!.firstName} ${interlocutorUser!!.lastName}`;
-  // }
-
   useEffect(() => {
     const faCollabHelp = (event: MouseEvent): void => {
       const target = (event.target as HTMLElement).closest<HTMLElement>(
