@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import AvatarNameBox, { SelfAvatar } from '../elements/AvatarNameBox';
-import { Box, Button, Typography, Modal, Link, TextField } from '@mui/material';
+import { Box, Button, Link, Modal, TextField, Typography } from '@mui/material';
 import { TextareaAutosize } from '@mui/base';
 import { HeightElement } from '../../common.styled';
 import styled from '@emotion/styled';
-import { Global, css } from '@emotion/react';
+import { css, Global } from '@emotion/react';
 import collaborationRequirementsImage from '../../../assets/collaboration_requirements.svg';
 import sendImage from '../../../assets/fa-send.svg';
 import fileIcon from '../../../assets/file-icon.svg';
 import timetableImage from '../../../assets/fa-timetable.svg';
 import highfiveImage from '../../../assets/fa-highfive.svg';
 import { CollaborationChatInterface } from '../../publication/store/CollaborationChatStore';
-import { getFullName, renderProfileImage } from "../../../util/userUtil"
-import { CollaborationMessageType } from 'src/apis/first-approval-api';
+import { getFullName, renderProfileImage } from '../../../util/userUtil';
+import {
+  CollaborationMessageType,
+  DataCollectionType
+} from 'src/apis/first-approval-api';
+import { DATA_COLLECTION_TYPES } from "../../publication/ChooseDataCollection"
 
 type ChatProps = {
   collaborationChatStore: CollaborationChatInterface;
@@ -20,7 +24,8 @@ type ChatProps = {
 
 const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: CollaborationChatInterface }) => {
   const { collaborationChatStore } = props;
-  const [stage, setStage] = useState(CollaborationMessageType.CREATE_REQUEST);
+  const [stage, setStage] =
+    useState<CollaborationMessageType | undefined>(CollaborationMessageType.CREATE_REQUEST);
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [showCollabModal, setShowCollabModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
@@ -82,6 +87,38 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
   const handleEmailDataUser: () => void = () => alert('Email data user');
   const handleShowCollabModal: () => void = () => setShowCollabModal(true);
   const handleCitation: () => void = () => {
+    // список всех авторов в формате [Фамилия Инициалы], дальше идет точка, за которой с большой буквы - [Название датасета].
+    // Год. First Approval [если специализированная коллекция - ее название] (например First Approval - Aging Data Collection)
+
+    const publication = collaborationChatStore.publication!!
+
+    const mappedAuthors = publication.authors!!
+      .map(author => `${author.lastName} ${author.firstName.charAt(0)}`)
+      .join(', ')
+
+    const year = publication.creationTime.substring(0, 4)
+
+    const dataCollectionTypeTitle = publication.dataCollectionType === DataCollectionType.GENERAL ? '' :
+      (' - ' + DATA_COLLECTION_TYPES
+        .find(dataCollectionType => dataCollectionType.type === publication.dataCollectionType)!!
+          .title
+      )
+
+    console.log(<p>
+      {mappedAuthors}. {publication.title}. {year}.{' '}
+      First Approval{dataCollectionTypeTitle}.
+    </p>)
+
+    const message = `${mappedAuthors}. ${publication.title}. ${year}. First Approval${dataCollectionTypeTitle}.`
+
+    collaborationChatStore.messages.push({
+      id: '',
+      isAssistant: true,
+      type: CollaborationMessageType.NONE,
+      text: message
+    });
+
+    setStage(CollaborationMessageType.NONE);
   };
 
   const handleReachOutToAuthor: () => void = () => {

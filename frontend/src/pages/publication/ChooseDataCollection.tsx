@@ -21,7 +21,7 @@ import { publicationService } from '../../core/service'
 import { Page, publicationPath } from '../../core/router/constants'
 import { PUBLISHING_DATA_COLLECTION_TYPE_SESSION_KEY } from './ActionBar'
 
-const DATA_COLLECTION_TYPES = [{
+export const DATA_COLLECTION_TYPES = [{
   type: DataCollectionType.GENERAL,
   title: 'General First Approval collection',
   description: 'All types of datasets. No submission deadlines'
