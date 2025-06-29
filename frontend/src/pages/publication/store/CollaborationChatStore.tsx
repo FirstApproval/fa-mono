@@ -16,25 +16,23 @@ export class CollaborationChatStore implements CollaborationChatInterface {
 
   constructor(publicationId: string, stage?: CollaborationMessageType, publication?: Publication) {
     makeAutoObservable(this);
-    this.loadInitialState(publicationId);
+    // this.loadInitialState(publicationId);
 
-    //
-    // if (stage === CollaborationMessageType.CREATE_REQUEST) {
-    //   this.publication = publication;
-    //   this.publicationCreator = publication?.creator;
-    //   this.collaborationRequestCreator = userStore.user;
-    //   this.messages = [
-    //     {
-    //       id: '',
-    //       type: CollaborationMessageType.CREATE_REQUEST,
-    //       isAssistant: true,
-    //       text: `The dataset "${publication?.title}" was downloaded.\n\n` +
-    //         'This dataset was published in open access by the author(s).\n' +
-    //         'If you reuse it in your work, it is enough for you to cite this dataset.'
-    //     }
-    //   ]
-    // } else {
-    // }
+    if (stage === CollaborationMessageType.CREATE_REQUEST) {
+      this.publication = publication;
+      this.publicationCreator = publication?.creator;
+      this.collaborationRequestCreator = userStore.user;
+      this.messages = [
+        {
+          id: '',
+          type: CollaborationMessageType.CREATE_REQUEST,
+          isAssistant: true,
+          text: `The dataset "${publication?.title}" was downloaded.\n\n` +
+            'This dataset was published in open access by the author(s).\n' +
+            'If you reuse it in your work, it is enough for you to cite this dataset.'
+        }
+      ]
+    }
   }
 
   private loadInitialState(publicationId: string): void {
@@ -54,6 +52,6 @@ export interface CollaborationChatInterface {
   collaborationRequestId: string;
   collaborationRequestCreator: UserInfo | undefined;
   publicationCreator: UserInfo | undefined;
-  messages: CollaborationRequestMessage[];
+  messages: CollaborationRequestMessage[] | undefined;
   publication?: Publication;
 }
