@@ -15,7 +15,6 @@ import org.firstapproval.backend.core.domain.user.toApiObject
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
 
 @RestController
 class CollaborationRequestChatController(
@@ -24,11 +23,12 @@ class CollaborationRequestChatController(
     private val userService: UserService,
     private val authHolderService: AuthHolderService,
     ) : CollaborationRequestChatApi {
-    override fun getCollaborationChat(collaborationRequestId: UUID): ResponseEntity<CollaborationChatResponse> {
-        val collaborationRequest = collaborationRequestRepository.getReferenceById(collaborationRequestId)
+
+    override fun getCollaborationChatByPublicationId(publicationId: String): ResponseEntity<CollaborationChatResponse> {
+        val collaborationRequest = collaborationRequestRepository.findByPublicationIdAndUserId(publicationId, authHolderService.user.id)
         val recipientType = getRecipientType(collaborationRequest)
         val messages = collaborationRequestMessageRepository
-            .findAllByCollaborationRequestIdAndRecipientTypesContainsOrderByCreationTime(collaborationRequestId, recipientType)
+            .findAllByCollaborationRequestIdAndRecipientTypesContainsOrderByCreationTime(collaborationRequest.id, recipientType)
         val publicationCreator = collaborationRequest.publication.creator.toApiObject(userService)
         val collaborationRequestCreator = collaborationRequest.user.toApiObject(userService)
         val messageAuthorById = mapOf(

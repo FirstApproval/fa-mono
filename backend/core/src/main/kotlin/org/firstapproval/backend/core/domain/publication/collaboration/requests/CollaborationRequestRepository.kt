@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
 interface CollaborationRequestRepository : JpaRepository<CollaborationRequest, UUID> {
-    fun findByUserIdAndPublicationId(userId: UUID, publicationId: String): CollaborationRequest?
+    fun findByPublicationIdAndUserId(publicationId: String, userId: UUID): CollaborationRequest
     fun findByUserId(userId: UUID, page: Pageable): Page<CollaborationRequest>
     fun findByPublicationIdAndStatusIn(
         publicationId: String,

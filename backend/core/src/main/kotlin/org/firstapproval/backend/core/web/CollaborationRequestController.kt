@@ -38,8 +38,8 @@ class CollaborationRequestController(
         return ok().build()
     }
 
-    override fun getCollaborationRequest(collaborationRequestId: UUID): ResponseEntity<CollaborationRequestInfo> {
-        return ok(collaborationRequestService.get(collaborationRequestId).toApiObject(userService = userService))
+    override fun getCollaborationRequest(publicationId: String): ResponseEntity<CollaborationRequestInfo> {
+        return ok(collaborationRequestService.get(publicationId, authHolderService.user.id).toApiObject(userService = userService))
     }
 
     override fun getPublicationCollaborationRequests(
