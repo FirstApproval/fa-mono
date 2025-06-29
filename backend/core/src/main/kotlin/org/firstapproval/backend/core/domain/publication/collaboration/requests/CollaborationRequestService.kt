@@ -25,9 +25,9 @@ import java.util.UUID
 
 const val I_AGREE_WITH_TERMS = "I agree to the terms of the First Approval Collaboration License, " +
     "including sending a Collaboration Request to the Data Author(s)."
-const val PLANS_TO_USE_YOUR_DATASET  = "%s plans to use your dataset in his research and wants to include you " +
+const val PLANS_TO_USE_YOUR_DATASET  = "%1\$s plans to use your dataset in his research and wants to include you " +
     "as a co-author of his article.\n" +
-    "This is First Approval collaboration agreement pre-filled by %s :" +
+    "This is First Approval collaboration agreement pre-filled by %1\$s :" +
     "By approving to the collaboration, you oblige data user to include you as a co-author.\n" +
     "The data user will also be required to provide a 14-day notice before sending you " +
     "the final version of the article.\n" +
