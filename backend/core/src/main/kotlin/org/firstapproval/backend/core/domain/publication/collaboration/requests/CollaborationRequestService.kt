@@ -139,7 +139,7 @@ class CollaborationRequestService(
                 user = user,
                 text = I_AGREE_WITH_TERMS,
                 sequenceIndex = 0,
-                recipients = mutableSetOf(COLLABORATION_REQUEST_CREATOR)
+                recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR)
             )
         )
 
@@ -153,7 +153,7 @@ class CollaborationRequestService(
                 user = user,
                 text = PLANS_TO_USE_YOUR_DATASET.format(fullNameRequestCreator),
                 sequenceIndex = 1,
-                recipients = mutableSetOf(PUBLICATION_CREATOR)
+                recipientTypes = mutableSetOf(PUBLICATION_CREATOR)
             )
         )
     }

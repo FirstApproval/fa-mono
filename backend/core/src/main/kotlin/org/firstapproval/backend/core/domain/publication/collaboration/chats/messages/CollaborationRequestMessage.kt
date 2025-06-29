@@ -55,7 +55,7 @@ class CollaborationRequestMessage(
     )
     @Column(name = "recipient_type", nullable = false) // Имя колонки для самого ENUM значения в вспомогательной таблице
     @Enumerated(STRING) // Указываем, что ENUM будет храниться как строка
-    val recipients: MutableSet<RecipientType>,
+    val recipientTypes: MutableSet<RecipientType>,
 
     val text: String? = null,
 
