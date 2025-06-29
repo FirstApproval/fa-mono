@@ -4,5 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
 interface CollaborationMessageRepository : JpaRepository<CollaborationRequestMessage, UUID> {
-    fun findAllByCollaborationRequestIdOrderByCreationTimeDesc(collaborationRequestId: UUID): List<CollaborationRequestMessage>
+    fun findAllByCollaborationRequestIdOrderByCreationTime(collaborationRequestId: UUID): List<CollaborationRequestMessage>
 }

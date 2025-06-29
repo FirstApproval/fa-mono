@@ -2,29 +2,21 @@ package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.CollaborationRequestApi
 import org.firstapproval.api.server.model.AuthorShortInfo
-import org.firstapproval.api.server.model.CollaborationChatResponse
 import org.firstapproval.api.server.model.CollaborationRequestInfo
-import org.firstapproval.api.server.model.CollaborationRequestStatus.APPROVED
-import org.firstapproval.api.server.model.CollaborationRequestStatus.DECLINED
 import org.firstapproval.api.server.model.CreateCollaborationRequest
 import org.firstapproval.api.server.model.GetCollaborationRequestsResponse
-import org.firstapproval.api.server.model.UseType
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.PublicationRepository
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestService
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.toApiObject
-import org.firstapproval.backend.core.domain.publication.toApiObject
 import org.firstapproval.backend.core.domain.publication.toShortInfoApiObject
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.toApiObject
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
-import java.lang.IllegalArgumentException
 import java.util.*
-import org.firstapproval.api.server.model.CollaborationRequestStatus as CollaborationRequestStatusApiObject
 
 @RestController
 class CollaborationRequestController(
@@ -33,24 +25,6 @@ class CollaborationRequestController(
     private val authHolderService: AuthHolderService,
     private val publicationRepository: PublicationRepository,
 ) : CollaborationRequestApi {
-
-    override fun acceptOrDeclineCollaborationRequest(
-        collaborationRequestId: UUID,
-        authorResponse: String,
-        status: CollaborationRequestStatusApiObject
-    ): ResponseEntity<Void> {
-        if (status !in arrayOf(APPROVED, DECLINED)) {
-            throw IllegalArgumentException("Status is $status. But must be '$APPROVED or $DECLINED")
-        }
-        collaborationRequestService.makeDecision(
-            collaborationRequestId,
-            CollaborationRequestStatus.valueOf(status.name),
-            authorResponse,
-            authHolderService.user
-        )
-
-        return ok().build()
-    }
 
     override fun createCollaborationRequest(
         publicationId: String,
@@ -95,7 +69,4 @@ class CollaborationRequestController(
         val authors = publicationRepository.getReferenceById(publicationId).authors.map { it.toShortInfoApiObject() }.toMutableList()
         return ok(authors)
     }
-    //    override fun selectUseType(publicationId: String, useType: UseType): ResponseEntity<CollaborationChatResponse> {
-//        collaborationRequestService.selectUseType(publicationId, useType, authHolderService.user)
-//    }
 }

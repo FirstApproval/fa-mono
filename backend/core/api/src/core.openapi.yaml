@@ -948,17 +948,39 @@ paths:
       operationId: createCollaborationRequest
       tags: [ collaboration-request ]
 
-  /api/collabortion/request/{collaborationRequestId}:
+#  /api/collabortion/request/{collaborationRequestId}:
+#    get:
+#      summary: Retrieve a collaboration request
+#      parameters:
+#        - in: path
+#          name: collaborationRequestId
+#          schema:
+#            type: string
+#            format: uuid
+#          required: true
+#          description: Collaboration request id
+#      responses:
+#        200:
+#          description: Success
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/CollaborationRequestInfo'
+#      security:
+#        - TokenAuth: [ ]
+#      operationId: getCollaborationRequest
+#      tags: [ collaboration-request ]
+
+  /api//publication/{publicationId}/collabortion-request:
     get:
       summary: Retrieve a collaboration request
       parameters:
         - in: path
-          name: collaborationRequestId
+          name: publicationId
           schema:
             type: string
-            format: uuid
           required: true
-          description: Collaboration request id
+          description: Publication id
       responses:
         200:
           description: Success
@@ -1028,7 +1050,7 @@ paths:
       operationId: selectUseType
       tags: [ collaboration-request ]
 
-  /api/collabortion/publication/{publicationId}/authors:
+  /api/publication/{publicationId}/collabortion/publication/authors:
     get:
       summary: Select publication authors
       parameters:
@@ -1051,17 +1073,39 @@ paths:
       operationId: getPublicationAuthors
       tags: [ collaboration-request ]
 
-  /api/collabortion/requests/chat/{collaborationRequestId}:
+#  /api/collabortion-requests/chat/{collaborationRequestId}:
+#    get:
+#      summary: Get collaboration request chat (including messages)
+#      parameters:
+#        - in: path
+#          name: collaborationRequestId
+#          schema:
+#            type: string
+#            format: uuid
+#          required: true
+#          description: Collaboration request id
+#      responses:
+#        200:
+#          description: Success
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/CollaborationChatResponse'
+#      security:
+#        - TokenAuth: [ ]
+#      operationId: getCollaborationChat
+#      tags: [ collaboration-request-chat ]
+
+  /api/publication/{publicationId}/collaboration-request/chat:
     get:
-      summary: Get collaboration request chat (including messages)
+      summary: Get collaboration request chat by publication id (including messages)
       parameters:
         - in: path
-          name: collaborationRequestId
+          name: publicationId
           schema:
             type: string
-            format: uuid
           required: true
-          description: Collaboration request id
+          description: Publication id
       responses:
         200:
           description: Success
@@ -1071,7 +1115,7 @@ paths:
                 $ref: '#/components/schemas/CollaborationChatResponse'
       security:
         - TokenAuth: [ ]
-      operationId: getCollaborationChat
+      operationId: getCollaborationChatByPublicationId
       tags: [ collaboration-request-chat ]
 
   /api/publication/search:

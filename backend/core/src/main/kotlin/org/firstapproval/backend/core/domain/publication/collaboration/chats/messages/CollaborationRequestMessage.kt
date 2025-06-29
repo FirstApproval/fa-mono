@@ -4,12 +4,16 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType
 import jakarta.persistence.CascadeType
+import jakarta.persistence.CollectionTable
 import jakarta.persistence.Column
+import jakarta.persistence.ElementCollection
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType.STRING
 import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType.EAGER
+import jakarta.persistence.FetchType.LAZY
 import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
@@ -35,7 +39,7 @@ class CollaborationRequestMessage(
     @Id
     val id: UUID = randomUUID(),
 
-    @ManyToOne(fetch = EAGER)
+    @ManyToOne(fetch = LAZY)
     val collaborationRequest: CollaborationRequest,
 
     @ManyToOne(fetch = EAGER)
@@ -43,6 +47,15 @@ class CollaborationRequestMessage(
 
     @Enumerated(STRING)
     val type: MessageType,
+
+    @ElementCollection(fetch = EAGER) // EAGER или LAZY в зависимости от потребностей
+    @CollectionTable(
+        name = "message_recipients", // Имя вспомогательной таблицы в БД
+        joinColumns = [JoinColumn(name = "message_id", referencedColumnName = "id")] // Колонка для связи с основной сущностью
+    )
+    @Column(name = "recipient_type", nullable = false) // Имя колонки для самого ENUM значения в вспомогательной таблице
+    @Enumerated(STRING) // Указываем, что ENUM будет храниться как строка
+    val recipients: MutableSet<RecipientType>,
 
     val text: String? = null,
 

@@ -6,7 +6,7 @@ import {
   UserInfo
 } from '../../../apis/first-approval-api';
 import { userStore } from '../../../core/user';
-import { publicationService } from "../../../core/service"
+import { collaborationRequestService, publicationService } from "../../../core/service"
 import { CollaborationChatInterface } from "./CollaborationChatStore"
 
 export class DownloadedPublicationCollaborationChatStore implements CollaborationChatInterface {
@@ -24,6 +24,7 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
       this.publication = response.data;
       this.publicationCreator = response.data.creator;
 
+      // if (collaborationRequestService.getCollaborationRequest())
       this.messages = [
         {
           type: CollaborationMessageType.CREATE_REQUEST,

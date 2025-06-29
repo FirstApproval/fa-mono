@@ -6,9 +6,10 @@ import org.firstapproval.backend.core.domain.publication.PublicationRepository
 import org.firstapproval.backend.core.domain.publication.PublicationService
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationMessageRepository
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessage
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.Create
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.MessageType
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.MessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.COLLABORATION_REQUEST_CREATOR
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.PUBLICATION_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.APPROVED
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.NEW
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.DECLINED
@@ -21,6 +22,17 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
 import java.util.UUID
+
+const val I_AGREE_WITH_TERMS = "I agree to the terms of the First Approval Collaboration License, " +
+    "including sending a Collaboration Request to the Data Author(s)."
+const val PLANS_TO_USE_YOUR_DATASET  = "%s plans to use your dataset in his research and wants to include you " +
+    "as a co-author of his article.\n" +
+    "This is First Approval collaboration agreement pre-filled by %s :" +
+    "By approving to the collaboration, you oblige data user to include you as a co-author.\n" +
+    "The data user will also be required to provide a 14-day notice before sending you " +
+    "the final version of the article.\n" +
+    "By declining a collaboration, you oblige data user to simply quote your dataset, " +
+    "without specifying you as a co-author."
 
 @Service
 class CollaborationRequestService(
@@ -62,6 +74,10 @@ class CollaborationRequestService(
     fun get(id: UUID) = collaborationRequestRepository.getReferenceById(id)
 
     @Transactional
+    fun get(publicationId: String, userId: UUID) =
+        collaborationRequestRepository.findByUserIdAndPublicationId(userId = userId, publicationId = publicationId)
+
+    @Transactional
     fun getByUser(userId: UUID, page: Int, pageSize: Int) =
         collaborationRequestRepository.findByUserId(
             userId, PageRequest.of(page, pageSize, Sort.by(DESC, "status", "creationTime"))
@@ -98,49 +114,46 @@ class CollaborationRequestService(
             )
         )
 
-        collaborationMessageRepository.save(
-            CollaborationRequestMessage(
-                collaborationRequest = collaboration,
-                type = MessageType.CREATE,
-                user = user,
-                text = collaborationRequestRequest.description,
-                payload = Create(
-                    collaborationRequestRequest.firstNameLegal,
-                    collaborationRequestRequest.lastNameLegal,
-                    typeOfWork,
-                    collaborationRequestRequest.description
-                ),
-                sequenceIndex = 0
-            )
-        )
+//        collaborationMessageRepository.save(
+//            CollaborationRequestMessage(
+//                collaborationRequest = collaboration,
+//                type = MessageType.CREATE,
+//                user = user,
+//                text = collaborationRequestRequest.description,
+//                payload = Create(
+//                    collaborationRequestRequest.firstNameLegal,
+//                    collaborationRequestRequest.lastNameLegal,
+//                    typeOfWork,
+//                    collaborationRequestRequest.description
+//                ),
+//                sequenceIndex = 0,
+//                recipients = mutableSetOf(COLLABORATION_REQUEST_CREATOR)
+//            )
+//        )
 
+        // For collaboration request creator
         collaborationMessageRepository.save(
             CollaborationRequestMessage(
                 collaborationRequest = collaboration,
                 type = AGREE_TO_THE_TERMS_OF_COLLABORATION,
                 user = user,
-                text = "I agree to the terms of the First Approval Collaboration License, " +
-                    "including sending a Collaboration Request to the Data Author(s).",
-                sequenceIndex = 0
+                text = I_AGREE_WITH_TERMS,
+                sequenceIndex = 0,
+                recipients = mutableSetOf(COLLABORATION_REQUEST_CREATOR)
             )
         )
 
 
+        // For publication creator
         val fullNameRequestCreator = "${collaborationRequestRequest.firstNameLegal} ${collaborationRequestRequest.lastNameLegal}"
         collaborationMessageRepository.save(
             CollaborationRequestMessage(
                 collaborationRequest = collaboration,
                 type = MessageType.ASSISTANT_CREATE,
                 user = user,
-                text = "$fullNameRequestCreator plans to use your dataset in his research and wants to include you " +
-                    "as a co-author of his article.\n" +
-                    "This is First Approval collaboration agreement pre-filled by $fullNameRequestCreator :" +
-                    "By approving to the collaboration, you oblige data user to include you as a co-author.\n" +
-                    "The data user will also be required to provide a 14-day notice before sending you " +
-                    "the final version of the article.\n" +
-                    "By declining a collaboration, you oblige data user to simply quote your dataset, " +
-                    "without specifying you as a co-author.",
-                sequenceIndex = 1
+                text = PLANS_TO_USE_YOUR_DATASET.format(fullNameRequestCreator),
+                sequenceIndex = 1,
+                recipients = mutableSetOf(PUBLICATION_CREATOR)
             )
         )
     }
