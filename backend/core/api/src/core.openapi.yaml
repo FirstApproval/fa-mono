@@ -2934,6 +2934,9 @@ components:
         - DECLINED
         - AUTHOR_INFO_RECEIVED
         - PUBLICATION_INFO_RECEIVED
+        - REACH_OUT_AUTHORS
+        - ONLY_CITATION
+        - NONE
 
     PublicationShortInfo:
       type: object
