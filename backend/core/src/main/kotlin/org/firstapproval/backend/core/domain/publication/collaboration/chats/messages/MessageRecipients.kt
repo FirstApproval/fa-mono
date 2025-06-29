@@ -6,7 +6,7 @@ import jakarta.persistence.FetchType.LAZY
 import java.io.Serializable
 
 @Entity
-@Table(name = "message_recipients")
+@Table(name = "collaboration_request_messages_recipients")
 class MessageRecipient(
     @Id
     @ManyToOne(fetch = LAZY)
@@ -15,7 +15,7 @@ class MessageRecipient(
 
     @Id
     @Enumerated(STRING)
-    @Column(name = "recipient_role", nullable = false)
+    @Column(name = "recipient_type", nullable = false)
     val recipientType: RecipientType
 ) : Serializable
 
