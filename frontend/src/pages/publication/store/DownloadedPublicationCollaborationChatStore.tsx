@@ -26,13 +26,21 @@ export class DownloadedPublicationCollaborationChatStore
     makeAutoObservable(this);
 
     this.collaborationRequestCreator = userStore.user;
-    publicationService.getPublication(publicationId).then(async (response) => {
+    publicationService.getPublication(publicationId).then(response => {
       this.publication = response.data;
       this.publicationCreator = response.data.creator;
 
       switch (this.publication.useType) {
         case (UseType.CO_AUTHORSHIP): {
-          await this.loadInitialState(publicationId)
+          collaborationRequestChatService
+            .getCollaborationChatByPublicationId(publicationId)
+            .then((response) => {
+              const data = response.data;
+              this.collaborationRequestId = data.collaborationRequestId;
+              this.publicationCreator = data.publicationCreator;
+              this.collaborationRequestCreator = data.collaborationRequestCreator;
+              this.messages = data.messages;
+            });
           break;
         }
         case (UseType.CITATION): {
@@ -51,15 +59,5 @@ export class DownloadedPublicationCollaborationChatStore
       }
       // if (collaborationRequestService.getCollaborationRequest())
     });
-  }
-
-  private async loadInitialState(publicationId: string): Promise<void> {
-    const response = await collaborationRequestChatService.getCollaborationChatByPublicationId(publicationId);
-    const data = response.data;
-    this.collaborationRequestId = data.collaborationRequestId;
-    this.publicationCreator = data.publicationCreator;
-    this.collaborationRequestCreator = data.collaborationRequestCreator;
-    this.messages = data.messages;
-    debugger;
   }
 }
