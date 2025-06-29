@@ -14,34 +14,35 @@ export class CollaborationChatStore implements CollaborationChatInterface {
   messages: CollaborationRequestMessage[] = [];
   publication?: Publication;
 
-  constructor(collaborationRequestId: string, stage?: CollaborationMessageType, publication?: Publication) {
+  constructor(publicationId: string, stage?: CollaborationMessageType, publication?: Publication) {
     makeAutoObservable(this);
+    this.loadInitialState(publicationId);
 
-    if (stage === CollaborationMessageType.CREATE_REQUEST) {
-      this.publication = publication;
-      this.publicationCreator = publication?.creator;
-      this.collaborationRequestCreator = userStore.user;
-      this.messages = [
-        {
-          id: '',
-          type: CollaborationMessageType.CREATE_REQUEST,
-          isAssistant: true,
-          text: `The dataset "${publication?.title}" was downloaded.\n\n` +
-            'This dataset was published in open access by the author(s).\n' +
-            'If you reuse it in your work, it is enough for you to cite this dataset.'
-        }
-      ]
-    } else {
-      this.loadInitialState(collaborationRequestId);
-    }
+    //
+    // if (stage === CollaborationMessageType.CREATE_REQUEST) {
+    //   this.publication = publication;
+    //   this.publicationCreator = publication?.creator;
+    //   this.collaborationRequestCreator = userStore.user;
+    //   this.messages = [
+    //     {
+    //       id: '',
+    //       type: CollaborationMessageType.CREATE_REQUEST,
+    //       isAssistant: true,
+    //       text: `The dataset "${publication?.title}" was downloaded.\n\n` +
+    //         'This dataset was published in open access by the author(s).\n' +
+    //         'If you reuse it in your work, it is enough for you to cite this dataset.'
+    //     }
+    //   ]
+    // } else {
+    // }
   }
 
-  private loadInitialState(collaborationRequestId: string): void {
-    this.collaborationRequestId = collaborationRequestId;
+  private loadInitialState(publicationId: string): void {
     collaborationRequestChatService
-      .getCollaborationChat(collaborationRequestId)
+      .getCollaborationChatByPublicationId(publicationId)
       .then((response) => {
         const data = response.data;
+        this.collaborationRequestId = data.collaborationRequestId;
         this.publicationCreator = data.publicationCreator;
         this.collaborationRequestCreator = data.collaborationRequestCreator;
         this.messages = data.messages;

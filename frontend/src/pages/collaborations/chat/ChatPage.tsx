@@ -13,9 +13,9 @@ import { routerStore } from '../../../core/router';
 import { CollaborationChatStore } from '../../publication/store/CollaborationChatStore';
 
 export const ChatPage = observer((): ReactElement => {
-  const [collaborationRequestId] = useState(() => routerStore.lastPathSegment);
+  const [publicationId] = useState(() => routerStore.lastPathSegment);
   const [collaborationChatStore] = useState(
-    () => new CollaborationChatStore(collaborationRequestId)
+    () => new CollaborationChatStore(publicationId)
   );
 
   // const publicationShortInfo } = props;

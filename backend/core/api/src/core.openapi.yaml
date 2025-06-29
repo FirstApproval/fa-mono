@@ -2883,6 +2883,9 @@ components:
     CollaborationChatResponse:
       type: object
       properties:
+        collaborationRequestId:
+          type: string
+          format: uuid
         publicationCreator:
           $ref: '#/components/schemas/UserInfo'
         collaborationRequestCreator:
@@ -2892,6 +2895,7 @@ components:
           items:
             $ref: '#/components/schemas/CollaborationRequestMessage'
       required:
+        - collaborationRequestId
         - publicationCreator
         - collaborationRequestCreator
         - messages

@@ -36,6 +36,7 @@ class CollaborationRequestChatController(
             collaborationRequestCreator.id to collaborationRequestCreator
         )
         val response = CollaborationChatResponse(
+            collaborationRequest.id,
             publicationCreator,
             collaborationRequestCreator,
             messages.map {
