@@ -9,7 +9,6 @@ import { TextSizeTruncation } from "../../util/stylesUtil"
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord"
 
 export const LeftPanelPublicationsPage = observer((): ReactElement => {
-  debugger;
   return (
     <LeftPanel>
       <FlexWrapColumn>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from "react"
 import AvatarNameBox, { SelfAvatar } from '../elements/AvatarNameBox';
 import { Box, Button, Link, Modal, TextField, Typography } from '@mui/material';
 import { TextareaAutosize } from '@mui/base';
@@ -17,12 +17,13 @@ import {
   DataCollectionType
 } from 'src/apis/first-approval-api';
 import { DATA_COLLECTION_TYPES } from "../../publication/ChooseDataCollection"
+import { observer } from 'mobx-react-lite';
 
 type ChatProps = {
   collaborationChatStore: CollaborationChatInterface;
 };
 
-const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: CollaborationChatInterface }) => {
+const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: CollaborationChatInterface }): ReactElement => {
   const { collaborationChatStore } = props;
   const [stage, setStage] =
     useState<CollaborationMessageType | undefined>(CollaborationMessageType.CREATE_REQUEST);
@@ -95,7 +96,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
 
     const message = `${mappedAuthors}. ${publication.title}. ${year}. First Approval${dataCollectionTypeTitle}.`
 
-    collaborationChatStore.messages.push({
+    collaborationChatStore.messages?.push({
       id: '',
       isAssistant: true,
       type: CollaborationMessageType.NONE,
@@ -109,7 +110,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
     const mappedAuthors = collaborationChatStore.publication!!.authors!!
       .map(author => `• ${author.firstName} ${author.lastName} - ` + (author.email ?? 'no email'))
 
-    collaborationChatStore.messages.push({
+    collaborationChatStore.messages?.push({
       id: '',
       type: CollaborationMessageType.REACH_OUT_AUTHORS,
       isAssistant: true,
@@ -458,7 +459,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
     });
     setStage(CollaborationMessageType.COLLABORATION_APPROVED);
   };
-
+  debugger;
   return (
     <>
       <Global
@@ -472,9 +473,10 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
         `}
       />
       <div>
-        {collaborationChatStore.messages.map((message) => {
+        {collaborationChatStore.messages && collaborationChatStore.messages.map((message) => {
           const fullName = message.isAssistant ? 'Assistant' : getFullName(message.userInfo!!);
           const avatar = message.isAssistant ? 'FA' : renderProfileImage(message.userInfo?.profileImage);
+          debugger;
           return (
             <React.Fragment key={message.id}>
               <Message name={fullName} avatar={avatar}>
@@ -490,6 +492,11 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
             onNeedHelp={handleShowCollabModal}
             citation={handleCitation}
             reachOutToTheAuthor={handleReachOutToAuthor}
+          />
+        )}
+        {stage === CollaborationMessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION && (
+          <UserOptions
+            stage={stage}
           />
         )}
         {stage === CollaborationMessageType.DEFAULT && (
@@ -574,7 +581,7 @@ const Chat: React.FC<ChatProps> = (props: { collaborationChatStore: Collaboratio
       </div>
     </>
   );
-};
+});
 
 interface MessageType {
   id: number;
