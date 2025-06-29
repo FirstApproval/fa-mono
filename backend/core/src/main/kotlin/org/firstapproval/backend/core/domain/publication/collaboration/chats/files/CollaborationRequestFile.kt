@@ -11,7 +11,7 @@ import java.util.UUID
 import java.util.UUID.randomUUID
 
 @Entity
-@Table(name = "collaboration_request_files")
+@Table(name = "collaboration_request_message_files")
 class CollaborationRequestFile(
     @Id
     val id: UUID = randomUUID(),

@@ -50,7 +50,7 @@ class CollaborationRequestMessage(
 
     @ElementCollection(fetch = EAGER) // EAGER или LAZY в зависимости от потребностей
     @CollectionTable(
-        name = "message_recipients", // Имя вспомогательной таблицы в БД
+        name = "collaboration_request_messages_recipients", // Имя вспомогательной таблицы в БД
         joinColumns = [JoinColumn(name = "message_id", referencedColumnName = "id")] // Колонка для связи с основной сущностью
     )
     @Column(name = "recipient_type", nullable = false) // Имя колонки для самого ENUM значения в вспомогательной таблице
