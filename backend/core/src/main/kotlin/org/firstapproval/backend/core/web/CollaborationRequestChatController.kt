@@ -9,7 +9,7 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.PUBLICATION_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.toApiObject
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequest
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestRepository
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestService
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.toApiObject
 import org.springframework.http.ResponseEntity
@@ -18,14 +18,14 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class CollaborationRequestChatController(
-    private val collaborationRequestRepository: CollaborationRequestRepository,
+    private val collaborationRequestService: CollaborationRequestService,
     private val collaborationRequestMessageRepository: CollaborationMessageRepository,
     private val userService: UserService,
     private val authHolderService: AuthHolderService,
     ) : CollaborationRequestChatApi {
 
     override fun getCollaborationChatByPublicationId(publicationId: String): ResponseEntity<CollaborationChatResponse> {
-        val collaborationRequest = collaborationRequestRepository.findByPublicationIdAndUserId(publicationId, authHolderService.user.id)
+        val collaborationRequest = collaborationRequestService.get(publicationId, authHolderService.user.id)
         val recipientType = getRecipientType(collaborationRequest)
         val messages = collaborationRequestMessageRepository
             .findAllByCollaborationRequestIdAndRecipientTypesContainsOrderByCreationTime(collaborationRequest.id, recipientType)

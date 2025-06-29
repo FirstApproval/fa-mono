@@ -589,9 +589,9 @@ fun Publication.toApiObject(
     publicationApiModel.previouslyPublishedDatasetData = previouslyPublishedDatasetData
     publicationApiModel.dataCollectionType = DataCollectionTypeApiObject.valueOf(dataCollectionType.name)
     publicationApiModel.useType = useType?.let { UseTypeApiObject.valueOf(it.name) }
-    publicationApiModel.userCollaborationStatus =
-        currentUser?.let { collaborationRequestRepository.findByPublicationIdAndUserId(id, it.id) }
-            ?.let { CollaborationRequestStatus.valueOf(it.status.name) }
+    publicationApiModel.userCollaborationStatus = currentUser
+        ?.let { collaborationRequestRepository.findByPublicationIdAndUserId(id, it.id) }
+        ?.let { CollaborationRequestStatus.valueOf(it.status.name) }
     publicationApiModel.isDownloadedByUser = currentUser?.let { downloaderRepository.existsByUserIdAndPublication(it.id, this) }
 }
 

@@ -75,7 +75,7 @@ class CollaborationRequestService(
 
     @Transactional
     fun get(publicationId: String, userId: UUID) =
-        collaborationRequestRepository.findByPublicationIdAndUserId(publicationId, userId)
+        collaborationRequestRepository.findByPublicationIdAndUserId(publicationId, userId)!!
 
     @Transactional
     fun getByUser(userId: UUID, page: Int, pageSize: Int) =

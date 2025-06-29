@@ -46,7 +46,6 @@ export class CollaborationChatStore implements CollaborationChatInterface {
         this.publicationCreator = data.publicationCreator;
         this.collaborationRequestCreator = data.collaborationRequestCreator;
         this.messages = data.messages;
-
       });
   }
 }
