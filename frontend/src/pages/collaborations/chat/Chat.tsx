@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from "react"
+import React, { ReactElement, useEffect, useState } from 'react';
 import AvatarNameBox, { SelfAvatar } from '../elements/AvatarNameBox';
 import { Box, Button, Link, Modal, TextField, Typography } from '@mui/material';
 import { TextareaAutosize } from '@mui/base';
@@ -11,12 +11,16 @@ import fileIcon from '../../../assets/file-icon.svg';
 import timetableImage from '../../../assets/fa-timetable.svg';
 import highfiveImage from '../../../assets/fa-highfive.svg';
 import { CollaborationChatInterface } from '../../publication/store/CollaborationChatStore';
-import { getFullName, getInitials, renderProfileImage } from '../../../util/userUtil';
+import {
+  getFullName,
+  getInitials,
+  renderProfileImage
+} from '../../../util/userUtil';
 import {
   CollaborationMessageType,
   DataCollectionType
 } from 'src/apis/first-approval-api';
-import { DATA_COLLECTION_TYPES } from "../../publication/ChooseDataCollection"
+import { DATA_COLLECTION_TYPES } from '../../publication/ChooseDataCollection';
 import { observer } from 'mobx-react-lite';
 
 type ChatProps = {
@@ -199,10 +203,18 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
   };
 
   const handleIWouldLikeToCollaborate: () => void = () => {
+    debugger;
+    collaborationChatStore.messages?.push({
+      id: '',
+      isAssistant: false,
+      userInfo: collaborationChatStore.collaborationRequestCreator,
+      type: CollaborationMessageType.I_WOULD_LIKE_TO_COLLABORATE,
+      text: 'I’d like to collaborate! Tell me more...'
+    });
     collaborationChatStore.messages?.push({
       id: '',
       isAssistant: true,
-      type: CollaborationMessageType.MANUSCRIPT_APPROVED,
+      type: CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET,
       text:
           "If you’re interested in this Dataset and considering publishing your \n" +
           "future work together with the Data Author(s), First Approval will make \n" +
@@ -210,7 +222,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
           "you agree to work on the publication together. The FA collaboration \n" +
           "process has 3 steps."
     });
-    collaborationChatStore.setStage(CollaborationMessageType.MANUSCRIPT_APPROVED);
+    collaborationChatStore.setStage(CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET)
   };
 
   const handleLetsMakeTheCollaboration: () => void = () => {
@@ -435,7 +447,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
         {collaborationChatStore.stage === CollaborationMessageType.DATASET_WAS_DOWNLOADED && (
           <UserOptions
             stage={collaborationChatStore.stage}
-            onIWouldLikeToCollaborate={() => {}}
+            onIWouldLikeToCollaborate={handleIWouldLikeToCollaborate}
             emailToAuthors={() => {}}
           />
         )}
@@ -446,7 +458,8 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
               style={{
                 display: 'flex',
                 flexDirection: 'row',
-                gap: '16px'
+                gap: '16px',
+                marginBottom: '32px'
               }}>
               <div
                 id="fa-collab-helper-step1"
