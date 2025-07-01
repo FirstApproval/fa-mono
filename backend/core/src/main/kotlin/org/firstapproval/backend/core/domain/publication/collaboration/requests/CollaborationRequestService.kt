@@ -8,11 +8,10 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessage
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.MessageType
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.MessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.MessageType.DATASET_WAS_DOWNLOADED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.COLLABORATION_REQUEST_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.PUBLICATION_CREATOR
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.APPROVED
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.NEW
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.DECLINED
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.*
 import org.firstapproval.backend.core.domain.user.User
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -21,11 +20,11 @@ import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
-import java.util.UUID
+import java.util.*
 
 const val I_AGREE_WITH_TERMS = "I agree to the terms of the First Approval Collaboration License, " +
     "including sending a Collaboration Request to the Data Author(s)."
-const val PLANS_TO_USE_YOUR_DATASET  = "%1\$s plans to use your dataset in his research and wants to include you " +
+const val PLANS_TO_USE_YOUR_DATASET = "%1\$s plans to use your dataset in his research and wants to include you " +
     "as a co-author of his article.\n" +
     "This is First Approval collaboration agreement pre-filled by %1\$s :" +
     "By approving to the collaboration, you oblige data user to include you as a co-author.\n" +
@@ -33,7 +32,7 @@ const val PLANS_TO_USE_YOUR_DATASET  = "%1\$s plans to use your dataset in his r
     "the final version of the article.\n" +
     "By declining a collaboration, you oblige data user to simply quote your dataset, " +
     "without specifying you as a co-author."
-const val DATASET_WAS_DOWNLOADED = "The dataset %1\$s was downloaded. \n" +
+const val ASSISTANT_DATASET_WAS_DOWNLOADED = "The dataset %1\$s was downloaded. \n" +
     "Important note: By incorporating this Dataset into your work or using it as a part of your larger Dataset you undertake to send " +
     "the Data Author(s) a Collaboration Request. This may result in including the Data Author(s) as co-author(s) to your work. " +
     "Read more about Collaboration..."
@@ -143,21 +142,24 @@ class CollaborationRequestService(
                 user = user,
                 text = I_AGREE_WITH_TERMS,
                 sequenceIndex = 0,
-                recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR)
+                recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR),
+                isAssistant = false
+            )
+        )
+
+        collaborationMessageRepository.save(
+            CollaborationRequestMessage(
+                collaborationRequest = collaboration,
+                type = DATASET_WAS_DOWNLOADED,
+                user = user,
+                text = ASSISTANT_DATASET_WAS_DOWNLOADED.format(publication.title),
+                sequenceIndex = 1,
+                recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR),
+                isAssistant = true
             )
         )
 
         // For publication creator
-        collaborationMessageRepository.save(
-            CollaborationRequestMessage(
-                collaborationRequest = collaboration,
-                type = AGREE_TO_THE_TERMS_OF_COLLABORATION,
-                user = user,
-                text = DATASET_WAS_DOWNLOADED.format(publication.title),
-                sequenceIndex = 1,
-                recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR)
-            )
-        )
         val fullNameRequestCreator = "${collaborationRequestRequest.firstNameLegal} ${collaborationRequestRequest.lastNameLegal}"
         collaborationMessageRepository.save(
             CollaborationRequestMessage(
@@ -166,7 +168,8 @@ class CollaborationRequestService(
                 user = user,
                 text = PLANS_TO_USE_YOUR_DATASET.format(fullNameRequestCreator),
                 sequenceIndex = 1,
-                recipientTypes = mutableSetOf(PUBLICATION_CREATOR)
+                recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
+                isAssistant = true
             )
         )
     }

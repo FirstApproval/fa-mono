@@ -11,7 +11,7 @@ import fileIcon from '../../../assets/file-icon.svg';
 import timetableImage from '../../../assets/fa-timetable.svg';
 import highfiveImage from '../../../assets/fa-highfive.svg';
 import { CollaborationChatInterface } from '../../publication/store/CollaborationChatStore';
-import { getFullName, renderProfileImage } from '../../../util/userUtil';
+import { getFullName, getInitials, renderProfileImage } from '../../../util/userUtil';
 import {
   CollaborationMessageType,
   DataCollectionType
@@ -474,8 +474,10 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
       />
       <div>
         {collaborationChatStore.messages && collaborationChatStore.messages.map((message) => {
-          const fullName = message.isAssistant ? 'Assistant' : getFullName(message.userInfo!!);
-          const avatar = message.isAssistant ? 'FA' : renderProfileImage(message.userInfo?.profileImage);
+          const userInfo = message.userInfo!!;
+          const fullName = message.isAssistant ? 'Assistant' : getFullName(userInfo);
+          const avatar = message.isAssistant ? 'FA' :
+            (userInfo.profileImage ? renderProfileImage(userInfo.profileImage) : getInitials(userInfo.firstName, userInfo.lastName));
           debugger;
           return (
             <React.Fragment key={message.id}>

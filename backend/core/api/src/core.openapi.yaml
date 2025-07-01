@@ -2941,6 +2941,7 @@ components:
         - REACH_OUT_AUTHORS
         - ONLY_CITATION
         - AGREE_TO_THE_TERMS_OF_COLLABORATION
+        - DATASET_WAS_DOWNLOADED
         - NONE
 
     PublicationShortInfo:

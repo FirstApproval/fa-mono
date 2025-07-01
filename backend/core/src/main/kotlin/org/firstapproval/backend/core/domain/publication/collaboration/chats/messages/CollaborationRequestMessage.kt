@@ -3,7 +3,7 @@ package org.firstapproval.backend.core.domain.publication.collaboration.chats.me
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType
-import jakarta.persistence.CascadeType
+import jakarta.persistence.CascadeType.ALL
 import jakarta.persistence.CollectionTable
 import jakarta.persistence.Column
 import jakarta.persistence.ElementCollection
@@ -67,12 +67,16 @@ class CollaborationRequestMessage(
 
     val creationTime: ZonedDateTime = ZonedDateTime.now(),
 
-    @OneToMany(mappedBy = "message", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val files: List<CollaborationRequestFile> = mutableListOf()
+    @OneToMany(mappedBy = "message", cascade = [ALL], orphanRemoval = true)
+    val files: List<CollaborationRequestFile> = mutableListOf(),
+
+    val isAssistant: Boolean,
+
 )
 
 enum class MessageType(ordinal: Int) {
     AGREE_TO_THE_TERMS_OF_COLLABORATION(0),
+    DATASET_WAS_DOWNLOADED(1),
     CREATE(1),
     ASSISTANT_CREATE(1),
     DEFAULT(2),
@@ -129,5 +133,6 @@ fun CollaborationRequestMessage.toApiObject(userInfo: UserInfo) = CollaborationR
     it.userInfo = userInfo.takeIf { this.user.id === userInfo.id }
         ?: throw IllegalArgumentException("UserInfo id doesn't match with user.id")
     it.payload = payload
+    it.isAssistant = isAssistant
     it.creationTime = creationTime.toOffsetDateTime()
 }
