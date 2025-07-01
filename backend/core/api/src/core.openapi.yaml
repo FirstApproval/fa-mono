@@ -2916,6 +2916,8 @@ components:
           type: object
         isAssistant:
           type: boolean
+        sequenceIndex:
+          type: integer
         creationTime:
           type: string
           format: date-time
@@ -2931,7 +2933,7 @@ components:
         - ACCEPT_OR_REJECT_COLLABORATION_REQUEST
         - CREATE_REQUEST
         - SELECT_USE_TYPE
-        - DEFAULT
+        - IF_YOU_ARE_INTERESTED_IN_THIS_DATASET
         - COLLABORATION_APPROVED
         - DATA_USER_ASKED
         - MANUSCRIPT_APPROVED

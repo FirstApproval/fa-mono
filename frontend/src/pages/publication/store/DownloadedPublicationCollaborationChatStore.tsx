@@ -21,6 +21,7 @@ export class DownloadedPublicationCollaborationChatStore
   messages: CollaborationRequestMessage[] | undefined = undefined;
   publication?: Publication;
   publicationCreator: UserInfo | undefined = undefined;
+  stage: CollaborationMessageType | undefined = undefined;
 
   constructor(publicationId: string) {
     makeAutoObservable(this);
@@ -40,6 +41,12 @@ export class DownloadedPublicationCollaborationChatStore
               this.publicationCreator = data.publicationCreator;
               this.collaborationRequestCreator = data.collaborationRequestCreator;
               this.messages = data.messages;
+
+              debugger;
+              this.stage = data.messages.reduce((max, item) =>
+                item.sequenceIndex!! > max.sequenceIndex!! ? item : max
+              ).type;
+              debugger;
             });
           break;
         }
@@ -57,7 +64,10 @@ export class DownloadedPublicationCollaborationChatStore
           break;
         }
       }
-      // if (collaborationRequestService.getCollaborationRequest())
     });
+  }
+
+  setStage (stage: CollaborationMessageType): void {
+    this.stage = stage;
   }
 }

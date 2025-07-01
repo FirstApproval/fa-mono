@@ -134,5 +134,6 @@ fun CollaborationRequestMessage.toApiObject(userInfo: UserInfo) = CollaborationR
         ?: throw IllegalArgumentException("UserInfo id doesn't match with user.id")
     it.payload = payload
     it.isAssistant = isAssistant
+    it.sequenceIndex = sequenceIndex
     it.creationTime = creationTime.toOffsetDateTime()
 }

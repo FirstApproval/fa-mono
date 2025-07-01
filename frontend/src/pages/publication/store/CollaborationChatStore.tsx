@@ -13,6 +13,7 @@ export class CollaborationChatStore implements CollaborationChatInterface {
   publicationCreator: UserInfo | undefined = undefined;
   messages: CollaborationRequestMessage[] = [];
   publication?: Publication;
+  stage: CollaborationMessageType | undefined = undefined;
 
   constructor(publicationId: string, stage?: CollaborationMessageType, publication?: Publication) {
     makeAutoObservable(this);
@@ -35,6 +36,10 @@ export class CollaborationChatStore implements CollaborationChatInterface {
     }
   }
 
+  setStage (stage: CollaborationMessageType): void {
+    this.stage = stage;
+  }
+
   private loadInitialState(publicationId: string): void {
     collaborationRequestChatService
       .getCollaborationChatByPublicationId(publicationId)
@@ -49,6 +54,8 @@ export class CollaborationChatStore implements CollaborationChatInterface {
 }
 
 export interface CollaborationChatInterface {
+  stage: CollaborationMessageType | undefined;
+  setStage: (stage: CollaborationMessageType) => void;
   collaborationRequestId: string;
   collaborationRequestCreator: UserInfo | undefined;
   publicationCreator: UserInfo | undefined;
