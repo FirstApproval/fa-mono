@@ -33,6 +33,10 @@ const val PLANS_TO_USE_YOUR_DATASET  = "%1\$s plans to use your dataset in his r
     "the final version of the article.\n" +
     "By declining a collaboration, you oblige data user to simply quote your dataset, " +
     "without specifying you as a co-author."
+const val DATASET_WAS_DOWNLOADED = "The dataset %1\$s was downloaded. \n" +
+    "Important note: By incorporating this Dataset into your work or using it as a part of your larger Dataset you undertake to send " +
+    "the Data Author(s) a Collaboration Request. This may result in including the Data Author(s) as co-author(s) to your work. " +
+    "Read more about Collaboration..."
 
 @Service
 class CollaborationRequestService(
@@ -143,8 +147,17 @@ class CollaborationRequestService(
             )
         )
 
-
         // For publication creator
+        collaborationMessageRepository.save(
+            CollaborationRequestMessage(
+                collaborationRequest = collaboration,
+                type = AGREE_TO_THE_TERMS_OF_COLLABORATION,
+                user = user,
+                text = DATASET_WAS_DOWNLOADED.format(publication.title),
+                sequenceIndex = 1,
+                recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR)
+            )
+        )
         val fullNameRequestCreator = "${collaborationRequestRequest.firstNameLegal} ${collaborationRequestRequest.lastNameLegal}"
         collaborationMessageRepository.save(
             CollaborationRequestMessage(
