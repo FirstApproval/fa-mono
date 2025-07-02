@@ -108,7 +108,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
     collaborationChatStore.setStage(CollaborationMessageType.NONE);
   };
 
-  const handleReachOutToAuthor: () => void = () => {
+  const showAuthorsEmails: () => void = () => {
     const mappedAuthors = collaborationChatStore.publication!!.authors!!
       .map(author => `• ${author.firstName} ${author.lastName} - ` + (author.email ?? 'no email'))
 
@@ -118,6 +118,10 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
       isAssistant: true,
       text: 'While we are working on the FA chat feature, you can contact the authors using their emails: \n' + mappedAuthors
     });
+  }
+
+  const handleReachOutToAuthor: () => void = () => {
+    showAuthorsEmails();
     collaborationChatStore.setStage(CollaborationMessageType.ONLY_CITATION);
   };
 
@@ -448,7 +452,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
           <UserOptions
             stage={collaborationChatStore.stage}
             onIWouldLikeToCollaborate={handleIWouldLikeToCollaborate}
-            emailToAuthors={() => {}}
+            emailToAuthors={showAuthorsEmails}
           />
         )}
         {collaborationChatStore.stage === CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET && (
