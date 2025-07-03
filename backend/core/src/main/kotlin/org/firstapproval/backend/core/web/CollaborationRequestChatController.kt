@@ -2,6 +2,7 @@ package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.CollaborationRequestChatApi
 import org.firstapproval.api.server.model.CollaborationChatResponse
+import org.firstapproval.api.server.model.CollaborationRequestMessage
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationMessageRepository
@@ -47,10 +48,22 @@ class CollaborationRequestChatController(
         return ok(response)
     }
 
+    override fun createCollaborationRequestMessage(
+        publicationId: String,
+        collaborationRequestMessage: CollaborationRequestMessage
+    ): ResponseEntity<CollaborationRequestMessage> {
+        val message = collaborationRequestService.createCollaborationRequestMessage(
+            publicationId = publicationId,
+            collaborationRequestMessage = collaborationRequestMessage,
+            user = authHolderService.user
+        )
+        return ok(message.toApiObject(authHolderService.user.toApiObject(userService)))
+    }
+
     private fun getRecipientType(collaborationRequest: CollaborationRequest) =
         when (authHolderService.user.id) {
             collaborationRequest.user.id -> COLLABORATION_REQUEST_CREATOR
             collaborationRequest.publication.creator.id -> PUBLICATION_CREATOR
-            else -> throw IllegalAccessException("Only creator of publication of collaboration request have access")
+            else -> throw IllegalAccessException("Only publication collaboration request creator have access")
         }
 }

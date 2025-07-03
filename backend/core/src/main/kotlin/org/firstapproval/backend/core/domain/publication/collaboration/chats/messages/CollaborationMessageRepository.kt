@@ -7,4 +7,5 @@ interface CollaborationMessageRepository : JpaRepository<CollaborationRequestMes
     fun findAllByCollaborationRequestIdAndRecipientTypesContainsOrderByCreationTime(
         collaborationRequestId: UUID,
         recipientType: RecipientType): List<CollaborationRequestMessage>
+    fun existsByCollaborationRequestIdAndUserIdAndSequenceIndexGreaterThanEqual(collaborationRequestId: UUID, userId: UUID, sequenceIndex: Int): Boolean
 }

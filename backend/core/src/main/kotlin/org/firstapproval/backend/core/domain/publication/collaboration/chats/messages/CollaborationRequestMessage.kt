@@ -19,8 +19,8 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationRequestFile
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.MessageType.ASSISTANT_CREATE
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.MessageType.CREATE
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaboraitonRequestMessageType.ASSISTANT_CREATE
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaboraitonRequestMessageType.CREATE
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequest
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.TypeOfWork
 import org.firstapproval.backend.core.domain.user.User
@@ -46,7 +46,7 @@ class CollaborationRequestMessage(
     val user: User,
 
     @Enumerated(STRING)
-    val type: MessageType,
+    val type: CollaboraitonRequestMessageType,
 
     @ElementCollection(fetch = EAGER) // EAGER или LAZY в зависимости от потребностей
     @CollectionTable(
@@ -72,9 +72,9 @@ class CollaborationRequestMessage(
 
     val isAssistant: Boolean,
 
-)
+    )
 
-enum class MessageType(ordinal: Int) {
+enum class CollaboraitonRequestMessageType(ordinal: Int) {
     AGREE_TO_THE_TERMS_OF_COLLABORATION(0),
     DATASET_WAS_DOWNLOADED(1),
     CREATE(1),
@@ -107,7 +107,7 @@ enum class MessageType(ordinal: Int) {
     ]
 )
 interface MessagePayload {
-    var type: MessageType
+    var type: CollaboraitonRequestMessageType
 }
 
 class Create(
@@ -115,11 +115,11 @@ class Create(
     val lastNameLegal: String,
     val typeOfWork: TypeOfWork,
     val description: String?,
-    override var type: MessageType = CREATE,
+    override var type: CollaboraitonRequestMessageType = CREATE,
 ) : MessagePayload
 
 class AssistantCreate(
-    override var type: MessageType = ASSISTANT_CREATE,
+    override var type: CollaboraitonRequestMessageType = ASSISTANT_CREATE,
 ) : MessagePayload
 
 fun CollaborationRequestMessage.toApiObject(userService: UserService) = toApiObject(user.toApiObject(userService))

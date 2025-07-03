@@ -1,14 +1,15 @@
 package org.firstapproval.backend.core.domain.publication.collaboration.requests
 
 import org.firstapproval.api.server.model.CreateCollaborationRequest
+import org.firstapproval.api.server.model.CollaborationRequestMessage as CollaborationRequestMessageApiObject
 import org.firstapproval.backend.core.domain.publication.Publication
 import org.firstapproval.backend.core.domain.publication.PublicationRepository
 import org.firstapproval.backend.core.domain.publication.PublicationService
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationMessageRepository
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessage
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.MessageType
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.MessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.MessageType.DATASET_WAS_DOWNLOADED
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaboraitonRequestMessageType
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaboraitonRequestMessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaboraitonRequestMessageType.DATASET_WAS_DOWNLOADED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.COLLABORATION_REQUEST_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.PUBLICATION_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.*
@@ -71,6 +72,36 @@ class CollaborationRequestService(
         val publication = publicationRepository.getReferenceById(publicationId)
         val typeOfWork = TypeOfWork.valueOf(collaborationRequestRequest.typeOfWork.name)
         createIfAbsent(publication, collaborationRequestRequest, typeOfWork, user)
+    }
+
+    @Transactional
+    fun createCollaborationRequestMessage(
+        publicationId: String,
+        collaborationRequestMessage: CollaborationRequestMessageApiObject,
+        user: User
+    ): CollaborationRequestMessage {
+        val collaborationRequest = collaborationRequestRepository.findByPublicationIdAndUserId(publicationId, user.id)!!
+
+        val type = CollaboraitonRequestMessageType.valueOf(collaborationRequestMessage.type.name)
+
+        // need to check that doesn't exist message with the same or higher sequenceIndex
+        collaborationMessageRepository.existsByCollaborationRequestIdAndUserIdAndSequenceIndexGreaterThanEqual(
+            collaborationRequestId = collaborationRequest.id,
+            userId = user.id,
+            sequenceIndex = collaborationRequestMessage.sequenceIndex
+        ).also { exists -> if (exists) throw IllegalArgumentException("Message with equal or higher sequenceIndex already exists") }
+
+        return collaborationMessageRepository.save(
+            CollaborationRequestMessage(
+                collaborationRequest = collaborationRequest,
+                type = type,
+                user = user,
+                text = collaborationRequestMessage.text,
+                sequenceIndex = collaborationRequestMessage.sequenceIndex,
+                recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
+                isAssistant = collaborationRequestMessage.isAssistant
+            )
+        )
     }
 
     @Transactional
@@ -164,7 +195,7 @@ class CollaborationRequestService(
         collaborationMessageRepository.save(
             CollaborationRequestMessage(
                 collaborationRequest = collaboration,
-                type = MessageType.ASSISTANT_CREATE,
+                type = CollaboraitonRequestMessageType.ASSISTANT_CREATE,
                 user = user,
                 text = PLANS_TO_USE_YOUR_DATASET.format(fullNameRequestCreator),
                 sequenceIndex = 1,
