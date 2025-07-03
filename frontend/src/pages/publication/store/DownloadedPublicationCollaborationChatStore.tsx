@@ -67,6 +67,16 @@ export class DownloadedPublicationCollaborationChatStore
     });
   }
 
+  sendMessage(collaborationRequestMessage: CollaborationRequestMessage, nextStage: CollaborationMessageType | undefined = undefined): void {
+    collaborationRequestChatService.createCollaborationRequestMessage(
+      this.publication!!.id,
+      collaborationRequestMessage
+    ).then(response => {
+      this.messages!!.push(response.data)
+      nextStage && this.setStage(nextStage);
+    });
+  }
+
   setStage (stage: CollaborationMessageType): void {
     this.stage = stage;
   }
