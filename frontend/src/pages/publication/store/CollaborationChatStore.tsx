@@ -40,6 +40,9 @@ export class CollaborationChatStore implements CollaborationChatInterface {
     this.stage = stage;
   }
 
+  sendMessage(message: CollaborationRequestMessage, next?: (CollaborationMessageType | undefined)): void {
+  }
+
   private loadInitialState(publicationId: string): void {
     collaborationRequestChatService
       .getCollaborationChatByPublicationId(publicationId)
@@ -56,6 +59,7 @@ export class CollaborationChatStore implements CollaborationChatInterface {
 export interface CollaborationChatInterface {
   stage: CollaborationMessageType | undefined;
   setStage: (stage: CollaborationMessageType) => void;
+  sendMessage: (message: CollaborationRequestMessage, next?: (CollaborationMessageType | undefined)) => void;
   collaborationRequestId: string;
   collaborationRequestCreator: UserInfo | undefined;
   publicationCreator: UserInfo | undefined;

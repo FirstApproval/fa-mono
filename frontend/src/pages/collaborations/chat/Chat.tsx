@@ -98,26 +98,39 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
 
     const message = `${mappedAuthors}. ${publication.title}. ${year}. First Approval${dataCollectionTypeTitle}.`
 
-    collaborationChatStore.messages?.push({
-      id: '',
+    // collaborationChatStore.messages?.push({
+    //   id: '',
+    //   isAssistant: true,
+    //   type: CollaborationMessageType.NONE,
+    //   text: message
+    // });
+    //
+    // collaborationChatStore.setStage(CollaborationMessageType.NONE);
+
+    collaborationChatStore.sendMessage({
       isAssistant: true,
       type: CollaborationMessageType.NONE,
       text: message
-    });
-
-    collaborationChatStore.setStage(CollaborationMessageType.NONE);
+    }, CollaborationMessageType.NONE)
   };
 
   const showAuthorsEmails: () => void = () => {
     const mappedAuthors = collaborationChatStore.publication!!.authors!!
       .map(author => `• ${author.firstName} ${author.lastName} - ` + (author.email ?? 'no email'))
 
-    collaborationChatStore.messages?.push({
+    // collaborationChatStore.messages?.push({
+    //   id: '',
+    //   type: CollaborationMessageType.REACH_OUT_AUTHORS,
+    //   isAssistant: true,
+    //   text: 'While we are working on the FA chat feature, you can contact the authors using their emails: \n' + mappedAuthors
+    // });
+
+    collaborationChatStore.sendMessage({
       id: '',
       type: CollaborationMessageType.REACH_OUT_AUTHORS,
       isAssistant: true,
       text: 'While we are working on the FA chat feature, you can contact the authors using their emails: \n' + mappedAuthors
-    });
+    })
   }
 
   const handleReachOutToAuthor: () => void = () => {
@@ -126,13 +139,24 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
   };
 
   const handleAskDataUser: () => void = () => {
-    Messages.push({
-      id: 404,
-      name: 'Me Myself',
-      avatar: 'MM',
-      text: 'You will have 2 weeks to read the article and decide whether to accept or decline co-authorship. You can ask questions or provide your suggestions to the author via private messages. We recommend starting this process well in advance. If you do not approve the request within 2 weeks, you will lose the opportunity for co-authorship in this article. If you decline, the data user will simply cite your dataset.'
-    });
-    collaborationChatStore.setStage(CollaborationMessageType.DATA_USER_ASKED);
+    // Messages.push({
+    //   id: 404,
+    //   name: 'Me Myself',
+    //   avatar: 'MM',
+    //   text: 'You will have 2 weeks to read the article and decide whether to accept or decline co-authorship. You can ask questions or provide your suggestions to the author via private messages. We recommend starting this process well in advance. If you do not approve the request within 2 weeks, you will lose the opportunity for co-authorship in this article. If you decline, the data user will simply cite your dataset.'
+    // });
+    // collaborationChatStore.setStage(CollaborationMessageType.DATA_USER_ASKED);
+
+    collaborationChatStore.sendMessage({
+      id: '',
+      type: CollaborationMessageType.DATA_USER_ASKED,
+      isAssistant: true,
+      text: 'You will have 2 weeks to read the article and decide whether to accept or decline co-authorship. ' +
+        'You can ask questions or provide your suggestions to the author via private messages. ' +
+        'We recommend starting this process well in advance. ' +
+        'If you do not approve the request within 2 weeks, you will lose the opportunity for co-authorship in this article. ' +
+        'If you decline, the data user will simply cite your dataset.'
+    }, CollaborationMessageType.DATA_USER_ASKED)
   };
 
   const handleShowCommentModal: () => void = () => setShowCommentModal(true);
@@ -208,15 +232,20 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
 
   const handleIWouldLikeToCollaborate: () => void = () => {
     debugger;
-    collaborationChatStore.messages?.push({
-      id: '',
-      isAssistant: false,
-      userInfo: collaborationChatStore.collaborationRequestCreator,
+    // collaborationChatStore.messages?.push({
+    //   id: '',
+    //   isAssistant: false,
+    //   userInfo: collaborationChatStore.collaborationRequestCreator,
+    //   type: CollaborationMessageType.I_WOULD_LIKE_TO_COLLABORATE,
+    //   text: 'I’d like to collaborate! Tell me more...'
+    // });
+
+    collaborationChatStore.sendMessage({
       type: CollaborationMessageType.I_WOULD_LIKE_TO_COLLABORATE,
+      isAssistant: false,
       text: 'I’d like to collaborate! Tell me more...'
-    });
-    collaborationChatStore.messages?.push({
-      id: '',
+    })
+    collaborationChatStore.sendMessage({
       isAssistant: true,
       type: CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET,
       text:
@@ -225,13 +254,11 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
           "the collaboration process easier. Let me guide you through it before \n" +
           "you agree to work on the publication together. The FA collaboration \n" +
           "process has 3 steps."
-    });
-    collaborationChatStore.setStage(CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET)
+    }, CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET);
   };
 
   const handleLetsMakeTheCollaboration: () => void = () => {
-    collaborationChatStore.messages?.push({
-      id: '',
+    collaborationChatStore.sendMessage({
       isAssistant: true,
       type: CollaborationMessageType.MANUSCRIPT_APPROVED,
       text:
@@ -240,8 +267,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
           "the collaboration process easier. Let me guide you through it before \n" +
           "you agree to work on the publication together. The FA collaboration \n" +
           "process has 3 steps."
-    });
-    collaborationChatStore.setStage(CollaborationMessageType.MANUSCRIPT_APPROVED);
+    }, CollaborationMessageType.MANUSCRIPT_APPROVED);
   };
 
   const handlePublicationFormMsg: () => void = () => {
