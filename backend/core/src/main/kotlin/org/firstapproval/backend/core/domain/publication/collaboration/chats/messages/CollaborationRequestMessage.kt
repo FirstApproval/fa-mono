@@ -147,8 +147,8 @@ fun CollaborationRequestMessage.toApiObject(userInfo: UserInfo) = CollaborationR
     false
 ).also {
     it.id = this.id
-    it.userInfo = userInfo.takeIf { this.user.id === userInfo.id }
-        ?: throw IllegalArgumentException("UserInfo id doesn't match with user.id")
+    it.userInfo = userInfo.takeIf { this.user.id == userInfo.id }
+        ?: throw IllegalArgumentException("UserInfo id ${userInfo.id} doesn't match with user.id ${this.user.id}")
     it.payload = payload
     it.isAssistant = isAssistant
     it.sequenceIndex = sequenceIndex
