@@ -11,16 +11,16 @@ const message = {
 const nextMessageType = CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET;
 
 function iWouldLikeToCollaborateAction(collaborationChatStore: CollaborationChatInterface): void {
-  collaborationChatStore.sendMessage(message)
-
-  collaborationChatStore.sendMessage({
-    type: CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET,
-    isAssistant: true,
-    text: 'If you’re interested in this Dataset and considering publishing your future work together with the Data Author(s), ' +
-      'First Approval will make the collaboration process easier. ' +
-      'Let me guide you through it before you agree to work on the publication together. ' +
-      'The FA collaboration process has 3 steps.'
-  }, nextMessageType)
+  collaborationChatStore.sendMessage(message).then(() => {
+    collaborationChatStore.sendMessage({
+      type: CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET,
+      isAssistant: true,
+      text: 'If you’re interested in this Dataset and considering publishing your future work together with the Data Author(s), ' +
+        'First Approval will make the collaboration process easier. ' +
+        'Let me guide you through it before you agree to work on the publication together. ' +
+        'The FA collaboration process has 3 steps.'
+    }, nextMessageType).then();
+  })
 }
 
 export const iWouldLikeToCollaborate: UserAction = {

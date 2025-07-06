@@ -371,12 +371,6 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
             </React.Fragment>
           );
         })}
-        {
-          collaborationChatStore.messageType && <UserActions
-            messageType={collaborationChatStore.messageType}
-            userActionsRegistry={userActionsRegistry}
-          />
-        }
         {/* {collaborationChatStore.messageType === CollaborationMessageType.CITATION_IS_ENOUGH && ( */}
         {/*   <UserActions */}
         {/*     messageType={CollaborationMessageType.CITATION_IS_ENOUGH} */}
@@ -528,6 +522,12 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
         {/* {collaborationChatStore.messageType === CollaborationMessageType.DECLINED && ( */}
         {/*   <UserActions messageType={collaborationChatStore.messageType} onNeedHelp={handleNeedHelp} /> */}
         {/* )} */}
+        {
+          collaborationChatStore.messageType && <UserActions
+            messageType={collaborationChatStore.messageType}
+            userActionsRegistry={userActionsRegistry}
+          />
+        }
         <DeclineModal
           open={showDeclineModal}
           handleClose={handleCloseDeclineModal}

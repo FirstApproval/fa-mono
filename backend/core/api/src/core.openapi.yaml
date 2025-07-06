@@ -2916,6 +2916,7 @@ components:
           $ref: '#/components/schemas/CollaborationMessageType'
         text:
           type: string
+          maxLength: 2048
         payload:
           type: object
         isAssistant:

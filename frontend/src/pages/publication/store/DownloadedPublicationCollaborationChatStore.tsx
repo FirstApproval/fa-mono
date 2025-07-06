@@ -65,8 +65,8 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
     });
   }
 
-  sendMessage(message: CollaborationRequestMessage, nextStage: CollaborationMessageType | undefined = undefined): void {
-    collaborationRequestChatService.createCollaborationRequestMessage(
+  sendMessage(message: CollaborationRequestMessage, nextStage: CollaborationMessageType | undefined = undefined): Promise<void> {
+    return collaborationRequestChatService.createCollaborationRequestMessage(
       this.publication!!.id,
       message
     ).then(response => {
