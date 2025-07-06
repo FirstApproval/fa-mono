@@ -4,8 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
 interface CollaborationMessageRepository : JpaRepository<CollaborationRequestMessage, UUID> {
-    fun findAllByCollaborationRequestIdAndRecipientTypesContainsOrderByCreationTime(
+    fun findAllByCollaborationRequestIdAndUserIdOrderByCreationTime(
         collaborationRequestId: UUID,
-        recipientType: RecipientType): List<CollaborationRequestMessage>
+        userId: UUID): List<CollaborationRequestMessage>
     fun existsByCollaborationRequestIdAndUserIdAndSequenceIndexGreaterThanEqual(collaborationRequestId: UUID, userId: UUID, sequenceIndex: Int): Boolean
 }

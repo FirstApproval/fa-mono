@@ -1,6 +1,7 @@
 package org.firstapproval.backend.core.domain.publication.collaboration.requests
 
 import org.firstapproval.api.server.model.CreateCollaborationRequest
+import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.api.server.model.CollaborationRequestMessage as CollaborationRequestMessageApiObject
 import org.firstapproval.backend.core.domain.publication.Publication
 import org.firstapproval.backend.core.domain.publication.PublicationRepository
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.lang.IllegalStateException
 import java.time.ZonedDateTime
 import java.util.*
 
@@ -91,14 +93,19 @@ class CollaborationRequestService(
             sequenceIndex = type.sequenceIndex
         ).also { exists -> if (exists) throw IllegalArgumentException("Message with equal or higher sequenceIndex already exists") }
 
+        val messageRecipient = when(type.recipientType) {
+            COLLABORATION_REQUEST_CREATOR -> collaborationRequest.user
+            PUBLICATION_CREATOR -> collaborationRequest.publication.creator
+        }
+
         return collaborationMessageRepository.save(
             CollaborationRequestMessage(
                 collaborationRequest = collaborationRequest,
                 type = type,
-                user = user,
+                user = messageRecipient,
                 text = collaborationRequestMessage.text,
                 sequenceIndex = type.sequenceIndex,
-                recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
+                recipientTypes = mutableSetOf(type.recipientType),
                 isAssistant = collaborationRequestMessage.isAssistant
             )
         )

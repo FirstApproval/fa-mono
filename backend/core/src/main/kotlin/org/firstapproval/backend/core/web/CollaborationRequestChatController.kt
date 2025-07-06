@@ -27,9 +27,8 @@ class CollaborationRequestChatController(
 
     override fun getCollaborationChatByPublicationId(publicationId: String): ResponseEntity<CollaborationChatResponse> {
         val collaborationRequest = collaborationRequestService.get(publicationId, authHolderService.user.id)
-        val recipientType = getRecipientType(collaborationRequest)
         val messages = collaborationRequestMessageRepository
-            .findAllByCollaborationRequestIdAndRecipientTypesContainsOrderByCreationTime(collaborationRequest.id, recipientType)
+            .findAllByCollaborationRequestIdAndUserIdOrderByCreationTime(collaborationRequest.id, authHolderService.user.id)
         val publicationCreator = collaborationRequest.publication.creator.toApiObject(userService)
         val collaborationRequestCreator = collaborationRequest.user.toApiObject(userService)
         val messageAuthorById = mapOf(
