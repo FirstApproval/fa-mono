@@ -19,14 +19,14 @@ export class CollaborationChatStore implements CollaborationChatInterface {
     makeAutoObservable(this);
     // this.loadInitialState(publicationId);
 
-    if (stage === CollaborationMessageType.CREATE_REQUEST) {
+    if (stage === CollaborationMessageType.CITATION_IS_ENOUGH) {
       this.publication = publication;
       this.publicationCreator = publication?.creator;
       this.collaborationRequestCreator = userStore.user;
       this.messages = [
         {
           id: '',
-          type: CollaborationMessageType.CREATE_REQUEST,
+          type: CollaborationMessageType.CITATION_IS_ENOUGH,
           isAssistant: true,
           text: `The dataset "${publication?.title}" was downloaded.\n\n` +
             'This dataset was published in open access by the author(s).\n' +

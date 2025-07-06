@@ -5,7 +5,7 @@ export function needHelpAction() {
   () => alert('Help is Needed');
 }
 
-export const citation: UserAction = {
+export const needHelp: UserAction = {
   text: 'I need help',
   action: (collaborationChatStore: CollaborationChatStore) => needHelpAction(),
 };

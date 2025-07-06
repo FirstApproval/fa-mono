@@ -51,7 +51,7 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
         case (UseType.CITATION): {
           this.messages = [
             {
-              type: CollaborationMessageType.CREATE_REQUEST,
+              type: CollaborationMessageType.CITATION_IS_ENOUGH,
               isAssistant: true,
               text:
                 `The dataset "${this.publication?.title}" was downloaded.\n\n` +

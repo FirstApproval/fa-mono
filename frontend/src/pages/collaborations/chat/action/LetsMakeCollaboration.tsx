@@ -2,10 +2,16 @@ import { UserAction } from "./UserAction"
 import { CollaborationChatStore } from "../../../publication/store/CollaborationChatStore"
 import { CollaborationMessageType, CollaborationRequestMessage } from "../../../../apis/first-approval-api"
 
+const message = {
+  text: 'Great, Let’s make the Collaboration request',
+  type: CollaborationMessageType.LETS_MAKE_COLLABORATION_REQUEST,
+  isAssistant: false
+};
+
+const nextMessageType = CollaborationMessageType.STEP_1_FORMALIZED_AGREEMENT;
+
 function letsMakeCollaborationAction (
   collaborationChatStore: CollaborationChatStore,
-  message: CollaborationRequestMessage,
-  nextMessageType: CollaborationMessageType
 ): void {
     collaborationChatStore.sendMessage(message, nextMessageType);
 
@@ -19,17 +25,9 @@ function letsMakeCollaborationAction (
     }, CollaborationMessageType.MANUSCRIPT_APPROVED);
 }
 
-const message = {
-  text: 'Great, Let’s make the Collaboration request',
-  type: CollaborationMessageType.LETS_MAKE_COLLABORATION,
-  isAssistant: false
-};
-
-const nextMessageType = CollaborationMessageType.STEP_1_FORMALIZED_AGREEMENT;
-
 export const letsMakeCollaboration: UserAction = {
-  message,
-  nextMessageType,
-  action: (collaborationChatStore: CollaborationChatStore) => letsMakeCollaborationAction(collaborationChatStore, message, nextMessageType)
+  // message,
+  // nextMessageType,
+  action: (collaborationChatStore: CollaborationChatStore) => letsMakeCollaborationAction(collaborationChatStore)
 };
 

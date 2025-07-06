@@ -375,9 +375,9 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
             </React.Fragment>
           );
         })}
-        {collaborationChatStore.messageType === CollaborationMessageType.CREATE_REQUEST && (
+        {collaborationChatStore.messageType === CollaborationMessageType.CITATION_IS_ENOUGH && (
           <UserActions
-            messageType={CollaborationMessageType.CREATE_REQUEST}
+            messageType={CollaborationMessageType.CITATION_IS_ENOUGH}
             onNeedHelp={needHelp}
             citation={handleCitation}
             reachOutToTheAuthor={handleReachOutToAuthor}
@@ -477,11 +477,11 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
                 </div>
               </div>
             </div>
-            <UserActions
-              messageType={collaborationChatStore.messageType}
-              onLetsMakeTheCollaboration={handleLetsMakeTheCollaboration}
-              onNeedHelp={handleShowCollabModal}
-            />
+            {/* <UserActions */}
+            {/*   messageType={collaborationChatStore.messageType} */}
+            {/*   onLetsMakeTheCollaboration={handleLetsMakeTheCollaboration} */}
+            {/*   onNeedHelp={handleShowCollabModal} */}
+            {/* /> */}
           </>
         )}
         {collaborationChatStore.messageType === CollaborationMessageType.COLLABORATION_APPROVED && (

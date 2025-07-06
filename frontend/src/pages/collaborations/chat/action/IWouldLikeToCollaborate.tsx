@@ -3,10 +3,10 @@ import { CollaborationChatStore } from "../../../publication/store/Collaboration
 import { UserAction } from "./UserAction"
 
 const message = {
-  type: CollaborationMessageType.REACH_OUT_AUTHORS,
+  type: CollaborationMessageType.I_WOULD_LIKE_TO_COLLABORATE,
   isAssistant: false,
-  text: 'I want to reach out to the author(s)'
-};
+  text: 'I`d like to collaborate! Tell me more...'
+}
 
 const nextMessageType = CollaborationMessageType.ONLY_CITATION;
 
@@ -17,14 +17,14 @@ function reachOutToAuthorsAction(collaborationChatStore: CollaborationChatStore)
     .map(author => `• ${author.firstName} ${author.lastName} - ` + (author.email ?? 'no email'))
 
   collaborationChatStore.sendMessage({
-    type: CollaborationMessageType.REACH_OUT_AUTHORS_RESPONSE,
+    type: CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET,
     isAssistant: true,
     text: 'While we are working on the FA chat feature, you can contact the authors using their emails: \n' + mappedAuthors
   }, nextMessageType)
 
 }
 
-export const reachOutToAuthors: UserAction = {
-  text: 'I want to reach out to the author(s)',
+export const iWouldLikeToCollaborate: UserAction = {
+  text: 'I`d like to collaborate! Tell me more...',
   action: (collaborationChatStore: CollaborationChatStore) => reachOutToAuthorsAction(collaborationChatStore)
 };
