@@ -29,10 +29,6 @@ import {
 } from './Modal';
 import { Message } from './ChatMessage';
 import { UserActionsRegistry } from "./UserActionsRegistry"
-import { needHelp } from "./action/NeedHelp"
-import { UserAction } from "./action/UserAction"
-import { collaborationStore } from "../../publication/store/downloadsStore"
-import { handleReachOutToAuthor } from "./action/ReachOutToAuthors"
 
 type ChatProps = {
   collaborationChatStore: CollaborationChatInterface;
@@ -375,26 +371,26 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
             </React.Fragment>
           );
         })}
-        {collaborationChatStore.messageType === CollaborationMessageType.CITATION_IS_ENOUGH && (
-          <UserActions
-            messageType={CollaborationMessageType.CITATION_IS_ENOUGH}
-            onNeedHelp={needHelp}
-            citation={handleCitation}
-            reachOutToTheAuthor={handleReachOutToAuthor}
-          />
-        )}
-        {collaborationChatStore.messageType === CollaborationMessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION && (
-          <UserActions
-            messageType={collaborationChatStore.messageType}
-          />
-        )}
-        {collaborationChatStore.messageType === CollaborationMessageType.DATASET_WAS_DOWNLOADED && (
-          <UserActions
-            messageType={collaborationChatStore.messageType}
-            onIWouldLikeToCollaborate={handleIWouldLikeToCollaborate}
-            emailToAuthors={showAuthorsEmails}
-          />
-        )}
+        {/* {collaborationChatStore.messageType === CollaborationMessageType.CITATION_IS_ENOUGH && ( */}
+        {/*   <UserActions */}
+        {/*     messageType={CollaborationMessageType.CITATION_IS_ENOUGH} */}
+        {/*     onNeedHelp={needHelp} */}
+        {/*     citation={handleCitation} */}
+        {/*     reachOutToTheAuthor={handleReachOutToAuthor} */}
+        {/*   /> */}
+        {/* )} */}
+        {/* {collaborationChatStore.messageType === CollaborationMessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION && ( */}
+        {/*   <UserActions */}
+        {/*     messageType={collaborationChatStore.messageType} */}
+        {/*   /> */}
+        {/* )} */}
+        {/* {collaborationChatStore.messageType === CollaborationMessageType.DATASET_WAS_DOWNLOADED && ( */}
+        {/*   <UserActions */}
+        {/*     messageType={collaborationChatStore.messageType} */}
+        {/*     onIWouldLikeToCollaborate={handleIWouldLikeToCollaborate} */}
+        {/*     emailToAuthors={showAuthorsEmails} */}
+        {/*   /> */}
+        {/* )} */}
         {collaborationChatStore.messageType === CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET && (
           <>
             <div
@@ -484,48 +480,48 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
             {/* /> */}
           </>
         )}
-        {collaborationChatStore.messageType === CollaborationMessageType.COLLABORATION_APPROVED && (
-          <UserActions
-            messageType={collaborationChatStore.messageType}
-            onNeedHelp={handleNeedHelp}
-            onFormMsg={handleAuthorInfoFormMsg}
-            onAskDataUser={handleAskDataUser}
-            onDecline={handleDecline}
-          />
-        )}
-        {collaborationChatStore.messageType === CollaborationMessageType.DATA_USER_ASKED && (
-          <UserActions
-            messageType={collaborationChatStore.messageType}
-            onNeedHelp={handleNeedHelp}
-            onApproveManuscript={handleApproveManuscript}
-            onApproveManuscriptWithComments={
-              handleApproveManuscriptWithComments
-            }
-            onAskDataUser={handleEmailDataUser}
-            onDecline={handleDecline}
-          />
-        )}
+        {/* {collaborationChatStore.messageType === CollaborationMessageType.COLLABORATION_APPROVED && ( */}
+        {/*   <UserActions */}
+        {/*     messageType={collaborationChatStore.messageType} */}
+        {/*     onNeedHelp={handleNeedHelp} */}
+        {/*     onFormMsg={handleAuthorInfoFormMsg} */}
+        {/*     onAskDataUser={handleAskDataUser} */}
+        {/*     onDecline={handleDecline} */}
+        {/*   /> */}
+        {/* )} */}
+        {/* {collaborationChatStore.messageType === CollaborationMessageType.DATA_USER_ASKED && ( */}
+        {/*   <UserActions */}
+        {/*     messageType={collaborationChatStore.messageType} */}
+        {/*     onNeedHelp={handleNeedHelp} */}
+        {/*     onApproveManuscript={handleApproveManuscript} */}
+        {/*     onApproveManuscriptWithComments={ */}
+        {/*       handleApproveManuscriptWithComments */}
+        {/*     } */}
+        {/*     onAskDataUser={handleEmailDataUser} */}
+        {/*     onDecline={handleDecline} */}
+        {/*   /> */}
+        {/* )} */}
         {/* {stage === CollaborationMessageType.REACH_OUT_AUTHORS && ( */}
         {/*   <UserOptions */}
         {/*     stage={stage} */}
         {/*   /> */}
         {/* )} */}
-        {collaborationChatStore.messageType === CollaborationMessageType.ONLY_CITATION && (
-          <UserActions
-            messageType={collaborationChatStore.messageType}
-            citation={handleCitation}
-          />
-        )}
-        {collaborationChatStore.messageType === CollaborationMessageType.MANUSCRIPT_APPROVED && (
-          <UserActions
-            messageType={collaborationChatStore.messageType}
-            onNeedHelp={handleNeedHelp}
-            onAskDataUser={handleEmailDataUser}
-          />
-        )}
-        {collaborationChatStore.messageType === CollaborationMessageType.DECLINED && (
-          <UserActions messageType={collaborationChatStore.messageType} onNeedHelp={handleNeedHelp} />
-        )}
+        {/* {collaborationChatStore.messageType === CollaborationMessageType.ONLY_CITATION && ( */}
+        {/*   <UserActions */}
+        {/*     messageType={collaborationChatStore.messageType} */}
+        {/*     citation={handleCitation} */}
+        {/*   /> */}
+        {/* )} */}
+        {/* {collaborationChatStore.messageType === CollaborationMessageType.MANUSCRIPT_APPROVED && ( */}
+        {/*   <UserActions */}
+        {/*     messageType={collaborationChatStore.messageType} */}
+        {/*     onNeedHelp={handleNeedHelp} */}
+        {/*     onAskDataUser={handleEmailDataUser} */}
+        {/*   /> */}
+        {/* )} */}
+        {/* {collaborationChatStore.messageType === CollaborationMessageType.DECLINED && ( */}
+        {/*   <UserActions messageType={collaborationChatStore.messageType} onNeedHelp={handleNeedHelp} /> */}
+        {/* )} */}
         <DeclineModal
           open={showDeclineModal}
           handleClose={handleCloseDeclineModal}
@@ -631,7 +627,7 @@ const UserActions = (messageType: CollaborationMessageType, userActionsRegistry:
           userActionsRegistry.getActions(messageType).map(action =>
             <StyledApproveButton
               variant="outlined"
-              onClick={() => action.action()}>
+              onClick={() => action.action(userActionsRegistry.collaborationChatStore)}>
               {action.text}
             </StyledApproveButton>
         )}
