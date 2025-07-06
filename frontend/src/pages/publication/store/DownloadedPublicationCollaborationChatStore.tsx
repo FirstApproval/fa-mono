@@ -38,9 +38,10 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
               this.collaborationRequestId = data.collaborationRequestId;
               this.publicationCreator = data.publicationCreator;
               this.collaborationRequestCreator = data.collaborationRequestCreator;
+
+              data.messages.sort(this.sortMessages)
               this.messages = data.messages;
 
-              debugger;
               this.messageType = data.messages.reduce((max, item) =>
                 item.sequenceIndex!! > max.sequenceIndex!! ? item : max
               ).type;
@@ -70,10 +71,14 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
       this.publication!!.id,
       message
     ).then(response => {
-      this.messages!!.push(response.data)
+      this.messages!!.push(response.data);
+      this.messages!!.sort(this.sortMessages);
       nextStage && this.setStage(nextStage);
     });
   }
+
+  sortMessages = (message1: CollaborationRequestMessage, message2: CollaborationRequestMessage) =>
+    message1.sequenceIndex!! - message2.sequenceIndex!!
 
   setStage (stage: CollaborationMessageType): void {
     this.messageType = stage;
