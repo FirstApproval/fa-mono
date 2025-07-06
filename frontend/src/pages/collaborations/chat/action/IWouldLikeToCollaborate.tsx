@@ -8,23 +8,22 @@ const message = {
   text: 'I`d like to collaborate! Tell me more...'
 }
 
-const nextMessageType = CollaborationMessageType.ONLY_CITATION;
+const nextMessageType = CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET;
 
-function reachOutToAuthorsAction(collaborationChatStore: CollaborationChatInterface): void {
+function iWouldLikeToCollaborateAction(collaborationChatStore: CollaborationChatInterface): void {
   collaborationChatStore.sendMessage(message)
-
-  const mappedAuthors = collaborationChatStore.publication!!.authors!!
-    .map(author => `• ${author.firstName} ${author.lastName} - ` + (author.email ?? 'no email'))
 
   collaborationChatStore.sendMessage({
     type: CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET,
     isAssistant: true,
-    text: 'While we are working on the FA chat feature, you can contact the authors using their emails: \n' + mappedAuthors
+    text: 'If you’re interested in this Dataset and considering publishing your future work together with the Data Author(s), ' +
+      'First Approval will make the collaboration process easier. ' +
+      'Let me guide you through it before you agree to work on the publication together. ' +
+      'The FA collaboration process has 3 steps.'
   }, nextMessageType)
-
 }
 
 export const iWouldLikeToCollaborate: UserAction = {
   text: 'I`d like to collaborate! Tell me more...',
-  action: (collaborationChatStore: CollaborationChatInterface) => reachOutToAuthorsAction(collaborationChatStore)
+  action: (collaborationChatStore: CollaborationChatInterface) => iWouldLikeToCollaborateAction(collaborationChatStore)
 };

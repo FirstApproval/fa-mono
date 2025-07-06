@@ -9,6 +9,7 @@ import { iWouldLikeToCollaborate } from "./action/IWouldLikeToCollaborate"
 import { gotItReadyToStart } from "./action/GotItReadyToStart"
 import { confirmThatProvidedInfoIsReal } from "./action/ConfirmThatProvidedInfoIsReal"
 import { doneWhatsNext } from "./action/DoneWhatsNext"
+import { showAuthorsEmails } from "./action/ShowAuthorsEmails"
 
 export class UserActionsRegistry {
   private userActionsByMessageType = new Map<CollaborationMessageType, UserAction[]>()
@@ -24,9 +25,9 @@ export class UserActionsRegistry {
 
     // Ниже для UseType.CO_AUTHORSHIP
     this.registerAction(CollaborationMessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION)
-    this.registerAction(CollaborationMessageType.DATASET_WAS_DOWNLOADED, [letsMakeCollaboration])
+    this.registerAction(CollaborationMessageType.DATASET_WAS_DOWNLOADED, [showAuthorsEmails, iWouldLikeToCollaborate])
     this.registerAction(CollaborationMessageType.I_WOULD_LIKE_TO_COLLABORATE)
-    this.registerAction(CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET, [iWouldLikeToCollaborate])
+    this.registerAction(CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET, [letsMakeCollaboration])
     this.registerAction(CollaborationMessageType.LETS_MAKE_COLLABORATION_REQUEST)
     this.registerAction(CollaborationMessageType.FORMALIZED_AGREEMENT, [gotItReadyToStart])
     this.registerAction(CollaborationMessageType.VERIFY_YOUR_NAME_AND_AFFILIATION, [confirmThatProvidedInfoIsReal])

@@ -7,9 +7,9 @@ import org.firstapproval.backend.core.domain.publication.PublicationRepository
 import org.firstapproval.backend.core.domain.publication.PublicationService
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationMessageRepository
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessage
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaboraitonRequestMessageType
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaboraitonRequestMessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaboraitonRequestMessageType.DATASET_WAS_DOWNLOADED
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DATASET_WAS_DOWNLOADED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.COLLABORATION_REQUEST_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.PUBLICATION_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.*
@@ -82,13 +82,13 @@ class CollaborationRequestService(
     ): CollaborationRequestMessage {
         val collaborationRequest = collaborationRequestRepository.findByPublicationIdAndUserId(publicationId, user.id)!!
 
-        val type = CollaboraitonRequestMessageType.valueOf(collaborationRequestMessage.type.name)
+        val type = CollaborationRequestMessageType.valueOf(collaborationRequestMessage.type.name)
 
         // need to check that doesn't exist message with the same or higher sequenceIndex
         collaborationMessageRepository.existsByCollaborationRequestIdAndUserIdAndSequenceIndexGreaterThanEqual(
             collaborationRequestId = collaborationRequest.id,
             userId = user.id,
-            sequenceIndex = collaborationRequestMessage.sequenceIndex
+            sequenceIndex = type.sequenceIndex
         ).also { exists -> if (exists) throw IllegalArgumentException("Message with equal or higher sequenceIndex already exists") }
 
         return collaborationMessageRepository.save(
@@ -97,7 +97,7 @@ class CollaborationRequestService(
                 type = type,
                 user = user,
                 text = collaborationRequestMessage.text,
-                sequenceIndex = collaborationRequestMessage.sequenceIndex,
+                sequenceIndex = type.sequenceIndex,
                 recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
                 isAssistant = collaborationRequestMessage.isAssistant
             )
@@ -195,7 +195,7 @@ class CollaborationRequestService(
         collaborationMessageRepository.save(
             CollaborationRequestMessage(
                 collaborationRequest = collaboration,
-                type = CollaboraitonRequestMessageType.ASSISTANT_CREATE,
+                type = CollaborationRequestMessageType.ASSISTANT_CREATE,
                 user = user,
                 text = PLANS_TO_USE_YOUR_DATASET.format(fullNameRequestCreator),
                 sequenceIndex = 1,

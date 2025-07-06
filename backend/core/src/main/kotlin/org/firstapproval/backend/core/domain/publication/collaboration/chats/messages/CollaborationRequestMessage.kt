@@ -19,8 +19,8 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationRequestFile
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaboraitonRequestMessageType.ASSISTANT_CREATE
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaboraitonRequestMessageType.CREATE
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_CREATE
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.CREATE
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequest
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.TypeOfWork
 import org.firstapproval.backend.core.domain.user.User
@@ -46,7 +46,7 @@ class CollaborationRequestMessage(
     val user: User,
 
     @Enumerated(STRING)
-    val type: CollaboraitonRequestMessageType,
+    val type: CollaborationRequestMessageType,
 
     @ElementCollection(fetch = EAGER) // EAGER или LAZY в зависимости от потребностей
     @CollectionTable(
@@ -74,20 +74,33 @@ class CollaborationRequestMessage(
 
     )
 
-enum class CollaboraitonRequestMessageType(ordinal: Int) {
+enum class CollaborationRequestMessageType(val sequenceIndex: Int) {
     AGREE_TO_THE_TERMS_OF_COLLABORATION(0),
     DATASET_WAS_DOWNLOADED(1),
-    CREATE(1),
+    I_WOULD_LIKE_TO_COLLABORATE(2),
+    IF_YOU_ARE_INTERESTED_IN_THIS_DATASET(3),
+    LETS_MAKE_COLLABORATION_REQUEST(4),
+    FORMALIZED_AGREEMENT(5),
+    GOT_IT_READY_TO_START(6),
+    VERIFY_YOUR_NAME_AND_AFFILIATION(7),
+    I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL(8),
+    PROPOSE_POTENTIAL_PUBLICATION_NAME_AND_TYPE(9),
+    DONE_WHATS_NEXT(10),
+    PREFILLED_COLLABORATION_AGREEMENT(11),
+    EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST(12),
+    CHANGE_MY_PERSONAL_INFO(13),
+    CHANGE_INFO_ABOUT_MY_PUBLICATION(14),
+    FIRST_STEP_IS_COMPLETED(15),
+
+    CREATE(0),
     ASSISTANT_CREATE(1),
     DEFAULT(2),
-    LETS_MAKE_COLLABORATION(2),
-    FORMALIZED_AGREEMENT(3),
     COLLABORATION_APPROVED(3),
     DATA_USER_ASKED(4),
     MANUSCRIPT_APPROVED(5),
     DECLINED(6),
     AUTHOR_INFO_RECEIVED(7),
-    PUBLICATION_INFO_RECEIVED(8)
+    PUBLICATION_INFO_RECEIVED(8),
 }
 
 @JsonTypeInfo(
@@ -109,7 +122,7 @@ enum class CollaboraitonRequestMessageType(ordinal: Int) {
     ]
 )
 interface MessagePayload {
-    var type: CollaboraitonRequestMessageType
+    var type: CollaborationRequestMessageType
 }
 
 class Create(
@@ -117,11 +130,11 @@ class Create(
     val lastNameLegal: String,
     val typeOfWork: TypeOfWork,
     val description: String?,
-    override var type: CollaboraitonRequestMessageType = CREATE,
+    override var type: CollaborationRequestMessageType = CREATE,
 ) : MessagePayload
 
 class AssistantCreate(
-    override var type: CollaboraitonRequestMessageType = ASSISTANT_CREATE,
+    override var type: CollaborationRequestMessageType = ASSISTANT_CREATE,
 ) : MessagePayload
 
 fun CollaborationRequestMessage.toApiObject(userService: UserService) = toApiObject(user.toApiObject(userService))
