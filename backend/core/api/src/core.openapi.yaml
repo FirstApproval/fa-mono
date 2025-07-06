@@ -1073,29 +1073,6 @@ paths:
       operationId: getPublicationAuthors
       tags: [ collaboration-request ]
 
-#  /api/collabortion-requests/chat/{collaborationRequestId}:
-#    get:
-#      summary: Get collaboration request chat (including messages)
-#      parameters:
-#        - in: path
-#          name: collaborationRequestId
-#          schema:
-#            type: string
-#            format: uuid
-#          required: true
-#          description: Collaboration request id
-#      responses:
-#        200:
-#          description: Success
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/CollaborationChatResponse'
-#      security:
-#        - TokenAuth: [ ]
-#      operationId: getCollaborationChat
-#      tags: [ collaboration-request-chat ]
-
   /api/publication/{publicationId}/collaboration-request/chat:
     get:
       summary: Get collaboration request chat by publication id (including messages)
@@ -2972,6 +2949,7 @@ components:
         - ONLY_CITATION
         - AGREE_TO_THE_TERMS_OF_COLLABORATION
         - DATASET_WAS_DOWNLOADED
+        - STEP_1_FORMALIZED_AGREEMENT
         - NONE
 
     PublicationShortInfo:
