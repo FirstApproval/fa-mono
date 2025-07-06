@@ -8,21 +8,21 @@ const message = {
   isAssistant: false
 };
 
-const nextMessageType = CollaborationMessageType.STEP_1_FORMALIZED_AGREEMENT;
+const nextMessageType = CollaborationMessageType.FORMALIZED_AGREEMENT;
 
 function letsMakeCollaborationAction (
   collaborationChatStore: CollaborationChatInterface,
 ): void {
-    collaborationChatStore.sendMessage(message, nextMessageType);
-
-    collaborationChatStore.sendMessage({
-      isAssistant: true,
-      type: CollaborationMessageType.STEP_1_FORMALIZED_AGREEMENT,
-      text:
-        "The collaboration request (1 step) is a formalized agreement. I'll help you fill it out. \n" +
-        "The agreement is sent to each author individually. \n" +
-        "It will contain your details and preliminary information about the work you are doing. Here is how the template looks:"
-    }, CollaborationMessageType.MANUSCRIPT_APPROVED);
+    collaborationChatStore.sendMessage(message, nextMessageType).then(response =>
+      collaborationChatStore.sendMessage({
+        isAssistant: true,
+        type: CollaborationMessageType.FORMALIZED_AGREEMENT,
+        text:
+          "The collaboration request (1 step) is a formalized agreement. I'll help you fill it out. \n" +
+          "The agreement is sent to each author individually. \n" +
+          "It will contain your details and preliminary information about the work you are doing. Here is how the template looks:"
+      }, nextMessageType).then()
+    );
 }
 
 export const letsMakeCollaboration: UserAction = {
