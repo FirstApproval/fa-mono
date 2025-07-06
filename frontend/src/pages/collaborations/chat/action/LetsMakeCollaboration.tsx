@@ -1,6 +1,6 @@
 import { UserAction } from "./UserAction"
-import { CollaborationChatStore } from "../../../publication/store/CollaborationChatStore"
-import { CollaborationMessageType, CollaborationRequestMessage } from "../../../../apis/first-approval-api"
+import { CollaborationChatInterface, CollaborationChatStore } from "../../../publication/store/CollaborationChatStore"
+import { CollaborationMessageType } from "../../../../apis/first-approval-api"
 
 const message = {
   text: 'Great, Let’s make the Collaboration request',
@@ -11,7 +11,7 @@ const message = {
 const nextMessageType = CollaborationMessageType.STEP_1_FORMALIZED_AGREEMENT;
 
 function letsMakeCollaborationAction (
-  collaborationChatStore: CollaborationChatStore,
+  collaborationChatStore: CollaborationChatInterface,
 ): void {
     collaborationChatStore.sendMessage(message, nextMessageType);
 
@@ -27,6 +27,6 @@ function letsMakeCollaborationAction (
 
 export const letsMakeCollaboration: UserAction = {
   text: 'Great, let`s make collaboration!',
-  action: (collaborationChatStore: CollaborationChatStore) => letsMakeCollaborationAction(collaborationChatStore)
+  action: (collaborationChatStore: CollaborationChatInterface) => letsMakeCollaborationAction(collaborationChatStore)
 };
 

@@ -371,6 +371,12 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
             </React.Fragment>
           );
         })}
+        {
+          collaborationChatStore.messageType && <UserActions
+            messageType={collaborationChatStore.messageType}
+            userActionsRegistry={userActionsRegistry}
+          />
+        }
         {/* {collaborationChatStore.messageType === CollaborationMessageType.CITATION_IS_ENOUGH && ( */}
         {/*   <UserActions */}
         {/*     messageType={CollaborationMessageType.CITATION_IS_ENOUGH} */}
@@ -618,7 +624,8 @@ const Messages: MessageType[] = [
   }
 ];
 
-const UserActions = (messageType: CollaborationMessageType, userActionsRegistry: UserActionsRegistry): React.ReactElement => {
+const UserActions = (props: {messageType: CollaborationMessageType, userActionsRegistry: UserActionsRegistry}): React.ReactElement => {
+  const { messageType, userActionsRegistry } = props;
   return (
     <div>
       <ButtonsWrapper>
@@ -631,80 +638,6 @@ const UserActions = (messageType: CollaborationMessageType, userActionsRegistry:
               {action.text}
             </StyledApproveButton>
         )}
-
-        {/* {onApproveCollaboration && ( */}
-        {/*   <StyledApproveButton */}
-        {/*     variant="outlined" */}
-        {/*     onClick={onApproveCollaboration}> */}
-        {/*     Approve collaboration */}
-        {/*   </StyledApproveButton> */}
-        {/* )} */}
-        {/* {onApproveManuscript && ( */}
-        {/*   <StyledApproveButton variant="outlined" onClick={onApproveManuscript}> */}
-        {/*     Approve manuscript */}
-        {/*   </StyledApproveButton> */}
-        {/* )} */}
-        {/* {onApproveManuscriptWithComments && ( */}
-        {/*   <StyledApproveButton */}
-        {/*     variant="outlined" */}
-        {/*     onClick={onApproveManuscriptWithComments}> */}
-        {/*     Approve with comments */}
-        {/*   </StyledApproveButton> */}
-        {/* )} */}
-        {/* {onDecline && ( */}
-        {/*   <StyledDeclineButton variant="outlined" onClick={onDecline}> */}
-        {/*     Decline, citation is enough */}
-        {/*   </StyledDeclineButton> */}
-        {/* )} */}
-        {/* {onAskDataUser && ( */}
-        {/*   <StyledButton variant="outlined" onClick={onAskDataUser}> */}
-        {/*     Ask data user */}
-        {/*   </StyledButton> */}
-        {/* )} */}
-        {/* {onEmailDataUser && ( */}
-        {/*   <StyledButton variant="outlined" onClick={onEmailDataUser}> */}
-        {/*     Email data user */}
-        {/*   </StyledButton> */}
-        {/* )} */}
-        {/* {onFormMsg && ( */}
-        {/*   <StyledButton variant="outlined" onClick={onFormMsg}> */}
-        {/*     Ask First Approval */}
-        {/*   </StyledButton> */}
-        {/* )} */}
-        {/* {onIWouldLikeToCollaborate && ( */}
-        {/*   <StyledApproveButton variant="outlined" onClick={onIWouldLikeToCollaborate}> */}
-        {/*     I’d like to collaborate! Tell me more... */}
-        {/*   </StyledApproveButton> */}
-        {/* )} */}
-        {/* {emailToAuthors && ( */}
-        {/*   <StyledApproveButton variant="outlined" onClick={emailToAuthors}> */}
-        {/*     Email to author(s) */}
-        {/*   </StyledApproveButton> */}
-        {/* )} */}
-        {/* {onLetsMakeTheCollaboration && ( */}
-        {/*   <StyledApproveButton variant="outlined" onClick={onIWouldLikeToCollaborate}> */}
-        {/*     Great, let’s make the Collaboration Request */}
-        {/*   </StyledApproveButton> */}
-        {/* )} */}
-
-
-        {/* {citation && ( */}
-        {/*   <StyledApproveButton variant="outlined" onClick={citation}> */}
-        {/*   Citation */}
-        {/*   </StyledApproveButton> */}
-        {/* )} */}
-
-
-
-        {/* {reachOutToTheAuthor && ( */}
-        {/*   <StyledApproveButton variant="outlined" onClick={reachOutToTheAuthor}> */}
-        {/*   I want to reach out to the author(s) */}
-        {/*   </StyledApproveButton> */}
-        {/* {onNeedHelp && ( */}
-        {/*   <StyledApproveButton variant="outlined" onClick={onNeedHelp}> */}
-        {/*   I need help */}
-        {/*   </StyledApproveButton> */}
-        {/* )} */}
       </ButtonsWrapper>
     </div>
   );

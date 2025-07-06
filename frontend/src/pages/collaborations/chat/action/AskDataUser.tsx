@@ -1,8 +1,8 @@
-import { CollaborationChatStore } from "../../../publication/store/CollaborationChatStore"
+import { CollaborationChatInterface } from "../../../publication/store/CollaborationChatStore"
 import { CollaborationMessageType } from "../../../../apis/first-approval-api"
 import { UserAction } from "./UserAction"
 
-function askDataUserAction(collaborationChatStore: CollaborationChatStore): void {
+function askDataUserAction(collaborationChatStore: CollaborationChatInterface): void {
   collaborationChatStore.sendMessage({
     id: "",
     type: CollaborationMessageType.DATA_USER_ASKED,
@@ -17,7 +17,7 @@ function askDataUserAction(collaborationChatStore: CollaborationChatStore): void
 
 export const askDataUser: UserAction = {
   text: 'Ask data user',
-  action: (collaborationChatStore: CollaborationChatStore) => askDataUserAction(collaborationChatStore)
+  action: (collaborationChatStore: CollaborationChatInterface) => askDataUserAction(collaborationChatStore)
 };
 
 // Messages.push({

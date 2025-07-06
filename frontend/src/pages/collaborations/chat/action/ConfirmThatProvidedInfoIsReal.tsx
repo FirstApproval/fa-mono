@@ -1,8 +1,8 @@
-import { CollaborationChatStore } from "../../../publication/store/CollaborationChatStore"
+import { CollaborationChatInterface, CollaborationChatStore } from "../../../publication/store/CollaborationChatStore"
 import { CollaborationMessageType } from "../../../../apis/first-approval-api"
 import { UserAction } from "./UserAction"
 
-function confirmThatProvidedInfoIsRealAction(collaborationChatStore: CollaborationChatStore): void {
+function confirmThatProvidedInfoIsRealAction(collaborationChatStore: CollaborationChatInterface): void {
   collaborationChatStore.sendMessage({
     type: CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL,
     isAssistant: true,
@@ -19,5 +19,5 @@ function confirmThatProvidedInfoIsRealAction(collaborationChatStore: Collaborati
 
 export const confirmThatProvidedInfoIsReal: UserAction = {
   text: 'I confirm that provided info is real',
-  action: (collaborationChatStore: CollaborationChatStore) => confirmThatProvidedInfoIsRealAction(collaborationChatStore)
+  action: (collaborationChatStore: CollaborationChatInterface) => confirmThatProvidedInfoIsRealAction(collaborationChatStore)
 };

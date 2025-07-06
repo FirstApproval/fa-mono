@@ -1,5 +1,5 @@
 import { CollaborationMessageType } from "../../../../apis/first-approval-api"
-import { CollaborationChatStore } from "../../../publication/store/CollaborationChatStore"
+import { CollaborationChatInterface, CollaborationChatStore } from "../../../publication/store/CollaborationChatStore"
 import { UserAction } from "./UserAction"
 
 const message = {
@@ -10,7 +10,7 @@ const message = {
 
 const nextMessageType = CollaborationMessageType.ONLY_CITATION;
 
-function reachOutToAuthorsAction(collaborationChatStore: CollaborationChatStore): void {
+function reachOutToAuthorsAction(collaborationChatStore: CollaborationChatInterface): void {
   collaborationChatStore.sendMessage(message)
 
   const mappedAuthors = collaborationChatStore.publication!!.authors!!
@@ -26,5 +26,5 @@ function reachOutToAuthorsAction(collaborationChatStore: CollaborationChatStore)
 
 export const iWouldLikeToCollaborate: UserAction = {
   text: 'I`d like to collaborate! Tell me more...',
-  action: (collaborationChatStore: CollaborationChatStore) => reachOutToAuthorsAction(collaborationChatStore)
+  action: (collaborationChatStore: CollaborationChatInterface) => reachOutToAuthorsAction(collaborationChatStore)
 };
