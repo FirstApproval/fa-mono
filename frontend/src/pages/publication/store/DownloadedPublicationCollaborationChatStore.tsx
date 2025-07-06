@@ -13,15 +13,13 @@ import {
 } from '../../../core/service';
 import { CollaborationChatInterface } from './CollaborationChatStore';
 
-export class DownloadedPublicationCollaborationChatStore
-  implements CollaborationChatInterface
-{
+export class DownloadedPublicationCollaborationChatStore implements CollaborationChatInterface {
   collaborationRequestId: string = '';
   collaborationRequestCreator: UserInfo | undefined = undefined;
   messages: CollaborationRequestMessage[] | undefined = undefined;
   publication?: Publication;
   publicationCreator: UserInfo | undefined = undefined;
-  stage: CollaborationMessageType | undefined = undefined;
+  messageType: CollaborationMessageType | undefined = undefined;
 
   constructor(publicationId: string) {
     makeAutoObservable(this);
@@ -43,7 +41,7 @@ export class DownloadedPublicationCollaborationChatStore
               this.messages = data.messages;
 
               debugger;
-              this.stage = data.messages.reduce((max, item) =>
+              this.messageType = data.messages.reduce((max, item) =>
                 item.sequenceIndex!! > max.sequenceIndex!! ? item : max
               ).type;
               debugger;
@@ -78,6 +76,6 @@ export class DownloadedPublicationCollaborationChatStore
   }
 
   setStage (stage: CollaborationMessageType): void {
-    this.stage = stage;
+    this.messageType = stage;
   }
 }

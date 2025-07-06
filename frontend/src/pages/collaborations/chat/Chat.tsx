@@ -16,9 +16,7 @@ import {
 } from '../../../util/userUtil';
 import {
   CollaborationMessageType,
-  DataCollectionType
 } from 'src/apis/first-approval-api';
-import { DATA_COLLECTION_TYPES } from '../../publication/ChooseDataCollection';
 import { observer } from 'mobx-react-lite';
 import {
   CollaborationRequirementsModal,
@@ -28,10 +26,13 @@ import {
   Step2Modal,
   Step3Modal,
   StyledApproveButton,
-  StyledButton,
-  StyledDeclineButton
 } from './Modal';
 import { Message } from './ChatMessage';
+import { UserActionsRegistry } from "./UserActionsRegistry"
+import { needHelp } from "./action/NeedHelp"
+import { UserAction } from "./action/UserAction"
+import { collaborationStore } from "../../publication/store/downloadsStore"
+import { handleReachOutToAuthor } from "./action/ReachOutToAuthors"
 
 type ChatProps = {
   collaborationChatStore: CollaborationChatInterface;
@@ -39,6 +40,7 @@ type ChatProps = {
 
 const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: CollaborationChatInterface }): ReactElement => {
   const { collaborationChatStore } = props;
+  const userActionsRegistry = new UserActionsRegistry(collaborationChatStore);
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [showCollabModal, setShowCollabModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
@@ -80,94 +82,9 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
     };
   }, []);
 
-  const handleNeedHelp: () => void = () => alert('Help is Needed');
   const handleEmailDataUser: () => void = () => alert('Email data user');
   const handleShowCollabModal: () => void = () => setShowCollabModal(true);
-  const handleCitation: () => void = () => {
-    // список всех авторов в формате [Фамилия Инициалы], дальше идет точка, за которой с большой буквы - [Название датасета].
-    // Год. First Approval [если специализированная коллекция - ее название] (например First Approval - Aging Data Collection)
 
-    const publication = collaborationChatStore.publication!!
-
-    const mappedAuthors = publication.authors!!
-      .map(author => `${author.lastName} ${author.firstName.charAt(0)}`)
-      .join(', ')
-
-    const year = publication.creationTime.substring(0, 4)
-
-    const dataCollectionTypeTitle = publication.dataCollectionType === DataCollectionType.GENERAL ? '' :
-      (' - ' + DATA_COLLECTION_TYPES
-        .find(dataCollectionType => dataCollectionType.type === publication.dataCollectionType)!!
-          .title
-      )
-
-    console.log(<p>
-      {mappedAuthors}. {publication.title}. {year}.{' '}
-      First Approval{dataCollectionTypeTitle}.
-    </p>)
-
-    const message = `${mappedAuthors}. ${publication.title}. ${year}. First Approval${dataCollectionTypeTitle}.`
-
-    // collaborationChatStore.messages?.push({
-    //   id: '',
-    //   isAssistant: true,
-    //   type: CollaborationMessageType.NONE,
-    //   text: message
-    // });
-    //
-    // collaborationChatStore.setStage(CollaborationMessageType.NONE);
-
-    collaborationChatStore.sendMessage({
-      isAssistant: true,
-      type: CollaborationMessageType.NONE,
-      text: message
-    }, CollaborationMessageType.NONE)
-  };
-
-  const showAuthorsEmails: () => void = () => {
-    const mappedAuthors = collaborationChatStore.publication!!.authors!!
-      .map(author => `• ${author.firstName} ${author.lastName} - ` + (author.email ?? 'no email'))
-
-    // collaborationChatStore.messages?.push({
-    //   id: '',
-    //   type: CollaborationMessageType.REACH_OUT_AUTHORS,
-    //   isAssistant: true,
-    //   text: 'While we are working on the FA chat feature, you can contact the authors using their emails: \n' + mappedAuthors
-    // });
-
-    collaborationChatStore.sendMessage({
-      id: '',
-      type: CollaborationMessageType.REACH_OUT_AUTHORS,
-      isAssistant: true,
-      text: 'While we are working on the FA chat feature, you can contact the authors using their emails: \n' + mappedAuthors
-    })
-  }
-
-  const handleReachOutToAuthor: () => void = () => {
-    showAuthorsEmails();
-    collaborationChatStore.setStage(CollaborationMessageType.ONLY_CITATION);
-  };
-
-  const handleAskDataUser: () => void = () => {
-    // Messages.push({
-    //   id: 404,
-    //   name: 'Me Myself',
-    //   avatar: 'MM',
-    //   text: 'You will have 2 weeks to read the article and decide whether to accept or decline co-authorship. You can ask questions or provide your suggestions to the author via private messages. We recommend starting this process well in advance. If you do not approve the request within 2 weeks, you will lose the opportunity for co-authorship in this article. If you decline, the data user will simply cite your dataset.'
-    // });
-    // collaborationChatStore.setStage(CollaborationMessageType.DATA_USER_ASKED);
-
-    collaborationChatStore.sendMessage({
-      id: '',
-      type: CollaborationMessageType.DATA_USER_ASKED,
-      isAssistant: true,
-      text: 'You will have 2 weeks to read the article and decide whether to accept or decline co-authorship. ' +
-        'You can ask questions or provide your suggestions to the author via private messages. ' +
-        'We recommend starting this process well in advance. ' +
-        'If you do not approve the request within 2 weeks, you will lose the opportunity for co-authorship in this article. ' +
-        'If you decline, the data user will simply cite your dataset.'
-    }, CollaborationMessageType.DATA_USER_ASKED)
-  };
 
   const handleShowCommentModal: () => void = () => setShowCommentModal(true);
   const handleCloseCommentModal: () => void = () => setShowCommentModal(false);
@@ -265,17 +182,6 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
           "you agree to work on the publication together. The FA collaboration \n" +
           "process has 3 steps."
     }, CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET);
-  };
-
-  const handleLetsMakeTheCollaboration: () => void = () => {
-    collaborationChatStore.sendMessage({
-      isAssistant: true,
-      type: CollaborationMessageType.MANUSCRIPT_APPROVED,
-      text:
-        "The collaboration request (1 step) is a formalized agreement. I'll help you fill it out. \n" +
-        "The agreement is sent to each author individually.  \n" +
-        "It will contain your details and preliminary information about the work you are doing. Here is how the template looks:"
-    }, CollaborationMessageType.MANUSCRIPT_APPROVED);
   };
 
   const handlePublicationFormMsg: () => void = () => {
@@ -469,27 +375,27 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
             </React.Fragment>
           );
         })}
-        {collaborationChatStore.stage === CollaborationMessageType.CREATE_REQUEST && (
-          <UserOptions
-            stage={collaborationChatStore.stage}
-            onNeedHelp={handleShowCollabModal}
+        {collaborationChatStore.messageType === CollaborationMessageType.CREATE_REQUEST && (
+          <UserActions
+            messageType={CollaborationMessageType.CREATE_REQUEST}
+            onNeedHelp={needHelp}
             citation={handleCitation}
             reachOutToTheAuthor={handleReachOutToAuthor}
           />
         )}
-        {collaborationChatStore.stage === CollaborationMessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION && (
-          <UserOptions
-            stage={collaborationChatStore.stage}
+        {collaborationChatStore.messageType === CollaborationMessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION && (
+          <UserActions
+            messageType={collaborationChatStore.messageType}
           />
         )}
-        {collaborationChatStore.stage === CollaborationMessageType.DATASET_WAS_DOWNLOADED && (
-          <UserOptions
-            stage={collaborationChatStore.stage}
+        {collaborationChatStore.messageType === CollaborationMessageType.DATASET_WAS_DOWNLOADED && (
+          <UserActions
+            messageType={collaborationChatStore.messageType}
             onIWouldLikeToCollaborate={handleIWouldLikeToCollaborate}
             emailToAuthors={showAuthorsEmails}
           />
         )}
-        {collaborationChatStore.stage === CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET && (
+        {collaborationChatStore.messageType === CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET && (
           <>
             <div
               id="fa-collab-helper-box"
@@ -571,25 +477,25 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
                 </div>
               </div>
             </div>
-            <UserOptions
-              stage={collaborationChatStore.stage}
+            <UserActions
+              messageType={collaborationChatStore.messageType}
               onLetsMakeTheCollaboration={handleLetsMakeTheCollaboration}
               onNeedHelp={handleShowCollabModal}
             />
           </>
         )}
-        {collaborationChatStore.stage === CollaborationMessageType.COLLABORATION_APPROVED && (
-          <UserOptions
-            stage={collaborationChatStore.stage}
+        {collaborationChatStore.messageType === CollaborationMessageType.COLLABORATION_APPROVED && (
+          <UserActions
+            messageType={collaborationChatStore.messageType}
             onNeedHelp={handleNeedHelp}
             onFormMsg={handleAuthorInfoFormMsg}
             onAskDataUser={handleAskDataUser}
             onDecline={handleDecline}
           />
         )}
-        {collaborationChatStore.stage === CollaborationMessageType.DATA_USER_ASKED && (
-          <UserOptions
-            stage={collaborationChatStore.stage}
+        {collaborationChatStore.messageType === CollaborationMessageType.DATA_USER_ASKED && (
+          <UserActions
+            messageType={collaborationChatStore.messageType}
             onNeedHelp={handleNeedHelp}
             onApproveManuscript={handleApproveManuscript}
             onApproveManuscriptWithComments={
@@ -604,21 +510,21 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
         {/*     stage={stage} */}
         {/*   /> */}
         {/* )} */}
-        {collaborationChatStore.stage === CollaborationMessageType.ONLY_CITATION && (
-          <UserOptions
-            stage={collaborationChatStore.stage}
+        {collaborationChatStore.messageType === CollaborationMessageType.ONLY_CITATION && (
+          <UserActions
+            messageType={collaborationChatStore.messageType}
             citation={handleCitation}
           />
         )}
-        {collaborationChatStore.stage === CollaborationMessageType.MANUSCRIPT_APPROVED && (
-          <UserOptions
-            stage={collaborationChatStore.stage}
+        {collaborationChatStore.messageType === CollaborationMessageType.MANUSCRIPT_APPROVED && (
+          <UserActions
+            messageType={collaborationChatStore.messageType}
             onNeedHelp={handleNeedHelp}
             onAskDataUser={handleEmailDataUser}
           />
         )}
-        {collaborationChatStore.stage === CollaborationMessageType.DECLINED && (
-          <UserOptions stage={collaborationChatStore.stage} onNeedHelp={handleNeedHelp} />
+        {collaborationChatStore.messageType === CollaborationMessageType.DECLINED && (
+          <UserActions messageType={collaborationChatStore.messageType} onNeedHelp={handleNeedHelp} />
         )}
         <DeclineModal
           open={showDeclineModal}
@@ -716,107 +622,88 @@ const Messages: MessageType[] = [
   }
 ];
 
-interface UserOptionsProps {
-  stage: CollaborationMessageType;
-  onNeedHelp?: () => void;
-  citation?: () => void;
-  reachOutToTheAuthor?: () => void;
-  onApproveCollaboration?: () => void;
-  onApproveManuscript?: () => void;
-  onApproveManuscriptWithComments?: () => void;
-  onAskDataUser?: () => void;
-  onEmailDataUser?: () => void;
-  onDecline?: () => void;
-  onIWouldLikeToCollaborate?: () => void;
-  emailToAuthors?: () => void;
-  onLetsMakeTheCollaboration?: () => void;
-  onFormMsg?: () => void;
-}
-
-const UserOptions = ({
-  stage,
-  onNeedHelp,
-  citation,
-  reachOutToTheAuthor,
-  onApproveCollaboration,
-  onApproveManuscript,
-  onApproveManuscriptWithComments,
-  onAskDataUser,
-  onEmailDataUser,
-  onDecline,
-  onIWouldLikeToCollaborate,
-  emailToAuthors,
-  onLetsMakeTheCollaboration,
-  onFormMsg
-}: UserOptionsProps): React.ReactElement => {
+const UserActions = (messageType: CollaborationMessageType, userActionsRegistry: UserActionsRegistry): React.ReactElement => {
   return (
     <div>
       <ButtonsWrapper>
         <SelfAvatar />
-        {onApproveCollaboration && (
-          <StyledApproveButton
-            variant="outlined"
-            onClick={onApproveCollaboration}>
-            Approve collaboration
-          </StyledApproveButton>
+        {
+          userActionsRegistry.getActions(messageType).map(action =>
+            <StyledApproveButton
+              variant="outlined"
+              onClick={() => action.action()}>
+              {action.text}
+            </StyledApproveButton>
         )}
-        {onApproveManuscript && (
-          <StyledApproveButton variant="outlined" onClick={onApproveManuscript}>
-            Approve manuscript
-          </StyledApproveButton>
-        )}
-        {onApproveManuscriptWithComments && (
-          <StyledApproveButton
-            variant="outlined"
-            onClick={onApproveManuscriptWithComments}>
-            Approve with comments
-          </StyledApproveButton>
-        )}
-        {onDecline && (
-          <StyledDeclineButton variant="outlined" onClick={onDecline}>
-            Decline, citation is enough
-          </StyledDeclineButton>
-        )}
-        {onAskDataUser && (
-          <StyledButton variant="outlined" onClick={onAskDataUser}>
-            Ask data user
-          </StyledButton>
-        )}
-        {onEmailDataUser && (
-          <StyledButton variant="outlined" onClick={onEmailDataUser}>
-            Email data user
-          </StyledButton>
-        )}
-        {onFormMsg && (
-          <StyledButton variant="outlined" onClick={onFormMsg}>
-            Ask First Approval
-          </StyledButton>
-        )}
-        {onIWouldLikeToCollaborate && (
-          <StyledApproveButton variant="outlined" onClick={onIWouldLikeToCollaborate}>
-            I’d like to collaborate! Tell me more...
-          </StyledApproveButton>
-        )}
-        {emailToAuthors && (
-          <StyledApproveButton variant="outlined" onClick={emailToAuthors}>
-            Email to author(s)
-          </StyledApproveButton>
-        )}
-        {onLetsMakeTheCollaboration && (
-          <StyledApproveButton variant="outlined" onClick={onIWouldLikeToCollaborate}>
-            Great, let’s make the Collaboration Request
-          </StyledApproveButton>
-        )}
-        {citation && (
-          <StyledApproveButton variant="outlined" onClick={citation}>
-          Citation
-          </StyledApproveButton>
-        )}
-        {reachOutToTheAuthor && (
-          <StyledApproveButton variant="outlined" onClick={reachOutToTheAuthor}>
-          I want to reach out to the author(s)
-          </StyledApproveButton>
-        )}
+
+        {/* {onApproveCollaboration && ( */}
+        {/*   <StyledApproveButton */}
+        {/*     variant="outlined" */}
+        {/*     onClick={onApproveCollaboration}> */}
+        {/*     Approve collaboration */}
+        {/*   </StyledApproveButton> */}
+        {/* )} */}
+        {/* {onApproveManuscript && ( */}
+        {/*   <StyledApproveButton variant="outlined" onClick={onApproveManuscript}> */}
+        {/*     Approve manuscript */}
+        {/*   </StyledApproveButton> */}
+        {/* )} */}
+        {/* {onApproveManuscriptWithComments && ( */}
+        {/*   <StyledApproveButton */}
+        {/*     variant="outlined" */}
+        {/*     onClick={onApproveManuscriptWithComments}> */}
+        {/*     Approve with comments */}
+        {/*   </StyledApproveButton> */}
+        {/* )} */}
+        {/* {onDecline && ( */}
+        {/*   <StyledDeclineButton variant="outlined" onClick={onDecline}> */}
+        {/*     Decline, citation is enough */}
+        {/*   </StyledDeclineButton> */}
+        {/* )} */}
+        {/* {onAskDataUser && ( */}
+        {/*   <StyledButton variant="outlined" onClick={onAskDataUser}> */}
+        {/*     Ask data user */}
+        {/*   </StyledButton> */}
+        {/* )} */}
+        {/* {onEmailDataUser && ( */}
+        {/*   <StyledButton variant="outlined" onClick={onEmailDataUser}> */}
+        {/*     Email data user */}
+        {/*   </StyledButton> */}
+        {/* )} */}
+        {/* {onFormMsg && ( */}
+        {/*   <StyledButton variant="outlined" onClick={onFormMsg}> */}
+        {/*     Ask First Approval */}
+        {/*   </StyledButton> */}
+        {/* )} */}
+        {/* {onIWouldLikeToCollaborate && ( */}
+        {/*   <StyledApproveButton variant="outlined" onClick={onIWouldLikeToCollaborate}> */}
+        {/*     I’d like to collaborate! Tell me more... */}
+        {/*   </StyledApproveButton> */}
+        {/* )} */}
+        {/* {emailToAuthors && ( */}
+        {/*   <StyledApproveButton variant="outlined" onClick={emailToAuthors}> */}
+        {/*     Email to author(s) */}
+        {/*   </StyledApproveButton> */}
+        {/* )} */}
+        {/* {onLetsMakeTheCollaboration && ( */}
+        {/*   <StyledApproveButton variant="outlined" onClick={onIWouldLikeToCollaborate}> */}
+        {/*     Great, let’s make the Collaboration Request */}
+        {/*   </StyledApproveButton> */}
+        {/* )} */}
+
+
+        {/* {citation && ( */}
+        {/*   <StyledApproveButton variant="outlined" onClick={citation}> */}
+        {/*   Citation */}
+        {/*   </StyledApproveButton> */}
+        {/* )} */}
+
+
+
+        {/* {reachOutToTheAuthor && ( */}
+        {/*   <StyledApproveButton variant="outlined" onClick={reachOutToTheAuthor}> */}
+        {/*   I want to reach out to the author(s) */}
+        {/*   </StyledApproveButton> */}
         {/* {onNeedHelp && ( */}
         {/*   <StyledApproveButton variant="outlined" onClick={onNeedHelp}> */}
         {/*   I need help */}
