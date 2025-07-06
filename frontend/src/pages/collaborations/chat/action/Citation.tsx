@@ -30,15 +30,6 @@ function citationAction(collaborationChatStore: CollaborationChatStore): void {
 
   const message = `${mappedAuthors}. ${publication.title}. ${year}. First Approval${dataCollectionTypeTitle}.`
 
-  // collaborationChatStore.messages?.push({
-  //   id: '',
-  //   isAssistant: true,
-  //   type: CollaborationMessageType.NONE,
-  //   text: message
-  // });
-  //
-  // collaborationChatStore.setStage(CollaborationMessageType.NONE);
-
   collaborationChatStore.sendMessage({
     isAssistant: true,
     type: CollaborationMessageType.NONE,
