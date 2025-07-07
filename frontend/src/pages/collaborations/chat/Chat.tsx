@@ -4,10 +4,7 @@ import { SelfAvatar } from '../elements/AvatarNameBox';
 import { Box, Button, Link, TextField, Typography } from '@mui/material';
 import { HeightElement } from '../../common.styled';
 import { css, Global } from '@emotion/react';
-import sendImage from '../../../assets/fa-send.svg';
 import fileIcon from '../../../assets/file-icon.svg';
-import timetableImage from '../../../assets/fa-timetable.svg';
-import highfiveImage from '../../../assets/fa-highfive.svg';
 import { CollaborationChatInterface } from '../../publication/store/CollaborationChatStore';
 import {
   getFullName,
@@ -30,6 +27,7 @@ import {
 import { Message } from './ChatMessage';
 import { UserActionsRegistry } from "./UserActionsRegistry"
 import { showStepsInfo } from "../elements/StepsInfo"
+import { personalData } from '../elements/PersonalData';
 
 type ChatProps = {
   collaborationChatStore: CollaborationChatInterface;
@@ -204,69 +202,6 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
     collaborationChatStore.setStage(CollaborationMessageType.PUBLICATION_INFO_RECEIVED);
   };
 
-  const handleAuthorInfoFormMsg: () => void = () => {
-    Messages.push({
-      id: 123123,
-      name: 'Assistant',
-      avatar: 'FA',
-      text: (
-        <>
-          Awesome! Please verify the spelling of your name and affiliation, as
-          this information will be used in the agreement.
-          <HeightElement value={'2rem'} />
-          <Box
-            component="form"
-            sx={{
-              p: 3,
-              borderRadius: 2,
-              border: '1px solid #dedede',
-              maxWidth: '600px',
-              margin: 'auto',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 2
-            }}>
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <TextField fullWidth label="First name" variant="outlined" />
-              <TextField fullWidth label="Last name" variant="outlined" />
-            </Box>
-
-            <TextField fullWidth label="Organization name" variant="outlined" />
-
-            <TextField fullWidth label="Department (opt.)" variant="outlined" />
-
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <TextField
-                label="Address (opt.)"
-                variant="outlined"
-                sx={{ flex: 7 }} // 80%
-              />
-              <TextField
-                label="Postal code (opt.)"
-                variant="outlined"
-                sx={{ flex: 3 }} // 20%
-              />
-            </Box>
-
-            <Link href="#" underline="hover" variant="body2">
-              + Add affiliation
-            </Link>
-
-            <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Button onClick={handlePublicationFormMsg} variant="outlined">
-                I confirm that provided info is real
-              </Button>
-              <Typography component={Link} href="#" variant="body2">
-                Back
-              </Typography>
-            </Box>
-          </Box>
-        </>
-      )
-    });
-    collaborationChatStore.setStage(CollaborationMessageType.AUTHOR_INFO_RECEIVED);
-  };
-
   const handleApproveCollaboration: () => void = () => {
     Messages.push({
       id: 333,
@@ -338,6 +273,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
                 {message.text}
 
                 {message.type === CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET && showStepsInfo()}
+                {message.type === CollaborationMessageType.VERIFY_YOUR_NAME_AND_AFFILIATION && personalData({handlePublicationFormMsg})}
               </Message>
               <HeightElement value={'32px'} />
             </React.Fragment>
