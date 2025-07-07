@@ -29,6 +29,7 @@ import {
 } from './Modal';
 import { Message } from './ChatMessage';
 import { UserActionsRegistry } from "./UserActionsRegistry"
+import { showStepsInfo } from "../elements/StepsInfo"
 
 type ChatProps = {
   collaborationChatStore: CollaborationChatInterface;
@@ -77,10 +78,6 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
       window.removeEventListener('click', faCollabHelp);
     };
   }, []);
-
-  const handleEmailDataUser: () => void = () => alert('Email data user');
-  const handleShowCollabModal: () => void = () => setShowCollabModal(true);
-
 
   const handleShowCommentModal: () => void = () => setShowCommentModal(true);
   const handleCloseCommentModal: () => void = () => setShowCommentModal(false);
@@ -151,33 +148,6 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
       text: 'Approve manuscript.'
     });
     collaborationChatStore.setStage(CollaborationMessageType.MANUSCRIPT_APPROVED);
-  };
-
-  const handleIWouldLikeToCollaborate: () => void = () => {
-    debugger;
-    // collaborationChatStore.messages?.push({
-    //   id: '',
-    //   isAssistant: false,
-    //   userInfo: collaborationChatStore.collaborationRequestCreator,
-    //   type: CollaborationMessageType.I_WOULD_LIKE_TO_COLLABORATE,
-    //   text: 'I’d like to collaborate! Tell me more...'
-    // });
-
-    collaborationChatStore.sendMessage({
-      type: CollaborationMessageType.I_WOULD_LIKE_TO_COLLABORATE,
-      isAssistant: false,
-      text: 'I’d like to collaborate! Tell me more...'
-    })
-    collaborationChatStore.sendMessage({
-      isAssistant: true,
-      type: CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET,
-      text:
-          "If you’re interested in this Dataset and considering publishing your \n" +
-          "future work together with the Data Author(s), First Approval will make \n" +
-          "the collaboration process easier. Let me guide you through it before \n" +
-          "you agree to work on the publication together. The FA collaboration \n" +
-          "process has 3 steps."
-    }, CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET);
   };
 
   const handlePublicationFormMsg: () => void = () => {
@@ -366,6 +336,8 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
             <React.Fragment key={message.id}>
               <Message name={fullName} avatar={avatar}>
                 {message.text}
+
+                {message.type === CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET && showStepsInfo()}
               </Message>
               <HeightElement value={'32px'} />
             </React.Fragment>
@@ -391,95 +363,6 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
         {/*     emailToAuthors={showAuthorsEmails} */}
         {/*   /> */}
         {/* )} */}
-        {collaborationChatStore.messageType === CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET && (
-          <>
-            <div
-              id="fa-collab-helper-box"
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                gap: '16px',
-                marginBottom: '32px'
-              }}>
-              <div
-                id="fa-collab-helper-step1"
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  border: '1px solid #dedede',
-                  borderRadius: '8px'
-                }}>
-                <img src={sendImage} />
-                <div style={{ padding: '8px 16px 0' }}>
-                <span
-                  style={{
-                    background: '#dedede',
-                    padding: '5px',
-                    borderRadius: '3px',
-                    fontSize: '11px'
-                  }}>
-                  Step 1
-                </span>
-                  <p>Send collaboration request to all dataset authors</p>
-                </div>
-              </div>
-              <div
-                id="fa-collab-helper-step2"
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  border: '1px solid #dedede',
-                  borderRadius: '8px'
-                }}>
-                <img src={timetableImage} />
-                <div style={{ padding: '8px 16px 0' }}>
-                <span
-                  style={{
-                    background: '#dedede',
-                    padding: '5px',
-                    borderRadius: '3px',
-                    fontSize: '11px'
-                  }}>
-                  Step 2
-                </span>
-                  <p>
-                    Dataset author(s) confirm the collaboration (maximum 30 days)
-                  </p>
-                </div>
-              </div>
-              <div
-                id="fa-collab-helper-step3"
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  border: '1px solid #dedede',
-                  borderRadius: '8px'
-                }}>
-                <img src={highfiveImage} />
-                <div style={{ padding: '8px 16px 0' }}>
-                <span
-                  style={{
-                    background: '#dedede',
-                    padding: '5px',
-                    borderRadius: '3px',
-                    fontSize: '11px'
-                  }}>
-                  Step 3
-                </span>
-                  <p>
-                    Discuss and confirm with author(s) the details of your
-                    publication before submission
-                  </p>
-                </div>
-              </div>
-            </div>
-            {/* <UserActions */}
-            {/*   messageType={collaborationChatStore.messageType} */}
-            {/*   onLetsMakeTheCollaboration={handleLetsMakeTheCollaboration} */}
-            {/*   onNeedHelp={handleShowCollabModal} */}
-            {/* /> */}
-          </>
-        )}
         {/* {collaborationChatStore.messageType === CollaborationMessageType.COLLABORATION_APPROVED && ( */}
         {/*   <UserActions */}
         {/*     messageType={collaborationChatStore.messageType} */}
