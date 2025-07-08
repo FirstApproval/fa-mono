@@ -4,7 +4,8 @@ import {
   CollaborationRequestMessage,
   Publication,
   UserInfo,
-  UseType
+  UseType,
+  Workplace
 } from "../../../apis/first-approval-api"
 import { userStore } from '../../../core/user';
 import {
@@ -12,14 +13,21 @@ import {
   publicationService
 } from '../../../core/service';
 import { CollaborationChatInterface } from './CollaborationChatStore';
+import { cloneDeep } from "lodash"
+import { IWorkplaceStore, WorkplaceProps, WorkplaceValidationState } from "../../../core/WorkplaceProps"
 
-export class DownloadedPublicationCollaborationChatStore implements CollaborationChatInterface {
+export class DownloadedPublicationCollaborationChatStore implements CollaborationChatInterface, IWorkplaceStore {
   collaborationRequestId: string = '';
   collaborationRequestCreator: UserInfo | undefined = undefined;
   messages: CollaborationRequestMessage[] | undefined = undefined;
   publication?: Publication;
   publicationCreator: UserInfo | undefined = undefined;
   messageType: CollaborationMessageType | undefined = undefined;
+  workplaces: Workplace[] = [];
+  workplacesProps: WorkplaceProps[] = [];
+  workplacesValidation: WorkplaceValidationState[] = [];
+  firstName: string | undefined;
+  lastName: string | undefined;
 
   constructor(publicationId: string) {
     makeAutoObservable(this);
@@ -39,13 +47,25 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
               this.publicationCreator = data.publicationCreator;
               this.collaborationRequestCreator = data.collaborationRequestCreator;
 
+              this.workplaces = cloneDeep(this.collaborationRequestCreator.workplaces)
+              this.workplaces?.forEach((w) => {
+                this.workplacesProps.push({
+                  orgQuery: w.organization?.name ?? '',
+                  organizationOptions: []
+                });
+                this.workplacesValidation.push({
+                  isValidOrganization: !!w.organization
+                });
+              });
+              this.firstName = this.collaborationRequestCreator.firstName;
+              this.lastName = this.collaborationRequestCreator.lastName;
+
               data.messages.sort(this.sortMessages)
               this.messages = data.messages;
 
               this.messageType = data.messages.reduce((max, item) =>
                 item.sequenceIndex!! > max.sequenceIndex!! ? item : max
               ).type;
-              debugger;
             });
           break;
         }
@@ -82,5 +102,13 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
 
   setStage (stage: CollaborationMessageType): void {
     this.messageType = stage;
+  }
+
+  setFirstName (firstName: string): void {
+    this.firstName = firstName;
+  }
+
+  setLastName (lastName: string): void {
+    this.lastName = lastName;
   }
 }

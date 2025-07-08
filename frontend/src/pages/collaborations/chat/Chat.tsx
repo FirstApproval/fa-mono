@@ -27,13 +27,14 @@ import {
 import { Message } from './ChatMessage';
 import { UserActionsRegistry } from "./UserActionsRegistry"
 import { showStepsInfo } from "../elements/StepsInfo"
-import { personalData } from '../elements/PersonalData';
+import { PersonalData } from '../elements/PersonalData';
+import { DownloadedPublicationCollaborationChatStore } from "../../publication/store/DownloadedPublicationCollaborationChatStore"
 
 type ChatProps = {
-  collaborationChatStore: CollaborationChatInterface;
+  collaborationChatStore: DownloadedPublicationCollaborationChatStore;
 };
 
-const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: CollaborationChatInterface }): ReactElement => {
+const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: DownloadedPublicationCollaborationChatStore }): ReactElement => {
   const { collaborationChatStore } = props;
   const userActionsRegistry = new UserActionsRegistry(collaborationChatStore);
   const [showDeclineModal, setShowDeclineModal] = useState(false);
@@ -202,52 +203,6 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
     collaborationChatStore.setStage(CollaborationMessageType.PUBLICATION_INFO_RECEIVED);
   };
 
-  const handleApproveCollaboration: () => void = () => {
-    Messages.push({
-      id: 333,
-      name: 'Me Myself',
-      avatar: 'MM',
-      text: 'Approve collaboration.'
-    });
-    Messages.push({
-      id: 334,
-      name: 'Assistant',
-      avatar: 'FA',
-      text: 'UPD: Peter Lidsky notified you that he plans to send you the final version of the article in two weeks.'
-    });
-    Messages.push({
-      id: 335,
-      name: 'Assistant',
-      avatar: 'FA',
-      text: (
-        <>
-          UPD: Peter Lidsky attached a preview of the manuscript of their
-          publication:
-          <p
-            style={{
-              borderRadius: '0.5rem',
-              backgroundColor: 'rgb(243, 242, 245)',
-              padding: '10px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              width: '100%',
-              gap: '8px',
-              maxWidth: '100%'
-            }}>
-            <img src={fileIcon} /> My manuscript.pdf
-          </p>
-          You will have 2 weeks to read the article and decide whether to accept
-          or decline co-authorship. You can ask questions or provide your
-          suggestions to the author via private messages. We recommend starting
-          this process well in advance. If you do not approve the request within
-          2 weeks, you will lose the opportunity for co-authorship in this
-          article. If you decline, the data user will simply cite your dataset.
-        </>
-      )
-    });
-    collaborationChatStore.setStage(CollaborationMessageType.COLLABORATION_APPROVED);
-  };
-  debugger;
   return (
     <>
       <Global
@@ -266,14 +221,18 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
           const fullName = message.isAssistant ? 'Assistant' : getFullName(userInfo);
           const avatar = message.isAssistant ? 'FA' :
             (userInfo.profileImage ? renderProfileImage(userInfo.profileImage) : getInitials(userInfo.firstName, userInfo.lastName));
-          debugger;
           return (
             <React.Fragment key={message.id}>
               <Message name={fullName} avatar={avatar}>
                 {message.text}
 
                 {message.type === CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET && showStepsInfo()}
-                {message.type === CollaborationMessageType.VERIFY_YOUR_NAME_AND_AFFILIATION && personalData({handlePublicationFormMsg})}
+                {message.type === CollaborationMessageType.VERIFY_YOUR_NAME_AND_AFFILIATION &&
+                  <PersonalData
+                    handlePublicationFormMsg={handlePublicationFormMsg}
+                    store={collaborationChatStore}
+                  />
+                }
               </Message>
               <HeightElement value={'32px'} />
             </React.Fragment>
@@ -471,3 +430,51 @@ export const ButtonsWrapper = styled.div`
 `
 
 export default Chat;
+
+
+
+// const handleApproveCollaboration: () => void = () => {
+//   Messages.push({
+//     id: 333,
+//     name: 'Me Myself',
+//     avatar: 'MM',
+//     text: 'Approve collaboration.'
+//   });
+//   Messages.push({
+//     id: 334,
+//     name: 'Assistant',
+//     avatar: 'FA',
+//     text: 'UPD: Peter Lidsky notified you that he plans to send you the final version of the article in two weeks.'
+//   });
+//   Messages.push({
+//     id: 335,
+//     name: 'Assistant',
+//     avatar: 'FA',
+//     text: (
+//       <>
+//         UPD: Peter Lidsky attached a preview of the manuscript of their
+//         publication:
+//         <p
+//           style={{
+//             borderRadius: '0.5rem',
+//             backgroundColor: 'rgb(243, 242, 245)',
+//             padding: '10px',
+//             display: 'inline-flex',
+//             alignItems: 'center',
+//             width: '100%',
+//             gap: '8px',
+//             maxWidth: '100%'
+//           }}>
+//           <img src={fileIcon} /> My manuscript.pdf
+//         </p>
+//         You will have 2 weeks to read the article and decide whether to accept
+//         or decline co-authorship. You can ask questions or provide your
+//         suggestions to the author via private messages. We recommend starting
+//         this process well in advance. If you do not approve the request within
+//         2 weeks, you will lose the opportunity for co-authorship in this
+//         article. If you decline, the data user will simply cite your dataset.
+//       </>
+//     )
+//   });
+//   collaborationChatStore.setStage(CollaborationMessageType.COLLABORATION_APPROVED);
+// };

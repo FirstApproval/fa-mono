@@ -46,7 +46,7 @@ export const ChatPage = observer((): ReactElement => {
             <BreadCrumbs name={interlocutorName} />
             <BodyWrap>
               <BodyContentWrap>
-                <Chat collaborationChatStore={collaborationChatStore}/>
+                {/* <Chat collaborationChatStore={collaborationChatStore}/> */}
               </BodyContentWrap>
             </BodyWrap>
           </RightPanel>

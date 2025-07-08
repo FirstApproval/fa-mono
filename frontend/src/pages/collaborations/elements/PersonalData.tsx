@@ -1,13 +1,18 @@
 import { HeightElement } from "../../common.styled"
 import { Box, Button, Link, TextField, Typography } from "@mui/material"
-import React from "react"
+import React, { ReactElement } from "react"
+import { WorkplacesEditor } from "../../../components/WorkplacesEditor"
+import { IWorkplaceStore } from "../../../core/WorkplaceProps"
+import { observer } from "mobx-react-lite"
+import { DownloadedPublicationCollaborationChatStore } from "../../publication/store/DownloadedPublicationCollaborationChatStore"
 
-export const personalData = (props: {handlePublicationFormMsg: () => void}) => {
-  const { handlePublicationFormMsg } = props;
+export const PersonalData = observer((
+  props: { handlePublicationFormMsg: () => void, store: DownloadedPublicationCollaborationChatStore}
+): ReactElement => {
+  const { handlePublicationFormMsg, store } = props;
+  debugger;
   return (
     <>
-      Awesome! Please verify the spelling of your name and affiliation, as
-      this information will be used in the agreement.
       <HeightElement value={'2rem'} />
       <Box
         component="form"
@@ -25,33 +30,25 @@ export const personalData = (props: {handlePublicationFormMsg: () => void}) => {
           display: 'flex',
           gap: 2
         }}>
-          <TextField fullWidth label="First name" variant="outlined" />
-          <TextField fullWidth label="Last name" variant="outlined" />
-        </Box>
-
-        <TextField fullWidth label="Organization name" variant="outlined" />
-
-        <TextField fullWidth label="Department (opt.)" variant="outlined" />
-
-        <Box sx={{
-          display: 'flex',
-          gap: 2
-        }}>
-          <TextField
-            label="Address (opt.)"
-            variant="outlined"
-            sx={{ flex: 7 }} // 80%
+          <TextField fullWidth
+                     label="First name"
+                     variant="outlined"
+                     value={store.firstName}
+                     onChange={(e) => {
+                       store.setFirstName(e.currentTarget.value);
+                     }}
           />
-          <TextField
-            label="Postal code (opt.)"
-            variant="outlined"
-            sx={{ flex: 3 }} // 20%
+          <TextField fullWidth
+                     label="Last name"
+                     variant="outlined"
+                     value={store.lastName}
+                     onChange={(e) => {
+                       store.setLastName(e.currentTarget.value);
+                     }}
           />
         </Box>
 
-        <Link href="#" underline="hover" variant="body2">
-          + Add affiliation
-        </Link>
+        {store.workplaces && <WorkplacesEditor store={store} isModalWindow={false} /> }
 
         <Box sx={{
           mt: 2,
@@ -69,4 +66,4 @@ export const personalData = (props: {handlePublicationFormMsg: () => void}) => {
       </Box>
     </>
   );
-}
+});
