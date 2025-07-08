@@ -2904,6 +2904,22 @@ components:
         - collaborationRequestCreator
         - messages
 
+    CollaboratorPersonalData:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        workplaces:
+          type: array
+          items:
+            $ref: '#/components/schemas/Workplace'
+      required:
+        - firstName
+        - lastName
+        - workplaces
+
     CollaborationRequestMessage:
       type: object
       properties:
