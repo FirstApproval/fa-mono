@@ -2,7 +2,6 @@ import { HeightElement } from "../../common.styled"
 import { Box, Button, Link, TextField, Typography } from "@mui/material"
 import React, { ReactElement } from "react"
 import { WorkplacesEditor } from "../../../components/WorkplacesEditor"
-import { IWorkplaceStore } from "../../../core/WorkplaceProps"
 import { observer } from "mobx-react-lite"
 import { DownloadedPublicationCollaborationChatStore } from "../../publication/store/DownloadedPublicationCollaborationChatStore"
 
@@ -20,11 +19,10 @@ export const PersonalData = observer((
           p: 3,
           borderRadius: 2,
           border: '1px solid #dedede',
-          maxWidth: '600px',
           margin: 'auto',
           display: 'flex',
           flexDirection: 'column',
-          gap: 2
+          gap: 4
         }}>
         <Box sx={{
           display: 'flex',
@@ -48,10 +46,9 @@ export const PersonalData = observer((
           />
         </Box>
 
-        {store.workplaces && <WorkplacesEditor store={store} isModalWindow={false} /> }
+        {store.workplaces && <WorkplacesEditor store={store} isModalWindow={true} /> }
 
         <Box sx={{
-          mt: 2,
           display: 'flex',
           alignItems: 'center',
           gap: 2

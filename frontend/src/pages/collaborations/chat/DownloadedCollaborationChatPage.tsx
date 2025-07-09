@@ -83,7 +83,7 @@ const BodyWrap = styled.div`
 
 const BodyContentWrap = styled.div`
   width: 680px;
-  padding: 48px 32px;
+  padding: 48px 0px;
 `;
 
 const RightPanel = styled.div`
