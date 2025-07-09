@@ -4,7 +4,7 @@ import { Box, Button, FormControl, InputLabel, Select, TextField } from "@mui/ma
 import { DownloadedPublicationCollaborationChatStore } from "../../publication/store/DownloadedPublicationCollaborationChatStore"
 import { UserAction } from "../chat/action/UserAction"
 import { FlexWrapRowFullWidth } from "../../../components/WorkplacesEditor"
-import { WidthElement } from "../../common.styled"
+import { StyledMenuItem, WidthElement } from "../../common.styled"
 import MenuItem from "@mui/material/MenuItem"
 import { CollaborationRequestTypeOfWork } from "../../../apis/first-approval-api"
 
@@ -42,9 +42,9 @@ export const PotentialPublicationDataForm = observer((
             label="Type of your publication in collaboration"
             onChange={() => {}}
           >
-            <MenuItem value={CollaborationRequestTypeOfWork.ARTICLE}>Journal Article</MenuItem>
-            <MenuItem value={CollaborationRequestTypeOfWork.DATASET}>Dataset</MenuItem>
-            <MenuItem value={CollaborationRequestTypeOfWork.OTHER_PUBLICATION}>Other publication</MenuItem>
+            <StyledMenuItem value={CollaborationRequestTypeOfWork.ARTICLE}>Journal Article</StyledMenuItem>
+            <StyledMenuItem value={CollaborationRequestTypeOfWork.DATASET}>Dataset</StyledMenuItem>
+            <StyledMenuItem value={CollaborationRequestTypeOfWork.OTHER_PUBLICATION}>Other publication</StyledMenuItem>
           </Select>
         </FormControl>
         <FlexWrapRowFullWidth>
