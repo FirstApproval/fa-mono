@@ -222,24 +222,26 @@ export const WorkplacesEditor = observer(
           }}>
           + Add affiliation
         </Button>
-        <HeightElement value="32px" />
         {buttonType === ActionButtonType.FULL_WIDTH_CONFIRM && saveCallback && (
-          <SaveButton
-            size={'large'}
-            loading={savingInProgress}
-            color={'primary'}
-            variant={'contained'}
-            onClick={() => {
-              setSavingInProgress(true);
-              void saveCallback(workplaces).then((saved) => {
-                setSavingInProgress(false);
-                if (saved) {
-                  setShowSuccessSavingAlter(true);
-                }
-              });
-            }}>
-            {saveButtonText}
-          </SaveButton>
+          <>
+            <HeightElement value="32px" />
+            <SaveButton
+              size={'large'}
+              loading={savingInProgress}
+              color={'primary'}
+              variant={'contained'}
+              onClick={() => {
+                setSavingInProgress(true)
+                void saveCallback(workplaces).then((saved) => {
+                  setSavingInProgress(false)
+                  if (saved) {
+                    setShowSuccessSavingAlter(true)
+                  }
+                })
+              }}>
+              {saveButtonText}
+            </SaveButton>
+          </>
         )}
         {showSuccessSavingAlter && (
           <Snackbar
