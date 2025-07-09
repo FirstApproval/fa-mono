@@ -3,11 +3,14 @@ import { UserAction } from "./UserAction"
 import { DownloadedPublicationCollaborationChatStore } from "../../../publication/store/DownloadedPublicationCollaborationChatStore"
 
 function confirmThatProvidedInfoIsRealAction(collaborationChatStore: DownloadedPublicationCollaborationChatStore): void {
+  debugger;
   const collaboratorPersonalData: CollaboratorPersonalData = {
+    type: CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL,
     firstName: collaborationChatStore.firstName!!,
     lastName: collaborationChatStore.lastName!!,
     workplaces: collaborationChatStore.workplaces
   };
+  debugger;
   collaborationChatStore.sendMessage({
     type: CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL,
     payload: collaboratorPersonalData,

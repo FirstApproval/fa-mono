@@ -1,5 +1,8 @@
 package org.firstapproval.backend.core.domain.publication.collaboration.requests
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.firstapproval.api.server.model.CreateCollaborationRequest
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.api.server.model.CollaborationRequestMessage as CollaborationRequestMessageApiObject
@@ -11,6 +14,7 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DATASET_WAS_DOWNLOADED
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.MessagePayload
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.COLLABORATION_REQUEST_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.PUBLICATION_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.*
@@ -46,6 +50,7 @@ class CollaborationRequestService(
     private val publicationRepository: PublicationRepository,
     private val publicationService: PublicationService,
     private val collaborationMessageRepository: CollaborationMessageRepository,
+    private val objectMapper: ObjectMapper
 ) {
     @Transactional
     fun makeDecision(
@@ -104,6 +109,7 @@ class CollaborationRequestService(
                 type = type,
                 user = messageRecipient,
                 text = collaborationRequestMessage.text,
+                payload = objectMapper.convertValue(collaborationRequestMessage.payload, MessagePayload::class.java),
                 sequenceIndex = type.sequenceIndex,
                 recipientTypes = mutableSetOf(type.recipientType),
                 isAssistant = collaborationRequestMessage.isAssistant

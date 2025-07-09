@@ -2915,6 +2915,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Workplace'
+        type:
+          $ref: '#/components/schemas/CollaborationMessageType'
       required:
         - firstName
         - lastName

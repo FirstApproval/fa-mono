@@ -1,104 +1,33 @@
-import { HeightElement } from "../../common.styled"
-import { Box, Button, Link, TextField, Typography } from "@mui/material"
 import React, { ReactElement } from "react"
-import { WorkplacesEditor } from "../../../components/WorkplacesEditor"
 import { observer } from "mobx-react-lite"
-import { DownloadedPublicationCollaborationChatStore } from "../../publication/store/DownloadedPublicationCollaborationChatStore"
-import { UserAction } from "../chat/action/UserAction"
 import { CollaborationRequestMessage, CollaboratorPersonalData } from "../../../apis/first-approval-api"
 
 export const PersonalData = observer((
-  props: { message: CollaborationRequestMessage, action: UserAction, store: DownloadedPublicationCollaborationChatStore}
+  props: { message: CollaborationRequestMessage }
 ): ReactElement => {
-  const { message, action, store } = props;
-  const newForm = () => {
-    return (
-      <>
-        <HeightElement value={'2rem'} />
-        <Box
-          component="form"
-          sx={{
-            p: 3,
-            borderRadius: 2,
-            border: '1px solid #dedede',
-            margin: 'auto',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 4
-          }}>
-          <Box sx={{
-            display: 'flex',
-            gap: 2
-          }}>
-            <TextField fullWidth
-                       label="First name"
-                       variant="outlined"
-                       value={store.firstName}
-                       onChange={(e) => {
-                         store.setFirstName(e.currentTarget.value);
-                       }}
-            />
-            <TextField fullWidth
-                       label="Last name"
-                       variant="outlined"
-                       value={store.lastName}
-                       onChange={(e) => {
-                         store.setLastName(e.currentTarget.value);
-                       }}
-            />
-          </Box>
+  const { message, } = props
+  const collaboratorPersonalInfo: CollaboratorPersonalData = message.payload!! as CollaboratorPersonalData
+  const lines: string[] = []
+  debugger;
 
-          {store.workplaces && <WorkplacesEditor store={store} isModalWindow={true} /> }
-
-          <Box sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 2
-          }}>
-            <Button
-              onClick={() => action.action(store)}
-              variant="outlined"
-              style={{
-                color: '#3b4eff',
-                borderColor: '#3b4eff'
-              }}
-            >
-              {action.text}
-            </Button>
-            <Button component={Link} variant="text" style={{color: 'black'}}>
-              Cancel
-            </Button>
-          </Box>
-        </Box>
-      </>
-    )
+  if (collaboratorPersonalInfo.firstName) {
+    lines.push(`First name: ${collaboratorPersonalInfo.firstName}`)
+  }
+  if (collaboratorPersonalInfo.lastName) {
+    lines.push(`Last name: ${collaboratorPersonalInfo.lastName}`)
   }
 
-  const existingForm = (message: CollaborationRequestMessage) => {
-    debugger;
-    const collaboratorPersonalInfo: CollaboratorPersonalData = message.payload!! as CollaboratorPersonalData;
-    const lines: string[] = [];
-    debugger;
+  debugger;
+  const formattedWorkplaces = collaboratorPersonalInfo.workplaces.map(workplace => workplace.organization!!.name +
+    `${workplace.department ? `, ${workplace.department}` : ""}` +
+    `${workplace.address ? `, ${workplace.address}` : ""}`
+  ).join("\n")
+  debugger;
+  lines.push(`Affiliations: ${formattedWorkplaces}`)
 
-    if (collaboratorPersonalInfo.firstName) {
-      lines.push(`• First name: ${collaboratorPersonalInfo.firstName}`);
-    }
-    if (collaboratorPersonalInfo.lastName) {
-      lines.push(`• Last name: ${collaboratorPersonalInfo.lastName}`);
-    }
-
-    const formattedWorkplaces = collaboratorPersonalInfo.workplaces.map(workplace => {
-      `${workplace.organization?.name ? `, ${workplace.organization?.name}` : ''}, 
-       ${workplace.department ? `, ${workplace.department}` : ''}, 
-       ${workplace.address ? `, ${workplace.address}` : ''}
-      `
-    }).join('; ')
-    lines.push(`• Affiliations: ${formattedWorkplaces}`);
-
-    return <div>
-      {lines}
-    </div>
-  };
-
-  return message.id ? existingForm(message) : newForm();
-});
+  return (
+    <ul>
+      {lines.map(line => <li>{line}</li>)}
+    </ul>
+  )
+})

@@ -20,6 +20,7 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
   collaborationRequestId: string = '';
   collaborationRequestCreator: UserInfo | undefined = undefined;
   messages: CollaborationRequestMessage[] | undefined = undefined;
+  existingMessageTypes: CollaborationMessageType[] | undefined = undefined;
   publication?: Publication;
   publicationCreator: UserInfo | undefined = undefined;
   messageType: CollaborationMessageType | undefined = undefined;
@@ -110,5 +111,9 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
 
   setLastName (lastName: string): void {
     this.lastName = lastName;
+  }
+
+  existsByType (type: CollaborationMessageType): boolean {
+    return this.messages!!.map(message => message.type).includes(type);
   }
 }

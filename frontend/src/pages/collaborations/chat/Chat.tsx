@@ -5,7 +5,6 @@ import { Box, Button, Link, TextField, Typography } from '@mui/material';
 import { HeightElement } from '../../common.styled';
 import { css, Global } from '@emotion/react';
 import fileIcon from '../../../assets/file-icon.svg';
-import { CollaborationChatInterface } from '../../publication/store/CollaborationChatStore';
 import {
   getFullName,
   getInitials,
@@ -27,6 +26,7 @@ import {
 import { Message } from './ChatMessage';
 import { UserActionsRegistry } from "./UserActionsRegistry"
 import { showStepsInfo } from "../elements/StepsInfo"
+import { PersonalDataForm } from '../elements/PersonalDataForm';
 import { PersonalData } from '../elements/PersonalData';
 import { DownloadedPublicationCollaborationChatStore } from "../../publication/store/DownloadedPublicationCollaborationChatStore"
 import { confirmThatProvidedInfoIsReal } from "./action/ConfirmThatProvidedInfoIsReal"
@@ -225,11 +225,14 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
           return (
             <React.Fragment key={message.id}>
               <Message name={fullName} avatar={avatar}>
+                {message.type === CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL && <PersonalData message={message} />}
                 {message.text}
+
 
                 {message.type === CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET && showStepsInfo()}
                 {message.type === CollaborationMessageType.VERIFY_YOUR_NAME_AND_AFFILIATION &&
-                  <PersonalData
+                  !collaborationChatStore.existsByType(CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL) &&
+                  <PersonalDataForm
                     message={message}
                     action={confirmThatProvidedInfoIsReal}
                     store={collaborationChatStore}

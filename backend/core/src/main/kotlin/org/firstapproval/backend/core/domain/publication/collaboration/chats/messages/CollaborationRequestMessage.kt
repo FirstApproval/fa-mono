@@ -18,9 +18,10 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import org.firstapproval.api.server.model.UserInfo
+import org.firstapproval.api.server.model.Workplace
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationRequestFile
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_CREATE
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.CREATE
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.COLLABORATION_REQUEST_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.PUBLICATION_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequest
@@ -113,16 +114,10 @@ enum class CollaborationRequestMessageType(val sequenceIndex: Int, val recipient
 @JsonSubTypes(
     value = [
         JsonSubTypes.Type(value = Create::class, name = "CREATE"),
-        JsonSubTypes.Type(value = AssistantCreate::class, name = "ASSISTANT_CREATE"),
-        JsonSubTypes.Type(value = Create::class, name = "DEFAULT"),
-        JsonSubTypes.Type(value = Create::class, name = "COLLABORATION_APPROVED"),
-        JsonSubTypes.Type(value = Create::class, name = "DATA_USER_ASKED"),
-        JsonSubTypes.Type(value = Create::class, name = "MANUSCRIPT_APPROVED"),
-        JsonSubTypes.Type(value = Create::class, name = "DECLINED"),
-        JsonSubTypes.Type(value = Create::class, name = "AUTHOR_INFO_RECEIVED"),
-        JsonSubTypes.Type(value = Create::class, name = "PUBLICATION_INFO_RECEIVED"),
+        JsonSubTypes.Type(value = PersonalDataConfirmation::class, name = "I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL"),
     ]
 )
+
 interface MessagePayload {
     var type: CollaborationRequestMessageType
 }
@@ -135,8 +130,11 @@ class Create(
     override var type: CollaborationRequestMessageType = CREATE,
 ) : MessagePayload
 
-class AssistantCreate(
-    override var type: CollaborationRequestMessageType = ASSISTANT_CREATE,
+class PersonalDataConfirmation(
+    val firstName: String,
+    val lastName: String,
+    val workplaces: List<Workplace>,
+    override var type: CollaborationRequestMessageType = I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL,
 ) : MessagePayload
 
 fun CollaborationRequestMessage.toApiObject(userService: UserService) = toApiObject(user.toApiObject(userService))
