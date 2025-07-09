@@ -1,10 +1,12 @@
 import React, { ReactElement } from "react"
 import { observer } from "mobx-react-lite"
-import { Box, Button, TextField } from "@mui/material"
+import { Box, Button, FormControl, InputLabel, Select, TextField } from "@mui/material"
 import { DownloadedPublicationCollaborationChatStore } from "../../publication/store/DownloadedPublicationCollaborationChatStore"
 import { UserAction } from "../chat/action/UserAction"
 import { FlexWrapRowFullWidth } from "../../../components/WorkplacesEditor"
 import { WidthElement } from "../../common.styled"
+import MenuItem from "@mui/material/MenuItem"
+import { CollaborationRequestTypeOfWork } from "../../../apis/first-approval-api"
 
 export const PotentialPublicationDataForm = observer((
   props: { store: DownloadedPublicationCollaborationChatStore, action: UserAction }
@@ -31,13 +33,20 @@ export const PotentialPublicationDataForm = observer((
           variant="outlined"
           value={store.potentialPublicationName}
         />
-        <TextField
-          fullWidth
-          label="Type of your publication in collaboration"
-          variant="outlined"
-          defaultValue="Journal Article"
-          value={store.typeOfWork}
-        />
+        <FormControl fullWidth>
+          <InputLabel id="Type of your publication in collaboration">Type of your publication in collaboration</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={store.typeOfWork}
+            label="Type of your publication in collaboration"
+            onChange={() => {}}
+          >
+            <MenuItem value={CollaborationRequestTypeOfWork.ARTICLE}>Journal Article</MenuItem>
+            <MenuItem value={CollaborationRequestTypeOfWork.DATASET}>Dataset</MenuItem>
+            <MenuItem value={CollaborationRequestTypeOfWork.OTHER_PUBLICATION}>Other publication</MenuItem>
+          </Select>
+        </FormControl>
         <FlexWrapRowFullWidth>
           <TextField
             label="Expeted publication date"
