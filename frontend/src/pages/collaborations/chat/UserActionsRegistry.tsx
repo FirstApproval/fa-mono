@@ -1,20 +1,18 @@
 import { CollaborationMessageType } from "../../../apis/first-approval-api"
 import { citation } from "./action/Citation"
 import { UserAction } from "./action/UserAction"
-import { CollaborationChatInterface } from "../../publication/store/CollaborationChatStore"
 import { letsMakeCollaboration } from "./action/LetsMakeCollaboration"
-import { needHelp } from "./action/NeedHelp"
-import { reachOutToAuthors } from "./action/ReachOutToAuthors"
 import { iWouldLikeToCollaborate } from "./action/IWouldLikeToCollaborate"
 import { gotItReadyToStart } from "./action/GotItReadyToStart"
 import { confirmThatProvidedInfoIsReal } from "./action/ConfirmThatProvidedInfoIsReal"
 import { doneWhatsNext } from "./action/DoneWhatsNext"
 import { showAuthorsEmails } from "./action/ShowAuthorsEmails"
+import { DownloadedPublicationCollaborationChatStore } from "../../publication/store/DownloadedPublicationCollaborationChatStore"
 
 export class UserActionsRegistry {
   private userActionsByMessageType = new Map<CollaborationMessageType, UserAction[]>()
 
-  constructor (readonly collaborationChatStore: CollaborationChatInterface) {
+  constructor (readonly collaborationChatStore: DownloadedPublicationCollaborationChatStore) {
     // CREATE_REQUEST создаётся на бэке
     // this.registerAction(CollaborationMessageType.CREATE_REQUEST, [citation, reachOutToAuthors, emailToAuthors]);
     // ниже два события для UseType.CITATION
