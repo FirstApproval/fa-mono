@@ -4,11 +4,12 @@ import React, { ReactElement } from "react"
 import { WorkplacesEditor } from "../../../components/WorkplacesEditor"
 import { observer } from "mobx-react-lite"
 import { DownloadedPublicationCollaborationChatStore } from "../../publication/store/DownloadedPublicationCollaborationChatStore"
+import { UserAction } from "../chat/action/UserAction"
 
 export const PersonalData = observer((
-  props: { handlePublicationFormMsg: () => void, store: DownloadedPublicationCollaborationChatStore}
+  props: { action: UserAction, store: DownloadedPublicationCollaborationChatStore}
 ): ReactElement => {
-  const { handlePublicationFormMsg, store } = props;
+  const { action, store } = props;
   debugger;
   return (
     <>
@@ -53,11 +54,18 @@ export const PersonalData = observer((
           alignItems: 'center',
           gap: 2
         }}>
-          <Button onClick={handlePublicationFormMsg} variant="outlined">
-            I confirm that provided info is real
+          <Button
+            onClick={() => action.action(store)}
+            variant="outlined"
+            style={{
+              color: '#3b4eff',
+              borderColor: '#3b4eff'
+            }}
+          >
+            {action.text}
           </Button>
           <Typography component={Link} href="#" variant="body2">
-            Back
+            Cancel
           </Typography>
         </Box>
       </Box>

@@ -28,7 +28,7 @@ export class UserActionsRegistry {
     this.registerAction(CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET, [letsMakeCollaboration])
     this.registerAction(CollaborationMessageType.LETS_MAKE_COLLABORATION_REQUEST)
     this.registerAction(CollaborationMessageType.FORMALIZED_AGREEMENT, [gotItReadyToStart])
-    this.registerAction(CollaborationMessageType.VERIFY_YOUR_NAME_AND_AFFILIATION, [confirmThatProvidedInfoIsReal])
+    this.registerAction(CollaborationMessageType.VERIFY_YOUR_NAME_AND_AFFILIATION, [])
     this.registerAction(CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL)
     this.registerAction(CollaborationMessageType.PROPOSE_POTENTIAL_PUBLICATION_NAME_AND_TYPE, [doneWhatsNext])
     this.registerAction(CollaborationMessageType.DONE_WHATS_NEXT)

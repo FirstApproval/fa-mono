@@ -29,6 +29,7 @@ import { UserActionsRegistry } from "./UserActionsRegistry"
 import { showStepsInfo } from "../elements/StepsInfo"
 import { PersonalData } from '../elements/PersonalData';
 import { DownloadedPublicationCollaborationChatStore } from "../../publication/store/DownloadedPublicationCollaborationChatStore"
+import { confirmThatProvidedInfoIsReal } from "./action/ConfirmThatProvidedInfoIsReal"
 
 type ChatProps = {
   collaborationChatStore: DownloadedPublicationCollaborationChatStore;
@@ -240,7 +241,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
         })}
         {collaborationChatStore.messageType === CollaborationMessageType.VERIFY_YOUR_NAME_AND_AFFILIATION &&
           <PersonalData
-            handlePublicationFormMsg={handlePublicationFormMsg}
+            action={confirmThatProvidedInfoIsReal}
             store={collaborationChatStore}
           />
         }
