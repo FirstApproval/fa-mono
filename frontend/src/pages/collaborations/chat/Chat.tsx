@@ -30,7 +30,8 @@ import { PersonalDataForm } from '../elements/PersonalDataForm';
 import { PersonalData } from '../elements/PersonalData';
 import { DownloadedPublicationCollaborationChatStore } from "../../publication/store/DownloadedPublicationCollaborationChatStore"
 import { confirmThatProvidedInfoIsReal } from "./action/ConfirmThatProvidedInfoIsReal"
-import { PotentialPublicationData } from "../elements/PotentialPublicationData"
+import { PotentialPublicationDataForm } from "../elements/PotentialPublicationDataForm"
+import { doneWhatsNext } from "./action/DoneWhatsNext"
 
 type ChatProps = {
   collaborationChatStore: DownloadedPublicationCollaborationChatStore;
@@ -240,8 +241,9 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
                   />
                 }
                 {message.type === CollaborationMessageType.PROPOSE_POTENTIAL_PUBLICATION_NAME_AND_TYPE &&
-                  <PotentialPublicationData
+                  <PotentialPublicationDataForm
                     store={collaborationChatStore}
+                    action={doneWhatsNext}
                   />
                 }
               </Message>

@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import {
   CollaborationMessageType,
-  CollaborationRequestMessage,
+  CollaborationRequestMessage, CollaborationRequestTypeOfWork,
   Publication,
   UserInfo,
   UseType,
@@ -24,11 +24,18 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
   publication?: Publication;
   publicationCreator: UserInfo | undefined = undefined;
   messageType: CollaborationMessageType | undefined = undefined;
+
   workplaces: Workplace[] = [];
   workplacesProps: WorkplaceProps[] = [];
   workplacesValidation: WorkplaceValidationState[] = [];
   firstName: string | undefined;
   lastName: string | undefined;
+
+  potentialPublicationName: string | undefined;
+  typeOfWork: CollaborationRequestTypeOfWork | undefined;
+  expectedPublicationDate: string | undefined;
+  intendedJournalForPublication: string | undefined;
+  detailsOfResearch: string | undefined;
 
   constructor(publicationId: string) {
     makeAutoObservable(this);
