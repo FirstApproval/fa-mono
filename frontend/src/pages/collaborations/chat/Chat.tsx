@@ -227,17 +227,23 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
                 {message.text}
 
                 {message.type === CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET && showStepsInfo()}
-                {message.type === CollaborationMessageType.VERIFY_YOUR_NAME_AND_AFFILIATION &&
-                  <PersonalData
-                    handlePublicationFormMsg={handlePublicationFormMsg}
-                    store={collaborationChatStore}
-                  />
-                }
+                {/* {message.type === CollaborationMessageType.VERIFY_YOUR_NAME_AND_AFFILIATION && */}
+                {/*   <PersonalData */}
+                {/*     handlePublicationFormMsg={handlePublicationFormMsg} */}
+                {/*     store={collaborationChatStore} */}
+                {/*   /> */}
+                {/* } */}
               </Message>
               <HeightElement value={'32px'} />
             </React.Fragment>
           );
         })}
+        {collaborationChatStore.messageType === CollaborationMessageType.VERIFY_YOUR_NAME_AND_AFFILIATION &&
+          <PersonalData
+            handlePublicationFormMsg={handlePublicationFormMsg}
+            store={collaborationChatStore}
+          />
+        }
         {/* {collaborationChatStore.messageType === CollaborationMessageType.CITATION_IS_ENOUGH && ( */}
         {/*   <UserActions */}
         {/*     messageType={CollaborationMessageType.CITATION_IS_ENOUGH} */}
