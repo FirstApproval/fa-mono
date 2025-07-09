@@ -2922,6 +2922,28 @@ components:
         - lastName
         - workplaces
 
+    CollaborationPotentialPublicationData:
+      type: object
+      properties:
+        potentialPublicationTitle:
+          type: string
+        typeOfWork:
+          $ref: '#/components/schemas/CollaborationRequestTypeOfWork'
+        expectedPublicationDate:
+          type: string
+          format: date
+        intendedJournalForPublication:
+          type: string
+        detailsOfResearch:
+          type: string
+          maxLength: 4096
+        type:
+          $ref: '#/components/schemas/CollaborationMessageType'
+      required:
+        - potentialPublicationTitle
+        - typeOfWork
+        - expectedPublicationDate
+
     CollaborationRequestMessage:
       type: object
       properties:

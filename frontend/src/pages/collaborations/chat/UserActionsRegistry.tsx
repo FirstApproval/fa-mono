@@ -30,7 +30,7 @@ export class UserActionsRegistry {
     this.registerAction(CollaborationMessageType.FORMALIZED_AGREEMENT, [gotItReadyToStart])
     this.registerAction(CollaborationMessageType.VERIFY_YOUR_NAME_AND_AFFILIATION, [])
     this.registerAction(CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL)
-    this.registerAction(CollaborationMessageType.PROPOSE_POTENTIAL_PUBLICATION_NAME_AND_TYPE, [doneWhatsNext])
+    this.registerAction(CollaborationMessageType.PROPOSE_POTENTIAL_PUBLICATION_NAME_AND_TYPE, [])
     this.registerAction(CollaborationMessageType.DONE_WHATS_NEXT)
     this.registerAction(CollaborationMessageType.PREFILLED_COLLABORATION_AGREEMENT)
     this.registerAction(CollaborationMessageType.EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST)

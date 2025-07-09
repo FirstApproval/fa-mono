@@ -30,6 +30,7 @@ import { PersonalDataForm } from '../elements/PersonalDataForm';
 import { PersonalData } from '../elements/PersonalData';
 import { DownloadedPublicationCollaborationChatStore } from "../../publication/store/DownloadedPublicationCollaborationChatStore"
 import { confirmThatProvidedInfoIsReal } from "./action/ConfirmThatProvidedInfoIsReal"
+import { PotentialPublicationData } from "../elements/PotentialPublicationData"
 
 type ChatProps = {
   collaborationChatStore: DownloadedPublicationCollaborationChatStore;
@@ -150,59 +151,59 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
     collaborationChatStore.setStage(CollaborationMessageType.MANUSCRIPT_APPROVED);
   };
 
-  const handlePublicationFormMsg: () => void = () => {
-    Messages.push({
-      id: 1009,
-      name: 'Assistant',
-      avatar: 'FA',
-      text: (
-        <>
-          <Typography>
-            Thank you! Now, propose a potential name and type of publication,
-            and specify the details of the research in which you would like to
-            use the dataset to ensure that Dataset Authors are well-informed
-            about ideas for future collaborative publications, please.
-          </Typography>
-          <Box
-            component="form"
-            sx={{
-              maxWidth: '600px',
-              mx: 'auto',
-              p: 3,
-              borderRadius: 2,
-              boxShadow: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 2
-            }}>
-            <TextField
-              fullWidth
-              label="Potential title of your publication in collaboration"
-              variant="outlined"
-            />
-            <TextField
-              fullWidth
-              label="Type of your publication in collaboration"
-              variant="outlined"
-              defaultValue="Journal Article"
-            />
-            <TextField
-              fullWidth
-              multiline
-              minRows={4}
-              label="Details of the research"
-              variant="outlined"
-            />
-            <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-              <Button variant="outlined">Done. What's next?</Button>
-              <Button variant="text">Back</Button>
-            </Box>
-          </Box>
-        </>
-      )
-    });
-    collaborationChatStore.setStage(CollaborationMessageType.PUBLICATION_INFO_RECEIVED);
-  };
+  // const handlePublicationFormMsg: () => void = () => {
+  //   Messages.push({
+  //     id: 1009,
+  //     name: 'Assistant',
+  //     avatar: 'FA',
+  //     text: (
+  //       <>
+  //         <Typography>
+  //           Thank you! Now, propose a potential name and type of publication,
+  //           and specify the details of the research in which you would like to
+  //           use the dataset to ensure that Dataset Authors are well-informed
+  //           about ideas for future collaborative publications, please.
+  //         </Typography>
+  //         <Box
+  //           component="form"
+  //           sx={{
+  //             maxWidth: '600px',
+  //             mx: 'auto',
+  //             p: 3,
+  //             borderRadius: 2,
+  //             boxShadow: 1,
+  //             display: 'flex',
+  //             flexDirection: 'column',
+  //             gap: 2
+  //           }}>
+  //           <TextField
+  //             fullWidth
+  //             label="Potential title of your publication in collaboration"
+  //             variant="outlined"
+  //           />
+  //           <TextField
+  //             fullWidth
+  //             label="Type of your publication in collaboration"
+  //             variant="outlined"
+  //             defaultValue="Journal Article"
+  //           />
+  //           <TextField
+  //             fullWidth
+  //             multiline
+  //             minRows={4}
+  //             label="Details of the research"
+  //             variant="outlined"
+  //           />
+  //           <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+  //             <Button variant="outlined">Done. What's next?</Button>
+  //             <Button variant="text">Back</Button>
+  //           </Box>
+  //         </Box>
+  //       </>
+  //     )
+  //   });
+  //   collaborationChatStore.setStage(CollaborationMessageType.PUBLICATION_INFO_RECEIVED);
+  // };
 
   return (
     <>
@@ -235,6 +236,11 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
                   <PersonalDataForm
                     message={message}
                     action={confirmThatProvidedInfoIsReal}
+                    store={collaborationChatStore}
+                  />
+                }
+                {message.type === CollaborationMessageType.PROPOSE_POTENTIAL_PUBLICATION_NAME_AND_TYPE &&
+                  <PotentialPublicationData
                     store={collaborationChatStore}
                   />
                 }

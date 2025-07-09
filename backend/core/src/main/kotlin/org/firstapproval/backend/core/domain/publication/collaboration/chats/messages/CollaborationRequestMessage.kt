@@ -17,6 +17,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
+import org.firstapproval.api.server.model.CollaborationRequestTypeOfWork
 import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.api.server.model.Workplace
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationRequestFile
@@ -30,6 +31,7 @@ import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.toApiObject
 import org.hibernate.annotations.Type
+import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.util.UUID
 import java.util.UUID.randomUUID
@@ -115,6 +117,7 @@ enum class CollaborationRequestMessageType(val sequenceIndex: Int, val recipient
     value = [
         JsonSubTypes.Type(value = Create::class, name = "CREATE"),
         JsonSubTypes.Type(value = PersonalDataConfirmation::class, name = "I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL"),
+        JsonSubTypes.Type(value = CollaborationPotentialPublicationData::class, name = "DONE_WHATS_NEXT"),
     ]
 )
 
@@ -134,6 +137,15 @@ class PersonalDataConfirmation(
     val firstName: String,
     val lastName: String,
     val workplaces: List<Workplace>,
+    override var type: CollaborationRequestMessageType = I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL,
+) : MessagePayload
+
+class CollaborationPotentialPublicationData(
+    val potentialPublicationTitle: String,
+    val typeOfWork: CollaborationRequestTypeOfWork,
+    val expectedPublicationDate: LocalDate,
+    val intendedJournalForPublication: String,
+    val detailsOfResearch: String,
     override var type: CollaborationRequestMessageType = I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL,
 ) : MessagePayload
 
