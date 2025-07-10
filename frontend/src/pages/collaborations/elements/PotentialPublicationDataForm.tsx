@@ -4,9 +4,10 @@ import { Box, Button, FormControl, InputLabel, Select, TextField } from "@mui/ma
 import { DownloadedPublicationCollaborationChatStore } from "../../publication/store/DownloadedPublicationCollaborationChatStore"
 import { UserAction } from "../chat/action/UserAction"
 import { FlexWrapRowFullWidth } from "../../../components/WorkplacesEditor"
-import { StyledMenuItem, WidthElement } from "../../common.styled"
+import { WidthElement } from "../../common.styled"
 import MenuItem from "@mui/material/MenuItem"
 import { CollaborationRequestTypeOfWork } from "../../../apis/first-approval-api"
+import _ from "lodash"
 
 export const PotentialPublicationDataForm = observer((
   props: { store: DownloadedPublicationCollaborationChatStore, action: UserAction }
@@ -32,19 +33,31 @@ export const PotentialPublicationDataForm = observer((
           label="Potential title of your publication in collaboration"
           variant="outlined"
           value={store.potentialPublicationName}
+          onChange={e => store.setPotentialPublicationName(e.target.value)}
         />
         <FormControl fullWidth>
-          <InputLabel id="Type of your publication in collaboration">Type of your publication in collaboration</InputLabel>
+          <InputLabel id="Type of your publication in collaboration">Type of your publication</InputLabel>
+          {/* <Select */}
+          {/*   labelId="demo-simple-select-label" */}
+          {/*   id="demo-simple-select" */}
+          {/*   value={store.typeOfWork} */}
+          {/*   label="Type of your publication in collaboration" */}
+          {/*   onChange={e => store.setTypeOfWork(e.target.value)} */}
+          {/* > */}
+          {/*   <StyledMenuItem value={CollaborationRequestTypeOfWork.ARTICLE}>Journal Article</StyledMenuItem> */}
+          {/*   <StyledMenuItem value={CollaborationRequestTypeOfWork.DATASET}>Dataset</StyledMenuItem> */}
+          {/*   <StyledMenuItem value={CollaborationRequestTypeOfWork.OTHER_PUBLICATION}>Other publication</StyledMenuItem> */}
+          {/* </Select> */}
+
           <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
             value={store.typeOfWork}
-            label="Type of your publication in collaboration"
-            onChange={() => {}}
-          >
-            <StyledMenuItem value={CollaborationRequestTypeOfWork.ARTICLE}>Journal Article</StyledMenuItem>
-            <StyledMenuItem value={CollaborationRequestTypeOfWork.DATASET}>Dataset</StyledMenuItem>
-            <StyledMenuItem value={CollaborationRequestTypeOfWork.OTHER_PUBLICATION}>Other publication</StyledMenuItem>
+            label="Type of work"
+            onChange={e => store.setTypeOfWork(e.target.value as CollaborationRequestTypeOfWork)}>
+            {Object.keys(CollaborationRequestTypeOfWork).map((key) => (
+              <MenuItem key={key} value={key}>
+                {_.capitalize(key.toLowerCase().replace('_', ' '))}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
         <FlexWrapRowFullWidth>
@@ -56,6 +69,9 @@ export const PotentialPublicationDataForm = observer((
             }}
             style={{width: '35%'}}
             value={store.expectedPublicationDate}
+            onChange={e => {
+              store.setExpectedPublicationDate(e.target.value);
+            }}
           />
           <WidthElement value={'15px'} />
           <TextField
@@ -64,6 +80,7 @@ export const PotentialPublicationDataForm = observer((
             variant="outlined"
             style={{width: '65%'}}
             value={store.intendedJournalForPublication}
+            onChange={e => store.setIntendedJournalForPublication(e.target.value)}
           />
         </FlexWrapRowFullWidth>
         <TextField
@@ -73,6 +90,7 @@ export const PotentialPublicationDataForm = observer((
           label="Details of the research"
           variant="outlined"
           value={store.detailsOfResearch}
+          onChange={e => store.setDetailsOfResearch(e.target.value)}
         />
         <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
           <Button

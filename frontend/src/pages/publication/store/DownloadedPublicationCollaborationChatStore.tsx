@@ -20,7 +20,6 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
   collaborationRequestId: string = '';
   collaborationRequestCreator: UserInfo | undefined = undefined;
   messages: CollaborationRequestMessage[] | undefined = undefined;
-  existingMessageTypes: CollaborationMessageType[] | undefined = undefined;
   publication?: Publication;
   publicationCreator: UserInfo | undefined = undefined;
   messageType: CollaborationMessageType | undefined = undefined;
@@ -122,5 +121,25 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
 
   existsByType (type: CollaborationMessageType): boolean {
     return this.messages!!.map(message => message.type).includes(type);
+  }
+
+  setDetailsOfResearch (detailsOfResearch: string) {
+    this.detailsOfResearch = detailsOfResearch
+  }
+
+  setIntendedJournalForPublication (intendedJournal: string) {
+    this.intendedJournalForPublication = intendedJournal;
+  }
+
+  setExpectedPublicationDate (expectedPublicationDate: string) {
+    this.expectedPublicationDate = expectedPublicationDate;
+  }
+
+  setTypeOfWork (typeOfWork: CollaborationRequestTypeOfWork) {
+    this.typeOfWork = typeOfWork;
+  }
+
+  setPotentialPublicationName (potentialPublicationName: string) {
+    this.potentialPublicationName = potentialPublicationName;
   }
 }
