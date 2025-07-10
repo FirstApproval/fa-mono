@@ -241,6 +241,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
                   />
                 }
                 {message.type === CollaborationMessageType.PROPOSE_POTENTIAL_PUBLICATION_NAME_AND_TYPE &&
+                  !collaborationChatStore.existsByType(CollaborationMessageType.DONE_WHATS_NEXT) &&
                   <PotentialPublicationDataForm
                     store={collaborationChatStore}
                     action={doneWhatsNext}

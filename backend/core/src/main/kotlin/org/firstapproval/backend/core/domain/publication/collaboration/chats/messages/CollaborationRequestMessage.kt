@@ -22,6 +22,7 @@ import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.api.server.model.Workplace
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationRequestFile
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.CREATE
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.COLLABORATION_REQUEST_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.PUBLICATION_CREATOR
@@ -31,7 +32,6 @@ import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.toApiObject
 import org.hibernate.annotations.Type
-import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.util.UUID
 import java.util.UUID.randomUUID
@@ -143,10 +143,10 @@ class PersonalDataConfirmation(
 class CollaborationPotentialPublicationData(
     val potentialPublicationTitle: String,
     val typeOfWork: CollaborationRequestTypeOfWork,
-    val expectedPublicationDate: LocalDate,
+    val expectedPublicationDate: String,
     val intendedJournalForPublication: String,
     val detailsOfResearch: String,
-    override var type: CollaborationRequestMessageType = I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL,
+    override var type: CollaborationRequestMessageType = DONE_WHATS_NEXT,
 ) : MessagePayload
 
 fun CollaborationRequestMessage.toApiObject(userService: UserService) = toApiObject(user.toApiObject(userService))

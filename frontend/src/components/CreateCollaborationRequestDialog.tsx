@@ -68,7 +68,7 @@ export const CreateCollaborationRequestDialog = observer(
             />
           </RowElementSpaceBetween>
           <FormControl>
-            <InputLabel id="type-of-work-label">Type of work</InputLabel>
+            <InputLabel id="type-of-work-label">Publication type</InputLabel>
             <Select
               value={typeOfWork}
               label="Type of work"
