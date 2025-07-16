@@ -23,7 +23,7 @@ function doneWhatsNextAction(collaborationChatStore: DownloadedPublicationCollab
       isAssistant: true,
       text: "Good job! Here is a pre-filled (unsigned) collaboration agreement with the corresponding author: \n" +
         "And the rest of agreements (they differ only in information about the data authors): \n" +
-        "Please review the agreement(s), and if all information is correct, sign and send it/them by clicking the button below."
+        "Please review the agreement(s), and if all information is correct, sign and send it them by clicking the button below."
     }, CollaborationMessageType.PREFILLED_COLLABORATION_AGREEMENT).then();
   }).then();
 }

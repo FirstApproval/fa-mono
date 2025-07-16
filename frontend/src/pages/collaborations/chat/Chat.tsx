@@ -32,6 +32,7 @@ import { DownloadedPublicationCollaborationChatStore } from "../../publication/s
 import { confirmThatProvidedInfoIsReal } from "./action/ConfirmThatProvidedInfoIsReal"
 import { PotentialPublicationDataForm } from "../elements/PotentialPublicationDataForm"
 import { doneWhatsNext } from "./action/DoneWhatsNext"
+import { PotentialPublicationData } from "../elements/PotentialPublicationData"
 
 type ChatProps = {
   collaborationChatStore: DownloadedPublicationCollaborationChatStore;
@@ -228,6 +229,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
             <React.Fragment key={message.id}>
               <Message name={fullName} avatar={avatar}>
                 {message.type === CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL && <PersonalData message={message} />}
+                {message.type === CollaborationMessageType.DONE_WHATS_NEXT && <PotentialPublicationData message={message} />}
                 {message.text}
 
 
