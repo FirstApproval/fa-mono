@@ -1,7 +1,8 @@
 import {
   AuthApi,
   AuthorApi,
-  CollaborationRequestApi, CollaborationRequestChatApi,
+  CollaborationRequestApi,
+  CollaborationRequestChatApi,
   Configuration,
   FileApi,
   OrganizationApi,
@@ -24,7 +25,7 @@ const configuration: Configuration = new Configuration({
     } else {
       console.error('No auth token set');
       routerStore.navigatePage(Page.SIGN_UP, signUpPath);
-      return '';
+      throw Error('No auth token set');
     }
   }
 });
