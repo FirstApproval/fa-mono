@@ -2560,8 +2560,9 @@ components:
     CollaborationRequestTypeOfWork:
       type: string
       enum:
-        - ARTICLE
-        - DATASET
+        - JOURNAL_ARTICLE
+        - BOOK_CHAPTER
+        - CONFERENCE_PAPER
         - OTHER_PUBLICATION
 
     UseType:

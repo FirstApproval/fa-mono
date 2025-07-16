@@ -1,7 +1,7 @@
 package org.firstapproval.backend.core.web
 
 import org.firstapproval.api.server.PublicationApi
-import org.firstapproval.api.server.model.CollaborationRequestTypeOfWork.ARTICLE
+import org.firstapproval.api.server.model.CollaborationRequestTypeOfWork.JOURNAL_ARTICLE
 import org.firstapproval.api.server.model.CreateCollaborationRequest
 import org.firstapproval.api.server.model.CreatePublicationRequest
 import org.firstapproval.api.server.model.CreatePublicationResponse
@@ -162,7 +162,7 @@ class PublicationController(
                 CreateCollaborationRequest(
                     authHolderService.user.firstName,
                     authHolderService.user.lastName,
-                    ARTICLE
+                    JOURNAL_ARTICLE
                 ),
                 authHolderService.user
             )

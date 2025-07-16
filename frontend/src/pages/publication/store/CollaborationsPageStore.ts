@@ -9,6 +9,7 @@ import { makeAutoObservable } from "mobx"
 import { routerStore } from "../../../core/router"
 import { downloadedPublicationCollaborationChatPath, Page } from "../../../core/router/constants"
 import { collaborationsPageStore } from "./downloadsStore"
+import { authStore } from "../../../core/auth"
 
 export class CollaborationsPageStore {
   isLoading = false;
@@ -23,7 +24,7 @@ export class CollaborationsPageStore {
 
   constructor() {
     makeAutoObservable(this);
-    this.loadInitialState();
+    authStore.token && this.loadInitialState();
   }
 
   goToChat(publicationId: string) {

@@ -36,22 +36,11 @@ export const PotentialPublicationDataForm = observer((
           onChange={e => store.setPotentialPublicationName(e.target.value)}
         />
         <FormControl fullWidth>
-          <InputLabel id="Type of your publication in collaboration">Type of your publication</InputLabel>
-          {/* <Select */}
-          {/*   labelId="demo-simple-select-label" */}
-          {/*   id="demo-simple-select" */}
-          {/*   value={store.typeOfWork} */}
-          {/*   label="Type of your publication in collaboration" */}
-          {/*   onChange={e => store.setTypeOfWork(e.target.value)} */}
-          {/* > */}
-          {/*   <StyledMenuItem value={CollaborationRequestTypeOfWork.ARTICLE}>Journal Article</StyledMenuItem> */}
-          {/*   <StyledMenuItem value={CollaborationRequestTypeOfWork.DATASET}>Dataset</StyledMenuItem> */}
-          {/*   <StyledMenuItem value={CollaborationRequestTypeOfWork.OTHER_PUBLICATION}>Other publication</StyledMenuItem> */}
-          {/* </Select> */}
+          <InputLabel id="type-of-your-publication-in-collaboration">Type of your publication in collaboration</InputLabel>
 
           <Select
             value={store.typeOfWork}
-            label="Type of work"
+            label="Type of your publication in collaboration"
             onChange={e => store.setTypeOfWork(e.target.value as CollaborationRequestTypeOfWork)}>
             {Object.keys(CollaborationRequestTypeOfWork).map((key) => (
               <MenuItem key={key} value={key}>
@@ -62,15 +51,26 @@ export const PotentialPublicationDataForm = observer((
         </FormControl>
         <FlexWrapRowFullWidth>
           <TextField
-            label="Expeted publication date"
+            label="Expected publication date"
             type="date"
             InputLabelProps={{
               shrink: true,
             }}
-            style={{width: '35%'}}
+            style={{ width: '35%', cursor: 'pointer' }}
+            sx={{ input: { cursor: 'pointer' } }}
             value={store.expectedPublicationDate}
             onChange={e => {
               store.setExpectedPublicationDate(e.target.value);
+            }}
+            inputProps={{
+              min: new Date().toISOString().split('T')[0],
+              style: {
+                cursor: 'pointer'
+              },
+            }}
+            onClick={e => {
+              const input = e.currentTarget.querySelector('input');
+              if (input) input.showPicker?.();
             }}
           />
           <WidthElement value={'15px'} />
