@@ -35,6 +35,7 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
   expectedPublicationDate: string | undefined;
   intendedJournalForPublication: string | undefined;
   detailsOfResearch: string | undefined;
+  isUploadDraftDialogOpen = false;
 
   constructor(publicationId: string) {
     makeAutoObservable(this);
@@ -141,5 +142,10 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
 
   setPotentialPublicationName (potentialPublicationName: string) {
     this.potentialPublicationName = potentialPublicationName;
+  }
+
+  setIsUploadDraftDialogOpen(open: boolean) {
+    debugger;
+    this.isUploadDraftDialogOpen = open;
   }
 }

@@ -32,6 +32,7 @@ import { confirmThatProvidedInfoIsReal } from "./action/ConfirmThatProvidedInfoI
 import { PotentialPublicationDataForm } from "../elements/PotentialPublicationDataForm"
 import { doneWhatsNext } from "./action/DoneWhatsNext"
 import { PotentialPublicationData } from "../elements/PotentialPublicationData"
+import { UploadFinalDraftDialog } from "../elements/UploadFinalDraftDialog"
 
 type ChatProps = {
   collaborationChatStore: DownloadedPublicationCollaborationChatStore;
@@ -362,6 +363,9 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
         <Step3Modal
           open={showCollabHelpStep3Modal}
           handleClose={() => setShowCollabHelpStep3Modal(false)}
+        />
+        <UploadFinalDraftDialog isOpen={collaborationChatStore.isUploadDraftDialogOpen}
+                                collaborationChatStore={collaborationChatStore}
         />
       </div>
     </>
