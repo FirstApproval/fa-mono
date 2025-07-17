@@ -235,7 +235,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
             (userInfo.profileImage ? renderProfileImage(userInfo.profileImage) : getInitials(userInfo.firstName, userInfo.lastName));
           return (
             <React.Fragment key={message.id} >
-              <Message name={fullName} avatar={avatar}>
+              <Message name={fullName} avatar={avatar} key={message.id}>
                 {message.type === CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL && <PersonalData message={message} />}
                 {message.type === CollaborationMessageType.DONE_WHATS_NEXT && <PotentialPublicationData message={message} />}
                 {message.text}
@@ -335,6 +335,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
           collaborationChatStore.messageType && <UserActions
             messageType={collaborationChatStore.messageType}
             userActionsRegistry={userActionsRegistry}
+            key={collaborationChatStore.messageType}
           />
         }
         <DeclineModal
@@ -440,7 +441,7 @@ const UserActions = (props: {messageType: CollaborationMessageType, userActionsR
   const { messageType, userActionsRegistry } = props;
   const actions = userActionsRegistry.getActions(messageType);
   return actions.length ? (
-    <div>
+    <React.Fragment key={messageType}>
       <ButtonsWrapper>
         <SelfAvatar />
         {
@@ -452,7 +453,7 @@ const UserActions = (props: {messageType: CollaborationMessageType, userActionsR
             </StyledApproveButton>
         )}
       </ButtonsWrapper>
-    </div>
+    </React.Fragment>
   ) : <></>;
 };
 

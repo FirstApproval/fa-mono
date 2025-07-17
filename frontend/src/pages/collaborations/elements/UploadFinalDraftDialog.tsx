@@ -115,7 +115,7 @@ export const UploadFinalDraftDialog = observer(
                 label={'Comments (optional):'}
                 onChange={(e) => setComment(e.currentTarget.value)}
               />
-              <Dropzone />
+              <Dropzone key={'uploaded-final-draft-dialog-dropzone'}/>
             </div>
             <ConfirmDialogActions style={{ marginTop: 32 }}>
               <FlexWrapRow>
