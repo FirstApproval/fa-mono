@@ -1,7 +1,6 @@
 import styled from '@emotion/styled';
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useRef, useState } from "react"
 import { SelfAvatar } from '../elements/AvatarNameBox';
-import { Box, Button, Link, TextField, Typography } from '@mui/material';
 import { HeightElement } from '../../common.styled';
 import { css, Global } from '@emotion/react';
 import fileIcon from '../../../assets/file-icon.svg';
@@ -50,6 +49,12 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
     useState(false);
   const [showCollabHelpStep3Modal, setShowCollabHelpStep3Modal] =
     useState(false);
+
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [collaborationChatStore.messages?.length]);
 
   useEffect(() => {
     const faCollabHelp = (event: MouseEvent): void => {
@@ -254,6 +259,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
             </React.Fragment>
           );
         })}
+        <div ref={bottomRef} />
         {/* {collaborationChatStore.messageType === CollaborationMessageType.VERIFY_YOUR_NAME_AND_AFFILIATION && */}
         {/*   <PersonalData */}
         {/*     action={confirmThatProvidedInfoIsReal} */}
@@ -426,7 +432,8 @@ const Messages: MessageType[] = [
 
 const UserActions = (props: {messageType: CollaborationMessageType, userActionsRegistry: UserActionsRegistry}): React.ReactElement => {
   const { messageType, userActionsRegistry } = props;
-  return (
+  const actions = userActionsRegistry.getActions(messageType);
+  return actions.length ? (
     <div>
       <ButtonsWrapper>
         <SelfAvatar />
@@ -440,7 +447,7 @@ const UserActions = (props: {messageType: CollaborationMessageType, userActionsR
         )}
       </ButtonsWrapper>
     </div>
-  );
+  ) : <></>;
 };
 
 export const ButtonsWrapper = styled.div`
