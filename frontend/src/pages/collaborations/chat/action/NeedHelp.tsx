@@ -1,12 +1,12 @@
 import { UserAction } from "./UserAction"
-import { CollaborationChatInterface, CollaborationChatStore } from "../../../publication/store/CollaborationChatStore"
+import { DownloadedPublicationCollaborationChatStore } from "../../../publication/store/DownloadedPublicationCollaborationChatStore"
 
-export function needHelpAction() {
+export function action(collaborationChatStore: DownloadedPublicationCollaborationChatStore) {
   () => alert('Help is Needed');
 }
 
 export const needHelp: UserAction = {
   text: 'I need help',
-  action: (collaborationChatStore: CollaborationChatInterface) => needHelpAction(),
+  action: action
 };
 

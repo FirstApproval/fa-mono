@@ -4,13 +4,15 @@ import { UserAction } from "./action/UserAction"
 import { letsMakeCollaboration } from "./action/LetsMakeCollaboration"
 import { iWouldLikeToCollaborate } from "./action/IWouldLikeToCollaborate"
 import { gotItReadyToStart } from "./action/GotItReadyToStart"
-import { confirmThatProvidedInfoIsReal } from "./action/ConfirmThatProvidedInfoIsReal"
-import { doneWhatsNext } from "./action/DoneWhatsNext"
 import { showAuthorsEmails } from "./action/ShowAuthorsEmails"
 import { DownloadedPublicationCollaborationChatStore } from "../../publication/store/DownloadedPublicationCollaborationChatStore"
 import { everythingIsCorrect } from "./action/EverythingIsCorrect"
 import { changeMyPersonalInfo } from "./action/ChangeMyPersonalInfo"
 import { iHaveMoreQuestions } from "./action/IHaveMoreQuestions"
+import { notifyCoAuthor } from "./action/NotifyCoAuthor"
+import { uploadFinalDraft } from "./action/UploadFinalDraft"
+import { askDataAuthor } from "./action/AskDataAuthor"
+import { needHelp } from "./action/NeedHelp"
 
 export class UserActionsRegistry {
   private userActionsByMessageType = new Map<CollaborationMessageType, UserAction[]>()
@@ -41,6 +43,10 @@ export class UserActionsRegistry {
     this.registerAction(CollaborationMessageType.CHANGE_MY_PERSONAL_INFO);
     this.registerAction(CollaborationMessageType.CHANGE_INFO_ABOUT_MY_PUBLICATION);
     this.registerAction(CollaborationMessageType.FIRST_STEP_IS_COMPLETED);
+    this.registerAction(
+      CollaborationMessageType.YOUR_COLLABORATION_IS_ESTABLISHED,
+      [notifyCoAuthor, uploadFinalDraft, askDataAuthor, needHelp]
+    );
   }
 
   private registerAction (messageType: CollaborationMessageType, actions: UserAction[] = []): void {

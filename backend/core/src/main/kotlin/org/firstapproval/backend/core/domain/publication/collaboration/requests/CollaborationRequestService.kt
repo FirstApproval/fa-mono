@@ -1,10 +1,7 @@
 package org.firstapproval.backend.core.domain.publication.collaboration.requests
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import org.firstapproval.api.server.model.CreateCollaborationRequest
-import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.api.server.model.CollaborationRequestMessage as CollaborationRequestMessageApiObject
 import org.firstapproval.backend.core.domain.publication.Publication
 import org.firstapproval.backend.core.domain.publication.PublicationRepository
@@ -25,7 +22,6 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.lang.IllegalStateException
 import java.time.ZonedDateTime
 import java.util.*
 
@@ -92,7 +88,7 @@ class CollaborationRequestService(
         val type = CollaborationRequestMessageType.valueOf(collaborationRequestMessage.type.name)
 
         // need to check that doesn't exist message with the same or higher sequenceIndex
-        collaborationMessageRepository.existsByCollaborationRequestIdAndUserIdAndSequenceIndexGreaterThanEqual(
+        collaborationMessageRepository.existsByCollaborationRequestIdAndUserIdAndSequenceIndexGreaterThan(
             collaborationRequestId = collaborationRequest.id,
             userId = user.id,
             sequenceIndex = type.sequenceIndex

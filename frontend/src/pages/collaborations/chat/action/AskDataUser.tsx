@@ -12,7 +12,7 @@ function askDataUserAction(collaborationChatStore: CollaborationChatInterface): 
       "We recommend starting this process well in advance. " +
       "If you do not approve the request within 2 weeks, you will lose the opportunity for co-authorship in this article. " +
       "If you decline, the data user will simply cite your dataset."
-  }, CollaborationMessageType.DATA_USER_ASKED)
+  }, CollaborationMessageType.DATA_USER_ASKED).then()
 }
 
 export const askDataUser: UserAction = {
