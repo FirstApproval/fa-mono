@@ -53,7 +53,9 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 30);
   }, [collaborationChatStore.messages?.length]);
 
   useEffect(() => {
@@ -231,7 +233,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
           const avatar = message.isAssistant ? 'FA' :
             (userInfo.profileImage ? renderProfileImage(userInfo.profileImage) : getInitials(userInfo.firstName, userInfo.lastName));
           return (
-            <React.Fragment key={message.id}>
+            <React.Fragment key={message.id} >
               <Message name={fullName} avatar={avatar}>
                 {message.type === CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL && <PersonalData message={message} />}
                 {message.type === CollaborationMessageType.DONE_WHATS_NEXT && <PotentialPublicationData message={message} />}
