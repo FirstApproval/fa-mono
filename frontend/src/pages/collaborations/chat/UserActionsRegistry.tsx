@@ -8,6 +8,7 @@ import { confirmThatProvidedInfoIsReal } from "./action/ConfirmThatProvidedInfoI
 import { doneWhatsNext } from "./action/DoneWhatsNext"
 import { showAuthorsEmails } from "./action/ShowAuthorsEmails"
 import { DownloadedPublicationCollaborationChatStore } from "../../publication/store/DownloadedPublicationCollaborationChatStore"
+import { everythingIsCorrect } from "./action/EverythingIsCorrect"
 
 export class UserActionsRegistry {
   private userActionsByMessageType = new Map<CollaborationMessageType, UserAction[]>()
@@ -32,7 +33,7 @@ export class UserActionsRegistry {
     this.registerAction(CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL)
     this.registerAction(CollaborationMessageType.PROPOSE_POTENTIAL_PUBLICATION_NAME_AND_TYPE, [])
     this.registerAction(CollaborationMessageType.DONE_WHATS_NEXT)
-    this.registerAction(CollaborationMessageType.PREFILLED_COLLABORATION_AGREEMENT)
+    this.registerAction(CollaborationMessageType.PREFILLED_COLLABORATION_AGREEMENT, [everythingIsCorrect])
     this.registerAction(CollaborationMessageType.EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST)
     this.registerAction(CollaborationMessageType.CHANGE_MY_PERSONAL_INFO)
     this.registerAction(CollaborationMessageType.CHANGE_INFO_ABOUT_MY_PUBLICATION)
