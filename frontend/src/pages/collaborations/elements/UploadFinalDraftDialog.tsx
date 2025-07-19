@@ -47,16 +47,19 @@ export const UploadFinalDraftDialog = observer(
 
         const message: CollaborationRequestMessage = {
           type: CollaborationMessageType.UPLOAD_FINAL_DRAFT,
-          text: "",
           isAssistant: false,
           payload
         }
         collaborationChatStore.sendMessage(message, CollaborationMessageType.UPLOAD_FINAL_DRAFT).then(messageId => {
-            collaborationChatStore.uploadFile(messageId, file!!)
-          }).finally(() => {
-            setLoading(false);
-            onClose();
-        });
+          collaborationChatStore.uploadFile(messageId, file!!)
+            .then(() => {
+              setLoading(false)
+              onClose()
+            })
+        }).catch(() => {
+          setLoading(false)
+          onClose()
+        })
       }
     }
 

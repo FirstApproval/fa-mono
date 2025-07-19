@@ -6,9 +6,10 @@ import jakarta.persistence.Id
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessage
-import java.time.OffsetDateTime
-import java.time.OffsetDateTime.now
+import java.time.ZonedDateTime
+import java.time.ZonedDateTime.now
 import java.util.UUID
+import org.firstapproval.api.server.model.CollaborationRequestMessageFile as CollaborationRequestMessageFileApiObject
 
 @Entity
 @Table(name = "collaboration_request_message_files")
@@ -19,5 +20,11 @@ class CollaborationRequestMessageFile(
     val message: CollaborationRequestMessage,
     val name: String,
     val size: Long,
-    val creationTime: OffsetDateTime = now()
+    val creationTime: ZonedDateTime = now()
+)
+
+fun CollaborationRequestMessageFile.toApiObject() = CollaborationRequestMessageFileApiObject(
+    id,
+    name,
+    size
 )

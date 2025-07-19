@@ -21,6 +21,7 @@ import org.firstapproval.api.server.model.CollaborationRequestTypeOfWork
 import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.api.server.model.Workplace
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationRequestMessageFile
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.toApiObject
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.CREATE
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL
@@ -173,11 +174,12 @@ fun CollaborationRequestMessage.toApiObject(userInfo: UserInfo) = CollaborationR
     false
 ).also {
     it.id = this.id
-    it.userInfo = userInfo.takeIf { this.user.id == userInfo.id }
-        ?: throw IllegalArgumentException("UserInfo id ${userInfo.id} doesn't match with user.id ${this.user.id}")
+    it.userInfo = userInfo.takeIf { user.id == userInfo.id }
+        ?: throw IllegalArgumentException("UserInfo id ${userInfo.id} doesn't match with user.id ${user.id}")
     it.text = text
     it.payload = payload
     it.isAssistant = isAssistant
     it.sequenceIndex = sequenceIndex
+    it.files = files.map { file -> file.toApiObject() }
     it.creationTime = creationTime.toOffsetDateTime()
 }

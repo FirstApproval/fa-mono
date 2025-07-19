@@ -3,8 +3,10 @@ package org.firstapproval.backend.core.web
 import org.firstapproval.api.server.CollaborationRequestChatApi
 import org.firstapproval.api.server.model.CollaborationChatResponse
 import org.firstapproval.api.server.model.CollaborationRequestMessage
+import org.firstapproval.api.server.model.CollaborationRequestMessageFile
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.toApiObject
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationMessageRepository
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.COLLABORATION_REQUEST_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.PUBLICATION_CREATOR
@@ -80,12 +82,13 @@ class CollaborationRequestChatController(
         publicationId: String,
         file: MultipartFile,
         messageId: UUID
-    ): ResponseEntity<UUID> {
-        val fileId = collaborationRequestService.uploadMessageFile(
+    ): ResponseEntity<CollaborationRequestMessageFile> {
+        val savedFileRecord = collaborationRequestService.uploadMessageFile(
             messageId = messageId,
             publicationId = publicationId,
-            file = file)
-        return ok(fileId)
+            file = file
+        ).toApiObject()
+        return ok(savedFileRecord)
     }
 
     private fun getRecipientType(collaborationRequest: CollaborationRequest) =

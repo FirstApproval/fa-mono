@@ -1153,10 +1153,9 @@ paths:
         200:
           description: Success
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                format: uuid
+                $ref: '#/components/schemas/CollaborationRequestMessageFile'
       security:
         - TokenAuth: [ ]
       operationId: uploadCollaborationRequestMessageFile
@@ -3052,12 +3051,31 @@ components:
           type: boolean
         sequenceIndex:
           type: integer
+        files:
+          items:
+            $ref: '#/components/schemas/CollaborationRequestMessageFile'
         creationTime:
           type: string
           format: date-time
       required:
         - type
         - isAssistant
+
+    CollaborationRequestMessageFile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        size:
+          type: integer
+          format: int64
+      required:
+        - id
+        - name
+        - size
 
     CollaborationMessageType:
       type: string

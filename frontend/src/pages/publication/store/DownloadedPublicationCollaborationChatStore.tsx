@@ -1,7 +1,9 @@
 import { makeAutoObservable } from 'mobx';
 import {
   CollaborationMessageType,
-  CollaborationRequestMessage, CollaborationRequestTypeOfWork,
+  CollaborationRequestMessage,
+  CollaborationRequestMessageFile,
+  CollaborationRequestTypeOfWork,
   Publication,
   UserInfo,
   UseType,
@@ -106,8 +108,15 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
     });
   }
 
-  uploadFile(messageId: string, file: File): Promise<string | any> {
-    return collaborationRequestChatService.uploadCollaborationRequestMessageFile(this.publication!!.id, file, messageId);
+  uploadFile(messageId: string, file: File): Promise<CollaborationRequestMessageFile> {
+    return collaborationRequestChatService.uploadCollaborationRequestMessageFile(
+      this.publication!!.id, file, messageId
+    ).then(response => {
+      const fileInfo: CollaborationRequestMessageFile = response.data;
+      const message = this.messages?.find(message => message.id === messageId)!!;
+      message.files!!.push(fileInfo);
+      return fileInfo;
+    })
   }
 
   sortMessages = (message1: CollaborationRequestMessage, message2: CollaborationRequestMessage) =>
