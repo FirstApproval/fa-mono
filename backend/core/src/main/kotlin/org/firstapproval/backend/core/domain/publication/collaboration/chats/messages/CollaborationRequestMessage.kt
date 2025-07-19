@@ -24,6 +24,7 @@ import org.firstapproval.api.server.model.Workplace
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationRequestMessageFile
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.toApiObject
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_APPROVED
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_DECLINED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.CREATE
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL
@@ -136,6 +137,7 @@ enum class CollaborationRequestMessageType(val sequenceIndex: Int, val recipient
         JsonSubTypes.Type(value = CollaborationPotentialPublicationData::class, name = "DONE_WHATS_NEXT"),
         JsonSubTypes.Type(value = UploadFinalDraftPayload::class, name = "UPLOAD_FINAL_DRAFT"),
         JsonSubTypes.Type(value = AuthorApprovedPayload::class, name = "AUTHOR_APPROVED"),
+        JsonSubTypes.Type(value = AuthorDeclinedPayload::class, name = "AUTHOR_DECLINED"),
     ]
 )
 
@@ -174,9 +176,15 @@ class UploadFinalDraftPayload(
 ) : MessagePayload
 
 class AuthorApprovedPayload(
-    val approvedAuthor: AuthorShortInfo,
+    val decisionAuthor: AuthorShortInfo,
     val expectedApprovingAuthors: List<AuthorShortInfo>,
     override var type: CollaborationRequestMessageType = AUTHOR_APPROVED
+) : MessagePayload
+
+class AuthorDeclinedPayload(
+    val decisionAuthor: AuthorShortInfo,
+    val expectedApprovingAuthors: List<AuthorShortInfo>,
+    override var type: CollaborationRequestMessageType = AUTHOR_DECLINED
 ) : MessagePayload
 
 fun CollaborationRequestMessage.toApiObject(userService: UserService) = toApiObject(user.toApiObject(userService))

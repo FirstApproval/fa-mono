@@ -3040,7 +3040,7 @@ components:
     CollaborationMessageAuthorsPayload:
       type: object
       properties:
-        approvedAuthor:
+        decisionAuthor:
             $ref: '#/components/schemas/AuthorShortInfo'
         expectedApprovingAuthors:
           items:
@@ -3049,7 +3049,7 @@ components:
           allOf:
             - $ref: '#/components/schemas/CollaborationMessageType'
             - type: string
-              enum: [ AUTHOR_APPROVED ]
+              enum: [ AUTHOR_APPROVED, AUTHOR_DECLINED ]
 
     CollaborationRequestMessage:
       type: object

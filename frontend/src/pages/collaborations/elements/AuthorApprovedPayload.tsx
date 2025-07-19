@@ -16,7 +16,7 @@ export const AuthorApprovedPayload = observer((
   const authorsPayload = message.payload!! as CollaborationMessageAuthorsPayload
 
   const lines: ReactElement[] = [];
-  const mappedAuthor = mapAuthorWithLink(authorsPayload.approvedAuthor!!);
+  const mappedAuthor = mapAuthorWithLink(authorsPayload.decisionAuthor!!);
 
   if (authorsPayload.expectedApprovingAuthors?.length) {
     const mappedExpectedApprovingAuthors = formatObjectInfo(authorsPayload.expectedApprovingAuthors ?? []);
@@ -42,7 +42,7 @@ function formatObjectInfo(authors: AuthorShortInfo[]): ReactElement[] {
   return authors
     .map((author, index) =>
         <li key={index}>
-          {author.username ? mapAuthorWithLink(author) : <span>{getAuthorFullName(author)}</span>}
+          {mapAuthorWithLink(author)}
         </li>
     )
 }
