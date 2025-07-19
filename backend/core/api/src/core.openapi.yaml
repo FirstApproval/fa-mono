@@ -3040,6 +3040,8 @@ components:
     CollaborationMessageAuthorsPayload:
       type: object
       properties:
+        approvedAuthor:
+            $ref: '#/components/schemas/AuthorShortInfo'
         expectedApprovingAuthors:
           items:
             $ref: '#/components/schemas/AuthorShortInfo'

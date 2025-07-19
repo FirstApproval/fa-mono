@@ -4,6 +4,7 @@ import { SelfAvatar } from '../elements/AvatarNameBox';
 import { HeightElement } from '../../common.styled'
 import { css, Global } from '@emotion/react';
 import fileIcon from '../../../assets/file-icon.svg';
+import highfiveImage from "../../../assets/fa-highfive.svg"
 import {
   getFullName,
   getInitials,
@@ -246,6 +247,10 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
               <Message name={fullName} avatar={avatar} key={message.id}>
                 {message.type === CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL && <PersonalData message={message} />}
                 {message.type === CollaborationMessageType.DONE_WHATS_NEXT && <PotentialPublicationData message={message} />}
+                {message.type === CollaborationMessageType.AUTHOR_APPROVED && (
+                    <img src={highfiveImage} />
+                )}
+                <div />
                 {message.text}
                 {mappedFiles}
                 {message.type === CollaborationMessageType.UPLOAD_FINAL_DRAFT && <UploadedFinalDraftPayload message={message} />}

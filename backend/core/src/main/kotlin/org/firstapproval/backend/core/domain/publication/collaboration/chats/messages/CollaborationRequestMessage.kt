@@ -17,11 +17,13 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
+import org.firstapproval.api.server.model.AuthorShortInfo
 import org.firstapproval.api.server.model.CollaborationRequestTypeOfWork
 import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.api.server.model.Workplace
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationRequestMessageFile
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.toApiObject
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_APPROVED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.CREATE
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL
@@ -100,6 +102,8 @@ enum class CollaborationRequestMessageType(val sequenceIndex: Int, val recipient
     YOUR_COLLABORATION_IS_ESTABLISHED(14, COLLABORATION_REQUEST_CREATOR),
     IN_TWO_WEEKS_YOU_ARE_PLAN_TO_SHARE_FINAL_DRAFT(15, COLLABORATION_REQUEST_CREATOR),
     AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE(16, COLLABORATION_REQUEST_CREATOR),
+    AUTHOR_APPROVED(17, COLLABORATION_REQUEST_CREATOR),
+    AUTHOR_DECLINED(17, COLLABORATION_REQUEST_CREATOR),
 
     CHANGE_MY_PERSONAL_INFO(0, COLLABORATION_REQUEST_CREATOR),
     CHANGE_INFO_ABOUT_MY_PUBLICATION(0, COLLABORATION_REQUEST_CREATOR),
@@ -131,6 +135,7 @@ enum class CollaborationRequestMessageType(val sequenceIndex: Int, val recipient
         JsonSubTypes.Type(value = PersonalDataConfirmation::class, name = "I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL"),
         JsonSubTypes.Type(value = CollaborationPotentialPublicationData::class, name = "DONE_WHATS_NEXT"),
         JsonSubTypes.Type(value = UploadFinalDraftPayload::class, name = "UPLOAD_FINAL_DRAFT"),
+        JsonSubTypes.Type(value = AuthorApprovedPayload::class, name = "AUTHOR_APPROVED"),
     ]
 )
 
@@ -166,6 +171,12 @@ class UploadFinalDraftPayload(
     val estimatedSubmissionDate: String,
     val comment: String? = null,
     override var type: CollaborationRequestMessageType = UPLOAD_FINAL_DRAFT,
+) : MessagePayload
+
+class AuthorApprovedPayload(
+    val approvedAuthor: AuthorShortInfo,
+    val expectedApprovingAuthors: List<AuthorShortInfo>,
+    override var type: CollaborationRequestMessageType = AUTHOR_APPROVED
 ) : MessagePayload
 
 fun CollaborationRequestMessage.toApiObject(userService: UserService) = toApiObject(user.toApiObject(userService))
