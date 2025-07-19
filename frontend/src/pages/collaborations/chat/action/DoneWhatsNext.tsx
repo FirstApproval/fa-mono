@@ -13,7 +13,6 @@ function doneWhatsNextAction(collaborationChatStore: DownloadedPublicationCollab
     detailsOfResearch: collaborationChatStore.detailsOfResearch,
     type: CollaborationMessageType.DONE_WHATS_NEXT,
   }
-  debugger;
   collaborationChatStore.sendMessage({
     type: CollaborationMessageType.DONE_WHATS_NEXT,
     isAssistant: false,

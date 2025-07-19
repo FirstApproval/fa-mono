@@ -158,11 +158,6 @@ export const PrefilledDetailsText = styled(Typography)`
   padding-bottom: 8px;
 `;
 
-export const FlexWrapRowRadioLabel = styled.span`
-  margin-top: 27.5px;
-  display: flex;
-`;
-
 export const OptionLabelWrap = styled.div<{
   disabled: boolean;
 }>`

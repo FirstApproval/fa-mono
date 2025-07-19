@@ -102,7 +102,6 @@ export class CollaborationStore {
       .then(() => {
         this.closeCollaborationRequest();
         this.collaborationRequestStatusForAlert = status;
-        debugger;
         this.showAcceptOrRejectAlert = true;
       });
   }

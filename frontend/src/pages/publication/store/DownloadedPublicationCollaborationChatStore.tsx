@@ -159,7 +159,6 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
   }
 
   setIsUploadDraftDialogOpen(open: boolean) {
-    debugger;
     this.isUploadDraftDialogOpen = open;
   }
 }

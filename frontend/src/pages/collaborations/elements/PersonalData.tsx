@@ -8,7 +8,6 @@ export const PersonalData = observer((
   const { message, } = props
   const collaboratorPersonalInfo: CollaboratorPersonalData = message.payload!! as CollaboratorPersonalData
   const lines: string[] = []
-  debugger;
 
   if (collaboratorPersonalInfo.firstName) {
     lines.push(`First name: ${collaboratorPersonalInfo.firstName}`)
@@ -17,12 +16,10 @@ export const PersonalData = observer((
     lines.push(`Last name: ${collaboratorPersonalInfo.lastName}`)
   }
 
-  debugger;
   const formattedWorkplaces = collaboratorPersonalInfo.workplaces.map(workplace => workplace.organization!!.name +
     `${workplace.department ? `, ${workplace.department}` : ""}` +
     `${workplace.address ? `, ${workplace.address}` : ""}`
   ).join("\n")
-  debugger;
   lines.push(`Affiliations: ${formattedWorkplaces}`)
 
   return (

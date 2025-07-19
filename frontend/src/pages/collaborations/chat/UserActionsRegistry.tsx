@@ -37,14 +37,13 @@ export class UserActionsRegistry {
     this.registerAction(CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL);
     this.registerAction(CollaborationMessageType.PROPOSE_POTENTIAL_PUBLICATION_NAME_AND_TYPE, []);
     this.registerAction(CollaborationMessageType.DONE_WHATS_NEXT);
-    this.registerAction(CollaborationMessageType.PREFILLED_COLLABORATION_AGREEMENT, [
-      everythingIsCorrect, changeMyPersonalInfo, iHaveMoreQuestions]);
+    this.registerAction(CollaborationMessageType.PREFILLED_COLLABORATION_AGREEMENT,
+      [everythingIsCorrect, changeMyPersonalInfo, iHaveMoreQuestions]);
     this.registerAction(CollaborationMessageType.EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST);
     this.registerAction(CollaborationMessageType.CHANGE_MY_PERSONAL_INFO);
     this.registerAction(CollaborationMessageType.CHANGE_INFO_ABOUT_MY_PUBLICATION);
     this.registerAction(CollaborationMessageType.FIRST_STEP_IS_COMPLETED);
-    this.registerAction(
-      CollaborationMessageType.YOUR_COLLABORATION_IS_ESTABLISHED,
+    this.registerAction(CollaborationMessageType.YOUR_COLLABORATION_IS_ESTABLISHED,
       [notifyCoAuthor, uploadFinalDraft, askDataAuthor, needHelp]
     );
   }

@@ -12,7 +12,6 @@ export const PotentialPublicationData = observer((
   const { message, } = props
   const potentialPublicationData: CollaborationPotentialPublicationData = message.payload!! as CollaborationPotentialPublicationData
   const lines: string[] = []
-  debugger;
 
   if (potentialPublicationData.potentialPublicationTitle)
     lines.push(`Potential publication title: ${potentialPublicationData.potentialPublicationTitle}`)

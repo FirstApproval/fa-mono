@@ -30,7 +30,6 @@ export const CollaboratorsDialog = (props: {
   collaborationRequests: CollaborationRequestInfo[];
 }): ReactElement => {
   const { isOpen, collaborationRequests } = props;
-  // debugger;
 
   return (
     <Dialog
