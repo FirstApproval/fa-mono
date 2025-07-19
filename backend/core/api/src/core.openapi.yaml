@@ -3041,7 +3041,9 @@ components:
       type: object
       properties:
         decisionAuthor:
-            $ref: '#/components/schemas/AuthorShortInfo'
+          $ref: '#/components/schemas/AuthorShortInfo'
+        decisionAuthorComment:
+          type: string
         expectedApprovingAuthors:
           items:
             $ref: '#/components/schemas/AuthorShortInfo'

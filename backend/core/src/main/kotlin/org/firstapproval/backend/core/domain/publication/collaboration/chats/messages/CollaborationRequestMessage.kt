@@ -177,12 +177,14 @@ class UploadFinalDraftPayload(
 
 class AuthorApprovedPayload(
     val decisionAuthor: AuthorShortInfo,
+    val decisionAuthorComment: String?,
     val expectedApprovingAuthors: List<AuthorShortInfo>,
     override var type: CollaborationRequestMessageType = AUTHOR_APPROVED
 ) : MessagePayload
 
 class AuthorDeclinedPayload(
     val decisionAuthor: AuthorShortInfo,
+    val decisionAuthorComment: String?,
     val expectedApprovingAuthors: List<AuthorShortInfo>,
     override var type: CollaborationRequestMessageType = AUTHOR_DECLINED
 ) : MessagePayload
