@@ -5,9 +5,9 @@ import {
   CollaborationMessageAuthorsPayload,
   CollaborationRequestMessage
 } from "../../../apis/first-approval-api"
-import { Link } from "@mui/material"
-import { profilePath } from "../../../core/router/constants"
 import { getAuthorFullName } from "../../../util/userUtil"
+import { mapAuthorWithLink } from "../utils"
+import { FlexWrapColumn } from "../../common.styled"
 
 export const AuthorApprovedPayload = observer((
   props: { message: CollaborationRequestMessage }
@@ -15,34 +15,34 @@ export const AuthorApprovedPayload = observer((
   const { message, } = props
   const authorsPayload = message.payload!! as CollaborationMessageAuthorsPayload
 
-  const lines = formatObjectInfo(authorsPayload.expectedApprovingAuthors ?? []);
+  const lines: ReactElement[] = [];
+  const mappedAuthor = mapAuthorWithLink(authorsPayload.approvedAuthor!!);
+
+  if (authorsPayload.expectedApprovingAuthors?.length) {
+    const mappedExpectedApprovingAuthors = formatObjectInfo(authorsPayload.expectedApprovingAuthors ?? []);
+    lines.push(...mappedExpectedApprovingAuthors)
+  }
 
   return (
-    <ul style={{marginTop: 4}}>
-      {lines}
-    </ul>
+    <FlexWrapColumn>
+      <span>Congratulations! {mappedAuthor} has confirmed the text of the drafted manuscript.</span>
+      {lines.length &&
+        <>
+          <span>We are still waiting for confirmation from:</span>
+          <ul style={{marginTop: 4}}>
+            {lines}
+          </ul>
+        </>
+      }
+    </FlexWrapColumn>
   )
 })
 
 function formatObjectInfo(authors: AuthorShortInfo[]): ReactElement[] {
   return authors
-    .map(author =>
-        <li>
-          {author.username ?
-            <Link href={`${profilePath}/${author.username}`}
-                  target="_blank"
-                  sx={{
-                    textDecoration: 'underline',
-                    textDecorationColor: 'black',
-                    textDecorationThickness: '1.5px',
-                    textUnderlineOffset: '2px',
-                    color: 'black'
-                  }}
-            >
-              {getAuthorFullName(author)}
-            </Link> :
-            <span>{getAuthorFullName(author)}</span>
-          }
+    .map((author, index) =>
+        <li key={index}>
+          {author.username ? mapAuthorWithLink(author) : <span>{getAuthorFullName(author)}</span>}
         </li>
     )
 }
