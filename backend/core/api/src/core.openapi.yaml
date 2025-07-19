@@ -2873,6 +2873,8 @@ components:
           type: string
         lastName:
           type: string
+        username:
+          type: string
       required:
         - email
         - firstName
@@ -3027,10 +3029,25 @@ components:
           type: string
           maxLength: 4096
         type:
-          $ref: '#/components/schemas/CollaborationMessageType'
+          allOf:
+            - $ref: '#/components/schemas/CollaborationMessageType'
+            - type: string
+              enum: [ UPLOAD_FINAL_DRAFT ]
       required:
         - estimatedSubmissionDate
         - type
+
+    CollaborationMessageAuthorsPayload:
+      type: object
+      properties:
+        expectedApprovingAuthors:
+          items:
+            $ref: '#/components/schemas/AuthorShortInfo'
+        type:
+          allOf:
+            - $ref: '#/components/schemas/CollaborationMessageType'
+            - type: string
+              enum: [ AUTHOR_APPROVED ]
 
     CollaborationRequestMessage:
       type: object
@@ -3104,6 +3121,8 @@ components:
         - YOUR_COLLABORATION_IS_ESTABLISHED
         - IN_TWO_WEEKS_YOU_ARE_PLAN_TO_SHARE_FINAL_DRAFT
         - AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE
+        - AUTHOR_APPROVED
+        - AUTHOR_DECLINED
 
         - SHOW_AUTHORS_EMAILS
         - SHOW_AUTHORS_EMAILS_RESPONSE
