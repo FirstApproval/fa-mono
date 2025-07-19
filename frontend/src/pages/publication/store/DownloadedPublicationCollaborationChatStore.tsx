@@ -108,6 +108,27 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
     });
   }
 
+  sendMessages(
+    messages: CollaborationRequestMessage[],
+    nextStage: CollaborationMessageType | undefined = undefined
+  ): Promise<CollaborationRequestMessage[]> {
+    return collaborationRequestChatService.createCollaborationRequestMessages(
+      this.publication!!.id,
+      messages
+    ).then(response => {
+      const savedMessages: CollaborationRequestMessage[] = response.data
+
+      savedMessages.forEach(savedMessage => {
+        this.messages!!.push(savedMessage);
+      })
+      this.messages!!.sort(this.sortMessages);
+
+      nextStage && this.setStage(nextStage);
+
+      return savedMessages;
+    });
+  }
+
   uploadFile(messageId: string, file: File): Promise<CollaborationRequestMessageFile> {
     return collaborationRequestChatService.uploadCollaborationRequestMessageFile(
       this.publication!!.id, file, messageId

@@ -39,19 +39,32 @@ export const UploadFinalDraftDialog = observer(
       if (estimatedSubmissionDate && file) {
         setLoading(true)
 
-        const payload: CollaborationMessageUploadFinalDraftPayload = {
-          estimatedSubmissionDate,
-          comment,
-          type: CollaborationMessageType.UPLOAD_FINAL_DRAFT
-        }
-
         const message: CollaborationRequestMessage = {
           type: CollaborationMessageType.UPLOAD_FINAL_DRAFT,
           isAssistant: false,
-          payload
+          payload: {
+            estimatedSubmissionDate,
+            comment,
+            type: CollaborationMessageType.UPLOAD_FINAL_DRAFT
+          }
         }
-        collaborationChatStore.sendMessage(message, CollaborationMessageType.UPLOAD_FINAL_DRAFT).then(messageId => {
-          collaborationChatStore.uploadFile(messageId, file!!)
+
+        const message2: CollaborationRequestMessage = {
+          type: CollaborationMessageType.AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE,
+          isAssistant: true,
+          text: 'The data author has 14 days to make revisions and approve the manuscript. \n' +
+            'This is a short period, so we recommend reaching out to the data author ' +
+            'to enhance the efficiency of the final draft approval process.'
+        }
+
+        collaborationChatStore.sendMessages(
+          [message, message2],
+          CollaborationMessageType.AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE
+        ).then(savedMessages => {
+          const uploadFinalDraftMessageId = savedMessages.find(
+            savedMessage => savedMessage.type === CollaborationMessageType.UPLOAD_FINAL_DRAFT
+          )!!.id;
+          collaborationChatStore.uploadFile(uploadFinalDraftMessageId!!, file!!)
             .then(() => {
               setLoading(false)
               onClose()
