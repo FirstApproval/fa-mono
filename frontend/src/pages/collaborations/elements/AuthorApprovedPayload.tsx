@@ -25,7 +25,8 @@ export const AuthorApprovedPayload = observer((
 
   return (
     <FlexWrapColumn>
-      <span>Congratulations! {mappedAuthor} has confirmed the text of the drafted manuscript.</span>
+      <span>Congratulations!</span>
+      <span>{mappedAuthor} has confirmed the text of the drafted manuscript.</span>
       {lines.length &&
         <>
           <span>We are still waiting for confirmation from:</span>

@@ -15,10 +15,13 @@ export const AuthorDeclinedPayload = observer((
 
   const mappedDecisionAuthor = mapAuthorWithLink(authorsPayload.decisionAuthor!!);
 
-  const mappedExpectedApprovingAuthors: ReactElement[] = []
-  authorsPayload.expectedApprovingAuthors?.forEach(
-    (author) => mappedExpectedApprovingAuthors.push(mapAuthorWithLink(author))
-  );
+  const mappedExpectedApprovingAuthors = authorsPayload.expectedApprovingAuthors?.map(
+    (author, index) =>
+      <React.Fragment key={author.username ?? index}>
+        {index > 0 && ", "}
+        {mapAuthorWithLink(author)}
+      </React.Fragment>
+  )
 
   return (
     <FlexWrapColumn>
@@ -26,7 +29,7 @@ export const AuthorDeclinedPayload = observer((
         Unfortunately, {mappedDecisionAuthor} has decided not to continue the collaboration.
       </span>
       {
-        mappedExpectedApprovingAuthors.length &&
+        mappedExpectedApprovingAuthors?.length &&
         <span>
           However, you are still collaborating with {mappedExpectedApprovingAuthors}.
         </span>
