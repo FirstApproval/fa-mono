@@ -243,13 +243,6 @@ const Dropzone: React.FC<{ setFile: (file: File) => void, file: File | null }> =
       <input {...getInputProps()} />
       {
         file ? (
-          // <SpaceBetweenColumn style={{justifyContent: 'space-between'}}>
-          //   <Typography variant={'body1'}>Uploaded file: {file.name}</Typography>
-          //   <Typography variant={'body1'}>
-          //     <span style={{ color: C3B4EFF }}>To upload another file click</span> or drag and drop
-          //   </Typography>
-          //   <Typography variant={'body1'} style={{ color: 'gray', marginBottom: 0 }}>PDF or DOCX</Typography>
-          // </SpaceBetweenColumn>
           <SpaceBetweenColumn>
             <Typography variant={"body1"}>Uploaded file: {file.name}</Typography>
             <Typography variant={"body1"}>
