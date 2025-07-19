@@ -7,12 +7,14 @@ import org.springframework.http.MediaType.TEXT_PLAIN
 import org.springframework.http.converter.AbstractHttpMessageConverter
 import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
+import java.util.UUID
 
 
 @Configuration
 class CustomMessageConverterConfig : WebMvcConfigurer {
     override fun configureMessageConverters(converters: MutableList<HttpMessageConverter<*>?>) {
         converters.add(LongToTextHttpMessageConverter())
+        converters.add(UuidToTextHttpMessageConverter())
     }
 
     private class LongToTextHttpMessageConverter : AbstractHttpMessageConverter<Long?>(TEXT_PLAIN) {
@@ -27,6 +29,24 @@ class CustomMessageConverterConfig : WebMvcConfigurer {
         override fun writeInternal(aLong: Long, outputMessage: HttpOutputMessage) {
             // Convert the Long to a plain text representation and write it to the response
             val longAsString = aLong.toString()
+            val outputStream = outputMessage.body
+            outputStream.write(longAsString.toByteArray())
+            outputStream.flush()
+        }
+    }
+
+    private class UuidToTextHttpMessageConverter : AbstractHttpMessageConverter<UUID?>(TEXT_PLAIN) {
+        override fun supports(clazz: Class<*>): Boolean {
+            return clazz == UUID::class.java || UUID::class.java.isAssignableFrom(clazz)
+        }
+
+        override fun readInternal(clazz: Class<out UUID?>, inputMessage: HttpInputMessage): UUID {
+            TODO("Not yet implemented")
+        }
+
+        override fun writeInternal(uuid: UUID, outputMessage: HttpOutputMessage) {
+            // Convert the UUID to a plain text representation and write it to the response
+            val longAsString = uuid.toString()
             val outputStream = outputMessage.body
             outputStream.write(longAsString.toByteArray())
             outputStream.flush()
