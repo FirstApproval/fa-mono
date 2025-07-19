@@ -24,6 +24,7 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.fil
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.CREATE
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.UPLOAD_FINAL_DRAFT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.COLLABORATION_REQUEST_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.PUBLICATION_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequest
@@ -101,10 +102,10 @@ enum class CollaborationRequestMessageType(val sequenceIndex: Int, val recipient
     CHANGE_MY_PERSONAL_INFO(0, COLLABORATION_REQUEST_CREATOR),
     CHANGE_INFO_ABOUT_MY_PUBLICATION(0, COLLABORATION_REQUEST_CREATOR),
 
-    NOTIFY_CO_AUTHOR(14, COLLABORATION_REQUEST_CREATOR),
-    UPLOAD_FINAL_DRAFT(14, COLLABORATION_REQUEST_CREATOR),
-    ASC_DATA_AUTHOR(14, COLLABORATION_REQUEST_CREATOR),
-    I_NEED_HELP(14, COLLABORATION_REQUEST_CREATOR),
+    UPLOAD_FINAL_DRAFT(15, COLLABORATION_REQUEST_CREATOR),
+    NOTIFY_CO_AUTHOR(15, COLLABORATION_REQUEST_CREATOR),
+    ASC_DATA_AUTHOR(15, COLLABORATION_REQUEST_CREATOR),
+    I_NEED_HELP(15, COLLABORATION_REQUEST_CREATOR),
 
     CREATE(0, PUBLICATION_CREATOR),
     ASSISTANT_CREATE(1, PUBLICATION_CREATOR),
@@ -127,6 +128,7 @@ enum class CollaborationRequestMessageType(val sequenceIndex: Int, val recipient
         JsonSubTypes.Type(value = Create::class, name = "CREATE"),
         JsonSubTypes.Type(value = PersonalDataConfirmation::class, name = "I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL"),
         JsonSubTypes.Type(value = CollaborationPotentialPublicationData::class, name = "DONE_WHATS_NEXT"),
+        JsonSubTypes.Type(value = UploadFinalDraftPayload::class, name = "UPLOAD_FINAL_DRAFT"),
     ]
 )
 
@@ -158,16 +160,22 @@ class CollaborationPotentialPublicationData(
     override var type: CollaborationRequestMessageType = DONE_WHATS_NEXT,
 ) : MessagePayload
 
+class UploadFinalDraftPayload(
+    val estimatedSubmissionDate: String,
+    val comment: String? = null,
+    override var type: CollaborationRequestMessageType = UPLOAD_FINAL_DRAFT,
+) : MessagePayload
+
 fun CollaborationRequestMessage.toApiObject(userService: UserService) = toApiObject(user.toApiObject(userService))
 
 fun CollaborationRequestMessage.toApiObject(userInfo: UserInfo) = CollaborationRequestMessageApiObject(
     CollaborationMessageTypeApiObject.valueOf(type.toString()),
-    text,
     false
 ).also {
     it.id = this.id
     it.userInfo = userInfo.takeIf { this.user.id == userInfo.id }
         ?: throw IllegalArgumentException("UserInfo id ${userInfo.id} doesn't match with user.id ${this.user.id}")
+    it.text = text
     it.payload = payload
     it.isAssistant = isAssistant
     it.sequenceIndex = sequenceIndex
