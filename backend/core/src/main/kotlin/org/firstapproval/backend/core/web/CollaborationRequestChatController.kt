@@ -16,6 +16,8 @@ import org.firstapproval.backend.core.domain.user.toApiObject
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
+import java.util.UUID
 
 @RestController
 class CollaborationRequestChatController(
@@ -72,6 +74,15 @@ class CollaborationRequestChatController(
         }
         val mappedMessages = messages.map { it.toApiObject(authHolderService.user.toApiObject(userService)) }
         return ok(mappedMessages)
+    }
+
+    override fun uploadCollaborationRequestMessageFile(
+        publicationId: String,
+        file: MultipartFile,
+        messageId: UUID
+    ): ResponseEntity<UUID> {
+        val fileId = collaborationRequestService.uploadMessageFile(messageId, publicationId, file.inputStream, file.size)
+        return ok(fileId)
     }
 
     private fun getRecipientType(collaborationRequest: CollaborationRequest) =

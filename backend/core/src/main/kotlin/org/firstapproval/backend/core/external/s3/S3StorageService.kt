@@ -21,6 +21,7 @@ import java.util.Base64
 import java.util.Date
 import java.util.UUID
 
+const val COLLABORATION_REQUEST_MESSAGE_FILES = "collaboration-request-message-files"
 const val FILES = "files"
 const val SAMPLE_FILES = "sample-files"
 const val ARCHIVED_PUBLICATION_FILES = "archived-publication-files"

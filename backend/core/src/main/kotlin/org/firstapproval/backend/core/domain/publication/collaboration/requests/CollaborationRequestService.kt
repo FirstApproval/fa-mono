@@ -2,10 +2,11 @@ package org.firstapproval.backend.core.domain.publication.collaboration.requests
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.firstapproval.api.server.model.CreateCollaborationRequest
-import org.firstapproval.api.server.model.CollaborationRequestMessage as CollaborationRequestMessageApiObject
 import org.firstapproval.backend.core.domain.publication.Publication
 import org.firstapproval.backend.core.domain.publication.PublicationRepository
 import org.firstapproval.backend.core.domain.publication.PublicationService
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationMessageFileRepository
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationRequestMessageFile
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationMessageRepository
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessage
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType
@@ -16,14 +17,20 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.PUBLICATION_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.*
 import org.firstapproval.backend.core.domain.user.User
+import org.firstapproval.backend.core.external.s3.COLLABORATION_REQUEST_MESSAGE_FILES
+import org.firstapproval.backend.core.external.s3.FileStorageService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
+import java.io.InputStream
 import java.time.ZonedDateTime
 import java.util.*
+import java.util.UUID.randomUUID
+import org.firstapproval.api.server.model.CollaborationRequestMessage as CollaborationRequestMessageApiObject
 
 const val I_AGREE_WITH_TERMS = "I agree to the terms of the First Approval Collaboration License, " +
     "including sending a Collaboration Request to the Data Author(s)."
@@ -46,6 +53,8 @@ class CollaborationRequestService(
     private val publicationRepository: PublicationRepository,
     private val publicationService: PublicationService,
     private val collaborationMessageRepository: CollaborationMessageRepository,
+    private val collaborationMessageFileRepository: CollaborationMessageFileRepository,
+    private val fileStorageService: FileStorageService,
     private val objectMapper: ObjectMapper
 ) {
     @Transactional
@@ -94,7 +103,7 @@ class CollaborationRequestService(
             sequenceIndex = type.sequenceIndex
         ).also { exists -> if (exists) throw IllegalArgumentException("Message with equal or higher sequenceIndex already exists") }
 
-        val messageRecipient = when(type.recipientType) {
+        val messageRecipient = when (type.recipientType) {
             COLLABORATION_REQUEST_CREATOR -> collaborationRequest.user
             PUBLICATION_CREATOR -> collaborationRequest.publication.creator
         }
@@ -111,6 +120,19 @@ class CollaborationRequestService(
                 isAssistant = collaborationRequestMessage.isAssistant
             )
         )
+    }
+
+    @Transactional
+    fun uploadMessageFile(messageId: UUID, publicationId: String, data: InputStream, contentLength: Long,): UUID {
+        val fileId = randomUUID()
+        val message = collaborationMessageRepository.getReferenceById(messageId)
+
+        assert(publicationId == message.collaborationRequest.publication.id)
+
+        collaborationMessageFileRepository.save(CollaborationRequestMessageFile(fileId, message))
+        fileStorageService.save(COLLABORATION_REQUEST_MESSAGE_FILES, fileId.toString(), data, contentLength)
+
+        return fileId
     }
 
     @Transactional

@@ -20,7 +20,7 @@ import jakarta.persistence.Table
 import org.firstapproval.api.server.model.CollaborationRequestTypeOfWork
 import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.api.server.model.Workplace
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationRequestFile
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationRequestMessageFile
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.CREATE
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL
@@ -72,8 +72,9 @@ class CollaborationRequestMessage(
 
     val creationTime: ZonedDateTime = ZonedDateTime.now(),
 
-    @OneToMany(mappedBy = "message", cascade = [ALL], orphanRemoval = true)
-    val files: List<CollaborationRequestFile> = mutableListOf(),
+    @OneToMany(cascade = [ALL], orphanRemoval = true)
+    @JoinColumn(name="message_id", nullable=false, insertable = false, updatable = false)
+    val files: List<CollaborationRequestMessageFile> = mutableListOf(),
 
     val isAssistant: Boolean,
 
