@@ -106,8 +106,8 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
     });
   }
 
-  uploadFile(messageId: string, file: File) {
-    collaborationRequestChatService.uploadCollaborationRequestMessageFile(this.publication!!.id, file, messageId).then();
+  uploadFile(messageId: string, file: File): Promise<string | any> {
+    return collaborationRequestChatService.uploadCollaborationRequestMessageFile(this.publication!!.id, file, messageId);
   }
 
   sortMessages = (message1: CollaborationRequestMessage, message2: CollaborationRequestMessage) =>

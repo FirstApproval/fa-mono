@@ -22,12 +22,11 @@ export const UploadFinalDraftDialog = observer(
     isOpen: boolean;
     collaborationChatStore: DownloadedPublicationCollaborationChatStore
   }): ReactElement => {
-    // const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [file, setFile] = useState<File | null>(null)
     const { isOpen, collaborationChatStore } = props
 
     const [estimatedSubmissionDate, setEstimatedSubmissionDate] = useState<string | null>(null)
-    const [comment, setComment] = useState<string | null>(null)
+    const [comment, setComment] = useState<string | undefined>(undefined)
 
     const [touched, setTouched] = useState(false)
 
@@ -37,7 +36,7 @@ export const UploadFinalDraftDialog = observer(
 
     const submit = async (): Promise<void> => {
       setTouched(true)
-      if (estimatedSubmissionDate && comment && file) {
+      if (estimatedSubmissionDate && file) {
         setLoading(true)
 
         const payload: CollaborationMessageUploadFinalDraftPayload = {
@@ -54,10 +53,10 @@ export const UploadFinalDraftDialog = observer(
         }
         collaborationChatStore.sendMessage(message, CollaborationMessageType.UPLOAD_FINAL_DRAFT).then(messageId => {
             collaborationChatStore.uploadFile(messageId, file!!)
-          }
-        )
-        setLoading(false)
-        onClose()
+          }).finally(() => {
+            setLoading(false);
+            onClose();
+        });
       }
     }
 
@@ -123,7 +122,6 @@ export const UploadFinalDraftDialog = observer(
               <FullWidthTextField
                 multiline
                 rows={4}
-                error={touched && !comment}
                 variant="outlined"
                 label={"Comments (optional):"}
                 onChange={(e) => setComment(e.currentTarget.value)}
@@ -150,7 +148,7 @@ export const UploadFinalDraftDialog = observer(
                 <WidthElement value={"24px"} />
                 <ConfirmButton
                   size={"large"}
-                  disabled={loading}
+                  disabled={loading || !estimatedSubmissionDate || !file}
                   variant={"contained"}
                   onClick={async () => await submit()}>
                   Submit
