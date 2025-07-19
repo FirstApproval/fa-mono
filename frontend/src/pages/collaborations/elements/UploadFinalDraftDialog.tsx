@@ -65,7 +65,7 @@ export const UploadFinalDraftDialog = observer(
             savedMessage => savedMessage.type === CollaborationMessageType.UPLOAD_FINAL_DRAFT
           )!!.id;
           collaborationChatStore.uploadFile(uploadFinalDraftMessageId!!, file!!)
-            .then(() => {
+            .finally(() => {
               setLoading(false)
               onClose()
             })

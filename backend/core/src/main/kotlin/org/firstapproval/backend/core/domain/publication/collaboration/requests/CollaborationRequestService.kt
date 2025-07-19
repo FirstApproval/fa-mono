@@ -129,7 +129,9 @@ class CollaborationRequestService(
 
         assert(publicationId == message.collaborationRequest.publication.id)
 
-        val savedFileRecord = collaborationMessageFileRepository.save(CollaborationRequestMessageFile(fileId, message, file.name, file.size))
+        val savedFileRecord = collaborationMessageFileRepository.save(
+            CollaborationRequestMessageFile(fileId, message, file.originalFilename!!, file.size)
+        )
         fileStorageService.save(COLLABORATION_REQUEST_MESSAGE_FILES, fileId.toString(), file.inputStream, file.size)
 
         return savedFileRecord
