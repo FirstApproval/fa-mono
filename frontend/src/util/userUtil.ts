@@ -1,4 +1,4 @@
-import { Workplace, UserInfo } from '../apis/first-approval-api';
+import { Workplace, UserInfo, AuthorShortInfo } from "../apis/first-approval-api"
 
 export function getInitials(firstName?: string, lastName?: string): string {
   const firstNameInitial = firstName ? firstName.charAt(0).toUpperCase() : '';
@@ -31,4 +31,8 @@ export const renderProfileImage = (profileImage: string | undefined): string =>
 
 export function getFullName(userInfo: UserInfo): string {
   return `${userInfo!!.firstName} ${userInfo!!.lastName}`
+}
+
+export function getAuthorFullName(author: AuthorShortInfo): string {
+  return `${author!!.firstName} ${author!!.lastName}`
 }

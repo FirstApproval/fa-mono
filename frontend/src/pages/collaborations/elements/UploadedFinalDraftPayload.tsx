@@ -26,7 +26,7 @@ function formatObjectInfo(object: Record<string, any>): string[] {
     .filter(([key, value]) => key !== 'type')
     .filter(([_, value]) => value !== null && value !== undefined && value !== '')
     .map(([key, value]) => {
-      const formattedKey = _.startCase(key) // Преобразует: "typeOfWork" → "Type Of Work"
+      const formattedKey = _.startCase(key)
       return `${formattedKey}: ${value}`
     })
 }

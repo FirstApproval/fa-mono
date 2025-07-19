@@ -36,6 +36,7 @@ import { PotentialPublicationData } from "../elements/PotentialPublicationData"
 import { UploadFinalDraftDialog } from "../elements/UploadFinalDraftDialog"
 import { UploadedFinalDraftPayload } from "../elements/UploadedFinalDraftPayload"
 import { DescriptionOutlined } from "@mui/icons-material"
+import { AuthorApprovedPayload } from "../elements/AuthorApprovedPayload"
 
 type ChatProps = {
   collaborationChatStore: DownloadedPublicationCollaborationChatStore;
@@ -253,6 +254,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
                 <div />
                 {message.text}
                 {mappedFiles}
+                {message.type === CollaborationMessageType.AUTHOR_APPROVED && <AuthorApprovedPayload message={message} />}
                 {message.type === CollaborationMessageType.UPLOAD_FINAL_DRAFT && <UploadedFinalDraftPayload message={message} />}
                 {message.type === CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET && showStepsInfo()}
                 {message.type === CollaborationMessageType.VERIFY_YOUR_NAME_AND_AFFILIATION &&
