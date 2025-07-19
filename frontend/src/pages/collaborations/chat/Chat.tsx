@@ -249,9 +249,10 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
               <Message name={fullName} avatar={avatar} key={message.id}>
                 {message.type === CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL && <PersonalData message={message} />}
                 {message.type === CollaborationMessageType.DONE_WHATS_NEXT && <PotentialPublicationData message={message} />}
-                {message.type === CollaborationMessageType.AUTHOR_APPROVED && (
+                {(message.type === CollaborationMessageType.AUTHOR_APPROVED ||
+                  message.type === CollaborationMessageType.ALL_AUTHORS_CONFIRMED) &&
                     <img src={highfiveImage} />
-                )}
+                }
                 <div />
                 {message.text}
                 {mappedFiles}
