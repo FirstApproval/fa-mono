@@ -59,6 +59,21 @@ class CollaborationRequestChatController(
         return ok(message.toApiObject(authHolderService.user.toApiObject(userService)))
     }
 
+    override fun createCollaborationRequestMessages(
+        publicationId: String,
+        collaborationRequestMessages: List<CollaborationRequestMessage>
+    ): ResponseEntity<List<CollaborationRequestMessage>> {
+        val messages = collaborationRequestMessages.map {
+            collaborationRequestService.createCollaborationRequestMessage(
+                publicationId = publicationId,
+                collaborationRequestMessage = it,
+                user = authHolderService.user
+            )
+        }
+        val mappedMessages = messages.map { it.toApiObject(authHolderService.user.toApiObject(userService)) }
+        return ok(mappedMessages)
+    }
+
     private fun getRecipientType(collaborationRequest: CollaborationRequest) =
         when (authHolderService.user.id) {
             collaborationRequest.user.id -> COLLABORATION_REQUEST_CREATOR

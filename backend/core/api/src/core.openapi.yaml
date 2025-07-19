@@ -1122,6 +1122,37 @@ paths:
       operationId: createCollaborationRequestMessage
       tags: [ collaboration-request-chat ]
 
+  /api/publication/{publicationId}/collaboration-request/messages:
+    post:
+      summary: Send collaboration request messages
+      parameters:
+        - in: path
+          name: publicationId
+          schema:
+            type: string
+          required: true
+          description: Publication id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CollaborationRequestMessage'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CollaborationRequestMessage'
+      security:
+        - TokenAuth: [ ]
+      operationId: createCollaborationRequestMessages
+      tags: [ collaboration-request-chat ]
+
   /api/publication/search:
     get:
       summary: Search publications
