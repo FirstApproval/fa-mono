@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import React, { ReactElement, useEffect, useRef, useState } from "react"
 import { SelfAvatar } from '../elements/AvatarNameBox';
-import { HeightElement } from '../../common.styled';
+import { HeightElement } from '../../common.styled'
 import { css, Global } from '@emotion/react';
 import fileIcon from '../../../assets/file-icon.svg';
 import {
@@ -33,6 +33,8 @@ import { PotentialPublicationDataForm } from "../elements/PotentialPublicationDa
 import { doneWhatsNext } from "./action/DoneWhatsNext"
 import { PotentialPublicationData } from "../elements/PotentialPublicationData"
 import { UploadFinalDraftDialog } from "../elements/UploadFinalDraftDialog"
+import { UploadedFinalDraftPayload } from "../elements/UploadedFinalDraftPayload"
+import { DescriptionOutlined } from "@mui/icons-material"
 
 type ChatProps = {
   collaborationChatStore: DownloadedPublicationCollaborationChatStore;
@@ -233,14 +235,20 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
           const fullName = message.isAssistant ? 'Assistant' : getFullName(userInfo);
           const avatar = message.isAssistant ? 'FA' :
             (userInfo.profileImage ? renderProfileImage(userInfo.profileImage) : getInitials(userInfo.firstName, userInfo.lastName));
+          const mappedFiles = message.files?.map(file =>
+              <FileElement>
+                <DescriptionOutlined style={{marginRight: '12px'}}/>
+                <span>{file.name}</span>
+              </FileElement>
+          );
           return (
             <React.Fragment key={message.id} >
               <Message name={fullName} avatar={avatar} key={message.id}>
                 {message.type === CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL && <PersonalData message={message} />}
                 {message.type === CollaborationMessageType.DONE_WHATS_NEXT && <PotentialPublicationData message={message} />}
                 {message.text}
-
-
+                {mappedFiles}
+                {message.type === CollaborationMessageType.UPLOAD_FINAL_DRAFT && <UploadedFinalDraftPayload message={message} />}
                 {message.type === CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET && showStepsInfo()}
                 {message.type === CollaborationMessageType.VERIFY_YOUR_NAME_AND_AFFILIATION &&
                   !collaborationChatStore.existsByType(CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL) &&
@@ -514,3 +522,15 @@ export default Chat;
 //   });
 //   collaborationChatStore.setStage(CollaborationMessageType.COLLABORATION_APPROVED);
 // };
+
+const FileElement = styled.div`
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  height: 48px;
+  border-radius: 4px;
+  background-color: #F3F2F5;
+  padding: 8px 12px;
+  margin-top: 12px;
+  cursor: pointer;
+`;
