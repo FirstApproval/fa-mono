@@ -2993,6 +2993,7 @@ components:
         - firstName
         - lastName
         - workplaces
+        - type
 
     CollaborationPotentialPublicationData:
       type: object
@@ -3015,6 +3016,23 @@ components:
         - potentialPublicationTitle
         - typeOfWork
         - expectedPublicationDate
+        - type
+
+    CollaborationMessageUploadFinalDraftPayload:
+      type: object
+      properties:
+        estimatedSubmissionDate:
+          type: string
+          format: date
+        comment:
+          type: string
+          maxLength: 4096
+        type:
+          $ref: '#/components/schemas/CollaborationMessageType'
+      required:
+        - estimatedSubmissionDate
+        - comment
+        - type
 
     CollaborationRequestMessage:
       type: object

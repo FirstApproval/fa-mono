@@ -83,6 +83,7 @@ export const SpaceBetween = styled.div`
 `;
 
 export const SpaceBetweenColumn = styled(SpaceBetween)`
+  height: 100%;
   flex-direction: column;
 `;
 

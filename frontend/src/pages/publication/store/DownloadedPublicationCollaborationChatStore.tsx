@@ -94,7 +94,7 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
     });
   }
 
-  sendMessage(message: CollaborationRequestMessage, nextStage: CollaborationMessageType | undefined = undefined): Promise<void> {
+  sendMessage(message: CollaborationRequestMessage, nextStage: CollaborationMessageType | undefined = undefined): Promise<string> {
     return collaborationRequestChatService.createCollaborationRequestMessage(
       this.publication!!.id,
       message
@@ -102,7 +102,12 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
       this.messages!!.push(response.data);
       this.messages!!.sort(this.sortMessages);
       nextStage && this.setStage(nextStage);
+      return response.data.id!!;
     });
+  }
+
+  uploadFile(messageId: string, file: File) {
+    collaborationRequestChatService.uploadCollaborationRequestMessageFile(this.publication!!.id, file, messageId).then();
   }
 
   sortMessages = (message1: CollaborationRequestMessage, message2: CollaborationRequestMessage) =>
