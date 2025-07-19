@@ -3031,7 +3031,6 @@ components:
           $ref: '#/components/schemas/CollaborationMessageType'
       required:
         - estimatedSubmissionDate
-        - comment
         - type
 
     CollaborationRequestMessage:
@@ -3058,7 +3057,6 @@ components:
           format: date-time
       required:
         - type
-        - text
         - isAssistant
 
     CollaborationMessageType:

@@ -14,6 +14,9 @@ CREATE TABLE collaboration_request_messages
 
 CREATE TABLE collaboration_request_message_files
 (
-    id         UUID PRIMARY KEY,
-    message_id UUID NOT NULL REFERENCES collaboration_request_messages (id) ON DELETE CASCADE
+    id            UUID PRIMARY KEY,
+    message_id    UUID      NOT NULL REFERENCES collaboration_request_messages (id) ON DELETE CASCADE,
+    creation_time TIMESTAMP NOT NULL,
+    name          TEXT      NOT NULL,
+    size          BIGINT    NOT NULL
 );

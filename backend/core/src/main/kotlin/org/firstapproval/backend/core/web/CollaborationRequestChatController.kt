@@ -81,7 +81,10 @@ class CollaborationRequestChatController(
         file: MultipartFile,
         messageId: UUID
     ): ResponseEntity<UUID> {
-        val fileId = collaborationRequestService.uploadMessageFile(messageId, publicationId, file.inputStream, file.size)
+        val fileId = collaborationRequestService.uploadMessageFile(
+            messageId = messageId,
+            publicationId = publicationId,
+            file = file)
         return ok(fileId)
     }
 

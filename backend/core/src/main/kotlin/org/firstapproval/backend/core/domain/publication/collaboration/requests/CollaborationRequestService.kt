@@ -123,14 +123,14 @@ class CollaborationRequestService(
     }
 
     @Transactional
-    fun uploadMessageFile(messageId: UUID, publicationId: String, data: InputStream, contentLength: Long,): UUID {
+    fun uploadMessageFile(messageId: UUID, publicationId: String, file: MultipartFile): UUID {
         val fileId = randomUUID()
         val message = collaborationMessageRepository.getReferenceById(messageId)
 
         assert(publicationId == message.collaborationRequest.publication.id)
 
-        collaborationMessageFileRepository.save(CollaborationRequestMessageFile(fileId, message))
-        fileStorageService.save(COLLABORATION_REQUEST_MESSAGE_FILES, fileId.toString(), data, contentLength)
+        collaborationMessageFileRepository.save(CollaborationRequestMessageFile(fileId, message, file.name, file.size))
+        fileStorageService.save(COLLABORATION_REQUEST_MESSAGE_FILES, fileId.toString(), file.inputStream, file.size)
 
         return fileId
     }

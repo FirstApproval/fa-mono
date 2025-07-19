@@ -6,6 +6,8 @@ import jakarta.persistence.Id
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessage
+import java.time.OffsetDateTime
+import java.time.OffsetDateTime.now
 import java.util.UUID
 
 @Entity
@@ -15,4 +17,7 @@ class CollaborationRequestMessageFile(
     val id: UUID,
     @ManyToOne(fetch = EAGER)
     val message: CollaborationRequestMessage,
+    val name: String,
+    val size: Long,
+    val creationTime: OffsetDateTime = now()
 )
