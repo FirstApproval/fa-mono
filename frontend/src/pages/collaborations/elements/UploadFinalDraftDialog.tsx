@@ -1,15 +1,17 @@
 import React, { ReactElement, useCallback, useState } from "react"
 import DialogTitle from '@mui/material/DialogTitle';
-import { Close } from '@mui/icons-material';
+import { Close, InfoOutlined, UploadFileOutlined } from "@mui/icons-material"
 import DialogContent from '@mui/material/DialogContent';
 import Dialog from '@mui/material/Dialog';
 import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
-import { Button, TextField } from '@mui/material';
+import { Button, TextField, Typography } from "@mui/material"
 import DialogActions from '@mui/material/DialogActions';
-import { FlexWrapRow, TitleRowWrap, WidthElement } from "src/pages/common.styled"
+import { FlexWrapRow, FlexWrapRowAlignTop, HeightElement, TitleRowWrap, WidthElement } from "src/pages/common.styled"
 import { DownloadedPublicationCollaborationChatStore } from "../../publication/store/DownloadedPublicationCollaborationChatStore"
 import { useDropzone } from "react-dropzone"
+import { CollaborationMessageType, CollaborationRequestMessage } from "src/apis/first-approval-api"
+import { C0288D1, C3B4EFF } from "../../../ui-kit/colors"
 
 export const UploadFinalDraftDialog = observer(
   (props: {
@@ -27,23 +29,18 @@ export const UploadFinalDraftDialog = observer(
 
     const [loading, setLoading] = useState(false);
 
-    const [isDropZoneVisible, setIsDropZoneVisible] = useState(true);
-
-    const onClose = (): void => {
-      debugger;
-      collaborationChatStore.setIsUploadDraftDialogOpen(false);
-    };
+    const onClose = (): void => collaborationChatStore.setIsUploadDraftDialogOpen(false);
 
     const submit = async (): Promise<void> => {
       setTouched(true);
       if (estimatedSubmissionDate && comment) {
         setLoading(true);
-        // await reportService.createReport({
-        //   email,
-        //   description,
-        //   publicationId,
-        //   fileIds: []
-        // });
+        const message: CollaborationRequestMessage = {
+          type: CollaborationMessageType.UPLOAD_FINAL_DRAFT,
+          text: 'asdf',
+          isAssistant: false
+        };
+        collaborationChatStore.sendMessage(message, CollaborationMessageType.UPLOAD_FINAL_DRAFT)
         setLoading(false);
         onClose();
       }
@@ -93,9 +90,7 @@ export const UploadFinalDraftDialog = observer(
                 style={{ width: '100%', cursor: 'pointer' }}
                 sx={{ input: { cursor: 'pointer' } }}
                 value={estimatedSubmissionDate}
-                onChange={e => {
-                  setEstimatedSubmissionDate(e.target.value);
-                }}
+                onChange={e => setEstimatedSubmissionDate(e.target.value)}
                 inputProps={{
                   min: new Date().toISOString().split('T')[0],
                   style: {
@@ -116,6 +111,14 @@ export const UploadFinalDraftDialog = observer(
                 onChange={(e) => setComment(e.currentTarget.value)}
               />
               <Dropzone key={'uploaded-final-draft-dialog-dropzone'}/>
+              <HeightElement value="32px"/>
+              <DontForgetToCreditDataAuthor style={{backgroundColor: '#E5F6FD'}}>
+                <InfoOutlined htmlColor={C0288D1} />
+                <WidthElement value={"8px"} />
+                <Typography variant={'body2'} color={'#014361'}>
+                  Don’t forget to credit Data Author as co-author
+                </Typography>
+              </DontForgetToCreditDataAuthor>
             </div>
             <ConfirmDialogActions style={{ marginTop: 32 }}>
               <FlexWrapRow>
@@ -179,6 +182,13 @@ const ConfirmButton = styled(Button)`
   color: var(--error-contrast, #fff);
 `;
 
+const DontForgetToCreditDataAuthor = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  padding: 14px 16px;
+  border-radius: 4px;
+`;
 
 const Dropzone = () => {
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -192,12 +202,12 @@ const Dropzone = () => {
     <div
       {...getRootProps()}
       style={{
-        border: '2px dashed #aaa',
+        border: '1px dashed #D2D2D6',
         marginTop: 32,
-        padding: 40,
+        padding: '24px 16px',
         textAlign: 'center',
-        background: isDragActive ? '#e0f7fa' : '#fafafa',
         borderRadius: 10,
+        minHeight: 210
       }}
     >
       <input {...getInputProps()} />
@@ -206,8 +216,9 @@ const Dropzone = () => {
           ? <p>Drop files here...</p>
           :
           <div>
+            <UploadFileOutlined htmlColor={C3B4EFF} sx={{ width: 40, height: 40}} />
             <p>Click to upload or drag and drop</p>
-            <p style={{color: 'gray'}}>PDF or DOCX</p>
+            <p style={{color: 'gray', marginBottom: 0}}>PDF or DOCX</p>
           </div>
       }
     </div>
