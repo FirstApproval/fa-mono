@@ -1,19 +1,13 @@
-import styled from '@emotion/styled';
+import styled from "@emotion/styled"
 import React, { ReactElement, useEffect, useRef, useState } from "react"
-import { SelfAvatar } from '../elements/AvatarNameBox';
-import { HeightElement } from '../../common.styled'
-import { css, Global } from '@emotion/react';
-import fileIcon from '../../../assets/file-icon.svg';
+import { SelfAvatar } from "../elements/AvatarNameBox"
+import { HeightElement } from "../../common.styled"
+import { css, Global } from "@emotion/react"
+import fileIcon from "../../../assets/file-icon.svg"
 import highfiveImage from "../../../assets/fa-highfive.svg"
-import {
-  getFullName,
-  getInitials,
-  renderProfileImage
-} from '../../../util/userUtil';
-import {
-  CollaborationMessageType,
-} from 'src/apis/first-approval-api';
-import { observer } from 'mobx-react-lite';
+import { getFullName, getInitials, renderProfileImage } from "../../../util/userUtil"
+import { CollaborationMessageType } from "src/apis/first-approval-api"
+import { observer } from "mobx-react-lite"
 import {
   CollaborationRequirementsModal,
   CommentsModal,
@@ -21,13 +15,13 @@ import {
   Step1Modal,
   Step2Modal,
   Step3Modal,
-  StyledApproveButton,
-} from './Modal';
-import { Message } from './ChatMessage';
+  StyledApproveButton
+} from "./Modal"
+import { Message } from "./ChatMessage"
 import { UserActionsRegistry } from "./UserActionsRegistry"
 import { showStepsInfo } from "../elements/StepsInfo"
-import { PersonalDataForm } from '../elements/PersonalDataForm';
-import { PersonalData } from '../elements/PersonalData';
+import { PersonalDataForm } from "../elements/PersonalDataForm"
+import { PersonalData } from "../elements/PersonalData"
 import { DownloadedPublicationCollaborationChatStore } from "../../publication/store/DownloadedPublicationCollaborationChatStore"
 import { confirmThatProvidedInfoIsReal } from "./action/ConfirmThatProvidedInfoIsReal"
 import { PotentialPublicationDataForm } from "../elements/PotentialPublicationDataForm"
@@ -38,6 +32,7 @@ import { UploadedFinalDraftPayload } from "../elements/UploadedFinalDraftPayload
 import { DescriptionOutlined } from "@mui/icons-material"
 import { AuthorApprovedPayload } from "../elements/AuthorApprovedPayload"
 import { AuthorDeclinedPayload } from "../elements/AuthorDeclinedPayload"
+import { Link } from "@mui/material"
 
 type ChatProps = {
   collaborationChatStore: DownloadedPublicationCollaborationChatStore;
@@ -166,59 +161,22 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
     collaborationChatStore.setStage(CollaborationMessageType.MANUSCRIPT_APPROVED);
   };
 
-  // const handlePublicationFormMsg: () => void = () => {
-  //   Messages.push({
-  //     id: 1009,
-  //     name: 'Assistant',
-  //     avatar: 'FA',
-  //     text: (
-  //       <>
-  //         <Typography>
-  //           Thank you! Now, propose a potential name and type of publication,
-  //           and specify the details of the research in which you would like to
-  //           use the dataset to ensure that Dataset Authors are well-informed
-  //           about ideas for future collaborative publications, please.
-  //         </Typography>
-  //         <Box
-  //           component="form"
-  //           sx={{
-  //             maxWidth: '600px',
-  //             mx: 'auto',
-  //             p: 3,
-  //             borderRadius: 2,
-  //             boxShadow: 1,
-  //             display: 'flex',
-  //             flexDirection: 'column',
-  //             gap: 2
-  //           }}>
-  //           <TextField
-  //             fullWidth
-  //             label="Potential title of your publication in collaboration"
-  //             variant="outlined"
-  //           />
-  //           <TextField
-  //             fullWidth
-  //             label="Type of your publication in collaboration"
-  //             variant="outlined"
-  //             defaultValue="Journal Article"
-  //           />
-  //           <TextField
-  //             fullWidth
-  //             multiline
-  //             minRows={4}
-  //             label="Details of the research"
-  //             variant="outlined"
-  //           />
-  //           <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-  //             <Button variant="outlined">Done. What's next?</Button>
-  //             <Button variant="text">Back</Button>
-  //           </Box>
-  //         </Box>
-  //       </>
-  //     )
-  //   });
-  //   collaborationChatStore.setStage(CollaborationMessageType.PUBLICATION_INFO_RECEIVED);
-  // };
+  function getCollaborationAgreementTemplateLink () {
+    return <FileElement>
+      <DescriptionOutlined style={{ marginRight: "12px" }} />
+      <Link
+        href={"/docs/FA_Collaboration_Agreement_template.pdf"}
+        target={"_blank"}
+        underline={"none"}
+        sx={{
+          color: "black"
+        }}
+        style={{ cursor: "pointer" }}
+      >
+        FA Collaboration Agreement template.pdf
+      </Link>
+    </FileElement>
+  }
 
   return (
     <>
@@ -244,6 +202,8 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
                 <span>{file.name}</span>
               </FileElement>
           );
+          const collaborationAgreementTemplate = getCollaborationAgreementTemplateLink()
+
           return (
             <React.Fragment key={message.id} >
               <Message name={fullName} avatar={avatar} key={message.id}>
@@ -256,6 +216,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
                 <div />
                 {message.text}
                 {mappedFiles}
+                {message.type === CollaborationMessageType.FORMALIZED_AGREEMENT && collaborationAgreementTemplate}
                 {message.type === CollaborationMessageType.AUTHOR_APPROVED && <AuthorApprovedPayload message={message} />}
                 {message.type === CollaborationMessageType.AUTHOR_DECLINED && <AuthorDeclinedPayload message={message} />}
                 {message.type === CollaborationMessageType.UPLOAD_FINAL_DRAFT && <UploadedFinalDraftPayload message={message} />}
@@ -276,7 +237,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
                   />
                 }
               </Message>
-              <HeightElement value={'32px'} />
+              <HeightElement value={'64px'} />
             </React.Fragment>
           );
         })}
