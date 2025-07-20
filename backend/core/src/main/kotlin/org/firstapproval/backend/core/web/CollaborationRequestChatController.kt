@@ -112,7 +112,7 @@ class CollaborationRequestChatController(
 
         return ok()
             .contentType(APPLICATION_PDF)
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=FA_Collaboration_Agreement_template.pdf")
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=FA_Collaboration_Agreement_${publicationId}.pdf")
             .body(resource);
     }
 
