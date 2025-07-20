@@ -15,11 +15,18 @@ import org.firstapproval.backend.core.domain.publication.collaboration.requests.
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestService
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.toApiObject
+import org.springframework.core.io.ClassPathResource
+import org.springframework.core.io.Resource
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
+import org.springframework.http.MediaType.APPLICATION_PDF
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import java.util.UUID
+
+const val AGREEMENT_TEMPLATE = "templates/pdf/FA_Collaboration_Agreement_template.pdf"
 
 @RestController
 class CollaborationRequestChatController(
@@ -27,7 +34,7 @@ class CollaborationRequestChatController(
     private val collaborationRequestMessageRepository: CollaborationMessageRepository,
     private val userService: UserService,
     private val authHolderService: AuthHolderService,
-    ) : CollaborationRequestChatApi {
+) : CollaborationRequestChatApi {
 
     override fun getCollaborationChatByPublicationId(publicationId: String): ResponseEntity<CollaborationChatResponse> {
         val collaborationRequest = collaborationRequestService.get(publicationId, authHolderService.user.id)
@@ -89,6 +96,18 @@ class CollaborationRequestChatController(
             file = file
         ).toApiObject()
         return ok(savedFileRecord)
+    }
+
+    override fun getCollaborationRequestAgreement(publicationId: String, collaborationRequestId: UUID): ResponseEntity<Resource> {
+        val resource = ClassPathResource(AGREEMENT_TEMPLATE)
+        if (!resource.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ok()
+            .contentType(APPLICATION_PDF)
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=FA_Collaboration_Agreement_template.pdf")
+            .body(resource);
     }
 
     private fun getRecipientType(collaborationRequest: CollaborationRequest) =

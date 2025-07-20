@@ -971,7 +971,7 @@ paths:
 #      operationId: getCollaborationRequest
 #      tags: [ collaboration-request ]
 
-  /api//publication/{publicationId}/collabortion-request:
+  /api/publication/{publicationId}/collabortion-request:
     get:
       summary: Retrieve a collaboration request
       parameters:
@@ -992,6 +992,39 @@ paths:
         - TokenAuth: [ ]
       operationId: getCollaborationRequest
       tags: [ collaboration-request ]
+
+  /api/publication/{publicationId}/collabortion-request/{collaborationRequestId}/agreement/download-link:
+    get:
+      summary: Retrieve a collaboration request agreement
+      parameters:
+        - in: path
+          name: publicationId
+          schema:
+            type: string
+          required: true
+          description: Publication id
+        - in: path
+          name: collaborationRequestId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Collaboration request Id
+      responses:
+        '200':
+          description: File download
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+#            text/plain:
+#              schema:
+#                type: string
+      security:
+        - TokenAuth: [ ]
+      operationId: getCollaborationRequestAgreement
+      tags: [ collaboration-request-chat ]
 
   /api/collabortion/accept-or-reject-request-collaboration/{collaborationRequestId}:
     post:

@@ -164,17 +164,33 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
   function getCollaborationAgreementTemplateLink () {
     return <FileElement>
       <DescriptionOutlined style={{ marginRight: "12px" }} />
-      <Link
-        href={"/docs/FA_Collaboration_Agreement_template.pdf"}
-        target={"_blank"}
-        underline={"none"}
-        sx={{
-          color: "black"
+      <span
+        onClick={async () => {
+          try {
+            const response = await collaborationChatStore.getCollaborationAgreementFile();
+
+            const blob = await response.data;
+            debugger;
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'FA_Collaboration_Agreement_template.pdf';
+            a.click();
+            window.URL.revokeObjectURL(url);
+          } catch (err) {
+            console.error('Error downloading collaboration agreement:', err);
+            alert('Error downloading collaboration agreement')
+          }
         }}
-        style={{ cursor: "pointer" }}
+        style={{
+          cursor: 'pointer',
+          color: 'black',
+          textDecoration: 'none',
+          display: 'inline-block'
+        }}
       >
-        FA Collaboration Agreement template.pdf
-      </Link>
+    FA Collaboration Agreement template.pdf
+  </span>
     </FileElement>
   }
 

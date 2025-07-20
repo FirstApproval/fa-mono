@@ -19,18 +19,21 @@ import org.firstapproval.backend.core.domain.publication.collaboration.requests.
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.external.s3.COLLABORATION_REQUEST_MESSAGE_FILES
 import org.firstapproval.backend.core.external.s3.FileStorageService
+import org.springframework.core.io.ClassPathResource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.DESC
+import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
-import java.io.InputStream
+import java.io.IOException
 import java.time.ZonedDateTime
 import java.util.*
 import java.util.UUID.randomUUID
 import org.firstapproval.api.server.model.CollaborationRequestMessage as CollaborationRequestMessageApiObject
+
 
 const val I_AGREE_WITH_TERMS = "I agree to the terms of the First Approval Collaboration License, " +
     "including sending a Collaboration Request to the Data Author(s)."

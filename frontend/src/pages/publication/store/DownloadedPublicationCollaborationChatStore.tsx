@@ -17,6 +17,7 @@ import {
 import { CollaborationChatInterface } from './CollaborationChatStore';
 import { cloneDeep } from "lodash"
 import { IWorkplaceStore, WorkplaceProps, WorkplaceValidationState } from "../../../core/WorkplaceProps"
+import { AxiosResponse } from "axios"
 
 export class DownloadedPublicationCollaborationChatStore implements CollaborationChatInterface, IWorkplaceStore {
   collaborationRequestId: string = '';
@@ -106,6 +107,14 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
       nextStage && this.setStage(nextStage);
       return response.data.id!!;
     });
+  }
+
+  getCollaborationAgreementFile(): Promise<AxiosResponse<Blob>> {
+    return collaborationRequestChatService.getCollaborationRequestAgreement(
+      this.publication!!.id,
+      this.collaborationRequestId,
+      { responseType: 'blob' }
+    );
   }
 
   sendMessages(
