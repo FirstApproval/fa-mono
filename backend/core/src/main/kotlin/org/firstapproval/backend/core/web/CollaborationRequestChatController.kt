@@ -132,7 +132,7 @@ class CollaborationRequestChatController(
         paramsMap["dataUserFullName"] = "${personalData.firstName} ${personalData.lastName}"
         paramsMap["dataUserAffiliations"] = dataUserAffiliations
         paramsMap["dataAuthorFullName"] = "${publicationCreator.firstName} ${publicationCreator.lastName}"
-        paramsMap["dataAuthorAffiliations"] = publicationCreator.workplacesNamesWithAddress.let { ", $it" } ?: ""
+        paramsMap["dataAuthorAffiliations"] = publicationCreator.workplacesNamesWithAddress.let { ", $it" }
         paramsMap["publicationTitle"] = publication.title!!
         paramsMap["doiLink"] = doiProperties.linkTemplate.format(publication.id)
         paramsMap["typeOfWork"] = typeOfWork

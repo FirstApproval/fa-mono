@@ -49,13 +49,14 @@ class User(
     val workplacesNames: String
         get() = workplaces.filter { it.organization.moderated }
             .joinToString(postfix = ".") {
-                (it.organization.name + " ${it.organizationDepartment}").trim()
+                (it.organization.name + " ${it.organizationDepartment ?: ""}").trim()
             }
 
     val workplacesNamesWithAddress: String
         get() = workplaces.filter { it.organization.moderated }
-            .joinToString(postfix = ".") {
-                ("${it.organization.name} ${it.organizationDepartment} ${it.address}").trim()
+            .joinToString(". ") {
+                ((it.organization.name +
+                    it.organizationDepartment.let { department -> ", $department" }).trim() + " ${it.address ?: ""}").trim()
             }
 }
 
