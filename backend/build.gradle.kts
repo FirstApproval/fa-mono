@@ -52,6 +52,9 @@ subprojects {
             dependency("net.logstash.logback:logstash-logback-encoder:7.3")
             dependency("org.springframework.data:spring-data-elasticsearch:5.1.2")
             dependency("com.vladmihalcea:hibernate-types-52:2.21.1")
+            dependency("org.docx4j:docx4j-core:11.5.4")
+            dependency("org.docx4j:docx4j-export-fo:11.5.4")
+            dependency("org.docx4j:docx4j-JAXB-ReferenceImpl:11.5.4")
         }
     }
 

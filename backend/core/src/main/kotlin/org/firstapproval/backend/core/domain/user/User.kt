@@ -51,6 +51,12 @@ class User(
             .joinToString(postfix = ".") {
                 (it.organization.name + " ${it.organizationDepartment}").trim()
             }
+
+    val workplacesNamesWithAddress: String
+        get() = workplaces.filter { it.organization.moderated }
+            .joinToString(postfix = ".") {
+                ("${it.organization.name} ${it.organizationDepartment} ${it.address}").trim()
+            }
 }
 
 fun User.toApiObject(userService: UserService) = UserInfo().also {
