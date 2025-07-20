@@ -107,10 +107,6 @@ class CollaborationRequestChatController(
     }
 
     override fun getCollaborationRequestAgreement(publicationId: String, collaborationRequestId: UUID): ResponseEntity<Resource> {
-//        val resource = ClassPathResource(AGREEMENT_TEMPLATE)
-//        if (!resource.exists()) {
-//            return ResponseEntity.notFound().build();
-//        }
         val params = createParamsMap(collaborationRequestId)
         val resource = docxPdfGenerator.generate(AGREEMENT_TEMPLATE, params)
 
@@ -130,17 +126,18 @@ class CollaborationRequestChatController(
 
         val requestCreationDate = messageByType[EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST]!!.creationTime.format(ofPattern(DATE_PATTERN))
         val personalData = messageByType[I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL]!!.payload as PersonalDataConfirmation
+        val dataUserAffiliations = personalData.workplaces.joinToString(separator = ". ", prefix = ", ") { it.format() }
 
         paramsMap["collaborationRequestCreationDate"] = requestCreationDate
         paramsMap["dataUserFullName"] = "${personalData.firstName} ${personalData.lastName}"
-        paramsMap["dataUserAffiliations"] = personalData.workplaces.map { it.format() }.joinToString { ". " }
+        paramsMap["dataUserAffiliations"] = dataUserAffiliations
         paramsMap["dataAuthorFullName"] = "${publicationCreator.firstName} ${publicationCreator.lastName}"
-        paramsMap["dataAuthorAffiliations"] = publicationCreator.workplacesNames
+        paramsMap["dataAuthorAffiliations"] = publicationCreator.workplacesNamesWithAddress.let { ", $it" } ?: ""
         paramsMap["publicationTitle"] = publication.title!!
         paramsMap["doiLink"] = doiProperties.linkTemplate.format(publication.id)
         paramsMap["typeOfWork"] = typeOfWork
-        paramsMap["publicationDescriptionOfWork"] = typeOfWork
-        paramsMap["publicationDescriptionOfIntendedUse"] = typeOfWork
+        paramsMap["publicationDescriptionOfWork"] = "Publication Description Of Work"
+        paramsMap["publicationDescriptionOfIntendedUse"] = "Publication Description Of Intended Use"
 
         return paramsMap
     }
