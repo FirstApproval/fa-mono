@@ -8,7 +8,6 @@ function doneWhatsNextAction(collaborationChatStore: DownloadedPublicationCollab
   const payload: CollaborationPotentialPublicationData = {
     potentialPublicationTitle: collaborationChatStore.potentialPublicationName!!,
     typeOfWork: collaborationChatStore.typeOfWork!!,
-    expectedPublicationDate: collaborationChatStore.expectedPublicationDate!!,
     intendedJournalForPublication: collaborationChatStore.intendedJournalForPublication,
     detailsOfResearch: collaborationChatStore.detailsOfResearch,
     type: CollaborationMessageType.DONE_WHATS_NEXT,

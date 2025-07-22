@@ -3036,9 +3036,6 @@ components:
           type: string
         typeOfWork:
           $ref: '#/components/schemas/CollaborationRequestTypeOfWork'
-        expectedPublicationDate:
-          type: string
-          format: date
         intendedJournalForPublication:
           type: string
         detailsOfResearch:
@@ -3049,7 +3046,6 @@ components:
       required:
         - potentialPublicationTitle
         - typeOfWork
-        - expectedPublicationDate
         - type
 
     CollaborationMessageUploadFinalDraftPayload:

@@ -4,6 +4,7 @@ import jakarta.persistence.*
 import jakarta.persistence.CascadeType.REFRESH
 import jakarta.persistence.EnumType.STRING
 import jakarta.persistence.FetchType.EAGER
+import jakarta.persistence.FetchType.LAZY
 import org.firstapproval.api.server.model.CollaborationRequestInfo
 import org.firstapproval.api.server.model.CollaborationRequestTypeOfWork
 import org.firstapproval.api.server.model.UserInfo
@@ -24,9 +25,9 @@ import org.firstapproval.api.server.model.CollaborationRequestStatus as Collabor
 class CollaborationRequest(
     @Id
     var id: UUID = randomUUID(),
-    @ManyToOne(fetch = EAGER, cascade = [REFRESH])
+    @ManyToOne(fetch = EAGER)
     val publication: Publication,
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "collaborationRequest")
+    @OneToMany(fetch = LAZY, mappedBy = "collaborationRequest")
     val authors: Set<CollaborationRequestAuthor> = setOf(),
     val firstNameLegal: String,
     val lastNameLegal: String,

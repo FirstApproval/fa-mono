@@ -17,8 +17,6 @@ export const PotentialPublicationData = observer((
     lines.push(`Potential publication title: ${potentialPublicationData.potentialPublicationTitle}`)
   if (potentialPublicationData.type)
     lines.push(`Type: ${_.capitalize(potentialPublicationData.typeOfWork.toLowerCase().replace('_', ' '))}`);
-  if (potentialPublicationData.expectedPublicationDate)
-    lines.push(`Expected publication date: ${potentialPublicationData.expectedPublicationDate}`);
   if (potentialPublicationData.intendedJournalForPublication)
     lines.push(`Intended journal for publication: ${potentialPublicationData.intendedJournalForPublication}`);
   if (potentialPublicationData.detailsOfResearch)

@@ -164,7 +164,6 @@ class PersonalDataConfirmation(
 class CollaborationPotentialPublicationData(
     val potentialPublicationTitle: String,
     val typeOfWork: CollaborationRequestTypeOfWork,
-    val expectedPublicationDate: String,
     val intendedJournalForPublication: String,
     val detailsOfResearch: String,
     override var type: CollaborationRequestMessageType = DONE_WHATS_NEXT,

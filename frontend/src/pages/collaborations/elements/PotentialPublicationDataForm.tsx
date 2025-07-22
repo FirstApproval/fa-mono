@@ -3,8 +3,6 @@ import { observer } from "mobx-react-lite"
 import { Box, Button, FormControl, InputLabel, Select, TextField } from "@mui/material"
 import { DownloadedPublicationCollaborationChatStore } from "../../publication/store/DownloadedPublicationCollaborationChatStore"
 import { UserAction } from "../chat/action/UserAction"
-import { FlexWrapRowFullWidth } from "../../../components/WorkplacesEditor"
-import { WidthElement } from "../../common.styled"
 import MenuItem from "@mui/material/MenuItem"
 import { CollaborationRequestTypeOfWork } from "../../../apis/first-approval-api"
 import _ from "lodash"
@@ -49,40 +47,13 @@ export const PotentialPublicationDataForm = observer((
             ))}
           </Select>
         </FormControl>
-        <FlexWrapRowFullWidth>
-          <TextField
-            label="Expected publication date"
-            type="date"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            style={{ width: '35%', cursor: 'pointer' }}
-            sx={{ input: { cursor: 'pointer' } }}
-            value={store.expectedPublicationDate}
-            onChange={e => {
-              store.setExpectedPublicationDate(e.target.value);
-            }}
-            inputProps={{
-              min: new Date().toISOString().split('T')[0],
-              style: {
-                cursor: 'pointer'
-              },
-            }}
-            onClick={e => {
-              const input = e.currentTarget.querySelector('input');
-              if (input) input.showPicker?.();
-            }}
-          />
-          <WidthElement value={'15px'} />
-          <TextField
-            fullWidth
-            label="Intended journal for publication"
-            variant="outlined"
-            style={{width: '65%'}}
-            value={store.intendedJournalForPublication}
-            onChange={e => store.setIntendedJournalForPublication(e.target.value)}
-          />
-        </FlexWrapRowFullWidth>
+        <TextField
+          fullWidth
+          label="Intended journal for publication"
+          variant="outlined"
+          value={store.intendedJournalForPublication}
+          onChange={e => store.setIntendedJournalForPublication(e.target.value)}
+        />
         <TextField
           fullWidth
           multiline
