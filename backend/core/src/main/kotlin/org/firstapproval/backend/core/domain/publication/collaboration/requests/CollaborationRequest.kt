@@ -1,26 +1,21 @@
 package org.firstapproval.backend.core.domain.publication.collaboration.requests
 
-import jakarta.persistence.CascadeType
+import jakarta.persistence.*
 import jakarta.persistence.CascadeType.REFRESH
-import jakarta.persistence.Entity
 import jakarta.persistence.EnumType.STRING
-import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType.EAGER
-import jakarta.persistence.Id
-import jakarta.persistence.ManyToOne
-import jakarta.persistence.OneToMany
-import jakarta.persistence.Table
 import org.firstapproval.api.server.model.CollaborationRequestInfo
 import org.firstapproval.api.server.model.CollaborationRequestTypeOfWork
 import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.backend.core.domain.publication.Publication
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessage
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.NEW
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationRequestAuthor
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.toApiObject
 import java.time.ZonedDateTime
-import java.util.UUID
+import java.util.*
 import java.util.UUID.randomUUID
 import org.firstapproval.api.server.model.CollaborationRequestStatus as CollaborationRequestStatusApiObject
 
@@ -31,6 +26,8 @@ class CollaborationRequest(
     var id: UUID = randomUUID(),
     @ManyToOne(fetch = EAGER, cascade = [REFRESH])
     val publication: Publication,
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "collaborationRequest")
+    val authors: Set<CollaborationRequestAuthor> = setOf(),
     val firstNameLegal: String,
     val lastNameLegal: String,
     @Enumerated(STRING)
