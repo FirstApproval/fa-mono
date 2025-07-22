@@ -4,14 +4,13 @@ import { UserAction } from "./action/UserAction"
 import { letsMakeCollaboration } from "./action/LetsMakeCollaboration"
 import { iWouldLikeToCollaborate } from "./action/IWouldLikeToCollaborate"
 import { gotItReadyToStart } from "./action/GotItReadyToStart"
-import { showAuthorsEmails } from "./action/ShowAuthorsEmails"
+import { askDataAuthor, showAuthorsEmails } from "./action/ShowAuthorsEmails"
 import { DownloadedPublicationCollaborationChatStore } from "../../publication/store/DownloadedPublicationCollaborationChatStore"
 import { everythingIsCorrect } from "./action/EverythingIsCorrect"
 import { changeMyPersonalInfo } from "./action/ChangeMyPersonalInfo"
 import { iHaveMoreQuestions } from "./action/IHaveMoreQuestions"
 import { notifyCoAuthor } from "./action/NotifyCoAuthor"
 import { uploadFinalDraft } from "./action/UploadFinalDraft"
-import { askDataAuthor } from "./action/AskDataAuthor"
 import { needHelp } from "./action/NeedHelp"
 
 export class UserActionsRegistry {
@@ -44,8 +43,12 @@ export class UserActionsRegistry {
     this.registerAction(CollaborationMessageType.CHANGE_INFO_ABOUT_MY_PUBLICATION);
     this.registerAction(CollaborationMessageType.FIRST_STEP_IS_COMPLETED);
     this.registerAction(CollaborationMessageType.YOUR_COLLABORATION_IS_ESTABLISHED,
-      [notifyCoAuthor, uploadFinalDraft, askDataAuthor, needHelp]
-    );
+      [notifyCoAuthor, uploadFinalDraft, askDataAuthor, needHelp]);
+    this.registerAction(CollaborationMessageType.AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE, [askDataAuthor, needHelp]);
+    this.registerAction(CollaborationMessageType.AUTHOR_APPROVED, [askDataAuthor, needHelp]);
+    this.registerAction(CollaborationMessageType.AUTHOR_DECLINED, [askDataAuthor, needHelp]);
+    this.registerAction(CollaborationMessageType.AUTHOR_DECLINED, [askDataAuthor, needHelp]);
+    this.registerAction(CollaborationMessageType.ALL_AUTHORS_CONFIRMED, [askDataAuthor, needHelp]);
   }
 
   private registerAction (messageType: CollaborationMessageType, actions: UserAction[] = []): void {
