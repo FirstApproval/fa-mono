@@ -1026,6 +1026,47 @@ paths:
       operationId: getCollaborationRequestAgreement
       tags: [ collaboration-request-chat ]
 
+  /api/publication/{publicationId}/collaboration-request/{collaborationRequestId}/file/{fileId}:
+    get:
+      summary: Get collaboration content download link
+      parameters:
+        - in: path
+          name: publicationId
+          schema:
+            type: string
+            maxLength: 7
+          required: true
+          description: Publication id
+        - in: path
+          name: collaborationRequestId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Collaboration request id
+        - in: path
+          name: fileId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: File id
+      responses:
+        200:
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+        401:
+          description: Unauthorized
+        404:
+          description: File not found
+      security:
+        - TokenAuth: [ ]
+      operationId: getCollaborationFileDownloadLink
+      tags: [ collaboration-request-chat ]
+
   /api/collabortion/accept-or-reject-request-collaboration/{collaborationRequestId}:
     post:
       summary: Approve a request for cooperation

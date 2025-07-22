@@ -17,6 +17,7 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.PUBLICATION_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.*
 import org.firstapproval.backend.core.domain.user.User
+import org.firstapproval.backend.core.external.ipfs.DownloadLink
 import org.firstapproval.backend.core.external.s3.COLLABORATION_REQUEST_MESSAGE_FILES
 import org.firstapproval.backend.core.external.s3.FileStorageService
 import org.springframework.core.io.ClassPathResource
@@ -138,6 +139,16 @@ class CollaborationRequestService(
         fileStorageService.save(COLLABORATION_REQUEST_MESSAGE_FILES, fileId.toString(), file.inputStream, file.size)
 
         return savedFileRecord
+    }
+
+    @Transactional
+    fun getDownloadFileLink(collaborationRequestId: UUID, fileId: UUID, user: User): String {
+        val file = collaborationMessageFileRepository.getReferenceById(fileId)
+
+        assert(collaborationRequestId == file.message.collaborationRequest.id)
+        assert(user.id == file.message.user.id)
+
+        return fileStorageService.generateTemporaryDownloadLink(COLLABORATION_REQUEST_MESSAGE_FILES, fileId.toString(), file.name)
     }
 
     @Transactional

@@ -117,6 +117,15 @@ class CollaborationRequestChatController(
             .body(resource);
     }
 
+    override fun getCollaborationFileDownloadLink(
+        publicationId: String,
+        collaborationRequestId: UUID,
+        fileId: UUID
+    ): ResponseEntity<String> {
+        val downloadLink = collaborationRequestService.getDownloadFileLink(collaborationRequestId, fileId, authHolderService.user)
+        return ok(downloadLink)
+    }
+
     private fun createParamsMap(collaborationRequestId: UUID): Map<String, String> {
         val collaborationRequest = collaborationRequestService.get(collaborationRequestId)
         val publication = collaborationRequest.publication

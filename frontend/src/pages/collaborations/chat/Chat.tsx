@@ -32,7 +32,6 @@ import { UploadedFinalDraftPayload } from "../elements/UploadedFinalDraftPayload
 import { DescriptionOutlined } from "@mui/icons-material"
 import { AuthorApprovedPayload } from "../elements/AuthorApprovedPayload"
 import { AuthorDeclinedPayload } from "../elements/AuthorDeclinedPayload"
-import { Link } from "@mui/material"
 
 type ChatProps = {
   collaborationChatStore: DownloadedPublicationCollaborationChatStore;
@@ -170,7 +169,6 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
             const response = await collaborationChatStore.getCollaborationAgreementFile();
 
             const blob = await response.data;
-            debugger;
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -213,7 +211,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
           const avatar = message.isAssistant ? 'FA' :
             (userInfo.profileImage ? renderProfileImage(userInfo.profileImage) : getInitials(userInfo.firstName, userInfo.lastName));
           const mappedFiles = message.files?.map(file =>
-              <FileElement>
+              <FileElement onClick={() => collaborationChatStore.getCollaborationFile(file)}>
                 <DescriptionOutlined style={{marginRight: '12px'}}/>
                 <span>{file.name}</span>
               </FileElement>

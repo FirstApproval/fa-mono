@@ -117,6 +117,19 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
     );
   }
 
+  getCollaborationFile(file: CollaborationRequestMessageFile): Promise<void> {
+    return collaborationRequestChatService.getCollaborationFileDownloadLink(
+      this.publication!!.id!!,
+      this.collaborationRequestId!!,
+      file.id
+    ).then(response => {
+      const a = document.createElement('a');
+      a.href = response.data;
+      a.download = file.name;
+      a.click();
+    });
+  }
+
   sendMessages(
     messages: CollaborationRequestMessage[],
     nextStage: CollaborationMessageType | undefined = undefined
