@@ -10,6 +10,8 @@ import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.toApiObject
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationMessageRepository
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationPotentialPublicationData
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.PersonalDataConfirmation
@@ -109,7 +111,6 @@ class CollaborationRequestChatController(
     override fun getCollaborationRequestAgreement(publicationId: String, collaborationRequestId: UUID): ResponseEntity<Resource> {
         val params = createParamsMap(collaborationRequestId)
         val resource = docxPdfGenerator.generate(AGREEMENT_TEMPLATE, params)
-
         return ok()
             .contentType(APPLICATION_PDF)
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=FA_Collaboration_Agreement_${publicationId}.pdf")
@@ -121,24 +122,24 @@ class CollaborationRequestChatController(
         val publication = collaborationRequest.publication
         val publicationCreator = collaborationRequest.publication.creator
         val messageByType = collaborationRequest.messages.associateBy { it.type }
-        val typeOfWork =collaborationRequest.typeOfWork.name.lowercase().replaceFirstChar { it.uppercase() }.replace('_', ' ')
         val paramsMap = mutableMapOf<String, String>()
 
         val requestCreationDate = messageByType[EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST]!!.creationTime.format(ofPattern(DATE_PATTERN))
         val personalData = messageByType[I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL]!!.payload as PersonalDataConfirmation
+        val potentialPublicationData = messageByType[DONE_WHATS_NEXT]!!.payload as CollaborationPotentialPublicationData
         val dataUserAffiliations = personalData.workplaces.joinToString(separator = ". ", prefix = ", ") { it.format() }
+        val typeOfWork = potentialPublicationData.typeOfWork.name.lowercase().replaceFirstChar { it.uppercase() }.replace('_', ' ')
 
         paramsMap["collaborationRequestCreationDate"] = requestCreationDate
         paramsMap["dataUserFullName"] = "${personalData.firstName} ${personalData.lastName}"
         paramsMap["dataUserAffiliations"] = dataUserAffiliations
         paramsMap["dataAuthorFullName"] = "${publicationCreator.firstName} ${publicationCreator.lastName}"
         paramsMap["dataAuthorAffiliations"] = publicationCreator.workplacesNamesWithAddress.let { ", $it" }
-        paramsMap["publicationTitle"] = publication.title!!
         paramsMap["doiLink"] = doiProperties.linkTemplate.format(publication.id)
         paramsMap["typeOfWork"] = typeOfWork
-        paramsMap["publicationDescriptionOfWork"] = "Publication Description Of Work"
-        paramsMap["publicationDescriptionOfIntendedUse"] = "Publication Description Of Intended Use"
-
+        paramsMap["publicationTitle"] = potentialPublicationData.potentialPublicationTitle
+        paramsMap["publicationDescriptionOfWork"] = potentialPublicationData.detailsOfResearch
+        paramsMap["publicationDescriptionOfIntendedUse"] = potentialPublicationData.intendedJournalForPublication
         return paramsMap
     }
 
