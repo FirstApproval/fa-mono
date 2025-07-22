@@ -3123,6 +3123,18 @@ components:
             - type: string
               enum: [ AUTHOR_APPROVED, AUTHOR_DECLINED ]
 
+    PrefilledCollaborationAgreementPayload:
+      type: object
+      properties:
+        authors:
+          items:
+            $ref: '#/components/schemas/AuthorShortInfo'
+        type:
+          allOf:
+            - $ref: '#/components/schemas/CollaborationMessageType'
+            - type: string
+              enum: [ PREFILLED_COLLABORATION_AGREEMENT ]
+
     CollaborationRequestMessage:
       type: object
       properties:

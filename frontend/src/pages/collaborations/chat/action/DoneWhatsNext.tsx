@@ -37,19 +37,9 @@ function createPrefilledAgreementMessage(
     const otherAuthors = collaborationChatStore.publication!!.authors!!
       .filter(author => author.user && author.user!!.id !== creator.id)
 
-    const mappedAuthors = otherAuthors.map(
-      author => {`• ${author!!.firstName} ${author!!.lastName} FA Collaboration Agreement.pdf`}
-    ).join('\n');
-
     return {
       type: CollaborationMessageType.PREFILLED_COLLABORATION_AGREEMENT,
       isAssistant: true,
-      text: (
-        "Good job! Here is a pre-filled (unsigned) collaboration agreement with the corresponding author: \n" +
-        `${getFullName(creator)} - FA Collaboration Agreement.pdf\n` +
-        "And the rest of agreements (they differ only in information about the data authors): \n" +
-        `${mappedAuthors}\n` +
-        "Please review the agreement(s), and if all information is correct, sign and send it them by clicking the button below."
-      )
+      payload: { "authors": otherAuthors }
     };
 }

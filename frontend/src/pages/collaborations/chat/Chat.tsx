@@ -32,6 +32,7 @@ import { UploadedFinalDraftPayload } from "../elements/UploadedFinalDraftPayload
 import { DescriptionOutlined } from "@mui/icons-material"
 import { AuthorApprovedPayload } from "../elements/AuthorApprovedPayload"
 import { AuthorDeclinedPayload } from "../elements/AuthorDeclinedPayload"
+import { PrefilledAgreementPayload } from "../elements/PrefilledAgreementPayload"
 
 type ChatProps = {
   collaborationChatStore: DownloadedPublicationCollaborationChatStore;
@@ -166,15 +167,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
       <span
         onClick={async () => {
           try {
-            const response = await collaborationChatStore.getCollaborationAgreementFile();
-
-            const blob = await response.data;
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'FA_Collaboration_Agreement_template.pdf';
-            a.click();
-            window.URL.revokeObjectURL(url);
+            await collaborationChatStore.getCollaborationAgreementFile();
           } catch (err) {
             console.error('Error downloading collaboration agreement:', err);
             alert('Error downloading collaboration agreement')
@@ -234,6 +227,9 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
                 {message.type === CollaborationMessageType.AUTHOR_APPROVED && <AuthorApprovedPayload message={message} />}
                 {message.type === CollaborationMessageType.AUTHOR_DECLINED && <AuthorDeclinedPayload message={message} />}
                 {message.type === CollaborationMessageType.UPLOAD_FINAL_DRAFT && <UploadedFinalDraftPayload message={message} />}
+                {message.type === CollaborationMessageType.PREFILLED_COLLABORATION_AGREEMENT &&
+                  <PrefilledAgreementPayload message={message} chatStore={collaborationChatStore} />
+                }
                 {message.type === CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET && showStepsInfo()}
                 {message.type === CollaborationMessageType.VERIFY_YOUR_NAME_AND_AFFILIATION &&
                   !collaborationChatStore.existsByType(CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL) &&

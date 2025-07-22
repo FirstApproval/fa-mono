@@ -109,12 +109,20 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
     });
   }
 
-  getCollaborationAgreementFile(): Promise<AxiosResponse<Blob>> {
+  getCollaborationAgreementFile(): Promise<void> {
     return collaborationRequestChatService.getCollaborationRequestAgreement(
       this.publication!!.id,
       this.collaborationRequestId,
       { responseType: 'blob' }
-    );
+    ).then(response => {
+      const blob = response.data;
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'FA_Collaboration_Agreement_template.pdf';
+      a.click();
+      window.URL.revokeObjectURL(url);
+    });
   }
 
   getCollaborationFile(file: CollaborationRequestMessageFile): Promise<void> {
