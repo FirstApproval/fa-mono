@@ -108,8 +108,12 @@ class CollaborationRequestChatController(
         return ok(savedFileRecord)
     }
 
-    override fun getCollaborationRequestAgreement(publicationId: String, collaborationRequestId: UUID): ResponseEntity<Resource> {
-        val params = createParamsMap(collaborationRequestId)
+    override fun getCollaborationRequestAgreement(
+        publicationId: String,
+        collaborationRequestId: UUID,
+        authorId: UUID
+    ): ResponseEntity<Resource> {
+        val params = createParamsMap(collaborationRequestId, authorId)
         val resource = docxPdfGenerator.generate(AGREEMENT_TEMPLATE, params)
         return ok()
             .contentType(APPLICATION_PDF)
@@ -126,10 +130,10 @@ class CollaborationRequestChatController(
         return ok(downloadLink)
     }
 
-    private fun createParamsMap(collaborationRequestId: UUID): Map<String, String> {
+    private fun createParamsMap(collaborationRequestId: UUID, authorId: UUID): Map<String, String> {
         val collaborationRequest = collaborationRequestService.get(collaborationRequestId)
         val publication = collaborationRequest.publication
-        val publicationCreator = collaborationRequest.publication.creator
+        val author = publication.authors.find { it.id == authorId }!!//collaborationRequest.publication.creator
         val messageByType = collaborationRequest.messages.associateBy { it.type }
         val paramsMap = mutableMapOf<String, String>()
 
@@ -142,8 +146,8 @@ class CollaborationRequestChatController(
         paramsMap["collaborationRequestCreationDate"] = requestCreationDate
         paramsMap["dataUserFullName"] = "${personalData.firstName} ${personalData.lastName}"
         paramsMap["dataUserAffiliations"] = dataUserAffiliations
-        paramsMap["dataAuthorFullName"] = "${publicationCreator.firstName} ${publicationCreator.lastName}"
-        paramsMap["dataAuthorAffiliations"] = publicationCreator.workplacesNamesWithAddress.let { ", $it" }
+        paramsMap["dataAuthorFullName"] = "${author.firstName} ${author.lastName}"
+        paramsMap["dataAuthorAffiliations"] = author.user!!.workplacesNamesWithAddress.let { ", $it" }
         paramsMap["doiLink"] = doiProperties.linkTemplate.format(publication.id)
         paramsMap["typeOfWork"] = typeOfWork
         paramsMap["publicationTitle"] = potentialPublicationData.potentialPublicationTitle

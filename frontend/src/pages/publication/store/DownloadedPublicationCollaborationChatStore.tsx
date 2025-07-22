@@ -109,10 +109,11 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
     });
   }
 
-  getCollaborationAgreementFile(): Promise<void> {
+  getCollaborationAgreementFile(authorId: string): Promise<void> {
     return collaborationRequestChatService.getCollaborationRequestAgreement(
       this.publication!!.id,
       this.collaborationRequestId,
+      authorId,
       { responseType: 'blob' }
     ).then(response => {
       const blob = response.data;
