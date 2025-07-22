@@ -189,7 +189,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
           display: 'inline-block'
         }}
       >
-    FA Collaboration Agreement template.pdf
+    FA Collaboration Agreement {collaborationChatStore.publication?.id}.pdf
   </span>
     </FileElement>
   }
