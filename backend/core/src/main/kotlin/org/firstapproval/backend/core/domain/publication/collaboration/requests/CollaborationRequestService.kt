@@ -169,7 +169,7 @@ class CollaborationRequestService(
         val publication = publicationService.getUserPublicationByIdAndStatus(publicationId, user)
         return collaborationRequestRepository.findByPublicationIdAndStatusIn(
             publication.id,
-            setOf(NEW, APPROVED, DECLINED),
+            setOf(PENDING, APPROVED, DECLINED),
             PageRequest.of(page, pageSize, Sort.by(DESC, "status", "creationTime"))
         )
     }

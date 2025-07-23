@@ -117,7 +117,6 @@ export class CollaborationStore {
       .createCollaborationRequest(publicationId, {
         firstNameLegal,
         lastNameLegal,
-        typeOfWork,
         description
       })
       .then(() => {

@@ -48,9 +48,10 @@ class CollaborationRequest(
 )
 
 enum class CollaborationRequestStatus {
+    NEW,
+    PENDING,
     APPROVED,
-    DECLINED,
-    NEW
+    DECLINED
 }
 
 enum class TypeOfWork {

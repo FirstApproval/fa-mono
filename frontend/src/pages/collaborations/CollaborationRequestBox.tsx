@@ -4,6 +4,7 @@ import { Card, CardContent, Typography, Button } from '@mui/material';
 import AvatarNameBox from './elements/AvatarNameBox';
 import { HeightElement } from '../common.styled';
 import { CollaborationRequestStatus } from "../../apis/first-approval-api"
+import _ from "lodash"
 
 function getBorderColor(status: CollaborationRequestStatus): string {
   switch (status) {
@@ -62,14 +63,7 @@ const BoxyIcon = styled.span`
 `;
 
 function getButtonText(status: CollaborationRequestStatus): string {
-  switch (status) {
-    case CollaborationRequestStatus.NEW:
-      return 'Answer';
-    case CollaborationRequestStatus.APPROVED:
-      return 'Approved';
-    case CollaborationRequestStatus.DECLINED:
-      return 'Declined';
-  }
+  return _.capitalize(status.toLowerCase().replace('_', ' '))
 }
 
 export const CollaborationRequestBox = ({
