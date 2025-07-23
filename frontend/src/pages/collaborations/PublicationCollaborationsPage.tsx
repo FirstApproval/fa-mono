@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { ReactElement, useEffect, useState } from "react"
+import React, { ReactElement, useEffect, useState } from "react"
 import { Button, Typography } from '@mui/material';
 import styled from '@emotion/styled';
 import { FullWidth, HeightElement } from '../common.styled'
@@ -12,6 +12,9 @@ import { collaborationStore } from '../publication/store/downloadsStore';
 import { CollaborationRequestInfo } from "../../apis/first-approval-api"
 import { PublicationCollaborationsStore } from "./dashboard/PublicationCollaborationsStore"
 import { PublicationInfoBox } from "./elements/PublicationInfoBox"
+import { LeftPanelPublicationsPage } from "./LeftPanelPublications"
+import { Helmet } from "react-helmet"
+import { HeaderComponent } from "../../components/HeaderComponent"
 
 export const PublicationCollaborationsPage = observer((): ReactElement => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -44,47 +47,59 @@ export const PublicationCollaborationsPage = observer((): ReactElement => {
   }
 
   return (
-    <>
-      <BodyWrap>
-        <BodyContentWrap>
-          <HeaderWrap>
-            <HeaderTitleWrap>
-              <Typography variant={'h5'}>
-                Collaboration dashboard
-              </Typography>
-              <MarginLeftAuto />
-            </HeaderTitleWrap>
-            <HeightElement value={'36px'} />
-          </HeaderWrap>
-          <div
-            style={{
-              marginBottom: '24px',
-              color: '#68676E',
-              fontSize: '16px',
-              fontWeight: '400',
-              lineHeight: '150%',
-              letterSpacing: '0.15px'
-            }}>
-            This page helps you manage collaboration requests from
-            data users who plan to reuse/include your data in their
-            upcoming publications.
-          </div>
-          <DatasetStatsWrapper>
-            {
-              publicationCollaborationsStore.publication &&
-              <PublicationInfoBox publicationInfo={publicationCollaborationsStore.publication} />
-            }
-          </DatasetStatsWrapper>
-          <HeightElement value={'36px'} />
-          <Typography variant={'h6'}>{collaborationStore.collaborationRequests.length ?
-            'Received requests' : 'There are no collaboration requests for this publication yet.'}</Typography>
-          <HeightElement value={'12px'} />
-          <FullWidth>
-            {collaborationStore.collaborationRequests.map(mapToCollaborationRequestBox)}
-          </FullWidth>
-        </BodyContentWrap>
-      </BodyWrap>
-    </>
+      <Parent>
+        <HeaderBorderColorFix>
+          <HeaderComponent
+            showPublishButton={true}
+            showCollaborateButton={true}
+            showBottomStyleGap={false}
+          />
+        </HeaderBorderColorFix>
+        <Container>
+          <LeftPanelPublicationsPage />
+          <RightPanel>
+            <BodyWrap>
+              <BodyContentWrap>
+                <HeaderWrap>
+                  <HeaderTitleWrap>
+                    <Typography variant={"h5"}>
+                      Collaboration dashboard
+                    </Typography>
+                    <MarginLeftAuto />
+                  </HeaderTitleWrap>
+                  <HeightElement value={"36px"} />
+                </HeaderWrap>
+                <div
+                  style={{
+                    marginBottom: "24px",
+                    color: "#68676E",
+                    fontSize: "16px",
+                    fontWeight: "400",
+                    lineHeight: "150%",
+                    letterSpacing: "0.15px"
+                  }}>
+                  This page helps you manage collaboration requests from
+                  data users who plan to reuse/include your data in their
+                  upcoming publications.
+                </div>
+                <DatasetStatsWrapper>
+                  {
+                    publicationCollaborationsStore.publication &&
+                    <PublicationInfoBox publicationInfo={publicationCollaborationsStore.publication} />
+                  }
+                </DatasetStatsWrapper>
+                <HeightElement value={"36px"} />
+                <Typography variant={"h6"}>{collaborationStore.collaborationRequests.length ?
+                  "Received requests" : "There are no collaboration requests for this publication yet."}</Typography>
+                <HeightElement value={"12px"} />
+                <FullWidth>
+                  {collaborationStore.collaborationRequests.map(mapToCollaborationRequestBox)}
+                </FullWidth>
+              </BodyContentWrap>
+            </BodyWrap>
+          </RightPanel>
+        </Container>
+      </Parent>
   )
 });
 
