@@ -8,12 +8,10 @@ import {
 } from './CollaborationRequestBox';
 import { routerStore } from '../../core/router';
 import { Page } from '../../core/router/constants';
-import { collaborationStore } from '../publication/store/downloadsStore';
 import { CollaborationRequestInfo } from "../../apis/first-approval-api"
 import { PublicationCollaborationsStore } from "./dashboard/PublicationCollaborationsStore"
 import { PublicationInfoBox } from "./elements/PublicationInfoBox"
 import { LeftPanelPublicationsPage } from "./LeftPanelPublications"
-import { Helmet } from "react-helmet"
 import { HeaderComponent } from "../../components/HeaderComponent"
 
 export const PublicationCollaborationsPage = observer((): ReactElement => {
@@ -89,11 +87,11 @@ export const PublicationCollaborationsPage = observer((): ReactElement => {
                   }
                 </DatasetStatsWrapper>
                 <HeightElement value={"36px"} />
-                <Typography variant={"h6"}>{collaborationStore.collaborationRequests.length ?
+                <Typography variant={"h6"}>{publicationCollaborationsStore.collaborationRequests.length ?
                   "Received requests" : "There are no collaboration requests for this publication yet."}</Typography>
                 <HeightElement value={"12px"} />
                 <FullWidth>
-                  {collaborationStore.collaborationRequests.map(mapToCollaborationRequestBox)}
+                  {publicationCollaborationsStore.collaborationRequests.map(mapToCollaborationRequestBox)}
                 </FullWidth>
               </BodyContentWrap>
             </BodyWrap>
