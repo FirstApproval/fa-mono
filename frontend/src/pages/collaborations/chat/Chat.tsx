@@ -33,6 +33,7 @@ import { DescriptionOutlined } from "@mui/icons-material"
 import { AuthorApprovedPayload } from "../elements/AuthorApprovedPayload"
 import { AuthorDeclinedPayload } from "../elements/AuthorDeclinedPayload"
 import { PrefilledAgreementPayload } from "../elements/PrefilledAgreementPayload"
+import { Link } from "@mui/material"
 
 type ChatProps = {
   collaborationChatStore: DownloadedPublicationCollaborationChatStore;
@@ -163,25 +164,15 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
 
   function getCollaborationAgreementTemplateLink () {
     return <FileElement>
-      <DescriptionOutlined style={{ marginRight: "12px" }} />
-      <span
-        onClick={async () => {
-          try {
-            await collaborationChatStore.getCollaborationAgreementFile();
-          } catch (err) {
-            console.error('Error downloading collaboration agreement:', err);
-            alert('Error downloading collaboration agreement')
-          }
-        }}
-        style={{
-          cursor: 'pointer',
-          color: 'black',
-          textDecoration: 'none',
-          display: 'inline-block'
-        }}
+      <Link
+        href={"/docs/FA_Collaboration_Agreement_template.pdf"}
+        target={"_blank"}
+        underline={"none"}
+        sx={{ color: "black" }}
+        style={{ cursor: "pointer" }}
       >
-    FA Collaboration Agreement {collaborationChatStore.publication?.id}.pdf
-  </span>
+        FA Collaboration Agreement template.pdf
+      </Link>
     </FileElement>
   }
 

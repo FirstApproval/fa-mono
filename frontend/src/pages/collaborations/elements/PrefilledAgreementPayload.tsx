@@ -17,7 +17,7 @@ export const PrefilledAgreementPayload = observer((
   const payload = message.payload!! as PrefilledCollaborationAgreementPayload;
   const authors = payload.authors ?? [];
 
-  const collaborationAgreementTemplate = getCollaborationAgreementTemplateLink(message, chatStore);
+  const collaborationAgreementTemplate = getPublicationCreatorCollaborationAgreementLink(message, chatStore);
 
   const mappedAuthorsAgreements = authors?.map(
     (author, index) =>
@@ -29,8 +29,15 @@ export const PrefilledAgreementPayload = observer((
             textDecorationThickness: '1.5px',
             textUnderlineOffset: '2px'
           }}
-          onClick={() => chatStore.getCollaborationAgreementFile()
-              .catch(error => console.error("Error downloading collaboration agreement", error)).then()
+          onClick={async () => {
+            try {
+              debugger;
+              await chatStore.getCollaborationAgreementFile(author.id!!);
+            } catch (err) {
+              console.error('Error downloading collaboration agreement:', err);
+              alert('Error downloading collaboration agreement')
+            }
+          }
           }>
         {getAuthorFullName(author)} - FA Collaboration Agreement.pdf
       </li>
@@ -50,13 +57,17 @@ export const PrefilledAgreementPayload = observer((
   )
 })
 
-function getCollaborationAgreementTemplateLink (message: CollaborationRequestMessage, chatStore: DownloadedPublicationCollaborationChatStore) {
+function getPublicationCreatorCollaborationAgreementLink (
+  message: CollaborationRequestMessage,
+  chatStore: DownloadedPublicationCollaborationChatStore
+) {
+  const creator = chatStore.publicationCreator
   return <FileElement>
     <DescriptionOutlined style={{ marginRight: "12px" }} />
     <span
       onClick={async () => {
         try {
-          await chatStore.getCollaborationAgreementFile();
+          await chatStore.getCollaborationAgreementFile(chatStore.publicationCreatorAuthor!!.id!!);
         } catch (err) {
           console.error('Error downloading collaboration agreement:', err);
           alert('Error downloading collaboration agreement')

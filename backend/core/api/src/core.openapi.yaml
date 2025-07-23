@@ -2945,6 +2945,9 @@ components:
     AuthorShortInfo:
       type: object
       properties:
+        id:
+          type: string
+          format: uuid
         email:
           type: string
         firstName:
@@ -2954,6 +2957,7 @@ components:
         username:
           type: string
       required:
+        - id
         - email
         - firstName
         - lastName

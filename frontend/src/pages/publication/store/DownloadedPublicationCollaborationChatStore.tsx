@@ -1,5 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 import {
+  Author,
   CollaborationMessageType,
   CollaborationRequestMessage,
   CollaborationRequestMessageFile,
@@ -25,6 +26,7 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
   messages: CollaborationRequestMessage[] | undefined = undefined;
   publication?: Publication;
   publicationCreator: UserInfo | undefined = undefined;
+  publicationCreatorAuthor: Author | undefined = undefined;
   messageType: CollaborationMessageType | undefined = undefined;
 
   workplaces: Workplace[] = [];
@@ -47,7 +49,7 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
     publicationService.getPublication(publicationId).then(response => {
       this.publication = response.data;
       this.publicationCreator = response.data.creator;
-
+      this.publicationCreatorAuthor = response.data.authors!!.find(author => this.publicationCreator!!.id === author.user!!.id)!!
       switch (this.publication.useType) {
         case (UseType.CO_AUTHORSHIP): {
           collaborationRequestChatService
