@@ -4,7 +4,7 @@ import {
   PrefilledCollaborationAgreementPayload
 } from "../../../apis/first-approval-api"
 import React, { ReactElement } from "react"
-import { getAuthorFullName, getFullName } from "../../../util/userUtil"
+import { getFullName } from "../../../util/userUtil"
 import { DownloadedPublicationCollaborationChatStore } from "../../publication/store/DownloadedPublicationCollaborationChatStore"
 import { DescriptionOutlined } from "@mui/icons-material"
 import styled from "@emotion/styled"
@@ -39,7 +39,7 @@ export const PrefilledAgreementPayload = observer((
             }
           }
           }>
-        {getAuthorFullName(author)} - FA Collaboration Agreement.pdf
+        {getFullName(author)} - FA Collaboration Agreement.pdf
       </li>
   );
 

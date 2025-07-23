@@ -27,7 +27,6 @@ export const SelfAvatar: React.FC = observer(() => {
   return (
     <SelfAvatarContainer>
       <StyledAvatar
-        // sx={{ marginTop: '5px' }}
         src={renderProfileImage(user?.profileImage)}>
         {getInitials(user?.firstName, user?.lastName)}
       </StyledAvatar>

@@ -5,7 +5,6 @@ import {
   CollaborationMessageAuthorsPayload,
   CollaborationRequestMessage
 } from "../../../apis/first-approval-api"
-import { getAuthorFullName } from "../../../util/userUtil"
 import { mapAuthorWithLink } from "../utils"
 import { FlexWrapColumn } from "../../common.styled"
 
