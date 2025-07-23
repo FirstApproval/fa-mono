@@ -162,7 +162,6 @@ class PublicationController(
                 CreateCollaborationRequest(
                     authHolderService.user.firstName,
                     authHolderService.user.lastName,
-                    JOURNAL_ARTICLE
                 ),
                 authHolderService.user
             )

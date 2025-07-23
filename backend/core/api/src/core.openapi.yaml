@@ -2619,8 +2619,8 @@ components:
           type: string
         lastNameLegal:
           type: string
-        typeOfWork:
-          $ref: '#/components/schemas/CollaborationRequestTypeOfWork'
+#        typeOfWork:
+#          $ref: '#/components/schemas/CollaborationRequestTypeOfWork'
         status:
           $ref: '#/components/schemas/CollaborationRequestStatus'
         userInfo:
@@ -2659,14 +2659,14 @@ components:
           type: string
         lastNameLegal:
           type: string
-        typeOfWork:
-          $ref: '#/components/schemas/CollaborationRequestTypeOfWork'
+#        typeOfWork:
+#          $ref: '#/components/schemas/CollaborationRequestTypeOfWork'
         description:
           type: string
       required:
         - firstNameLegal
         - lastNameLegal
-        - typeOfWork
+#        - typeOfWork
 
     FullName:
       type: object

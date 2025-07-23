@@ -86,8 +86,8 @@ class CollaborationRequestService(
     @Transactional
     fun createCollaborationRequest(publicationId: String, collaborationRequestRequest: CreateCollaborationRequest, user: User) {
         val publication = publicationRepository.getReferenceById(publicationId)
-        val typeOfWork = TypeOfWork.valueOf(collaborationRequestRequest.typeOfWork.name)
-        createIfAbsent(publication, collaborationRequestRequest, typeOfWork, user)
+//        val typeOfWork = TypeOfWork.valueOf(collaborationRequestRequest.typeOfWork.name)
+        createIfAbsent(publication, collaborationRequestRequest, user)
     }
 
     @Transactional
@@ -177,7 +177,6 @@ class CollaborationRequestService(
     private fun createIfAbsent(
         publication: Publication,
         collaborationRequestRequest: CreateCollaborationRequest,
-        typeOfWork: TypeOfWork,
         user: User
     ) {
         if (collaborationRequestRepository.existsByPublicationAndUser(publication, user)) {
@@ -189,7 +188,6 @@ class CollaborationRequestService(
                 publication = publication,
                 firstNameLegal = collaborationRequestRequest.firstNameLegal,
                 lastNameLegal = collaborationRequestRequest.lastNameLegal,
-                typeOfWork = typeOfWork,
                 description = collaborationRequestRequest.description,
                 user = user
             )

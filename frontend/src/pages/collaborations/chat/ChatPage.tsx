@@ -3,7 +3,6 @@ import styled from '@emotion/styled';
 import { HeaderComponent } from '../../../components/HeaderComponent';
 import { Helmet } from 'react-helmet';
 import BreadCrumbs from '../BreadCrumbs';
-import Chat from './Chat';
 import { Typography } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 import { LeftPanelPublicationsPage } from '../LeftPanelPublications';

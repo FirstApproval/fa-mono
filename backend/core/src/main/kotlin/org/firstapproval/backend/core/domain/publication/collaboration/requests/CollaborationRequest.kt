@@ -31,8 +31,8 @@ class CollaborationRequest(
     val authors: Set<CollaborationRequestAuthor> = setOf(),
     val firstNameLegal: String,
     val lastNameLegal: String,
-    @Enumerated(STRING)
-    val typeOfWork: TypeOfWork,
+//    @Enumerated(STRING)
+//    val typeOfWork: TypeOfWork,
     var authorResponse: String? = null,
     @ManyToOne(fetch = EAGER)
     val user: User,
@@ -69,7 +69,6 @@ fun CollaborationRequest.toApiObject(userInfo: UserInfo) = CollaborationRequestI
     it.publicationId = publication.id
     it.firstNameLegal = firstNameLegal
     it.lastNameLegal = lastNameLegal
-    it.typeOfWork = CollaborationRequestTypeOfWork.fromValue(typeOfWork.name)
     it.description = description
     it.creationTime = creationTime.toOffsetDateTime()
     it.decisionTime = decisionTime?.toOffsetDateTime()
