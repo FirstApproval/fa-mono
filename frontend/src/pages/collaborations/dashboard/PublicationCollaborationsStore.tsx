@@ -1,9 +1,10 @@
 import {
   CollaborationRequestInfo,
-  Publication,
+  Publication
 } from "../../../apis/first-approval-api"
 import { makeAutoObservable } from "mobx"
-import { collaborationRequestService } from "../../../core/service"
+import { forkJoin } from 'rxjs';
+import { collaborationRequestService, publicationService } from "../../../core/service"
 
 const PAGE_SIZE = 20;
 
@@ -40,13 +41,16 @@ export class PublicationCollaborationsStore {
   }
 
   private loadInitialState(publicationId: string): void {
-    debugger;
-    collaborationRequestService.getPublicationCollaborationRequests(publicationId, this.currentPage, PAGE_SIZE)
-      .then((response) => {
+    forkJoin(
+      publicationService.getPublication(publicationId),
+      collaborationRequestService.getPublicationCollaborationRequests(publicationId, this.currentPage, PAGE_SIZE)
+    ).subscribe(
+      ([publicationResponse, collaborationRequestsResponse]) => {
+        this.publication = publicationResponse.data
+        this.isLastPage = collaborationRequestsResponse.data.isLastPage
+        this.collaborationRequests.push(...collaborationRequestsResponse.data.collaborationRequests)
         debugger;
-        const data = response.data;
-        this.isLastPage = data.isLastPage;
-        this.collaborationRequests.push(...data.collaborationRequests);
-      });
+      }
+    )
   }
 }
