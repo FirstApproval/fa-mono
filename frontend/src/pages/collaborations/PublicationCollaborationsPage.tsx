@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import { ReactElement, useEffect, useState } from "react"
 import { Button, Typography } from '@mui/material';
 import styled from '@emotion/styled';
-import { HeightElement } from '../common.styled';
+import { FullWidth, HeightElement } from '../common.styled'
 import {
   CollaborationRequestBox,
 } from './CollaborationRequestBox';
@@ -70,16 +70,18 @@ export const PublicationCollaborationsPage = observer((): ReactElement => {
             upcoming publications.
           </div>
           <DatasetStatsWrapper>
-            {/* <PublicationInfoBox */}
-            {/*  publicationInfo={publicationInfo} */}
-            {/* /> */}
+            {
+              publicationCollaborationsStore.publication &&
+              <PublicationInfoBox publicationInfo={publicationCollaborationsStore.publication} />
+            }
           </DatasetStatsWrapper>
           <HeightElement value={'36px'} />
-          <Typography variant={'h6'}>Received requests</Typography>
+          <Typography variant={'h6'}>{collaborationStore.collaborationRequests.length ?
+            'Received requests' : 'There are no collaboration requests for this publication yet.'}</Typography>
           <HeightElement value={'12px'} />
-          <>
+          <FullWidth>
             {collaborationStore.collaborationRequests.map(mapToCollaborationRequestBox)}
-          </>
+          </FullWidth>
         </BodyContentWrap>
       </BodyWrap>
     </>
