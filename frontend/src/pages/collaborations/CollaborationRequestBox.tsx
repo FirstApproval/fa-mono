@@ -94,23 +94,40 @@ export const CollaborationRequestBox = ({
         <HeightElement value={'12px'} />
         <Typography variant="h6">{children}</Typography>
         <HeightElement value={'12px'} />
-        {status === CollaborationRequestStatus.NEW && (
-          <BoxyButton onClick={onClick} variant="contained" icon>
-            {getButtonText(status)}
-          </BoxyButton>
-        )}
-        {status === CollaborationRequestStatus.APPROVED && (
-          <BoxyButton onClick={onClick} green variant="outlined">
-            {getButtonText(status)}
-          </BoxyButton>
-        )}
-        {status === CollaborationRequestStatus.DECLINED && (
-          <BoxyButton onClick={onClick} red variant="outlined">
-            {getButtonText(status)}
-          </BoxyButton>
-        )}
+        {renderButtonByStatus(status, onClick)}
       </CardContent>
     </StyledCard>
+  );
+};
+
+const renderButtonByStatus = (status: CollaborationRequestStatus, onClick: () => void): ReactElement => {
+  const children = getButtonText(status);
+
+  let props: {
+    variant: 'outlined' | 'contained';
+    icon?: boolean;
+    green?: boolean;
+    red?: boolean;
+  };
+
+  switch (status) {
+    case CollaborationRequestStatus.NEW:
+      props = { variant: 'contained', icon: true };
+      break;
+    case CollaborationRequestStatus.APPROVED:
+      props = { variant: 'outlined', green: true };
+      break;
+    case CollaborationRequestStatus.DECLINED:
+      props = { variant: 'outlined', red: true };
+      break;
+    default:
+      throw Error('Unexpected status')
+  }
+
+  return (
+    <BoxyButton onClick={onClick} {...props}>
+      {children}
+    </BoxyButton>
   );
 };
 
