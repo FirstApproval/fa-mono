@@ -7,7 +7,7 @@ import {
 } from "../../../apis/first-approval-api"
 import { makeAutoObservable } from "mobx"
 import { routerStore } from "../../../core/router"
-import { downloadedPublicationCollaborationChatPath, Page } from "../../../core/router/constants"
+import { downloadedPublicationCollaborationChatPath, myPublicationCollaborationsPath, Page } from "../../../core/router/constants"
 import { collaborationsPageStore } from "./downloadsStore"
 import { authStore } from "../../../core/auth"
 
@@ -36,8 +36,11 @@ export class CollaborationsPageStore {
   }
 
   selectMyPublication(publicationInfo: PublicationShortInfo): void {
-    this.selectedPublication = publicationInfo;
-    this.selectedPublicationType = PublicationType.MY;
+    routerStore.navigatePage(
+      Page.MY_PUBLICATION_COLLABORATIONS,
+      `${myPublicationCollaborationsPath}${publicationInfo.id!!}`,
+      true
+    );
   }
 
   selectDownloadedPublication(publicationInfo: PublicationShortInfo): void {

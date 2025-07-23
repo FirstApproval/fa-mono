@@ -33,7 +33,9 @@ export enum Page {
 
   COLLABORATIONS_PAGE,
   COLLABORATIONS_CHAT,
-  DOWNLOADED_PUBLICATION_COLLABORATIONS_CHAT
+  DOWNLOADED_PUBLICATION_COLLABORATIONS_CHAT,
+  MY_PUBLICATION_COLLABORATIONS,
+  MY_PUBLICATION_COLLABORATION_CHAT
 }
 
 export const pathToOauthType: Record<string, OauthType> = {
@@ -62,3 +64,5 @@ export const passwordChangeConfirmation = '/password-change-confirmation'
 export const collaborationPath = '/collaborations/';
 export const collaborationChatPath = '/collaborations/chat/';
 export const downloadedPublicationCollaborationChatPath = '/collaborations/downloaded/chat';
+export const myPublicationCollaborationsPath = '/my-publication-collaborations/';
+export const myPublicationCollaborationChatPath = '/my-publication-collaboration/chat/';

@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import { userStore } from "../../core/user";
-import { ReactElement, useEffect } from 'react';
+import { ReactElement, useEffect, useState } from "react"
 import { Button, Typography } from '@mui/material';
 import styled from '@emotion/styled';
 import { HeightElement } from '../common.styled';
@@ -11,21 +11,24 @@ import {
 import { routerStore } from '../../core/router';
 import { Page } from '../../core/router/constants';
 import { collaborationStore } from '../publication/store/downloadsStore';
-import { CollaborationRequestInfo, PublicationShortInfo } from "../../apis/first-approval-api"
-import { PublicationInfoBox } from './elements/PublicationInfoBox';
+import { CollaborationRequestInfo } from "../../apis/first-approval-api"
+import { PublicationCollaborationsStore } from "./dashboard/PublicationCollaborationsStore"
 
-export const PublicationCollaborationsPage = observer((props: { publicationInfo: PublicationShortInfo}): ReactElement => {
-  const { publicationInfo } = props;
+export const PublicationCollaborationsPage = observer((): ReactElement => {
+  const [publicationId] = useState(() => routerStore.lastPathSegment);
+  const [] = useState(new PublicationCollaborationsStore(publicationId));
+
+
   useEffect(() => {
-    collaborationStore.clearAndOpen(publicationInfo.id, publicationInfo.collaboratorsCount);
-    if (publicationInfo.creator!!.id === userStore.user!!.id) {
-      collaborationStore.loadCollaborationRequests(0);
-    }
+    // collaborationStore.clearAndOpen(publicationInfo.id, publicationInfo.collaboratorsCount);
+    // if (publicationInfo.creator!!.id === userStore.user!!.id) {
+    //   collaborationStore.loadCollaborationRequests(0);
+    // }
     // collaborationStore.loadCollaborationRequests(0);
   }, []);
   const goToChat = (collaborationRequestId: string) => routerStore.navigatePage(
     Page.COLLABORATIONS_CHAT,
-    `chat/${collaborationRequestId}`,
+    `/publication/${publicationId}/chat/${collaborationRequestId}`,
     true
   );
 
@@ -68,9 +71,9 @@ export const PublicationCollaborationsPage = observer((props: { publicationInfo:
             upcoming publications.
           </div>
           <DatasetStatsWrapper>
-            <PublicationInfoBox
-              publicationInfo={publicationInfo}
-            />
+            {/* <PublicationInfoBox */}
+            {/*  publicationInfo={publicationInfo} */}
+            {/* /> */}
           </DatasetStatsWrapper>
           <HeightElement value={'36px'} />
           <Typography variant={'h6'}>Received requests</Typography>

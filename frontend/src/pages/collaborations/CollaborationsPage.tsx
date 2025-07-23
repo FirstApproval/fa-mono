@@ -6,9 +6,7 @@ import { Button } from '@mui/material';
 import NoPublicationsImage from '../../assets/no-publications.svg';
 import { collaborationsPageStore } from '../publication/store/downloadsStore';
 import { observer } from 'mobx-react-lite';
-import { PublicationCollaborationsPage } from './PublicationCollaborations';
 import { LeftPanelPublicationsPage } from './LeftPanelPublications';
-import { PublicationType } from "../publication/store/CollaborationsPageStore"
 import { routerStore } from "../../core/router"
 import { Page } from "../../core/router/constants"
 
@@ -16,8 +14,6 @@ export const CollaborationsPage = observer((): ReactElement => {
   const {
     myPublications,
     downloadedPublications,
-    selectedPublication,
-    selectedPublicationType
   } = collaborationsPageStore;
   const hasPublications =
     (myPublications?.length ?? 0) + (downloadedPublications?.length ?? 0) > 0;
@@ -47,12 +43,12 @@ export const CollaborationsPage = observer((): ReactElement => {
             <>
               <LeftPanelPublicationsPage />
               <RightPanel>
-                {selectedPublication &&
-                  selectedPublicationType === PublicationType.MY && (
-                    <PublicationCollaborationsPage
-                      publicationInfo={selectedPublication}
-                    />
-                  )}
+                {/* {selectedPublication && */}
+                {/*   selectedPublicationType === PublicationType.MY && ( */}
+                {/*     <PublicationCollaborationsPage */}
+                {/*       publicationInfo={selectedPublication} */}
+                {/*     /> */}
+                {/*   )} */}
               </RightPanel>
             </>
           ) : (
