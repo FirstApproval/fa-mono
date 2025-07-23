@@ -6,12 +6,12 @@ import downloads from './../../../assets/downloads.svg';
 import { Tooltip, Typography } from '@mui/material';
 import AlternateEmailOutlinedIcon from '@mui/icons-material/AlternateEmailOutlined';
 import styled from '@emotion/styled';
-import { PublicationShortInfo } from '../../../apis/first-approval-api';
+import { Publication, PublicationShortInfo } from "../../../apis/first-approval-api"
 import { HeightElement } from "../../common.styled"
 
 export const PublicationInfoBox = observer(
   (props: {
-    publicationInfo: PublicationShortInfo;
+    publicationInfo: PublicationShortInfo | Publication;
     // openDownloadersDialog: () => void;
     // openCollaborationRequestsDialog: () => void;
   }): ReactElement => {

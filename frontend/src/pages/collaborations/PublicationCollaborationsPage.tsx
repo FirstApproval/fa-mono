@@ -1,22 +1,21 @@
 import { observer } from 'mobx-react-lite';
-import { userStore } from "../../core/user";
 import { ReactElement, useEffect, useState } from "react"
 import { Button, Typography } from '@mui/material';
 import styled from '@emotion/styled';
 import { HeightElement } from '../common.styled';
 import {
   CollaborationRequestBox,
-  CollaborationRequestBoxStatus
 } from './CollaborationRequestBox';
 import { routerStore } from '../../core/router';
 import { Page } from '../../core/router/constants';
 import { collaborationStore } from '../publication/store/downloadsStore';
 import { CollaborationRequestInfo } from "../../apis/first-approval-api"
 import { PublicationCollaborationsStore } from "./dashboard/PublicationCollaborationsStore"
+import { PublicationInfoBox } from "./elements/PublicationInfoBox"
 
 export const PublicationCollaborationsPage = observer((): ReactElement => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
-  const [] = useState(new PublicationCollaborationsStore(publicationId));
+  const [publicationCollaborationsStore] = useState(new PublicationCollaborationsStore(publicationId));
 
 
   useEffect(() => {
@@ -38,7 +37,7 @@ export const PublicationCollaborationsPage = observer((): ReactElement => {
         onClick={() => goToChat(collaborationRequestInfo.id)}
         avatar={'PL'}
         name={`${collaborationRequestInfo?.userInfo?.firstName} ${collaborationRequestInfo?.userInfo?.lastName}`}
-        status={CollaborationRequestBoxStatus.NEW}>
+        status={collaborationRequestInfo.status}>
         {collaborationRequestInfo.description}
       </CollaborationRequestBox>
     );

@@ -3,25 +3,24 @@ import styled from '@emotion/styled';
 import { Card, CardContent, Typography, Button } from '@mui/material';
 import AvatarNameBox from './elements/AvatarNameBox';
 import { HeightElement } from '../common.styled';
+import { CollaborationRequestStatus } from "../../apis/first-approval-api"
 
-export enum CollaborationRequestBoxStatus {
-  NEW,
-  APPROVED,
-  DECLINED
-}
-
-function getBorderColor(status: CollaborationRequestBoxStatus): string {
+function getBorderColor(status: CollaborationRequestStatus): string {
   switch (status) {
-    case CollaborationRequestBoxStatus.NEW:
+    case CollaborationRequestStatus.NEW:
       return '#3b4eff';
+    case CollaborationRequestStatus.DECLINED:
+      return '#ff3b3b';
+    case CollaborationRequestStatus.APPROVED:
+      return '#3bff5c';
     default:
       return '#d2d2d6';
   }
 }
 
-function getBGColor(status: CollaborationRequestBoxStatus): string {
+function getBGColor(status: CollaborationRequestStatus): string {
   switch (status) {
-    case CollaborationRequestBoxStatus.NEW:
+    case CollaborationRequestStatus.NEW:
       return '#f7f8ff';
     default:
       return '#fff';
@@ -62,13 +61,13 @@ const BoxyIcon = styled.span`
   font-size: 16px;
 `;
 
-function getButtonText(status: CollaborationRequestBoxStatus): string {
+function getButtonText(status: CollaborationRequestStatus): string {
   switch (status) {
-    case CollaborationRequestBoxStatus.NEW:
+    case CollaborationRequestStatus.NEW:
       return 'Answer';
-    case CollaborationRequestBoxStatus.APPROVED:
+    case CollaborationRequestStatus.APPROVED:
       return 'Approved';
-    case CollaborationRequestBoxStatus.DECLINED:
+    case CollaborationRequestStatus.DECLINED:
       return 'Declined';
   }
 }
@@ -82,7 +81,7 @@ export const CollaborationRequestBox = ({
 }: {
   avatar: string;
   name: string;
-  status: CollaborationRequestBoxStatus;
+  status: CollaborationRequestStatus;
   onClick: () => void;
   children: ReactNode;
 }): ReactElement => {
@@ -95,17 +94,17 @@ export const CollaborationRequestBox = ({
         <HeightElement value={'12px'} />
         <Typography variant="h6">{children}</Typography>
         <HeightElement value={'12px'} />
-        {status === CollaborationRequestBoxStatus.NEW && (
+        {status === CollaborationRequestStatus.NEW && (
           <BoxyButton onClick={onClick} variant="contained" icon>
             {getButtonText(status)}
           </BoxyButton>
         )}
-        {status === CollaborationRequestBoxStatus.APPROVED && (
+        {status === CollaborationRequestStatus.APPROVED && (
           <BoxyButton onClick={onClick} green variant="outlined">
             {getButtonText(status)}
           </BoxyButton>
         )}
-        {status === CollaborationRequestBoxStatus.DECLINED && (
+        {status === CollaborationRequestStatus.DECLINED && (
           <BoxyButton onClick={onClick} red variant="outlined">
             {getButtonText(status)}
           </BoxyButton>
