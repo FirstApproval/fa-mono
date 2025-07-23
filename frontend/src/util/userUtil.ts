@@ -7,6 +7,10 @@ export function getInitials(firstName?: string, lastName?: string): string {
   return `${firstNameInitial}${lastNameInitial}`;
 }
 
+export function getUserInfoInitials(userInfo: UserInfo): string {
+  return getInitials(userInfo.firstName, userInfo.lastName)
+}
+
 export function getCurrentWorkplacesString(workplaces: Workplace[]): string {
   const formattedWorkplaces = workplaces
     .map((workplace) =>

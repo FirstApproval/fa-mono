@@ -13,6 +13,7 @@ import { PublicationCollaborationsStore } from "./dashboard/PublicationCollabora
 import { PublicationInfoBox } from "./elements/PublicationInfoBox"
 import { LeftPanelPublicationsPage } from "./LeftPanelPublications"
 import { HeaderComponent } from "../../components/HeaderComponent"
+import { getUserInfoInitials } from "../../util/userUtil"
 
 export const PublicationCollaborationsPage = observer((): ReactElement => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -36,7 +37,7 @@ export const PublicationCollaborationsPage = observer((): ReactElement => {
     return (
       <CollaborationRequestBox
         onClick={() => goToChat(collaborationRequestInfo.id)}
-        avatar={'PL'}
+        avatar={getUserInfoInitials(collaborationRequestInfo?.userInfo)}
         name={`${collaborationRequestInfo?.userInfo?.firstName} ${collaborationRequestInfo?.userInfo?.lastName}`}
         status={collaborationRequestInfo.status}>
         {collaborationRequestInfo.description}
