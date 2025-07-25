@@ -103,16 +103,20 @@ const renderButtonByStatus = (status: CollaborationRequestStatus, onClick: () =>
     green?: boolean;
     red?: boolean;
   };
+  let title = ''
 
   switch (status) {
     case CollaborationRequestStatus.PENDING:
       props = { variant: 'contained', icon: true };
+      title = 'Answer'
       break;
     case CollaborationRequestStatus.APPROVED:
       props = { variant: 'outlined', green: true };
+      title = 'Approved'
       break;
     case CollaborationRequestStatus.DECLINED:
       props = { variant: 'outlined', red: true };
+      title = 'Declined'
       break;
     default:
       throw Error('Unexpected status')
@@ -120,7 +124,7 @@ const renderButtonByStatus = (status: CollaborationRequestStatus, onClick: () =>
 
   return (
     <BoxyButton onClick={onClick} {...props}>
-      {children}
+      {title}
     </BoxyButton>
   );
 };
