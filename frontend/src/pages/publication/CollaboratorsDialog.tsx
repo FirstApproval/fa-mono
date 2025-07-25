@@ -70,7 +70,7 @@ export const CollaboratorsDialog = (props: {
                 onClick={() => {
                   if (
                     collaborationRequest.status ===
-                    CollaborationRequestStatus.NEW
+                    CollaborationRequestStatus.PENDING
                   ) {
                     collaborationStore.openCollaborationRequest(
                       collaborationRequest
@@ -90,7 +90,7 @@ export const CollaboratorsDialog = (props: {
                   shouldOpenInNewTab={true}
                 />
                 {collaborationRequest.status ===
-                  CollaborationRequestStatus.NEW && (
+                  CollaborationRequestStatus.PENDING && (
                   <Circle
                     sx={{
                       width: '16px',

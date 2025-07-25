@@ -13,6 +13,7 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_CREATE
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DATASET_WAS_DOWNLOADED
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.PROPOSE_POTENTIAL_PUBLICATION_NAME_AND_TYPE
@@ -118,7 +119,7 @@ class CollaborationRequestService(
             collaborationRequest.status = PENDING
 
             val potentialPublicationData = collaborationRequest.messages
-                .find { it.type === PROPOSE_POTENTIAL_PUBLICATION_NAME_AND_TYPE }!!.payload as PotentialPublicationData
+                .find { it.type === DONE_WHATS_NEXT }!!.payload as PotentialPublicationData
             collaborationMessageRepository.save(
                 CollaborationRequestMessage(
                     collaborationRequest = collaborationRequest,

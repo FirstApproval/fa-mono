@@ -8,7 +8,7 @@ import _ from "lodash"
 
 function getBorderColor(status: CollaborationRequestStatus): string {
   switch (status) {
-    case CollaborationRequestStatus.NEW:
+    case CollaborationRequestStatus.PENDING:
       return '#3b4eff';
     case CollaborationRequestStatus.DECLINED:
       return '#ff3b3b';
@@ -21,7 +21,7 @@ function getBorderColor(status: CollaborationRequestStatus): string {
 
 function getBGColor(status: CollaborationRequestStatus): string {
   switch (status) {
-    case CollaborationRequestStatus.NEW:
+    case CollaborationRequestStatus.PENDING:
       return '#f7f8ff';
     default:
       return '#fff';
@@ -105,7 +105,7 @@ const renderButtonByStatus = (status: CollaborationRequestStatus, onClick: () =>
   };
 
   switch (status) {
-    case CollaborationRequestStatus.NEW:
+    case CollaborationRequestStatus.PENDING:
       props = { variant: 'contained', icon: true };
       break;
     case CollaborationRequestStatus.APPROVED:
