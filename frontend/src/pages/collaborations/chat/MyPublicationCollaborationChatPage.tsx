@@ -3,18 +3,18 @@ import styled from '@emotion/styled';
 import { HeaderComponent } from '../../../components/HeaderComponent';
 import { Helmet } from 'react-helmet';
 import BreadCrumbs from '../BreadCrumbs';
-import { Typography } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 import { LeftPanelPublicationsPage } from '../LeftPanelPublications';
 import { UserInfo } from '../../../apis/first-approval-api';
 import { userStore } from '../../../core/user';
 import { routerStore } from '../../../core/router';
-import { CollaborationChatStore } from '../../publication/store/CollaborationChatStore';
+import { MyPublicationCollaborationChatStore } from '../../publication/store/MyPublicationCollaborationChatStore';
+import Chat from "./Chat"
 
 export const MyPublicationCollaborationChatPage = observer((): ReactElement => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
   const [collaborationChatStore] = useState(
-    () => new CollaborationChatStore(publicationId)
+    () => new MyPublicationCollaborationChatStore(publicationId)
   );
 
   // const publicationShortInfo } = props;
@@ -45,7 +45,7 @@ export const MyPublicationCollaborationChatPage = observer((): ReactElement => {
             <BreadCrumbs name={interlocutorName} />
             <BodyWrap>
               <BodyContentWrap>
-                {/* <Chat collaborationChatStore={collaborationChatStore}/> */}
+                <Chat collaborationChatStore={collaborationChatStore}/>
               </BodyContentWrap>
             </BodyWrap>
           </RightPanel>
@@ -95,24 +95,6 @@ const BodyWrap = styled.div`
 const BodyContentWrap = styled.div`
   width: 680px;
   padding: 48px 32px;
-`;
-
-const LeftPanel = styled.div`
-  flex: 22%;
-  display: flex;
-  max-width: 300px;
-  flex-direction: column;
-  align-items: start;
-  border-right: 1px solid #d2d2d6;
-
-  justify-content: space-between;
-  padding: 22px;
-`;
-
-const LeftPanelHeader = styled(Typography)`
-  color: var(--text-disabled, rgba(4, 0, 54, 0.38));
-  font-size: 0.8rem;
-  padding-left: 16px;
 `;
 
 const RightPanel = styled.div`

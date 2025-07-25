@@ -1,8 +1,8 @@
-import { CollaborationChatInterface } from "../../../publication/store/CollaborationChatStore"
+import { CollaborationChatStoreInterface } from "../../../publication/store/MyPublicationCollaborationChatStore"
 import { CollaborationMessageType } from "../../../../apis/first-approval-api"
 import { UserAction } from "./UserAction"
 
-function everythingIsCorrectAction(collaborationChatStore: CollaborationChatInterface): void {
+function everythingIsCorrectAction(collaborationChatStore: CollaborationChatStoreInterface): void {
   collaborationChatStore.sendMessage({
     type: CollaborationMessageType.EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST,
     isAssistant: false,
@@ -23,5 +23,5 @@ function everythingIsCorrectAction(collaborationChatStore: CollaborationChatInte
 
 export const everythingIsCorrect: UserAction = {
   text: 'Everything is correct. Sign and send request ➤',
-  action: (collaborationChatStore: CollaborationChatInterface) => everythingIsCorrectAction(collaborationChatStore)
+  action: (collaborationChatStore: CollaborationChatStoreInterface) => everythingIsCorrectAction(collaborationChatStore)
 }

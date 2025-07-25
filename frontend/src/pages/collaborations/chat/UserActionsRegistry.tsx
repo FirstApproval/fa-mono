@@ -5,7 +5,6 @@ import { letsMakeCollaboration } from "./action/LetsMakeCollaboration"
 import { iWouldLikeToCollaborate } from "./action/IWouldLikeToCollaborate"
 import { gotItReadyToStart } from "./action/GotItReadyToStart"
 import { askDataAuthor, showAuthorsEmails } from "./action/ShowAuthorsEmails"
-import { DownloadedPublicationCollaborationChatStore } from "../../publication/store/DownloadedPublicationCollaborationChatStore"
 import { everythingIsCorrect } from "./action/EverythingIsCorrect"
 import { changeMyPersonalInfo } from "./action/ChangeMyPersonalInfo"
 import { iHaveMoreQuestions } from "./action/IHaveMoreQuestions"
@@ -16,7 +15,7 @@ import { needHelp } from "./action/NeedHelp"
 export class UserActionsRegistry {
   private userActionsByMessageType = new Map<CollaborationMessageType, UserAction[]>()
 
-  constructor (readonly collaborationChatStore: DownloadedPublicationCollaborationChatStore) {
+  constructor () {
     // CREATE_REQUEST создаётся на бэке
     // this.registerAction(CollaborationMessageType.CREATE_REQUEST, [citation, reachOutToAuthors, emailToAuthors]);
     // ниже два события для UseType.CITATION

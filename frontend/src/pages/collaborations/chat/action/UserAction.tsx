@@ -1,8 +1,6 @@
-import { DownloadedPublicationCollaborationChatStore } from "../../../publication/store/DownloadedPublicationCollaborationChatStore"
+import { CollaborationChatStoreInterface } from "../../../publication/store/MyPublicationCollaborationChatStore"
 
 export interface UserAction {
-  // message: CollaborationRequestMessage | undefined | null;
-  // nextMessageType: CollaborationMessageType;
   text: string;
-  action: (collaborationChatStore: DownloadedPublicationCollaborationChatStore) => void;
+  action: (collaborationChatStore: CollaborationChatStoreInterface) => void;
 }

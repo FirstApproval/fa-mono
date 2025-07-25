@@ -1,5 +1,5 @@
 import { CollaborationMessageType } from "../../../../apis/first-approval-api"
-import { CollaborationChatInterface } from "../../../publication/store/CollaborationChatStore"
+import { CollaborationChatStoreInterface } from "../../../publication/store/MyPublicationCollaborationChatStore"
 import { UserAction } from "./UserAction"
 import { userStore } from "../../../../core/user"
 import { getFullName } from "../../../../util/userUtil"
@@ -7,7 +7,7 @@ import { getFullName } from "../../../../util/userUtil"
 const nextMessageType = CollaborationMessageType.NONE
 
 export function showAuthorsEmailsAction (
-  collaborationChatStore: CollaborationChatInterface,
+  collaborationChatStore: CollaborationChatStoreInterface,
   text: string,
   messageType: CollaborationMessageType
 ): void {
@@ -34,18 +34,18 @@ export function showAuthorsEmailsAction (
 
 export const showAuthorsEmails: UserAction = {
   text: 'Show author(s) emails',
-  action: (collaborationChatStore: CollaborationChatInterface) =>
+  action: (collaborationChatStore: CollaborationChatStoreInterface) =>
     showAuthorsEmailsAction(collaborationChatStore, 'Show author(s) emails', CollaborationMessageType.SHOW_AUTHORS_EMAILS)
 };
 
 export const askDataAuthor: UserAction = {
   text: 'Ask data author',
-  action: (collaborationChatStore: CollaborationChatInterface) =>
+  action: (collaborationChatStore: CollaborationChatStoreInterface) =>
     showAuthorsEmailsAction(collaborationChatStore, 'Ask data author', CollaborationMessageType.ASK_DATA_USER)
 };
 
 export const reachOutToAuthors: UserAction = {
   text: 'I want to reach out to the author(s)',
-  action: (collaborationChatStore: CollaborationChatInterface) =>
+  action: (collaborationChatStore: CollaborationChatStoreInterface) =>
     showAuthorsEmailsAction(collaborationChatStore, 'I want to reach out to the author(s)', CollaborationMessageType.REACH_OUT_AUTHORS)
 };

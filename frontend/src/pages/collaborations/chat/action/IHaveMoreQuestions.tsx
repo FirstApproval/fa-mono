@@ -1,8 +1,8 @@
-import { CollaborationChatInterface } from "../../../publication/store/CollaborationChatStore"
+import { CollaborationChatStoreInterface } from "../../../publication/store/MyPublicationCollaborationChatStore"
 import { CollaborationMessageType } from "../../../../apis/first-approval-api"
 import { UserAction } from "./UserAction"
 
-function iHaveMoreQuestionsAction(collaborationChatStore: CollaborationChatInterface): void {
+function iHaveMoreQuestionsAction(collaborationChatStore: CollaborationChatStoreInterface): void {
   collaborationChatStore.sendMessage({
     type: CollaborationMessageType.MORE_QUESTIONS_ABOUT_COLLABORATION,
     isAssistant: false,
@@ -12,5 +12,5 @@ function iHaveMoreQuestionsAction(collaborationChatStore: CollaborationChatInter
 
 export const iHaveMoreQuestions: UserAction = {
   text: 'I have more questions about the collaboration',
-  action: (collaborationChatStore: CollaborationChatInterface) => iHaveMoreQuestionsAction(collaborationChatStore)
+  action: (collaborationChatStore: CollaborationChatStoreInterface) => iHaveMoreQuestionsAction(collaborationChatStore)
 }

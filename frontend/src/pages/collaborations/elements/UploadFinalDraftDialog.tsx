@@ -10,11 +10,7 @@ import DialogActions from '@mui/material/DialogActions'
 import { FlexWrapRow, HeightElement, SpaceBetweenColumn, TitleRowWrap, WidthElement } from 'src/pages/common.styled'
 import { DownloadedPublicationCollaborationChatStore } from '../../publication/store/DownloadedPublicationCollaborationChatStore'
 import { useDropzone } from "react-dropzone"
-import {
-  CollaborationMessageType,
-  CollaborationMessageUploadFinalDraftPayload,
-  CollaborationRequestMessage
-} from 'src/apis/first-approval-api'
+import { CollaborationMessageType, CollaborationRequestMessage } from 'src/apis/first-approval-api'
 import { C0288D1, C3B4EFF } from '../../../ui-kit/colors'
 
 export const UploadFinalDraftDialog = observer(

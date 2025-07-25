@@ -34,14 +34,18 @@ import { AuthorApprovedPayload } from "../elements/AuthorApprovedPayload"
 import { AuthorDeclinedPayload } from "../elements/AuthorDeclinedPayload"
 import { PrefilledAgreementPayload } from "../elements/PrefilledAgreementPayload"
 import { Link } from "@mui/material"
+import {
+  CollaborationChatStoreInterface,
+  MyPublicationCollaborationChatStore
+} from "../../publication/store/MyPublicationCollaborationChatStore"
 
 type ChatProps = {
-  collaborationChatStore: DownloadedPublicationCollaborationChatStore;
+  collaborationChatStore: CollaborationChatStoreInterface;
 };
 
-const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: DownloadedPublicationCollaborationChatStore }): ReactElement => {
+const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: CollaborationChatStoreInterface }): ReactElement => {
   const { collaborationChatStore } = props;
-  const userActionsRegistry = new UserActionsRegistry(collaborationChatStore);
+  const userActionsRegistry = new UserActionsRegistry();
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [showCollabModal, setShowCollabModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
@@ -219,7 +223,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
                 {message.type === CollaborationMessageType.AUTHOR_DECLINED && <AuthorDeclinedPayload message={message} />}
                 {message.type === CollaborationMessageType.UPLOAD_FINAL_DRAFT && <UploadedFinalDraftPayload message={message} />}
                 {message.type === CollaborationMessageType.PREFILLED_COLLABORATION_AGREEMENT &&
-                  <PrefilledAgreementPayload message={message} chatStore={collaborationChatStore} />
+                  <PrefilledAgreementPayload message={message} chatStore={collaborationChatStore as DownloadedPublicationCollaborationChatStore} />
                 }
                 {message.type === CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET && showStepsInfo()}
                 {message.type === CollaborationMessageType.VERIFY_YOUR_NAME_AND_AFFILIATION &&
@@ -227,13 +231,13 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
                   <PersonalDataForm
                     message={message}
                     action={confirmThatProvidedInfoIsReal}
-                    store={collaborationChatStore}
+                    store={collaborationChatStore as DownloadedPublicationCollaborationChatStore}
                   />
                 }
                 {message.type === CollaborationMessageType.PROPOSE_POTENTIAL_PUBLICATION_NAME_AND_TYPE &&
                   !collaborationChatStore.existsByType(CollaborationMessageType.DONE_WHATS_NEXT) &&
                   <PotentialPublicationDataForm
-                    store={collaborationChatStore}
+                    store={collaborationChatStore as DownloadedPublicationCollaborationChatStore}
                     action={doneWhatsNext}
                   />
                 }
@@ -315,6 +319,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
           collaborationChatStore.messageType && <UserActions
             messageType={collaborationChatStore.messageType}
             userActionsRegistry={userActionsRegistry}
+            collaborationChatStore={collaborationChatStore}
             key={collaborationChatStore.messageType}
           />
         }
@@ -346,7 +351,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Dow
           handleClose={() => setShowCollabHelpStep3Modal(false)}
         />
         <UploadFinalDraftDialog isOpen={collaborationChatStore.isUploadDraftDialogOpen}
-                                collaborationChatStore={collaborationChatStore}
+                                collaborationChatStore={collaborationChatStore as DownloadedPublicationCollaborationChatStore}
         />
       </div>
     </>
@@ -417,7 +422,11 @@ const Messages: MessageType[] = [
   }
 ];
 
-const UserActions = (props: {messageType: CollaborationMessageType, userActionsRegistry: UserActionsRegistry}): React.ReactElement => {
+const UserActions = (props: {
+  messageType: CollaborationMessageType,
+  userActionsRegistry: UserActionsRegistry,
+  collaborationChatStore: CollaborationChatStoreInterface
+}): React.ReactElement => {
   const { messageType, userActionsRegistry } = props;
   const actions = userActionsRegistry.getActions(messageType);
   return actions.length ? (
@@ -428,7 +437,7 @@ const UserActions = (props: {messageType: CollaborationMessageType, userActionsR
           userActionsRegistry.getActions(messageType).map(action =>
             <StyledApproveButton
               variant="outlined"
-              onClick={() => action.action(userActionsRegistry.collaborationChatStore)}>
+              onClick={() => action.action(props.collaborationChatStore)}>
               {action.text}
             </StyledApproveButton>
         )}
@@ -446,54 +455,6 @@ export const ButtonsWrapper = styled.div`
 `
 
 export default Chat;
-
-
-
-// const handleApproveCollaboration: () => void = () => {
-//   Messages.push({
-//     id: 333,
-//     name: 'Me Myself',
-//     avatar: 'MM',
-//     text: 'Approve collaboration.'
-//   });
-//   Messages.push({
-//     id: 334,
-//     name: 'Assistant',
-//     avatar: 'FA',
-//     text: 'UPD: Peter Lidsky notified you that he plans to send you the final version of the article in two weeks.'
-//   });
-//   Messages.push({
-//     id: 335,
-//     name: 'Assistant',
-//     avatar: 'FA',
-//     text: (
-//       <>
-//         UPD: Peter Lidsky attached a preview of the manuscript of their
-//         publication:
-//         <p
-//           style={{
-//             borderRadius: '0.5rem',
-//             backgroundColor: 'rgb(243, 242, 245)',
-//             padding: '10px',
-//             display: 'inline-flex',
-//             alignItems: 'center',
-//             width: '100%',
-//             gap: '8px',
-//             maxWidth: '100%'
-//           }}>
-//           <img src={fileIcon} /> My manuscript.pdf
-//         </p>
-//         You will have 2 weeks to read the article and decide whether to accept
-//         or decline co-authorship. You can ask questions or provide your
-//         suggestions to the author via private messages. We recommend starting
-//         this process well in advance. If you do not approve the request within
-//         2 weeks, you will lose the opportunity for co-authorship in this
-//         article. If you decline, the data user will simply cite your dataset.
-//       </>
-//     )
-//   });
-//   collaborationChatStore.setStage(CollaborationMessageType.COLLABORATION_APPROVED);
-// };
 
 const FileElement = styled.div`
   display: flex;

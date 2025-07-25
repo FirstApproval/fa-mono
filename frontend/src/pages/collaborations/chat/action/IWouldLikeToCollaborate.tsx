@@ -1,5 +1,5 @@
 import { CollaborationMessageType } from "../../../../apis/first-approval-api"
-import { CollaborationChatInterface, CollaborationChatStore } from "../../../publication/store/CollaborationChatStore"
+import { CollaborationChatStoreInterface, MyPublicationCollaborationChatStore } from "../../../publication/store/MyPublicationCollaborationChatStore"
 import { UserAction } from "./UserAction"
 
 const message = {
@@ -10,7 +10,7 @@ const message = {
 
 const nextMessageType = CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET;
 
-function iWouldLikeToCollaborateAction(collaborationChatStore: CollaborationChatInterface): void {
+function iWouldLikeToCollaborateAction(collaborationChatStore: CollaborationChatStoreInterface): void {
   collaborationChatStore.sendMessage(message).then(() => {
     collaborationChatStore.sendMessage({
       type: CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET,
@@ -25,5 +25,5 @@ function iWouldLikeToCollaborateAction(collaborationChatStore: CollaborationChat
 
 export const iWouldLikeToCollaborate: UserAction = {
   text: 'I`d like to collaborate! Tell me more...',
-  action: (collaborationChatStore: CollaborationChatInterface) => iWouldLikeToCollaborateAction(collaborationChatStore)
+  action: (collaborationChatStore: CollaborationChatStoreInterface) => iWouldLikeToCollaborateAction(collaborationChatStore)
 };

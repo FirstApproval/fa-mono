@@ -1,11 +1,11 @@
 import { CollaborationMessageType, DataCollectionType } from "../../../../apis/first-approval-api"
 import { DATA_COLLECTION_TYPES } from "../../../publication/ChooseDataCollection"
 import React from "react"
-import { CollaborationChatInterface, CollaborationChatStore } from "../../../publication/store/CollaborationChatStore"
+import { CollaborationChatStoreInterface } from "../../../publication/store/MyPublicationCollaborationChatStore"
 
 import { UserAction } from "./UserAction"
 
-function citationAction(collaborationChatStore: CollaborationChatInterface): void {
+function citationAction(collaborationChatStore: CollaborationChatStoreInterface): void {
   // список всех авторов в формате [Фамилия Инициалы], дальше идет точка, за которой с большой буквы - [Название датасета].
   // Год. First Approval [если специализированная коллекция - ее название] (например First Approval - Aging Data Collection)
 
@@ -39,5 +39,5 @@ function citationAction(collaborationChatStore: CollaborationChatInterface): voi
 
 export const citation: UserAction = {
   text: 'Citation',
-  action: (collaborationChatStore: CollaborationChatInterface) => citationAction(collaborationChatStore),
+  action: (collaborationChatStore: CollaborationChatStoreInterface) => citationAction(collaborationChatStore),
 };

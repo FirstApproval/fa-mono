@@ -1,8 +1,8 @@
 import { CollaborationMessageType } from "../../../../apis/first-approval-api"
 import { UserAction } from "./UserAction"
-import { DownloadedPublicationCollaborationChatStore } from "../../../publication/store/DownloadedPublicationCollaborationChatStore"
+import { CollaborationChatStoreInterface } from "../../../publication/store/MyPublicationCollaborationChatStore"
 
-function action (collaborationChatStore: DownloadedPublicationCollaborationChatStore): void {
+function action (collaborationChatStore: CollaborationChatStoreInterface): void {
   collaborationChatStore.sendMessage({
     type: CollaborationMessageType.YOUR_COLLABORATION_IS_ESTABLISHED,
     isAssistant: true,

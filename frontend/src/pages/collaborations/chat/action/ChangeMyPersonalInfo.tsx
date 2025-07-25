@@ -1,8 +1,8 @@
-import { CollaborationChatInterface } from "../../../publication/store/CollaborationChatStore"
+import { CollaborationChatStoreInterface } from "../../../publication/store/MyPublicationCollaborationChatStore"
 import { CollaborationMessageType } from "../../../../apis/first-approval-api"
 import { UserAction } from "./UserAction"
 
-function changeMyPersonalInfoAction(collaborationChatStore: CollaborationChatInterface): void {
+function changeMyPersonalInfoAction(collaborationChatStore: CollaborationChatStoreInterface): void {
   collaborationChatStore.sendMessage({
     type: CollaborationMessageType.CHANGE_MY_PERSONAL_INFO,
     isAssistant: false,
@@ -12,5 +12,5 @@ function changeMyPersonalInfoAction(collaborationChatStore: CollaborationChatInt
 
 export const changeMyPersonalInfo: UserAction = {
   text: 'Change my personal info or info about publication',
-  action: (collaborationChatStore: CollaborationChatInterface) => changeMyPersonalInfoAction(collaborationChatStore)
+  action: (collaborationChatStore: CollaborationChatStoreInterface) => changeMyPersonalInfoAction(collaborationChatStore)
 };

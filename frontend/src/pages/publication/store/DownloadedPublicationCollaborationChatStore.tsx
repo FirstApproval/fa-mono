@@ -15,12 +15,11 @@ import {
   collaborationRequestChatService,
   publicationService
 } from '../../../core/service';
-import { CollaborationChatInterface } from './CollaborationChatStore';
+import { CollaborationChatStoreInterface } from './MyPublicationCollaborationChatStore';
 import { cloneDeep } from "lodash"
 import { IWorkplaceStore, WorkplaceProps, WorkplaceValidationState } from "../../../core/WorkplaceProps"
-import { AxiosResponse } from "axios"
 
-export class DownloadedPublicationCollaborationChatStore implements CollaborationChatInterface, IWorkplaceStore {
+export class DownloadedPublicationCollaborationChatStore implements CollaborationChatStoreInterface, IWorkplaceStore {
   collaborationRequestId: string = '';
   collaborationRequestCreator: UserInfo | undefined = undefined;
   messages: CollaborationRequestMessage[] | undefined = undefined;

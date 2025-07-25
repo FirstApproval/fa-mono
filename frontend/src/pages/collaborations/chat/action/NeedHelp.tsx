@@ -1,7 +1,7 @@
 import { UserAction } from "./UserAction"
-import { DownloadedPublicationCollaborationChatStore } from "../../../publication/store/DownloadedPublicationCollaborationChatStore"
+import { CollaborationChatStoreInterface } from "../../../publication/store/MyPublicationCollaborationChatStore"
 
-export function action(collaborationChatStore: DownloadedPublicationCollaborationChatStore) {
+export function action(collaborationChatStore: CollaborationChatStoreInterface) {
   const subject = encodeURIComponent('I need help with FA collaboration');
   const body = encodeURIComponent('Hi! I need help with...');
   window.location.href = `mailto:info@firstapproval.io?subject=${subject}&body=${body}`;

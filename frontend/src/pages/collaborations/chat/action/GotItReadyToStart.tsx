@@ -1,8 +1,8 @@
-import { CollaborationChatInterface } from "../../../publication/store/CollaborationChatStore"
+import { CollaborationChatStoreInterface } from "../../../publication/store/MyPublicationCollaborationChatStore"
 import { CollaborationMessageType } from "../../../../apis/first-approval-api"
 import { UserAction } from "./UserAction"
 
-function gotItReadyToStartAction(collaborationChatStore: CollaborationChatInterface): void {
+function gotItReadyToStartAction(collaborationChatStore: CollaborationChatStoreInterface): void {
   collaborationChatStore.sendMessage({
     type: CollaborationMessageType.GOT_IT_READY_TO_START,
     isAssistant: false,
@@ -18,5 +18,5 @@ function gotItReadyToStartAction(collaborationChatStore: CollaborationChatInterf
 
 export const gotItReadyToStart: UserAction = {
   text: 'Got it. I am ready to start',
-  action: (collaborationChatStore: CollaborationChatInterface) => gotItReadyToStartAction(collaborationChatStore)
+  action: (collaborationChatStore: CollaborationChatStoreInterface) => gotItReadyToStartAction(collaborationChatStore)
 }

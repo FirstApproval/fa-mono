@@ -6,8 +6,9 @@ import { UserAction } from "./UserAction"
 import { DownloadedPublicationCollaborationChatStore } from "../../../publication/store/DownloadedPublicationCollaborationChatStore"
 import { getFullName } from "../../../../util/userUtil"
 import React from "react"
+import { CollaborationChatStoreInterface } from "../../../publication/store/MyPublicationCollaborationChatStore"
 
-function doneWhatsNextAction(collaborationChatStore: DownloadedPublicationCollaborationChatStore): void {
+function doneWhatsNextAction(collaborationChatStore: CollaborationChatStoreInterface): void {
   const doneWhatsNextMessage = {
     type: CollaborationMessageType.DONE_WHATS_NEXT,
     isAssistant: false,
@@ -27,11 +28,11 @@ function doneWhatsNextAction(collaborationChatStore: DownloadedPublicationCollab
 
 export const doneWhatsNext: UserAction = {
   text: 'Done. What’s next?',
-  action: (collaborationChatStore: DownloadedPublicationCollaborationChatStore) => doneWhatsNextAction(collaborationChatStore)
+  action: (collaborationChatStore: CollaborationChatStoreInterface) => doneWhatsNextAction(collaborationChatStore)
 }
 
 function createPrefilledAgreementMessage(
-  collaborationChatStore: DownloadedPublicationCollaborationChatStore
+  collaborationChatStore: CollaborationChatStoreInterface
 ): CollaborationRequestMessage {
     const creator = collaborationChatStore.publication!!.creator!!;
     const otherAuthors = collaborationChatStore.publication!!.authors!!
