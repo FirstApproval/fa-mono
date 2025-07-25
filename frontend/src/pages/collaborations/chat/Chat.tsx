@@ -34,10 +34,7 @@ import { AuthorApprovedPayload } from "../elements/AuthorApprovedPayload"
 import { AuthorDeclinedPayload } from "../elements/AuthorDeclinedPayload"
 import { PrefilledAgreementPayload } from "../elements/PrefilledAgreementPayload"
 import { Link } from "@mui/material"
-import {
-  CollaborationChatStoreInterface,
-  MyPublicationCollaborationChatStore
-} from "../../publication/store/MyPublicationCollaborationChatStore"
+import { CollaborationChatStoreInterface } from "../../publication/store/MyPublicationCollaborationChatStore"
 
 type ChatProps = {
   collaborationChatStore: CollaborationChatStoreInterface;
@@ -241,6 +238,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
                     action={doneWhatsNext}
                   />
                 }
+                {message.type === CollaborationMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU && <PotentialPublicationData message={message} />}
               </Message>
               <HeightElement value={'64px'} />
             </React.Fragment>
