@@ -2625,6 +2625,9 @@ components:
           $ref: '#/components/schemas/CollaborationRequestStatus'
         userInfo:
           $ref: '#/components/schemas/UserInfo'
+        invitedAuthors:
+          items:
+            $ref: '#/components/schemas/CollaborationRequestInvitedAuthorInfo'
         publicationTitle:
           type: string
         publicationId:
@@ -2651,6 +2654,25 @@ components:
         - publicationId
         - creationTime
         - autoApproval
+
+    CollaborationRequestInvitedAuthorInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        collaborationRequestId:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/CollaborationAuthorDecisionStatus'
+        author:
+          $ref: '#/components/schemas/AuthorShortInfo'
+      required:
+        - id
+        - collaborationRequestId
+        - status
+        - author
 
     CollaborationAuthorDecisionStatus:
       type: string
