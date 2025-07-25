@@ -16,14 +16,14 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.PROPOSE_POTENTIAL_PUBLICATION_NAME_AND_TYPE
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.PUBLICATION_INFO_RECEIVED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.IWouldLikeToIncludeYouAsCoAuthor
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.MessagePayload
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.PotentialPublicationData
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.COLLABORATION_REQUEST_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.PUBLICATION_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.*
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationRequestInvitedAuthor
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationRequestInvitedAuthorRepository
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.external.s3.COLLABORATION_REQUEST_MESSAGE_FILES
 import org.firstapproval.backend.core.external.s3.FileStorageService
@@ -66,6 +66,7 @@ class CollaborationRequestService(
     private val publicationService: PublicationService,
     private val collaborationMessageRepository: CollaborationMessageRepository,
     private val collaborationMessageFileRepository: CollaborationMessageFileRepository,
+    private val collaborationRequestInvitedAuthorRepository: CollaborationRequestInvitedAuthorRepository,
     private val fileStorageService: FileStorageService,
     private val objectMapper: ObjectMapper
 ) {
@@ -117,6 +118,10 @@ class CollaborationRequestService(
 
         if (type == EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST) {
             collaborationRequest.status = PENDING
+            val authors = collaborationRequest.publication.authors.map {
+                CollaborationRequestInvitedAuthor(collaborationRequest = collaborationRequest, author = it)
+            }
+            collaborationRequestInvitedAuthorRepository.saveAll(authors)
 
             val potentialPublicationData = collaborationRequest.messages
                 .find { it.type === DONE_WHATS_NEXT }!!.payload as PotentialPublicationData
@@ -206,7 +211,14 @@ class CollaborationRequestService(
     }
 
     @Transactional
-    fun get(id: UUID) = collaborationRequestRepository.getReferenceById(id)
+    fun get(id: UUID, user: User): CollaborationRequest {
+        val collaborationRequest = collaborationRequestRepository.getReferenceById(id)
+        if (collaborationRequest.user.id != user.id &&
+            user.id !in collaborationRequest.authors.map { it.author.user!!.id }) {
+            throw IllegalAccessException("Only the creator of collaboration requests or authors of publication may access it.")
+        }
+        return collaborationRequest
+    }
 
     @Transactional
     fun get(publicationId: String, userId: UUID) =

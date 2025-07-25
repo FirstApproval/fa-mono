@@ -12,9 +12,9 @@ import { MyPublicationCollaborationChatStore } from '../../publication/store/MyP
 import Chat from "./Chat"
 
 export const MyPublicationCollaborationChatPage = observer((): ReactElement => {
-  const [publicationId] = useState(() => routerStore.lastPathSegment);
+  const [collaborationRequestId] = useState(() => routerStore.lastPathSegment);
   const [collaborationChatStore] = useState(
-    () => new MyPublicationCollaborationChatStore(publicationId)
+    () => new MyPublicationCollaborationChatStore(collaborationRequestId)
   );
 
   // const publicationShortInfo } = props;

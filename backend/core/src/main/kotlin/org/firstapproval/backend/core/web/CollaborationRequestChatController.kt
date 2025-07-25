@@ -46,27 +46,11 @@ class CollaborationRequestChatController(
     private val doiProperties: DoiProperties
 ) : CollaborationRequestChatApi {
 
-    override fun getCollaborationChatByPublicationId(publicationId: String): ResponseEntity<CollaborationChatResponse> {
-        val collaborationRequest = collaborationRequestService.get(publicationId, authHolderService.user.id)
-        val messages = collaborationRequestMessageRepository
-            .findAllByCollaborationRequestIdAndUserIdOrderByCreationTime(collaborationRequest.id, authHolderService.user.id)
-        val publicationCreator = collaborationRequest.publication.creator.toApiObject(userService)
-        val collaborationRequestCreator = collaborationRequest.user.toApiObject(userService)
-        val messageAuthorById = mapOf(
-            publicationCreator.id to publicationCreator,
-            collaborationRequestCreator.id to collaborationRequestCreator
-        )
-        val response = CollaborationChatResponse(
-            collaborationRequest.id,
-            publicationCreator,
-            collaborationRequestCreator,
-            messages.map {
-                val messageAuthor = messageAuthorById[it.user.id]!!
-                it.toApiObject(messageAuthor)
-            }
-        )
-        return ok(response)
-    }
+    override fun getCollaborationChatByPublicationId(publicationId: String) =
+        getCollaboration { collaborationRequestService.get(publicationId, authHolderService.user.id) }
+
+    override fun getCollaborationChatById(collaborationRequestId: UUID) =
+        getCollaboration { collaborationRequestService.get(collaborationRequestId, authHolderService.user) }
 
     override fun createCollaborationRequestMessage(
         publicationId: String,
@@ -131,8 +115,30 @@ class CollaborationRequestChatController(
         return ok(downloadLink)
     }
 
+    private fun getCollaboration(collaborationSupplier: () -> CollaborationRequest): ResponseEntity<CollaborationChatResponse> {
+        val collaborationRequest = collaborationSupplier()
+        val messages = collaborationRequestMessageRepository
+            .findAllByCollaborationRequestIdAndUserIdOrderByCreationTime(collaborationRequest.id, authHolderService.user.id)
+        val publicationCreator = collaborationRequest.publication.creator.toApiObject(userService)
+        val collaborationRequestCreator = collaborationRequest.user.toApiObject(userService)
+        val messageAuthorById = mapOf(
+            publicationCreator.id to publicationCreator,
+            collaborationRequestCreator.id to collaborationRequestCreator
+        )
+        val response = CollaborationChatResponse(
+            collaborationRequest.id,
+            publicationCreator,
+            collaborationRequestCreator,
+            messages.map {
+                val messageAuthor = messageAuthorById[it.user.id]!!
+                it.toApiObject(messageAuthor)
+            }
+        )
+        return ok(response)
+    }
+
     private fun createParamsMap(collaborationRequestId: UUID, authorId: UUID): Map<String, String> {
-        val collaborationRequest = collaborationRequestService.get(collaborationRequestId)
+        val collaborationRequest = collaborationRequestService.get(collaborationRequestId, authHolderService.user)
         val publication = collaborationRequest.publication
         val author = publication.authors.find { it.id == authorId }!!//collaborationRequest.publication.creator
         val messageByType = collaborationRequest.messages.associateBy { it.type }

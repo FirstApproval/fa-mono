@@ -26,9 +26,9 @@ export class MyPublicationCollaborationChatStore implements CollaborationChatSto
   messageType: CollaborationMessageType | undefined = undefined;
   isUploadDraftDialogOpen = false;
 
-  constructor(publicationId: string, stage?: CollaborationMessageType, publication?: Publication) {
+  constructor(collaborationRequestId: string, stage?: CollaborationMessageType) {
     makeAutoObservable(this);
-    this.loadInitialState(publicationId);
+    this.loadInitialState(collaborationRequestId);
 
     // if (stage === CollaborationMessageType.CITATION_IS_ENOUGH) {
     //   this.publication = publication;
@@ -71,9 +71,8 @@ export class MyPublicationCollaborationChatStore implements CollaborationChatSto
     this.isUploadDraftDialogOpen = open;
   }
 
-  private loadInitialState(publicationId: string): void {
-    collaborationRequestChatService
-      .getCollaborationChatByPublicationId(publicationId)
+  private loadInitialState(collaborationId: string): void {
+    collaborationRequestChatService.getCollaborationChatById(collaborationId)
       .then((response) => {
         const data = response.data;
         this.collaborationRequestId = data.collaborationRequestId;

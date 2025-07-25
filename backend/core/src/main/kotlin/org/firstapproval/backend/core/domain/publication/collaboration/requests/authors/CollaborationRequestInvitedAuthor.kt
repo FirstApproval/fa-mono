@@ -1,6 +1,8 @@
 package org.firstapproval.backend.core.domain.publication.collaboration.requests.authors
 
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType.STRING
+import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType.EAGER
 import jakarta.persistence.Id
 import jakarta.persistence.ManyToOne
@@ -21,6 +23,7 @@ class CollaborationRequestInvitedAuthor(
     val collaborationRequest: CollaborationRequest,
     @ManyToOne(fetch = EAGER)
     val author: Author,
+    @Enumerated(STRING)
     var status: CollaborationAuthorDecisionStatus = PENDING,
     var creationTime: ZonedDateTime = ZonedDateTime.now(),
     var editingTime: ZonedDateTime = ZonedDateTime.now(),
