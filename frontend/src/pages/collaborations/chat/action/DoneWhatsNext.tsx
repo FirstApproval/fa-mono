@@ -40,6 +40,6 @@ function createPrefilledAgreementMessage(
     return {
       type: CollaborationMessageType.PREFILLED_COLLABORATION_AGREEMENT,
       isAssistant: true,
-      payload: { "authors": otherAuthors }
+      payload: { "authors": otherAuthors, type: CollaborationMessageType.PREFILLED_COLLABORATION_AGREEMENT }
     };
 }

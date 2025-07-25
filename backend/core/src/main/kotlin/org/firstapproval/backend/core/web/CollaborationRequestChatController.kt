@@ -10,7 +10,7 @@ import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.toApiObject
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationMessageRepository
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationPotentialPublicationData
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.PotentialPublicationData
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL
@@ -138,9 +138,10 @@ class CollaborationRequestChatController(
         val messageByType = collaborationRequest.messages.associateBy { it.type }
         val paramsMap = mutableMapOf<String, String>()
 
-        val requestCreationDate = messageByType[EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST]!!.creationTime.format(ofPattern(DATE_PATTERN))
+        val requestCreationDate = messageByType[EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST]
+            ?.creationTime?.format(ofPattern(DATE_PATTERN)) ?: "_"
         val personalData = messageByType[I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL]!!.payload as PersonalDataConfirmation
-        val potentialPublicationData = messageByType[DONE_WHATS_NEXT]!!.payload as CollaborationPotentialPublicationData
+        val potentialPublicationData = messageByType[DONE_WHATS_NEXT]!!.payload as PotentialPublicationData
         val dataUserAffiliations = personalData.workplaces.joinToString(separator = ". ", prefix = ", ") { it.format() }
         val typeOfWork = potentialPublicationData.typeOfWork.name.lowercase().replaceFirstChar { it.uppercase() }.replace('_', ' ')
 
@@ -164,5 +165,8 @@ class CollaborationRequestChatController(
             else -> throw IllegalAccessException("Only publication collaboration request creator have access")
         }
 
-    fun Workplace.format() = "${organization.name}, $department, $address"
+    fun Workplace.format(): String =
+        listOfNotNull(organization.name, department, address)
+            .filter { it.isNotBlank() }
+            .joinToString(", ")
 }

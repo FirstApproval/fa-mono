@@ -25,15 +25,14 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.fil
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.toApiObject
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_APPROVED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_DECLINED
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.CREATE
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.PREFILLED_COLLABORATION_AGREEMENT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.UPLOAD_FINAL_DRAFT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.COLLABORATION_REQUEST_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.PUBLICATION_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequest
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.TypeOfWork
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.toApiObject
@@ -87,6 +86,7 @@ class CollaborationRequestMessage(
     )
 
 enum class CollaborationRequestMessageType(val sequenceIndex: Int, val recipientType: RecipientType) {
+    //Collaboration request creator:
     AGREE_TO_THE_TERMS_OF_COLLABORATION(0, COLLABORATION_REQUEST_CREATOR),
     DATASET_WAS_DOWNLOADED(1, COLLABORATION_REQUEST_CREATOR),
     I_WOULD_LIKE_TO_COLLABORATE(2, COLLABORATION_REQUEST_CREATOR),
@@ -116,7 +116,8 @@ enum class CollaborationRequestMessageType(val sequenceIndex: Int, val recipient
     ASC_DATA_AUTHOR(15, COLLABORATION_REQUEST_CREATOR),
     I_NEED_HELP(15, COLLABORATION_REQUEST_CREATOR),
 
-    CREATE(0, PUBLICATION_CREATOR),
+    //Publication creator
+    I_WOULD_LIKE_TO_INCLUDE_YOU(0, PUBLICATION_CREATOR),
     ASSISTANT_CREATE(1, PUBLICATION_CREATOR),
     DEFAULT(2, PUBLICATION_CREATOR),
     COLLABORATION_APPROVED(3, PUBLICATION_CREATOR),
@@ -134,9 +135,9 @@ enum class CollaborationRequestMessageType(val sequenceIndex: Int, val recipient
 )
 @JsonSubTypes(
     value = [
-        JsonSubTypes.Type(value = Create::class, name = "CREATE"),
+        JsonSubTypes.Type(value = IWouldLikeToIncludeYouAsCoAuthor::class, name = "I_WOULD_LIKE_TO_INCLUDE_YOU"),
         JsonSubTypes.Type(value = PersonalDataConfirmation::class, name = "I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL"),
-        JsonSubTypes.Type(value = CollaborationPotentialPublicationData::class, name = "DONE_WHATS_NEXT"),
+        JsonSubTypes.Type(value = PotentialPublicationData::class, name = "DONE_WHATS_NEXT"),
         JsonSubTypes.Type(value = UploadFinalDraftPayload::class, name = "UPLOAD_FINAL_DRAFT"),
         JsonSubTypes.Type(value = AuthorApprovedPayload::class, name = "AUTHOR_APPROVED"),
         JsonSubTypes.Type(value = AuthorDeclinedPayload::class, name = "AUTHOR_DECLINED"),
@@ -148,12 +149,12 @@ interface MessagePayload {
     var type: CollaborationRequestMessageType
 }
 
-class Create(
-    val firstNameLegal: String,
-    val lastNameLegal: String,
-    val typeOfWork: TypeOfWork,
-    val description: String?,
-    override var type: CollaborationRequestMessageType = CREATE,
+class IWouldLikeToIncludeYouAsCoAuthor(
+    val potentialPublicationTitle: String,
+    val typeOfWork: CollaborationRequestTypeOfWork,
+    val intendedJournalForPublication: String,
+    val detailsOfResearch: String,
+    override var type: CollaborationRequestMessageType = I_WOULD_LIKE_TO_INCLUDE_YOU,
 ) : MessagePayload
 
 class PersonalDataConfirmation(
@@ -163,7 +164,7 @@ class PersonalDataConfirmation(
     override var type: CollaborationRequestMessageType = I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL,
 ) : MessagePayload
 
-class CollaborationPotentialPublicationData(
+class PotentialPublicationData(
     val potentialPublicationTitle: String,
     val typeOfWork: CollaborationRequestTypeOfWork,
     val intendedJournalForPublication: String,
