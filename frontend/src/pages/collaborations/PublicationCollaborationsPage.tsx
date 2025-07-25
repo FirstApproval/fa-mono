@@ -7,7 +7,7 @@ import {
   CollaborationRequestBox,
 } from './CollaborationRequestBox';
 import { routerStore } from '../../core/router';
-import { Page } from '../../core/router/constants';
+import { myPublicationCollaborationChatPath, Page } from "../../core/router/constants"
 import { CollaborationRequestInfo } from "../../apis/first-approval-api"
 import { PublicationCollaborationsStore } from "./dashboard/PublicationCollaborationsStore"
 import { PublicationInfoBox } from "./elements/PublicationInfoBox"
@@ -29,7 +29,7 @@ export const PublicationCollaborationsPage = observer((): ReactElement => {
   }, []);
   const goToChat = (collaborationRequestId: string) => routerStore.navigatePage(
     Page.MY_PUBLICATION_COLLABORATION_CHAT,
-    `/publication/${publicationId}/chat/${collaborationRequestId}`,
+    `${myPublicationCollaborationChatPath}${collaborationRequestId}`,
     true
   );
 
