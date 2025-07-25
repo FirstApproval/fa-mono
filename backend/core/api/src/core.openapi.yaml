@@ -2652,6 +2652,15 @@ components:
         - creationTime
         - autoApproval
 
+    CollaborationAuthorDecisionStatus:
+      type: string
+      enum:
+        - PENDING
+        - COLLABORATION_APPROVED
+        - COLLABORATION_DECLINED
+        - MANUSCRIPT_APPROVED
+        - MANUSCRIPT_DECLINED
+
     CreateCollaborationRequest:
       type: object
       properties:
@@ -2659,14 +2668,11 @@ components:
           type: string
         lastNameLegal:
           type: string
-#        typeOfWork:
-#          $ref: '#/components/schemas/CollaborationRequestTypeOfWork'
         description:
           type: string
       required:
         - firstNameLegal
         - lastNameLegal
-#        - typeOfWork
 
     FullName:
       type: object

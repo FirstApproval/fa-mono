@@ -1,4 +1,4 @@
-CREATE TABLE collaboration_requests_authors
+CREATE TABLE collaboration_requests_invited_authors
 (
     id                       UUID PRIMARY KEY,
     collaboration_request_id UUID NOT NULL REFERENCES collaboration_requests (id) ON DELETE CASCADE,
