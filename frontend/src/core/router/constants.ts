@@ -32,7 +32,6 @@ export enum Page {
   CONTEST_PAGE,
 
   COLLABORATIONS_PAGE,
-  COLLABORATIONS_CHAT,
   DOWNLOADED_PUBLICATION_COLLABORATIONS_CHAT,
   MY_PUBLICATION_COLLABORATIONS,
   MY_PUBLICATION_COLLABORATION_CHAT
@@ -62,7 +61,7 @@ export const registrationConfirmationPath = '/registration-confirmation/';
 export const contestPath = '/contest';
 export const passwordChangeConfirmation = '/password-change-confirmation'
 export const collaborationPath = '/collaborations/';
-export const collaborationChatPath = '/collaborations/chat/';
+export const collaborationMyPublicationChatPath = '/collaborations/my-publication/chat/';
 export const downloadedPublicationCollaborationChatPath = '/collaborations/downloaded/chat';
 export const myPublicationCollaborationsPath = '/my-publication-collaborations/';
 export const myPublicationCollaborationChatPath = '/my-publication-collaboration/chat/';

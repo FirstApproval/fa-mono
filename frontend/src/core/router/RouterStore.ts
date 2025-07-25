@@ -22,7 +22,6 @@ import {
   signInPath,
   signUpPath,
   collaborationPath,
-  collaborationChatPath,
   downloadedPublicationCollaborationChatPath,
   myPublicationCollaborationsPath,
   myPublicationCollaborationChatPath
@@ -163,11 +162,6 @@ export class RouterStore {
           path.replace(shortPublicationPath, `${publicationPath}/`),
           true
         );
-        return;
-      }
-
-      if (path.startsWith(collaborationChatPath)) {
-        this.navigatePage(Page.COLLABORATIONS_CHAT, path, true);
         return;
       }
 

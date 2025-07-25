@@ -28,7 +28,7 @@ export const PublicationCollaborationsPage = observer((): ReactElement => {
     // collaborationStore.loadCollaborationRequests(0);
   }, []);
   const goToChat = (collaborationRequestId: string) => routerStore.navigatePage(
-    Page.COLLABORATIONS_CHAT,
+    Page.MY_PUBLICATION_COLLABORATION_CHAT,
     `/publication/${publicationId}/chat/${collaborationRequestId}`,
     true
   );
@@ -45,6 +45,7 @@ export const PublicationCollaborationsPage = observer((): ReactElement => {
     );
   }
 
+  const mappedRequests = publicationCollaborationsStore.collaborationRequests.map(mapToCollaborationRequestBox);
   return (
       <Parent>
         <HeaderBorderColorFix>
@@ -92,7 +93,7 @@ export const PublicationCollaborationsPage = observer((): ReactElement => {
                   "Received requests" : "There are no collaboration requests for this publication yet."}</Typography>
                 <HeightElement value={"12px"} />
                 <FullWidth>
-                  {publicationCollaborationsStore.collaborationRequests.map(mapToCollaborationRequestBox)}
+                  {mappedRequests}
                 </FullWidth>
               </BodyContentWrap>
             </BodyWrap>

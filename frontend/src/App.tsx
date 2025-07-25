@@ -10,7 +10,7 @@ import {SetPasswordPage} from './pages/signup/SetPasswordPage';
 import {LoadingPage} from './pages/LoadingPage';
 import {HomePage} from './pages/home/HomePage';
 import {CollaborationsPage} from './pages/collaborations/CollaborationsPage';
-import {ChatPage} from './pages/collaborations/chat/ChatPage';
+import {MyPublicationCollaborationChatPage} from './pages/collaborations/chat/MyPublicationCollaborationChatPage';
 import {observer} from 'mobx-react-lite';
 import {SignUpStore} from './pages/signup/SignUpStore';
 import {EmailVerificationPage} from './pages/signup/EmailVerificationPage';
@@ -90,8 +90,8 @@ const App: FunctionComponent = observer(() => {
               {page === Page.COLLABORATIONS_PAGE && (
                 <CollaborationsPage key={routerStore.key} />
               )}
-              {page === Page.COLLABORATIONS_CHAT && (
-                <ChatPage key={routerStore.key} />
+              {page === Page.MY_PUBLICATION_COLLABORATION_CHAT && (
+                <MyPublicationCollaborationChatPage key={routerStore.key} />
               )}
               {page === Page.DOWNLOADED_PUBLICATION_COLLABORATIONS_CHAT && (
                 <DownloadedCollaborationChatPage key={routerStore.key} />

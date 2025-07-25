@@ -11,7 +11,7 @@ import { userStore } from '../../../core/user';
 import { routerStore } from '../../../core/router';
 import { CollaborationChatStore } from '../../publication/store/CollaborationChatStore';
 
-export const ChatPage = observer((): ReactElement => {
+export const MyPublicationCollaborationChatPage = observer((): ReactElement => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
   const [collaborationChatStore] = useState(
     () => new CollaborationChatStore(publicationId)

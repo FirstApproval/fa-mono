@@ -91,7 +91,8 @@ class CollaborationRequestChatController(
                 user = authHolderService.user
             )
         }
-        val mappedMessages = messages.map { it.toApiObject(authHolderService.user.toApiObject(userService)) }
+        val mappedUser = authHolderService.user.toApiObject(userService)
+        val mappedMessages = messages.map { it.toApiObject(mappedUser) }
         return ok(mappedMessages)
     }
 

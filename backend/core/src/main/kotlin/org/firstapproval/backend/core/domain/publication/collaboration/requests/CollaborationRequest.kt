@@ -41,7 +41,7 @@ class CollaborationRequest(
     var decisionTime: ZonedDateTime? = null,
     var autoApproval: Boolean? = false,
     val isFinished: Boolean = false,
-    @OneToMany(mappedBy = "collaborationRequest", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "collaborationRequest", orphanRemoval = true)
     val messages: List<CollaborationRequestMessage> = mutableListOf()
 )
 
