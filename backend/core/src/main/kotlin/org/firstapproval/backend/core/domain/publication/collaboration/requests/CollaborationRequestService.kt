@@ -12,24 +12,21 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DATASET_WAS_DOWNLOADED
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.MessagePayload
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.COLLABORATION_REQUEST_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.PUBLICATION_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.*
 import org.firstapproval.backend.core.domain.user.User
-import org.firstapproval.backend.core.external.ipfs.DownloadLink
 import org.firstapproval.backend.core.external.s3.COLLABORATION_REQUEST_MESSAGE_FILES
 import org.firstapproval.backend.core.external.s3.FileStorageService
-import org.springframework.core.io.ClassPathResource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.DESC
-import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
-import java.io.IOException
 import java.time.ZonedDateTime
 import java.util.*
 import java.util.UUID.randomUUID
@@ -106,6 +103,10 @@ class CollaborationRequestService(
             userId = user.id,
             sequenceIndex = type.sequenceIndex
         ).also { exists -> if (exists) throw IllegalArgumentException("Message with equal or higher sequenceIndex already exists") }
+
+        if (type == DONE_WHATS_NEXT) {
+            collaborationRequest.status = PENDING
+        }
 
         val messageRecipient = when (type.recipientType) {
             COLLABORATION_REQUEST_CREATOR -> collaborationRequest.user
