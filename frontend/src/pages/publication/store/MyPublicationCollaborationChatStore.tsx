@@ -16,6 +16,7 @@ export class MyPublicationCollaborationChatStore implements CollaborationChatSto
   publicationCreator: UserInfo | undefined = undefined;
   messages: CollaborationRequestMessage[] = [];
   publication?: Publication;
+  publicationCreatorAuthor?: Author;
   detailsOfResearch: string | undefined;
   firstName: string | undefined;
   intendedJournalForPublication: string | undefined;
@@ -98,6 +99,8 @@ export class MyPublicationCollaborationChatStore implements CollaborationChatSto
         this.messages = data.messages;
         publicationService.getPublication(data.publicationId!!).then(response => {
           this.publication = response.data;
+          this.publicationCreatorAuthor = response.data.authors
+            ?.find(author => author.user!!.id === this.publicationCreator!!.id)
         });
       });
   }
