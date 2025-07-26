@@ -17,7 +17,7 @@ export const PrefilledAgreementPayload = observer((
   const payload = message.payload!! as PrefilledCollaborationAgreementPayload;
   const authors = payload.authors ?? [];
 
-  const collaborationAgreementTemplate = getPublicationCreatorCollaborationAgreementLink(message, chatStore);
+  const collaborationAgreementFile = getPublicationCreatorCollaborationAgreementFile(message, chatStore);
 
   const mappedAuthorsAgreements = authors?.map(
     (author, index) => {
@@ -46,7 +46,7 @@ export const PrefilledAgreementPayload = observer((
   return (
     <div>
       <span>Good job! Here is a pre-filled (unsigned) collaboration agreement with the corresponding author:</span>
-      {collaborationAgreementTemplate}
+      {collaborationAgreementFile}
       <span>And the rest of agreements (they differ only in information about the data authors):</span>
       {mappedAuthorsAgreements}
       <HeightElement value={'20px'} />
@@ -57,18 +57,17 @@ export const PrefilledAgreementPayload = observer((
   )
 })
 
-function getPublicationCreatorCollaborationAgreementLink (
+function getPublicationCreatorCollaborationAgreementFile (
   message: CollaborationRequestMessage,
   chatStore: DownloadedPublicationCollaborationChatStore
 ) {
-  const creator = chatStore.publicationCreator
+  const fileName =
+    `${getFullName(chatStore.publicationCreator!!)} - FA Collaboration Agreement ${chatStore.publication?.id}.pdf`
   return <FileElement>
     <DescriptionOutlined style={{ marginRight: "12px" }} />
     <span
       onClick={async () => {
         try {
-          const fileName =
-            `${getFullName(chatStore.publicationCreator!!)} - FA Collaboration Agreement ${chatStore.publication?.id}.pdf`
           await chatStore.getCollaborationAgreementFile(chatStore.publicationCreatorAuthor!!.id!!, fileName);
         } catch (err) {
           console.error('Error downloading collaboration agreement:', err);
@@ -82,11 +81,10 @@ function getPublicationCreatorCollaborationAgreementLink (
         display: 'inline-block'
       }}
     >
-    {getFullName(chatStore.publicationCreator!!)} FA Collaboration Agreement {chatStore.publication?.id}.pdf
+    {fileName}
   </span>
   </FileElement>
 }
-
 
 const FileElement = styled.div`
   display: flex;

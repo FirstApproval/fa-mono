@@ -71,6 +71,23 @@ export class MyPublicationCollaborationChatStore implements CollaborationChatSto
     this.isUploadDraftDialogOpen = open;
   }
 
+  getCollaborationAgreementFile(authorId: string): Promise<void> {
+    return collaborationRequestChatService.getCollaborationRequestAgreement(
+      this.publication!!.id,
+      this.collaborationRequestId,
+      authorId,
+      { responseType: 'blob' }
+    ).then(response => {
+      const blob = response.data;
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `FA_Collaboration_Agreement_${this.publication!!.id}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    });
+  }
+
   private loadInitialState(collaborationId: string): void {
     collaborationRequestChatService.getCollaborationChatById(collaborationId)
       .then((response) => {

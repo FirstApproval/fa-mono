@@ -110,7 +110,7 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
     });
   }
 
-  getCollaborationAgreementFile(authorId: string): Promise<void> {
+  getCollaborationAgreementFile(authorId: string, fileName: string): Promise<void> {
     return collaborationRequestChatService.getCollaborationRequestAgreement(
       this.publication!!.id,
       this.collaborationRequestId,
@@ -121,7 +121,7 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'FA_Collaboration_Agreement_template.pdf';
+      a.download = fileName;
       a.click();
       window.URL.revokeObjectURL(url);
     });
