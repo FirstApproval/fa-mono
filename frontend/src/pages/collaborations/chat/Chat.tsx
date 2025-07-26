@@ -242,11 +242,10 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
                 {message.type === CollaborationMessageType.ASSISTANT_CREATE &&
                   <FormalizedAgreementPayload message={message} chatStore={collaborationChatStore} />}
               </Message>
-              <HeightElement value={'64px'} />
+              <HeightElement value={'32px'} />
             </React.Fragment>
           );
         })}
-        <div ref={bottomRef} />
         {
           collaborationChatStore.messageType && <UserActions
             messageType={collaborationChatStore.messageType}
@@ -255,6 +254,8 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
             key={collaborationChatStore.messageType}
           />
         }
+        {<HeightElement value={'32px'} />}
+        <div ref={bottomRef} />
         <DeclineModal
           open={showDeclineModal}
           handleClose={() => {}}
