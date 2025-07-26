@@ -127,6 +127,7 @@ class CollaborationRequestChatController(
         )
         val response = CollaborationChatResponse(
             collaborationRequest.id,
+            collaborationRequest.publication.id,
             publicationCreator,
             collaborationRequestCreator,
             messages.map {

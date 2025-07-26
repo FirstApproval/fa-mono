@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx';
-import { collaborationRequestChatService } from '../../../core/service';
+import { collaborationRequestChatService, publicationService } from "../../../core/service"
 import {
+  Author,
   CollaborationMessageType,
   CollaborationRequestMessage,
   CollaborationRequestMessageFile, CollaborationRequestTypeOfWork,
@@ -8,7 +9,6 @@ import {
   UserInfo,
   Workplace
 } from "../../../apis/first-approval-api"
-import { userStore } from "../../../core/user"
 
 export class MyPublicationCollaborationChatStore implements CollaborationChatStoreInterface {
   collaborationRequestId: string = '';
@@ -96,6 +96,9 @@ export class MyPublicationCollaborationChatStore implements CollaborationChatSto
         this.publicationCreator = data.publicationCreator;
         this.collaborationRequestCreator = data.collaborationRequestCreator;
         this.messages = data.messages;
+        publicationService.getPublication(data.publicationId!!).then(response => {
+          this.publication = response.data;
+        });
       });
   }
 }
@@ -114,6 +117,7 @@ export interface CollaborationChatStoreInterface {
   workplaces?: Workplace[];
   potentialPublicationName?: string;
   typeOfWork?: CollaborationRequestTypeOfWork;
+  publicationCreatorAuthor?: Author;
   intendedJournalForPublication?: string;
   detailsOfResearch?: string;
   isUploadDraftDialogOpen: boolean;
@@ -122,4 +126,6 @@ export interface CollaborationChatStoreInterface {
     messages: CollaborationRequestMessage[], nextStage?: CollaborationMessageType | undefined
   ): Promise<CollaborationRequestMessage[]>
   existsByType (type: CollaborationMessageType): boolean;
-  getCollaborationFile(file: CollaborationRequestMessageFile): Promise<void>;}
+  getCollaborationFile(file: CollaborationRequestMessageFile): Promise<void>;
+  getCollaborationAgreementFile(authorId: string, fileName: string): Promise<void>;
+}

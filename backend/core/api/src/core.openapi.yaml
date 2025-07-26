@@ -3097,6 +3097,10 @@ components:
         collaborationRequestId:
           type: string
           format: uuid
+        publicationId:
+          type: string
+          minLength: 7
+          maxLength: 7
         publicationCreator:
           $ref: '#/components/schemas/UserInfo'
         collaborationRequestCreator:
@@ -3107,6 +3111,7 @@ components:
             $ref: '#/components/schemas/CollaborationRequestMessage'
       required:
         - collaborationRequestId
+        - publicationId
         - publicationCreator
         - collaborationRequestCreator
         - messages

@@ -35,6 +35,7 @@ import { AuthorDeclinedPayload } from "../elements/AuthorDeclinedPayload"
 import { PrefilledAgreementPayload } from "../elements/PrefilledAgreementPayload"
 import { Link } from "@mui/material"
 import { CollaborationChatStoreInterface } from "../../publication/store/MyPublicationCollaborationChatStore"
+import { FormalizedAgreementPayload } from "../elements/FormalizedAgreementPayload"
 
 const HIGH_FIVE_MESSAGE_TYPES = [
   CollaborationMessageType.AUTHOR_APPROVED, CollaborationMessageType.ALL_AUTHORS_CONFIRMED];
@@ -216,7 +217,9 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
                 {message.type === CollaborationMessageType.AUTHOR_DECLINED && <AuthorDeclinedPayload message={message} />}
                 {message.type === CollaborationMessageType.UPLOAD_FINAL_DRAFT && <UploadedFinalDraftPayload message={message} />}
                 {message.type === CollaborationMessageType.PREFILLED_COLLABORATION_AGREEMENT &&
-                  <PrefilledAgreementPayload message={message} chatStore={collaborationChatStore as DownloadedPublicationCollaborationChatStore} />
+                  <PrefilledAgreementPayload message={message}
+                                             chatStore={collaborationChatStore as DownloadedPublicationCollaborationChatStore}
+                  />
                 }
                 {message.type === CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET && showStepsInfo()}
                 {message.type === CollaborationMessageType.VERIFY_YOUR_NAME_AND_AFFILIATION &&
@@ -236,6 +239,8 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
                 }
                 {/* For data author: */}
                 {message.type === CollaborationMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU && <PotentialPublicationData message={message} />}
+                {message.type === CollaborationMessageType.ASSISTANT_CREATE &&
+                  <FormalizedAgreementPayload message={message} chatStore={collaborationChatStore} />}
               </Message>
               <HeightElement value={'64px'} />
             </React.Fragment>

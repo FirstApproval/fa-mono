@@ -1,68 +1,48 @@
 import { observer } from "mobx-react-lite"
 import {
   CollaborationRequestMessage,
-  PrefilledCollaborationAgreementPayload
 } from "../../../apis/first-approval-api"
 import React, { ReactElement } from "react"
 import { getFullName } from "../../../util/userUtil"
-import { DownloadedPublicationCollaborationChatStore } from "../../publication/store/DownloadedPublicationCollaborationChatStore"
 import { DescriptionOutlined } from "@mui/icons-material"
 import styled from "@emotion/styled"
-import { HeightElement } from "../../common.styled"
+import { CollaborationChatStoreInterface } from "../../publication/store/MyPublicationCollaborationChatStore"
+import { FlexWrapColumn } from "../../common.styled"
 
-export const PrefilledAgreementPayload = observer((
-  props: { message: CollaborationRequestMessage, chatStore: DownloadedPublicationCollaborationChatStore }
+export const FormalizedAgreementPayload = observer((
+  props: { message: CollaborationRequestMessage, chatStore: CollaborationChatStoreInterface }
 ): ReactElement => {
   const { message, chatStore, } = props
-  const payload = message.payload!! as PrefilledCollaborationAgreementPayload;
-  const authors = payload.authors ?? [];
-
   const collaborationAgreementFile = getPublicationCreatorCollaborationAgreementFile(message, chatStore);
-
-  const mappedAuthorsAgreements = authors?.map(
-    (author, index) => {
-      const fileName = `${getFullName(author)} - FA Collaboration Agreement.pdf`
-      return <li key={author.username ?? index.toString()}
-                 style={{
-                   cursor: "pointer",
-                   textDecoration: "underline",
-                   textDecorationColor: "black",
-                   textDecorationThickness: "1.5px",
-                   textUnderlineOffset: "2px"
-                 }}
-                 onClick={async () => {
-                   try {
-                     await chatStore.getCollaborationAgreementFile(author.id, fileName)
-                   } catch (err) {
-                     console.error("Error downloading collaboration agreement:", err)
-                     alert("Error downloading collaboration agreement")
-                   }
-                 }}>
-        {fileName}
-      </li>
-    }
-  )
+  const dataUserFullName = getFullName(chatStore.collaborationRequestCreator!!);
 
   return (
-    <div>
-      <span>Good job! Here is a pre-filled (unsigned) collaboration agreement with the corresponding author:</span>
+    <FlexWrapColumn>
+      <span>{dataUserFullName} plans to use your dataset in his research and wants to include you as a co-author of his article.</span>
+      <span>This is First Approval collaboration agreement pre-filled by {dataUserFullName}:</span>
       {collaborationAgreementFile}
-      <span>And the rest of agreements (they differ only in information about the data authors):</span>
-      {mappedAuthorsAgreements}
-      <HeightElement value={'20px'} />
-      <span>
-        Please review the agreement(s), and if all information is correct, sign and send it them by clicking the button below.
-      </span>
-    </div>
+      <ul>
+        <li>
+          By approving to the collaboration, you oblige data user to include you as a co-author.
+          <ul>
+            <li style={{color: 'black'}}>The data user will also be required to provide a 14-day notice before sending you the final version of the article.</li>
+          </ul>
+        </li>
+        <li>
+          By declining a collaboration, you oblige data user to simply quote your dataset, without specifying you as a co-author.
+        </li>
+      </ul>
+    </FlexWrapColumn>
   )
 })
 
 function getPublicationCreatorCollaborationAgreementFile (
   message: CollaborationRequestMessage,
-  chatStore: DownloadedPublicationCollaborationChatStore
+  chatStore: CollaborationChatStoreInterface
 ) {
   const fileName =
     `${getFullName(chatStore.publicationCreator!!)} - FA Collaboration Agreement ${chatStore.publication?.id}.pdf`
+  debugger;
   return <FileElement>
     <DescriptionOutlined style={{ marginRight: "12px" }} />
     <span
