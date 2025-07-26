@@ -1,6 +1,7 @@
 import { CollaborationChatStoreInterface } from "../../../publication/store/MyPublicationCollaborationChatStore"
 
-export interface UserAction {
-  text: string;
-  action: (collaborationChatStore: CollaborationChatStoreInterface) => void;
+export abstract class UserAction {
+  text: string | undefined = undefined;
+  isDecline?: boolean = false;
+  action: (collaborationChatStore: CollaborationChatStoreInterface) => void = () => {};
 }

@@ -368,6 +368,7 @@ const UserActions = (props: {
         {
           userActionsRegistry.getActions(messageType).map(action =>
             <StyledApproveButton
+              isDecline={action.isDecline}
               variant="outlined"
               onClick={() => action.action(props.collaborationChatStore)}>
               {action.text}

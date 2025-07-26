@@ -367,23 +367,22 @@ export const StyledButton = styled(Button)`
     border-color: #040036;
   }
 `
-export const StyledApproveButton = styled(Button)`
+export const StyledApproveButton = styled(Button)<{
+  isDecline?: boolean;
+}>`
   margin-right: 0.75rem;
   margin-bottom: 0.75rem;
-  color: #3b4eff;
-  border-color: #3b4eff;
+  ${(props) =>
+          props.isDecline ? 
+                  'color: #d32f2f;' +
+                  'border-color: #d32f2f;' +
+                  '&:hover {border-color: #d32f2f; background: rgb(255 78 255 / 4%);}' 
+                  :
+                  'color: #3b4eff;' +
+                  'border-color: #3b4eff;'}
+  
 `
-export const StyledDeclineButton = styled(Button)`
-  margin-right: 0.75rem;
-  margin-bottom: 0.75rem;
-  color: #d32f2f;
-  border-color: #d32f2f;
 
-  &:hover {
-    border-color: #d32f2f;
-    background: rgb(255 78 255 / 4%);
-  }
-`
 const StyledBox = styled(Box)`
   border-radius: 0.5rem;
   background: #fff;
