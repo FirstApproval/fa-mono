@@ -27,9 +27,9 @@ export const MyPublicationCollaborationChatPage = observer((): ReactElement => {
       <Helmet>
         <meta
           name="description"
-          content={'Chat with __firstname__ __lastname__'}
+          content={`Chat with ${interlocutorName}`}
         />
-        <title>Chat with __firstname__ __lastname__</title>
+        <title>Chat with {interlocutorName}</title>
       </Helmet>
       <Parent>
         <HeaderBorderColorFix>
