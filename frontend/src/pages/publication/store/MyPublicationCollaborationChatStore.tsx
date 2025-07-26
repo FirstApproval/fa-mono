@@ -96,7 +96,12 @@ export class MyPublicationCollaborationChatStore implements CollaborationChatSto
         this.collaborationRequestId = data.collaborationRequestId;
         this.publicationCreator = data.publicationCreator;
         this.collaborationRequestCreator = data.collaborationRequestCreator;
+        data.messages.sort(this.sortMessages)
         this.messages = data.messages;
+        this.messages = data.messages;
+        this.messageType = data.messages.reduce((max, item) =>
+          item.sequenceIndex!! > max.sequenceIndex!! ? item : max
+        ).type;
         publicationService.getPublication(data.publicationId!!).then(response => {
           this.publication = response.data;
           this.publicationCreatorAuthor = response.data.authors
@@ -104,6 +109,9 @@ export class MyPublicationCollaborationChatStore implements CollaborationChatSto
         });
       });
   }
+
+  sortMessages = (message1: CollaborationRequestMessage, message2: CollaborationRequestMessage) =>
+    message1.sequenceIndex!! - message2.sequenceIndex!!
 }
 
 export interface CollaborationChatStoreInterface {
