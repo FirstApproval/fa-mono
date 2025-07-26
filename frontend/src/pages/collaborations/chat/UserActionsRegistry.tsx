@@ -11,11 +11,15 @@ import { iHaveMoreQuestions } from "./action/IHaveMoreQuestions"
 import { notifyCoAuthor } from "./action/NotifyCoAuthor"
 import { uploadFinalDraft } from "./action/UploadFinalDraft"
 import { needHelp } from "./action/NeedHelp"
+import { emailDataUser } from "./action/author/EmailDataUser"
+import { approveCollaboration } from "./action/author/ApproveCollaboration"
+import { declineCollaboration } from "./action/author/DeclineCollaboration"
 
 export class UserActionsRegistry {
   private userActionsByMessageType = new Map<CollaborationMessageType, UserAction[]>()
 
   constructor () {
+    //for data user
     // CREATE_REQUEST создаётся на бэке
     // this.registerAction(CollaborationMessageType.CREATE_REQUEST, [citation, reachOutToAuthors, emailToAuthors]);
     // ниже два события для UseType.CITATION
@@ -48,6 +52,9 @@ export class UserActionsRegistry {
     this.registerAction(CollaborationMessageType.AUTHOR_DECLINED, [askDataAuthor, needHelp]);
     this.registerAction(CollaborationMessageType.AUTHOR_DECLINED, [askDataAuthor, needHelp]);
     this.registerAction(CollaborationMessageType.ALL_AUTHORS_CONFIRMED, [askDataAuthor, needHelp]);
+
+    //for data author
+    this.registerAction(CollaborationMessageType.ASSISTANT_CREATE, [approveCollaboration, declineCollaboration, emailDataUser, needHelp]);
   }
 
   private registerAction (messageType: CollaborationMessageType, actions: UserAction[] = []): void {
