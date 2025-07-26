@@ -32,26 +32,4 @@ class DocxPdfGenerator {
 
         return InputStreamResource(outputStream.toByteArray().inputStream())
     }
-//
-//    private fun replacePlaceholders(wordMLPackage: WordprocessingMLPackage, variables: Map<String, String>) {
-//        val texts = wordMLPackage.mainDocumentPart.jaxbElement.body
-//            .content
-//            .flatMap {
-//                when (it) {
-//                    is org.docx4j.wml.P -> it.content
-//                    else -> listOf(it)
-//                }
-//            }
-//            .filterIsInstance(org.docx4j.wml.R::class.java)
-//            .flatMap { it.content }
-//            .filterIsInstance(Text::class.java)
-//
-//        for (text in texts) {
-//            for ((key, value) in variables) {
-//                if (text.value.contains("{{${key}}}")) {
-//                    text.value = text.value.replace("{{${key}}}", value)
-//                }
-//            }
-//        }
-//    }
 }
