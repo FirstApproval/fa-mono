@@ -36,6 +36,9 @@ import { PrefilledAgreementPayload } from "../elements/PrefilledAgreementPayload
 import { Link } from "@mui/material"
 import { CollaborationChatStoreInterface } from "../../publication/store/MyPublicationCollaborationChatStore"
 
+const HIGH_FIVE_MESSAGE_TYPES = [
+  CollaborationMessageType.AUTHOR_APPROVED, CollaborationMessageType.ALL_AUTHORS_CONFIRMED];
+
 type ChatProps = {
   collaborationChatStore: CollaborationChatStoreInterface;
 };
@@ -119,11 +122,6 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
     handleCloseCommentModal();
   };
 
-  const handleDecline: () => void = () => setShowDeclineModal(true);
-  const handleCloseDeclineModal: () => void = () => setShowDeclineModal(false);
-  const handleDownloadAction: () => void = () => {
-    alert('Download');
-  };
 
   const handleDeclineAction: () => void = () => {
     Messages.push({
@@ -206,12 +204,10 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
           return (
             <React.Fragment key={message.id} >
               <Message name={fullName} avatar={avatar} key={message.id}>
+                {/* For data user: */}
                 {message.type === CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL && <PersonalData message={message} />}
                 {message.type === CollaborationMessageType.DONE_WHATS_NEXT && <PotentialPublicationData message={message} />}
-                {(message.type === CollaborationMessageType.AUTHOR_APPROVED ||
-                  message.type === CollaborationMessageType.ALL_AUTHORS_CONFIRMED) &&
-                    <img src={highfiveImage} />
-                }
+                {HIGH_FIVE_MESSAGE_TYPES.includes(message.type) && <img src={highfiveImage}  alt="High five"/>}
                 <div />
                 {message.text}
                 {mappedFiles}
@@ -238,6 +234,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
                     action={doneWhatsNext}
                   />
                 }
+                {/* For data author: */}
                 {message.type === CollaborationMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU && <PotentialPublicationData message={message} />}
               </Message>
               <HeightElement value={'64px'} />
@@ -245,74 +242,6 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
           );
         })}
         <div ref={bottomRef} />
-        {/* {collaborationChatStore.messageType === CollaborationMessageType.VERIFY_YOUR_NAME_AND_AFFILIATION && */}
-        {/*   <PersonalData */}
-        {/*     action={confirmThatProvidedInfoIsReal} */}
-        {/*     store={collaborationChatStore} */}
-        {/*   /> */}
-        {/* } */}
-        {/* {collaborationChatStore.messageType === CollaborationMessageType.CITATION_IS_ENOUGH && ( */}
-        {/*   <UserActions */}
-        {/*     messageType={CollaborationMessageType.CITATION_IS_ENOUGH} */}
-        {/*     onNeedHelp={needHelp} */}
-        {/*     citation={handleCitation} */}
-        {/*     reachOutToTheAuthor={handleReachOutToAuthor} */}
-        {/*   /> */}
-        {/* )} */}
-        {/* {collaborationChatStore.messageType === CollaborationMessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION && ( */}
-        {/*   <UserActions */}
-        {/*     messageType={collaborationChatStore.messageType} */}
-        {/*   /> */}
-        {/* )} */}
-        {/* {collaborationChatStore.messageType === CollaborationMessageType.DATASET_WAS_DOWNLOADED && ( */}
-        {/*   <UserActions */}
-        {/*     messageType={collaborationChatStore.messageType} */}
-        {/*     onIWouldLikeToCollaborate={handleIWouldLikeToCollaborate} */}
-        {/*     emailToAuthors={showAuthorsEmails} */}
-        {/*   /> */}
-        {/* )} */}
-        {/* {collaborationChatStore.messageType === CollaborationMessageType.COLLABORATION_APPROVED && ( */}
-        {/*   <UserActions */}
-        {/*     messageType={collaborationChatStore.messageType} */}
-        {/*     onNeedHelp={handleNeedHelp} */}
-        {/*     onFormMsg={handleAuthorInfoFormMsg} */}
-        {/*     onAskDataUser={handleAskDataUser} */}
-        {/*     onDecline={handleDecline} */}
-        {/*   /> */}
-        {/* )} */}
-        {/* {collaborationChatStore.messageType === CollaborationMessageType.DATA_USER_ASKED && ( */}
-        {/*   <UserActions */}
-        {/*     messageType={collaborationChatStore.messageType} */}
-        {/*     onNeedHelp={handleNeedHelp} */}
-        {/*     onApproveManuscript={handleApproveManuscript} */}
-        {/*     onApproveManuscriptWithComments={ */}
-        {/*       handleApproveManuscriptWithComments */}
-        {/*     } */}
-        {/*     onAskDataUser={handleEmailDataUser} */}
-        {/*     onDecline={handleDecline} */}
-        {/*   /> */}
-        {/* )} */}
-        {/* {stage === CollaborationMessageType.REACH_OUT_AUTHORS && ( */}
-        {/*   <UserOptions */}
-        {/*     stage={stage} */}
-        {/*   /> */}
-        {/* )} */}
-        {/* {collaborationChatStore.messageType === CollaborationMessageType.ONLY_CITATION && ( */}
-        {/*   <UserActions */}
-        {/*     messageType={collaborationChatStore.messageType} */}
-        {/*     citation={handleCitation} */}
-        {/*   /> */}
-        {/* )} */}
-        {/* {collaborationChatStore.messageType === CollaborationMessageType.MANUSCRIPT_APPROVED && ( */}
-        {/*   <UserActions */}
-        {/*     messageType={collaborationChatStore.messageType} */}
-        {/*     onNeedHelp={handleNeedHelp} */}
-        {/*     onAskDataUser={handleEmailDataUser} */}
-        {/*   /> */}
-        {/* )} */}
-        {/* {collaborationChatStore.messageType === CollaborationMessageType.DECLINED && ( */}
-        {/*   <UserActions messageType={collaborationChatStore.messageType} onNeedHelp={handleNeedHelp} /> */}
-        {/* )} */}
         {
           collaborationChatStore.messageType && <UserActions
             messageType={collaborationChatStore.messageType}
@@ -323,18 +252,18 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
         }
         <DeclineModal
           open={showDeclineModal}
-          handleClose={handleCloseDeclineModal}
+          handleClose={() => {}}
           handleAction={handleDeclineAction}
         />
         <CommentsModal
           open={showCommentModal}
-          handleClose={handleCloseDeclineModal}
+          handleClose={() => {}}
           handleAction={handleComment}
         />
         <CollaborationRequirementsModal
           open={showCollabModal}
           handleClose={() => setShowCollabModal(false)}
-          handleAction={handleDownloadAction}
+          handleAction={() => {}}
         />
         <Step1Modal
           open={showCollabHelpStep1Modal}
