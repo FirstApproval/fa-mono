@@ -3289,6 +3289,9 @@ components:
 
         - I_WOULD_LIKE_TO_INCLUDE_YOU
         - ASSISTANT_CREATE
+        - APPROVE_COLLABORATION
+        - DECLINE_COLLABORATION
+
         - ACCEPT_OR_REJECT_COLLABORATION_REQUEST
         - COLLABORATION_APPROVED
         - ASK_DATA_USER
@@ -3299,6 +3302,8 @@ components:
         - PUBLICATION_INFO_RECEIVED
         - STEP_1_FORMALIZED_AGREEMENT
         - NONE
+
+        - EMAIL_DATA_USER
 
     PublicationShortInfo:
       type: object
