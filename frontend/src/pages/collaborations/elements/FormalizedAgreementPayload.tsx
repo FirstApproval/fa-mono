@@ -1,7 +1,5 @@
 import { observer } from "mobx-react-lite"
-import {
-  CollaborationRequestMessage,
-} from "../../../apis/first-approval-api"
+import { CollaborationRequestMessage } from "../../../apis/first-approval-api"
 import React, { ReactElement } from "react"
 import { getFullName } from "../../../util/userUtil"
 import { DescriptionOutlined } from "@mui/icons-material"
@@ -12,9 +10,12 @@ import { FlexWrapColumn } from "../../common.styled"
 export const FormalizedAgreementPayload = observer((
   props: { message: CollaborationRequestMessage, chatStore: CollaborationChatStoreInterface }
 ): ReactElement => {
-  const { message, chatStore, } = props
-  const collaborationAgreementFile = getPublicationCreatorCollaborationAgreementFile(message, chatStore);
-  const dataUserFullName = getFullName(chatStore.collaborationRequestCreator!!);
+  const {
+    message,
+    chatStore
+  } = props
+  const collaborationAgreementFile = getPublicationCreatorCollaborationAgreementFile(message, chatStore)
+  const dataUserFullName = getFullName(chatStore.collaborationRequestCreator!!)
 
   return (
     <FlexWrapColumn>
@@ -24,13 +25,11 @@ export const FormalizedAgreementPayload = observer((
       <ul>
         <li>
           By approving to the collaboration, you oblige data user to include you as a co-author.
-          <ul>
-            <li style={{color: 'black'}}>The data user will also be required to provide a 14-day notice before sending you the final version of the article.</li>
-          </ul>
+          <CustomUL>
+            <li>The data user will also be required to provide a 14-day notice before sending you the final version of the article.</li>
+          </CustomUL>
         </li>
-        <li>
-          By declining a collaboration, you oblige data user to simply quote your dataset, without specifying you as a co-author.
-        </li>
+        <li>By declining a collaboration, you oblige data user to simply quote your dataset, without specifying you as a co-author.</li>
       </ul>
     </FlexWrapColumn>
   )
@@ -51,7 +50,7 @@ function getPublicationCreatorCollaborationAgreementFile (
           await chatStore.getCollaborationAgreementFile(chatStore.publicationCreatorAuthor!!.id!!, fileName);
         } catch (err) {
           console.error('Error downloading collaboration agreement:', err);
-          alert('Error downloading collaboration agreement')
+          alert('Error downloading collaboration agreement');
         }
       }}
       style={{
@@ -79,3 +78,20 @@ const FileElement = styled.div`
   cursor: pointer;
 `;
 
+const CustomUL = styled.ul`
+  list-style: none;
+  padding-left: 1.2em;
+
+  li {
+    position: relative;
+    padding-left: 1em;
+    color: black;
+  }
+
+  li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: black;
+  }
+`;
