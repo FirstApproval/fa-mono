@@ -259,11 +259,6 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
         }
         {<HeightElement value={'32px'} />}
         <div ref={bottomRef} />
-        <DeclineModal
-          open={showDeclineModal}
-          handleClose={() => {}}
-          handleAction={handleDeclineAction}
-        />
         <CommentsModal
           open={showCommentModal}
           handleClose={() => {}}
@@ -295,7 +290,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
               type: CollaborationMessageType.DECLINE_COLLABORATION,
               isAssistant: false,
               text: "Decline, citation is enough"
-            })
+            }, CollaborationMessageType.DECLINE_COLLABORATION)
           }
           title={'Decline, citation is enough'}
           text={

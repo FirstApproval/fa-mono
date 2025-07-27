@@ -66,6 +66,6 @@ class Author(
         )
 }
 
-fun Author.toShortInfoApiObject() = AuthorShortInfo(id, firstName, lastName, email).also {
+fun Author.toShortInfoApiObject() = AuthorShortInfo(id, email, firstName, lastName).also {
     it.username = user?.username
 }

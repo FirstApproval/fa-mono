@@ -5,8 +5,9 @@ import { getFullName } from "../../util/userUtil"
 import React from "react"
 
 export const mapAuthorWithLink = (author: AuthorShortInfo | UserInfo) => {
+  const fullName = getFullName(author);
   return author.username ?
-    <Link href={`${profilePath}/${author.username}`}
+    <Link href={`${profilePath}${author.username}`}
           target="_blank"
           sx={{
             textDecoration: "underline",
@@ -16,7 +17,7 @@ export const mapAuthorWithLink = (author: AuthorShortInfo | UserInfo) => {
             color: "black"
           }}
     >
-      {getFullName(author)}
+      {fullName}
     </Link> :
-    <span>{getFullName(author)}</span>
+    <span>{fullName}</span>
 }
