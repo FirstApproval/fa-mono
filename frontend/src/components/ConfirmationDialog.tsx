@@ -1,8 +1,9 @@
-import { Button, Dialog, DialogContent, Typography } from '@mui/material';
+import { Button, ButtonPropsVariantOverrides, Dialog, DialogContent, Typography } from "@mui/material"
 import React, { ReactElement } from 'react';
 import { FlexWrapRow, WidthElement } from '../pages/common.styled';
 import styled from '@emotion/styled';
 import DialogActions from '@mui/material/DialogActions';
+import { OverridableStringUnion } from "@mui/types"
 
 export const ConfirmationDialog = (props: {
   isOpen: boolean;
@@ -12,8 +13,23 @@ export const ConfirmationDialog = (props: {
   text?: string;
   yesText?: string;
   noText?: string;
+  cancelButtonVariant?: OverridableStringUnion<'text' | 'outlined' | 'contained'>;
+  confirmButtonVariant?: OverridableStringUnion<'text' | 'outlined' | 'contained'>;
+  cancelButtonColor?: OverridableStringUnion<'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning'>
+  confirmButtonColor?: OverridableStringUnion<'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning'>
 }): ReactElement => {
-  const { isOpen, onClose, onConfirm, title, text, yesText, noText } = props;
+  const { isOpen,
+    onClose,
+    onConfirm,
+    title,
+    text,
+    yesText,
+    noText,
+    cancelButtonVariant,
+    confirmButtonVariant,
+    cancelButtonColor,
+    confirmButtonColor
+  } = props;
   return (
     <Dialog
       open={isOpen}
@@ -32,15 +48,15 @@ export const ConfirmationDialog = (props: {
         <FlexWrapRow>
           <CancelButton
             size={'large'}
-            color={'primary'}
-            variant="text"
+            color={cancelButtonColor ?? 'primary'}
+            variant={cancelButtonVariant ?? 'text'}
             onClick={onClose}>
             {noText ?? 'No'}
           </CancelButton>
           <WidthElement value={'24px'} />
           <ConfirmButton
-            color="error"
-            variant={'contained'}
+            color={confirmButtonColor ?? 'error'}
+            variant={confirmButtonVariant ?? 'contained'}
             size={'large'}
             onClick={() => {
               onConfirm && onConfirm();
