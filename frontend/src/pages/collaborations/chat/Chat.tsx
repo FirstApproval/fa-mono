@@ -31,6 +31,7 @@ import { FormalizedAgreementPayload } from "../elements/FormalizedAgreementPaylo
 import { ConfirmationDialog } from "../../../components/ConfirmationDialog"
 import { AssistantCollaborationDeclined } from "../elements/AssistantCollaborationDeclined"
 import { YourCollaborationIsEstablished } from "../elements/YourCollaborationIsEstablished"
+import { FinalDraftAttachedByDataUser } from "../elements/FinalDraftAttachedByDataUser"
 
 const HIGH_FIVE_MESSAGE_TYPES = [
   CollaborationMessageType.AUTHOR_APPROVED, CollaborationMessageType.ALL_AUTHORS_CONFIRMED];
@@ -179,6 +180,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
                 {message.type === CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL && <PersonalData message={message} />}
                 {message.type === CollaborationMessageType.DONE_WHATS_NEXT && <PotentialPublicationData message={message} />}
                 {message.type === CollaborationMessageType.UPLOAD_FINAL_DRAFT && <span>Final draft:</span>}
+                {message.type === CollaborationMessageType.ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER && <FinalDraftAttachedByDataUser message={message} />}
                 {HIGH_FIVE_MESSAGE_TYPES.includes(message.type) && <img src={highfiveImage}  alt="High five"/>}
                 <div />
                 {message.text}
@@ -222,6 +224,17 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
                   <FormalizedAgreementPayload message={message} chatStore={collaborationChatStore} />}
                 {message.type === CollaborationMessageType.YOUR_COLLABORATION_IS_ESTABLISHED &&
                   <YourCollaborationIsEstablished message={message} chatStore={collaborationChatStore} />}
+                {message.type === CollaborationMessageType.ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER &&
+                  <div style={{marginTop: '20px'}}>
+                  <span>
+                    You will have 2 weeks to read the article and decide whether to accept or decline co-authorship.
+                    You can ask questions or provide your suggestions to the author via private messages.
+                    We recommend starting this process well in advance.
+                    If you do not approve the request within 2 weeks, you will lose the opportunity for co-authorship in this article.
+                    If you decline, the data user will simply cite your dataset.
+                  </span>
+                  </div>
+                }
               </Message>
               <HeightElement value={'32px'} />
             </React.Fragment>
