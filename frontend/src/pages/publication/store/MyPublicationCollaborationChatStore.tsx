@@ -58,7 +58,6 @@ export class MyPublicationCollaborationChatStore implements CollaborationChatSto
       this.collaborationRequestId,
       message
     ).then(response => {
-      debugger;
       this.messages!!.push(response.data);
       this.messages!!.sort(this.sortMessages);
       nextStage && this.setStage(nextStage);
@@ -118,8 +117,7 @@ export class MyPublicationCollaborationChatStore implements CollaborationChatSto
         ).type;
         publicationService.getPublication(data.publicationId!!).then(response => {
           this.publication = response.data;
-          this.publicationCreatorAuthor = response.data.authors
-            ?.find(author => author.user!!.id === this.publicationCreator!!.id)
+          this.publicationCreatorAuthor = response.data.authors?.find(author => author.user!!.id === this.publicationCreator!!.id)
         });
       });
   }
