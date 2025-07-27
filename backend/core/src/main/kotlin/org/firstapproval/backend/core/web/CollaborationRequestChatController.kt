@@ -19,6 +19,7 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.PUBLICATION_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.toApiObject
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequest
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestRepository
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestService
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.toApiObject
@@ -41,6 +42,7 @@ class CollaborationRequestChatController(
     private val collaborationRequestService: CollaborationRequestService,
     private val collaborationRequestMessageRepository: CollaborationMessageRepository,
     private val userService: UserService,
+    private val collaborationRequestRepository: CollaborationRequestRepository,
     private val authHolderService: AuthHolderService,
     private val docxPdfGenerator: DocxPdfGenerator,
     private val doiProperties: DoiProperties
@@ -53,11 +55,12 @@ class CollaborationRequestChatController(
         getCollaboration { collaborationRequestService.get(collaborationRequestId, authHolderService.user) }
 
     override fun createCollaborationRequestMessage(
-        publicationId: String,
+        collaborationRequestId: UUID,
         collaborationRequestMessage: CollaborationRequestMessage
     ): ResponseEntity<CollaborationRequestMessage> {
+        val collaborationRequest = collaborationRequestRepository.getReferenceById(collaborationRequestId)
         val message = collaborationRequestService.createCollaborationRequestMessage(
-            publicationId = publicationId,
+            collaborationRequest,
             collaborationRequestMessage = collaborationRequestMessage,
             user = authHolderService.user
         )
@@ -65,12 +68,13 @@ class CollaborationRequestChatController(
     }
 
     override fun createCollaborationRequestMessages(
-        publicationId: String,
+        collaborationRequestId: UUID,
         collaborationRequestMessages: List<CollaborationRequestMessage>
     ): ResponseEntity<List<CollaborationRequestMessage>> {
+        val collaborationRequest = collaborationRequestRepository.getReferenceById(collaborationRequestId)
         val messages = collaborationRequestMessages.map {
             collaborationRequestService.createCollaborationRequestMessage(
-                publicationId = publicationId,
+                collaborationRequest = collaborationRequest,
                 collaborationRequestMessage = it,
                 user = authHolderService.user
             )

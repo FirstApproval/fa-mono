@@ -101,7 +101,7 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
 
   sendMessage(message: CollaborationRequestMessage, nextStage: CollaborationMessageType | undefined = undefined): Promise<string> {
     return collaborationRequestChatService.createCollaborationRequestMessage(
-      this.publication!!.id,
+      this.collaborationRequestId,
       message
     ).then(response => {
       this.messages!!.push(response.data);

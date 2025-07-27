@@ -12,7 +12,9 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_CREATE
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_DECLINED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DATASET_WAS_DOWNLOADED
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DECLINE_COLLABORATION
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU
@@ -22,6 +24,7 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.COLLABORATION_REQUEST_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.PUBLICATION_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.*
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorDecisionStatus.COLLABORATION_DECLINED
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationRequestInvitedAuthor
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationRequestInvitedAuthorRepository
 import org.firstapproval.backend.core.domain.user.User
@@ -101,12 +104,10 @@ class CollaborationRequestService(
 
     @Transactional
     fun createCollaborationRequestMessage(
-        publicationId: String,
+        collaborationRequest: CollaborationRequest,
         collaborationRequestMessage: CollaborationRequestMessageApiObject,
         user: User
     ): CollaborationRequestMessage {
-        val collaborationRequest = collaborationRequestRepository.findByPublicationIdAndUserId(publicationId, user.id)!!
-
         val type = CollaborationRequestMessageType.valueOf(collaborationRequestMessage.type.name)
 
         // need to check that doesn't exist message with the same or higher sequenceIndex
@@ -154,6 +155,23 @@ class CollaborationRequestService(
                     text = PLANS_TO_USE_YOUR_DATASET.format(fullNameRequestCreator),
                     sequenceIndex = ASSISTANT_CREATE.sequenceIndex,
                     recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
+                    isAssistant = true
+                )
+            )
+        }
+        if (type == DECLINE_COLLABORATION) {
+            val invitedAuthor = collaborationRequest.authors.find { it.author.user!!.id == user.id }!!
+            invitedAuthor.status = COLLABORATION_DECLINED
+
+            collaborationMessageRepository.save(
+                CollaborationRequestMessage(
+                    collaborationRequest = collaborationRequest,
+                    type = AUTHOR_DECLINED,
+                    user = targetUser(AUTHOR_DECLINED, collaborationRequest),
+                    text = collaborationRequestMessage.text,
+                    payload = objectMapper.convertValue(collaborationRequestMessage.payload, MessagePayload::class.java),
+                    sequenceIndex = type.sequenceIndex,
+                    recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR),
                     isAssistant = true
                 )
             )

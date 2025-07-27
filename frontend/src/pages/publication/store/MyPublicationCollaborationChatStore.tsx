@@ -55,7 +55,7 @@ export class MyPublicationCollaborationChatStore implements CollaborationChatSto
 
   sendMessage(message: CollaborationRequestMessage, nextStage: CollaborationMessageType | undefined = undefined): Promise<string> {
     return collaborationRequestChatService.createCollaborationRequestMessage(
-      this.publication!!.id,
+      this.collaborationRequestId,
       message
     ).then(response => {
       debugger;
