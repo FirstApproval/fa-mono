@@ -7,9 +7,9 @@ import org.firstapproval.api.server.model.GetCollaborationRequestsResponse
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.PublicationRepository
+import org.firstapproval.backend.core.domain.publication.authors.toShortInfoApiObject
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestService
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.toApiObject
-import org.firstapproval.backend.core.domain.publication.toShortInfoApiObject
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.toApiObject
 import org.springframework.http.ResponseEntity

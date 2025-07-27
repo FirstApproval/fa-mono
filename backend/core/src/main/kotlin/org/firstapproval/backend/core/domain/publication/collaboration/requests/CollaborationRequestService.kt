@@ -5,8 +5,10 @@ import org.firstapproval.api.server.model.CreateCollaborationRequest
 import org.firstapproval.backend.core.domain.publication.Publication
 import org.firstapproval.backend.core.domain.publication.PublicationRepository
 import org.firstapproval.backend.core.domain.publication.PublicationService
+import org.firstapproval.backend.core.domain.publication.authors.toShortInfoApiObject
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationMessageFileRepository
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationRequestMessageFile
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.AuthorDeclinedPayload
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationMessageRepository
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessage
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType
@@ -24,6 +26,7 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.COLLABORATION_REQUEST_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.PUBLICATION_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.*
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorDecisionStatus
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorDecisionStatus.COLLABORATION_DECLINED
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationRequestInvitedAuthor
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationRequestInvitedAuthorRepository
@@ -61,6 +64,11 @@ const val PLANS_TO_USE_YOUR_DATASET = "%1\$s plans to use your dataset in his re
     "the final version of the article.\n" +
     "By declining a collaboration, you oblige data user to simply quote your dataset, " +
     "without specifying you as a co-author."
+
+private val APPROVED_STATUSES = listOf(
+    CollaborationAuthorDecisionStatus.COLLABORATION_APPROVED,
+    CollaborationAuthorDecisionStatus.MANUSCRIPT_APPROVED
+)
 
 @Service
 class CollaborationRequestService(
@@ -162,15 +170,23 @@ class CollaborationRequestService(
         if (type == DECLINE_COLLABORATION) {
             val invitedAuthor = collaborationRequest.authors.find { it.author.user!!.id == user.id }!!
             invitedAuthor.status = COLLABORATION_DECLINED
+            val declineMessageType = AUTHOR_DECLINED
+            val payload = AuthorDeclinedPayload(
+                type = declineMessageType,
+                decisionAuthor = invitedAuthor.author.toShortInfoApiObject(),
+                decisionAuthorComment = null,
+                expectedApprovingAuthors = collaborationRequest.authors
+                    .filter { APPROVED_STATUSES.contains(it.status) }
+                    .map { it.author.toShortInfoApiObject() }
+            )
 
             collaborationMessageRepository.save(
                 CollaborationRequestMessage(
                     collaborationRequest = collaborationRequest,
-                    type = AUTHOR_DECLINED,
-                    user = targetUser(AUTHOR_DECLINED, collaborationRequest),
-                    text = collaborationRequestMessage.text,
-                    payload = objectMapper.convertValue(collaborationRequestMessage.payload, MessagePayload::class.java),
-                    sequenceIndex = type.sequenceIndex,
+                    type = declineMessageType,
+                    user = targetUser(declineMessageType, collaborationRequest),
+                    payload = payload,
+                    sequenceIndex = declineMessageType.sequenceIndex,
                     recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR),
                     isAssistant = true
                 )

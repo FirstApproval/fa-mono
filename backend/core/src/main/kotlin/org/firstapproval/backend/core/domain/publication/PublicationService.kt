@@ -637,10 +637,6 @@ fun Author.toApiObject(profileImage: ByteArray?) = AuthorApiObject().also {
     it.workplaces = workplaces.map { workplace -> workplace.toApiObject() }
 }
 
-fun Author.toShortInfoApiObject() = AuthorShortInfo(id, firstName, lastName, email).also {
-    it.username = user?.username
-}
-
 class PublicationShortInfo(
     var id: String,
     var title: String,

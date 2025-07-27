@@ -50,7 +50,6 @@ export class UserActionsRegistry {
     this.registerAction(CollaborationMessageType.AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE, [askDataAuthor, needHelp]);
     this.registerAction(CollaborationMessageType.AUTHOR_APPROVED, [askDataAuthor, needHelp]);
     this.registerAction(CollaborationMessageType.AUTHOR_DECLINED, [askDataAuthor, needHelp]);
-    this.registerAction(CollaborationMessageType.AUTHOR_DECLINED, [askDataAuthor, needHelp]);
     this.registerAction(CollaborationMessageType.ALL_AUTHORS_CONFIRMED, [askDataAuthor, needHelp]);
 
     //for data author

@@ -29,7 +29,7 @@ export const AuthorDeclinedPayload = observer((
         Unfortunately, {mappedDecisionAuthor} has decided not to continue the collaboration.
       </span>
       {
-        mappedExpectedApprovingAuthors?.length &&
+        Boolean(mappedExpectedApprovingAuthors?.length) &&
         <span>
           However, you are still collaborating with {mappedExpectedApprovingAuthors}.
         </span>

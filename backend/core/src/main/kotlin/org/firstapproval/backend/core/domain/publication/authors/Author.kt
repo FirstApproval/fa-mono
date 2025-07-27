@@ -9,6 +9,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
+import org.firstapproval.api.server.model.AuthorShortInfo
 import org.firstapproval.backend.core.domain.publication.Publication
 import org.firstapproval.backend.core.domain.user.User
 import org.hibernate.annotations.Fetch
@@ -63,4 +64,8 @@ class Author(
             workplaces = workplaces,
             creationTime = creationTime
         )
+}
+
+fun Author.toShortInfoApiObject() = AuthorShortInfo(id, firstName, lastName, email).also {
+    it.username = user?.username
 }
