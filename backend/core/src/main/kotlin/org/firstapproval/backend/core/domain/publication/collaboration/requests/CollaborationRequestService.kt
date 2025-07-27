@@ -193,12 +193,12 @@ class CollaborationRequestService(
             val invitedAuthor = collaborationRequest.authors.find { it.author.user!!.id == user.id }!!
             invitedAuthor.status = COLLABORATION_DECLINED
 
-            val assistanceCollaborationDeclined = ASSISTANT_COLLABORATION_DECLINED
+            val assistanceCollaborationDeclinedMessageType = ASSISTANT_COLLABORATION_DECLINED
             val assistantCollaborationDeclinedMessage = CollaborationRequestMessage(
                 collaborationRequest = collaborationRequest,
-                type = assistanceCollaborationDeclined,
-                user = targetUser(assistanceCollaborationDeclined, collaborationRequest),
-                sequenceIndex = assistanceCollaborationDeclined.sequenceIndex,
+                type = assistanceCollaborationDeclinedMessageType,
+                user = targetUser(assistanceCollaborationDeclinedMessageType, collaborationRequest),
+                sequenceIndex = assistanceCollaborationDeclinedMessageType.sequenceIndex,
                 recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
                 isAssistant = true
             )
