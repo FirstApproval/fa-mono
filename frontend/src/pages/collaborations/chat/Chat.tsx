@@ -126,31 +126,6 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
   };
 
 
-  const handleDeclineAction: () => void = () => {
-    Messages.push({
-      id: 404,
-      name: 'Me Myself',
-      avatar: 'MM',
-      text: 'Decline, citation is enough'
-    });
-    Messages.push({
-      id: 405,
-      name: 'Assistant',
-      avatar: 'FA',
-      text: [
-        <>
-          <p>
-            Thank you for the reply. The data user will be required to cite your
-            dataset, but will not specify you as a co-author.
-          </p>
-          <p>You can write us feedback to improve the platform 💬</p>
-        </>
-      ]
-    });
-    collaborationChatStore.setStage(CollaborationMessageType.DECLINED);
-    setShowDeclineModal(false);
-  };
-
   const handleApproveManuscriptWithComments: () => void = () => {
     handleShowCommentModal();
   };

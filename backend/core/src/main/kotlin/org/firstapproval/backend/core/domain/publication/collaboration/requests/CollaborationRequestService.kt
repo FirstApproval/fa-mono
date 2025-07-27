@@ -16,13 +16,16 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.APPROVE_COLLABORATION
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_CREATE
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_COLLABORATION_DECLINED
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_DECLINED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DATASET_WAS_DOWNLOADED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DECLINE_COLLABORATION
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.UPLOAD_FINAL_DRAFT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.YOUR_COLLABORATION_IS_ESTABLISHED
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.FinalDraftAttachedByDataUser
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.IWouldLikeToIncludeYouAsCoAuthor
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.MessagePayload
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.PotentialPublicationData
@@ -35,6 +38,7 @@ import org.firstapproval.backend.core.domain.publication.collaboration.requests.
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationRequestInvitedAuthor
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationRequestInvitedAuthorRepository
 import org.firstapproval.backend.core.domain.user.User
+import org.firstapproval.backend.core.domain.user.toApiObjectWithoutPhoto
 import org.firstapproval.backend.core.external.s3.COLLABORATION_REQUEST_MESSAGE_FILES
 import org.firstapproval.backend.core.external.s3.FileStorageService
 import org.springframework.data.domain.Page
@@ -244,6 +248,21 @@ class CollaborationRequestService(
             listOf(authorNotifiedDeclinedMessage)
         }
 
+        UPLOAD_FINAL_DRAFT -> {
+            val finalDraftAttachedByDataUserMessageType = ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER
+
+            val authorNotifiedDeclinedMessage = CollaborationRequestMessage(
+                collaborationRequest = collaborationRequest,
+                type = finalDraftAttachedByDataUserMessageType,
+                user = targetUser(finalDraftAttachedByDataUserMessageType, collaborationRequest),
+                payload = FinalDraftAttachedByDataUser(dataUser = user.toApiObjectWithoutPhoto()),
+                sequenceIndex = finalDraftAttachedByDataUserMessageType.sequenceIndex,
+                recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
+                isAssistant = true
+            )
+            listOf(authorNotifiedDeclinedMessage)
+        }
+
         else -> emptyList()
     }
 
@@ -331,23 +350,6 @@ class CollaborationRequestService(
             )
         )
 
-//        collaborationMessageRepository.save(
-//            CollaborationRequestMessage(
-//                collaborationRequest = collaboration,
-//                type = MessageType.CREATE,
-//                user = user,
-//                text = collaborationRequestRequest.description,
-//                payload = Create(
-//                    collaborationRequestRequest.firstNameLegal,
-//                    collaborationRequestRequest.lastNameLegal,
-//                    typeOfWork,
-//                    collaborationRequestRequest.description
-//                ),
-//                sequenceIndex = 0,
-//                recipients = mutableSetOf(COLLABORATION_REQUEST_CREATOR)
-//            )
-//        )
-
         // For collaboration request creator
         collaborationMessageRepository.save(
             CollaborationRequestMessage(
@@ -372,19 +374,5 @@ class CollaborationRequestService(
                 isAssistant = true
             )
         )
-
-        // For publication creator
-//        val fullNameRequestCreator = "${collaborationRequestRequest.firstNameLegal} ${collaborationRequestRequest.lastNameLegal}"
-//        collaborationMessageRepository.save(
-//            CollaborationRequestMessage(
-//                collaborationRequest = collaboration,
-//                type = CollaborationRequestMessageType.ASSISTANT_CREATE,
-//                user = publication.creator,
-//                text = PLANS_TO_USE_YOUR_DATASET.format(fullNameRequestCreator),
-//                sequenceIndex = 1,
-//                recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
-//                isAssistant = true
-//            )
-//        )
     }
 }

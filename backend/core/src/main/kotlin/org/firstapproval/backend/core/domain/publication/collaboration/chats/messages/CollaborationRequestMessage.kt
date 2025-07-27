@@ -23,9 +23,9 @@ import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.api.server.model.Workplace
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationRequestMessageFile
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.toApiObject
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_APPROVED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_DECLINED
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DATA_USER_NOTIFIED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU
@@ -104,7 +104,8 @@ enum class CollaborationRequestMessageType(val sequenceIndex: Int, val recipient
     EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST(12, COLLABORATION_REQUEST_CREATOR),
     FIRST_STEP_IS_COMPLETED(13, COLLABORATION_REQUEST_CREATOR),
     YOUR_COLLABORATION_IS_ESTABLISHED(14, COLLABORATION_REQUEST_CREATOR),
-    IN_TWO_WEEKS_YOU_ARE_PLAN_TO_SHARE_FINAL_DRAFT(15, COLLABORATION_REQUEST_CREATOR),
+//    IN_TWO_WEEKS_YOU_ARE_PLAN_TO_SHARE_FINAL_DRAFT(15, COLLABORATION_REQUEST_CREATOR),
+    UPLOAD_FINAL_DRAFT(15, COLLABORATION_REQUEST_CREATOR),
     AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE(16, COLLABORATION_REQUEST_CREATOR),
     AUTHOR_APPROVED(17, COLLABORATION_REQUEST_CREATOR),
     AUTHOR_DECLINED(17, COLLABORATION_REQUEST_CREATOR),
@@ -113,10 +114,10 @@ enum class CollaborationRequestMessageType(val sequenceIndex: Int, val recipient
     CHANGE_MY_PERSONAL_INFO(0, COLLABORATION_REQUEST_CREATOR),
     CHANGE_INFO_ABOUT_MY_PUBLICATION(0, COLLABORATION_REQUEST_CREATOR),
 
-    UPLOAD_FINAL_DRAFT(15, COLLABORATION_REQUEST_CREATOR),
-    NOTIFY_CO_AUTHOR(15, COLLABORATION_REQUEST_CREATOR),
-    ASC_DATA_AUTHOR(15, COLLABORATION_REQUEST_CREATOR),
-    I_NEED_HELP(15, COLLABORATION_REQUEST_CREATOR),
+//    UPLOAD_FINAL_DRAFT(15, COLLABORATION_REQUEST_CREATOR),
+//    NOTIFY_CO_AUTHOR(15, COLLABORATION_REQUEST_CREATOR),
+//    ASK_DATA_AUTHOR(15, COLLABORATION_REQUEST_CREATOR),
+//    I_NEED_HELP(15, COLLABORATION_REQUEST_CREATOR),
 
     //Publication creator
     I_WOULD_LIKE_TO_INCLUDE_YOU(0, PUBLICATION_CREATOR),
@@ -124,8 +125,9 @@ enum class CollaborationRequestMessageType(val sequenceIndex: Int, val recipient
     APPROVE_COLLABORATION(2, PUBLICATION_CREATOR),
     DECLINE_COLLABORATION(2, PUBLICATION_CREATOR),
     ASSISTANT_COLLABORATION_DECLINED(3, PUBLICATION_CREATOR),
+    ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER(4, PUBLICATION_CREATOR),
 
-    DATA_USER_NOTIFIED(3, PUBLICATION_CREATOR),
+//    DATA_USER_NOTIFIED(3, PUBLICATION_CREATOR),
 
     APPROVE_MANUSCRIPT(5, PUBLICATION_CREATOR),
     DECLINE_MANUSCRIPT(5, PUBLICATION_CREATOR),
@@ -155,8 +157,8 @@ enum class CollaborationRequestMessageType(val sequenceIndex: Int, val recipient
         JsonSubTypes.Type(value = AuthorApprovedPayload::class, name = "AUTHOR_APPROVED"),
         JsonSubTypes.Type(value = AuthorDeclinedPayload::class, name = "AUTHOR_DECLINED"),
         JsonSubTypes.Type(value = PrefilledCollaborationAgreementPayload::class, name = "PREFILLED_COLLABORATION_AGREEMENT"),
-        JsonSubTypes.Type(value = DataUserPayload::class, name = "DATA_USER_NOTIFIED"),
-        JsonSubTypes.Type(value = YourCollaborationIsEstablishedPayload::class, name = "YOUR_COLLABORATION_IS_ESTABLISHED")
+        JsonSubTypes.Type(value = YourCollaborationIsEstablishedPayload::class, name = "YOUR_COLLABORATION_IS_ESTABLISHED"),
+        JsonSubTypes.Type(value = FinalDraftAttachedByDataUser::class, name = "ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER")
     ]
 )
 
@@ -212,9 +214,9 @@ class PrefilledCollaborationAgreementPayload(
     override var type: CollaborationRequestMessageType = PREFILLED_COLLABORATION_AGREEMENT
 ) : MessagePayload
 
-class DataUserPayload(
+class FinalDraftAttachedByDataUser(
     val dataUser: UserInfo,
-    override var type: CollaborationRequestMessageType = DATA_USER_NOTIFIED
+    override var type: CollaborationRequestMessageType = ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER
 ) : MessagePayload
 
 class YourCollaborationIsEstablishedPayload(
