@@ -18,7 +18,7 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_COLLABORATION_DECLINED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_DECLINED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DATASET_WAS_DOWNLOADED
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DATA_USER_NOTIFIED
+//import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DATA_USER_NOTIFIED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DECLINE_COLLABORATION
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST
@@ -229,20 +229,19 @@ class CollaborationRequestService(
             listOf(declinedMessage, assistantCollaborationDeclinedMessage)
         }
 
-        APPROVE_COLLABORATION -> {
-            val authorNotifiedMessageType = DATA_USER_NOTIFIED
-            val authorNotifiedDeclinedMessage = CollaborationRequestMessage(
-                collaborationRequest = collaborationRequest,
-                type = authorNotifiedMessageType,
-                user = targetUser(authorNotifiedMessageType, collaborationRequest),
-                payload = DataUserPayload(collaborationRequest.user.toApiObjectWithoutPhoto()),
-                sequenceIndex = authorNotifiedMessageType.sequenceIndex,
-                recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
-                isAssistant = true
-            )
-
-            listOf(authorNotifiedDeclinedMessage)
-        }
+//        APPROVE_COLLABORATION -> {
+//            val authorNotifiedMessageType = DATA_USER_NOTIFIED
+//            val authorNotifiedDeclinedMessage = CollaborationRequestMessage(
+//                collaborationRequest = collaborationRequest,
+//                type = authorNotifiedMessageType,
+//                user = targetUser(authorNotifiedMessageType, collaborationRequest),
+//                payload = DataUserPayload(collaborationRequest.user.toApiObjectWithoutPhoto()),
+//                sequenceIndex = authorNotifiedMessageType.sequenceIndex,
+//                recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
+//                isAssistant = true
+//            )
+//            listOf(authorNotifiedDeclinedMessage)
+//        }
 
         else -> emptyList()
     }
