@@ -13,9 +13,11 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessage
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.APPROVE_COLLABORATION
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_CREATE
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_COLLABORATION_DECLINED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_DECLINED
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_NOTIFIED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DATASET_WAS_DOWNLOADED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DECLINE_COLLABORATION
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
@@ -222,6 +224,20 @@ class CollaborationRequestService(
             )
 
             listOf(declinedMessage, assistantCollaborationDeclinedMessage)
+        }
+
+        APPROVE_COLLABORATION -> {
+            val authorNotifiedMessageType = AUTHOR_NOTIFIED
+            val authorNotifiedDeclinedMessage = CollaborationRequestMessage(
+                collaborationRequest = collaborationRequest,
+                type = authorNotifiedMessageType,
+                user = targetUser(authorNotifiedMessageType, collaborationRequest),
+                sequenceIndex = authorNotifiedMessageType.sequenceIndex,
+                recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
+                isAssistant = true
+            )
+
+            listOf(authorNotifiedDeclinedMessage)
         }
 
         else -> emptyList()

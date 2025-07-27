@@ -27,6 +27,7 @@ export class MyPublicationCollaborationChatStore implements CollaborationChatSto
   messageType: CollaborationMessageType | undefined = undefined;
   isUploadDraftDialogOpen = false;
   isDeclineCollaborationDialogOpen = false;
+  isApproveCollaborationDialogOpen = false;
 
   constructor(collaborationRequestId: string, stage?: CollaborationMessageType) {
     makeAutoObservable(this);
@@ -85,6 +86,10 @@ export class MyPublicationCollaborationChatStore implements CollaborationChatSto
 
   setIsDeclineCollaborationDialogOpen (open: boolean): void {
     this.isDeclineCollaborationDialogOpen = open;
+  }
+
+  setIsApproveCollaborationDialogOpen (open: boolean): void {
+    this.isApproveCollaborationDialogOpen = open;
   }
 
   getCollaborationAgreementFile(authorId: string, fileName: string): Promise<void> {
@@ -147,10 +152,12 @@ export interface CollaborationChatStoreInterface {
   publicationCreatorAuthor?: Author;
   intendedJournalForPublication?: string;
   detailsOfResearch?: string;
-  isUploadDraftDialogOpen: boolean;
-  setIsUploadDraftDialogOpen: (open: boolean) => void;
-  isDeclineCollaborationDialogOpen: boolean;
-  setIsDeclineCollaborationDialogOpen: (open: boolean) => void;
+  isUploadDraftDialogOpen?: boolean;
+  setIsUploadDraftDialogOpen?: (open: boolean) => void;
+  isDeclineCollaborationDialogOpen?: boolean;
+  setIsDeclineCollaborationDialogOpen?: (open: boolean) => void;
+  isApproveCollaborationDialogOpen?: boolean;
+  setIsApproveCollaborationDialogOpen?: (open: boolean) => void;
   sendMessages(
     messages: CollaborationRequestMessage[], nextStage?: CollaborationMessageType | undefined
   ): Promise<CollaborationRequestMessage[]>
