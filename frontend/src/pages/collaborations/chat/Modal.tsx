@@ -358,15 +358,6 @@ export const Step3Modal = ({
   )
 }
 
-// Need to double check designs for clicked and hovered styles of buttons
-export const StyledButton = styled(Button)`
-  margin-right: 0.75rem;
-  margin-bottom: 0.75rem;
-  &:hover {
-    background: rgb(0 0 0 / 4%);
-    border-color: #040036;
-  }
-`
 export const StyledApproveButton = styled(Button)<{
   isDecline?: boolean;
 }>`
@@ -383,7 +374,7 @@ export const StyledApproveButton = styled(Button)<{
   
 `
 
-const StyledBox = styled(Box)`
+export const StyledBox = styled(Box)`
   border-radius: 0.5rem;
   background: #fff;
   box-shadow: 0px 6px 28px 5px rgba(0, 0, 0, 0.12),
@@ -401,11 +392,11 @@ const Textarea = styled(TextareaAutosize)`
   padding: 1rem;
   font: inherit;
 `
-const ModalButtonsWrapper = styled.div`
+export const ModalButtonsWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
 `
-const ModalButtonsCancel = styled(Button)`
+export const ModalButtonsCancel = styled(Button)`
   color: #3b4eff;
   padding: 0.5rem 1.375rem;
   font-size: 1.125rem;
@@ -413,7 +404,7 @@ const ModalButtonsCancel = styled(Button)`
   font-weight: 500;
   margin-right: 1.5rem;
 `
-const ModalButtonsDecline = styled(Button)`
+export const ModalButtonsDecline = styled(Button)`
   color: #fff;
   background: #d32f2f;
   padding: 0.5rem 1.375rem;

@@ -53,8 +53,17 @@ export class MyPublicationCollaborationChatStore implements CollaborationChatSto
     this.messageType = stage;
   }
 
-  sendMessage(message: CollaborationRequestMessage, next?: (CollaborationMessageType | undefined)): Promise<string> {
-    return Promise.resolve('');
+  sendMessage(message: CollaborationRequestMessage, nextStage: CollaborationMessageType | undefined = undefined): Promise<string> {
+    return collaborationRequestChatService.createCollaborationRequestMessage(
+      this.publication!!.id,
+      message
+    ).then(response => {
+      debugger;
+      this.messages!!.push(response.data);
+      this.messages!!.sort(this.sortMessages);
+      nextStage && this.setStage(nextStage);
+      return response.data.id!!;
+    });
   }
 
   existsByType (type: CollaborationMessageType): boolean {

@@ -42,7 +42,10 @@ export const ConfirmationDialog = (props: {
             color="error"
             variant={'contained'}
             size={'large'}
-            onClick={onConfirm}>
+            onClick={() => {
+              onConfirm && onConfirm();
+              onClose();
+            }}>
             {yesText ?? 'Yes'}
           </ConfirmButton>
         </FlexWrapRow>

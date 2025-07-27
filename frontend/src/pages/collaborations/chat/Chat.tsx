@@ -289,14 +289,13 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
         <ConfirmationDialog
           isOpen={collaborationChatStore.isDeclineCollaborationDialogOpen}
           onClose={() => collaborationChatStore.setIsDeclineCollaborationDialogOpen(false)}
-          onConfirm={async () => await
-            collaborationChatStore.sendMessage({
+          onConfirm={async () => await collaborationChatStore.sendMessage({
               type: CollaborationMessageType.DECLINE_COLLABORATION,
               isAssistant: false,
-              text: 'Decline collaboration',
+              text: "Decline, citation is enough"
             })
-        }
-          title={'Decline collaboration'}
+          }
+          title={'Decline, citation is enough'}
           text={
             'Are you sure you want to decline the request? \n' +
             'By declining a collaboration, you oblige data user to simply quote your dataset, ' +

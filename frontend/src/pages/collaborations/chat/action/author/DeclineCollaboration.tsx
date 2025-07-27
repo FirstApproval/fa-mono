@@ -7,6 +7,6 @@ function declineCollaborationAction(collaborationChatStore: CollaborationChatSto
 
 export const declineCollaboration: UserAction = {
   isDecline: true,
-  text: 'Decline collaboration',
+  text: 'Decline, citation is enough',
   action: (collaborationChatStore: CollaborationChatStoreInterface) => declineCollaborationAction(collaborationChatStore)
 }
