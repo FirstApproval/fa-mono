@@ -37,6 +37,7 @@ import { Link } from "@mui/material"
 import { CollaborationChatStoreInterface } from "../../publication/store/MyPublicationCollaborationChatStore"
 import { FormalizedAgreementPayload } from "../elements/FormalizedAgreementPayload"
 import { ConfirmationDialog } from "../../../components/ConfirmationDialog"
+import { AssistantCollaborationDeclined } from "../elements/AssistantCollaborationDeclined"
 
 const HIGH_FIVE_MESSAGE_TYPES = [
   CollaborationMessageType.AUTHOR_APPROVED, CollaborationMessageType.ALL_AUTHORS_CONFIRMED];
@@ -240,6 +241,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
                 }
                 {/* For data author: */}
                 {message.type === CollaborationMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU && <PotentialPublicationData message={message} />}
+                {message.type === CollaborationMessageType.ASSISTANT_COLLABORATION_DECLINED && <AssistantCollaborationDeclined />}
                 {message.type === CollaborationMessageType.ASSISTANT_CREATE &&
                   <FormalizedAgreementPayload message={message} chatStore={collaborationChatStore} />}
               </Message>

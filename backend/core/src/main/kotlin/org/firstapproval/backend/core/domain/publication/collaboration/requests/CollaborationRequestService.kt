@@ -14,6 +14,7 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_CREATE
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_COLLABORATION_DECLINED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_DECLINED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DATASET_WAS_DOWNLOADED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DECLINE_COLLABORATION
@@ -188,6 +189,17 @@ class CollaborationRequestService(
                     payload = payload,
                     sequenceIndex = declineMessageType.sequenceIndex,
                     recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR),
+                    isAssistant = true
+                )
+            )
+
+            collaborationMessageRepository.save(
+                CollaborationRequestMessage(
+                    collaborationRequest = collaborationRequest,
+                    type = ASSISTANT_COLLABORATION_DECLINED,
+                    user = targetUser(declineMessageType, collaborationRequest),
+                    sequenceIndex = ASSISTANT_COLLABORATION_DECLINED.sequenceIndex,
+                    recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
                     isAssistant = true
                 )
             )
