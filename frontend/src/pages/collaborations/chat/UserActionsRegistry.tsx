@@ -60,6 +60,8 @@ export class UserActionsRegistry {
     this.registerAction(CollaborationMessageType.APPROVE_COLLABORATION, [needHelp]);
     this.registerAction(CollaborationMessageType.ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER,
       [approveManuscript, declineCollaboration, askDataAuthor, needHelp]);
+    this.registerAction(CollaborationMessageType.ASSISTANT_MANUSCRIPT_APPROVED, [askDataAuthor, needHelp]);
+
   }
 
   private registerAction (messageType: CollaborationMessageType, actions: UserAction[] = []): void {

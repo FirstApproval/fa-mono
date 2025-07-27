@@ -32,9 +32,13 @@ import { ConfirmationDialog } from "../../../components/ConfirmationDialog"
 import { AssistantCollaborationDeclined } from "../elements/AssistantCollaborationDeclined"
 import { YourCollaborationIsEstablished } from "../elements/YourCollaborationIsEstablished"
 import { FinalDraftAttachedByDataUser } from "../elements/FinalDraftAttachedByDataUser"
+import { AllAuthorsConfirmed } from "../elements/AllAuthorsConfirmed"
 
 const HIGH_FIVE_MESSAGE_TYPES = [
-  CollaborationMessageType.AUTHOR_APPROVED, CollaborationMessageType.ALL_AUTHORS_CONFIRMED];
+  CollaborationMessageType.AUTHOR_APPROVED,
+  CollaborationMessageType.ALL_AUTHORS_CONFIRMED,
+  CollaborationMessageType.ASSISTANT_MANUSCRIPT_APPROVED
+];
 
 type ChatProps = {
   collaborationChatStore: CollaborationChatStoreInterface;
@@ -230,6 +234,18 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
                     If you do not approve the request within 2 weeks, you will lose the opportunity for co-authorship in this article.
                     If you decline, the data user will simply cite your dataset.
                   </span>
+                  </div>
+                }
+                {message.type === CollaborationMessageType.ASSISTANT_MANUSCRIPT_APPROVED &&
+                  <div style={{marginTop: '20px'}}>
+                  <span>
+                    The manuscript was approved. You may use this log to continue discussions with data user according your collaboration.
+                  </span>
+                  </div>
+                }
+                {message.type === CollaborationMessageType.ALL_AUTHORS_CONFIRMED &&
+                  <div style={{marginTop: '20px'}}>
+                  <AllAuthorsConfirmed />
                   </div>
                 }
               </Message>

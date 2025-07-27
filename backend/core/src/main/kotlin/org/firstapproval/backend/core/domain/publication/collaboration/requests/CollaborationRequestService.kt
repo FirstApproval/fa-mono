@@ -11,11 +11,13 @@ import org.firstapproval.backend.core.domain.publication.authors.toShortInfoApiO
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationMessageFileRepository
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationRequestMessageFile
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.ApproveManuscriptPayload
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.AuthorApprovedPayload
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.AuthorDeclinedPayload
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationMessageRepository
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessage
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ALL_AUTHORS_CONFIRMED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.APPROVE_COLLABORATION
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.APPROVE_MANUSCRIPT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_COLLABORATION_DECLINED
@@ -40,7 +42,10 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.YourCollaborationIsEstablishedPayload
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.*
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorDecisionStatus
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorDecisionStatus.COLLABORATION_APPROVED
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorDecisionStatus.COLLABORATION_DECLINED
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorDecisionStatus.MANUSCRIPT_APPROVED
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorDecisionStatus.MANUSCRIPT_DECLINED
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationRequestInvitedAuthor
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationRequestInvitedAuthorRepository
 import org.firstapproval.backend.core.domain.user.User
@@ -80,8 +85,8 @@ const val PLANS_TO_USE_YOUR_DATASET = "%1\$s plans to use your dataset in his re
     "without specifying you as a co-author."
 
 private val APPROVED_STATUSES = listOf(
-    CollaborationAuthorDecisionStatus.COLLABORATION_APPROVED,
-    CollaborationAuthorDecisionStatus.MANUSCRIPT_APPROVED
+    COLLABORATION_APPROVED,
+    MANUSCRIPT_APPROVED
 )
 
 @Service
@@ -241,6 +246,7 @@ class CollaborationRequestService(
             val yourCollaborationIsEstablishedMessageType = YOUR_COLLABORATION_IS_ESTABLISHED
 
             val invitedAuthor = collaborationRequest.authors.find { it.author.user!!.id == user.id }!!
+            invitedAuthor.status = COLLABORATION_APPROVED
 
             val authorNotifiedDeclinedMessage = CollaborationRequestMessage(
                 collaborationRequest = collaborationRequest,
@@ -282,18 +288,53 @@ class CollaborationRequestService(
 
         APPROVE_MANUSCRIPT -> {
             val authorApprovedMessageType = AUTHOR_APPROVED
+
+            val assistanceManuscriptApprovedMessageType = CollaborationRequestMessageType.ASSISTANT_MANUSCRIPT_APPROVED
+            val assistantManuscriptApproved = CollaborationRequestMessage(
+                collaborationRequest = collaborationRequest,
+                type = assistanceManuscriptApprovedMessageType,
+                user = targetUser(assistanceManuscriptApprovedMessageType, collaborationRequest),
+                sequenceIndex = assistanceManuscriptApprovedMessageType.sequenceIndex,
+                recipientTypes = mutableSetOf(assistanceManuscriptApprovedMessageType.recipientType),
+                isAssistant = true
+            )
+
             val payload = originalMessage.payload as ApproveManuscriptPayload
+            val invitedAuthor = collaborationRequest.authors.find { it.author.user!!.id == user.id }!!
+            invitedAuthor.status = MANUSCRIPT_APPROVED
 
             val authorNotifiedDeclinedMessage = CollaborationRequestMessage(
                 collaborationRequest = collaborationRequest,
                 type = authorApprovedMessageType,
                 user = targetUser(authorApprovedMessageType, collaborationRequest),
-                payload = ApproveManuscriptPayload(comment = payload.comment),
+                payload = AuthorApprovedPayload(
+                    type = authorApprovedMessageType,
+                    decisionAuthor = invitedAuthor.author.toShortInfoApiObject(),
+                    decisionAuthorComment = payload.comment,
+                    expectedApprovingAuthors = collaborationRequest.authors
+                        .filter { it.status == COLLABORATION_APPROVED }
+                        .map { it.author.toShortInfoApiObject() }
+                ),
                 sequenceIndex = authorApprovedMessageType.sequenceIndex,
                 recipientTypes = mutableSetOf(authorApprovedMessageType.recipientType),
                 isAssistant = true
             )
-            listOf(authorNotifiedDeclinedMessage)
+
+            val messages =  mutableListOf(authorNotifiedDeclinedMessage, assistantManuscriptApproved)
+            if (collaborationRequest.authors.all { it.status == MANUSCRIPT_APPROVED  }) {
+                val allAuthorsConfirmedMessageType = ALL_AUTHORS_CONFIRMED
+                val allAuthorsConfirmedMessage = CollaborationRequestMessage(
+                    collaborationRequest = collaborationRequest,
+                    type = allAuthorsConfirmedMessageType,
+                    user = targetUser(allAuthorsConfirmedMessageType, collaborationRequest),
+                    sequenceIndex = allAuthorsConfirmedMessageType.sequenceIndex,
+                    recipientTypes = mutableSetOf(allAuthorsConfirmedMessageType.recipientType),
+                    isAssistant = true
+                )
+                messages.add(allAuthorsConfirmedMessage)
+            }
+
+            messages
         }
 
         else -> emptyList()

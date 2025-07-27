@@ -34,6 +34,7 @@ export const PublicationCollaborationsPage = observer((): ReactElement => {
   );
 
   function mapToCollaborationRequestBox(collaborationRequestInfo: CollaborationRequestInfo) {
+    // const invitedAuthor = collaborationRequestInfo.invitedAuthors?.find(invitedAuthor => invitedAuthor.author.username === userStore.user!!.username);
     return (
       <CollaborationRequestBox
         onClick={() => goToChat(collaborationRequestInfo.id)}
