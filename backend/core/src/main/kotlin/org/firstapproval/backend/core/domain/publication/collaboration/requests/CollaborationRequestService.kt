@@ -10,15 +10,18 @@ import org.firstapproval.backend.core.domain.publication.PublicationService
 import org.firstapproval.backend.core.domain.publication.authors.toShortInfoApiObject
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationMessageFileRepository
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationRequestMessageFile
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.ApproveManuscriptPayload
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.AuthorDeclinedPayload
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationMessageRepository
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessage
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.APPROVE_COLLABORATION
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.APPROVE_MANUSCRIPT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_COLLABORATION_DECLINED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_CREATE
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_APPROVED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_DECLINED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DATASET_WAS_DOWNLOADED
@@ -148,17 +151,17 @@ class CollaborationRequestService(
             isAssistant = collaborationRequestMessage.isAssistant
         )
 
-        val additionalMessagesToSave = createAdditionalMessages(type, collaborationRequest, user)
+        val additionalMessagesToSave = createAdditionalMessages(collaborationRequest, user, message)
 
         return collaborationMessageRepository.saveAll(additionalMessagesToSave + message)
             .filter { it.user.id == user.id }
     }
 
     private fun createAdditionalMessages(
-        type: CollaborationRequestMessageType,
         collaborationRequest: CollaborationRequest,
-        user: User
-    ): List<CollaborationRequestMessage> = when (type) {
+        user: User,
+        originalMessage: CollaborationRequestMessage
+    ): List<CollaborationRequestMessage> = when (originalMessage.type) {
         EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST -> {
             collaborationRequest.status = PENDING
             val authors = collaborationRequest.publication.authors.map {
@@ -275,6 +278,22 @@ class CollaborationRequestService(
             )
 
             listOf(authorNotifiedDeclinedMessage, authorHas14DaysToMakeRevisionAndApproveMessage)
+        }
+
+        APPROVE_MANUSCRIPT -> {
+            val authorApprovedMessageType = AUTHOR_APPROVED
+            val payload = originalMessage.payload as ApproveManuscriptPayload
+
+            val authorNotifiedDeclinedMessage = CollaborationRequestMessage(
+                collaborationRequest = collaborationRequest,
+                type = authorApprovedMessageType,
+                user = targetUser(authorApprovedMessageType, collaborationRequest),
+                payload = ApproveManuscriptPayload(comment = payload.comment),
+                sequenceIndex = authorApprovedMessageType.sequenceIndex,
+                recipientTypes = mutableSetOf(authorApprovedMessageType.recipientType),
+                isAssistant = true
+            )
+            listOf(authorNotifiedDeclinedMessage)
         }
 
         else -> emptyList()

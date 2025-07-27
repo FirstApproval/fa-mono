@@ -221,4 +221,7 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
   setIsDeclineCollaborationDialogOpen(open: boolean) {
     this.isDeclineCollaborationDialogOpen = open;
   }
+
+  setIsApproveManuscriptDialogOpen (open: boolean): void {
+  }
 }

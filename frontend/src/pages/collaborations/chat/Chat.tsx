@@ -45,7 +45,6 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
   const userActionsRegistry = new UserActionsRegistry();
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [showCollabModal, setShowCollabModal] = useState(false);
-  const [showCommentModal, setShowCommentModal] = useState(false);
   const [showCollabHelpStep1Modal, setShowCollabHelpStep1Modal] =
     useState(false);
   const [showCollabHelpStep2Modal, setShowCollabHelpStep2Modal] =
@@ -92,46 +91,44 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
     };
   }, []);
 
-  const handleShowCommentModal: () => void = () => setShowCommentModal(true);
-  const handleCloseCommentModal: () => void = () => setShowCommentModal(false);
-  const handleComment: (e: any) => void = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const comment = formData.get('comment');
-    Messages.push({
-      id: 1001,
-      name: 'Me Myself',
-      avatar: 'MM',
-      text: comment as string
-    });
-    Messages.push({
-      id: 1001,
-      name: 'Assistant',
-      avatar: 'FA',
-      text: (
-        <p>
-          The manuscript was approved. You may use this log to continue
-          discussions with data user according your collaboration.
-        </p>
-      )
-    });
-    collaborationChatStore.setStage(CollaborationMessageType.MANUSCRIPT_APPROVED);
-    handleCloseCommentModal();
-  };
+  // const handleComment: (e: any) => void = (e) => {
+  //   e.preventDefault();
+  //   const formData = new FormData(e.currentTarget);
+  //   const comment = formData.get('comment');
+  //   Messages.push({
+  //     id: 1001,
+  //     name: 'Me Myself',
+  //     avatar: 'MM',
+  //     text: comment as string
+  //   });
+  //   Messages.push({
+  //     id: 1001,
+  //     name: 'Assistant',
+  //     avatar: 'FA',
+  //     text: (
+  //       <p>
+  //         The manuscript was approved. You may use this log to continue
+  //         discussions with data user according your collaboration.
+  //       </p>
+  //     )
+  //   });
+  //   collaborationChatStore.setStage(CollaborationMessageType.MANUSCRIPT_APPROVED);
+  //   handleCloseCommentModal();
+  // };
 
 
-  const handleApproveManuscriptWithComments: () => void = () => {
-    handleShowCommentModal();
-  };
-  const handleApproveManuscript: () => void = () => {
-    Messages.push({
-      id: 444,
-      name: 'Me Myself',
-      avatar: 'MM',
-      text: 'Approve manuscript.'
-    });
-    collaborationChatStore.setStage(CollaborationMessageType.MANUSCRIPT_APPROVED);
-  };
+  // const handleApproveManuscriptWithComments: () => void = () => {
+  //   handleShowCommentModal();
+  // };
+  // const handleApproveManuscript: () => void = () => {
+  //   Messages.push({
+  //     id: 444,
+  //     name: 'Me Myself',
+  //     avatar: 'MM',
+  //     text: 'Approve manuscript.'
+  //   });
+  //   collaborationChatStore.setStage(CollaborationMessageType.MANUSCRIPT_APPROVED);
+  // };
 
   function getCollaborationAgreementTemplateLink () {
     return <FileElement>
@@ -251,9 +248,17 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
         {<HeightElement value={'32px'} />}
         <div ref={bottomRef} />
         <CommentsModal
-          open={showCommentModal}
-          handleClose={() => {}}
-          handleAction={handleComment}
+          open={collaborationChatStore.isApproveManuscriptDialogOpen ?? false}
+          handleClose={() => collaborationChatStore.setIsApproveManuscriptDialogOpen!!(false)}
+          handleAction={async (comment: string) =>
+            await collaborationChatStore.sendMessage({
+                type: CollaborationMessageType.APPROVE_MANUSCRIPT,
+                isAssistant: false,
+                text: "Approve manuscript",
+                payload: {comment, type: CollaborationMessageType.APPROVE_MANUSCRIPT}
+              }, CollaborationMessageType.APPROVE_MANUSCRIPT
+            )
+          }
         />
         <CollaborationRequirementsModal
           open={showCollabModal}

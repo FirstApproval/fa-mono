@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { Box, Button, Link, Modal, Typography } from "@mui/material"
-import React from "react"
+import React, { useState } from "react"
 import collaborationRequirementsImage from "../../../assets/collaboration_requirements.svg"
 import { HeightElement } from "../../common.styled"
 import timetableImage from "../../../assets/fa-timetable.svg"
@@ -101,8 +101,10 @@ export const CommentsModal = ({
 }: {
   open: boolean;
   handleClose: () => void;
-  handleAction: (e: any) => void;
+  handleAction: (e: string) => void;
 }): React.ReactElement => {
+  const [comment, setComment] = useState('');
+
   return (
     <Modal
       open={open}
@@ -114,8 +116,14 @@ export const CommentsModal = ({
           Approve with comments
         </Typography>
         <HeightElement value={"2rem"} />
-        <form onSubmit={handleAction}>
+        <form onSubmit={e => {
+          e.preventDefault()
+          handleAction(comment)
+          handleClose()
+        }}>
           <Textarea
+            value={comment}
+            onChange={e => setComment(e.target.value)}
             aria-label="comment"
             name="comment"
             minRows={10}

@@ -3182,6 +3182,7 @@ components:
           $ref: '#/components/schemas/AuthorShortInfo'
         decisionAuthorComment:
           type: string
+          maxLength: 4096
         expectedApprovingAuthors:
           items:
             $ref: '#/components/schemas/AuthorShortInfo'
@@ -3226,6 +3227,18 @@ components:
               enum: [ YOUR_COLLABORATION_IS_ESTABLISHED ]
       required:
         - author
+
+    ApproveManuscriptPayload:
+      type: object
+      properties:
+        comment:
+          type: string
+          maxLength: 4096
+        type:
+          allOf:
+            - $ref: '#/components/schemas/CollaborationMessageType'
+            - type: string
+              enum: [ APPROVE_MANUSCRIPT ]
 
     CollaborationRequestMessage:
       type: object

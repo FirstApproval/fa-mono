@@ -23,6 +23,7 @@ import org.firstapproval.api.server.model.UserInfo
 import org.firstapproval.api.server.model.Workplace
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationRequestMessageFile
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.toApiObject
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.APPROVE_MANUSCRIPT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_APPROVED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_DECLINED
@@ -158,7 +159,8 @@ enum class CollaborationRequestMessageType(val sequenceIndex: Int, val recipient
         JsonSubTypes.Type(value = AuthorDeclinedPayload::class, name = "AUTHOR_DECLINED"),
         JsonSubTypes.Type(value = PrefilledCollaborationAgreementPayload::class, name = "PREFILLED_COLLABORATION_AGREEMENT"),
         JsonSubTypes.Type(value = YourCollaborationIsEstablishedPayload::class, name = "YOUR_COLLABORATION_IS_ESTABLISHED"),
-        JsonSubTypes.Type(value = FinalDraftAttachedByDataUser::class, name = "ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER")
+        JsonSubTypes.Type(value = FinalDraftAttachedByDataUser::class, name = "ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER"),
+        JsonSubTypes.Type(value = ApproveManuscriptPayload::class, name = "APPROVE_MANUSCRIPT")
     ]
 )
 
@@ -222,6 +224,11 @@ class FinalDraftAttachedByDataUser(
 class YourCollaborationIsEstablishedPayload(
     val author: AuthorShortInfo,
     override var type: CollaborationRequestMessageType = YOUR_COLLABORATION_IS_ESTABLISHED
+) : MessagePayload
+
+class ApproveManuscriptPayload(
+    val comment: String?,
+    override var type: CollaborationRequestMessageType = APPROVE_MANUSCRIPT
 ) : MessagePayload
 
 fun CollaborationRequestMessage.toApiObject(userService: UserService) = toApiObject(user.toApiObject(userService))

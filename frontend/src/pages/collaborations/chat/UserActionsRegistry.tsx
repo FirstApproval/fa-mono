@@ -13,6 +13,7 @@ import { needHelp } from "./action/NeedHelp"
 import { emailDataUser } from "./action/author/EmailDataUser"
 import { approveCollaboration } from "./action/author/ApproveCollaboration"
 import { declineCollaboration } from "./action/author/DeclineCollaboration"
+import { approveManuscript } from "./action/author/ApproveManuscript"
 
 export class UserActionsRegistry {
   private userActionsByMessageType = new Map<CollaborationMessageType, UserAction[]>()
@@ -56,6 +57,9 @@ export class UserActionsRegistry {
     //for data author
     this.registerAction(CollaborationMessageType.ASSISTANT_CREATE, [approveCollaboration, declineCollaboration, emailDataUser, needHelp]);
     this.registerAction(CollaborationMessageType.DECLINE_COLLABORATION, [needHelp]);
+    this.registerAction(CollaborationMessageType.APPROVE_COLLABORATION, [needHelp]);
+    this.registerAction(CollaborationMessageType.ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER,
+      [approveManuscript, declineCollaboration, askDataAuthor, needHelp]);
   }
 
   private registerAction (messageType: CollaborationMessageType, actions: UserAction[] = []): void {
