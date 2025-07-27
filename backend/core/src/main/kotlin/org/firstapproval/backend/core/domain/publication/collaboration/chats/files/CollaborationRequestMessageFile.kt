@@ -9,13 +9,15 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
 import java.util.UUID
+import java.util.UUID.randomUUID
 import org.firstapproval.api.server.model.CollaborationRequestMessageFile as CollaborationRequestMessageFileApiObject
 
 @Entity
 @Table(name = "collaboration_request_message_files")
 class CollaborationRequestMessageFile(
     @Id
-    val id: UUID,
+    val id: UUID = randomUUID(),
+    val fileId: UUID,
     @ManyToOne(fetch = EAGER)
     val message: CollaborationRequestMessage,
     val name: String,

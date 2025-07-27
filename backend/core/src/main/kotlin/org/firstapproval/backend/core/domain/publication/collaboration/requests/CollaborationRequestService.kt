@@ -1,5 +1,7 @@
 package org.firstapproval.backend.core.domain.publication.collaboration.requests
 
+import com.amazonaws.AmazonServiceException
+import com.amazonaws.SdkClientException
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.firstapproval.api.server.model.CreateCollaborationRequest
 import org.firstapproval.backend.core.domain.publication.Publication
@@ -14,10 +16,11 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.APPROVE_COLLABORATION
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_CREATE
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_COLLABORATION_DECLINED
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_CREATE
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_DECLINED
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DATASET_WAS_DOWNLOADED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DECLINE_COLLABORATION
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
@@ -260,7 +263,18 @@ class CollaborationRequestService(
                 recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
                 isAssistant = true
             )
-            listOf(authorNotifiedDeclinedMessage)
+
+            val authorHas14DaysToApproveMessageType = AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE
+            val authorHas14DaysToMakeRevisionAndApproveMessage = CollaborationRequestMessage(
+                collaborationRequest = collaborationRequest,
+                type = authorHas14DaysToApproveMessageType,
+                user = targetUser(authorHas14DaysToApproveMessageType, collaborationRequest),
+                sequenceIndex = authorHas14DaysToApproveMessageType.sequenceIndex,
+                recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR),
+                isAssistant = true
+            )
+
+            listOf(authorNotifiedDeclinedMessage, authorHas14DaysToMakeRevisionAndApproveMessage)
         }
 
         else -> emptyList()
@@ -276,19 +290,34 @@ class CollaborationRequestService(
         }
     }
 
-    @Transactional
+    @Transactional(rollbackFor = [SdkClientException::class, AmazonServiceException::class])
     fun uploadMessageFile(messageId: UUID, publicationId: String, file: MultipartFile): CollaborationRequestMessageFile {
+        val uploadFinalDraftMessage = collaborationMessageRepository.getReferenceById(messageId)
+        val finalDraftAttachedMessage = uploadFinalDraftMessage.collaborationRequest.messages
+            .find { it.type == ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER }!!
+
+        require(publicationId == uploadFinalDraftMessage.collaborationRequest.publication.id) {
+            "Publication ID does not match the message's publication."
+        }
+
         val fileId = randomUUID()
-        val message = collaborationMessageRepository.getReferenceById(messageId)
-
-        assert(publicationId == message.collaborationRequest.publication.id)
-
-        val savedFileRecord = collaborationMessageFileRepository.save(
-            CollaborationRequestMessageFile(fileId, message, file.originalFilename!!, file.size)
+        val uploadDraftMessageFile = CollaborationRequestMessageFile(
+            fileId = fileId,
+            message = uploadFinalDraftMessage,
+            name = file.originalFilename!!,
+            size = file.size
         )
+        val finalDraftAttachedMessageFile = CollaborationRequestMessageFile(
+            fileId = fileId,
+            message = finalDraftAttachedMessage,
+            name = file.originalFilename!!,
+            size = file.size
+        )
+
+        collaborationMessageFileRepository.saveAll(listOf(uploadDraftMessageFile, finalDraftAttachedMessageFile))
         fileStorageService.save(COLLABORATION_REQUEST_MESSAGE_FILES, fileId.toString(), file.inputStream, file.size)
 
-        return savedFileRecord
+        return uploadDraftMessageFile
     }
 
     @Transactional
