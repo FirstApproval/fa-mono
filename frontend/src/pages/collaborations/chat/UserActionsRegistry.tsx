@@ -52,8 +52,11 @@ export class UserActionsRegistry {
     this.registerAction(CollaborationMessageType.AUTHOR_DECLINED, [askDataAuthor, needHelp]);
     this.registerAction(CollaborationMessageType.ALL_AUTHORS_CONFIRMED, [askDataAuthor, needHelp]);
 
+    this.registerAction(CollaborationMessageType.ASSISTANT_COLLABORATION_DECLINED, [needHelp]);
+
     //for data author
     this.registerAction(CollaborationMessageType.ASSISTANT_CREATE, [approveCollaboration, declineCollaboration, emailDataUser, needHelp]);
+    this.registerAction(CollaborationMessageType.DECLINE_COLLABORATION, [needHelp]);
   }
 
   private registerAction (messageType: CollaborationMessageType, actions: UserAction[] = []): void {
