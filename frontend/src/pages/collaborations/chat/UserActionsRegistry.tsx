@@ -8,7 +8,6 @@ import { askDataAuthor, showAuthorsEmails } from "./action/ShowAuthorsEmails"
 import { everythingIsCorrect } from "./action/EverythingIsCorrect"
 import { changeMyPersonalInfo } from "./action/ChangeMyPersonalInfo"
 import { iHaveMoreQuestions } from "./action/IHaveMoreQuestions"
-import { notifyCoAuthor } from "./action/NotifyCoAuthor"
 import { uploadFinalDraft } from "./action/UploadFinalDraft"
 import { needHelp } from "./action/NeedHelp"
 import { emailDataUser } from "./action/author/EmailDataUser"
@@ -46,7 +45,7 @@ export class UserActionsRegistry {
     this.registerAction(CollaborationMessageType.CHANGE_INFO_ABOUT_MY_PUBLICATION);
     this.registerAction(CollaborationMessageType.FIRST_STEP_IS_COMPLETED);
     this.registerAction(CollaborationMessageType.YOUR_COLLABORATION_IS_ESTABLISHED,
-      [notifyCoAuthor, uploadFinalDraft, askDataAuthor, needHelp]);
+      [uploadFinalDraft, askDataAuthor, needHelp]);
     this.registerAction(CollaborationMessageType.AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE, [askDataAuthor, needHelp]);
     this.registerAction(CollaborationMessageType.AUTHOR_APPROVED, [askDataAuthor, needHelp]);
     this.registerAction(CollaborationMessageType.AUTHOR_DECLINED, [askDataAuthor, needHelp]);
