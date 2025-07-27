@@ -37,7 +37,7 @@ import { CollaborationChatStoreInterface } from "../../publication/store/MyPubli
 import { FormalizedAgreementPayload } from "../elements/FormalizedAgreementPayload"
 import { ConfirmationDialog } from "../../../components/ConfirmationDialog"
 import { AssistantCollaborationDeclined } from "../elements/AssistantCollaborationDeclined"
-import { DataUserNotifiedPayload } from "../elements/DataUserNotifiedPayload"
+import { YourCollaborationIsEstablished } from "../elements/YourCollaborationIsEstablished"
 
 const HIGH_FIVE_MESSAGE_TYPES = [
   CollaborationMessageType.AUTHOR_APPROVED, CollaborationMessageType.ALL_AUTHORS_CONFIRMED];
@@ -244,7 +244,8 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
                 {message.type === CollaborationMessageType.ASSISTANT_COLLABORATION_DECLINED && <AssistantCollaborationDeclined />}
                 {message.type === CollaborationMessageType.ASSISTANT_CREATE &&
                   <FormalizedAgreementPayload message={message} chatStore={collaborationChatStore} />}
-                {message.type === CollaborationMessageType.DATA_USER_NOTIFIED && <DataUserNotifiedPayload message={message}/>}
+                {message.type === CollaborationMessageType.YOUR_COLLABORATION_IS_ESTABLISHED &&
+                  <YourCollaborationIsEstablished message={message} chatStore={collaborationChatStore} />}
               </Message>
               <HeightElement value={'32px'} />
             </React.Fragment>

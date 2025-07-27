@@ -3214,6 +3214,19 @@ components:
             - type: string
               enum: [ PREFILLED_COLLABORATION_AGREEMENT ]
 
+    YourCollaborationIsEstablishedPayload:
+      type: object
+      properties:
+        author:
+          $ref: '#/components/schemas/AuthorShortInfo'
+        type:
+          allOf:
+            - $ref: '#/components/schemas/CollaborationMessageType'
+            - type: string
+              enum: [ YOUR_COLLABORATION_IS_ESTABLISHED ]
+      required:
+        - author
+
     CollaborationRequestMessage:
       type: object
       properties:

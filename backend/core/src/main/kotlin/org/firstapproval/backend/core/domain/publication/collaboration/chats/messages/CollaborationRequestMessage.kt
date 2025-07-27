@@ -31,6 +31,7 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.PREFILLED_COLLABORATION_AGREEMENT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.UPLOAD_FINAL_DRAFT
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.YOUR_COLLABORATION_IS_ESTABLISHED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.COLLABORATION_REQUEST_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.PUBLICATION_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequest
@@ -155,6 +156,7 @@ enum class CollaborationRequestMessageType(val sequenceIndex: Int, val recipient
         JsonSubTypes.Type(value = AuthorDeclinedPayload::class, name = "AUTHOR_DECLINED"),
         JsonSubTypes.Type(value = PrefilledCollaborationAgreementPayload::class, name = "PREFILLED_COLLABORATION_AGREEMENT"),
         JsonSubTypes.Type(value = DataUserPayload::class, name = "DATA_USER_NOTIFIED"),
+        JsonSubTypes.Type(value = YourCollaborationIsEstablishedPayload::class, name = "YOUR_COLLABORATION_IS_ESTABLISHED")
     ]
 )
 
@@ -213,6 +215,11 @@ class PrefilledCollaborationAgreementPayload(
 class DataUserPayload(
     val dataUser: UserInfo,
     override var type: CollaborationRequestMessageType = DATA_USER_NOTIFIED
+) : MessagePayload
+
+class YourCollaborationIsEstablishedPayload(
+    val author: AuthorShortInfo,
+    override var type: CollaborationRequestMessageType = YOUR_COLLABORATION_IS_ESTABLISHED
 ) : MessagePayload
 
 fun CollaborationRequestMessage.toApiObject(userService: UserService) = toApiObject(user.toApiObject(userService))

@@ -18,25 +18,23 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_COLLABORATION_DECLINED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_DECLINED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DATASET_WAS_DOWNLOADED
-//import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DATA_USER_NOTIFIED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DECLINE_COLLABORATION
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.DataUserPayload
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.YOUR_COLLABORATION_IS_ESTABLISHED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.IWouldLikeToIncludeYouAsCoAuthor
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.MessagePayload
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.PotentialPublicationData
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.COLLABORATION_REQUEST_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.PUBLICATION_CREATOR
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.YourCollaborationIsEstablishedPayload
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.*
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorDecisionStatus
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorDecisionStatus.COLLABORATION_DECLINED
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationRequestInvitedAuthor
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationRequestInvitedAuthorRepository
 import org.firstapproval.backend.core.domain.user.User
-import org.firstapproval.backend.core.domain.user.toApiObject
-import org.firstapproval.backend.core.domain.user.toApiObjectWithoutPhoto
 import org.firstapproval.backend.core.external.s3.COLLABORATION_REQUEST_MESSAGE_FILES
 import org.firstapproval.backend.core.external.s3.FileStorageService
 import org.springframework.data.domain.Page
@@ -229,19 +227,22 @@ class CollaborationRequestService(
             listOf(declinedMessage, assistantCollaborationDeclinedMessage)
         }
 
-//        APPROVE_COLLABORATION -> {
-//            val authorNotifiedMessageType = DATA_USER_NOTIFIED
-//            val authorNotifiedDeclinedMessage = CollaborationRequestMessage(
-//                collaborationRequest = collaborationRequest,
-//                type = authorNotifiedMessageType,
-//                user = targetUser(authorNotifiedMessageType, collaborationRequest),
-//                payload = DataUserPayload(collaborationRequest.user.toApiObjectWithoutPhoto()),
-//                sequenceIndex = authorNotifiedMessageType.sequenceIndex,
-//                recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
-//                isAssistant = true
-//            )
-//            listOf(authorNotifiedDeclinedMessage)
-//        }
+        APPROVE_COLLABORATION -> {
+            val yourCollaborationIsEstablishedMessageType = YOUR_COLLABORATION_IS_ESTABLISHED
+
+            val invitedAuthor = collaborationRequest.authors.find { it.author.user!!.id == user.id }!!
+
+            val authorNotifiedDeclinedMessage = CollaborationRequestMessage(
+                collaborationRequest = collaborationRequest,
+                type = yourCollaborationIsEstablishedMessageType,
+                user = targetUser(yourCollaborationIsEstablishedMessageType, collaborationRequest),
+                payload = YourCollaborationIsEstablishedPayload(author = invitedAuthor.author.toShortInfoApiObject()),
+                sequenceIndex = yourCollaborationIsEstablishedMessageType.sequenceIndex,
+                recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
+                isAssistant = true
+            )
+            listOf(authorNotifiedDeclinedMessage)
+        }
 
         else -> emptyList()
     }
