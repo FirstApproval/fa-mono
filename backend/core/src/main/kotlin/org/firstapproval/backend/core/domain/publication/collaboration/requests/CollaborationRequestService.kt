@@ -321,13 +321,13 @@ class CollaborationRequestService(
     }
 
     @Transactional
-    fun getDownloadFileLink(collaborationRequestId: UUID, fileId: UUID, user: User): String {
-        val file = collaborationMessageFileRepository.getReferenceById(fileId)
+    fun getDownloadFileLink(collaborationRequestId: UUID, fileRecordId: UUID, user: User): String {
+        val file = collaborationMessageFileRepository.getReferenceById(fileRecordId)
 
         assert(collaborationRequestId == file.message.collaborationRequest.id)
         assert(user.id == file.message.user.id)
 
-        return fileStorageService.generateTemporaryDownloadLink(COLLABORATION_REQUEST_MESSAGE_FILES, fileId.toString(), file.name)
+        return fileStorageService.generateTemporaryDownloadLink(COLLABORATION_REQUEST_MESSAGE_FILES, file.fileId.toString(), file.name)
     }
 
     @Transactional

@@ -72,8 +72,17 @@ export class MyPublicationCollaborationChatStore implements CollaborationChatSto
     return this.messages!!.map(message => message.type).includes(type);
   }
 
-  getCollaborationFile (file: CollaborationRequestMessageFile): Promise<void> {
-    return Promise.resolve(undefined)
+  getCollaborationFile(file: CollaborationRequestMessageFile): Promise<void> {
+    return collaborationRequestChatService.getCollaborationFileDownloadLink(
+      this.publication!!.id!!,
+      this.collaborationRequestId!!,
+      file.id
+    ).then(response => {
+      const a = document.createElement('a');
+      a.href = response.data;
+      a.download = file.name;
+      a.click();
+    });
   }
 
   sendMessages (messages: CollaborationRequestMessage[], nextStage?: CollaborationMessageType | undefined): Promise<CollaborationRequestMessage[]> {
