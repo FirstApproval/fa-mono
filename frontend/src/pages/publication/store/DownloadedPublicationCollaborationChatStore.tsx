@@ -99,15 +99,20 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
     });
   }
 
-  sendMessage(message: CollaborationRequestMessage, nextStage: CollaborationMessageType | undefined = undefined): Promise<string> {
+  sendMessage(
+    message: CollaborationRequestMessage,
+    nextStage: CollaborationMessageType | undefined = undefined,
+    messageTypeToReturnId: CollaborationMessageType | undefined): Promise<string> {
     return collaborationRequestChatService.createCollaborationRequestMessage(
       this.collaborationRequestId,
       message
     ).then(response => {
-      this.messages!!.push(response.data);
+      this.messages!!.push(...response.data);
       this.messages!!.sort(this.sortMessages);
       nextStage && this.setStage(nextStage);
-      return response.data.id!!;
+      return messageTypeToReturnId!! ?
+        response.data.find(savedMessage => savedMessage.type === messageTypeToReturnId)?.id!! :
+        this.messages!![this.messages!!.length - 1]!!.id!!
     });
   }
 

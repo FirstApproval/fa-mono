@@ -53,15 +53,20 @@ export class MyPublicationCollaborationChatStore implements CollaborationChatSto
     this.messageType = stage;
   }
 
-  sendMessage(message: CollaborationRequestMessage, nextStage: CollaborationMessageType | undefined = undefined): Promise<string> {
+  sendMessage(
+    message: CollaborationRequestMessage,
+    nextStage: CollaborationMessageType | undefined = undefined,
+    messageTypeToReturnId: CollaborationMessageType | undefined): Promise<string> {
     return collaborationRequestChatService.createCollaborationRequestMessage(
       this.collaborationRequestId,
       message
     ).then(response => {
-      this.messages!!.push(response.data);
+      this.messages!!.push(...response.data);
       this.messages!!.sort(this.sortMessages);
       nextStage && this.setStage(nextStage);
-      return response.data.id!!;
+      return messageTypeToReturnId!! ?
+        response.data.find(savedMessage => savedMessage.type === messageTypeToReturnId)?.id!! :
+        this.messages!![this.messages!!.length - 1]!!.id!!
     });
   }
 
@@ -129,7 +134,10 @@ export class MyPublicationCollaborationChatStore implements CollaborationChatSto
 export interface CollaborationChatStoreInterface {
   messageType: CollaborationMessageType | undefined;
   setStage: (stage: CollaborationMessageType) => void;
-  sendMessage: (message: CollaborationRequestMessage, next?: (CollaborationMessageType | undefined)) => Promise<string>;
+  sendMessage: (
+    message: CollaborationRequestMessage,
+    next?: CollaborationMessageType | undefined,
+    messageTypeToReturnId?: CollaborationMessageType | undefined) => Promise<string>;
   collaborationRequestId: string;
   collaborationRequestCreator: UserInfo | undefined;
   publicationCreator: UserInfo | undefined;
