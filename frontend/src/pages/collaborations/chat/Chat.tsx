@@ -8,14 +8,7 @@ import highfiveImage from "../../../assets/fa-highfive.svg"
 import { getFullName, getInitials, renderProfileImage } from "../../../util/userUtil"
 import { CollaborationMessageType } from "src/apis/first-approval-api"
 import { observer } from "mobx-react-lite"
-import {
-  CollaborationRequirementsModal,
-  CommentsModal,
-  Step1Modal,
-  Step2Modal,
-  Step3Modal,
-  StyledApproveButton
-} from "./Modal"
+import { CollaborationRequirementsModal, CommentsModal, Step1Modal, Step2Modal, Step3Modal, StyledApproveButton } from "./Modal"
 import { Message } from "./ChatMessage"
 import { UserActionsRegistry } from "./UserActionsRegistry"
 import { showStepsInfo } from "../elements/StepsInfo"
@@ -185,6 +178,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
                 {/* For data user: */}
                 {message.type === CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL && <PersonalData message={message} />}
                 {message.type === CollaborationMessageType.DONE_WHATS_NEXT && <PotentialPublicationData message={message} />}
+                {message.type === CollaborationMessageType.UPLOAD_FINAL_DRAFT && <span>Final draft:</span>}
                 {HIGH_FIVE_MESSAGE_TYPES.includes(message.type) && <img src={highfiveImage}  alt="High five"/>}
                 <div />
                 {message.text}
@@ -213,6 +207,13 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
                     store={collaborationChatStore as DownloadedPublicationCollaborationChatStore}
                     action={doneWhatsNext}
                   />
+                }
+                {message.type === CollaborationMessageType.AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE &&
+                  <>
+                    <span>The data author has 14 days to make revisions and approve the manuscript.</span>
+                    <span>This is a short period, so we recommend reaching out to the data author</span>
+                    <span> to enhance the efficiency of the final draft approval process.</span>
+                  </>
                 }
                 {/* For data author: */}
                 {message.type === CollaborationMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU && <PotentialPublicationData message={message} />}
