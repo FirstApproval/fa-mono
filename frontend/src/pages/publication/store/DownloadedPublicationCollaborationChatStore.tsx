@@ -40,6 +40,7 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
   intendedJournalForPublication: string | undefined;
   detailsOfResearch: string | undefined;
   isUploadDraftDialogOpen = false;
+  isDeclineCollaborationDialogOpen = false;
 
   constructor(publicationId: string) {
     makeAutoObservable(this);
@@ -213,5 +214,9 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
 
   setIsUploadDraftDialogOpen(open: boolean) {
     this.isUploadDraftDialogOpen = open;
+  }
+
+  setIsDeclineCollaborationDialogOpen(open: boolean) {
+    this.isDeclineCollaborationDialogOpen = open;
   }
 }

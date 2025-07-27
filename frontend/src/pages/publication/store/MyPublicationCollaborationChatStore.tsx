@@ -26,6 +26,7 @@ export class MyPublicationCollaborationChatStore implements CollaborationChatSto
   workplaces: Workplace[] = [];
   messageType: CollaborationMessageType | undefined = undefined;
   isUploadDraftDialogOpen = false;
+  isDeclineCollaborationDialogOpen = false;
 
   constructor(collaborationRequestId: string, stage?: CollaborationMessageType) {
     makeAutoObservable(this);
@@ -72,7 +73,11 @@ export class MyPublicationCollaborationChatStore implements CollaborationChatSto
     this.isUploadDraftDialogOpen = open;
   }
 
-  getCollaborationAgreementFile(authorId: string): Promise<void> {
+  setIsDeclineCollaborationDialogOpen (open: boolean): void {
+    this.isDeclineCollaborationDialogOpen = open;
+  }
+
+  getCollaborationAgreementFile(authorId: string, fileName: string): Promise<void> {
     return collaborationRequestChatService.getCollaborationRequestAgreement(
       this.publication!!.id,
       this.collaborationRequestId,
@@ -83,7 +88,7 @@ export class MyPublicationCollaborationChatStore implements CollaborationChatSto
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `FA_Collaboration_Agreement_${this.publication!!.id}.pdf`;
+      a.download = fileName;
       a.click();
       window.URL.revokeObjectURL(url);
     });
@@ -133,6 +138,8 @@ export interface CollaborationChatStoreInterface {
   detailsOfResearch?: string;
   isUploadDraftDialogOpen: boolean;
   setIsUploadDraftDialogOpen: (open: boolean) => void;
+  isDeclineCollaborationDialogOpen: boolean;
+  setIsDeclineCollaborationDialogOpen: (open: boolean) => void;
   sendMessages(
     messages: CollaborationRequestMessage[], nextStage?: CollaborationMessageType | undefined
   ): Promise<CollaborationRequestMessage[]>
