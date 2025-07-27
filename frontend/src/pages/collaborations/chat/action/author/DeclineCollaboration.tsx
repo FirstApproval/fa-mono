@@ -2,7 +2,7 @@ import { CollaborationChatStoreInterface } from "../../../../publication/store/M
 import { UserAction } from "../UserAction"
 
 function declineCollaborationAction(collaborationChatStore: CollaborationChatStoreInterface): void {
-  collaborationChatStore.setIsDeclineCollaborationDialogOpen(true);
+  collaborationChatStore.setIsDeclineCollaborationDialogOpen!!(true);
 }
 
 export const declineCollaboration: UserAction = {

@@ -13,10 +13,10 @@ export const ConfirmationDialog = (props: {
   text?: string;
   yesText?: string;
   noText?: string;
-  cancelButtonVariant?: OverridableStringUnion<'text' | 'outlined' | 'contained'>;
-  confirmButtonVariant?: OverridableStringUnion<'text' | 'outlined' | 'contained'>;
-  cancelButtonColor?: OverridableStringUnion<'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning'>
-  confirmButtonColor?: OverridableStringUnion<'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning'>
+  noButtonVariant?: OverridableStringUnion<'text' | 'outlined' | 'contained'>;
+  yesButtonVariant?: OverridableStringUnion<'text' | 'outlined' | 'contained'>;
+  noButtonColor?: OverridableStringUnion<'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning'>
+  yesButtonColor?: OverridableStringUnion<'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning'>
 }): ReactElement => {
   const { isOpen,
     onClose,
@@ -25,10 +25,10 @@ export const ConfirmationDialog = (props: {
     text,
     yesText,
     noText,
-    cancelButtonVariant,
-    confirmButtonVariant,
-    cancelButtonColor,
-    confirmButtonColor
+    noButtonVariant,
+    yesButtonVariant,
+    noButtonColor,
+    yesButtonColor
   } = props;
   return (
     <Dialog
@@ -48,15 +48,15 @@ export const ConfirmationDialog = (props: {
         <FlexWrapRow>
           <CancelButton
             size={'large'}
-            color={cancelButtonColor ?? 'primary'}
-            variant={cancelButtonVariant ?? 'text'}
+            color={noButtonColor ?? 'primary'}
+            variant={noButtonVariant ?? 'text'}
             onClick={onClose}>
             {noText ?? 'No'}
           </CancelButton>
           <WidthElement value={'24px'} />
           <ConfirmButton
-            color={confirmButtonColor ?? 'error'}
-            variant={confirmButtonVariant ?? 'contained'}
+            color={yesButtonColor ?? 'error'}
+            variant={yesButtonVariant ?? 'contained'}
             size={'large'}
             onClick={() => {
               onConfirm && onConfirm();

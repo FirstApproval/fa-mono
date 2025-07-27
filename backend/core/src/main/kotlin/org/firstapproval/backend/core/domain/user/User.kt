@@ -70,3 +70,13 @@ fun User.toApiObject(userService: UserService) = UserInfo().also {
     it.profileImage = userService.getProfileImage(profileImage)
     it.workplaces = workplaces.map { workplace -> workplace.toApiObject() }
 }
+
+fun User.toApiObjectWithoutPhoto() = UserInfo().also {
+    it.id = id
+    it.firstName = firstName
+    it.middleName = middleName
+    it.lastName = lastName
+    it.email = email
+    it.username = username
+    it.workplaces = workplaces.map { workplace -> workplace.toApiObject() }
+}

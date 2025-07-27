@@ -25,6 +25,7 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.fil
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.toApiObject
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_APPROVED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_DECLINED
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DATA_USER_NOTIFIED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU
@@ -78,7 +79,7 @@ class CollaborationRequestMessage(
     val creationTime: ZonedDateTime = ZonedDateTime.now(),
 
     @OneToMany(cascade = [ALL], orphanRemoval = true)
-    @JoinColumn(name="message_id", nullable=false, insertable = false, updatable = false)
+    @JoinColumn(name = "message_id", nullable = false, insertable = false, updatable = false)
     val files: List<CollaborationRequestMessageFile> = mutableListOf(),
 
     val isAssistant: Boolean,
@@ -123,7 +124,7 @@ enum class CollaborationRequestMessageType(val sequenceIndex: Int, val recipient
     DECLINE_COLLABORATION(2, PUBLICATION_CREATOR),
     ASSISTANT_COLLABORATION_DECLINED(3, PUBLICATION_CREATOR),
 
-    AUTHOR_NOTIFIED(4, PUBLICATION_CREATOR),
+    DATA_USER_NOTIFIED(3, PUBLICATION_CREATOR),
 
     APPROVE_MANUSCRIPT(5, PUBLICATION_CREATOR),
     DECLINE_MANUSCRIPT(5, PUBLICATION_CREATOR),
@@ -153,6 +154,7 @@ enum class CollaborationRequestMessageType(val sequenceIndex: Int, val recipient
         JsonSubTypes.Type(value = AuthorApprovedPayload::class, name = "AUTHOR_APPROVED"),
         JsonSubTypes.Type(value = AuthorDeclinedPayload::class, name = "AUTHOR_DECLINED"),
         JsonSubTypes.Type(value = PrefilledCollaborationAgreementPayload::class, name = "PREFILLED_COLLABORATION_AGREEMENT"),
+        JsonSubTypes.Type(value = DataUserPayload::class, name = "DATA_USER_NOTIFIED"),
     ]
 )
 
@@ -206,6 +208,11 @@ class AuthorDeclinedPayload(
 class PrefilledCollaborationAgreementPayload(
     val authors: List<AuthorShortInfo>,
     override var type: CollaborationRequestMessageType = PREFILLED_COLLABORATION_AGREEMENT
+) : MessagePayload
+
+class DataUserPayload(
+    val dataUser: UserInfo,
+    override var type: CollaborationRequestMessageType = DATA_USER_NOTIFIED
 ) : MessagePayload
 
 fun CollaborationRequestMessage.toApiObject(userService: UserService) = toApiObject(user.toApiObject(userService))

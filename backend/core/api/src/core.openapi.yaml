@@ -3191,6 +3191,17 @@ components:
             - type: string
               enum: [ AUTHOR_APPROVED, AUTHOR_DECLINED ]
 
+    CollaborationDataUserPayload:
+      type: object
+      properties:
+        dataUser:
+          $ref: '#/components/schemas/UserInfo'
+        type:
+          allOf:
+            - $ref: '#/components/schemas/CollaborationMessageType'
+            - type: string
+              enum: [ DATA_USER_NOTIFIED ]
+
     PrefilledCollaborationAgreementPayload:
       type: object
       properties:
@@ -3294,7 +3305,7 @@ components:
         - ASSISTANT_CREATE
         - APPROVE_COLLABORATION
         - DECLINE_COLLABORATION
-        - AUTHOR_NOTIFIED
+        - DATA_USER_NOTIFIED
         - ASSISTANT_COLLABORATION_DECLINED
         - APPROVE_MANUSCRIPT
         - DECLINE_MANUSCRIPT

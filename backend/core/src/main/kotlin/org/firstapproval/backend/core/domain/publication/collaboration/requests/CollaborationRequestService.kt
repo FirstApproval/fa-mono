@@ -17,12 +17,13 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_CREATE
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_COLLABORATION_DECLINED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_DECLINED
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_NOTIFIED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DATASET_WAS_DOWNLOADED
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DATA_USER_NOTIFIED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DECLINE_COLLABORATION
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.DataUserPayload
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.IWouldLikeToIncludeYouAsCoAuthor
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.MessagePayload
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.PotentialPublicationData
@@ -34,6 +35,8 @@ import org.firstapproval.backend.core.domain.publication.collaboration.requests.
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationRequestInvitedAuthor
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationRequestInvitedAuthorRepository
 import org.firstapproval.backend.core.domain.user.User
+import org.firstapproval.backend.core.domain.user.toApiObject
+import org.firstapproval.backend.core.domain.user.toApiObjectWithoutPhoto
 import org.firstapproval.backend.core.external.s3.COLLABORATION_REQUEST_MESSAGE_FILES
 import org.firstapproval.backend.core.external.s3.FileStorageService
 import org.springframework.data.domain.Page
@@ -128,8 +131,6 @@ class CollaborationRequestService(
             sequenceIndex = type.sequenceIndex
         ).also { exists -> if (exists) throw IllegalArgumentException("Message with equal or higher sequenceIndex already exists") }
 
-        val additionalMessagesToSave = createAdditionalMessages(type, collaborationRequest, user)
-
         val messageRecipient = targetUser(type, collaborationRequest)
         val message = CollaborationRequestMessage(
             collaborationRequest = collaborationRequest,
@@ -141,6 +142,8 @@ class CollaborationRequestService(
             recipientTypes = mutableSetOf(type.recipientType),
             isAssistant = collaborationRequestMessage.isAssistant
         )
+
+        val additionalMessagesToSave = createAdditionalMessages(type, collaborationRequest, user)
 
         return collaborationMessageRepository.saveAll(additionalMessagesToSave + message)
             .filter { it.user.id == user.id }
@@ -227,11 +230,12 @@ class CollaborationRequestService(
         }
 
         APPROVE_COLLABORATION -> {
-            val authorNotifiedMessageType = AUTHOR_NOTIFIED
+            val authorNotifiedMessageType = DATA_USER_NOTIFIED
             val authorNotifiedDeclinedMessage = CollaborationRequestMessage(
                 collaborationRequest = collaborationRequest,
                 type = authorNotifiedMessageType,
                 user = targetUser(authorNotifiedMessageType, collaborationRequest),
+                payload = DataUserPayload(collaborationRequest.user.toApiObjectWithoutPhoto()),
                 sequenceIndex = authorNotifiedMessageType.sequenceIndex,
                 recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
                 isAssistant = true

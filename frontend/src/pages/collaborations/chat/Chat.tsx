@@ -11,7 +11,6 @@ import { observer } from "mobx-react-lite"
 import {
   CollaborationRequirementsModal,
   CommentsModal,
-  DeclineModal,
   Step1Modal,
   Step2Modal,
   Step3Modal,
@@ -38,6 +37,7 @@ import { CollaborationChatStoreInterface } from "../../publication/store/MyPubli
 import { FormalizedAgreementPayload } from "../elements/FormalizedAgreementPayload"
 import { ConfirmationDialog } from "../../../components/ConfirmationDialog"
 import { AssistantCollaborationDeclined } from "../elements/AssistantCollaborationDeclined"
+import { DataUserNotifiedPayload } from "../elements/DataUserNotifiedPayload"
 
 const HIGH_FIVE_MESSAGE_TYPES = [
   CollaborationMessageType.AUTHOR_APPROVED, CollaborationMessageType.ALL_AUTHORS_CONFIRMED];
@@ -244,6 +244,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
                 {message.type === CollaborationMessageType.ASSISTANT_COLLABORATION_DECLINED && <AssistantCollaborationDeclined />}
                 {message.type === CollaborationMessageType.ASSISTANT_CREATE &&
                   <FormalizedAgreementPayload message={message} chatStore={collaborationChatStore} />}
+                {message.type === CollaborationMessageType.DATA_USER_NOTIFIED && <DataUserNotifiedPayload message={message}/>}
               </Message>
               <HeightElement value={'32px'} />
             </React.Fragment>
@@ -296,7 +297,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
           text={
             'Are you sure you want to decline the request? \n' +
             'By declining a collaboration, you oblige data user to simply quote your dataset, ' +
-            'without specifying you as a co-author.' +
+            'without specifying you as a co-author.\n' +
             'Everything will be deleted and you won’t be able to undo this action.'
           }
           yesText={'Decline'}
@@ -308,18 +309,18 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
           onConfirm={async () => await collaborationChatStore.sendMessage({
               type: CollaborationMessageType.APPROVE_COLLABORATION,
               isAssistant: false,
-              text: "Decline, citation is enough"
-            }, CollaborationMessageType.APPROVE_COLLABORATION)
+              text: "Approve collaboration"
+            }, CollaborationMessageType.NOTIFY_CO_AUTHOR)
           }
-          title={'Decline, citation is enough'}
+          title={'Approve collaboration'}
           text={
-            'Are you sure you want to decline the request? \n' +
-            'By declining a collaboration, you oblige data user to simply quote your dataset, ' +
-            'without specifying you as a co-author.' +
-            'Everything will be deleted and you won’t be able to undo this action.'
+            'Are you sure you want to approve the request?\n' +
+            'By approving the collaboration, you allow the data user to include you as a co-author, ' +
+            'ensuring full credit for your contribution.'
           }
-          yesText={'Decline'}
+          yesText={'Approve'}
           noText={'Cancel'}
+          yesButtonColor={'primary'}
         />
       </div>
     </>
