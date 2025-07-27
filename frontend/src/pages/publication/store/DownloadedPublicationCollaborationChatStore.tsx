@@ -101,8 +101,7 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
 
   sendMessage(
     message: CollaborationRequestMessage,
-    nextStage: CollaborationMessageType | undefined = undefined,
-    messageTypeToReturnId: CollaborationMessageType | undefined): Promise<string> {
+    nextStage: CollaborationMessageType | undefined = undefined): Promise<string> {
     return collaborationRequestChatService.createCollaborationRequestMessage(
       this.collaborationRequestId,
       message
@@ -110,9 +109,7 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
       this.messages!!.push(...response.data);
       this.messages!!.sort(this.sortMessages);
       nextStage && this.setStage(nextStage);
-      return messageTypeToReturnId!! ?
-        response.data.find(savedMessage => savedMessage.type === messageTypeToReturnId)?.id!! :
-        this.messages!![this.messages!!.length - 1]!!.id!!
+      return response.data.find(savedMessage => savedMessage.type === message.type)!!.id!!;
     });
   }
 
