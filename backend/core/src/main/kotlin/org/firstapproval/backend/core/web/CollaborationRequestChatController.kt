@@ -57,14 +57,14 @@ class CollaborationRequestChatController(
     override fun createCollaborationRequestMessage(
         collaborationRequestId: UUID,
         collaborationRequestMessage: CollaborationRequestMessage
-    ): ResponseEntity<CollaborationRequestMessage> {
+    ): ResponseEntity<List<CollaborationRequestMessage>> {
         val collaborationRequest = collaborationRequestRepository.getReferenceById(collaborationRequestId)
-        val message = collaborationRequestService.createCollaborationRequestMessage(
+        val messages = collaborationRequestService.createCollaborationRequestMessages(
             collaborationRequest,
             collaborationRequestMessage = collaborationRequestMessage,
             user = authHolderService.user
         )
-        return ok(message.toApiObject(authHolderService.user.toApiObject(userService)))
+        return ok(messages.map { it.toApiObject(authHolderService.user.toApiObject(userService)) })
     }
 
     override fun createCollaborationRequestMessages(
@@ -73,14 +73,14 @@ class CollaborationRequestChatController(
     ): ResponseEntity<List<CollaborationRequestMessage>> {
         val collaborationRequest = collaborationRequestRepository.getReferenceById(collaborationRequestId)
         val messages = collaborationRequestMessages.map {
-            collaborationRequestService.createCollaborationRequestMessage(
+            collaborationRequestService.createCollaborationRequestMessages(
                 collaborationRequest = collaborationRequest,
                 collaborationRequestMessage = it,
                 user = authHolderService.user
             )
         }
         val mappedUser = authHolderService.user.toApiObject(userService)
-        val mappedMessages = messages.map { it.toApiObject(mappedUser) }
+        val mappedMessages = messages.flatten().map { it.toApiObject(mappedUser) }
         return ok(mappedMessages)
     }
 

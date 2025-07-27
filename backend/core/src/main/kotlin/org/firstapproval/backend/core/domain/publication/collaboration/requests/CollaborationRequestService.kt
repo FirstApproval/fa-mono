@@ -112,11 +112,11 @@ class CollaborationRequestService(
     }
 
     @Transactional
-    fun createCollaborationRequestMessage(
+    fun createCollaborationRequestMessages(
         collaborationRequest: CollaborationRequest,
         collaborationRequestMessage: CollaborationRequestMessageApiObject,
         user: User
-    ): CollaborationRequestMessage {
+    ): List<CollaborationRequestMessage> {
         val type = CollaborationRequestMessageType.valueOf(collaborationRequestMessage.type.name)
 
         // need to check that doesn't exist message with the same or higher sequenceIndex
@@ -140,9 +140,8 @@ class CollaborationRequestService(
             isAssistant = collaborationRequestMessage.isAssistant
         )
 
-
         return collaborationMessageRepository.saveAll(additionalMessagesToSave + message)
-            .find { it.id == message.id } ?: error("Message not saved")
+            .filter { it.user.id == user.id }
     }
 
     private fun createAdditionalMessages(

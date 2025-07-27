@@ -1218,7 +1218,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CollaborationRequestMessage'
+                items:
+                  $ref: '#/components/schemas/CollaborationRequestMessage'
       security:
         - TokenAuth: [ ]
       operationId: createCollaborationRequestMessage
