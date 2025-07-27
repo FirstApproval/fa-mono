@@ -36,6 +36,7 @@ import { PrefilledAgreementPayload } from "../elements/PrefilledAgreementPayload
 import { Link } from "@mui/material"
 import { CollaborationChatStoreInterface } from "../../publication/store/MyPublicationCollaborationChatStore"
 import { FormalizedAgreementPayload } from "../elements/FormalizedAgreementPayload"
+import { ConfirmationDialog } from "../../../components/ConfirmationDialog"
 
 const HIGH_FIVE_MESSAGE_TYPES = [
   CollaborationMessageType.AUTHOR_APPROVED, CollaborationMessageType.ALL_AUTHORS_CONFIRMED];
@@ -284,7 +285,26 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
           handleClose={() => setShowCollabHelpStep3Modal(false)}
         />
         <UploadFinalDraftDialog isOpen={collaborationChatStore.isUploadDraftDialogOpen}
-                                collaborationChatStore={collaborationChatStore as DownloadedPublicationCollaborationChatStore}
+                                collaborationChatStore={collaborationChatStore as DownloadedPublicationCollaborationChatStore} />
+        <ConfirmationDialog
+          isOpen={collaborationChatStore.isDeclineCollaborationDialogOpen}
+          onClose={() => collaborationChatStore.setIsDeclineCollaborationDialogOpen(false)}
+          onConfirm={async () => await
+            collaborationChatStore.sendMessage({
+              type: CollaborationMessageType.DECLINE_COLLABORATION,
+              isAssistant: false,
+              text: 'Decline collaboration',
+            })
+        }
+          title={'Decline collaboration'}
+          text={
+            'Are you sure you want to decline the request? \n' +
+            'By declining a collaboration, you oblige data user to simply quote your dataset, ' +
+            'without specifying you as a co-author.' +
+            'Everything will be deleted and you won’t be able to undo this action.'
+          }
+          yesText={'Decline'}
+          noText={'Cancel'}
         />
       </div>
     </>
