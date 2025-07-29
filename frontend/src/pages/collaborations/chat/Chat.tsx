@@ -11,145 +11,73 @@ import { observer } from "mobx-react-lite"
 import { CollaborationRequirementsModal, CommentsModal, Step1Modal, Step2Modal, Step3Modal, StyledApproveButton } from "./Modal"
 import { Message } from "./ChatMessage"
 import { UserActionsRegistry } from "./UserActionsRegistry"
-import { showStepsInfo } from "../elements/StepsInfo"
-import { PersonalDataForm } from "../elements/PersonalDataForm"
-import { PersonalData } from "../elements/PersonalData"
 import { DownloadedPublicationCollaborationChatStore } from "../../publication/store/DownloadedPublicationCollaborationChatStore"
-import { confirmThatProvidedInfoIsReal } from "./action/ConfirmThatProvidedInfoIsReal"
-import { PotentialPublicationDataForm } from "../elements/PotentialPublicationDataForm"
-import { doneWhatsNext } from "./action/DoneWhatsNext"
-import { PotentialPublicationData } from "../elements/PotentialPublicationData"
 import { UploadFinalDraftDialog } from "../elements/UploadFinalDraftDialog"
-import { UploadedFinalDraftPayload } from "../elements/UploadedFinalDraftPayload"
 import { DescriptionOutlined } from "@mui/icons-material"
-import { AuthorApprovedPayload } from "../elements/AuthorApprovedPayload"
-import { AuthorDeclinedPayload } from "../elements/AuthorDeclinedPayload"
-import { PrefilledAgreementPayload } from "../elements/PrefilledAgreementPayload"
-import { Link } from "@mui/material"
 import { CollaborationChatStoreInterface } from "../../publication/store/MyPublicationCollaborationChatStore"
-import { FormalizedAgreementPayload } from "../elements/FormalizedAgreementPayload"
 import { ConfirmationDialog } from "../../../components/ConfirmationDialog"
-import { AssistantCollaborationDeclined } from "../elements/AssistantCollaborationDeclined"
-import { YourCollaborationIsEstablished } from "../elements/YourCollaborationIsEstablished"
-import { FinalDraftAttachedByDataUser } from "../elements/FinalDraftAttachedByDataUser"
-import { AllAuthorsConfirmed } from "../elements/AllAuthorsConfirmed"
-import { AssistantFinalDraftAttachedByDataUser } from "../elements/AssistantFinalDraftAttachedByDataUser"
-import { AssistantManuscriptApproved } from "../elements/AssistantManuscriptApproved"
-import { AuthorHas14DaysToMakeRevisionsAndApprove } from "../elements/AuthorHas14DaysToMakeRevisionsAndApprove"
+import { MessageContent } from "../elements/MessageContent"
 
 const HIGH_FIVE_MESSAGE_TYPES = [
   CollaborationMessageType.AUTHOR_APPROVED,
   CollaborationMessageType.ALL_AUTHORS_CONFIRMED,
   CollaborationMessageType.ASSISTANT_MANUSCRIPT_APPROVED
-];
+]
 
 type ChatProps = {
   collaborationChatStore: CollaborationChatStoreInterface;
 };
 
 const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: CollaborationChatStoreInterface }): ReactElement => {
-  const { collaborationChatStore } = props;
-  const userActionsRegistry = new UserActionsRegistry();
-  const [showDeclineModal, setShowDeclineModal] = useState(false);
-  const [showCollabModal, setShowCollabModal] = useState(false);
+  const { collaborationChatStore } = props
+  const userActionsRegistry = new UserActionsRegistry()
+  const [showDeclineModal, setShowDeclineModal] = useState(false)
+  const [showCollabModal, setShowCollabModal] = useState(false)
   const [showCollabHelpStep1Modal, setShowCollabHelpStep1Modal] =
-    useState(false);
+    useState(false)
   const [showCollabHelpStep2Modal, setShowCollabHelpStep2Modal] =
-    useState(false);
+    useState(false)
   const [showCollabHelpStep3Modal, setShowCollabHelpStep3Modal] =
-    useState(false);
+    useState(false)
 
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     setTimeout(() => {
-      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, 30);
-  }, [collaborationChatStore.messages?.length]);
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+    }, 30)
+  }, [collaborationChatStore.messages?.length])
 
   useEffect(() => {
     const faCollabHelp = (event: MouseEvent): void => {
       const target = (event.target as HTMLElement).closest<HTMLElement>(
-        '#fa-collab-helper-step1, #fa-collab-helper-step2, #fa-collab-helper-step3'
-      );
+        "#fa-collab-helper-step1, #fa-collab-helper-step2, #fa-collab-helper-step3"
+      )
 
       if (target) {
-        const step = target.id.split('-')[3];
+        const step = target.id.split("-")[3]
         switch (step) {
-          case 'step1':
-            setShowCollabHelpStep1Modal(true);
-            break;
-          case 'step2':
-            setShowCollabHelpStep2Modal(true);
-            break;
-          case 'step3':
-            setShowCollabHelpStep3Modal(true);
-            break;
+          case "step1":
+            setShowCollabHelpStep1Modal(true)
+            break
+          case "step2":
+            setShowCollabHelpStep2Modal(true)
+            break
+          case "step3":
+            setShowCollabHelpStep3Modal(true)
+            break
           default:
-            break;
+            break
         }
       }
-    };
+    }
 
-    window.addEventListener('click', faCollabHelp);
+    window.addEventListener("click", faCollabHelp)
 
     return () => {
-      window.removeEventListener('click', faCollabHelp);
-    };
-  }, []);
-
-  // const handleComment: (e: any) => void = (e) => {
-  //   e.preventDefault();
-  //   const formData = new FormData(e.currentTarget);
-  //   const comment = formData.get('comment');
-  //   Messages.push({
-  //     id: 1001,
-  //     name: 'Me Myself',
-  //     avatar: 'MM',
-  //     text: comment as string
-  //   });
-  //   Messages.push({
-  //     id: 1001,
-  //     name: 'Assistant',
-  //     avatar: 'FA',
-  //     text: (
-  //       <p>
-  //         The manuscript was approved. You may use this log to continue
-  //         discussions with data user according your collaboration.
-  //       </p>
-  //     )
-  //   });
-  //   collaborationChatStore.setStage(CollaborationMessageType.MANUSCRIPT_APPROVED);
-  //   handleCloseCommentModal();
-  // };
-
-
-  // const handleApproveManuscriptWithComments: () => void = () => {
-  //   handleShowCommentModal();
-  // };
-  // const handleApproveManuscript: () => void = () => {
-  //   Messages.push({
-  //     id: 444,
-  //     name: 'Me Myself',
-  //     avatar: 'MM',
-  //     text: 'Approve manuscript.'
-  //   });
-  //   collaborationChatStore.setStage(CollaborationMessageType.MANUSCRIPT_APPROVED);
-  // };
-
-  function getCollaborationAgreementTemplateLink () {
-    return <FileElement>
-      <Link
-        href={"/docs/FA_Collaboration_Agreement_template.pdf"}
-        target={"_blank"}
-        underline={"none"}
-        sx={{ color: "black" }}
-        style={{ cursor: "pointer" }}
-      >
-        FA Collaboration Agreement template.pdf
-      </Link>
-    </FileElement>
-  }
+      window.removeEventListener("click", faCollabHelp)
+    }
+  }, [])
 
   return (
     <>
@@ -165,70 +93,31 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
       />
       <div>
         {collaborationChatStore.messages && collaborationChatStore.messages.map((message) => {
-          const userInfo = message.userInfo!!;
-          const fullName = message.isAssistant ? 'Assistant' : getFullName(userInfo);
-          const avatar = message.isAssistant ? 'FA' :
-            (userInfo.profileImage ? renderProfileImage(userInfo.profileImage) : getInitials(userInfo.firstName, userInfo.lastName));
+          const userInfo = message.userInfo!!
+          const fullName = message.isAssistant ? "Assistant" : getFullName(userInfo)
+          const avatar = message.isAssistant ? "FA" :
+            (userInfo.profileImage ? renderProfileImage(userInfo.profileImage) : getInitials(userInfo.firstName, userInfo.lastName))
           const mappedFiles = message.files?.map(file =>
-              <FileElement onClick={() => collaborationChatStore.getCollaborationFile(file)}>
-                <DescriptionOutlined style={{marginRight: '12px'}}/>
-                <span>{file.name}</span>
-              </FileElement>
-          );
-          const collaborationAgreementTemplate = getCollaborationAgreementTemplateLink()
+            <FileElement onClick={() => collaborationChatStore.getCollaborationFile(file)}>
+              <DescriptionOutlined style={{ marginRight: "12px" }} />
+              <span>{file.name}</span>
+            </FileElement>
+          )
 
           return (
-            <React.Fragment key={message.id} >
-              <Message name={fullName} avatar={avatar} key={message.id}>
-                {/* For data user: */}
-                {message.type === CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL && <PersonalData message={message} />}
-                {message.type === CollaborationMessageType.DONE_WHATS_NEXT && <PotentialPublicationData message={message} />}
-                {message.type === CollaborationMessageType.UPLOAD_FINAL_DRAFT && <UploadedFinalDraftPayload message={message} />}
-                {message.type === CollaborationMessageType.ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER && <FinalDraftAttachedByDataUser message={message} />}
-                {HIGH_FIVE_MESSAGE_TYPES.includes(message.type) && <img src={highfiveImage}  alt="High five"/>}
+            <React.Fragment key={message.id}>
+              <Message name={fullName} avatar={avatar}>
+                <MessageContent message={message} chatStore={collaborationChatStore} />
+                {HIGH_FIVE_MESSAGE_TYPES.includes(message.type) && (
+                  <img src={highfiveImage} alt="High five" />
+                )}
                 <div />
                 {message.text}
                 {mappedFiles}
-                {message.type === CollaborationMessageType.FORMALIZED_AGREEMENT && collaborationAgreementTemplate}
-                {message.type === CollaborationMessageType.AUTHOR_APPROVED && <AuthorApprovedPayload message={message} />}
-                {message.type === CollaborationMessageType.AUTHOR_DECLINED && <AuthorDeclinedPayload message={message} />}
-                {message.type === CollaborationMessageType.PREFILLED_COLLABORATION_AGREEMENT &&
-                  <PrefilledAgreementPayload message={message}
-                                             chatStore={collaborationChatStore as DownloadedPublicationCollaborationChatStore}
-                  />
-                }
-                {message.type === CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET && showStepsInfo()}
-                {message.type === CollaborationMessageType.VERIFY_YOUR_NAME_AND_AFFILIATION &&
-                  !collaborationChatStore.existsByType(CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL) &&
-                  <PersonalDataForm
-                    message={message}
-                    action={confirmThatProvidedInfoIsReal}
-                    store={collaborationChatStore as DownloadedPublicationCollaborationChatStore}
-                  />
-                }
-                {message.type === CollaborationMessageType.PROPOSE_POTENTIAL_PUBLICATION_NAME_AND_TYPE &&
-                  !collaborationChatStore.existsByType(CollaborationMessageType.DONE_WHATS_NEXT) &&
-                  <PotentialPublicationDataForm
-                    store={collaborationChatStore as DownloadedPublicationCollaborationChatStore}
-                    action={doneWhatsNext}
-                  />
-                }
-                {message.type === CollaborationMessageType.AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE &&
-                  <AuthorHas14DaysToMakeRevisionsAndApprove />}
-                {/* For data author: */}
-                {message.type === CollaborationMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU && <PotentialPublicationData message={message} />}
-                {message.type === CollaborationMessageType.ASSISTANT_COLLABORATION_DECLINED && <AssistantCollaborationDeclined />}
-                {message.type === CollaborationMessageType.ASSISTANT_CREATE &&
-                  <FormalizedAgreementPayload message={message} chatStore={collaborationChatStore} />}
-                {message.type === CollaborationMessageType.YOUR_COLLABORATION_IS_ESTABLISHED &&
-                  <YourCollaborationIsEstablished message={message} chatStore={collaborationChatStore} />}
-                {message.type === CollaborationMessageType.ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER && <AssistantFinalDraftAttachedByDataUser />}
-                {message.type === CollaborationMessageType.ASSISTANT_MANUSCRIPT_APPROVED && <AssistantManuscriptApproved />}
-                {message.type === CollaborationMessageType.ALL_AUTHORS_CONFIRMED && <AllAuthorsConfirmed />}
               </Message>
-              <HeightElement value={'32px'} />
+              <HeightElement value="32px" />
             </React.Fragment>
-          );
+          )
         })}
         {
           collaborationChatStore.messageType && <UserActions
@@ -238,7 +127,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
             key={collaborationChatStore.messageType}
           />
         }
-        {<HeightElement value={'32px'} />}
+        {<HeightElement value={"32px"} />}
         <div ref={bottomRef} />
         <CommentsModal
           open={collaborationChatStore.isApproveManuscriptDialogOpen ?? false}
@@ -248,7 +137,10 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
                 type: CollaborationMessageType.APPROVE_MANUSCRIPT,
                 isAssistant: false,
                 text: "Approve manuscript",
-                payload: {comment, type: CollaborationMessageType.APPROVE_MANUSCRIPT}
+                payload: {
+                  comment,
+                  type: CollaborationMessageType.APPROVE_MANUSCRIPT
+                }
               }, CollaborationMessageType.APPROVE_MANUSCRIPT
             )
           }
@@ -256,7 +148,8 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
         <CollaborationRequirementsModal
           open={showCollabModal}
           handleClose={() => setShowCollabModal(false)}
-          handleAction={() => {}}
+          handleAction={() => {
+          }}
         />
         <Step1Modal
           open={showCollabHelpStep1Modal}
@@ -276,44 +169,44 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
           isOpen={collaborationChatStore.isDeclineCollaborationDialogOpen!!}
           onClose={() => collaborationChatStore.setIsDeclineCollaborationDialogOpen!!(false)}
           onConfirm={async () => await collaborationChatStore.sendMessage({
-              type: CollaborationMessageType.DECLINE_COLLABORATION,
-              isAssistant: false,
-              text: "Decline, citation is enough"
-            }, CollaborationMessageType.DECLINE_COLLABORATION)
+            type: CollaborationMessageType.DECLINE_COLLABORATION,
+            isAssistant: false,
+            text: "Decline, citation is enough"
+          }, CollaborationMessageType.DECLINE_COLLABORATION)
           }
-          title={'Decline, citation is enough'}
+          title={"Decline, citation is enough"}
           text={
-            'Are you sure you want to decline the request? \n' +
-            'By declining a collaboration, you oblige data user to simply quote your dataset, ' +
-            'without specifying you as a co-author.\n' +
-            'Everything will be deleted and you won’t be able to undo this action.'
+            "Are you sure you want to decline the request? \n" +
+            "By declining a collaboration, you oblige data user to simply quote your dataset, " +
+            "without specifying you as a co-author.\n" +
+            "Everything will be deleted and you won’t be able to undo this action."
           }
-          yesText={'Decline'}
-          noText={'Cancel'}
+          yesText={"Decline"}
+          noText={"Cancel"}
         />
         <ConfirmationDialog
           isOpen={collaborationChatStore.isApproveCollaborationDialogOpen!!}
           onClose={() => collaborationChatStore.setIsApproveCollaborationDialogOpen!!(false)}
           onConfirm={async () => await collaborationChatStore.sendMessage({
-              type: CollaborationMessageType.APPROVE_COLLABORATION,
-              isAssistant: false,
-              text: "Approve collaboration"
-            }, CollaborationMessageType.NOTIFY_CO_AUTHOR)
+            type: CollaborationMessageType.APPROVE_COLLABORATION,
+            isAssistant: false,
+            text: "Approve collaboration"
+          }, CollaborationMessageType.NOTIFY_CO_AUTHOR)
           }
-          title={'Approve collaboration'}
+          title={"Approve collaboration"}
           text={
-            'Are you sure you want to approve the request?\n' +
-            'By approving the collaboration, you allow the data user to include you as a co-author, ' +
-            'ensuring full credit for your contribution.'
+            "Are you sure you want to approve the request?\n" +
+            "By approving the collaboration, you allow the data user to include you as a co-author, " +
+            "ensuring full credit for your contribution."
           }
-          yesText={'Approve'}
-          noText={'Cancel'}
-          yesButtonColor={'primary'}
+          yesText={"Approve"}
+          noText={"Cancel"}
+          yesButtonColor={"primary"}
         />
       </div>
     </>
-  );
-});
+  )
+})
 
 interface MessageType {
   id: number;
@@ -322,70 +215,16 @@ interface MessageType {
   text: string | string[] | React.ReactNode | React.ReactNode[];
 }
 
-const Messages: MessageType[] = [
-  {
-    id: 1,
-    name: 'Peter Lidsky',
-    avatar: 'PL',
-    text: `I would like to include you as a co-author of my work, as I plan to use the materials from your dataset. 
-
-* Potential title of my publication in collaboration: Mice brain control/ex fertilization RNA-seq data
-* Type of my publication in collaboration: Journal Article
-* Details of the research: The aim is to investigate the main cortex genetical alterations in the result of mice prenatal influence.
-* Intended journal for publication: Nature Communications 
-* Expected publication date: 1 January 2025
-`
-  },
-  {
-    id: 0,
-    name: 'Assistant',
-    avatar: 'FA',
-    text: (
-      <>
-        Peter Lidsky plans to use your dataset in his research and wants to
-        include you as a co-author of his article.', 'This is First Approval
-        collaboration agreement pre-filled by Peter Lidsky:
-        <p
-          style={{
-            borderRadius: '0.5rem',
-            backgroundColor: 'rgb(243, 242, 245)',
-            padding: '10px',
-            display: 'inline-flex',
-            alignItems: 'center',
-            width: '100%',
-            maxWidth: '100%',
-            gap: '6px'
-          }}>
-          <img src={fileIcon} /> Tim Glinin - FA Collaboration agreement.pdf
-        </p>
-        <ul>
-          <li>
-            <b>By approving</b> to the collaboration, you oblige data user to
-            include you as a co-author.
-            <ul>
-              <li>
-                The data user will also be required to provide a 14-day notice
-                before sending you the final version of the article.
-              </li>
-            </ul>
-          </li>
-          <li>
-            <b>By declining</b> a collaboration, you oblige data user to simply
-            quote your dataset, without specifying you as a co-author.
-          </li>
-        </ul>
-      </>
-    )
-  }
-];
-
 const UserActions = (props: {
   messageType: CollaborationMessageType,
   userActionsRegistry: UserActionsRegistry,
   collaborationChatStore: CollaborationChatStoreInterface
 }): React.ReactElement => {
-  const { messageType, userActionsRegistry } = props;
-  const actions = userActionsRegistry.getActions(messageType);
+  const {
+    messageType,
+    userActionsRegistry
+  } = props
+  const actions = userActionsRegistry.getActions(messageType)
   return actions.length ? (
     <React.Fragment key={messageType}>
       <ButtonsWrapper>
@@ -398,11 +237,11 @@ const UserActions = (props: {
               onClick={() => action.action(props.collaborationChatStore)}>
               {action.text}
             </StyledApproveButton>
-        )}
+          )}
       </ButtonsWrapper>
     </React.Fragment>
-  ) : <></>;
-};
+  ) : <></>
+}
 
 export const ButtonsWrapper = styled.div`
   display: block;
@@ -412,7 +251,7 @@ export const ButtonsWrapper = styled.div`
   }
 `
 
-export default Chat;
+export default Chat
 
 const FileElement = styled.div`
   display: flex;
@@ -424,4 +263,4 @@ const FileElement = styled.div`
   padding: 8px 12px;
   margin-top: 12px;
   cursor: pointer;
-`;
+`
