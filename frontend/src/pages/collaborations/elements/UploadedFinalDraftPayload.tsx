@@ -15,9 +15,12 @@ export const UploadedFinalDraftPayload = observer((
   const lines = formatObjectInfo(potentialPublicationData);
 
   return (
-    <ul>
-      {lines.map(line => <li>{line}</li>)}
-    </ul>
+    <div>
+      <span>Final draft:</span>
+      <ul>
+        {lines.map(line => <li>{line}</li>)}
+      </ul>
+    </div>
   )
 })
 

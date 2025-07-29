@@ -33,6 +33,9 @@ import { AssistantCollaborationDeclined } from "../elements/AssistantCollaborati
 import { YourCollaborationIsEstablished } from "../elements/YourCollaborationIsEstablished"
 import { FinalDraftAttachedByDataUser } from "../elements/FinalDraftAttachedByDataUser"
 import { AllAuthorsConfirmed } from "../elements/AllAuthorsConfirmed"
+import { AssistantFinalDraftAttachedByDataUser } from "../elements/AssistantFinalDraftAttachedByDataUser"
+import { AssistantManuscriptApproved } from "../elements/AssistantManuscriptApproved"
+import { AuthorHas14DaysToMakeRevisionsAndApprove } from "../elements/AuthorHas14DaysToMakeRevisionsAndApprove"
 
 const HIGH_FIVE_MESSAGE_TYPES = [
   CollaborationMessageType.AUTHOR_APPROVED,
@@ -180,7 +183,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
                 {/* For data user: */}
                 {message.type === CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL && <PersonalData message={message} />}
                 {message.type === CollaborationMessageType.DONE_WHATS_NEXT && <PotentialPublicationData message={message} />}
-                {message.type === CollaborationMessageType.UPLOAD_FINAL_DRAFT && <span>Final draft:</span>}
+                {message.type === CollaborationMessageType.UPLOAD_FINAL_DRAFT && <UploadedFinalDraftPayload message={message} />}
                 {message.type === CollaborationMessageType.ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER && <FinalDraftAttachedByDataUser message={message} />}
                 {HIGH_FIVE_MESSAGE_TYPES.includes(message.type) && <img src={highfiveImage}  alt="High five"/>}
                 <div />
@@ -189,7 +192,6 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
                 {message.type === CollaborationMessageType.FORMALIZED_AGREEMENT && collaborationAgreementTemplate}
                 {message.type === CollaborationMessageType.AUTHOR_APPROVED && <AuthorApprovedPayload message={message} />}
                 {message.type === CollaborationMessageType.AUTHOR_DECLINED && <AuthorDeclinedPayload message={message} />}
-                {message.type === CollaborationMessageType.UPLOAD_FINAL_DRAFT && <UploadedFinalDraftPayload message={message} />}
                 {message.type === CollaborationMessageType.PREFILLED_COLLABORATION_AGREEMENT &&
                   <PrefilledAgreementPayload message={message}
                                              chatStore={collaborationChatStore as DownloadedPublicationCollaborationChatStore}
@@ -212,12 +214,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
                   />
                 }
                 {message.type === CollaborationMessageType.AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE &&
-                  <>
-                    <span>The data author has 14 days to make revisions and approve the manuscript.</span>
-                    <span>This is a short period, so we recommend reaching out to the data author</span>
-                    <span> to enhance the efficiency of the final draft approval process.</span>
-                  </>
-                }
+                  <AuthorHas14DaysToMakeRevisionsAndApprove />}
                 {/* For data author: */}
                 {message.type === CollaborationMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU && <PotentialPublicationData message={message} />}
                 {message.type === CollaborationMessageType.ASSISTANT_COLLABORATION_DECLINED && <AssistantCollaborationDeclined />}
@@ -225,29 +222,9 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
                   <FormalizedAgreementPayload message={message} chatStore={collaborationChatStore} />}
                 {message.type === CollaborationMessageType.YOUR_COLLABORATION_IS_ESTABLISHED &&
                   <YourCollaborationIsEstablished message={message} chatStore={collaborationChatStore} />}
-                {message.type === CollaborationMessageType.ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER &&
-                  <div style={{marginTop: '20px'}}>
-                  <span>
-                    You will have 2 weeks to read the article and decide whether to accept or decline co-authorship.
-                    You can ask questions or provide your suggestions to the author via private messages.
-                    We recommend starting this process well in advance.
-                    If you do not approve the request within 2 weeks, you will lose the opportunity for co-authorship in this article.
-                    If you decline, the data user will simply cite your dataset.
-                  </span>
-                  </div>
-                }
-                {message.type === CollaborationMessageType.ASSISTANT_MANUSCRIPT_APPROVED &&
-                  <div style={{marginTop: '20px'}}>
-                  <span>
-                    The manuscript was approved. You may use this log to continue discussions with data user according your collaboration.
-                  </span>
-                  </div>
-                }
-                {message.type === CollaborationMessageType.ALL_AUTHORS_CONFIRMED &&
-                  <div style={{marginTop: '20px'}}>
-                  <AllAuthorsConfirmed />
-                  </div>
-                }
+                {message.type === CollaborationMessageType.ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER && <AssistantFinalDraftAttachedByDataUser />}
+                {message.type === CollaborationMessageType.ASSISTANT_MANUSCRIPT_APPROVED && <AssistantManuscriptApproved />}
+                {message.type === CollaborationMessageType.ALL_AUTHORS_CONFIRMED && <AllAuthorsConfirmed />}
               </Message>
               <HeightElement value={'32px'} />
             </React.Fragment>
