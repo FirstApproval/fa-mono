@@ -18,6 +18,10 @@ const BreadCrumbs: React.FC<{ name: string }> = ({ name }) => {
 const CrumbsWrapper = styled.div`
   padding: 12px;
   border-bottom: 1px solid var(--divider, #d2d2d6);
+  background-color: white;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 `;
 
 export default BreadCrumbs;
