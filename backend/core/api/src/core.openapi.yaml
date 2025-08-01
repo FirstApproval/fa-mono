@@ -803,64 +803,6 @@ paths:
       operationId: getPublicationDownloaders
       tags: [ publication ]
 
-  #  /api/publication/collaborators/check-user-is-collaborator/{publicationId}:
-  #    get:
-  #      summary: Check user is collaborator of publication
-  #      parameters:
-  #        - in: path
-  #          name: publicationId
-  #          schema:
-  #            type: string
-  #            maxLength: 7
-  #          required: true
-  #          description: Return true if user is collaborator of publication
-  #      responses:
-  #        200:
-  #          description: Success
-  #          content:
-  #            'application/json':
-  #              schema:
-  #                type: boolean
-  #      security:
-  #        - TokenAuth: [ ]
-  #      operationId: isUserCollaborator
-  #      tags: [ collaborator ]
-  #
-  #  /api/publication/{publicationId}/collaboration-requests:
-  #    get:
-  #      summary: Get publication
-  #      parameters:
-  #        - in: path
-  #          name: publicationId
-  #          schema:
-  #            type: string
-  #            maxLength: 7
-  #          required: true
-  #          description: Publication id
-  #        - in: query
-  #          name: page
-  #          schema:
-  #            type: integer
-  #          required: true
-  #          description: Page number
-  #        - in: query
-  #          name: pageSize
-  #          schema:
-  #            type: integer
-  #          required: true
-  #          description: Page size
-  #      responses:
-  #        200:
-  #          description: Success
-  #          content:
-  #            application/json:
-  #              schema:
-  #                $ref: '#/components/schemas/GetCollaborationRequestsResponse'
-  #      security:
-  #        - TokenAuth: [ ]
-  #      operationId: getPublicationCollaborators
-  #      tags: [ collaborator ]
-
   /api/collabortion/requests/{publicationId}:
     post:
       summary: Get collaboration requests
@@ -890,7 +832,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetCollaborationRequestsResponse'
+                $ref: '#/components/schemas/GetCollaborationRequestAuthorInvitationStatusResponse'
       security:
         - TokenAuth: [ ]
       operationId: getPublicationCollaborationRequests
@@ -3080,6 +3022,30 @@ components:
       required:
         - pageNum
         - isLast
+
+    CollaborationRequestAuthorInvitationStatus:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/CollaborationAuthorDecisionStatus'
+        collaborationRequest:
+          $ref: '#/components/schemas/CollaborationRequestInfo'
+      required:
+        - collaborationRequests
+        - isLastPage
+
+    GetCollaborationRequestAuthorInvitationStatusResponse:
+      type: object
+      properties:
+        isLastPage:
+          type: boolean
+        collaborationRequestsWithInvitationStatus:
+          type: array
+          items:
+            $ref: '#/components/schemas/CollaborationRequestAuthorInvitationStatus'
+      required:
+        - collaborationRequestsWithInvitationStatus
+        - isLastPage
 
     GetCollaborationRequestsResponse:
       type: object

@@ -3,12 +3,14 @@ package org.firstapproval.backend.core.web
 import org.firstapproval.api.server.CollaborationRequestApi
 import org.firstapproval.api.server.model.AuthorShortInfo
 import org.firstapproval.api.server.model.CollaborationRequestInfo
+import org.firstapproval.api.server.model.GetCollaborationRequestAuthorInvitationStatusResponse
 import org.firstapproval.api.server.model.GetCollaborationRequestsResponse
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.PublicationRepository
 import org.firstapproval.backend.core.domain.publication.authors.toShortInfoApiObject
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestService
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.toApiObject
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.toApiObject
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.toApiObject
@@ -32,13 +34,13 @@ class CollaborationRequestController(
         publicationId: String,
         page: Int,
         pageSize: Int
-    ): ResponseEntity<GetCollaborationRequestsResponse> {
-        val result = collaborationRequestService.findByPublicationId(publicationId, page, pageSize, authHolderService.user)
+    ): ResponseEntity<GetCollaborationRequestAuthorInvitationStatusResponse> {
+        val result = collaborationRequestService.findInvitation(publicationId, page, pageSize, authHolderService.user)
         val collaborationRequests = result
-            .map { it.toApiObject(userService = userService) }
+            .map { it.toApiObject() }
             .toList()
 
-        return ok(GetCollaborationRequestsResponse(result.isLast, collaborationRequests))
+        return ok(GetCollaborationRequestAuthorInvitationStatusResponse(result.isLast, collaborationRequests))
     }
 
     override fun getMyCollaborationRequests(page: Int, pageSize: Int): ResponseEntity<GetCollaborationRequestsResponse> {

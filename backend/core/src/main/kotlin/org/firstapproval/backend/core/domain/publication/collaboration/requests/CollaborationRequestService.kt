@@ -41,11 +41,9 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.PUBLICATION_CREATOR
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.YourCollaborationIsEstablishedPayload
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.*
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorDecisionStatus
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorDecisionStatus.COLLABORATION_APPROVED
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorDecisionStatus.COLLABORATION_DECLINED
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorDecisionStatus.MANUSCRIPT_APPROVED
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorDecisionStatus.MANUSCRIPT_DECLINED
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorInvitationStatus.COLLABORATION_APPROVED
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorInvitationStatus.COLLABORATION_DECLINED
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorInvitationStatus.MANUSCRIPT_APPROVED
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationRequestInvitedAuthor
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationRequestInvitedAuthorRepository
 import org.firstapproval.backend.core.domain.user.User
@@ -416,6 +414,16 @@ class CollaborationRequestService(
         return collaborationRequestRepository.findByPublicationIdAndStatusIn(
             publication.id,
             setOf(PENDING, APPROVED, DECLINED),
+            PageRequest.of(page, pageSize, Sort.by(DESC, "status", "creationTime"))
+        )
+    }
+
+    @Transactional
+    fun findInvitation(publicationId: String, page: Int, pageSize: Int, user: User): Page<CollaborationRequestInvitedAuthor> {
+        val publication = publicationService.getUserPublicationByIdAndStatus(publicationId, user)
+        return collaborationRequestInvitedAuthorRepository.findByCollaborationRequestPublicationIdAndAuthorUserId(
+            publication.id,
+            user.id,
             PageRequest.of(page, pageSize, Sort.by(DESC, "status", "creationTime"))
         )
     }

@@ -72,3 +72,15 @@ fun CollaborationRequest.toApiObject(userInfo: UserInfo) = CollaborationRequestI
     it.creationTime = creationTime.toOffsetDateTime()
     it.decisionTime = decisionTime?.toOffsetDateTime()
 }
+
+fun CollaborationRequest.toApiObject() = CollaborationRequestInfo().also {
+    it.id = id
+    it.status = CollaborationRequestStatusApiObject.valueOf(status.name)
+    it.publicationTitle = publication.title
+    it.publicationId = publication.id
+    it.firstNameLegal = firstNameLegal
+    it.lastNameLegal = lastNameLegal
+    it.description = description
+    it.creationTime = creationTime.toOffsetDateTime()
+    it.decisionTime = decisionTime?.toOffsetDateTime()
+}

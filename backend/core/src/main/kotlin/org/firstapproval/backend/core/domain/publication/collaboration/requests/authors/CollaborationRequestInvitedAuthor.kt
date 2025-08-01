@@ -7,9 +7,12 @@ import jakarta.persistence.FetchType.EAGER
 import jakarta.persistence.Id
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
+import org.firstapproval.api.server.model.CollaborationAuthorDecisionStatus
+import org.firstapproval.api.server.model.CollaborationRequestAuthorInvitationStatus
 import org.firstapproval.backend.core.domain.publication.authors.Author
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequest
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorDecisionStatus.PENDING
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorInvitationStatus.PENDING
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.toApiObject
 import java.time.ZonedDateTime
 import java.util.*
 import java.util.UUID.randomUUID
@@ -24,15 +27,20 @@ class CollaborationRequestInvitedAuthor(
     @ManyToOne(fetch = EAGER)
     val author: Author,
     @Enumerated(STRING)
-    var status: CollaborationAuthorDecisionStatus = PENDING,
+    var status: CollaborationAuthorInvitationStatus = PENDING,
     var creationTime: ZonedDateTime = ZonedDateTime.now(),
     var editingTime: ZonedDateTime = ZonedDateTime.now(),
 )
 
-enum class CollaborationAuthorDecisionStatus {
+enum class CollaborationAuthorInvitationStatus {
     PENDING,
     COLLABORATION_APPROVED,
     COLLABORATION_DECLINED,
     MANUSCRIPT_APPROVED,
     MANUSCRIPT_DECLINED,
+}
+
+fun CollaborationRequestInvitedAuthor.toApiObject() = CollaborationRequestAuthorInvitationStatus().also {
+    it.status = CollaborationAuthorDecisionStatus.valueOf(status.name)
+    it.collaborationRequest = collaborationRequest.toApiObject()
 }
