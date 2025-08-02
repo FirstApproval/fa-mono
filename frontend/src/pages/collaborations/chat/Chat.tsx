@@ -3,7 +3,6 @@ import React, { ReactElement, useEffect, useRef, useState } from "react"
 import { SelfAvatar } from "../elements/AvatarNameBox"
 import { HeightElement } from "../../common.styled"
 import { css, Global } from "@emotion/react"
-import fileIcon from "../../../assets/file-icon.svg"
 import highfiveImage from "../../../assets/fa-highfive.svg"
 import { getFullName, getInitials, renderProfileImage } from "../../../util/userUtil"
 import { CollaborationMessageType } from "src/apis/first-approval-api"
@@ -107,10 +106,10 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
           return (
             <React.Fragment key={message.id}>
               <Message name={fullName} avatar={avatar}>
-                <MessageContent message={message} chatStore={collaborationChatStore} />
                 {HIGH_FIVE_MESSAGE_TYPES.includes(message.type) && (
                   <img src={highfiveImage} alt="High five" />
                 )}
+                <MessageContent message={message} chatStore={collaborationChatStore} />
                 <div />
                 {message.text}
                 {mappedFiles}
