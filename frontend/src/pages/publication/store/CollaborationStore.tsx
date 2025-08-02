@@ -1,6 +1,7 @@
 import { action, makeAutoObservable } from 'mobx';
 import { collaborationRequestService } from '../../../core/service';
 import {
+  CollaborationRequestAuthorInvitationStatus,
   CollaborationRequestInfo,
   CollaborationRequestStatus,
   CollaborationRequestTypeOfWork
@@ -12,7 +13,7 @@ export class CollaborationStore {
   openCreateCollaborationRequestDialog = false;
   publicationId: string = '';
   approvedCollaborationRequestCount: number = 0;
-  collaborationRequests: CollaborationRequestInfo[] = [];
+  collaborationRequestsWithStatus: CollaborationRequestAuthorInvitationStatus[] = [];
   collaborationRequest: CollaborationRequestInfo | null = null;
   collaborationRequestsIsLastPage = false;
   showAcceptOrRejectAlert = false;
@@ -33,10 +34,10 @@ export class CollaborationStore {
         .getPublicationCollaborationRequests(this.publicationId, page, 100)
         .then(
           action((response) => {
-            this.collaborationRequests = [
-              ...this.collaborationRequests,
-              ...(response.data.collaborationRequests ?? [])
-            ];
+            this.collaborationRequestsWithStatus = [
+              ...this.collaborationRequestsWithStatus,
+              ...(response.data.collaborationRequestsWithInvitationStatus ?? [])
+            ]
             this.collaborationRequestsIsLastPage = response.data.isLastPage;
             this.loadCollaborationRequestsLocked = false;
           })
@@ -81,7 +82,7 @@ export class CollaborationStore {
   ): void {
     this.publicationId = '';
     this.approvedCollaborationRequestCount = 0;
-    this.collaborationRequests = [];
+    this.collaborationRequestsWithStatus = [];
     this.collaborationRequestsIsLastPage = false;
 
     this.publicationId = publicationId;

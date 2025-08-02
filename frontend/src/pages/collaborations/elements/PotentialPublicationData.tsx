@@ -20,7 +20,7 @@ export const PotentialPublicationData = observer((
   if (potentialPublicationData.intendedJournalForPublication)
     lines.push(`Intended journal for publication: ${potentialPublicationData.intendedJournalForPublication}`);
   if (potentialPublicationData.detailsOfResearch)
-    lines.push(`Intended journal for publication: ${potentialPublicationData.detailsOfResearch}`);
+    lines.push(`Details of the research: ${potentialPublicationData.detailsOfResearch}`);
 
   return (
     <ul>

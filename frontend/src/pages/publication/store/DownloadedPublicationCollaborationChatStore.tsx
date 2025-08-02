@@ -148,7 +148,7 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
     nextStage: CollaborationMessageType | undefined = undefined
   ): Promise<CollaborationRequestMessage[]> {
     return collaborationRequestChatService.createCollaborationRequestMessages(
-      this.publication!!.id,
+      this.collaborationRequestId,
       messages
     ).then(response => {
       const savedMessages: CollaborationRequestMessage[] = response.data

@@ -8,12 +8,12 @@ import {
 } from './CollaborationRequestBox';
 import { routerStore } from '../../core/router';
 import { myPublicationCollaborationChatPath, Page } from "../../core/router/constants"
-import { CollaborationRequestInfo } from "../../apis/first-approval-api"
+import { CollaborationRequestAuthorInvitationStatus, CollaborationRequestInfo } from "../../apis/first-approval-api"
 import { PublicationCollaborationsStore } from "./dashboard/PublicationCollaborationsStore"
 import { PublicationInfoBox } from "./elements/PublicationInfoBox"
 import { LeftPanelPublicationsPage } from "./LeftPanelPublications"
 import { HeaderComponent } from "../../components/HeaderComponent"
-import { getUserInfoInitials } from "../../util/userUtil"
+import { getInitials } from "../../util/userUtil"
 
 export const PublicationCollaborationsPage = observer((): ReactElement => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -33,14 +33,16 @@ export const PublicationCollaborationsPage = observer((): ReactElement => {
     true
   );
 
-  function mapToCollaborationRequestBox(collaborationRequestInfo: CollaborationRequestInfo) {
+  function mapToCollaborationRequestBox(collaborationRequestInfoWithStatus: CollaborationRequestAuthorInvitationStatus) {
+    const collaborationRequestInfo = collaborationRequestInfoWithStatus.collaborationRequest!!;
+    debugger;
     // const invitedAuthor = collaborationRequestInfo.invitedAuthors?.find(invitedAuthor => invitedAuthor.author.username === userStore.user!!.username);
     return (
       <CollaborationRequestBox
         onClick={() => goToChat(collaborationRequestInfo.id)}
-        avatar={getUserInfoInitials(collaborationRequestInfo?.userInfo)}
-        name={`${collaborationRequestInfo?.userInfo?.firstName} ${collaborationRequestInfo?.userInfo?.lastName}`}
-        status={collaborationRequestInfo.status}>
+        avatar={getInitials(collaborationRequestInfo?.firstNameLegal, collaborationRequestInfo?.lastNameLegal)}
+        name={`${collaborationRequestInfo?.firstNameLegal} ${collaborationRequestInfo?.lastNameLegal}`}
+        status={collaborationRequestInfoWithStatus.status!!}>
         {collaborationRequestInfo.description}
       </CollaborationRequestBox>
     );

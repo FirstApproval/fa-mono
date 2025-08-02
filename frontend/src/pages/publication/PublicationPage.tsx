@@ -204,7 +204,9 @@ export const PublicationPage: FunctionComponent = observer(() => {
       />
       <CollaboratorsDialog
         isOpen={collaborationStore.collaboratorsDialogOpen}
-        collaborationRequests={collaborationStore.collaborationRequests}
+        collaborationRequests={collaborationStore.collaborationRequestsWithStatus
+          .map(requestWithStatus => requestWithStatus.collaborationRequest!!)
+        }
       />
       <CollaborationRequestDialog
         isOpen={collaborationStore.collaborationRequestDialogOpen}

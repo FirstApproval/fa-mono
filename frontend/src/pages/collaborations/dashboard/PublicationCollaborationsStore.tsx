@@ -1,5 +1,5 @@
 import {
-  CollaborationRequestInfo,
+  CollaborationRequestAuthorInvitationStatus,
   Publication
 } from "../../../apis/first-approval-api"
 import { makeAutoObservable } from "mobx"
@@ -9,7 +9,7 @@ import { collaborationRequestService, publicationService } from "../../../core/s
 const PAGE_SIZE = 20;
 
 export class PublicationCollaborationsStore {
-  collaborationRequests: CollaborationRequestInfo[] = []
+  collaborationRequests: CollaborationRequestAuthorInvitationStatus[] = []
   publication?: Publication;
   isLastPage: Boolean = false;
   currentPage = 0;
@@ -48,8 +48,9 @@ export class PublicationCollaborationsStore {
       ([publicationResponse, collaborationRequestsResponse]) => {
         this.publication = publicationResponse.data
         this.isLastPage = collaborationRequestsResponse.data.isLastPage
-        this.collaborationRequests.push(...collaborationRequestsResponse.data.collaborationRequests)
-        debugger;
+        this.collaborationRequests.push(
+          ...collaborationRequestsResponse.data.collaborationRequestsWithInvitationStatus
+        );
       }
     )
   }

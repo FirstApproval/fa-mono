@@ -3,26 +3,31 @@ import styled from '@emotion/styled';
 import { Card, CardContent, Typography, Button } from '@mui/material';
 import AvatarNameBox from './elements/AvatarNameBox';
 import { HeightElement } from '../common.styled';
-import { CollaborationRequestStatus } from "../../apis/first-approval-api"
+import { CollaborationAuthorDecisionStatus, CollaborationRequestStatus } from "../../apis/first-approval-api"
 import _ from "lodash"
 
-function getBorderColor(status: CollaborationRequestStatus): string {
+function getBorderColor(status: CollaborationAuthorDecisionStatus): string {
   switch (status) {
-    case CollaborationRequestStatus.PENDING:
-      return '#3b4eff';
-    case CollaborationRequestStatus.DECLINED:
-      return '#ff3b3b';
-    case CollaborationRequestStatus.APPROVED:
-      return '#3bff5c';
+    case CollaborationAuthorDecisionStatus.PENDING:
+      // return '#3b4eff';
+    case CollaborationAuthorDecisionStatus.COLLABORATION_DECLINED:
+    case CollaborationAuthorDecisionStatus.MANUSCRIPT_DECLINED:
+      // return '#ff3b3b';
+    case CollaborationAuthorDecisionStatus.COLLABORATION_APPROVED:
+    case CollaborationAuthorDecisionStatus.MANUSCRIPT_APPROVED:
+      // return '#3bff5c';
     default:
       return '#d2d2d6';
   }
 }
 
-function getBGColor(status: CollaborationRequestStatus): string {
+function getBGColor(status: CollaborationAuthorDecisionStatus): string {
   switch (status) {
-    case CollaborationRequestStatus.PENDING:
+    case CollaborationAuthorDecisionStatus.PENDING:
       return '#f7f8ff';
+    case CollaborationAuthorDecisionStatus.COLLABORATION_APPROVED:
+    case CollaborationAuthorDecisionStatus.MANUSCRIPT_APPROVED:
+    // return '#79ff8c';
     default:
       return '#fff';
   }
@@ -62,7 +67,7 @@ const BoxyIcon = styled.span`
   font-size: 16px;
 `;
 
-function getButtonText(status: CollaborationRequestStatus): string {
+function getButtonText(status: CollaborationAuthorDecisionStatus): string {
   return _.capitalize(status.toLowerCase().replace('_', ' '))
 }
 
@@ -75,7 +80,7 @@ export const CollaborationRequestBox = ({
 }: {
   avatar: string;
   name: string;
-  status: CollaborationRequestStatus;
+  status: CollaborationAuthorDecisionStatus;
   onClick: () => void;
   children: ReactNode;
 }): ReactElement => {
@@ -94,9 +99,7 @@ export const CollaborationRequestBox = ({
   );
 };
 
-const renderButtonByStatus = (status: CollaborationRequestStatus, onClick: () => void): ReactElement => {
-  const children = getButtonText(status);
-
+const renderButtonByStatus = (status: CollaborationAuthorDecisionStatus, onClick: () => void): ReactElement => {
   let props: {
     variant: 'outlined' | 'contained';
     icon?: boolean;
@@ -106,15 +109,17 @@ const renderButtonByStatus = (status: CollaborationRequestStatus, onClick: () =>
   let title = ''
 
   switch (status) {
-    case CollaborationRequestStatus.PENDING:
+    case CollaborationAuthorDecisionStatus.PENDING:
       props = { variant: 'contained', icon: true };
       title = 'Answer'
       break;
-    case CollaborationRequestStatus.APPROVED:
+    case CollaborationAuthorDecisionStatus.COLLABORATION_APPROVED:
+    case CollaborationAuthorDecisionStatus.MANUSCRIPT_APPROVED:
       props = { variant: 'outlined', green: true };
       title = 'Approved'
       break;
-    case CollaborationRequestStatus.DECLINED:
+    case CollaborationAuthorDecisionStatus.COLLABORATION_DECLINED:
+    case CollaborationAuthorDecisionStatus.MANUSCRIPT_DECLINED:
       props = { variant: 'outlined', red: true };
       title = 'Declined'
       break;
