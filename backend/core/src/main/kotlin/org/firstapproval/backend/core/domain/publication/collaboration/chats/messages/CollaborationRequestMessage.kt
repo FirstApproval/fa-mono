@@ -70,8 +70,6 @@ class CollaborationRequestMessage(
     @Enumerated(STRING) // Указываем, что ENUM будет храниться как строка
     val recipientTypes: MutableSet<RecipientType>,
 
-    val text: String? = null,
-
     @Type(JsonBinaryType::class)
     @Column(columnDefinition = "jsonb")
     val payload: MessagePayload? = null,
@@ -238,7 +236,6 @@ fun CollaborationRequestMessage.toApiObject(userInfo: UserInfo) = CollaborationR
     it.id = this.id
     it.userInfo = userInfo.takeIf { user.id == userInfo.id }
         ?: throw IllegalArgumentException("UserInfo id ${userInfo.id} doesn't match with user.id ${user.id}")
-    it.text = text
     it.payload = payload
     it.isAssistant = isAssistant
     it.sequenceIndex = sequenceIndex

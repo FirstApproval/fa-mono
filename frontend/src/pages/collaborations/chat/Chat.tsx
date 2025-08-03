@@ -111,7 +111,6 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
                 )}
                 <MessageContent message={message} chatStore={collaborationChatStore} />
                 <div />
-                {message.text}
                 {mappedFiles}
               </Message>
               <HeightElement value="32px" />
@@ -135,7 +134,6 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
             await collaborationChatStore.sendMessage({
                 type: CollaborationMessageType.APPROVE_MANUSCRIPT,
                 isAssistant: false,
-                text: "Approve manuscript",
                 payload: {
                   comment,
                   type: CollaborationMessageType.APPROVE_MANUSCRIPT

@@ -23,8 +23,11 @@ export const PersonalData = observer((
   lines.push(`Affiliations: ${formattedWorkplaces}`)
 
   return (
-    <ul>
-      {lines.map(line => <li>{line}</li>)}
-    </ul>
+    <div>
+      <span>I confirm that provided info is real.</span>
+      <ul>
+        {lines.map(line => <li>{line}</li>)}
+      </ul>
+    </div>
   )
 })

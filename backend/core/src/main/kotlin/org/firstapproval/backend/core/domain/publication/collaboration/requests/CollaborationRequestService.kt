@@ -62,26 +62,6 @@ import java.util.*
 import java.util.UUID.randomUUID
 import org.firstapproval.api.server.model.CollaborationRequestMessage as CollaborationRequestMessageApiObject
 
-
-const val I_AGREE_WITH_TERMS = "I agree to the terms of the First Approval Collaboration License, " +
-    "including sending a Collaboration Request to the Data Author(s)."
-const val ASSISTANT_DATASET_WAS_DOWNLOADED = "The dataset %1\$s was downloaded.\n\n" +
-    "Important note: By incorporating this Dataset into your work or using it as a part of your larger Dataset you undertake to send " +
-    "the Data Author(s) a Collaboration Request. This may result in including the Data Author(s) as co-author(s) to your work. " +
-    "Read more about Collaboration..."
-
-const val I_WOULD_LIKE_TO_INCLUDE_YOU_AS_A_CO_AUTHOR = "" +
-    "I would like to include you as a co-author of my work, as I plan to use the materials from your dataset." +
-    ""
-const val PLANS_TO_USE_YOUR_DATASET = "%1\$s plans to use your dataset in his research and wants to include you " +
-    "as a co-author of his article.\n" +
-    "This is First Approval collaboration agreement pre-filled by %1\$s :" +
-    "By approving to the collaboration, you oblige data user to include you as a co-author.\n" +
-    "The data user will also be required to provide a 14-day notice before sending you " +
-    "the final version of the article.\n" +
-    "By declining a collaboration, you oblige data user to simply quote your dataset, " +
-    "without specifying you as a co-author."
-
 private val APPROVED_STATUSES = listOf(
     COLLABORATION_APPROVED,
     MANUSCRIPT_APPROVED
@@ -147,7 +127,6 @@ class CollaborationRequestService(
             collaborationRequest = collaborationRequest,
             type = type,
             user = messageRecipient,
-            text = collaborationRequestMessage.text,
             payload = objectMapper.convertValue(collaborationRequestMessage.payload, MessagePayload::class.java),
             sequenceIndex = type.sequenceIndex,
             recipientTypes = mutableSetOf(type.recipientType),
@@ -179,7 +158,6 @@ class CollaborationRequestService(
                 type = I_WOULD_LIKE_TO_INCLUDE_YOU,
                 // make for all authors (not only creator)
                 user = targetUser(I_WOULD_LIKE_TO_INCLUDE_YOU, collaborationRequest),
-                text = I_WOULD_LIKE_TO_INCLUDE_YOU_AS_A_CO_AUTHOR,
                 payload = IWouldLikeToIncludeYouAsCoAuthor(
                     potentialPublicationTitle = potentialPublicationData.potentialPublicationTitle,
                     typeOfWork = potentialPublicationData.typeOfWork,
@@ -197,7 +175,6 @@ class CollaborationRequestService(
                 type = ASSISTANT_CREATE,
                 // make for all authors (not only creator)
                 user = targetUser(ASSISTANT_CREATE, collaborationRequest),
-                text = PLANS_TO_USE_YOUR_DATASET.format(fullNameRequestCreator),
                 sequenceIndex = ASSISTANT_CREATE.sequenceIndex,
                 recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
                 isAssistant = true
@@ -453,7 +430,6 @@ class CollaborationRequestService(
                 collaborationRequest = collaboration,
                 type = AGREE_TO_THE_TERMS_OF_COLLABORATION,
                 user = user,
-                text = I_AGREE_WITH_TERMS,
                 sequenceIndex = 0,
                 recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR),
                 isAssistant = false
@@ -465,7 +441,6 @@ class CollaborationRequestService(
                 collaborationRequest = collaboration,
                 type = DATASET_WAS_DOWNLOADED,
                 user = user,
-                text = ASSISTANT_DATASET_WAS_DOWNLOADED.format(publication.title),
                 sequenceIndex = 1,
                 recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR),
                 isAssistant = true

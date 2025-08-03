@@ -5,13 +5,20 @@ import React from "react"
 
 export const showStepsInfo = () => {
   return <div style={{marginTop: '12px'}}>
+    <span>
+      If you’re interested in this Dataset and considering publishing your future work together with the Data Author(s),
+      First Approval will make the collaboration process easier.
+      Let me guide you through it before you agree to work on the publication together.
+      The FA collaboration process has 3 steps.
+    </span>
     <div
       id="fa-collab-helper-box"
       style={{
         display: "flex",
         flexDirection: "row",
         gap: "16px",
-        marginBottom: "32px"
+        marginBottom: "32px",
+        marginTop: "20px"
       }}>
       <div
         id="fa-collab-helper-step1"

@@ -2,6 +2,7 @@ import { Link } from "@mui/material"
 import React, { ReactElement } from "react"
 import styled from "@emotion/styled"
 import { observer } from "mobx-react-lite"
+import { DescriptionOutlined } from "@mui/icons-material"
 
 export const CollaborationMessageFile  = observer((
   props: { link: string }
@@ -14,6 +15,7 @@ export const CollaborationMessageFile  = observer((
       sx={{ color: "black" }}
       style={{ cursor: "pointer" }}
     >
+      <DescriptionOutlined />
       FA Collaboration Agreement template.pdf
     </Link>
   </FileElement>
