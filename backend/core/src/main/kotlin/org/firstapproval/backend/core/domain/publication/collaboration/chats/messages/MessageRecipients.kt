@@ -20,6 +20,6 @@ class MessageRecipient(
 ) : Serializable
 
 enum class RecipientType {
-    COLLABORATION_REQUEST_CREATOR,
-    PUBLICATION_CREATOR
+    DATA_USER,
+    DATA_AUTHOR
 }
