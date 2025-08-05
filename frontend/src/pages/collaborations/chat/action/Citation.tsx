@@ -11,29 +11,29 @@ function citationAction(collaborationChatStore: CollaborationChatStoreInterface)
 
   const publication = collaborationChatStore.publication!!
 
-  const mappedAuthors = publication.authors!!
-    .map(author => `${author.lastName} ${author.firstName.charAt(0)}`)
-    .join(", ")
+  // const mappedAuthors = publication.authors!!
+  //   .map(author => `${author.lastName} ${author.firstName.charAt(0)}`)
+  //   .join(", ")
+  //
+  // const year = publication.creationTime.substring(0, 4)
+  //
+  // const dataCollectionTypeTitle = publication.dataCollectionType === DataCollectionType.GENERAL ? "" :
+  //   (" - " + DATA_COLLECTION_TYPES
+  //       .find(dataCollectionType => dataCollectionType.type === publication.dataCollectionType)!!
+  //       .title
+  //   )
 
-  const year = publication.creationTime.substring(0, 4)
+  // console.log(<p>
+  //   {mappedAuthors}. {publication.title}. {year}.{" "}
+  //   First Approval{dataCollectionTypeTitle}.
+  // </p>)
 
-  const dataCollectionTypeTitle = publication.dataCollectionType === DataCollectionType.GENERAL ? "" :
-    (" - " + DATA_COLLECTION_TYPES
-        .find(dataCollectionType => dataCollectionType.type === publication.dataCollectionType)!!
-        .title
-    )
-
-  console.log(<p>
-    {mappedAuthors}. {publication.title}. {year}.{" "}
-    First Approval{dataCollectionTypeTitle}.
-  </p>)
-
-  const message = `${mappedAuthors}. ${publication.title}. ${year}. First Approval${dataCollectionTypeTitle}.`
+  // const message = `${mappedAuthors}. ${publication.title}. ${year}. First Approval${dataCollectionTypeTitle}.`
 
   collaborationChatStore.sendMessage({
     isAssistant: true,
     type: CollaborationMessageType.NONE,
-    text: message
+    // text: message
   }, CollaborationMessageType.NONE)
 }
 

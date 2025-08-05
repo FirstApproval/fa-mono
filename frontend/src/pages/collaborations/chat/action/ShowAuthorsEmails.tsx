@@ -26,8 +26,8 @@ export function showAuthorsEmailsAction (
     collaborationChatStore.messages!!.push({
         type: CollaborationMessageType.SHOW_AUTHORS_EMAILS_RESPONSE,
         isAssistant: true,
-        userInfo: userStore.user,
-        text: "While we are working on the FA chat feature, you can contact the authors using their emails: \n" + mappedAuthors
+        // userInfo: userStore.user,
+        // text: "While we are working on the FA chat feature, you can contact the authors using their emails: \n" + mappedAuthors
       }
     );
 }

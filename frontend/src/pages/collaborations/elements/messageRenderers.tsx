@@ -26,6 +26,7 @@ import { DatasetWasDownloaded } from "./DatasetWasDownloaded"
 import { AgreeToTheTermsOfCollaboration } from "./AgreeToTheTermsOfCollaboration"
 import { ProposePotentialPublicationNameAndType } from "./ProposePotentialPublicationNameAndType"
 import { GreatFirstStepIsCompleted } from "./GreatFirstStepIsCompleted"
+import { DataUserPayload } from "./DataUserPayload"
 
 export function createMessageRenderers(collaborationChatStore: CollaborationChatStoreInterface) {
   return {
@@ -96,5 +97,6 @@ export function createMessageRenderers(collaborationChatStore: CollaborationChat
     [CollaborationMessageType.I_WOULD_LIKE_TO_COLLABORATE]: () => <span>I`d like to collaborate! Tell me more...</span>,
     [CollaborationMessageType.ALL_DATA_AUTHORS_RESPONDED_TO_COLLABORATION_REQUEST]: () =>
       <span>All data authors responded to the request for collaboration, and you can now upload the final draft.</span>,
+    [CollaborationMessageType.EMAIL_DATA_USER]: () => <DataUserPayload chatStore={collaborationChatStore} />,
   } satisfies Partial<Record<CollaborationMessageType, (message: CollaborationRequestMessage) => React.ReactNode>>;
 }

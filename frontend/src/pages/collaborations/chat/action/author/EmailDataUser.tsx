@@ -24,7 +24,8 @@ export function emailDataUserAction (
       type: CollaborationMessageType.EMAIL_DATA_USER,
       isAssistant: true,
       userInfo: userStore.user,
-      text: "While we are working on the FA chat feature, you can contact the data user by email: \n" + mappedDataUser
+      payload: { dataUser: mappedDataUser}
+      // text: "While we are working on the FA chat feature, you can contact the data user by email: \n" + mappedDataUser
     }
   );
 }

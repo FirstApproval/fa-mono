@@ -83,16 +83,7 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
           break;
         }
         case (UseType.CITATION): {
-          this.messages = [
-            {
-              type: CollaborationMessageType.CITATION_IS_ENOUGH,
-              isAssistant: true,
-              text:
-                `The dataset "${this.publication?.title}" was downloaded.\n\n` +
-                'This dataset was published in open access by the author(s).\n' +
-                'If you reuse it in your work, it is enough for you to cite this dataset.'
-            }
-          ]
+          this.messages = [{ type: CollaborationMessageType.CITATION_IS_ENOUGH, isAssistant: true }]
           break;
         }
       }

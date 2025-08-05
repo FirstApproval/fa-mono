@@ -17,10 +17,10 @@ function letsMakeCollaborationAction (
       collaborationChatStore.sendMessage({
         isAssistant: true,
         type: CollaborationMessageType.FORMALIZED_AGREEMENT,
-        text:
-          "The collaboration request (1 step) is a formalized agreement. I'll help you fill it out. \n" +
-          "The agreement is sent to each author individually. \n" +
-          "It will contain your details and preliminary information about the work you are doing. Here is how the template looks:"
+        // text:
+        //   "The collaboration request (1 step) is a formalized agreement. I'll help you fill it out. \n" +
+        //   "The agreement is sent to each author individually. \n" +
+        //   "It will contain your details and preliminary information about the work you are doing. Here is how the template looks:"
       }, nextMessageType).then()
     );
 }

@@ -6,7 +6,7 @@ function iHaveMoreQuestionsAction(collaborationChatStore: CollaborationChatStore
   collaborationChatStore.sendMessage({
     type: CollaborationMessageType.MORE_QUESTIONS_ABOUT_COLLABORATION,
     isAssistant: false,
-    text: "I have more questions about the collaboration."
+    // text: "I have more questions about the collaboration."
   }).then();
 }
 

@@ -6,7 +6,7 @@ function changeMyPersonalInfoAction(collaborationChatStore: CollaborationChatSto
   collaborationChatStore.sendMessage({
     type: CollaborationMessageType.CHANGE_MY_PERSONAL_INFO,
     isAssistant: false,
-    text: 'Change my personal or info about publication'
+    // text: 'Change my personal or info about publication'
   }, CollaborationMessageType.CHANGE_MY_PERSONAL_INFO).then()
 }
 

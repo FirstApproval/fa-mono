@@ -18,8 +18,7 @@ function doneWhatsNextAction(collaborationChatStore: CollaborationChatStoreInter
       intendedJournalForPublication: collaborationChatStore.intendedJournalForPublication,
       detailsOfResearch: collaborationChatStore.detailsOfResearch,
       type: CollaborationMessageType.DONE_WHATS_NEXT,
-    },
-    text: "Done. What’s next?"
+    }
   }
 
   const prefilledCollaborationAgreementMessage = createPrefilledAgreementMessage(collaborationChatStore);

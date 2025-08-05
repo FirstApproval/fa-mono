@@ -168,7 +168,6 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
           onConfirm={async () => await collaborationChatStore.sendMessage({
             type: CollaborationMessageType.DECLINE_COLLABORATION,
             isAssistant: false,
-            text: "Decline, citation is enough"
           }, CollaborationMessageType.DECLINE_COLLABORATION)
           }
           title={"Decline, citation is enough"}
@@ -187,7 +186,6 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
           onConfirm={async () => await collaborationChatStore.sendMessage({
             type: CollaborationMessageType.APPROVE_COLLABORATION,
             isAssistant: false,
-            text: "Approve collaboration"
           }, CollaborationMessageType.NOTIFY_CO_AUTHOR)
           }
           title={"Approve collaboration"}
