@@ -203,13 +203,6 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
   )
 })
 
-interface MessageType {
-  id: number;
-  name: string;
-  avatar: string; // or url
-  text: string | string[] | React.ReactNode | React.ReactNode[];
-}
-
 const UserActions = (props: {
   messageType: CollaborationMessageType,
   userActionsRegistry: UserActionsRegistry,

@@ -1,10 +1,5 @@
-import {
-  CollaborationMessageType,
-  CollaborationRequestMessage
-} from "../../../../apis/first-approval-api"
+import { CollaborationMessageType, CollaborationRequestMessage } from "../../../../apis/first-approval-api"
 import { UserAction } from "./UserAction"
-import { DownloadedPublicationCollaborationChatStore } from "../../../publication/store/DownloadedPublicationCollaborationChatStore"
-import { getFullName } from "../../../../util/userUtil"
 import React from "react"
 import { CollaborationChatStoreInterface } from "../../../publication/store/MyPublicationCollaborationChatStore"
 
@@ -22,7 +17,10 @@ function doneWhatsNextAction(collaborationChatStore: CollaborationChatStoreInter
   }
 
   const prefilledCollaborationAgreementMessage = createPrefilledAgreementMessage(collaborationChatStore);
-  collaborationChatStore.sendMessages([doneWhatsNextMessage, prefilledCollaborationAgreementMessage]).then();
+  collaborationChatStore.sendMessages(
+    [doneWhatsNextMessage, prefilledCollaborationAgreementMessage],
+    CollaborationMessageType.PREFILLED_COLLABORATION_AGREEMENT
+  ).then();
 }
 
 export const doneWhatsNext: UserAction = {

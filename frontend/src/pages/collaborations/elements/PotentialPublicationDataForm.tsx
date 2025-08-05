@@ -13,7 +13,13 @@ export const PotentialPublicationDataForm = observer((
   const { store, action } = props
 
   return (
-    <>
+    <div>
+      <span>
+        Thank you! Now, propose a potential name and type of publication,
+        and specify the details of the research in which you would like to use
+        the dataset to ensure that Dataset Authors are
+        well-informed about ideas for future collaborative publications, please.
+      </span>
       <Box
         component="form"
         sx={{
@@ -76,6 +82,6 @@ export const PotentialPublicationDataForm = observer((
           <Button variant="text" style={{color: 'black'}}>Back</Button>
         </Box>
       </Box>
-    </>
+    </div>
   )
 })

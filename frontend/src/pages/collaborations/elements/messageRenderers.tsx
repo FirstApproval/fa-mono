@@ -91,7 +91,7 @@ export function createMessageRenderers(collaborationChatStore: CollaborationChat
     [CollaborationMessageType.DECLINE_MANUSCRIPT]: () => <span>Decline collaboration</span>,
     [CollaborationMessageType.FIRST_STEP_IS_COMPLETED]: () => <GreatFirstStepIsCompleted />,
     [CollaborationMessageType.EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST]: () => <span>Everything is correct. Sign and send request.</span>,
-    [CollaborationMessageType.PROPOSE_POTENTIAL_PUBLICATION_NAME_AND_TYPE]: () => <ProposePotentialPublicationNameAndType />,
+    // [CollaborationMessageType.PROPOSE_POTENTIAL_PUBLICATION_NAME_AND_TYPE]: () => <ProposePotentialPublicationNameAndType />,
     [CollaborationMessageType.GOT_IT_READY_TO_START]: () => <span>Got it. I am ready to start.</span>,
     [CollaborationMessageType.LETS_MAKE_COLLABORATION_REQUEST]: () => <span>Great, Let’s make the Collaboration request</span>,
     [CollaborationMessageType.I_WOULD_LIKE_TO_COLLABORATE]: () => <span>I`d like to collaborate! Tell me more...</span>,
