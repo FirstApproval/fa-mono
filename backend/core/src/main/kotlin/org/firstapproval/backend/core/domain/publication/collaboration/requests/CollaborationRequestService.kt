@@ -69,7 +69,7 @@ class CollaborationRequestService(
             collaborationRequestId = collaborationRequest.id,
             userId = user.id,
             sequenceIndex = type.step
-        ).also { exists -> if (exists) throw IllegalArgumentException("Message with equal or higher sequenceIndex already exists") }
+        ).also { exists -> if (exists) throw IllegalArgumentException("Message with equal or higher sequenceIndex ${type.step} already exists. Current type: $type") }
 
 //        val messageRecipient = targetUser(type, collaborationRequest)
 //        val message = CollaborationRequestMessage(
@@ -283,7 +283,7 @@ class CollaborationRequestService(
             val invitedAuthor = collaborationRequest.authors.find { it.author.user!!.id == user.id }!!
             invitedAuthor.status = MANUSCRIPT_APPROVED
 
-            val assistantManuscriptApproved = collaborationRequestMessage(collaborationRequest, ASSISTANT_MANUSCRIPT_APPROVED)
+            val assistantManuscriptApproved = collaborationRequestMessage(collaborationRequest, ASSISTANT_MANUSCRIPT_APPROVED, user)
             val authorNotifiedDeclinedMessage = collaborationRequestMessage(
                 collaborationRequest,
                 AUTHOR_APPROVED,
