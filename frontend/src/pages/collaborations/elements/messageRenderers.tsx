@@ -47,7 +47,7 @@ export function createMessageRenderers(collaborationChatStore: CollaborationChat
       <CollaborationMessageFile link="/docs/FA_Collaboration_Agreement_template.pdf" />
     </div>,
     [CollaborationMessageType.AUTHOR_APPROVED]: (message) => <AuthorApprovedPayload message={message} />,
-    // [CollaborationMessageType.AUTHOR_DECLINED]: (message) => <AuthorDeclinedPayload message={message} />,
+    [CollaborationMessageType.AUTHOR_DECLINED]: (message) => <AuthorDeclinedPayload message={message} />,
     [CollaborationMessageType.PREFILLED_COLLABORATION_AGREEMENT]: (message) => (
       <PrefilledAgreementPayload
         message={message}
@@ -73,6 +73,7 @@ export function createMessageRenderers(collaborationChatStore: CollaborationChat
     [CollaborationMessageType.AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE]: () => <AuthorHas14DaysToMakeRevisionsAndApprove />,
     [CollaborationMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU]: (message) => <PotentialPublicationData message={message} />,
     [CollaborationMessageType.ASSISTANT_COLLABORATION_DECLINED]: () => <AssistantCollaborationDeclined />,
+    [CollaborationMessageType.ASSISTANT_MANUSCRIPT_DECLINED]: () => <AssistantCollaborationDeclined />,
     [CollaborationMessageType.ASSISTANT_CREATE]: (message) => (
       <FormalizedAgreementPayload message={message} chatStore={collaborationChatStore} />
     ),

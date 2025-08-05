@@ -14,6 +14,7 @@ import { emailDataUser } from "./action/author/EmailDataUser"
 import { approveCollaboration } from "./action/author/ApproveCollaboration"
 import { declineCollaboration } from "./action/author/DeclineCollaboration"
 import { approveManuscript } from "./action/author/ApproveManuscript"
+import { declineManuscript } from "./action/author/DeclineManuscript"
 
 export class UserActionsRegistry {
   private userActionsByMessageType = new Map<CollaborationMessageType, UserAction[]>()
@@ -62,11 +63,14 @@ export class UserActionsRegistry {
 
     //for data author
     this.registerAction(CollaborationMessageType.ASSISTANT_CREATE, [approveCollaboration, declineCollaboration, emailDataUser, needHelp]);
-    this.registerAction(CollaborationMessageType.DECLINE_COLLABORATION, [needHelp]);
-    this.registerAction(CollaborationMessageType.APPROVE_COLLABORATION, [needHelp]);
+    this.registerAction(CollaborationMessageType.DECLINE_COLLABORATION, [emailDataUser, needHelp]);
+    this.registerAction(CollaborationMessageType.DECLINE_MANUSCRIPT, [emailDataUser, needHelp]);
+    this.registerAction(CollaborationMessageType.APPROVE_COLLABORATION, [emailDataUser, needHelp]);
+    this.registerAction(CollaborationMessageType.APPROVE_MANUSCRIPT, [emailDataUser, needHelp]);
     this.registerAction(CollaborationMessageType.ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER,
-      [approveManuscript, declineCollaboration, askDataAuthor, needHelp]);
+      [approveManuscript, declineManuscript, askDataAuthor, needHelp]);
     this.registerAction(CollaborationMessageType.ASSISTANT_MANUSCRIPT_APPROVED, [emailDataUser, needHelp]);
+    this.registerAction(CollaborationMessageType.ASSISTANT_MANUSCRIPT_DECLINED, [emailDataUser, needHelp]);
 
   }
 

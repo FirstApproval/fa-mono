@@ -29,6 +29,7 @@ export class MyPublicationCollaborationChatStore implements CollaborationChatSto
   isDeclineCollaborationDialogOpen = false;
   isApproveCollaborationDialogOpen = false;
   isApproveManuscriptDialogOpen = false;
+  isDeclineManuscriptDialogOpen = false;
 
   constructor(collaborationRequestId: string, stage?: CollaborationMessageType) {
     makeAutoObservable(this);
@@ -106,6 +107,10 @@ export class MyPublicationCollaborationChatStore implements CollaborationChatSto
     this.isApproveManuscriptDialogOpen = open;
   }
 
+  setIsDeclineManuscriptDialogOpen (open: boolean): void {
+    this.isDeclineManuscriptDialogOpen = open;
+  }
+
   getCollaborationAgreementFile(authorId: string, fileName: string): Promise<void> {
     return collaborationRequestChatService.getCollaborationRequestAgreement(
       this.publication!!.id,
@@ -174,6 +179,8 @@ export interface CollaborationChatStoreInterface {
   setIsApproveCollaborationDialogOpen?: (open: boolean) => void;
   isApproveManuscriptDialogOpen?: boolean;
   setIsApproveManuscriptDialogOpen?: (open: boolean) => void;
+  isDeclineManuscriptDialogOpen?: boolean;
+  setIsDeclineManuscriptDialogOpen?: (open: boolean) => void;
   sendMessages(
     messages: CollaborationRequestMessage[], nextStage?: CollaborationMessageType | undefined
   ): Promise<CollaborationRequestMessage[]>

@@ -26,6 +26,7 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.fil
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.APPROVE_MANUSCRIPT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_APPROVED
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_DECLINED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU
@@ -130,14 +131,14 @@ enum class CollaborationRequestMessageType(val step: Int, val recipientType: Rec
     APPROVE_MANUSCRIPT(5, DATA_AUTHOR),
     DECLINE_MANUSCRIPT(5, DATA_AUTHOR),
     ASSISTANT_MANUSCRIPT_APPROVED(6, DATA_AUTHOR),
+    ASSISTANT_MANUSCRIPT_DECLINED(6, DATA_AUTHOR),
 
-    DEFAULT(2, DATA_AUTHOR),
-    COLLABORATION_APPROVED(3, DATA_AUTHOR),
-    DATA_USER_ASKED(4, DATA_AUTHOR),
-    MANUSCRIPT_APPROVED(5, DATA_AUTHOR),
-    DECLINED(6, DATA_AUTHOR),
-    AUTHOR_INFO_RECEIVED(7, DATA_AUTHOR),
-    PUBLICATION_INFO_RECEIVED(8, DATA_AUTHOR),
+//    DEFAULT(2, DATA_AUTHOR),
+//    COLLABORATION_APPROVED(3, DATA_AUTHOR),
+//    DATA_USER_ASKED(4, DATA_AUTHOR),
+//    MANUSCRIPT_APPROVED(5, DATA_AUTHOR),
+//    AUTHOR_INFO_RECEIVED(7, DATA_AUTHOR),
+//    PUBLICATION_INFO_RECEIVED(8, DATA_AUTHOR),
 
     EMAIL_DATA_USER(0, DATA_AUTHOR)
 }
@@ -154,6 +155,7 @@ enum class CollaborationRequestMessageType(val step: Int, val recipientType: Rec
         JsonSubTypes.Type(value = PotentialPublicationData::class, name = "DONE_WHATS_NEXT"),
         JsonSubTypes.Type(value = UploadFinalDraftPayload::class, name = "UPLOAD_FINAL_DRAFT"),
         JsonSubTypes.Type(value = AuthorApprovedPayload::class, name = "AUTHOR_APPROVED"),
+        JsonSubTypes.Type(value = AuthorDeclinedPayload::class, name = "AUTHOR_DECLINED"),
         JsonSubTypes.Type(value = YourCollaborationIsDeclinedPayload::class, name = "YOUR_COLLABORATION_IS_DECLINED"),
         JsonSubTypes.Type(value = PrefilledCollaborationAgreementPayload::class, name = "PREFILLED_COLLABORATION_AGREEMENT"),
         JsonSubTypes.Type(value = YourCollaborationIsEstablishedPayload::class, name = "YOUR_COLLABORATION_IS_ESTABLISHED"),
@@ -200,6 +202,13 @@ class AuthorApprovedPayload(
     val decisionAuthorComment: String?,
     val expectedApprovingAuthors: List<AuthorShortInfo>,
     override var type: CollaborationRequestMessageType = AUTHOR_APPROVED
+) : MessagePayload
+
+class AuthorDeclinedPayload(
+    val decisionAuthor: AuthorShortInfo,
+    val decisionAuthorComment: String?,
+    val expectedApprovingAuthors: List<AuthorShortInfo>,
+    override var type: CollaborationRequestMessageType = AUTHOR_DECLINED
 ) : MessagePayload
 
 class YourCollaborationIsDeclinedPayload(

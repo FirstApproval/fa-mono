@@ -249,36 +249,6 @@ class CollaborationRequestService(
         }
 
         APPROVE_MANUSCRIPT -> {
-//            val authorApprovedMessageType = AUTHOR_APPROVED
-
-//            val assistanceManuscriptApprovedMessageType = CollaborationRequestMessageType.ASSISTANT_MANUSCRIPT_APPROVED
-//            val assistantManuscriptApproved = CollaborationRequestMessage(
-//                collaborationRequest = collaborationRequest,
-//                type = assistanceManuscriptApprovedMessageType,
-//                user = targetUser(assistanceManuscriptApprovedMessageType, collaborationRequest),
-//                sequenceIndex = assistanceManuscriptApprovedMessageType.step,
-//                recipientTypes = mutableSetOf(assistanceManuscriptApprovedMessageType.recipientType),
-//                isAssistant = true
-//            )
-
-//            val authorNotifiedDeclinedMessage = CollaborationRequestMessage(
-//                collaborationRequest = collaborationRequest,
-//                type = authorApprovedMessageType,
-//                user = targetUser(authorApprovedMessageType, collaborationRequest),
-//                payload = AuthorApprovedPayload(
-//                    type = authorApprovedMessageType,
-//                    decisionAuthor = invitedAuthor.author.toShortInfoApiObject(),
-//                    decisionAuthorComment = payload.comment,
-//                    expectedApprovingAuthors = collaborationRequest.authors
-//                        .filter { it.status == COLLABORATION_APPROVED }
-//                        .map { it.author.toShortInfoApiObject() }
-//                ),
-//                sequenceIndex = authorApprovedMessageType.step,
-//                recipientTypes = mutableSetOf(authorApprovedMessageType.recipientType),
-//                isAssistant = true
-//            )
-
-
             val payload = originalMessage.payload as ApproveManuscriptPayload
             val invitedAuthor = collaborationRequest.authors.find { it.author.user!!.id == user.id }!!
             invitedAuthor.status = MANUSCRIPT_APPROVED
@@ -304,6 +274,31 @@ class CollaborationRequestService(
             }
 
             messages
+        }
+
+        DECLINE_MANUSCRIPT -> {
+            val invitedAuthor = collaborationRequest.authors.find { it.author.user!!.id == user.id }!!
+            invitedAuthor.status = MANUSCRIPT_DECLINED
+
+            val assistantCollaborationDeclinedMessage = collaborationRequestMessage(
+                collaborationRequest = collaborationRequest,
+                type = ASSISTANT_MANUSCRIPT_DECLINED,
+                targetUser = user
+            )
+            val declinedMessage = collaborationRequestMessage(
+                collaborationRequest = collaborationRequest,
+                type = AUTHOR_DECLINED,
+                payload = AuthorDeclinedPayload(
+                    type = AUTHOR_DECLINED,
+                    decisionAuthor = invitedAuthor.author.toShortInfoApiObject(),
+                    decisionAuthorComment = null,
+                    expectedApprovingAuthors = collaborationRequest.authors
+                        .filter { !DECLINE_STATUSES.contains(it.status) }
+                        .map { it.author.toShortInfoApiObject() }
+                )
+            )
+
+            listOf(assistantCollaborationDeclinedMessage, declinedMessage)
         }
 
         else -> emptyList()

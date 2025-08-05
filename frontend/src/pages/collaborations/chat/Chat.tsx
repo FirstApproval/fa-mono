@@ -182,6 +182,24 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
           noText={"Cancel"}
         />
         <ConfirmationDialog
+          isOpen={collaborationChatStore.isDeclineManuscriptDialogOpen!!}
+          onClose={() => collaborationChatStore.setIsDeclineManuscriptDialogOpen!!(false)}
+          onConfirm={async () => await collaborationChatStore.sendMessage({
+            type: CollaborationMessageType.DECLINE_MANUSCRIPT,
+            isAssistant: false,
+          }, CollaborationMessageType.DECLINE_MANUSCRIPT)
+          }
+          title={"Decline, citation is enough"}
+          text={
+            "Are you sure you want to decline the request? \n" +
+            "By declining a collaboration, you oblige data user to simply quote your dataset, " +
+            "without specifying you as a co-author.\n" +
+            "Everything will be deleted and you won’t be able to undo this action."
+          }
+          yesText={"Decline"}
+          noText={"Cancel"}
+        />
+        <ConfirmationDialog
           isOpen={collaborationChatStore.isApproveCollaborationDialogOpen!!}
           onClose={() => collaborationChatStore.setIsApproveCollaborationDialogOpen!!(false)}
           onConfirm={async () => await collaborationChatStore.sendMessage({
