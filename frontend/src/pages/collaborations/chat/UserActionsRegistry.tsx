@@ -51,6 +51,8 @@ export class UserActionsRegistry {
       [askDataAuthor, needHelp]);
     this.registerAction(CollaborationMessageType.ALL_DATA_AUTHORS_RESPONDED_TO_COLLABORATION_REQUEST,
       [uploadFinalDraft, askDataAuthor, needHelp]);
+    this.registerAction(CollaborationMessageType.ALL_DATA_AUTHORS_DECLINED_COLLABORATION_REQUEST,
+      [askDataAuthor, needHelp]);
     this.registerAction(CollaborationMessageType.AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE, [askDataAuthor, needHelp]);
     this.registerAction(CollaborationMessageType.AUTHOR_APPROVED, [askDataAuthor, needHelp]);
     this.registerAction(CollaborationMessageType.AUTHOR_DECLINED, [askDataAuthor, needHelp]);

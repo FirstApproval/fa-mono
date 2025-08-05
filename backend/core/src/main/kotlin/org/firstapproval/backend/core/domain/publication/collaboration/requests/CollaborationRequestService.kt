@@ -37,7 +37,7 @@ import java.util.UUID.randomUUID
 import org.firstapproval.api.server.model.CollaborationRequestMessage as CollaborationRequestMessageApiObject
 
 private val DECLINE_STATUSES = listOf(COLLABORATION_DECLINED, MANUSCRIPT_DECLINED)
-private val FINAL_INVITED_AUTHORS_STATUS = listOf(COLLABORATION_DECLINED, MANUSCRIPT_APPROVED, MANUSCRIPT_DECLINED)
+private val COLLABORATION_RESPONSE_STATUSES = listOf(COLLABORATION_DECLINED, COLLABORATION_APPROVED)
 
 @Service
 class CollaborationRequestService(
@@ -176,7 +176,9 @@ class CollaborationRequestService(
             )
 
             val messages = mutableListOf(declinedMessage, assistantCollaborationDeclinedMessage)
-            if (collaborationRequest.authors.all { FINAL_INVITED_AUTHORS_STATUS.contains(it.status) }) {
+            if (collaborationRequest.authors.all { it.status == COLLABORATION_DECLINED }) {
+                messages.add(collaborationRequestMessage(collaborationRequest, ALL_DATA_AUTHORS_DECLINED_COLLABORATION_REQUEST))
+            } else if (collaborationRequest.authors.all { it.status in COLLABORATION_RESPONSE_STATUSES }) {
                 messages.add(collaborationRequestMessage(collaborationRequest, ALL_DATA_AUTHORS_RESPONDED_TO_COLLABORATION_REQUEST))
             }
 
@@ -205,7 +207,7 @@ class CollaborationRequestService(
 //            )
 
             val messages = mutableListOf(authorNotifiedDeclinedMessage)
-            if (collaborationRequest.authors.all { FINAL_INVITED_AUTHORS_STATUS.contains(it.status) }) {
+            if (collaborationRequest.authors.all { it.status in COLLABORATION_RESPONSE_STATUSES }) {
                 messages.add(collaborationRequestMessage(collaborationRequest, ALL_DATA_AUTHORS_RESPONDED_TO_COLLABORATION_REQUEST))
             }
 

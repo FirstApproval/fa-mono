@@ -101,6 +101,11 @@ export function createMessageRenderers(collaborationChatStore: CollaborationChat
       <div style={{marginTop: '20px'}}>
         All data authors responded to the request for collaboration, and you can now upload the final draft.
       </div>,
+    [CollaborationMessageType.ALL_DATA_AUTHORS_DECLINED_COLLABORATION_REQUEST]: () =>
+      <span>
+        Unfortunately, all data authors have declined your request for collaboration.
+        If you reuse it in your work, it is enough for you to cite this dataset.
+      </span>,
     [CollaborationMessageType.EMAIL_DATA_USER]: () => <DataUserPayload chatStore={collaborationChatStore} />,
     [CollaborationMessageType.ASK_DATA_AUTHOR]: () => <span>Ask data author</span>,
     [CollaborationMessageType.ASK_DATA_USER]: () => <span>Ask data user</span>,
