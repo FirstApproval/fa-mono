@@ -20,6 +20,7 @@ import { MessageContent } from "../elements/MessageContent"
 const HIGH_FIVE_MESSAGE_TYPES = [
   CollaborationMessageType.AUTHOR_APPROVED,
   CollaborationMessageType.ALL_AUTHORS_CONFIRMED,
+  CollaborationMessageType.ALL_DATA_AUTHORS_RESPONDED_TO_COLLABORATION_REQUEST,
   CollaborationMessageType.ASSISTANT_MANUSCRIPT_APPROVED
 ]
 

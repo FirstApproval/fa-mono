@@ -47,7 +47,7 @@ export function createMessageRenderers(collaborationChatStore: CollaborationChat
       <CollaborationMessageFile link="/docs/FA_Collaboration_Agreement_template.pdf" />
     </div>,
     [CollaborationMessageType.AUTHOR_APPROVED]: (message) => <AuthorApprovedPayload message={message} />,
-    [CollaborationMessageType.AUTHOR_DECLINED]: (message) => <AuthorDeclinedPayload message={message} />,
+    // [CollaborationMessageType.AUTHOR_DECLINED]: (message) => <AuthorDeclinedPayload message={message} />,
     [CollaborationMessageType.PREFILLED_COLLABORATION_AGREEMENT]: (message) => (
       <PrefilledAgreementPayload
         message={message}
@@ -79,6 +79,9 @@ export function createMessageRenderers(collaborationChatStore: CollaborationChat
     [CollaborationMessageType.YOUR_COLLABORATION_IS_ESTABLISHED]: (message) => (
       <YourCollaborationIsEstablished message={message} chatStore={collaborationChatStore} />
     ),
+    [CollaborationMessageType.YOUR_COLLABORATION_IS_DECLINED]: (message) => (
+      <AuthorDeclinedPayload message={message} />
+    ),
     [CollaborationMessageType.ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER]: () => <AssistantFinalDraftAttachedByDataUser />,
     [CollaborationMessageType.ASSISTANT_MANUSCRIPT_APPROVED]: () => <AssistantManuscriptApproved />,
     [CollaborationMessageType.ALL_AUTHORS_CONFIRMED]: () => <AllAuthorsConfirmed />,
@@ -91,12 +94,13 @@ export function createMessageRenderers(collaborationChatStore: CollaborationChat
     [CollaborationMessageType.DECLINE_MANUSCRIPT]: () => <span>Decline collaboration</span>,
     [CollaborationMessageType.FIRST_STEP_IS_COMPLETED]: () => <GreatFirstStepIsCompleted />,
     [CollaborationMessageType.EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST]: () => <span>Everything is correct. Sign and send request.</span>,
-    // [CollaborationMessageType.PROPOSE_POTENTIAL_PUBLICATION_NAME_AND_TYPE]: () => <ProposePotentialPublicationNameAndType />,
     [CollaborationMessageType.GOT_IT_READY_TO_START]: () => <span>Got it. I am ready to start.</span>,
     [CollaborationMessageType.LETS_MAKE_COLLABORATION_REQUEST]: () => <span>Great, Let’s make the Collaboration request</span>,
     [CollaborationMessageType.I_WOULD_LIKE_TO_COLLABORATE]: () => <span>I`d like to collaborate! Tell me more...</span>,
     [CollaborationMessageType.ALL_DATA_AUTHORS_RESPONDED_TO_COLLABORATION_REQUEST]: () =>
-      <span>All data authors responded to the request for collaboration, and you can now upload the final draft.</span>,
+      <div style={{marginTop: '20px'}}>
+        All data authors responded to the request for collaboration, and you can now upload the final draft.
+      </div>,
     [CollaborationMessageType.EMAIL_DATA_USER]: () => <DataUserPayload chatStore={collaborationChatStore} />,
     [CollaborationMessageType.ASK_DATA_AUTHOR]: () => <span>Ask data author</span>,
     [CollaborationMessageType.ASK_DATA_USER]: () => <span>Ask data user</span>,

@@ -157,40 +157,16 @@ class CollaborationRequestService(
             val invitedAuthor = collaborationRequest.authors.find { it.author.user!!.id == user.id }!!
             invitedAuthor.status = COLLABORATION_DECLINED
 
-//            val assistanceCollaborationDeclinedMessageType = ASSISTANT_COLLABORATION_DECLINED
-//            val assistantCollaborationDeclinedMessage = CollaborationRequestMessage(
-//                collaborationRequest = collaborationRequest,
-//                type = assistanceCollaborationDeclinedMessageType,
-//                user = targetUser(assistanceCollaborationDeclinedMessageType, collaborationRequest),
-//                sequenceIndex = assistanceCollaborationDeclinedMessageType.step,
-//                recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
-//                isAssistant = true
-//            )
-
-//            val declineMessageType = AUTHOR_DECLINED
-//            val declinedMessage = CollaborationRequestMessage(
-//                collaborationRequest = collaborationRequest,
-//                type = declineMessageType,
-//                user = targetUser(declineMessageType, collaborationRequest),
-//                payload = AuthorDeclinedPayload(
-//                    type = declineMessageType,
-//                    decisionAuthor = invitedAuthor.author.toShortInfoApiObject(),
-//                    decisionAuthorComment = null,
-//                    expectedApprovingAuthors = collaborationRequest.authors
-//                        .filter { APPROVED_STATUSES.contains(it.status) }
-//                        .map { it.author.toShortInfoApiObject() }
-//                ),
-//                sequenceIndex = declineMessageType.step,
-//                recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR),
-//                isAssistant = true
-//            )
-
-            val assistantCollaborationDeclinedMessage = collaborationRequestMessage(collaborationRequest, ASSISTANT_COLLABORATION_DECLINED)
+            val assistantCollaborationDeclinedMessage = collaborationRequestMessage(
+                collaborationRequest = collaborationRequest,
+                type = ASSISTANT_COLLABORATION_DECLINED,
+                targetUser = user
+            )
             val declinedMessage = collaborationRequestMessage(
                 collaborationRequest = collaborationRequest,
-                type = AUTHOR_DECLINED,
-                payload = AuthorDeclinedPayload(
-                    type = AUTHOR_DECLINED,
+                type = YOUR_COLLABORATION_IS_DECLINED,
+                payload = YourCollaborationIsDeclinedPayload(
+                    type = YOUR_COLLABORATION_IS_DECLINED,
                     decisionAuthor = invitedAuthor.author.toShortInfoApiObject(),
                     decisionAuthorComment = null,
                     expectedApprovingAuthors = collaborationRequest.authors
