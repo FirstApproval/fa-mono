@@ -10,39 +10,14 @@ import org.firstapproval.backend.core.domain.publication.PublicationService
 import org.firstapproval.backend.core.domain.publication.authors.toShortInfoApiObject
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationMessageFileRepository
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationRequestMessageFile
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.ApproveManuscriptPayload
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.AuthorApprovedPayload
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.AuthorDeclinedPayload
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationMessageRepository
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.*
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessage
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AGREE_TO_THE_TERMS_OF_COLLABORATION
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ALL_AUTHORS_CONFIRMED
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.APPROVE_COLLABORATION
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.APPROVE_MANUSCRIPT
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_COLLABORATION_DECLINED
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_CREATE
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_APPROVED
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_DECLINED
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DATASET_WAS_DOWNLOADED
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DECLINE_COLLABORATION
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.UPLOAD_FINAL_DRAFT
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.YOUR_COLLABORATION_IS_ESTABLISHED
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.FinalDraftAttachedByDataUser
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.IWouldLikeToIncludeYouAsCoAuthor
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.MessagePayload
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.PotentialPublicationData
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.COLLABORATION_REQUEST_CREATOR
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.PUBLICATION_CREATOR
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.YourCollaborationIsEstablishedPayload
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.*
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.*
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.DATA_USER
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.DATA_AUTHOR
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.PENDING
+import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorInvitationStatus.*
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorInvitationStatus.COLLABORATION_APPROVED
-import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorInvitationStatus.COLLABORATION_DECLINED
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorInvitationStatus.MANUSCRIPT_APPROVED
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationRequestInvitedAuthor
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationRequestInvitedAuthorRepository
@@ -57,15 +32,12 @@ import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
-import java.time.ZonedDateTime
 import java.util.*
 import java.util.UUID.randomUUID
 import org.firstapproval.api.server.model.CollaborationRequestMessage as CollaborationRequestMessageApiObject
 
-private val APPROVED_STATUSES = listOf(
-    COLLABORATION_APPROVED,
-    MANUSCRIPT_APPROVED
-)
+private val DECLINE_STATUSES = listOf(COLLABORATION_DECLINED, MANUSCRIPT_DECLINED)
+private val FINAL_INVITED_AUTHORS_STATUS = listOf(COLLABORATION_DECLINED, MANUSCRIPT_APPROVED, MANUSCRIPT_DECLINED)
 
 @Service
 class CollaborationRequestService(
@@ -79,31 +51,8 @@ class CollaborationRequestService(
     private val objectMapper: ObjectMapper
 ) {
     @Transactional
-    fun makeDecision(
-        collaborationRequestId: UUID,
-        collaborationRequestStatus: CollaborationRequestStatus,
-        authorResponse: String,
-        user: User
-    ) {
-        val collaborationRequest: CollaborationRequest = collaborationRequestRepository.getReferenceById(collaborationRequestId)
-        if (collaborationRequest.publication.creator.id != user.id) {
-            throw IllegalAccessException("Only the creator of the publication can approve or reject a collaboration request.")
-        }
-        if (collaborationRequestStatus !in listOf(APPROVED, DECLINED)) {
-            throw IllegalArgumentException("Status must be APPROVED or REJECT, but status is $collaborationRequestStatus.")
-        }
-
-        collaborationRequest.decisionTime = ZonedDateTime.now()
-        collaborationRequest.status = collaborationRequestStatus
-        collaborationRequest.authorResponse = authorResponse
-
-        collaborationRequest.publication.collaboratorsCount += 1
-    }
-
-    @Transactional
     fun createCollaborationRequest(publicationId: String, collaborationRequestRequest: CreateCollaborationRequest, user: User) {
         val publication = publicationRepository.getReferenceById(publicationId)
-//        val typeOfWork = TypeOfWork.valueOf(collaborationRequestRequest.typeOfWork.name)
         createIfAbsent(publication, collaborationRequestRequest, user)
     }
 
@@ -119,18 +68,25 @@ class CollaborationRequestService(
         collaborationMessageRepository.existsByCollaborationRequestIdAndUserIdAndSequenceIndexGreaterThan(
             collaborationRequestId = collaborationRequest.id,
             userId = user.id,
-            sequenceIndex = type.sequenceIndex
+            sequenceIndex = type.step
         ).also { exists -> if (exists) throw IllegalArgumentException("Message with equal or higher sequenceIndex already exists") }
 
-        val messageRecipient = targetUser(type, collaborationRequest)
-        val message = CollaborationRequestMessage(
+//        val messageRecipient = targetUser(type, collaborationRequest)
+//        val message = CollaborationRequestMessage(
+//            collaborationRequest = collaborationRequest,
+//            type = type,
+//            user = messageRecipient,
+//            payload = objectMapper.convertValue(collaborationRequestMessage.payload, MessagePayload::class.java),
+//            sequenceIndex = type.step,
+//            recipientTypes = mutableSetOf(type.recipientType),
+//            isAssistant = collaborationRequestMessage.isAssistant
+//        )
+
+        val message = collaborationRequestMessage(
             collaborationRequest = collaborationRequest,
             type = type,
-            user = messageRecipient,
             payload = objectMapper.convertValue(collaborationRequestMessage.payload, MessagePayload::class.java),
-            sequenceIndex = type.sequenceIndex,
-            recipientTypes = mutableSetOf(type.recipientType),
-            isAssistant = collaborationRequestMessage.isAssistant
+            targetUser = user
         )
 
         val additionalMessagesToSave = createAdditionalMessages(collaborationRequest, user, message)
@@ -146,166 +102,226 @@ class CollaborationRequestService(
     ): List<CollaborationRequestMessage> = when (originalMessage.type) {
         EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST -> {
             collaborationRequest.status = PENDING
-            val authors = collaborationRequest.publication.authors.map {
-                CollaborationRequestInvitedAuthor(collaborationRequest = collaborationRequest, author = it)
-            }
+            val authors = collaborationRequest.publication.authors
+                .filter { it.user != null }
+                .map { CollaborationRequestInvitedAuthor(collaborationRequest = collaborationRequest, author = it) }
             collaborationRequestInvitedAuthorRepository.saveAll(authors)
 
             val potentialPublicationData = collaborationRequest.messages
                 .find { it.type === DONE_WHATS_NEXT }!!.payload as PotentialPublicationData
-            val iWouldLikeToIncludeYouAsCoAuthorMessage = CollaborationRequestMessage(
-                collaborationRequest = collaborationRequest,
-                type = I_WOULD_LIKE_TO_INCLUDE_YOU,
-                // make for all authors (not only creator)
-                user = targetUser(I_WOULD_LIKE_TO_INCLUDE_YOU, collaborationRequest),
-                payload = IWouldLikeToIncludeYouAsCoAuthor(
-                    potentialPublicationTitle = potentialPublicationData.potentialPublicationTitle,
-                    typeOfWork = potentialPublicationData.typeOfWork,
-                    intendedJournalForPublication = potentialPublicationData.intendedJournalForPublication,
-                    detailsOfResearch = potentialPublicationData.detailsOfResearch
-                ),
-                sequenceIndex = I_WOULD_LIKE_TO_INCLUDE_YOU.sequenceIndex,
-                recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
-                isAssistant = true
-            )
+//            val iWouldLikeToIncludeYouAsCoAuthorMessage = CollaborationRequestMessage(
+//                collaborationRequest = collaborationRequest,
+//                type = I_WOULD_LIKE_TO_INCLUDE_YOU,
+//                // make for all authors (not only creator)
+//                user = targetUser(I_WOULD_LIKE_TO_INCLUDE_YOU, collaborationRequest),
+//                payload = IWouldLikeToIncludeYouAsCoAuthor(
+//                    potentialPublicationTitle = potentialPublicationData.potentialPublicationTitle,
+//                    typeOfWork = potentialPublicationData.typeOfWork,
+//                    intendedJournalForPublication = potentialPublicationData.intendedJournalForPublication,
+//                    detailsOfResearch = potentialPublicationData.detailsOfResearch
+//                ),
+//                sequenceIndex = I_WOULD_LIKE_TO_INCLUDE_YOU.step,
+//                recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
+//                isAssistant = true
+//            )
+            val iWouldLikeToIncludeYouAsCoAuthorMessages = authors.map {
+                collaborationRequestMessage(
+                    collaborationRequest = collaborationRequest,
+                    type = I_WOULD_LIKE_TO_INCLUDE_YOU,
+                    payload = IWouldLikeToIncludeYouAsCoAuthor(
+                        potentialPublicationTitle = potentialPublicationData.potentialPublicationTitle,
+                        typeOfWork = potentialPublicationData.typeOfWork,
+                        intendedJournalForPublication = potentialPublicationData.intendedJournalForPublication,
+                        detailsOfResearch = potentialPublicationData.detailsOfResearch
+                    ),
+                    targetUser = it.author.user
+                )
+            }
 
-            val fullNameRequestCreator = "${collaborationRequest.user.firstName} ${collaborationRequest.user.lastName}"
-            val assistantCreateMessage = CollaborationRequestMessage(
-                collaborationRequest = collaborationRequest,
-                type = ASSISTANT_CREATE,
-                // make for all authors (not only creator)
-                user = targetUser(ASSISTANT_CREATE, collaborationRequest),
-                sequenceIndex = ASSISTANT_CREATE.sequenceIndex,
-                recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
-                isAssistant = true
-            )
-            listOf(iWouldLikeToIncludeYouAsCoAuthorMessage, assistantCreateMessage)
+//            val assistantCreateMessage = CollaborationRequestMessage(
+//                collaborationRequest = collaborationRequest,
+//                type = ASSISTANT_CREATE,
+//                // make for all authors (not only creator)
+//                user = targetUser(ASSISTANT_CREATE, collaborationRequest),
+//                sequenceIndex = ASSISTANT_CREATE.step,
+//                recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
+//                isAssistant = true
+//            )
+            val assistantCreateMessages = authors.map {
+                collaborationRequestMessage(collaborationRequest, ASSISTANT_CREATE, it.author.user)
+            }
+            iWouldLikeToIncludeYouAsCoAuthorMessages + assistantCreateMessages
         }
 
         DECLINE_COLLABORATION -> {
             val invitedAuthor = collaborationRequest.authors.find { it.author.user!!.id == user.id }!!
             invitedAuthor.status = COLLABORATION_DECLINED
 
-            val assistanceCollaborationDeclinedMessageType = ASSISTANT_COLLABORATION_DECLINED
-            val assistantCollaborationDeclinedMessage = CollaborationRequestMessage(
-                collaborationRequest = collaborationRequest,
-                type = assistanceCollaborationDeclinedMessageType,
-                user = targetUser(assistanceCollaborationDeclinedMessageType, collaborationRequest),
-                sequenceIndex = assistanceCollaborationDeclinedMessageType.sequenceIndex,
-                recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
-                isAssistant = true
-            )
+//            val assistanceCollaborationDeclinedMessageType = ASSISTANT_COLLABORATION_DECLINED
+//            val assistantCollaborationDeclinedMessage = CollaborationRequestMessage(
+//                collaborationRequest = collaborationRequest,
+//                type = assistanceCollaborationDeclinedMessageType,
+//                user = targetUser(assistanceCollaborationDeclinedMessageType, collaborationRequest),
+//                sequenceIndex = assistanceCollaborationDeclinedMessageType.step,
+//                recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
+//                isAssistant = true
+//            )
 
-            val declineMessageType = AUTHOR_DECLINED
-            val declinedMessage = CollaborationRequestMessage(
+//            val declineMessageType = AUTHOR_DECLINED
+//            val declinedMessage = CollaborationRequestMessage(
+//                collaborationRequest = collaborationRequest,
+//                type = declineMessageType,
+//                user = targetUser(declineMessageType, collaborationRequest),
+//                payload = AuthorDeclinedPayload(
+//                    type = declineMessageType,
+//                    decisionAuthor = invitedAuthor.author.toShortInfoApiObject(),
+//                    decisionAuthorComment = null,
+//                    expectedApprovingAuthors = collaborationRequest.authors
+//                        .filter { APPROVED_STATUSES.contains(it.status) }
+//                        .map { it.author.toShortInfoApiObject() }
+//                ),
+//                sequenceIndex = declineMessageType.step,
+//                recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR),
+//                isAssistant = true
+//            )
+
+            val assistantCollaborationDeclinedMessage = collaborationRequestMessage(collaborationRequest, ASSISTANT_COLLABORATION_DECLINED)
+            val declinedMessage = collaborationRequestMessage(
                 collaborationRequest = collaborationRequest,
-                type = declineMessageType,
-                user = targetUser(declineMessageType, collaborationRequest),
+                type = AUTHOR_DECLINED,
                 payload = AuthorDeclinedPayload(
-                    type = declineMessageType,
+                    type = AUTHOR_DECLINED,
                     decisionAuthor = invitedAuthor.author.toShortInfoApiObject(),
                     decisionAuthorComment = null,
                     expectedApprovingAuthors = collaborationRequest.authors
-                        .filter { APPROVED_STATUSES.contains(it.status) }
+                        .filter { !DECLINE_STATUSES.contains(it.status) }
                         .map { it.author.toShortInfoApiObject() }
-                ),
-                sequenceIndex = declineMessageType.sequenceIndex,
-                recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR),
-                isAssistant = true
+                )
             )
 
-            listOf(declinedMessage, assistantCollaborationDeclinedMessage)
+            val messages = mutableListOf(declinedMessage, assistantCollaborationDeclinedMessage)
+            if (collaborationRequest.authors.all { FINAL_INVITED_AUTHORS_STATUS.contains(it.status) }) {
+                messages.add(collaborationRequestMessage(collaborationRequest, ALL_DATA_AUTHORS_RESPONDED_TO_COLLABORATION_REQUEST))
+            }
+
+            messages
         }
 
+        // тут нужно добавить сообщение для data user с информацией что все data author ответили
         APPROVE_COLLABORATION -> {
-            val yourCollaborationIsEstablishedMessageType = YOUR_COLLABORATION_IS_ESTABLISHED
-
             val invitedAuthor = collaborationRequest.authors.find { it.author.user!!.id == user.id }!!
             invitedAuthor.status = COLLABORATION_APPROVED
 
-            val authorNotifiedDeclinedMessage = CollaborationRequestMessage(
+            val authorNotifiedDeclinedMessage = collaborationRequestMessage(
                 collaborationRequest = collaborationRequest,
-                type = yourCollaborationIsEstablishedMessageType,
-                user = targetUser(yourCollaborationIsEstablishedMessageType, collaborationRequest),
+                type = YOUR_COLLABORATION_IS_ESTABLISHED,
                 payload = YourCollaborationIsEstablishedPayload(author = invitedAuthor.author.toShortInfoApiObject()),
-                sequenceIndex = yourCollaborationIsEstablishedMessageType.sequenceIndex,
-                recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
-                isAssistant = true
             )
-            listOf(authorNotifiedDeclinedMessage)
+
+//            val authorNotifiedDeclinedMessage = CollaborationRequestMessage(
+//                collaborationRequest = collaborationRequest,
+//                type = YOUR_COLLABORATION_IS_ESTABLISHED,
+//                user = targetUser(YOUR_COLLABORATION_IS_ESTABLISHED, collaborationRequest),
+//                payload = YourCollaborationIsEstablishedPayload(author = invitedAuthor.author.toShortInfoApiObject()),
+//                sequenceIndex = YOUR_COLLABORATION_IS_ESTABLISHED.step,
+//                recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR),
+//                isAssistant = true
+//            )
+
+            val messages = mutableListOf(authorNotifiedDeclinedMessage)
+            if (collaborationRequest.authors.all { FINAL_INVITED_AUTHORS_STATUS.contains(it.status) }) {
+                messages.add(collaborationRequestMessage(collaborationRequest, ALL_DATA_AUTHORS_RESPONDED_TO_COLLABORATION_REQUEST))
+            }
+
+            messages
         }
 
         UPLOAD_FINAL_DRAFT -> {
-            val finalDraftAttachedByDataUserMessageType = ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER
+//            val finalDraftAttachedByDataUserMessageType = ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER
+//            val finalDraftAttachedMessage = CollaborationRequestMessage(
+//                collaborationRequest = collaborationRequest,
+//                type = finalDraftAttachedByDataUserMessageType,
+//                user = targetUser(finalDraftAttachedByDataUserMessageType, collaborationRequest),
+//                payload = FinalDraftAttachedByDataUser(dataUser = user.toApiObjectWithoutPhoto()),
+//                sequenceIndex = finalDraftAttachedByDataUserMessageType.step,
+//                recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
+//                isAssistant = true
+//            )
+            val finalDraftAttachedMessages = collaborationRequest.authors.map {
+                collaborationRequestMessage(
+                    collaborationRequest = collaborationRequest,
+                    type = ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER,
+                    payload = FinalDraftAttachedByDataUser(user.toApiObjectWithoutPhoto()),
+                    targetUser = it.author.user
+                )
+            }
 
-            val authorNotifiedDeclinedMessage = CollaborationRequestMessage(
-                collaborationRequest = collaborationRequest,
-                type = finalDraftAttachedByDataUserMessageType,
-                user = targetUser(finalDraftAttachedByDataUserMessageType, collaborationRequest),
-                payload = FinalDraftAttachedByDataUser(dataUser = user.toApiObjectWithoutPhoto()),
-                sequenceIndex = finalDraftAttachedByDataUserMessageType.sequenceIndex,
-                recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
-                isAssistant = true
-            )
+//            val authorHas14DaysToApproveMessageType = AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE
+//            val authorHas14DaysToMakeRevisionAndApproveMessage = CollaborationRequestMessage(
+//                collaborationRequest = collaborationRequest,
+//                type = authorHas14DaysToApproveMessageType,
+//                user = targetUser(authorHas14DaysToApproveMessageType, collaborationRequest),
+//                sequenceIndex = authorHas14DaysToApproveMessageType.step,
+//                recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR),
+//                isAssistant = true
+//            )
+            val authorHas14DaysMessage = collaborationRequestMessage(collaborationRequest, AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE)
 
-            val authorHas14DaysToApproveMessageType = AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE
-            val authorHas14DaysToMakeRevisionAndApproveMessage = CollaborationRequestMessage(
-                collaborationRequest = collaborationRequest,
-                type = authorHas14DaysToApproveMessageType,
-                user = targetUser(authorHas14DaysToApproveMessageType, collaborationRequest),
-                sequenceIndex = authorHas14DaysToApproveMessageType.sequenceIndex,
-                recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR),
-                isAssistant = true
-            )
-
-            listOf(authorNotifiedDeclinedMessage, authorHas14DaysToMakeRevisionAndApproveMessage)
+            finalDraftAttachedMessages + authorHas14DaysMessage
         }
 
         APPROVE_MANUSCRIPT -> {
-            val authorApprovedMessageType = AUTHOR_APPROVED
+//            val authorApprovedMessageType = AUTHOR_APPROVED
 
-            val assistanceManuscriptApprovedMessageType = CollaborationRequestMessageType.ASSISTANT_MANUSCRIPT_APPROVED
-            val assistantManuscriptApproved = CollaborationRequestMessage(
-                collaborationRequest = collaborationRequest,
-                type = assistanceManuscriptApprovedMessageType,
-                user = targetUser(assistanceManuscriptApprovedMessageType, collaborationRequest),
-                sequenceIndex = assistanceManuscriptApprovedMessageType.sequenceIndex,
-                recipientTypes = mutableSetOf(assistanceManuscriptApprovedMessageType.recipientType),
-                isAssistant = true
-            )
+//            val assistanceManuscriptApprovedMessageType = CollaborationRequestMessageType.ASSISTANT_MANUSCRIPT_APPROVED
+//            val assistantManuscriptApproved = CollaborationRequestMessage(
+//                collaborationRequest = collaborationRequest,
+//                type = assistanceManuscriptApprovedMessageType,
+//                user = targetUser(assistanceManuscriptApprovedMessageType, collaborationRequest),
+//                sequenceIndex = assistanceManuscriptApprovedMessageType.step,
+//                recipientTypes = mutableSetOf(assistanceManuscriptApprovedMessageType.recipientType),
+//                isAssistant = true
+//            )
+
+//            val authorNotifiedDeclinedMessage = CollaborationRequestMessage(
+//                collaborationRequest = collaborationRequest,
+//                type = authorApprovedMessageType,
+//                user = targetUser(authorApprovedMessageType, collaborationRequest),
+//                payload = AuthorApprovedPayload(
+//                    type = authorApprovedMessageType,
+//                    decisionAuthor = invitedAuthor.author.toShortInfoApiObject(),
+//                    decisionAuthorComment = payload.comment,
+//                    expectedApprovingAuthors = collaborationRequest.authors
+//                        .filter { it.status == COLLABORATION_APPROVED }
+//                        .map { it.author.toShortInfoApiObject() }
+//                ),
+//                sequenceIndex = authorApprovedMessageType.step,
+//                recipientTypes = mutableSetOf(authorApprovedMessageType.recipientType),
+//                isAssistant = true
+//            )
+
 
             val payload = originalMessage.payload as ApproveManuscriptPayload
             val invitedAuthor = collaborationRequest.authors.find { it.author.user!!.id == user.id }!!
             invitedAuthor.status = MANUSCRIPT_APPROVED
 
-            val authorNotifiedDeclinedMessage = CollaborationRequestMessage(
-                collaborationRequest = collaborationRequest,
-                type = authorApprovedMessageType,
-                user = targetUser(authorApprovedMessageType, collaborationRequest),
+            val assistantManuscriptApproved = collaborationRequestMessage(collaborationRequest, ASSISTANT_MANUSCRIPT_APPROVED)
+            val authorNotifiedDeclinedMessage = collaborationRequestMessage(
+                collaborationRequest,
+                AUTHOR_APPROVED,
                 payload = AuthorApprovedPayload(
-                    type = authorApprovedMessageType,
+                    type = AUTHOR_APPROVED,
                     decisionAuthor = invitedAuthor.author.toShortInfoApiObject(),
                     decisionAuthorComment = payload.comment,
                     expectedApprovingAuthors = collaborationRequest.authors
                         .filter { it.status == COLLABORATION_APPROVED }
                         .map { it.author.toShortInfoApiObject() }
-                ),
-                sequenceIndex = authorApprovedMessageType.sequenceIndex,
-                recipientTypes = mutableSetOf(authorApprovedMessageType.recipientType),
-                isAssistant = true
+                )
             )
 
-            val messages =  mutableListOf(authorNotifiedDeclinedMessage, assistantManuscriptApproved)
-            if (collaborationRequest.authors.all { it.status == MANUSCRIPT_APPROVED  }) {
-                val allAuthorsConfirmedMessageType = ALL_AUTHORS_CONFIRMED
-                val allAuthorsConfirmedMessage = CollaborationRequestMessage(
-                    collaborationRequest = collaborationRequest,
-                    type = allAuthorsConfirmedMessageType,
-                    user = targetUser(allAuthorsConfirmedMessageType, collaborationRequest),
-                    sequenceIndex = allAuthorsConfirmedMessageType.sequenceIndex,
-                    recipientTypes = mutableSetOf(allAuthorsConfirmedMessageType.recipientType),
-                    isAssistant = true
-                )
+            val messages = mutableListOf(authorNotifiedDeclinedMessage, assistantManuscriptApproved)
+            if (collaborationRequest.authors.all { it.status == MANUSCRIPT_APPROVED }) {
+                val allAuthorsConfirmedMessage = collaborationRequestMessage(collaborationRequest, ALL_AUTHORS_CONFIRMED)
                 messages.add(allAuthorsConfirmedMessage)
             }
 
@@ -315,13 +331,29 @@ class CollaborationRequestService(
         else -> emptyList()
     }
 
+    private fun collaborationRequestMessage(
+        collaborationRequest: CollaborationRequest,
+        type: CollaborationRequestMessageType,
+        targetUser: User? = null,
+        payload: MessagePayload? = null,
+    ) = CollaborationRequestMessage(
+        collaborationRequest = collaborationRequest,
+        type = type,
+        user = targetUser(type, collaborationRequest, targetUser),
+        payload = payload,
+        sequenceIndex = type.step,
+        recipientTypes = mutableSetOf(type.recipientType),
+        isAssistant = true
+    )
+
     private fun targetUser(
         type: CollaborationRequestMessageType,
-        collaborationRequest: CollaborationRequest
+        collaborationRequest: CollaborationRequest,
+        dataAuthor: User?
     ): User {
         return when (type.recipientType) {
-            COLLABORATION_REQUEST_CREATOR -> collaborationRequest.user
-            PUBLICATION_CREATOR -> collaborationRequest.publication.creator
+            DATA_USER -> collaborationRequest.user
+            DATA_AUTHOR -> dataAuthor!!
         }
     }
 
@@ -369,7 +401,8 @@ class CollaborationRequestService(
     fun get(id: UUID, user: User): CollaborationRequest {
         val collaborationRequest = collaborationRequestRepository.getReferenceById(id)
         if (collaborationRequest.user.id != user.id &&
-            user.id !in collaborationRequest.authors.map { it.author.user!!.id }) {
+            user.id !in collaborationRequest.authors.map { it.author.user!!.id }
+        ) {
             throw IllegalAccessException("Only the creator of collaboration requests or authors of publication may access it.")
         }
         return collaborationRequest
@@ -384,16 +417,6 @@ class CollaborationRequestService(
         collaborationRequestRepository.findByUserId(
             userId, PageRequest.of(page, pageSize, Sort.by(DESC, "status", "creationTime"))
         )
-
-    @Transactional
-    fun findByPublicationId(publicationId: String, page: Int, pageSize: Int, user: User): Page<CollaborationRequest> {
-        val publication = publicationService.getUserPublicationByIdAndStatus(publicationId, user)
-        return collaborationRequestRepository.findByPublicationIdAndStatusIn(
-            publication.id,
-            setOf(PENDING, APPROVED, DECLINED),
-            PageRequest.of(page, pageSize, Sort.by(DESC, "status", "creationTime"))
-        )
-    }
 
     @Transactional
     fun findInvitation(publicationId: String, page: Int, pageSize: Int, user: User): Page<CollaborationRequestInvitedAuthor> {
@@ -425,26 +448,31 @@ class CollaborationRequestService(
         )
 
         // For collaboration request creator
-        collaborationMessageRepository.save(
-            CollaborationRequestMessage(
-                collaborationRequest = collaboration,
-                type = AGREE_TO_THE_TERMS_OF_COLLABORATION,
-                user = user,
-                sequenceIndex = 0,
-                recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR),
-                isAssistant = false
+        collaborationMessageRepository.saveAll(
+            listOf(
+                collaborationRequestMessage(collaboration, AGREE_TO_THE_TERMS_OF_COLLABORATION),
+                collaborationRequestMessage(collaboration, DATASET_WAS_DOWNLOADED)
             )
+//            CollaborationRequestMessage(
+//                collaborationRequest = collaboration,
+//                type = AGREE_TO_THE_TERMS_OF_COLLABORATION,
+//                user = user,
+//                sequenceIndex = 0,
+//                recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR),
+//                isAssistant = false
+//            )
         )
 
-        collaborationMessageRepository.save(
-            CollaborationRequestMessage(
-                collaborationRequest = collaboration,
-                type = DATASET_WAS_DOWNLOADED,
-                user = user,
-                sequenceIndex = 1,
-                recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR),
-                isAssistant = true
-            )
-        )
+//        collaborationMessageRepository.save(
+//            collaborationRequestMessage(collaboration, DATASET_WAS_DOWNLOADED)
+//            CollaborationRequestMessage(
+//                collaborationRequest = collaboration,
+//                type = DATASET_WAS_DOWNLOADED,
+//                user = user,
+//                sequenceIndex = 1,
+//                recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR),
+//                isAssistant = true
+//            )
+//        )
     }
 }
