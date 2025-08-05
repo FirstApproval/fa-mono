@@ -3,6 +3,7 @@ import { CollaborationChatStoreInterface } from "../../../publication/store/MyPu
 import { UserAction } from "./UserAction"
 import { userStore } from "../../../../core/user"
 import { getFullName } from "../../../../util/userUtil"
+import { mapAuthorWithLink } from "../../utils"
 
 const nextMessageType = CollaborationMessageType.NONE
 
@@ -22,7 +23,7 @@ export function showAuthorsEmailsAction (
 
     const mappedAuthors = collaborationChatStore.publication!!.authors!!
       .filter(author => author.user !== null)
-      .map(author => `• ${getFullName(author)} - ${author.email ?? "no email"}`)
+      .map(author => `• ${mapAuthorWithLink(author.user!!)} - ${author.email ?? "no email"}`)
     collaborationChatStore.messages!!.push({
         type: CollaborationMessageType.SHOW_AUTHORS_EMAILS_RESPONSE,
         isAssistant: true,
@@ -41,7 +42,7 @@ export const showAuthorsEmails: UserAction = {
 export const askDataAuthor: UserAction = {
   text: 'Ask data author',
   action: (collaborationChatStore: CollaborationChatStoreInterface) =>
-    showAuthorsEmailsAction(collaborationChatStore, 'Ask data author', CollaborationMessageType.ASK_DATA_USER)
+    showAuthorsEmailsAction(collaborationChatStore, 'Ask data author', CollaborationMessageType.ASK_DATA_AUTHOR)
 };
 
 export const reachOutToAuthors: UserAction = {
