@@ -27,6 +27,7 @@ import { AgreeToTheTermsOfCollaboration } from "./AgreeToTheTermsOfCollaboration
 import { ProposePotentialPublicationNameAndType } from "./ProposePotentialPublicationNameAndType"
 import { GreatFirstStepIsCompleted } from "./GreatFirstStepIsCompleted"
 import { DataUserPayload } from "./DataUserPayload"
+import { ShowAuthorsEmails } from "./ShowAuthorsEmails"
 
 export function createMessageRenderers(collaborationChatStore: CollaborationChatStoreInterface) {
   return {
@@ -91,7 +92,6 @@ export function createMessageRenderers(collaborationChatStore: CollaborationChat
     [CollaborationMessageType.FIRST_STEP_IS_COMPLETED]: () => <GreatFirstStepIsCompleted />,
     [CollaborationMessageType.EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST]: () => <span>Everything is correct. Sign and send request.</span>,
     [CollaborationMessageType.PROPOSE_POTENTIAL_PUBLICATION_NAME_AND_TYPE]: () => <ProposePotentialPublicationNameAndType />,
-    [CollaborationMessageType.VERIFY_YOUR_NAME_AND_AFFILIATION]: () => <span>Decline collaboration</span>,
     [CollaborationMessageType.GOT_IT_READY_TO_START]: () => <span>Got it. I am ready to start.</span>,
     [CollaborationMessageType.LETS_MAKE_COLLABORATION_REQUEST]: () => <span>Great, Let’s make the Collaboration request</span>,
     [CollaborationMessageType.I_WOULD_LIKE_TO_COLLABORATE]: () => <span>I`d like to collaborate! Tell me more...</span>,
@@ -100,5 +100,7 @@ export function createMessageRenderers(collaborationChatStore: CollaborationChat
     [CollaborationMessageType.EMAIL_DATA_USER]: () => <DataUserPayload chatStore={collaborationChatStore} />,
     [CollaborationMessageType.ASK_DATA_AUTHOR]: () => <span>Ask data author</span>,
     [CollaborationMessageType.ASK_DATA_USER]: () => <span>Ask data user</span>,
+    [CollaborationMessageType.SHOW_AUTHORS_EMAILS]: () => <span>Show author(s) emails</span>,
+    [CollaborationMessageType.SHOW_AUTHORS_EMAILS_RESPONSE]: () => <ShowAuthorsEmails chatStore={collaborationChatStore}/>,
   } satisfies Partial<Record<CollaborationMessageType, (message: CollaborationRequestMessage) => React.ReactNode>>;
 }

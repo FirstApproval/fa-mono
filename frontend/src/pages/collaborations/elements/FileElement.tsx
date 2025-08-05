@@ -13,7 +13,12 @@ export const CollaborationMessageFile  = observer((
       target={"_blank"}
       underline={"none"}
       sx={{ color: "black" }}
-      style={{ cursor: "pointer" }}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        cursor: "pointer"
+      }}
     >
       <DescriptionOutlined />
       FA Collaboration Agreement template.pdf

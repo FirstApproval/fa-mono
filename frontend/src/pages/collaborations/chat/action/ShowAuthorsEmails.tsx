@@ -1,36 +1,23 @@
 import { CollaborationMessageType } from "../../../../apis/first-approval-api"
 import { CollaborationChatStoreInterface } from "../../../publication/store/MyPublicationCollaborationChatStore"
 import { UserAction } from "./UserAction"
-import { userStore } from "../../../../core/user"
-import { getFullName } from "../../../../util/userUtil"
-import { mapAuthorWithLink } from "../../utils"
-
-const nextMessageType = CollaborationMessageType.NONE
 
 export function showAuthorsEmailsAction (
   collaborationChatStore: CollaborationChatStoreInterface,
   text: string,
   messageType: CollaborationMessageType
 ): void {
-  const message = {
-    type: messageType,
-    isAssistant: false,
-    userInfo: userStore.user,
-    text
-  }
-
-    collaborationChatStore.messages!!.push(message)
-
-    const mappedAuthors = collaborationChatStore.publication!!.authors!!
-      .filter(author => author.user !== null)
-      .map(author => `• ${mapAuthorWithLink(author.user!!)} - ${author.email ?? "no email"}`)
-    collaborationChatStore.messages!!.push({
-        type: CollaborationMessageType.SHOW_AUTHORS_EMAILS_RESPONSE,
-        isAssistant: true,
-        // userInfo: userStore.user,
-        // text: "While we are working on the FA chat feature, you can contact the authors using their emails: \n" + mappedAuthors
-      }
-    );
+  collaborationChatStore.messages!!.push(
+    {
+      type: messageType,
+      isAssistant: false,
+      userInfo: collaborationChatStore.collaborationRequestCreator,
+    },
+    {
+      type: CollaborationMessageType.SHOW_AUTHORS_EMAILS_RESPONSE,
+      isAssistant: true
+    }
+  )
 }
 
 export const showAuthorsEmails: UserAction = {
