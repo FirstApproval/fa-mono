@@ -94,5 +94,7 @@ export function createMessageRenderers(collaborationChatStore: CollaborationChat
     [CollaborationMessageType.GOT_IT_READY_TO_START]: () => <span>Got it. I am ready to start.</span>,
     [CollaborationMessageType.LETS_MAKE_COLLABORATION_REQUEST]: () => <span>Great, Let’s make the Collaboration request</span>,
     [CollaborationMessageType.I_WOULD_LIKE_TO_COLLABORATE]: () => <span>I`d like to collaborate! Tell me more...</span>,
+    [CollaborationMessageType.ALL_DATA_AUTHORS_RESPONDED_TO_COLLABORATION_REQUEST]: () =>
+      <span>All data authors responded to the request for collaboration, and you can now upload the final draft.</span>,
   } satisfies Partial<Record<CollaborationMessageType, (message: CollaborationRequestMessage) => React.ReactNode>>;
 }
