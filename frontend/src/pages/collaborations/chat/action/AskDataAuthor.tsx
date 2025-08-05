@@ -1,4 +1,3 @@
-// import { CollaborationChatInterface } from "../../../publication/store/CollaborationChatStore"
 // import { CollaborationMessageType } from "../../../../apis/first-approval-api"
 // import { UserAction } from "./UserAction"
 //

@@ -3286,7 +3286,7 @@ components:
 #        Collaboration established actions:
         - NOTIFY_CO_AUTHOR
         - UPLOAD_FINAL_DRAFT
-        - ASC_DATA_AUTHOR
+        - ASK_DATA_AUTHOR
         - I_NEED_HELP
 
         - MORE_QUESTIONS_ABOUT_COLLABORATION

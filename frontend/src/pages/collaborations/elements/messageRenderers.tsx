@@ -98,5 +98,7 @@ export function createMessageRenderers(collaborationChatStore: CollaborationChat
     [CollaborationMessageType.ALL_DATA_AUTHORS_RESPONDED_TO_COLLABORATION_REQUEST]: () =>
       <span>All data authors responded to the request for collaboration, and you can now upload the final draft.</span>,
     [CollaborationMessageType.EMAIL_DATA_USER]: () => <DataUserPayload chatStore={collaborationChatStore} />,
+    [CollaborationMessageType.ASK_DATA_AUTHOR]: () => <span>Ask data author</span>,
+    [CollaborationMessageType.ASK_DATA_USER]: () => <span>Ask data user</span>,
   } satisfies Partial<Record<CollaborationMessageType, (message: CollaborationRequestMessage) => React.ReactNode>>;
 }
