@@ -100,13 +100,22 @@ export function createMessageRenderers(collaborationChatStore: CollaborationChat
     [CollaborationMessageType.I_WOULD_LIKE_TO_COLLABORATE]: () => <span>I`d like to collaborate! Tell me more...</span>,
     [CollaborationMessageType.ALL_DATA_AUTHORS_RESPONDED_TO_COLLABORATION_REQUEST]: () =>
       <div style={{marginTop: '20px'}}>
-        All data authors responded to the request for collaboration, and you can now upload the final draft.
+        <span>All data authors have responded to your collaboration request ✅</span>
+        <p>
+          Now you have collaborators for working with the dataset!
+          The final stage of collaboration is reviewing and approving the final draft of your manuscript together with your collaborators.
+        </p>
+        <span>
+          You can do this by using the "Upload Final Draft" function —
+          this will send the manuscript to your collaborators for review and approval before submission.
+        </span>
       </div>,
     [CollaborationMessageType.ALL_DATA_AUTHORS_DECLINED_COLLABORATION_REQUEST]: () =>
-      <span>
+      <p>
         Unfortunately, all data authors have declined your request for collaboration.
-        If you reuse it in your work, it is enough for you to cite this dataset.
-      </span>,
+        As no collaboration agreement has been signed, you may still use the dataset
+        in your work under the terms of its license, applying the Standard Citation.
+      </p>,
     [CollaborationMessageType.EMAIL_DATA_USER]: () => <DataUserPayload chatStore={collaborationChatStore} />,
     [CollaborationMessageType.ASK_DATA_AUTHOR]: () => <span>Ask data author</span>,
     [CollaborationMessageType.ASK_DATA_USER]: () => <span>Ask data user</span>,
