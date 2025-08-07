@@ -1,11 +1,12 @@
 import { UserAction } from "./UserAction"
 import { CollaborationChatStoreInterface, MyPublicationCollaborationChatStore } from "../../../publication/store/MyPublicationCollaborationChatStore"
-import { CollaborationMessageType } from "../../../../apis/first-approval-api"
+import { CollaborationMessageType, MessageSenderType } from "../../../../apis/first-approval-api"
 
 const message = {
   text: 'Great, Let’s make the Collaboration request',
   type: CollaborationMessageType.LETS_MAKE_COLLABORATION_REQUEST,
-  isAssistant: false
+  senderType: MessageSenderType.DATA_USER,
+
 };
 
 const nextMessageType = CollaborationMessageType.FORMALIZED_AGREEMENT;
@@ -15,7 +16,7 @@ function letsMakeCollaborationAction (
 ): void {
     collaborationChatStore.sendMessage(message, nextMessageType).then(response =>
       collaborationChatStore.sendMessage({
-        isAssistant: true,
+        senderType: MessageSenderType.ASSISTANT,
         type: CollaborationMessageType.FORMALIZED_AGREEMENT,
         // text:
         //   "The collaboration request (1 step) is a formalized agreement. I'll help you fill it out. \n" +

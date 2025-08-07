@@ -5,7 +5,7 @@ import { HeightElement } from "../../common.styled"
 import { css, Global } from "@emotion/react"
 import highfiveImage from "../../../assets/fa-highfive.svg"
 import { getFullName, getInitials, renderProfileImage } from "../../../util/userUtil"
-import { CollaborationMessageType } from "src/apis/first-approval-api"
+import { CollaborationMessageType, MessageSenderType } from "src/apis/first-approval-api"
 import { observer } from "mobx-react-lite"
 import { CollaborationRequirementsModal, CommentsModal, Step1Modal, Step2Modal, Step3Modal, StyledApproveButton } from "./Modal"
 import { Message } from "./ChatMessage"
@@ -94,8 +94,9 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
       <div>
         {collaborationChatStore.messages && collaborationChatStore.messages.map((message) => {
           const userInfo = message.userInfo!!
-          const fullName = message.isAssistant ? "Assistant" : getFullName(userInfo)
-          const avatar = message.isAssistant ? "FA" :
+          const isAssistant = message.senderType === MessageSenderType.ASSISTANT
+          const fullName = isAssistant ? "Assistant" : getFullName(userInfo)
+          const avatar = isAssistant ? "FA" :
             (userInfo.profileImage ? renderProfileImage(userInfo.profileImage) : getInitials(userInfo.firstName, userInfo.lastName))
           const mappedFiles = message.files?.map(file =>
             <FileElement onClick={() => collaborationChatStore.getCollaborationFile(file)}>
@@ -134,7 +135,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
           handleAction={async (comment: string) =>
             await collaborationChatStore.sendMessage({
                 type: CollaborationMessageType.APPROVE_MANUSCRIPT,
-                isAssistant: false,
+                senderType: MessageSenderType.DATA_USER,
                 payload: {
                   comment,
                   type: CollaborationMessageType.APPROVE_MANUSCRIPT
@@ -168,9 +169,8 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
           onClose={() => collaborationChatStore.setIsDeclineCollaborationDialogOpen!!(false)}
           onConfirm={async () => await collaborationChatStore.sendMessage({
             type: CollaborationMessageType.DECLINE_COLLABORATION,
-            isAssistant: false,
-          }, CollaborationMessageType.DECLINE_COLLABORATION)
-          }
+            senderType: MessageSenderType.DATA_USER
+          }, CollaborationMessageType.DECLINE_COLLABORATION)}
           title={"Decline, citation is enough"}
           text={
             "Are you sure you want to decline the request? \n" +
@@ -186,7 +186,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
           onClose={() => collaborationChatStore.setIsDeclineManuscriptDialogOpen!!(false)}
           onConfirm={async () => await collaborationChatStore.sendMessage({
             type: CollaborationMessageType.DECLINE_MANUSCRIPT,
-            isAssistant: false,
+            senderType: MessageSenderType.DATA_USER,
           }, CollaborationMessageType.DECLINE_MANUSCRIPT)
           }
           title={"Decline, citation is enough"}
@@ -204,7 +204,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
           onClose={() => collaborationChatStore.setIsApproveCollaborationDialogOpen!!(false)}
           onConfirm={async () => await collaborationChatStore.sendMessage({
             type: CollaborationMessageType.APPROVE_COLLABORATION,
-            isAssistant: false,
+            senderType: MessageSenderType.DATA_USER,
           }, CollaborationMessageType.NOTIFY_CO_AUTHOR)
           }
           title={"Approve collaboration"}

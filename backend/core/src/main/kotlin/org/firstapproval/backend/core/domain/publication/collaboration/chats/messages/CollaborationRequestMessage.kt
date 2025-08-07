@@ -3,44 +3,24 @@ package org.firstapproval.backend.core.domain.publication.collaboration.chats.me
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType
+import jakarta.persistence.*
 import jakarta.persistence.CascadeType.ALL
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
 import jakarta.persistence.EnumType.STRING
-import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType.EAGER
 import jakarta.persistence.FetchType.LAZY
-import jakarta.persistence.Id
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
-import jakarta.persistence.OneToMany
-import jakarta.persistence.Table
-import org.firstapproval.api.server.model.AuthorShortInfo
-import org.firstapproval.api.server.model.CollaborationRequestTypeOfWork
-import org.firstapproval.api.server.model.UserInfo
-import org.firstapproval.api.server.model.Workplace
+import org.firstapproval.api.server.model.*
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.CollaborationRequestMessageFile
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.toApiObject
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.APPROVE_MANUSCRIPT
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_APPROVED
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.AUTHOR_DECLINED
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.PREFILLED_COLLABORATION_AGREEMENT
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.*
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.RecipientType.DATA_AUTHOR
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.RecipientType.DATA_USER
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.UPLOAD_FINAL_DRAFT
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.YOUR_COLLABORATION_IS_DECLINED
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.YOUR_COLLABORATION_IS_ESTABLISHED
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequest
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.toApiObject
 import org.hibernate.annotations.Type
 import java.time.ZonedDateTime
-import java.util.UUID
+import java.util.*
 import java.util.UUID.randomUUID
 import org.firstapproval.api.server.model.CollaborationMessageType as CollaborationMessageTypeApiObject
 import org.firstapproval.api.server.model.CollaborationRequestMessage as CollaborationRequestMessageApiObject
@@ -71,68 +51,60 @@ class CollaborationRequestMessage(
     @OneToMany(cascade = [ALL], orphanRemoval = true)
     @JoinColumn(name = "message_id", nullable = false, insertable = false, updatable = false)
     val files: List<CollaborationRequestMessageFile> = mutableListOf(),
-
-    val isAssistant: Boolean,
 )
 
-enum class CollaborationRequestMessageType(val step: Int, val recipientType: RecipientType) {
+enum class CollaborationRequestMessageType(val step: Int, val recipientType: RecipientType, val senderType: SenderType) {
     //Collaboration request creator:
-    AGREE_TO_THE_TERMS_OF_COLLABORATION(0, DATA_USER),
-    DATASET_WAS_DOWNLOADED(1, DATA_USER),
-    I_WOULD_LIKE_TO_COLLABORATE(2, DATA_USER),
-    IF_YOU_ARE_INTERESTED_IN_THIS_DATASET(3, DATA_USER),
-    LETS_MAKE_COLLABORATION_REQUEST(4, DATA_USER),
-    FORMALIZED_AGREEMENT(5, DATA_USER),
-    GOT_IT_READY_TO_START(6, DATA_USER),
-    VERIFY_YOUR_NAME_AND_AFFILIATION(7, DATA_USER),
-    I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL(8, DATA_USER),
-    PROPOSE_POTENTIAL_PUBLICATION_NAME_AND_TYPE(9, DATA_USER),
-    DONE_WHATS_NEXT(10, DATA_USER),
-    PREFILLED_COLLABORATION_AGREEMENT(11, DATA_USER),
-    EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST(12, DATA_USER),
-    FIRST_STEP_IS_COMPLETED(13, DATA_USER),
-    YOUR_COLLABORATION_IS_ESTABLISHED(14, DATA_USER),
-    YOUR_COLLABORATION_IS_DECLINED(14, DATA_USER),
-    ALL_DATA_AUTHORS_RESPONDED_TO_COLLABORATION_REQUEST(15, DATA_USER),
-    ALL_DATA_AUTHORS_DECLINED_COLLABORATION_REQUEST(15, DATA_USER),
-    UPLOAD_FINAL_DRAFT(16, DATA_USER),
-    AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE(17, DATA_USER),
-    AUTHOR_APPROVED(18, DATA_USER),
-    AUTHOR_DECLINED(19, DATA_USER),
-    ALL_AUTHORS_CONFIRMED(20, DATA_USER),
+    AGREE_TO_THE_TERMS_OF_COLLABORATION(0, DATA_USER, SenderType.DATA_USER),
+    DATASET_WAS_DOWNLOADED(1, DATA_USER, SenderType.DATA_USER),
+    I_WOULD_LIKE_TO_COLLABORATE(2, DATA_USER, SenderType.DATA_USER),
+    IF_YOU_ARE_INTERESTED_IN_THIS_DATASET(3, DATA_USER, SenderType.DATA_USER),
+    LETS_MAKE_COLLABORATION_REQUEST(4, DATA_USER, SenderType.DATA_USER),
+    FORMALIZED_AGREEMENT(5, DATA_USER, SenderType.DATA_USER),
+    GOT_IT_READY_TO_START(6, DATA_USER, SenderType.DATA_USER),
+    VERIFY_YOUR_NAME_AND_AFFILIATION(7, DATA_USER, SenderType.DATA_USER),
+    I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL(8, DATA_USER, SenderType.DATA_USER),
+    PROPOSE_POTENTIAL_PUBLICATION_NAME_AND_TYPE(9, DATA_USER, SenderType.DATA_USER),
+    DONE_WHATS_NEXT(10, DATA_USER, SenderType.DATA_USER),
+    PREFILLED_COLLABORATION_AGREEMENT(11, DATA_USER, SenderType.DATA_USER),
+    EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST(12, DATA_USER, SenderType.DATA_USER),
+    FIRST_STEP_IS_COMPLETED(13, DATA_USER, SenderType.DATA_USER),
+    YOUR_COLLABORATION_IS_ESTABLISHED(14, DATA_USER, SenderType.DATA_USER),
+    YOUR_COLLABORATION_IS_DECLINED(14, DATA_USER, SenderType.DATA_USER),
+    ALL_DATA_AUTHORS_RESPONDED_TO_COLLABORATION_REQUEST(15, DATA_USER, SenderType.DATA_USER),
+    ALL_DATA_AUTHORS_DECLINED_COLLABORATION_REQUEST(15, DATA_USER, SenderType.DATA_USER),
+    UPLOAD_FINAL_DRAFT(16, DATA_USER, SenderType.DATA_USER),
+    AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE(17, DATA_USER, SenderType.DATA_USER),
+    AUTHOR_APPROVED(18, DATA_USER, SenderType.DATA_USER),
+    AUTHOR_DECLINED(19, DATA_USER, SenderType.DATA_USER),
+    ALL_AUTHORS_CONFIRMED(20, DATA_USER, SenderType.DATA_USER),
 
-    CHANGE_MY_PERSONAL_INFO(0, DATA_USER),
-    CHANGE_INFO_ABOUT_MY_PUBLICATION(0, DATA_USER),
-
-//    UPLOAD_FINAL_DRAFT(15, COLLABORATION_REQUEST_CREATOR),
-//    NOTIFY_CO_AUTHOR(15, COLLABORATION_REQUEST_CREATOR),
-//    ASK_DATA_AUTHOR(15, COLLABORATION_REQUEST_CREATOR),
-//    I_NEED_HELP(15, COLLABORATION_REQUEST_CREATOR),
+    CHANGE_MY_PERSONAL_INFO(0, DATA_USER, SenderType.DATA_USER),
+    CHANGE_INFO_ABOUT_MY_PUBLICATION(0, DATA_USER, SenderType.DATA_USER),
 
     //Publication creator
-    I_WOULD_LIKE_TO_INCLUDE_YOU(0, DATA_AUTHOR),
-    ASSISTANT_CREATE(1, DATA_AUTHOR),
-    APPROVE_COLLABORATION(2, DATA_AUTHOR),
-    DECLINE_COLLABORATION(2, DATA_AUTHOR),
-    ASSISTANT_COLLABORATION_DECLINED(3, DATA_AUTHOR),
-    ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER(4, DATA_AUTHOR),
-    APPROVE_MANUSCRIPT(5, DATA_AUTHOR),
-    DECLINE_MANUSCRIPT(5, DATA_AUTHOR),
-    ASSISTANT_MANUSCRIPT_APPROVED(6, DATA_AUTHOR),
-    ASSISTANT_MANUSCRIPT_DECLINED(6, DATA_AUTHOR),
+    I_WOULD_LIKE_TO_INCLUDE_YOU(0, DATA_AUTHOR, SenderType.DATA_USER),
+    ASSISTANT_CREATE(1, DATA_AUTHOR, SenderType.DATA_AUTHOR),
+    APPROVE_COLLABORATION(2, DATA_AUTHOR, SenderType.DATA_AUTHOR),
+    DECLINE_COLLABORATION(2, DATA_AUTHOR, SenderType.DATA_AUTHOR),
+    ASSISTANT_COLLABORATION_DECLINED(3, DATA_AUTHOR, SenderType.DATA_AUTHOR),
+    ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER(4, DATA_AUTHOR, SenderType.DATA_AUTHOR),
+    APPROVE_MANUSCRIPT(5, DATA_AUTHOR, SenderType.DATA_AUTHOR),
+    DECLINE_MANUSCRIPT(5, DATA_AUTHOR, SenderType.DATA_AUTHOR),
+    ASSISTANT_MANUSCRIPT_APPROVED(6, DATA_AUTHOR, SenderType.DATA_AUTHOR),
+    ASSISTANT_MANUSCRIPT_DECLINED(6, DATA_AUTHOR, SenderType.DATA_AUTHOR),
 
-//    DEFAULT(2, DATA_AUTHOR),
-//    COLLABORATION_APPROVED(3, DATA_AUTHOR),
-//    DATA_USER_ASKED(4, DATA_AUTHOR),
-//    MANUSCRIPT_APPROVED(5, DATA_AUTHOR),
-//    AUTHOR_INFO_RECEIVED(7, DATA_AUTHOR),
-//    PUBLICATION_INFO_RECEIVED(8, DATA_AUTHOR),
-
-    EMAIL_DATA_USER(0, DATA_AUTHOR);
+    EMAIL_DATA_USER(0, DATA_AUTHOR, SenderType.DATA_AUTHOR);
 
     enum class RecipientType {
         DATA_USER,
         DATA_AUTHOR
+    }
+
+    enum class SenderType {
+        ASSISTANT,
+        DATA_AUTHOR,
+        DATA_USER
     }
 }
 
@@ -235,14 +207,13 @@ fun CollaborationRequestMessage.toApiObject(userService: UserService) = toApiObj
 
 fun CollaborationRequestMessage.toApiObject(userInfo: UserInfo) = CollaborationRequestMessageApiObject(
     CollaborationMessageTypeApiObject.valueOf(type.toString()),
-    false
 ).also {
     it.id = this.id
     it.userInfo = userInfo.takeIf { user.id == userInfo.id }
         ?: throw IllegalArgumentException("UserInfo id ${userInfo.id} doesn't match with user.id ${user.id}")
     it.payload = payload
-    it.isAssistant = isAssistant
-    it.sequenceIndex = sequenceIndex
+    it.senderType = MessageSenderType.valueOf(type.senderType.name)
+    it.sequenceIndex = type.step
     it.files = files.map { file -> file.toApiObject() }
     it.creationTime = creationTime.toOffsetDateTime()
 }

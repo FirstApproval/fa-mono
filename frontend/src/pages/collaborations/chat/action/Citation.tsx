@@ -1,4 +1,4 @@
-import { CollaborationMessageType, DataCollectionType } from "../../../../apis/first-approval-api"
+import { CollaborationMessageType, DataCollectionType, MessageSenderType } from "../../../../apis/first-approval-api"
 import { DATA_COLLECTION_TYPES } from "../../../publication/ChooseDataCollection"
 import React from "react"
 import { CollaborationChatStoreInterface } from "../../../publication/store/MyPublicationCollaborationChatStore"
@@ -31,10 +31,10 @@ function citationAction(collaborationChatStore: CollaborationChatStoreInterface)
   // const message = `${mappedAuthors}. ${publication.title}. ${year}. First Approval${dataCollectionTypeTitle}.`
 
   collaborationChatStore.sendMessage({
-    isAssistant: true,
+    senderType: MessageSenderType.ASSISTANT,
     type: CollaborationMessageType.NONE,
     // text: message
-  }, CollaborationMessageType.NONE)
+  }, CollaborationMessageType.NONE).then();
 }
 
 export const citation: UserAction = {

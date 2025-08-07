@@ -1,5 +1,5 @@
 import { CollaborationChatStoreInterface } from "../../../../publication/store/MyPublicationCollaborationChatStore"
-import { CollaborationMessageType } from "../../../../../apis/first-approval-api"
+import { CollaborationMessageType, MessageSenderType } from "../../../../../apis/first-approval-api"
 import { userStore } from "../../../../../core/user"
 import { UserAction } from "../UserAction"
 
@@ -8,7 +8,7 @@ export function emailDataUserAction (
 ): void {
   collaborationChatStore.messages!!.push({
       type: CollaborationMessageType.EMAIL_DATA_USER,
-      isAssistant: true,
+      senderType: MessageSenderType.ASSISTANT,
       userInfo: userStore.user,
     }
   );

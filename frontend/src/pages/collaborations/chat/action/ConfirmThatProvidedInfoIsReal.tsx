@@ -1,10 +1,10 @@
-import { CollaborationMessageType, CollaboratorPersonalData } from "../../../../apis/first-approval-api"
+import { CollaborationMessageType, CollaboratorPersonalData, MessageSenderType } from "../../../../apis/first-approval-api"
 import { UserAction } from "./UserAction"
 import { CollaborationChatStoreInterface } from "../../../publication/store/MyPublicationCollaborationChatStore"
 
 const proposePotentialPublicationNameAndTypeMessage = {
       type: CollaborationMessageType.PROPOSE_POTENTIAL_PUBLICATION_NAME_AND_TYPE,
-      isAssistant: true
+      senderType: MessageSenderType.ASSISTANT
 }
 
 function confirmThatProvidedInfoIsRealAction(collaborationChatStore: CollaborationChatStoreInterface): void {
@@ -18,7 +18,7 @@ function confirmThatProvidedInfoIsRealAction(collaborationChatStore: Collaborati
   const iConfirmThatProvidedInfoIsRealMessage = {
     type: CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL,
     payload: collaboratorPersonalData,
-    isAssistant: true,
+    senderType: MessageSenderType.ASSISTANT,
   }
 
   collaborationChatStore.sendMessages(

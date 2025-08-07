@@ -1,14 +1,13 @@
 import { CollaborationChatStoreInterface } from "../../../publication/store/MyPublicationCollaborationChatStore"
-import { CollaborationMessageType } from "../../../../apis/first-approval-api"
+import { CollaborationMessageType, MessageSenderType } from "../../../../apis/first-approval-api"
 import { UserAction } from "./UserAction"
+import { userStore } from "../../../../core/user"
 
 function askDataUserAction(collaborationChatStore: CollaborationChatStoreInterface): void {
   collaborationChatStore.messages!!.push({
     type: CollaborationMessageType.ASK_DATA_USER,
-    isAssistant: true
-  },{
-    type: CollaborationMessageType.ASK_DATA_USER,
-    isAssistant: true
+    senderType: MessageSenderType.ASSISTANT,
+    userInfo: userStore.user
   });
 }
 

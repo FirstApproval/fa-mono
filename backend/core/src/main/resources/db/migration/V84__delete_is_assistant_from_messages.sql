@@ -1,0 +1,1 @@
+ALTER TABLE collaboration_request_messages DROP is_assistant;

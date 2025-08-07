@@ -4,7 +4,7 @@
 // function askDataAuthorAction(collaborationChatStore: CollaborationChatInterface): void {
 //   collaborationChatStore.sendMessage({
 //     type: CollaborationMessageType.ASC_DATA_AUTHOR,
-//     isAssistant: false,
+//     senderType: MessageSenderType.DATA_USER,
 //     text: "Ask data author."
 //   }, CollaborationMessageType.ASC_DATA_AUTHOR).then()
 // }

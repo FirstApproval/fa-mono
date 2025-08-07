@@ -314,8 +314,7 @@ class CollaborationRequestService(
         type = type,
         user = targetUser(type, collaborationRequest, targetUser),
         payload = payload,
-        sequenceIndex = type.step,
-        isAssistant = true
+        sequenceIndex = type.step
     )
 
     private fun targetUser(

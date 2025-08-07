@@ -1,4 +1,4 @@
-import { CollaborationMessageType, CollaborationRequestMessage } from "../../../../apis/first-approval-api"
+import { CollaborationMessageType, CollaborationRequestMessage, MessageSenderType } from "../../../../apis/first-approval-api"
 import { UserAction } from "./UserAction"
 import React from "react"
 import { CollaborationChatStoreInterface } from "../../../publication/store/MyPublicationCollaborationChatStore"
@@ -6,7 +6,7 @@ import { CollaborationChatStoreInterface } from "../../../publication/store/MyPu
 function doneWhatsNextAction(collaborationChatStore: CollaborationChatStoreInterface): void {
   const doneWhatsNextMessage = {
     type: CollaborationMessageType.DONE_WHATS_NEXT,
-    isAssistant: false,
+    senderType: MessageSenderType.DATA_USER,
     payload: {
       potentialPublicationTitle: collaborationChatStore.potentialPublicationName!!,
       typeOfWork: collaborationChatStore.typeOfWork!!,
@@ -37,7 +37,7 @@ function createPrefilledAgreementMessage(
 
     return {
       type: CollaborationMessageType.PREFILLED_COLLABORATION_AGREEMENT,
-      isAssistant: true,
+      senderType: MessageSenderType.ASSISTANT,
       payload: { "authors": otherAuthors, type: CollaborationMessageType.PREFILLED_COLLABORATION_AGREEMENT }
     };
 }

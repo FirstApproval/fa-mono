@@ -1,11 +1,11 @@
 import { CollaborationChatStoreInterface } from "../../../publication/store/MyPublicationCollaborationChatStore"
-import { CollaborationMessageType } from "../../../../apis/first-approval-api"
+import { CollaborationMessageType, MessageSenderType } from "../../../../apis/first-approval-api"
 import { UserAction } from "./UserAction"
 
 function iHaveMoreQuestionsAction(collaborationChatStore: CollaborationChatStoreInterface): void {
   collaborationChatStore.sendMessage({
     type: CollaborationMessageType.MORE_QUESTIONS_ABOUT_COLLABORATION,
-    isAssistant: false,
+    senderType: MessageSenderType.DATA_USER,
     // text: "I have more questions about the collaboration."
   }).then();
 }

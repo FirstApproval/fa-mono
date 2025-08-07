@@ -31,7 +31,7 @@ export class PublicationCollaborationsStore {
     //     {
     //       id: '',
     //       type: CollaborationMessageType.CITATION_IS_ENOUGH,
-    //       isAssistant: true,
+    //       senderType: MessageSenderType.ASSISTANT,
     //       text: `The dataset "${publication?.title}" was downloaded.\n\n` +
     //         'This dataset was published in open access by the author(s).\n' +
     //         'If you reuse it in your work, it is enough for you to cite this dataset.'

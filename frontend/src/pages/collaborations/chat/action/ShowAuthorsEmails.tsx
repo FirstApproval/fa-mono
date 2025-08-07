@@ -1,4 +1,4 @@
-import { CollaborationMessageType } from "../../../../apis/first-approval-api"
+import { CollaborationMessageType, MessageSenderType } from "../../../../apis/first-approval-api"
 import { CollaborationChatStoreInterface } from "../../../publication/store/MyPublicationCollaborationChatStore"
 import { UserAction } from "./UserAction"
 
@@ -10,12 +10,12 @@ export function showAuthorsEmailsAction (
   collaborationChatStore.messages!!.push(
     {
       type: messageType,
-      isAssistant: false,
+      senderType: MessageSenderType.DATA_USER,
       userInfo: collaborationChatStore.collaborationRequestCreator,
     },
     {
       type: CollaborationMessageType.SHOW_AUTHORS_EMAILS_RESPONSE,
-      isAssistant: true
+      senderType: MessageSenderType.ASSISTANT
     }
   )
 }

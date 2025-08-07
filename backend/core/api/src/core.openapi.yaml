@@ -3218,8 +3218,8 @@ components:
           $ref: '#/components/schemas/CollaborationMessageType'
         payload:
           type: object
-        isAssistant:
-          type: boolean
+        senderType:
+          $ref: '#/components/schemas/MessageSenderType'
         sequenceIndex:
           type: integer
         files:
@@ -3230,7 +3230,6 @@ components:
           format: date-time
       required:
         - type
-        - isAssistant
 
     CollaborationRequestMessageFile:
       type: object
@@ -3316,6 +3315,12 @@ components:
         - NONE
 
         - EMAIL_DATA_USER
+
+    MessageSenderType:
+      type: string
+      enum:
+        - DATA_USER
+        - ASSISTANT
 
     PublicationShortInfo:
       type: object

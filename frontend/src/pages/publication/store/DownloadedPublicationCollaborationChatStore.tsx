@@ -5,6 +5,7 @@ import {
   CollaborationRequestMessage,
   CollaborationRequestMessageFile,
   CollaborationRequestTypeOfWork,
+  MessageSenderType,
   Publication,
   UserInfo,
   UseType,
@@ -83,7 +84,7 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
           break;
         }
         case (UseType.CITATION): {
-          this.messages = [{ type: CollaborationMessageType.CITATION_IS_ENOUGH, isAssistant: true }]
+          this.messages = [{ type: CollaborationMessageType.CITATION_IS_ENOUGH, senderType: MessageSenderType.ASSISTANT }]
           break;
         }
       }
