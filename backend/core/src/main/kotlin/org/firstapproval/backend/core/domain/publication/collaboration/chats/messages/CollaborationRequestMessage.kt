@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType
 import jakarta.persistence.CascadeType.ALL
-import jakarta.persistence.CollectionTable
 import jakarta.persistence.Column
-import jakarta.persistence.ElementCollection
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType.STRING
 import jakarta.persistence.Enumerated
@@ -31,11 +29,11 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.PREFILLED_COLLABORATION_AGREEMENT
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.RecipientType.DATA_AUTHOR
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.RecipientType.DATA_USER
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.UPLOAD_FINAL_DRAFT
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.YOUR_COLLABORATION_IS_DECLINED
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.YOUR_COLLABORATION_IS_ESTABLISHED
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.DATA_USER
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.DATA_AUTHOR
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequest
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.domain.user.UserService
@@ -62,15 +60,6 @@ class CollaborationRequestMessage(
     @Enumerated(STRING)
     val type: CollaborationRequestMessageType,
 
-    @ElementCollection(fetch = EAGER) // EAGER или LAZY в зависимости от потребностей
-    @CollectionTable(
-        name = "collaboration_request_messages_recipients", // Имя вспомогательной таблицы в БД
-        joinColumns = [JoinColumn(name = "message_id", referencedColumnName = "id")] // Колонка для связи с основной сущностью
-    )
-    @Column(name = "recipient_type", nullable = false) // Имя колонки для самого ENUM значения в вспомогательной таблице
-    @Enumerated(STRING) // Указываем, что ENUM будет храниться как строка
-    val recipientTypes: MutableSet<RecipientType>,
-
     @Type(JsonBinaryType::class)
     @Column(columnDefinition = "jsonb")
     val payload: MessagePayload? = null,
@@ -84,8 +73,7 @@ class CollaborationRequestMessage(
     val files: List<CollaborationRequestMessageFile> = mutableListOf(),
 
     val isAssistant: Boolean,
-
-    )
+)
 
 enum class CollaborationRequestMessageType(val step: Int, val recipientType: RecipientType) {
     //Collaboration request creator:
@@ -140,7 +128,12 @@ enum class CollaborationRequestMessageType(val step: Int, val recipientType: Rec
 //    AUTHOR_INFO_RECEIVED(7, DATA_AUTHOR),
 //    PUBLICATION_INFO_RECEIVED(8, DATA_AUTHOR),
 
-    EMAIL_DATA_USER(0, DATA_AUTHOR)
+    EMAIL_DATA_USER(0, DATA_AUTHOR);
+
+    enum class RecipientType {
+        DATA_USER,
+        DATA_AUTHOR
+    }
 }
 
 @JsonTypeInfo(

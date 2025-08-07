@@ -13,8 +13,8 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.fil
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.*
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessage
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.*
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.DATA_USER
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.RecipientType.DATA_AUTHOR
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.RecipientType.DATA_USER
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.RecipientType.DATA_AUTHOR
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.PENDING
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorInvitationStatus.*
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorInvitationStatus.COLLABORATION_APPROVED
@@ -315,7 +315,6 @@ class CollaborationRequestService(
         user = targetUser(type, collaborationRequest, targetUser),
         payload = payload,
         sequenceIndex = type.step,
-        recipientTypes = mutableSetOf(type.recipientType),
         isAssistant = true
     )
 

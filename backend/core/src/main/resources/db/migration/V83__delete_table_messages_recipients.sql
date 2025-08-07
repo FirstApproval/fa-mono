@@ -1,0 +1,1 @@
+DROP TABLE collaboration_request_messages_recipients;
