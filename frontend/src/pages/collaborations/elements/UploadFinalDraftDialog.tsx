@@ -221,7 +221,11 @@ const Dropzone: React.FC<{ setFile: (file: File) => void, file: File | null }> =
     isDragActive
   } = useDropzone({
     onDrop,
-    multiple: false
+    multiple: false,
+    accept: {
+      'application/pdf': ['.pdf'],
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
+    }
   })
 
   return (
