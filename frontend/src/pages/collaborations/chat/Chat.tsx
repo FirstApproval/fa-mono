@@ -16,6 +16,7 @@ import { DescriptionOutlined } from "@mui/icons-material"
 import { CollaborationChatStoreInterface } from "../../publication/store/MyPublicationCollaborationChatStore"
 import { ConfirmationDialog } from "../../../components/ConfirmationDialog"
 import { MessageContent } from "../elements/MessageContent"
+import { userStore } from "../../../core/user"
 
 const HIGH_FIVE_MESSAGE_TYPES = [
   CollaborationMessageType.AUTHOR_APPROVED,
@@ -93,11 +94,25 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
       />
       <div>
         {collaborationChatStore.messages && collaborationChatStore.messages.map((message) => {
-          const userInfo = message.userInfo!!
-          const isAssistant = message.senderType === MessageSenderType.ASSISTANT
-          const fullName = isAssistant ? "Assistant" : getFullName(userInfo)
-          const avatar = isAssistant ? "FA" :
-            (userInfo.profileImage ? renderProfileImage(userInfo.profileImage) : getInitials(userInfo.firstName, userInfo.lastName))
+          const targetUserInfo = message.userInfo!!
+          let fullName: string | undefined;
+          let username: string | undefined;
+          let avatar: string | undefined;
+          if (message.senderType === MessageSenderType.ASSISTANT) {
+            fullName = 'Assistant';
+            avatar = 'FA';
+          } if (message.senderType === MessageSenderType.DATA_USER) {
+            const dataUser = collaborationChatStore.collaborationRequestCreator!!;
+            fullName = dataUser.id === userStore.user!!.id ? 'You' : getFullName(dataUser);
+            username = dataUser.username;
+            avatar = dataUser.profileImage ? renderProfileImage(dataUser.profileImage) :
+              getInitials(dataUser.firstName, dataUser.lastName)
+          } else if (message.senderType === MessageSenderType.DATA_AUTHOR) {
+            fullName = targetUserInfo.id === userStore.user!!.id ? 'You' : getFullName(targetUserInfo);
+            username = targetUserInfo.username;
+            avatar = (targetUserInfo.profileImage ? renderProfileImage(targetUserInfo.profileImage) :
+              getInitials(targetUserInfo.firstName, targetUserInfo.lastName));
+          }
           const mappedFiles = message.files?.map(file =>
             <FileElement onClick={() => collaborationChatStore.getCollaborationFile(file)}>
               <DescriptionOutlined style={{ marginRight: "12px" }} />
@@ -107,7 +122,7 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
 
           return (
             <React.Fragment key={message.id}>
-              <Message name={fullName} avatar={avatar}>
+              <Message name={fullName!!} username={username} avatar={avatar!!}>
                 {HIGH_FIVE_MESSAGE_TYPES.includes(message.type) && (
                   <img src={highfiveImage} alt="High five" />
                 )}

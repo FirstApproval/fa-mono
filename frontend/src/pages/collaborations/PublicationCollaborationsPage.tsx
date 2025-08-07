@@ -42,6 +42,7 @@ export const PublicationCollaborationsPage = observer((): ReactElement => {
         onClick={() => goToChat(collaborationRequestInfo.id)}
         avatar={getInitials(collaborationRequestInfo?.firstNameLegal, collaborationRequestInfo?.lastNameLegal)}
         name={`${collaborationRequestInfo?.firstNameLegal} ${collaborationRequestInfo?.lastNameLegal}`}
+        username={collaborationRequestInfo?.userInfo.username}
         status={collaborationRequestInfoWithStatus.status!!}>
         {collaborationRequestInfo.description}
       </CollaborationRequestBox>

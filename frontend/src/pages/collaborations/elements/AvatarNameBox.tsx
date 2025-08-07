@@ -1,24 +1,33 @@
 import { CSSProperties } from 'react';
 import styled from '@emotion/styled';
-import { Avatar } from '@mui/material';
+import { Avatar, Link } from "@mui/material"
 import { userStore } from '../../../core/user';
 import { observer } from 'mobx-react-lite';
 import { getInitials, renderProfileImage } from '../../../util/userUtil';
+import { profilePath } from 'src/core/router/constants';
 
 const AvatarNameBox = ({
   avatar,
   name,
+  username,
   style
 }: {
   name: string;
   avatar?: string;
+  username?: string;
   style?: CSSProperties;
 }): React.ReactElement => {
   return (
-    <AvatarContainer style={style}>
-      <StyledAvatar>{avatar}</StyledAvatar>
-      <div>{name}</div>
-    </AvatarContainer>
+    <Link style={{cursor: username ? 'pointer': 'default'}}
+          sx={{ color: "black" }}
+          target={'_blank'}
+          underline={'none'}
+          href={username ? `${profilePath}${username}` : undefined}>
+      <AvatarContainer style={style}>
+        <StyledAvatar>{avatar}</StyledAvatar>
+        <div>{name}</div>
+      </AvatarContainer>
+    </Link>
   );
 };
 

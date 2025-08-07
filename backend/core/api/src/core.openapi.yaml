@@ -3320,6 +3320,7 @@ components:
       type: string
       enum:
         - DATA_USER
+        - DATA_AUTHOR
         - ASSISTANT
 
     PublicationShortInfo:

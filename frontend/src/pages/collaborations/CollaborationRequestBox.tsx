@@ -74,12 +74,14 @@ function getButtonText(status: CollaborationAuthorDecisionStatus): string {
 export const CollaborationRequestBox = ({
   avatar,
   name,
+  username,
   status,
   onClick,
   children
 }: {
   avatar: string;
   name: string;
+  username: string;
   status: CollaborationAuthorDecisionStatus;
   onClick: () => void;
   children: ReactNode;
@@ -89,7 +91,7 @@ export const CollaborationRequestBox = ({
       bordercolor={getBorderColor(status)}
       bgcolor={getBGColor(status)}>
       <CardContent sx={{ paddingBottom: '16px !important' }}>
-        <AvatarNameBox avatar={avatar} name={name} />
+        <AvatarNameBox avatar={avatar} name={name} username={username} />
         <HeightElement value={'12px'} />
         <Typography variant="h6">{children}</Typography>
         <HeightElement value={'12px'} />
