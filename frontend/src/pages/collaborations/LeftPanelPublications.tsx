@@ -1,5 +1,5 @@
 import { FlexWrapColumn, HeightElement } from "../common.styled"
-import { List, ListItemButton, ListItemIcon, ListItemText, Typography } from "@mui/material"
+import { List, ListItemButton, ListItemIcon, ListItemText, Tooltip, Typography } from "@mui/material"
 import { collaborationsPageStore } from "../publication/store/downloadsStore"
 import { observer } from "mobx-react-lite"
 import { ReactElement } from "react"
@@ -7,6 +7,8 @@ import styled from '@emotion/styled';
 import { PublicationShortInfo } from "../../apis/first-approval-api"
 import { TextSizeTruncation } from "../../util/stylesUtil"
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord"
+
+const TITLE_TRUNCATE_LENGTH = 25;
 
 export const LeftPanelPublicationsPage = observer((): ReactElement => {
   return (
@@ -63,14 +65,16 @@ function mapToListItem(publicationInfo: PublicationShortInfo, isMyPublication: b
           collaborationsPageStore.selectDownloadedPublication(publicationInfo);
         }
       }}>
-      <ListItemText
-        primary={TextSizeTruncation(publicationInfo.title!!, 26)}
-        sx={{
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis'
-        }}
-      />
+      <Tooltip title={publicationInfo.title?.length!! > TITLE_TRUNCATE_LENGTH ? publicationInfo.title : undefined}>
+        <ListItemText
+          primary={TextSizeTruncation(publicationInfo.title!!, TITLE_TRUNCATE_LENGTH)}
+          sx={{
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          }}
+        />
+      </Tooltip>
       <ListItemIcon
         sx={{
           minWidth: 'auto',
