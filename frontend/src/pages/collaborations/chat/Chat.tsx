@@ -104,12 +104,12 @@ const Chat: React.FC<ChatProps> = observer((props: { collaborationChatStore: Col
           } if (message.senderType === MessageSenderType.DATA_USER) {
             const dataUser = collaborationChatStore.collaborationRequestCreator!!;
             fullName = dataUser.id === userStore.user!!.id ? 'You' : getFullName(dataUser);
-            username = dataUser.username;
+            username = dataUser?.username;
             avatar = dataUser.profileImage ? renderProfileImage(dataUser.profileImage) :
               getInitials(dataUser.firstName, dataUser.lastName)
           } else if (message.senderType === MessageSenderType.DATA_AUTHOR) {
             fullName = targetUserInfo.id === userStore.user!!.id ? 'You' : getFullName(targetUserInfo);
-            username = targetUserInfo.username;
+            username = targetUserInfo?.username;
             avatar = (targetUserInfo.profileImage ? renderProfileImage(targetUserInfo.profileImage) :
               getInitials(targetUserInfo.firstName, targetUserInfo.lastName));
           }

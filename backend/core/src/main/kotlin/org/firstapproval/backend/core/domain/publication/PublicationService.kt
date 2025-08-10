@@ -488,7 +488,7 @@ class PublicationService(
         pageSize: Int,
     ): PublicationsResponse {
         val downloadedPublicationsPage =
-            downloaderRepository.findAllByUserId(user.id, PageRequest.of(page, pageSize, Sort.by(DESC, "lastDownloadTime")))
+            downloaderRepository.findAllByUserIdExcludeAuthors(user.id, PageRequest.of(page, pageSize, Sort.by(DESC, "lastDownloadTime")))
 
         return PublicationsResponse(downloadedPublicationsPage.isLast)
             .publications(downloadedPublicationsPage.map {

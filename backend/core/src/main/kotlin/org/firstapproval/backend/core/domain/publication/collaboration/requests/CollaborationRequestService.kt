@@ -71,17 +71,6 @@ class CollaborationRequestService(
             sequenceIndex = type.step
         ).also { exists -> if (exists) throw IllegalArgumentException("Message with equal or higher sequenceIndex ${type.step} already exists. Current type: $type") }
 
-//        val messageRecipient = targetUser(type, collaborationRequest)
-//        val message = CollaborationRequestMessage(
-//            collaborationRequest = collaborationRequest,
-//            type = type,
-//            user = messageRecipient,
-//            payload = objectMapper.convertValue(collaborationRequestMessage.payload, MessagePayload::class.java),
-//            sequenceIndex = type.step,
-//            recipientTypes = mutableSetOf(type.recipientType),
-//            isAssistant = collaborationRequestMessage.isAssistant
-//        )
-
         val message = collaborationRequestMessage(
             collaborationRequest = collaborationRequest,
             type = type,
@@ -109,21 +98,6 @@ class CollaborationRequestService(
 
             val potentialPublicationData = collaborationRequest.messages
                 .find { it.type === DONE_WHATS_NEXT }!!.payload as PotentialPublicationData
-//            val iWouldLikeToIncludeYouAsCoAuthorMessage = CollaborationRequestMessage(
-//                collaborationRequest = collaborationRequest,
-//                type = I_WOULD_LIKE_TO_INCLUDE_YOU,
-//                // make for all authors (not only creator)
-//                user = targetUser(I_WOULD_LIKE_TO_INCLUDE_YOU, collaborationRequest),
-//                payload = IWouldLikeToIncludeYouAsCoAuthor(
-//                    potentialPublicationTitle = potentialPublicationData.potentialPublicationTitle,
-//                    typeOfWork = potentialPublicationData.typeOfWork,
-//                    intendedJournalForPublication = potentialPublicationData.intendedJournalForPublication,
-//                    detailsOfResearch = potentialPublicationData.detailsOfResearch
-//                ),
-//                sequenceIndex = I_WOULD_LIKE_TO_INCLUDE_YOU.step,
-//                recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
-//                isAssistant = true
-//            )
             val iWouldLikeToIncludeYouAsCoAuthorMessages = authors.map {
                 collaborationRequestMessage(
                     collaborationRequest = collaborationRequest,
@@ -138,15 +112,6 @@ class CollaborationRequestService(
                 )
             }
 
-//            val assistantCreateMessage = CollaborationRequestMessage(
-//                collaborationRequest = collaborationRequest,
-//                type = ASSISTANT_CREATE,
-//                // make for all authors (not only creator)
-//                user = targetUser(ASSISTANT_CREATE, collaborationRequest),
-//                sequenceIndex = ASSISTANT_CREATE.step,
-//                recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
-//                isAssistant = true
-//            )
             val assistantCreateMessages = authors.map {
                 collaborationRequestMessage(collaborationRequest, ASSISTANT_CREATE, it.author.user)
             }
@@ -196,16 +161,6 @@ class CollaborationRequestService(
                 payload = YourCollaborationIsEstablishedPayload(author = invitedAuthor.author.toShortInfoApiObject()),
             )
 
-//            val authorNotifiedDeclinedMessage = CollaborationRequestMessage(
-//                collaborationRequest = collaborationRequest,
-//                type = YOUR_COLLABORATION_IS_ESTABLISHED,
-//                user = targetUser(YOUR_COLLABORATION_IS_ESTABLISHED, collaborationRequest),
-//                payload = YourCollaborationIsEstablishedPayload(author = invitedAuthor.author.toShortInfoApiObject()),
-//                sequenceIndex = YOUR_COLLABORATION_IS_ESTABLISHED.step,
-//                recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR),
-//                isAssistant = true
-//            )
-
             val messages = mutableListOf(authorNotifiedDeclinedMessage)
             if (collaborationRequest.authors.all { it.status in COLLABORATION_RESPONSE_STATUSES }) {
                 messages.add(collaborationRequestMessage(collaborationRequest, ALL_DATA_AUTHORS_RESPONDED_TO_COLLABORATION_REQUEST))
@@ -215,16 +170,6 @@ class CollaborationRequestService(
         }
 
         UPLOAD_FINAL_DRAFT -> {
-//            val finalDraftAttachedByDataUserMessageType = ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER
-//            val finalDraftAttachedMessage = CollaborationRequestMessage(
-//                collaborationRequest = collaborationRequest,
-//                type = finalDraftAttachedByDataUserMessageType,
-//                user = targetUser(finalDraftAttachedByDataUserMessageType, collaborationRequest),
-//                payload = FinalDraftAttachedByDataUser(dataUser = user.toApiObjectWithoutPhoto()),
-//                sequenceIndex = finalDraftAttachedByDataUserMessageType.step,
-//                recipientTypes = mutableSetOf(PUBLICATION_CREATOR),
-//                isAssistant = true
-//            )
             val finalDraftAttachedMessages = collaborationRequest.authors.map {
                 collaborationRequestMessage(
                     collaborationRequest = collaborationRequest,
@@ -234,17 +179,7 @@ class CollaborationRequestService(
                 )
             }
 
-//            val authorHas14DaysToApproveMessageType = AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE
-//            val authorHas14DaysToMakeRevisionAndApproveMessage = CollaborationRequestMessage(
-//                collaborationRequest = collaborationRequest,
-//                type = authorHas14DaysToApproveMessageType,
-//                user = targetUser(authorHas14DaysToApproveMessageType, collaborationRequest),
-//                sequenceIndex = authorHas14DaysToApproveMessageType.step,
-//                recipientTypes = mutableSetOf(COLLABORATION_REQUEST_CREATOR),
-//                isAssistant = true
-//            )
             val authorHas14DaysMessage = collaborationRequestMessage(collaborationRequest, AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE)
-
             finalDraftAttachedMessages + authorHas14DaysMessage
         }
 
