@@ -23,11 +23,6 @@ import {ProfilePage} from './pages/user/ProfilePage';
 import {AccountPage} from './pages/user/AccountPage';
 import {ResetPasswordPage} from './pages/restore/set-password/RestorePasswordPage';
 import {SharingOptionsPage} from './pages/publication/SharingOptionsPage';
-import logo from '../src/assets/logo-black.svg';
-import developing from '../src/assets/developing.svg';
-import {Button} from '@mui/material';
-import DesktopMacOutlinedIcon from '@mui/icons-material/DesktopMacOutlined';
-import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
 import {Page} from './core/router/constants';
 import {EnterAffiliationsPage} from './pages/signup/EnterAffiliationsPage';
 import {userStore} from './core/user';
@@ -36,7 +31,6 @@ import {EnterEmailPage} from './pages/signup/EnterEmailPage';
 import {ContestPage} from "./pages/contest/ContestPage";
 import {ChooseDataCollectionPage} from "./pages/publication/ChooseDataCollection"
 
-const MOBILE_VERSION_NOT_SUPPORT_STORAGE_KEY = 'mobileVersionNotSupportShown';
 
 const App: FunctionComponent = observer(() => {
   const { page, navigatePage } = routerStore;
@@ -45,14 +39,6 @@ const App: FunctionComponent = observer(() => {
   const [signUpStore] = useState(() => new SignUpStore());
   const [restorePasswordStore] = useState(() => new RestorePasswordStore());
 
-  const [mobileVersionNowSupportShown, setMobileVersionNowSupportShown] =
-    useState(
-      Boolean(localStorage.getItem(MOBILE_VERSION_NOT_SUPPORT_STORAGE_KEY))
-    );
-
-  const showMobileNotSupporting =
-    window.innerWidth < 960 && !mobileVersionNowSupportShown && page != Page.CONTEST_PAGE;
-
   return (
     <>
       {/*
@@ -60,18 +46,7 @@ const App: FunctionComponent = observer(() => {
       <DndProvider backend={HTML5Backend}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          {showMobileNotSupporting && (
-            <MobileVersionIsNotSupporting
-              close={() => {
-                localStorage.setItem(
-                  MOBILE_VERSION_NOT_SUPPORT_STORAGE_KEY,
-                  String(true)
-                );
-                setMobileVersionNowSupportShown(true);
-              }}></MobileVersionIsNotSupporting>
-          )}
-          {!showMobileNotSupporting && (
-            <>
+          <>
               {page === Page.LOADING && <LoadingPage />}
               {page === Page.HOME_PAGE && <HomePage key={routerStore.key} />}
               {page === Page.CONTACTS_PAGE && (
@@ -240,66 +215,10 @@ const App: FunctionComponent = observer(() => {
                 />
               )}
             </>
-          )}
         </ThemeProvider>
       </DndProvider>
     </>
   );
 });
-
-interface MobileVersionIsNotSupportingProps {
-  close: () => void;
-}
-
-const MobileVersionIsNotSupporting = observer(
-  (props: MobileVersionIsNotSupportingProps) => {
-    return (
-      <div
-        style={{
-          position: 'fixed',
-          width: '100vw',
-          height: '100vh',
-          backgroundColor: 'white',
-          zIndex: 1000,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          padding: 24
-        }}>
-        <img src={logo} />
-        <img style={{ marginTop: 24 }} src={developing} />
-        <div
-          style={{
-            fontSize: 24,
-            fontWeight: 600,
-            marginTop: 24
-          }}>
-          No mobile version yet
-        </div>
-        <div
-          style={{
-            marginTop: 16,
-            fontSize: 16,
-            color: '#68676E',
-            textAlign: 'center',
-            marginBottom: 24
-          }}>
-          We recommend you to switch on a desktop while we&apos;re still
-          perfecting our mobile version. Or you can use Desktop Mode.
-        </div>
-        <Button
-          style={{ width: '100%' }}
-          startIcon={<DesktopMacOutlinedIcon />}
-          endIcon={<ArrowForwardOutlinedIcon />}
-          color={'primary'}
-          variant="contained"
-          onClick={props.close}>
-          Continue in Desktop Mode
-        </Button>
-      </div>
-    );
-  }
-);
 
 export default App;
