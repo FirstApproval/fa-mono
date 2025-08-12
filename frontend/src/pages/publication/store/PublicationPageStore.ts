@@ -203,6 +203,7 @@ export class PublicationPageStore {
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);
+    this.publicationStore.isDownloadedByUser = true;
   };
 
   downloadPdf = async (): Promise<void> => {
