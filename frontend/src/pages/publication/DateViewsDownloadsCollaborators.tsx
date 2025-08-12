@@ -15,7 +15,7 @@ import styled from '@emotion/styled';
 import { getContentLicensingAbbreviation } from '../../util/publicationUtils';
 import { routerStore } from '../../core/router';
 import { LicenseType } from '../../apis/first-approval-api';
-import { collaborationStore } from './store/downloadsStore';
+import { downloadedPublicationCollaborationChatPath } from "../../core/router/constants"
 
 export const DateViewsDownloadsCollaborators = observer(
   (props: {
@@ -115,9 +115,8 @@ export const DateViewsDownloadsCollaborators = observer(
               color="primary"
               variant="text"
               size={'small'}
-              onClick={() =>
-                (collaborationStore.openCreateCollaborationRequestDialog = true)
-              }>
+              href={`${downloadedPublicationCollaborationChatPath}/${publicationStore.publicationId}`}
+              >
               Request collaboration
             </RequestCollaborationButton>
           ) : (
