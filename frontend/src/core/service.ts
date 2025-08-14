@@ -7,7 +7,7 @@ import {
   PublicationApi,
   RegistrationApi,
   ReportApi,
-  SampleFileApi,
+  SampleFileApi, SubscriptionApi,
   UserApi,
   VisitorApi
 } from '../apis/first-approval-api';
@@ -49,3 +49,7 @@ export const organizationService = new OrganizationApi(configuration);
 export const reportService = new ReportApi(configuration);
 
 export const visitorService = new VisitorApi(configuration);
+
+export const subscriptionService = new SubscriptionApi(
+  configuration
+);

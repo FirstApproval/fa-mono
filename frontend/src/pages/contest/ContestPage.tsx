@@ -1,4 +1,4 @@
-import React, {type FunctionComponent, useEffect} from 'react'
+import React, { type FunctionComponent, useEffect, useState } from "react"
 import {observer} from 'mobx-react-lite';
 import {HeaderComponent} from '../../components/HeaderComponent';
 import {Footer} from '../home/Footer';
@@ -30,13 +30,17 @@ import StanislovasJanakuskas from 'src/assets/contest/judges/StanislovasJanakusk
 import ThomasStoeger from 'src/assets/contest/judges/ThomasStoeger.png';
 import { routerStore } from '../../core/router';
 import { Page } from '../../core/router/constants';
-import { Box, Button, Grid, Link } from '@mui/material';
+import { Alert, Box, Button, Grid, InputAdornment, Link, Snackbar } from "@mui/material"
 import styled from '@emotion/styled';
 import { userStore } from '../../core/user';
 import { DataCollectionType } from '../../apis/first-approval-api';
 import { css } from '@emotion/react';
 import { INTRO_VIEWED } from "../../core/router/RouterStore"
 import { Helmet } from "react-helmet"
+import { ArrowForward, MailOutlined } from "@mui/icons-material"
+import { FullWidthButton, FullWidthTextField, HeightElement } from "../common.styled"
+import { validateEmail } from "../../util/emailUtil"
+import { subscriptionService } from "../../core/service"
 
 export interface ExpertElement {
     logo: string;
@@ -218,7 +222,36 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
           'biotechnology, and biomedicine. The competition directly evaluates the quality of scientific datasets and their annotation, ' +
           'aiming to…';
 
+        const [isValidEmail, setIsValidEmail] = useState(true);
+        const [isSubmitting, setIsSubmitting] = useState(false);
+        const [showSuccessSubscriptionAlter, setShowSuccessSubscriptionAlter] = useState(false);
+        const [email, setEmail] = useState('');
+
+        useEffect(() => {
+            setIsValidEmail(email.length > 0 && validateEmail(email));
+        }, [email]);
+
         const applyNow = () => userStore.goToCreatePublication(DataCollectionType.STUDENT);
+
+        const validate = (): boolean => {
+            const isVE =
+              email.length > 0 && validateEmail(email);
+            setIsValidEmail(isVE);
+            return isVE;
+        };
+        const validateAndContinue = (event: any): void => {
+            if (event.key === 'Enter' || event.keyCode === 13 || event.button === 0) {
+                event.preventDefault();
+                const isValid = validate();
+                if (isValid) {
+                    setIsSubmitting(true);
+                    subscriptionService.subscribe({email}).then(_ => {
+                        setIsSubmitting(false);
+                        setShowSuccessSubscriptionAlter(true);
+                    });
+                }
+            }
+        };
 
         return (
             <>
@@ -502,6 +535,34 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                     </div>
                                 </div>
                                 <div>
+                                    <FullWidthTextField
+                                      autoComplete={'email'}
+                                      autoFocus
+                                      value={email}
+                                      type={'email'}
+                                      onChange={(e) => setEmail(e.currentTarget.value)}
+                                      onKeyDown={validateAndContinue}
+                                      label="Email"
+                                      variant="outlined"
+                                      InputProps={{
+                                          startAdornment: (
+                                            <InputAdornment position="start">
+                                                <MailOutlined />
+                                            </InputAdornment>
+                                          )
+                                      }}
+                                    />
+                                    <HeightElement value={'20px'} />
+                                    <FullWidthButton
+                                      loading={isSubmitting}
+                                      disabled={!isValidEmail}
+                                      variant="contained"
+                                      size={'large'}
+                                      endIcon={<ArrowForward />}
+                                      onClick={validateAndContinue}>
+                                        Subscribe
+                                    </FullWidthButton>
+                                    <HeightElement value={'20px'} />
                                     <div style={{
                                         width: 540,
                                         height: 80,
@@ -2236,6 +2297,18 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
           </div>
         </Box>
         <Footer />
+        <Snackbar
+          open={showSuccessSubscriptionAlter}
+          autoHideDuration={4000}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right'
+          }}
+          onClose={() => setShowSuccessSubscriptionAlter(false)}>
+            <Alert severity="success" sx={{ width: '100%' }}>
+                You're successfully subscribed!
+            </Alert>
+        </Snackbar>
       </>
     );
   }
