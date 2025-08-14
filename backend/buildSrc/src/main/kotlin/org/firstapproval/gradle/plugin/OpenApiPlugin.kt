@@ -172,6 +172,7 @@ class OpenApiPlugin : Plugin<Project> {
             "org.springframework.data:spring-data-commons",
             "io.swagger.core.v3:swagger-annotations",
             "jakarta.xml.bind:jakarta.xml.bind-api",
+            "javax.validation:validation-api",
             "com.fasterxml.jackson.datatype:jackson-datatype-jsr310",
             "org.openapitools:jackson-databind-nullable",
             "jakarta.validation:jakarta.validation-api",

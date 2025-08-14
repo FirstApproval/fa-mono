@@ -9,7 +9,7 @@ import {
   PublicationApi,
   RegistrationApi,
   ReportApi,
-  SampleFileApi,
+  SampleFileApi, SubscriptionApi,
   UserApi,
   VisitorApi
 } from "../apis/first-approval-api"
@@ -57,5 +57,9 @@ export const collaborationRequestService = new CollaborationRequestApi(
 );
 
 export const collaborationRequestChatService = new CollaborationRequestChatApi(
+  configuration
+);
+
+export const subscriptionService = new SubscriptionApi(
   configuration
 );
