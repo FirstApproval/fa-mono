@@ -2142,6 +2142,28 @@ paths:
       operationId: getOrganization
       tags: [ organization ]
 
+  /api/subscribe:
+    post:
+      summary: Save visitor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+              required:
+                - email
+        required: true
+      responses:
+        200:
+          description: Success
+      security:
+        - PublicAuth: [ ]
+      operationId: subscribe
+      tags: [ subscription ]
+
 components:
   schemas:
     PublicationFile:
