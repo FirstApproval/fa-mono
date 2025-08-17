@@ -12,4 +12,6 @@ interface CollaborationMessageRepository : JpaRepository<CollaborationRequestMes
         userId: UUID,
         sequenceIndex: Int
     ): Boolean
+
+    fun findAllByEmailNotificationStatus(status: EmailNotificationStatus): List<CollaborationRequestMessage>
 }

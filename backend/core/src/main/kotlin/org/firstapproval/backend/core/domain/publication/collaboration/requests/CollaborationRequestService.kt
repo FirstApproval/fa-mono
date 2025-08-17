@@ -15,6 +15,7 @@ import org.firstapproval.backend.core.domain.publication.collaboration.chats.mes
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.*
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.RecipientType.DATA_USER
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.RecipientType.DATA_AUTHOR
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.EmailNotificationStatus.NOT_REQUIRED
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestStatus.PENDING
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorInvitationStatus.*
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.authors.CollaborationAuthorInvitationStatus.COLLABORATION_APPROVED
@@ -247,6 +248,7 @@ class CollaborationRequestService(
     ) = CollaborationRequestMessage(
         collaborationRequest = collaborationRequest,
         type = type,
+        emailNotificationStatus = if (type.emailNotificationRequired) EmailNotificationStatus.PENDING else NOT_REQUIRED,
         user = targetUser(type, collaborationRequest, targetUser),
         payload = payload,
         sequenceIndex = type.step

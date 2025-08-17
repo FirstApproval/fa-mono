@@ -2,9 +2,15 @@ package org.firstapproval.backend.core.domain.notification
 
 import io.jsonwebtoken.lang.Strings
 import mu.KotlinLogging.logger
-import org.firstapproval.backend.core.config.Properties
 import org.firstapproval.backend.core.config.Properties.EmailProperties
+import org.firstapproval.backend.core.config.Properties.FrontendProperties
 import org.firstapproval.backend.core.domain.publication.Publication
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessage
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.RecipientType.DATA_AUTHOR
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.RecipientType.DATA_USER
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.EmailNotificationStatus.NOT_REQUIRED
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.EmailNotificationStatus.SENT
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.formatters.MessageEmailFormatStrategyFactory
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.infra.mail.MailService
 import org.firstapproval.backend.core.utils.require
@@ -18,7 +24,8 @@ class NotificationService(
     private val emailProperties: EmailProperties,
     private val templateEngine: SpringTemplateEngine,
     private val mailService: MailService,
-    private val frontendProperties: Properties.FrontendProperties,
+    private val messageEmailFormatStrategyFactory: MessageEmailFormatStrategyFactory,
+    private val frontendProperties: FrontendProperties,
     @Value("\${tech-support-email}")
     private val techSupportEmail: String,
     @Value("\${admin-email}")
@@ -170,5 +177,28 @@ class NotificationService(
             .forEach { email ->
                 mailService.send(email, "[FirstApproval] Publication passed moderation", content)
             }
+    }
+
+    fun sendCollaborationMessage(message: CollaborationRequestMessage) {
+        if (message.emailNotificationStatus == SENT || message.emailNotificationStatus == NOT_REQUIRED) {
+            log.warn { "Email notification not required for message ${message.id}, type: ${message.type}" }
+            return
+        }
+        if (emailProperties.noopMode) {
+            log.info { "${message.type}: ${message.payload}" }
+            return
+        }
+
+        val collaborationRequest = message.collaborationRequest
+
+        val subject = messageEmailFormatStrategyFactory.generateSubject(message)
+        val content = messageEmailFormatStrategyFactory.generateContent(message)
+
+        val usersForSendingEmail = when (message.type.recipientType) {
+            DATA_USER -> listOf(collaborationRequest.user.email!!)
+            DATA_AUTHOR -> collaborationRequest.authors.map { it.author.email!! }
+        }
+
+        mailService.send(usersForSendingEmail.toTypedArray(), subject, content)
     }
 }

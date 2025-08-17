@@ -21,4 +21,14 @@ class MailService(
         helper.setSubject(subject)
         emailSender.send(message)
     }
+
+    fun send(to: Array<String>, subject: String, content: String, html: Boolean = false) {
+        val message = emailSender.createMimeMessage()
+        val helper = MimeMessageHelper(message, StandardCharsets.UTF_8.name())
+        helper.setFrom(emailProperties.from)
+        helper.setTo(to)
+        helper.setText(content, html)
+        helper.setSubject(subject)
+        emailSender.send(message)
+    }
 }

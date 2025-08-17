@@ -40,6 +40,9 @@ class CollaborationRequestMessage(
     @Enumerated(STRING)
     val type: CollaborationRequestMessageType,
 
+    @Enumerated(STRING)
+    var emailNotificationStatus: EmailNotificationStatus,
+
     @Type(JsonBinaryType::class)
     @Column(columnDefinition = "jsonb")
     val payload: MessagePayload? = null,
@@ -53,7 +56,13 @@ class CollaborationRequestMessage(
     val files: List<CollaborationRequestMessageFile> = mutableListOf(),
 )
 
-enum class CollaborationRequestMessageType(val step: Int, val recipientType: RecipientType, val senderType: SenderType) {
+enum class CollaborationRequestMessageType(
+    val step: Int,
+    val recipientType: RecipientType,
+    val senderType: SenderType,
+    val emailNotificationRequired: Boolean = false,
+    val template: String? = null
+) {
     //Collaboration request creator:
     AGREE_TO_THE_TERMS_OF_COLLABORATION(0, DATA_USER, SenderType.DATA_USER),
     DATASET_WAS_DOWNLOADED(1, DATA_USER, SenderType.ASSISTANT),
@@ -69,32 +78,37 @@ enum class CollaborationRequestMessageType(val step: Int, val recipientType: Rec
     PREFILLED_COLLABORATION_AGREEMENT(11, DATA_USER, SenderType.ASSISTANT),
     EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST(12, DATA_USER, SenderType.DATA_USER),
     FIRST_STEP_IS_COMPLETED(13, DATA_USER, SenderType.ASSISTANT),
-    YOUR_COLLABORATION_IS_ESTABLISHED(14, DATA_USER, SenderType.ASSISTANT),
-    YOUR_COLLABORATION_IS_DECLINED(14, DATA_USER, SenderType.ASSISTANT),
-    ALL_DATA_AUTHORS_RESPONDED_TO_COLLABORATION_REQUEST(15, DATA_USER, SenderType.ASSISTANT),
-    ALL_DATA_AUTHORS_DECLINED_COLLABORATION_REQUEST(15, DATA_USER, SenderType.ASSISTANT),
+    YOUR_COLLABORATION_IS_ESTABLISHED(14, DATA_USER, SenderType.ASSISTANT, true),
+    YOUR_COLLABORATION_IS_DECLINED(14, DATA_USER, SenderType.ASSISTANT, true),
+    ALL_DATA_AUTHORS_RESPONDED_TO_COLLABORATION_REQUEST(15, DATA_USER, SenderType.ASSISTANT, true),
+    ALL_DATA_AUTHORS_DECLINED_COLLABORATION_REQUEST(15, DATA_USER, SenderType.ASSISTANT, true),
     UPLOAD_FINAL_DRAFT(16, DATA_USER, SenderType.DATA_USER),
     AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE(17, DATA_USER, SenderType.ASSISTANT),
-    AUTHOR_APPROVED(18, DATA_USER, SenderType.ASSISTANT),
-    AUTHOR_DECLINED(19, DATA_USER, SenderType.ASSISTANT),
-    ALL_AUTHORS_CONFIRMED(20, DATA_USER, SenderType.ASSISTANT),
+    AUTHOR_APPROVED(18, DATA_USER, SenderType.ASSISTANT, true),
+    AUTHOR_DECLINED(19, DATA_USER, SenderType.ASSISTANT, true),
+    ALL_AUTHORS_CONFIRMED(20, DATA_USER, SenderType.ASSISTANT, true),
+    ALL_AUTHORS_DECLINED(20, DATA_USER, SenderType.ASSISTANT, true),
 
     CHANGE_MY_PERSONAL_INFO(0, DATA_USER, SenderType.DATA_USER),
     CHANGE_INFO_ABOUT_MY_PUBLICATION(0, DATA_USER, SenderType.DATA_USER),
 
     //Publication creator
-    I_WOULD_LIKE_TO_INCLUDE_YOU(0, DATA_AUTHOR, SenderType.DATA_USER),
+    I_WOULD_LIKE_TO_INCLUDE_YOU(0, DATA_AUTHOR, SenderType.DATA_USER, true),
     ASSISTANT_CREATE(1, DATA_AUTHOR, SenderType.DATA_AUTHOR),
     APPROVE_COLLABORATION(2, DATA_AUTHOR, SenderType.DATA_AUTHOR),
     DECLINE_COLLABORATION(2, DATA_AUTHOR, SenderType.DATA_AUTHOR),
+    // need to handle in back and front
+    ASSISTANT_COLLABORATION_APPROVED(3, DATA_AUTHOR, SenderType.ASSISTANT),
     ASSISTANT_COLLABORATION_DECLINED(3, DATA_AUTHOR, SenderType.ASSISTANT),
-    ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER(4, DATA_AUTHOR, SenderType.ASSISTANT),
+    ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER(4, DATA_AUTHOR, SenderType.ASSISTANT, true),
     APPROVE_MANUSCRIPT(5, DATA_AUTHOR, SenderType.DATA_AUTHOR),
     DECLINE_MANUSCRIPT(5, DATA_AUTHOR, SenderType.DATA_AUTHOR),
     ASSISTANT_MANUSCRIPT_APPROVED(6, DATA_AUTHOR, SenderType.ASSISTANT),
     ASSISTANT_MANUSCRIPT_DECLINED(6, DATA_AUTHOR, SenderType.ASSISTANT),
 
-    EMAIL_DATA_USER(0, DATA_AUTHOR, SenderType.DATA_AUTHOR);
+    EMAIL_DATA_USER(0, DATA_AUTHOR, SenderType.DATA_AUTHOR),
+
+    DEFAULT(-1, DATA_AUTHOR, SenderType.DATA_AUTHOR);
 
     enum class RecipientType {
         DATA_USER,
@@ -106,6 +120,12 @@ enum class CollaborationRequestMessageType(val step: Int, val recipientType: Rec
         DATA_AUTHOR,
         DATA_USER
     }
+}
+
+enum class EmailNotificationStatus {
+    NOT_REQUIRED,
+    PENDING,
+    SENT
 }
 
 @JsonTypeInfo(
