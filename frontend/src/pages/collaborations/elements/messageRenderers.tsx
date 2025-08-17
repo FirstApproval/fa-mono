@@ -15,7 +15,6 @@ import { AuthorHas14DaysToMakeRevisionsAndApprove } from "./AuthorHas14DaysToMak
 import { AssistantCollaborationDeclined } from "./AssistantCollaborationDeclined"
 import { FormalizedAgreementPayload } from "./FormalizedAgreementPayload"
 import { YourCollaborationIsEstablished } from "./YourCollaborationIsEstablished"
-import { AssistantFinalDraftAttachedByDataUser } from "./AssistantFinalDraftAttachedByDataUser"
 import { AssistantManuscriptApproved } from "./AssistantManuscriptApproved"
 import { AllAuthorsConfirmed } from "./AllAuthorsConfirmed"
 import { PotentialPublicationDataForm } from "./PotentialPublicationDataForm"
@@ -24,7 +23,6 @@ import { CollaborationChatStoreInterface } from "../../publication/store/MyPubli
 import { IWouldLikeToIncludeYouAsCoAuthor } from "./IWouldLikeToIncludeYouAsCoAuthor"
 import { DatasetWasDownloaded } from "./DatasetWasDownloaded"
 import { AgreeToTheTermsOfCollaboration } from "./AgreeToTheTermsOfCollaboration"
-import { ProposePotentialPublicationNameAndType } from "./ProposePotentialPublicationNameAndType"
 import { GreatFirstStepIsCompleted } from "./GreatFirstStepIsCompleted"
 import { DataUserPayload } from "./DataUserPayload"
 import { ShowAuthorsEmails } from "./ShowAuthorsEmails"
@@ -83,7 +81,7 @@ export function createMessageRenderers(collaborationChatStore: CollaborationChat
     [CollaborationMessageType.YOUR_COLLABORATION_IS_DECLINED]: (message) => (
       <AuthorDeclinedPayload message={message} />
     ),
-    [CollaborationMessageType.ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER]: () => <AssistantFinalDraftAttachedByDataUser />,
+    // [CollaborationMessageType.ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER]: () => <AssistantFinalDraftAttachedByDataUser />,
     [CollaborationMessageType.ASSISTANT_MANUSCRIPT_APPROVED]: () => <AssistantManuscriptApproved />,
     [CollaborationMessageType.ALL_AUTHORS_CONFIRMED]: () => <AllAuthorsConfirmed />,
     [CollaborationMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU]: () => <IWouldLikeToIncludeYouAsCoAuthor />,
