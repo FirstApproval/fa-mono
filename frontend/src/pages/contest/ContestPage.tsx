@@ -12,16 +12,17 @@ import contestTopImage from 'src/assets/contest-top-image.svg';
 import contest1 from 'src/assets/contest-1.svg';
 import contest2 from 'src/assets/contest-2.svg';
 import contest3 from 'src/assets/contest-3.svg';
-import AlexanderPanchin from 'src/assets/contest/organizing-сommittee/AlexanderPanchin.png';
-import AnastasiaEgorova from 'src/assets/contest/organizing-сommittee/AnastasiaEgorova.png';
+import TimofeyGlinin from 'src/assets/contest/organizing-сommittee/TimofeyGlinin.png';
 import AnastasiaShubina from 'src/assets/contest/organizing-сommittee/AnastasiaShubina.png';
+import AlexanderPanchin from 'src/assets/contest/organizing-сommittee/AlexanderPanchin.png';
+import DanielDominguez from 'src/assets/contest/organizing-сommittee/DanielDominguez.png';
+import AnastasiaEgorova from 'src/assets/contest/organizing-сommittee/AnastasiaEgorova.png';
 import ElenaArzumanyan from 'src/assets/contest/organizing-сommittee/ElenaArzumanyan.png';
 import EugenKhomula from 'src/assets/contest/organizing-сommittee/EugenKhomula.png';
 import EvgenyAkkuratov from 'src/assets/contest/organizing-сommittee/EvgenyAkkuratov.png';
 import MariaPorokh from 'src/assets/contest/organizing-сommittee/MariaPorokh.png';
 import MikhailBatin from 'src/assets/contest/organizing-сommittee/MikhailBatin.png';
 import TatyanaLopatina from 'src/assets/contest/organizing-сommittee/TatyanaLopatina.png';
-import TimofeyGlinin from 'src/assets/contest/organizing-сommittee/TimofeyGlinin.png';
 import TylerHilsabeck from 'src/assets/contest/organizing-сommittee/TylerHilsabeck.png';
 import AlexandraStolzing from 'src/assets/contest/judges/AlexandraStolzing.png';
 import AnchaBaranova from 'src/assets/contest/judges/AnchaBaranova.png';
@@ -53,14 +54,20 @@ const organizationCommittee: ExpertElement[] = [
     {
         logo: TimofeyGlinin,
         name: "Timofey\nGlinin",
-        title: "PhD, First Approval, CA",
+        title: "PhD, Co-founder, First Approval, CA",
         url: "https://www.linkedin.com/in/timofey-glinin"
     },
     {
         logo: AnastasiaShubina,
         name: "Anastasia\nShubina",
-        title: "First Approval, CA",
+        title: "Co-founder, First Approval, CA",
         url: "https://www.linkedin.com/in/anastasia-n-shubina"
+    },
+    {
+        logo: DanielDominguez,
+        name: "Daniel\nDominguez",
+        title: "Co-founder, First Approval, CA",
+        url: "https://www.linkedin.com/in/daniel-dominguez-gomez/"
     },
     {
         logo: AnastasiaEgorova,
