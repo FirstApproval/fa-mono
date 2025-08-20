@@ -57,10 +57,10 @@ const organizationCommittee: ExpertElement[] = [
         url: "https://www.linkedin.com/in/timofey-glinin"
     },
     {
-        logo: AlexanderPanchin,
-        name: "Alexander\nPanchin",
+        logo: AnastasiaShubina,
+        name: "Anastasia\nShubina",
         title: "First Approval, CA",
-        url: "https://www.linkedin.com/in/alexander-panchin-2b303945"
+        url: "https://www.linkedin.com/in/anastasia-n-shubina"
     },
     {
         logo: AnastasiaEgorova,
@@ -68,11 +68,11 @@ const organizationCommittee: ExpertElement[] = [
         title: "Open Longevity, CA",
         url: "https://www.linkedin.com/in/anastasia-egorova-60580397"
     },
-      {
-        logo: AnastasiaShubina,
-        name: "Anastasia\nShubina",
-        title: "First Approval, CA",
-        url: "https://www.linkedin.com/in/anastasia-n-shubina"
+    {
+        logo: AlexanderPanchin,
+        name: "Alexander\nPanchin",
+        title: "Open Longevity, CA",
+        url: "https://www.linkedin.com/in/alexander-panchin-2b303945"
     },
     {
         logo: ElenaArzumanyan,
