@@ -1,10 +1,5 @@
 name: Frontend CI/CD. Build, Push to GHCR and deploy
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - 'frontend/**'
   workflow_dispatch:
     inputs:
       environment:
