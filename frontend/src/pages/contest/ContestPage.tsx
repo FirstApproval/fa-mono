@@ -651,7 +651,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                           padding: "10px 24px"
                                       }}
                                     >
-                                        <span>Info session: 28 August 2025. 9:00 PDT</span>
+                                        <span>Info session: 28 August 2025. 9:00 AM PDT</span>
                                         <Link
                                           color="inherit"
                                           href={'https://us06web.zoom.us/meeting/register/yIftWBuiRUGomwhuPy7Yjg'}
@@ -798,7 +798,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                           padding: "10px 24px",
                                       }}
                                     >
-                                        <span>Info session: 28 August 2025. 9:00 PDT</span>
+                                        <span>Info session: 28 August 2025. 9:00 AM PDT</span>
                                         <Link
                                           color="inherit"
                                           href={'https://us06web.zoom.us/meeting/register/yIftWBuiRUGomwhuPy7Yjg'}
