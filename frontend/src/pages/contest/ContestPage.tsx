@@ -38,7 +38,7 @@ import { DataCollectionType } from '../../apis/first-approval-api';
 import { css } from '@emotion/react';
 import { INTRO_VIEWED } from "../../core/router/RouterStore"
 import { Helmet } from "react-helmet"
-import { ArrowForward, MailOutlined } from "@mui/icons-material"
+import { ArrowForward, OpenInNewOutlined, MailOutlined } from "@mui/icons-material"
 import { FullWidthButton, FullWidthTextField, HeightElement } from "../common.styled"
 import { validateEmail } from "../../util/emailUtil"
 import { subscriptionService } from "../../core/service"
@@ -615,6 +615,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         <div style={{
                                             width: 540,
                                             height: 80,
+                                            marginBottom: 6,
                                             backgroundColor: '#F8F7FA',
                                             fontFamily: 'Roboto',
                                             fontSize: 24,
@@ -629,6 +630,37 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                             <img src={contestRightTop} style={{marginLeft: 8}}/>
                                         </div>
                                     </Link>
+                                    <div
+                                      style={{
+                                          width: 540,
+                                          height: 80,
+                                          color: 'white',
+                                          backgroundColor: "#3b4eff",
+                                          fontFamily: "Roboto",
+                                          fontSize: 20,
+                                          fontWeight: 500,
+                                          display: "flex",
+                                          flexDirection: "column",
+                                          alignItems: "flex-start",
+                                          borderRadius: 8,
+                                          padding: "10px 24px"
+                                      }}
+                                    >
+                                        <span>Info session: 28 August 2025. 9:00 PDT</span>
+                                        <Link
+                                          color="inherit"
+                                          href={'https://us06web.zoom.us/meeting/register/yIftWBuiRUGomwhuPy7Yjg'}
+                                          target={'_blank'}>
+                                            <div
+                                              style={{
+                                                  display: 'flex',
+                                                  alignItems: 'center',
+                                              }}>
+                                                <span>Register now</span>
+                                                <OpenInNewOutlined sx={{ width: 24, height: 24, marginLeft: '8px' }} />
+                                            </div>
+                                        </Link>
+                                    </div>
                                 </div>
                             </div>
                         </div>
