@@ -31,7 +31,7 @@ import StanislovasJanakuskas from 'src/assets/contest/judges/StanislovasJanakusk
 import ThomasStoeger from 'src/assets/contest/judges/ThomasStoeger.png';
 import { routerStore } from '../../core/router';
 import { Page } from '../../core/router/constants';
-import { Alert, Box, Button, Grid, InputAdornment, Link, Snackbar } from "@mui/material"
+import { Alert, Box, Button, Grid, InputAdornment, Link, Snackbar, Typography } from "@mui/material"
 import styled from '@emotion/styled';
 import { userStore } from '../../core/user';
 import { DataCollectionType } from '../../apis/first-approval-api';
@@ -542,33 +542,38 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                     </div>
                                 </div>
                                 <div>
-                                    <FullWidthTextField
-                                      autoComplete={'email'}
-                                      autoFocus
-                                      value={email}
-                                      type={'email'}
-                                      onChange={(e) => setEmail(e.currentTarget.value)}
-                                      onKeyDown={validateAndContinue}
-                                      label="Email"
-                                      variant="outlined"
-                                      InputProps={{
-                                          startAdornment: (
-                                            <InputAdornment position="start">
-                                                <MailOutlined />
-                                            </InputAdornment>
-                                          )
-                                      }}
-                                    />
-                                    <HeightElement value={'20px'} />
-                                    <FullWidthButton
-                                      loading={isSubmitting}
-                                      disabled={!isValidEmail}
-                                      variant="contained"
-                                      size={'large'}
-                                      endIcon={<ArrowForward />}
-                                      onClick={validateAndContinue}>
-                                        Subscribe
-                                    </FullWidthButton>
+                                    <div>
+                                        <Typography marginBottom='6px'>
+                                            Would you like to learn more about competition? Join our mailing list:
+                                        </Typography>
+                                        <FullWidthTextField
+                                          autoComplete={'email'}
+                                          autoFocus
+                                          value={email}
+                                          type={'email'}
+                                          onChange={(e) => setEmail(e.currentTarget.value)}
+                                          onKeyDown={validateAndContinue}
+                                          label="Email"
+                                          variant="outlined"
+                                          InputProps={{
+                                              startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <MailOutlined />
+                                                </InputAdornment>
+                                              )
+                                          }}
+                                        />
+                                        <HeightElement value={'10px'} />
+                                        <FullWidthButton
+                                          loading={isSubmitting}
+                                          disabled={!isValidEmail}
+                                          variant="contained"
+                                          size={'large'}
+                                          endIcon={<ArrowForward />}
+                                          onClick={validateAndContinue}>
+                                            Subscribe
+                                        </FullWidthButton>
+                                    </div>
                                     <HeightElement value={'20px'} />
                                     <div style={{
                                         width: 540,
@@ -685,6 +690,38 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                 marginBottom: 40,
                             }}>
                                 <div style={{marginBottom: 32}}>
+                                    <div style={{marginBottom: '12px'}}>
+                                        <Typography marginBottom='6px'>
+                                            Would you like to learn more about competition? Join our mailing list:
+                                        </Typography>
+                                        <FullWidthTextField
+                                          autoComplete={'email'}
+                                          autoFocus
+                                          value={email}
+                                          type={'email'}
+                                          onChange={(e) => setEmail(e.currentTarget.value)}
+                                          onKeyDown={validateAndContinue}
+                                          label="Email"
+                                          variant="outlined"
+                                          InputProps={{
+                                              startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <MailOutlined />
+                                                </InputAdornment>
+                                              )
+                                          }}
+                                        />
+                                        <HeightElement value={'8px'} />
+                                        <FullWidthButton
+                                          loading={isSubmitting}
+                                          disabled={!isValidEmail}
+                                          variant="contained"
+                                          size={'large'}
+                                          endIcon={<ArrowForward />}
+                                          onClick={validateAndContinue}>
+                                            Subscribe
+                                        </FullWidthButton>
+                                    </div>
                                     <div style={{
                                         width: '100%',
                                         height: 80,
@@ -696,7 +733,6 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         display: 'flex',
                                         alignItems: 'center',
                                         borderRadius: 8,
-                                        cursor: 'pointer',
                                     }}>
                                         <img src={contest1} style={{marginRight: 8, marginLeft: 16}}/>
                                         {submissionDeadlineText}
@@ -737,6 +773,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                             display: 'flex',
                                             alignItems: 'center',
                                             borderRadius: 8,
+                                            marginBottom: 6,
                                             cursor: 'pointer',
                                         }}>
                                             <img src={contest3} style={{marginRight: 8, marginLeft: 16}}/>
@@ -744,6 +781,38 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                             <img src={contestRightTop} style={{marginLeft: 8}}/>
                                         </div>
                                     </Link>
+                                    <div
+                                      style={{
+                                          color: 'white',
+                                          width: '100%',
+                                          height: 80,
+                                          backgroundColor: "#3b4eff",
+                                          fontFamily: 'Roboto',
+                                          fontSize: 16,
+                                          fontWeight: 500,
+                                          display: 'flex',
+                                          flexDirection: 'column',
+                                          alignItems: 'flex-start',
+                                          justifyContent: 'center',
+                                          borderRadius: 8,
+                                          padding: "10px 24px",
+                                      }}
+                                    >
+                                        <span>Info session: 28 August 2025. 9:00 PDT</span>
+                                        <Link
+                                          color="inherit"
+                                          href={'https://us06web.zoom.us/meeting/register/yIftWBuiRUGomwhuPy7Yjg'}
+                                          target={'_blank'}>
+                                            <div
+                                              style={{
+                                                  display: 'flex',
+                                                  alignItems: 'center',
+                                              }}>
+                                                <span>Register now</span>
+                                                <OpenInNewOutlined sx={{ width: 24, height: 24, marginLeft: '8px' }} />
+                                            </div>
+                                        </Link>
+                                    </div>
                                 </div>
                                 <div>
                                     <div style={{
