@@ -21,7 +21,7 @@ export const DataFirst = (): ReactElement => {
                 publishing reveres comprehensive elucidation,{' '}
                 <Subtitle3>
                   we're entering an era where quality datasets become the
-                  foundation for AI-driven analyses and breakthroughs
+                  foundation for AI-driven analysis and breakthroughs
                 </Subtitle3>
                 . Streamline your publishing with First Approval, where data
                 does the talking.

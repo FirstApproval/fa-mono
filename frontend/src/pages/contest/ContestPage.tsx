@@ -941,7 +941,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                     <span style={{fontWeight: 500}}>Eligible Data:</span> Submissions may include any
                                     form of raw and processed scientific data, covering both original datasets and
                                     those replicating previously published experiments. Negative data that fail to
-                                    confirm initial hypotheses are also welcome. By accepting such a broad range of
+                                    confirm initial hypothesis are also welcome. By accepting such a broad range of
                                     data types, the competition seeks to encourage rigorous scientific discourse and
                                     foster greater transparency in research.
                                 </li>
@@ -956,7 +956,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                     that
                                     replicate previously published experiments, as well as negative data that do not
                                     confirm
-                                    initial hypotheses.
+                                    initial hypothesis.
                                 </li>
                                 <li style={{
                                     fontFamily: 'Roboto',
@@ -1063,7 +1063,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                     <span style={{fontWeight: 500}}>Eligible Data:</span> Submissions may include any
                                     form of raw and processed scientific data, covering both original datasets and
                                     those replicating previously published experiments. Negative data that fail to
-                                    confirm initial hypotheses are also welcome. By accepting such a broad range of
+                                    confirm initial hypothesis are also welcome. By accepting such a broad range of
                                     data types, the competition seeks to encourage rigorous scientific discourse and
                                     foster greater transparency in research.
                                 </li>
@@ -1079,7 +1079,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                     that
                                     replicate previously published experiments, as well as negative data that do not
                                     confirm
-                                    initial hypotheses.
+                                    initial hypothesis.
                                 </li>
                                 <li style={{
                                     fontFamily: 'Roboto',
@@ -1455,7 +1455,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                 DOI, issued as part of a dedicated collection of biological, biotechnological, or biomedical datasets.
                                 This publication will be a valuable addition to each participant’s CV, highlighting their
                                 technical expertise.
-                                The records will become publicly available once the competition has concluded.
+                                The records will become publicly available once the competition has ended.
                                 Depositing a dataset with First Approval <span style={{fontWeight: 500}}>does not</span> impede
                                 subsequent publication of related work in a journal.
                                 The repository record is recognised as a formal research output and can be cited in
@@ -1933,7 +1933,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                       fontWeight: 400,
                       marginBottom: 30
                   }}>
-                    Dozens of academics from around the world volunteer in our judging process,
+                    Dozens of academics from around the world participate in our judging process,
                     selecting winners based on the quality of the work.
                 </div>
                 <Grid container spacing={2} justifyContent="start">
@@ -2104,7 +2104,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                         fontWeight: 400,
                         marginBottom: 30
                     }}>
-                      Dozens of academics from around the world volunteer in our judging process,
+                      Dozens of academics from around the world participate in our judging process,
                       selecting winners based on the quality of the work.
                   </div>
                   <Grid container spacing={2} justifyContent="start">

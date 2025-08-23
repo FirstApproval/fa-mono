@@ -52,7 +52,7 @@ export const Footer = (): ReactElement => {
           We are still fine-tuning the platform and would love your feedback.
         </FineTuningText>
         <FirstApprovalFooterText>
-          © 2023 First Approval (FA)
+          © 2025 First Approval (FA)
         </FirstApprovalFooterText>
       </div>
     </FooterWrap>
