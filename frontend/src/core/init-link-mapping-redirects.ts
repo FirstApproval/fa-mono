@@ -1,4 +1,4 @@
-import { linkMappingService } from '../core/service';
+import { linkMappingService } from "./service";
 import { contestWebinarPath, linkPath } from "./router/constants"
 import { routerStore } from "./router"
 
@@ -10,9 +10,8 @@ export async function initLinkMappingRedirects(): Promise<void> {
     const linkAlias = routerStore.lastPathSegment;
     linkMappingService.getLinkByAlias(linkAlias)
       .then(response => {
-        const url = response.data;
-        debugger;
-        window.location.replace(url);
+        const linkMapping = response.data;
+        window.location.replace(linkMapping.url);
       })
   }
 }
