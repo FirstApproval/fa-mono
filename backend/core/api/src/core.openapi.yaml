@@ -2165,6 +2165,28 @@ paths:
       operationId: subscribe
       tags: [ subscription ]
 
+  /api/link/{alias}:
+    get:
+      summary: Get link by alias
+      parameters:
+        - in: path
+          name: alias
+          schema:
+            type: string
+          required: true
+          description: Link alias
+      responses:
+        200:
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+      security:
+        - PublicAuth: [ ]
+      operationId: getLinkByAlias
+      tags: [ linkMapping ]
+
 components:
   schemas:
     PublicationFile:
