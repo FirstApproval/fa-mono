@@ -1676,9 +1676,9 @@ paths:
         200:
           description: Success
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/LinkMapping'
       security:
         - PublicAuth: [ ]
       operationId: getLinkByAlias
@@ -2605,6 +2605,19 @@ components:
         - link
         - passcode
         - contentStatus
+
+    LinkMapping:
+      type: object
+      properties:
+        url:
+          type: string
+        description:
+          type: string
+        eventTime:
+          type: string
+          format: date-time
+      required:
+        - url
 
   securitySchemes:
     PublicAuth:

@@ -34,14 +34,15 @@ import { Page } from '../../core/router/constants';
 import { Alert, Box, Button, Grid, InputAdornment, Link, Snackbar, Typography } from "@mui/material"
 import styled from '@emotion/styled';
 import { userStore } from '../../core/user';
-import { DataCollectionType } from '../../apis/first-approval-api';
+import { DataCollectionType, LinkMapping } from "../../apis/first-approval-api"
 import { css } from '@emotion/react';
 import { INTRO_VIEWED } from "../../core/router/RouterStore"
 import { Helmet } from "react-helmet"
 import { ArrowForward, OpenInNewOutlined, MailOutlined } from "@mui/icons-material"
 import { FullWidthButton, FullWidthTextField, HeightElement } from "../common.styled"
 import { validateEmail } from "../../util/emailUtil"
-import { subscriptionService } from "../../core/service"
+import { linkMappingService, subscriptionService } from "../../core/service"
+import { format, toZonedTime } from "date-fns-tz";
 
 export interface ExpertElement {
     logo: string;
@@ -222,7 +223,7 @@ const Expert = ({ logo, name, title, url }: ExpertElement) => {
 interface ContestPageProps {}
 
 export const ContestPage: FunctionComponent<ContestPageProps> = observer((props: ContestPageProps) => {
-        useEffect(() => localStorage.setItem(INTRO_VIEWED, 'true'));
+        useEffect(() => localStorage.setItem(INTRO_VIEWED, 'true'), []);
         const submissionDeadlineText = 'Submission deadline: 15 September 2025';
         const metaDescription = 'First Approval is pleased to invite students to participate in the Student Biological Data Competition. ' +
           'This unique initiative is aimed at encouraging the next generation of scientists to publish high-quality data in biology, ' +
@@ -233,10 +234,26 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
         const [isSubmitting, setIsSubmitting] = useState(false);
         const [showSuccessSubscriptionAlter, setShowSuccessSubscriptionAlter] = useState(false);
         const [email, setEmail] = useState('');
+        const [webinarLinkMapping, setWebinarLinkMapping] =
+          useState<LinkMapping | undefined>(undefined);
+        const [webinarTime, setWebinarTime] =
+          useState<string | undefined>(undefined);
 
         useEffect(() => {
             setIsValidEmail(email.length > 0 && validateEmail(email));
         }, [email]);
+
+        useEffect(() => {
+            linkMappingService.getLinkByAlias('contest-webinar')
+              .then(response => {
+                  const linkMapping = response.data;
+                  setWebinarLinkMapping(linkMapping)
+                  const timeZone = "America/Los_Angeles";
+                  const zoned = toZonedTime(linkMapping?.eventTime!!, timeZone);
+                  const formattedEventTime = format(zoned, "d MMMM yyyy. h:mm a zzz", { timeZone });
+                  setWebinarTime(formattedEventTime);
+              });
+        }, []);
 
         const applyNow = () => userStore.goToCreatePublication(DataCollectionType.STUDENT);
 
@@ -586,7 +603,7 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         display: 'flex',
                                         alignItems: 'center',
                                         borderRadius: 8,
-                                        cursor: 'pointer',
+                                        cursor: 'default',
                                     }}>
                                         <img src={contest1} style={{marginRight: 8, marginLeft: 16}}/>
                                         {submissionDeadlineText}
@@ -651,15 +668,16 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                           padding: "10px 24px"
                                       }}
                                     >
-                                        <span>Info session: 28 August 2025. 9:00 AM PDT</span>
+                                        <span>Info session: {webinarTime}</span>
                                         <Link
                                           color="inherit"
-                                          href={'https://us06web.zoom.us/meeting/register/yIftWBuiRUGomwhuPy7Yjg'}
+                                          href={webinarLinkMapping?.url}
                                           target={'_blank'}>
                                             <div
                                               style={{
                                                   display: 'flex',
                                                   alignItems: 'center',
+                                                  cursor: 'pointer'
                                               }}>
                                                 <span>Register now</span>
                                                 <OpenInNewOutlined sx={{ width: 24, height: 24, marginLeft: '8px' }} />
@@ -798,10 +816,10 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                           padding: "10px 24px",
                                       }}
                                     >
-                                        <span>Info session: 28 August 2025. 9:00 AM PDT</span>
+                                        <span>Info session: {webinarTime}</span>
                                         <Link
                                           color="inherit"
-                                          href={'https://us06web.zoom.us/meeting/register/yIftWBuiRUGomwhuPy7Yjg'}
+                                          href={webinarLinkMapping?.url}
                                           target={'_blank'}>
                                             <div
                                               style={{
