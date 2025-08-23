@@ -9,7 +9,8 @@ import {
   ReportApi,
   SampleFileApi, SubscriptionApi,
   UserApi,
-  VisitorApi
+  VisitorApi,
+  LinkMappingApi
 } from '../apis/first-approval-api';
 import { SampleFileServiceAdapter } from './SampleFileServiceAdapter';
 import { authStore } from './auth';
@@ -51,5 +52,9 @@ export const reportService = new ReportApi(configuration);
 export const visitorService = new VisitorApi(configuration);
 
 export const subscriptionService = new SubscriptionApi(
+  configuration
+);
+
+export const linkMappingService = new LinkMappingApi(
   configuration
 );

@@ -55,3 +55,5 @@ export const emailChangeConfirmationPath = '/email-change-confirmation/';
 export const registrationConfirmationPath = '/registration-confirmation/';
 export const contestPath = '/contest';
 export const passwordChangeConfirmation = '/password-change-confirmation'
+export const linkPath = '/link/';
+export const contestWebinarPath = '/contest-webinar';

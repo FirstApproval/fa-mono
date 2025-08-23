@@ -9,8 +9,10 @@ import {
   chooseDataCollectionPath,
   contactsPath,
   contestPath,
+  contestWebinarPath,
   emailChangeConfirmationPath,
   emailPath,
+  linkPath,
   namePath,
   Page,
   passwordChangeConfirmation,
@@ -93,6 +95,10 @@ export class RouterStore {
             localStorage.setItem(VISIT_MARK_KEY, 'true');
           }
         });
+      }
+
+      if (window.location.pathname.startsWith(linkPath) || window.location.pathname.startsWith(contestWebinarPath)) {
+        return;
       }
 
       if (path.startsWith(emailChangeConfirmationPath)) {

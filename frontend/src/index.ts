@@ -3,11 +3,13 @@ import './index.css';
 import { createRoot } from 'react-dom/client';
 import { initAuth } from './core/auth';
 import { initRouter } from './core/router';
+import { initLinkMappingRedirects } from "./core/init-link-mapping-redirects"
 import axios from 'axios';
 
 void (async (): Promise<void> => {
   await initAuth();
   await initRouter();
+  await initLinkMappingRedirects();
 
   const module = await import('./App');
 
