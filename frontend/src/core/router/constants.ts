@@ -65,3 +65,5 @@ export const collaborationMyPublicationChatPath = '/collaborations/my-publicatio
 export const downloadedPublicationCollaborationChatPath = '/collaborations/downloaded/chat';
 export const myPublicationCollaborationsPath = '/my-publication-collaborations/';
 export const myPublicationCollaborationChatPath = '/my-publication-collaboration/chat/';
+export const linkPath = '/link/';
+export const contestWebinarPath = '/contest-webinar';

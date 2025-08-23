@@ -24,8 +24,8 @@ import {
   collaborationPath,
   downloadedPublicationCollaborationChatPath,
   myPublicationCollaborationsPath,
-  myPublicationCollaborationChatPath
-} from './constants'
+  myPublicationCollaborationChatPath, linkPath, contestWebinarPath
+} from "./constants"
 import {
   PUBLICATION_TRIED_TO_DOWNLOAD_SESSION_KEY,
   PUBLISHING_DATA_COLLECTION_TYPE_SESSION_KEY
@@ -99,6 +99,10 @@ export class RouterStore {
         });
       }
 
+      if (window.location.pathname.startsWith(linkPath) || window.location.pathname.startsWith(contestWebinarPath)) {
+        return;
+      }
+
       if (path.startsWith(emailChangeConfirmationPath)) {
         this.navigatePage(Page.CHANGE_EMAIL_VERIFICATION, path, true);
         return;
@@ -127,6 +131,7 @@ export class RouterStore {
       }
 
       if (window.location.pathname.startsWith(contestPath)) {
+        debugger;
         this.navigatePage(Page.CONTEST_PAGE, path, true);
         return;
       }

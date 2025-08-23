@@ -11,7 +11,8 @@ import {
   ReportApi,
   SampleFileApi, SubscriptionApi,
   UserApi,
-  VisitorApi
+  VisitorApi,
+  LinkMappingApi
 } from "../apis/first-approval-api"
 import { SampleFileServiceAdapter } from './SampleFileServiceAdapter';
 import { authStore } from './auth';
@@ -61,5 +62,9 @@ export const collaborationRequestChatService = new CollaborationRequestChatApi(
 );
 
 export const subscriptionService = new SubscriptionApi(
+  configuration
+);
+
+export const linkMappingService = new LinkMappingApi(
   configuration
 );
