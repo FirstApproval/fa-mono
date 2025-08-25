@@ -136,6 +136,7 @@ enum class EmailNotificationStatus {
 @JsonSubTypes(
     value = [
         JsonSubTypes.Type(value = IWouldLikeToIncludeYouAsCoAuthor::class, name = "I_WOULD_LIKE_TO_INCLUDE_YOU"),
+        JsonSubTypes.Type(value = AssistanceCreate::class, name = "ASSISTANT_CREATE"),
         JsonSubTypes.Type(value = PersonalDataConfirmation::class, name = "I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL"),
         JsonSubTypes.Type(value = PotentialPublicationData::class, name = "DONE_WHATS_NEXT"),
         JsonSubTypes.Type(value = UploadFinalDraftPayload::class, name = "UPLOAD_FINAL_DRAFT"),
@@ -159,6 +160,17 @@ class IWouldLikeToIncludeYouAsCoAuthor(
     val intendedJournalForPublication: String,
     val detailsOfResearch: String,
     override var type: CollaborationRequestMessageType = I_WOULD_LIKE_TO_INCLUDE_YOU,
+) : MessagePayload
+
+class AssistanceCreate(
+    val firstName: String,
+    val lastName: String,
+    val workplaces: List<Workplace>,
+    val potentialPublicationTitle: String,
+    val typeOfWork: CollaborationRequestTypeOfWork,
+    val intendedJournalForPublication: String,
+    val detailsOfResearch: String,
+    override var type: CollaborationRequestMessageType = ASSISTANT_CREATE,
 ) : MessagePayload
 
 class PersonalDataConfirmation(

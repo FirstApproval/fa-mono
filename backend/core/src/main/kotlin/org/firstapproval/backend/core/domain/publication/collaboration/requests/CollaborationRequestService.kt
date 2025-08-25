@@ -99,6 +99,9 @@ class CollaborationRequestService(
 
             val potentialPublicationData = collaborationRequest.messages
                 .find { it.type === DONE_WHATS_NEXT }!!.payload as PotentialPublicationData
+
+            val personalData = collaborationRequest.messages
+                .find { it.type === I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL }!!.payload as PersonalDataConfirmation
             val iWouldLikeToIncludeYouAsCoAuthorMessages = authors.map {
                 collaborationRequestMessage(
                     collaborationRequest = collaborationRequest,
@@ -114,7 +117,20 @@ class CollaborationRequestService(
             }
 
             val assistantCreateMessages = authors.map {
-                collaborationRequestMessage(collaborationRequest, ASSISTANT_CREATE, it.author.user)
+                collaborationRequestMessage(
+                    collaborationRequest = collaborationRequest,
+                    type = ASSISTANT_CREATE,
+                    payload = AssistanceCreate(
+                        firstName = personalData.firstName,
+                        lastName = personalData.lastName,
+                        workplaces = personalData.workplaces,
+                        potentialPublicationTitle = potentialPublicationData.potentialPublicationTitle,
+                        typeOfWork = potentialPublicationData.typeOfWork,
+                        intendedJournalForPublication = potentialPublicationData.intendedJournalForPublication,
+                        detailsOfResearch = potentialPublicationData.detailsOfResearch,
+                    ),
+                    targetUser = it.author.user
+                )
             }
             iWouldLikeToIncludeYouAsCoAuthorMessages + assistantCreateMessages
         }

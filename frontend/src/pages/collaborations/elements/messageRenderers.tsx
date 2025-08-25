@@ -57,20 +57,26 @@ export function createMessageRenderers(collaborationChatStore: CollaborationChat
     ),
     [CollaborationMessageType.IF_YOU_ARE_INTERESTED_IN_THIS_DATASET]: () => showStepsInfo(),
     [CollaborationMessageType.VERIFY_YOUR_NAME_AND_AFFILIATION]: (message) =>
-      !collaborationChatStore.existsByType(CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL) && (
+      !collaborationChatStore.existsByType(CollaborationMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL) ? (
         <PersonalDataForm
           message={message}
           action={confirmThatProvidedInfoIsReal}
           store={collaborationChatStore as DownloadedPublicationCollaborationChatStore}
         />
-      ),
+      ) : <p>I confirm that provided info is real</p>,
     [CollaborationMessageType.PROPOSE_POTENTIAL_PUBLICATION_NAME_AND_TYPE]: (message) =>
-      !collaborationChatStore.existsByType(CollaborationMessageType.DONE_WHATS_NEXT) && (
+      !collaborationChatStore.existsByType(CollaborationMessageType.DONE_WHATS_NEXT) ? (
         <PotentialPublicationDataForm
           store={collaborationChatStore as DownloadedPublicationCollaborationChatStore}
           action={doneWhatsNext}
         />
-      ),
+      ) :
+        <p>
+          Thank you! Now, propose a potential name and type of publication,
+          and specify the details of the research in which you would like to use
+          the dataset to ensure that Dataset Authors are
+          well-informed about ideas for future collaborative publications, please.
+        </p>,
     [CollaborationMessageType.AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE]: () => <AuthorHas14DaysToMakeRevisionsAndApprove />,
     [CollaborationMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU]: (message) => <PotentialPublicationData message={message} />,
     [CollaborationMessageType.ASSISTANT_COLLABORATION_DECLINED]: () => <AssistantCollaborationDeclined />,

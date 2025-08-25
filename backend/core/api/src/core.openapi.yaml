@@ -3168,6 +3168,36 @@ components:
         - typeOfWork
         - type
 
+    AssistantCreatePayload:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        potentialPublicationTitle:
+          type: string
+        workplaces:
+          type: array
+          items:
+            $ref: '#/components/schemas/Workplace'
+        typeOfWork:
+          $ref: '#/components/schemas/CollaborationRequestTypeOfWork'
+        intendedJournalForPublication:
+          type: string
+        detailsOfResearch:
+          type: string
+          maxLength: 4096
+        type:
+          $ref: '#/components/schemas/CollaborationMessageType'
+      required:
+        - firstName
+        - lastName
+        - workplaces
+        - potentialPublicationTitle
+        - typeOfWork
+        - type
+
     CollaborationMessageUploadFinalDraftPayload:
       type: object
       properties:

@@ -1,5 +1,10 @@
 import { observer } from "mobx-react-lite"
-import { CollaborationMessageAuthorsPayload, CollaborationRequestMessage } from "../../../apis/first-approval-api"
+import {
+  AssistantCreatePayload,
+  CollaborationDataUserPayload,
+  CollaborationMessageAuthorsPayload,
+  CollaborationRequestMessage
+} from "../../../apis/first-approval-api"
 import React, { ReactElement } from "react"
 import { getCurrentWorkplacesString, getFullName } from "../../../util/userUtil"
 import { DescriptionOutlined } from "@mui/icons-material"
@@ -8,6 +13,7 @@ import { CollaborationChatStoreInterface } from "../../publication/store/MyPubli
 import { FlexWrapColumn, HeightElement } from "../../common.styled"
 import { userStore } from "../../../core/user"
 import chat from "../chat/Chat"
+import _ from "lodash"
 
 export const FormalizedAgreementPayload = observer((
   props: { message: CollaborationRequestMessage, chatStore: CollaborationChatStoreInterface }
@@ -17,36 +23,37 @@ export const FormalizedAgreementPayload = observer((
     chatStore
   } = props
   const collaborationAgreementFile = getPublicationAuthorCollaborationAgreementFile(message, chatStore)
-  const dataUserFullName = getFullName(chatStore.collaborationRequestCreator!!)
-  const affiliations = getCurrentWorkplacesString(chatStore.collaborationRequestCreator!!.workplaces)
-
-  // const authorsPayload = message.payload!! as Formaliz
+  const payload = message.payload as AssistantCreatePayload;
+  const dataUserFullName = `${payload.firstName} ${payload.lastName}`
+  const affiliations = getCurrentWorkplacesString(payload.workplaces)
 
   return (
     <FlexWrapColumn>
       <span>{dataUserFullName} plans to use your dataset in his research and would like to include you as a co-author in an upcoming publication.
         Below are the details of the proposed collaboration:</span>
-      <div>
-        <span><b>📄 Data User Information</b></span>
-        <span><b>Name:</b>{dataUserFullName}</span>
-        <span><b>Affiliation:</b>{affiliations}</span>
-        <span><b>Email:</b>{chatStore.collaborationRequestCreator!!.email}</span>
-      </div>
       <br />
-      <div>
+      <FlexWrapColumn>
+        <span><b>📄 Data User Information</b></span>
+        <span><b>Name: </b>{dataUserFullName}</span>
+        <span><b>Affiliation: </b>{affiliations}</span>
+        <span><b>Email: </b>{chatStore.collaborationRequestCreator!!.email}</span>
+      </FlexWrapColumn>
+      <br />
+      <FlexWrapColumn>
         <span><b>📝 Publication Plans</b></span>
-        <span><b>Tentative Title:</b></span>
-        <span><b>Type of Publication:</b></span>
-        <span><b>Comments:</b></span>
-        <span><b>Target Journal:</b></span>
+        <span><b>Tentative Title: </b>{payload.potentialPublicationTitle}</span>
+        <span><b>Type of Publication: </b>{_.capitalize(payload.typeOfWork.toLowerCase().replace('_', ' '))}</span>
+        <span><b>Comments: </b>{payload.detailsOfResearch}</span>
+        <span><b>Target Journal: </b>{payload.intendedJournalForPublication}</span>
+        <br />
         <span>
           <i>
             Please note: the target journal is not included in
             the agreement and may change depending on the final scope and results of the study.
           </i>
         </span>
-      </div>
-
+      </FlexWrapColumn>
+      <br />
 
       <span><b>🤝 Collaboration Summary</b></span>
       <span>By approving this collaboration:</span>
@@ -70,7 +77,7 @@ export const FormalizedAgreementPayload = observer((
         </li>
       </ul>
       <span>
-        <br>📎 Attached: </br> First Approval Collaboration Agreement (pre-filled by {dataUserFullName})
+        <b>📎 Attached: </b> First Approval Collaboration Agreement (pre-filled by {dataUserFullName})
       </span>
       {collaborationAgreementFile}
     </FlexWrapColumn>
