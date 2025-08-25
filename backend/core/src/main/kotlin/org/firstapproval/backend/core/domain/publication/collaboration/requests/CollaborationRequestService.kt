@@ -172,13 +172,19 @@ class CollaborationRequestService(
             val invitedAuthor = collaborationRequest.authors.find { it.author.user!!.id == user.id }!!
             invitedAuthor.status = COLLABORATION_APPROVED
 
-            val authorNotifiedDeclinedMessage = collaborationRequestMessage(
+            val youApprovedCollaborationAssistantMessage = collaborationRequestMessage(
+                collaborationRequest = collaborationRequest,
+                type = ASSISTANT_COLLABORATION_APPROVED,
+                targetUser = user
+            )
+
+            val authorNotifiedMessage = collaborationRequestMessage(
                 collaborationRequest = collaborationRequest,
                 type = YOUR_COLLABORATION_IS_ESTABLISHED,
                 payload = YourCollaborationIsEstablishedPayload(author = invitedAuthor.author.toShortInfoApiObject()),
             )
 
-            val messages = mutableListOf(authorNotifiedDeclinedMessage)
+            val messages = mutableListOf(youApprovedCollaborationAssistantMessage, authorNotifiedMessage)
             if (collaborationRequest.authors.all { it.status in COLLABORATION_RESPONSE_STATUSES }) {
                 messages.add(collaborationRequestMessage(collaborationRequest, ALL_DATA_AUTHORS_RESPONDED_TO_COLLABORATION_REQUEST))
             }

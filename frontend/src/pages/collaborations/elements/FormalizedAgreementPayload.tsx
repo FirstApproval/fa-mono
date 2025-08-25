@@ -126,21 +126,3 @@ const FileElement = styled.div`
   margin-bottom: 12px;
   cursor: pointer;
 `;
-
-const CustomUL = styled.ul`
-  list-style: none;
-  padding-left: 1.2em;
-
-  li {
-    position: relative;
-    padding-left: 1em;
-    color: black;
-  }
-
-  li::before {
-    content: "•";
-    position: absolute;
-    left: 0;
-    color: black;
-  }
-`;

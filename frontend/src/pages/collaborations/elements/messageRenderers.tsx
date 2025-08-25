@@ -28,6 +28,7 @@ import { DataUserPayload } from "./DataUserPayload"
 import { ShowAuthorsEmails } from "./ShowAuthorsEmails"
 import { AllDataAuthorsRespondedToCollaborationRequest } from "./AllDataAuthorsRespondedToCollaborationRequest"
 import { HeightElement } from "../../common.styled"
+import { AssistantCollaborationRequestApproved } from "./AssistantCollaborationApproved"
 
 export function createMessageRenderers(collaborationChatStore: CollaborationChatStoreInterface) {
   return {
@@ -99,6 +100,7 @@ export function createMessageRenderers(collaborationChatStore: CollaborationChat
     [CollaborationMessageType.APPROVE_MANUSCRIPT]: () => <span>Approve manuscript</span>,
     [CollaborationMessageType.APPROVE_COLLABORATION]: () => <span>Approve collaboration</span>,
     [CollaborationMessageType.DECLINE_COLLABORATION]: () => <span>Decline collaboration</span>,
+    [CollaborationMessageType.ASSISTANT_COLLABORATION_APPROVED]: () => <AssistantCollaborationRequestApproved chatStore={collaborationChatStore} />,
     [CollaborationMessageType.DECLINE_MANUSCRIPT]: () => <span>Decline collaboration</span>,
     [CollaborationMessageType.FIRST_STEP_IS_COMPLETED]: () => <GreatFirstStepIsCompleted />,
     [CollaborationMessageType.EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST]: () => <span>Everything is correct. Sign and send request.</span>,
