@@ -11,7 +11,7 @@ import { DownloadedPublicationCollaborationChatStore } from "../../publication/s
 import { showStepsInfo } from "./StepsInfo"
 import { confirmThatProvidedInfoIsReal } from "../chat/action/ConfirmThatProvidedInfoIsReal"
 import { doneWhatsNext } from "../chat/action/DoneWhatsNext"
-import { AuthorHas14DaysToMakeRevisionsAndApprove } from "./AuthorHas14DaysToMakeRevisionsAndApprove"
+import { AuthorHasSomeDaysToMakeRevisionsAndApprove } from "./AuthorHasSomeDaysToMakeRevisionsAndApprove"
 import { AssistantCollaborationDeclined } from "./AssistantCollaborationDeclined"
 import { FormalizedAgreementPayload } from "./FormalizedAgreementPayload"
 import { YourCollaborationIsEstablished } from "./YourCollaborationIsEstablished"
@@ -78,7 +78,7 @@ export function createMessageRenderers(collaborationChatStore: CollaborationChat
           the dataset to ensure that Dataset Authors are
           well-informed about ideas for future collaborative publications, please.
         </p>,
-    [CollaborationMessageType.AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE]: () => <AuthorHas14DaysToMakeRevisionsAndApprove />,
+    [CollaborationMessageType.AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE]: () => <AuthorHasSomeDaysToMakeRevisionsAndApprove />,
     [CollaborationMessageType.I_WOULD_LIKE_TO_INCLUDE_YOU]: (message) => <PotentialPublicationData message={message} />,
     [CollaborationMessageType.ASSISTANT_COLLABORATION_DECLINED]: () => <AssistantCollaborationDeclined />,
     [CollaborationMessageType.ASSISTANT_MANUSCRIPT_DECLINED]: () => <AssistantCollaborationDeclined />,
