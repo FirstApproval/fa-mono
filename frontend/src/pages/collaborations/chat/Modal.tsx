@@ -4,9 +4,14 @@ import React, { useState } from "react"
 import collaborationRequirementsImage from "../../../assets/collaboration_requirements.svg"
 import { HeightElement } from "../../common.styled"
 import timetableImage from "../../../assets/fa-timetable.svg"
-import fileIcon from "../../../assets/file-icon.svg"
 import sendImage from "../../../assets/fa-send.svg"
+import highFiveImage from "../../../assets/fa-highfive.svg"
 import { TextareaAutosize } from "@mui/base"
+import { CollaborationMessageFile } from "../elements/FileElement"
+import { Flex, FlexAlignItems, FlexJustifyContent } from "../../../ui-kit/flex"
+import { Close } from "@mui/icons-material"
+import { C68676E } from "../../../ui-kit/colors"
+import { FlexWrapRowFullWidth } from "../../../components/WorkplacesEditor"
 
 export const DeclineModal = ({
   open,
@@ -160,7 +165,22 @@ export const Step1Modal = ({
       aria-describedby="modal-modal-description">
       <StyledBox>
         <div>
-          <img src={sendImage} style={{ marginLeft: "-14px" }} />
+          <FlexWrapRowFullWidth style={{justifyContent: 'space-between', alignItems: 'flex-start'}}>
+            <img src={sendImage} style={{ marginLeft: "-14px" }} />
+            <Flex
+              justifyContent={FlexJustifyContent.flexEnd}
+              alignItems={FlexAlignItems.center}>
+              <Close
+                onClick={() => handleClose()}
+                sx={{
+                  width: "35px",
+                  height: "35px",
+                  cursor: "pointer"
+                }}
+                htmlColor={C68676E}
+              />
+            </Flex>
+          </FlexWrapRowFullWidth>
           <div>
             <span
               style={{
@@ -201,7 +221,7 @@ export const Step1Modal = ({
             maxWidth: "100%",
             cursor: "pointer"
           }}>
-          <img src={fileIcon} /> FA Collaboration agreement.pdf
+          <CollaborationMessageFile link="/docs/FA_Collaboration_Agreement_template.pdf" fileName="FA Collaboration Agreement template.pdf"/>
         </p>
       </StyledBox>
     </Modal>
@@ -223,22 +243,33 @@ export const Step2Modal = ({
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description">
       <StyledBox>
-        <div>
+        <FlexWrapRowFullWidth style={{justifyContent: 'space-between', alignItems: 'flex-start'}}>
           <img src={timetableImage} style={{ marginLeft: "-14px" }} />
-          <div>
-            <span
-              style={{
-                background: "#dedede",
-                padding: "5px",
-                borderRadius: "3px",
-                fontSize: "11px",
-                margin: "10px 0 20px",
-                display: "inline-block"
-              }}>
-              Step 2
-            </span>
-          </div>
-        </div>
+          <Flex
+            justifyContent={FlexJustifyContent.flexEnd}
+            alignItems={FlexAlignItems.center}>
+            <Close
+              onClick={() => handleClose()}
+              sx={{
+                width: "35px",
+                height: "35px",
+                cursor: "pointer"
+              }}
+              htmlColor={C68676E}
+            />
+          </Flex>
+        </FlexWrapRowFullWidth>
+        <span
+          style={{
+            background: "#dedede",
+            padding: "5px",
+            borderRadius: "3px",
+            fontSize: "11px",
+            margin: "10px 0 20px",
+            display: "inline-block"
+          }}>
+          Step 2
+        </span>
         <Typography id="modal-modal-title" variant="h5" component="h5">
           Dataset author(s) confirm the collaboration (maximum 30 days)
         </Typography>
@@ -270,7 +301,7 @@ export const Step2Modal = ({
             maxWidth: "100%",
             cursor: "pointer"
           }}>
-          <img src={fileIcon} /> FA Collaboration agreement.pdf
+          <CollaborationMessageFile link="/docs/FA_Collaboration_Agreement_template.pdf" fileName="FA Collaboration Agreement template.pdf"/>
         </p>
       </StyledBox>
     </Modal>
@@ -293,7 +324,22 @@ export const Step3Modal = ({
       aria-describedby="modal-modal-description">
       <StyledBox>
         <div>
-          <img src={sendImage} style={{ marginLeft: "-14px" }} />
+          <FlexWrapRowFullWidth style={{justifyContent: 'space-between', alignItems: 'flex-start'}}>
+            <img src={highFiveImage} style={{ marginLeft: "-14px" }} />
+            <Flex
+              justifyContent={FlexJustifyContent.flexEnd}
+              alignItems={FlexAlignItems.center}>
+              <Close
+                onClick={() => handleClose()}
+                sx={{
+                  width: "35px",
+                  height: "35px",
+                  cursor: "pointer"
+                }}
+                htmlColor={C68676E}
+              />
+            </Flex>
+          </FlexWrapRowFullWidth>
           <div>
             <span
               style={{
@@ -304,7 +350,7 @@ export const Step3Modal = ({
                 margin: "10px 0 20px",
                 display: "inline-block"
               }}>
-              Step 1
+              Step 3
             </span>
           </div>
         </div>
@@ -359,7 +405,7 @@ export const Step3Modal = ({
             maxWidth: "100%",
             cursor: "pointer"
           }}>
-          <img src={fileIcon} /> FA Collaboration agreement.pdf
+          <CollaborationMessageFile link="/docs/FA_Collaboration_Agreement_template.pdf" fileName="FA Collaboration Agreement template.pdf"/>
         </p>
       </StyledBox>
     </Modal>
