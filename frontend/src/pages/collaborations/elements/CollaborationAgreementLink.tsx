@@ -30,7 +30,7 @@ export function getPublicationCreatorCollaborationAgreementLink (
         display: 'inline-block'
       }}
     >
-    {getFullName(chatStore.publicationCreator!!)} FA Collaboration Agreement {chatStore.publication?.id}.pdf
+    {getFullName(chatStore.publicationCreator!!)} - FA Collaboration Agreement {chatStore.publication?.id}.pdf
   </span>
   </FileElement>
 }

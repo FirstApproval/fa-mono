@@ -1,11 +1,13 @@
 import { observer } from "mobx-react-lite"
-import { CollaborationRequestMessage } from "../../../apis/first-approval-api"
+import { CollaborationMessageAuthorsPayload, CollaborationRequestMessage } from "../../../apis/first-approval-api"
 import React, { ReactElement } from "react"
-import { getFullName } from "../../../util/userUtil"
+import { getCurrentWorkplacesString, getFullName } from "../../../util/userUtil"
 import { DescriptionOutlined } from "@mui/icons-material"
 import styled from "@emotion/styled"
 import { CollaborationChatStoreInterface } from "../../publication/store/MyPublicationCollaborationChatStore"
-import { FlexWrapColumn } from "../../common.styled"
+import { FlexWrapColumn, HeightElement } from "../../common.styled"
+import { userStore } from "../../../core/user"
+import chat from "../chat/Chat"
 
 export const FormalizedAgreementPayload = observer((
   props: { message: CollaborationRequestMessage, chatStore: CollaborationChatStoreInterface }
@@ -14,33 +16,73 @@ export const FormalizedAgreementPayload = observer((
     message,
     chatStore
   } = props
-  const collaborationAgreementFile = getPublicationCreatorCollaborationAgreementFile(message, chatStore)
+  const collaborationAgreementFile = getPublicationAuthorCollaborationAgreementFile(message, chatStore)
   const dataUserFullName = getFullName(chatStore.collaborationRequestCreator!!)
+  const affiliations = getCurrentWorkplacesString(chatStore.collaborationRequestCreator!!.workplaces)
+
+  // const authorsPayload = message.payload!! as Formaliz
 
   return (
     <FlexWrapColumn>
-      <span>{dataUserFullName} plans to use your dataset in his research and wants to include you as a co-author of his article.</span>
-      <span>This is First Approval collaboration agreement pre-filled by {dataUserFullName}:</span>
-      {collaborationAgreementFile}
+      <span>{dataUserFullName} plans to use your dataset in his research and would like to include you as a co-author in an upcoming publication.
+        Below are the details of the proposed collaboration:</span>
+      <div>
+        <span><b>📄 Data User Information</b></span>
+        <span><b>Name:</b>{dataUserFullName}</span>
+        <span><b>Affiliation:</b>{affiliations}</span>
+        <span><b>Email:</b>{chatStore.collaborationRequestCreator!!.email}</span>
+      </div>
+      <br />
+      <div>
+        <span><b>📝 Publication Plans</b></span>
+        <span><b>Tentative Title:</b></span>
+        <span><b>Type of Publication:</b></span>
+        <span><b>Comments:</b></span>
+        <span><b>Target Journal:</b></span>
+        <span>
+          <i>
+            Please note: the target journal is not included in
+            the agreement and may change depending on the final scope and results of the study.
+          </i>
+        </span>
+      </div>
+
+
+      <span><b>🤝 Collaboration Summary</b></span>
+      <span>By approving this collaboration:</span>
       <ul>
         <li>
-          By approving to the collaboration, you oblige data user to include you as a co-author.
-          <CustomUL>
-            <li>The data user will also be required to provide a 14-day notice before sending you the final version of the article.</li>
-          </CustomUL>
+          You will be formally included as a co-author on the resulting publication.
+          The Data User will be required to send you the final draft at least 30 days before submission, to allow you to review and approve how your dataset is used.
         </li>
-        <li>By declining a collaboration, you oblige data user to simply quote your dataset, without specifying you as a co-author.</li>
+        <li>
+          You may receive follow-up questions, suggestions for interpretation, or requests for clarification — please be open to sharing your expertise and advising on the analysis, where possible.
+        </li>
       </ul>
+      <HeightElement value="10px"/>
+      <span>By declining the collaboration:</span>
+      <ul>
+        <li>
+          You authorize the Data User to reuse the dataset under the standard license, but without including you as a co-author.
+        </li>
+        <li>
+          Instead, your dataset will be referenced using the <b>Standard Citation</b>.
+        </li>
+      </ul>
+      <span>
+        <br>📎 Attached: </br> First Approval Collaboration Agreement (pre-filled by {dataUserFullName})
+      </span>
+      {collaborationAgreementFile}
     </FlexWrapColumn>
   )
 })
 
-function getPublicationCreatorCollaborationAgreementFile (
+function getPublicationAuthorCollaborationAgreementFile (
   message: CollaborationRequestMessage,
   chatStore: CollaborationChatStoreInterface
 ) {
   const fileName =
-    `${getFullName(chatStore.publicationCreator!!)} - FA Collaboration Agreement ${chatStore.publication?.id}.pdf`
+    `${getFullName(userStore.user!!)} - FA Collaboration Agreement ${chatStore.publication?.id}.pdf`
   debugger;
   return <FileElement>
     <DescriptionOutlined style={{ marginRight: "12px" }} />

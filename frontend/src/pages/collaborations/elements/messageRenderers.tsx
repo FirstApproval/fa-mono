@@ -26,6 +26,8 @@ import { AgreeToTheTermsOfCollaboration } from "./AgreeToTheTermsOfCollaboration
 import { GreatFirstStepIsCompleted } from "./GreatFirstStepIsCompleted"
 import { DataUserPayload } from "./DataUserPayload"
 import { ShowAuthorsEmails } from "./ShowAuthorsEmails"
+import { AllDataAuthorsRespondedToCollaborationRequest } from "./AllDataAuthorsRespondedToCollaborationRequest"
+import { HeightElement } from "../../common.styled"
 
 export function createMessageRenderers(collaborationChatStore: CollaborationChatStoreInterface) {
   return {
@@ -42,7 +44,8 @@ export function createMessageRenderers(collaborationChatStore: CollaborationChat
         The agreement is sent to each author individually.
         It will contain your details and preliminary information about the work you are doing. Here is how the template looks:
       </span>
-      <CollaborationMessageFile link="/docs/FA_Collaboration_Agreement_template.pdf" />
+      <HeightElement value="12px" />
+      <CollaborationMessageFile link="/docs/FA_Collaboration_Agreement_template.pdf" fileName="FA Collaboration Agreement template.pdf"/>
     </div>,
     [CollaborationMessageType.AUTHOR_APPROVED]: (message) => <AuthorApprovedPayload message={message} />,
     [CollaborationMessageType.AUTHOR_DECLINED]: (message) => <AuthorDeclinedPayload message={message} />,
@@ -96,18 +99,7 @@ export function createMessageRenderers(collaborationChatStore: CollaborationChat
     [CollaborationMessageType.GOT_IT_READY_TO_START]: () => <span>Got it. I am ready to start.</span>,
     [CollaborationMessageType.LETS_MAKE_COLLABORATION_REQUEST]: () => <span>Great, Let’s make the Collaboration request</span>,
     [CollaborationMessageType.I_WOULD_LIKE_TO_COLLABORATE]: () => <span>I`d like to collaborate! Tell me more...</span>,
-    [CollaborationMessageType.ALL_DATA_AUTHORS_RESPONDED_TO_COLLABORATION_REQUEST]: () =>
-      <div style={{marginTop: '20px'}}>
-        <span>All data authors have responded to your collaboration request ✅</span>
-        <p>
-          Now you have collaborators for working with the dataset!
-          The final stage of collaboration is reviewing and approving the final draft of your manuscript together with your collaborators.
-        </p>
-        <span>
-          You can do this by using the "Upload Final Draft" function —
-          this will send the manuscript to your collaborators for review and approval before submission.
-        </span>
-      </div>,
+    [CollaborationMessageType.ALL_DATA_AUTHORS_RESPONDED_TO_COLLABORATION_REQUEST]: () => <AllDataAuthorsRespondedToCollaborationRequest />,
     [CollaborationMessageType.ALL_DATA_AUTHORS_DECLINED_COLLABORATION_REQUEST]: () =>
       <p>
         Unfortunately, all data authors have declined your request for collaboration.
