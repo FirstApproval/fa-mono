@@ -1,7 +1,9 @@
 import styled from '@emotion/styled';
 import React, { type ReactElement, useState } from 'react';
+import { YouTube, LinkedIn } from '@mui/icons-material';
 import logo from '../../assets/logo.svg';
-import { Button } from '@mui/material';
+import xTwitter from '../../assets/x_white.svg';
+import { Button, IconButton, Link, Stack } from "@mui/material"
 import { BetaDialogWithButton } from '../../components/BetaDialogWithButton';
 import { BetaDialog } from '../../components/BetaDialog';
 import { routerStore } from '../../core/router';
@@ -14,16 +16,31 @@ export const Footer = (): ReactElement => {
     <>
       <BetaDialog isOpen={isBetaDialogOpen} onClose={onClose} />
       <FooterWrap>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}>
-          <img src={logo} />
-          <BetaDialogWithButton />
-        </div>
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          justifyContent="space-between"
+          alignItems="center"
+          spacing={2}
+        >
+          {/* Левая часть */}
+          <Stack direction="row" spacing={2} alignItems="center">
+            <img src={logo} alt="logo" />
+            <BetaDialogWithButton />
+          </Stack>
+
+          {/* Правая часть */}
+          <Stack direction="row" spacing={2} justifyContent={{ xs: "center", sm: "flex-end" }}>
+            <IconButton component={Link} target="_blank" href="https://x.com/firstapproval">
+              <img src={xTwitter} />
+            </IconButton>
+            <IconButton component={Link} target="_blank" href="https://www.linkedin.com/company/first-approval/">
+              <LinkedIn sx={{ width: 35, height: 35 }} htmlColor="white" />
+            </IconButton>
+            <IconButton component={Link} target="_blank" href="https://www.youtube.com/@First_Approval">
+              <YouTube sx={{ width: 35, height: 35 }} htmlColor="white" />
+            </IconButton>
+          </Stack>
+        </Stack>
 
         <FooterButtons>
           <ButtonWrap onClick={() => setIsBetaDialogOpen(true)} size={'medium'}>
