@@ -85,7 +85,7 @@ class FileStorageService(private val s3Client: S3Client, private val s3Propertie
         val presignRequest = GetObjectPresignRequest.builder()
             .signatureDuration(Duration.ofMillis(s3Properties.downloadLinkTtl.toMillis()))
             .getObjectRequest { builder ->
-                builder.bucket(bucketName).key(id)
+                builder.bucket(bucketName + s3Properties.bucketPostfix).key(id)
                     .responseContentDisposition("attachment; filename=\"$contentDisposition\"")
             }
             .build()
