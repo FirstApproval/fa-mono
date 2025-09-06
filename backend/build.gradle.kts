@@ -48,7 +48,7 @@ subprojects {
             dependency("com.fasterxml.jackson.core:jackson-databind:2.14.2")
             dependency("io.jsonwebtoken:jjwt:0.9.1")
             dependency("org.springframework.boot:spring-boot-starter-webflux:3.1.0-SNAPSHOT")
-            dependency("com.amazonaws:aws-java-sdk-s3:1.12.449")
+            dependency("software.amazon.awssdk:s3:2.31.6")
             dependency("net.logstash.logback:logstash-logback-encoder:7.3")
             dependency("org.springframework.data:spring-data-elasticsearch:5.1.2")
             dependency("com.vladmihalcea:hibernate-types-52:2.21.1")

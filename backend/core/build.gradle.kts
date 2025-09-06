@@ -28,7 +28,7 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
     implementation("io.swagger:swagger-annotations:1.6.10")
     implementation("io.jsonwebtoken:jjwt")
-    implementation("com.amazonaws:aws-java-sdk-s3")
+    implementation("software.amazon.awssdk:s3")
     implementation("com.auth0:java-jwt:4.4.0")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
