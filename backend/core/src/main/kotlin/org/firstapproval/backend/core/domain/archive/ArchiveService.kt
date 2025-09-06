@@ -6,6 +6,7 @@ import net.lingala.zip4j.io.outputstream.ZipOutputStream
 import net.lingala.zip4j.model.ZipParameters
 import net.lingala.zip4j.model.enums.AesKeyStrength.KEY_STRENGTH_256
 import net.lingala.zip4j.model.enums.EncryptionMethod.AES
+import org.apache.commons.codec.digest.MessageDigestAlgorithms.SHA_256
 import org.apache.commons.lang3.RandomStringUtils.randomPrint
 import org.firstapproval.backend.core.domain.notification.NotificationService
 import org.firstapproval.backend.core.domain.publication.Publication
@@ -37,7 +38,10 @@ import java.io.File
 import java.io.File.createTempFile
 import java.io.FileOutputStream
 import java.nio.file.Files
+import java.security.DigestOutputStream
+import java.security.MessageDigest
 import java.time.ZonedDateTime.now
+import java.util.Base64
 import java.util.UUID
 import kotlin.io.path.Path
 import kotlin.io.path.exists
@@ -46,6 +50,7 @@ import kotlin.io.path.exists
 private const val BATCH_SIZE = 10
 private const val TMP_FOLDER = "archive_tmp"
 private const val ARCHIVE_PASSWORD_LENGTH = 32
+private const val BUFFER_SIZE = 8192
 
 private const val DESCRIPTIONS_FILE_DEFAULT_NAME = "descriptions"
 
@@ -132,7 +137,7 @@ class ArchiveService(
         publication.status = MODERATION
         publication.archivePassword = password
         publication.archiveSize = mainArchiveResult.size
-        publication.archiveSampleSize = sampleArchiveResult.size
+        publication.archiveSampleSize = sampleArchiveResult?.size
         publication.hash = mainArchiveResult.hash
         publication.filesCount = mainArchiveResult.filesCount.toLong()
         publication.foldersCount = mainArchiveResult.foldersCount.toLong()
@@ -149,86 +154,96 @@ class ArchiveService(
         val filesCount = files.totalElements
         var foldersCount = 1
         val folder = getOrCreateTmpFolder()
-        val tempArchive = createTempFile(publication.id.toString(), ".zip", folder)
-        val fileOutputStream = FileOutputStream(tempArchive)
-        val zipOutputStream = ZipOutputStream(fileOutputStream, password.toCharArray())
+        val tempArchive = createTempFile(publication.id, ".zip", folder)
         var err: Exception? = null
         val descriptions = StringBuilder()
         var archiveSize: Long = 0
         var hash: String? = null
-        try {
-            while (!files.isEmpty) {
-                filesIds.addAll(files.map { it.id })
-                files.forEach {
-                    if (it.isDir) {
-                        foldersCount++
-                    }
-                    if (!it.isDir) {
-                        val inputStream = fileStorageService.get(FILES, it.id.toString())
-                        val zipParams = ZipParameters()
-                        zipParams.fileNameInZip = it.fullPath
-                        zipParams.isEncryptFiles = true
-                        zipParams.encryptionMethod = AES
-                        // The assignment of aesKeyStrength = KEY_STRENGTH_256 is intended
-                        // solely for developer understanding, but it is, in fact, the default value.
-                        zipParams.aesKeyStrength = KEY_STRENGTH_256
-                        zipOutputStream.putNextEntry(zipParams)
-                        val buffer = ByteArray(1024)
-                        var len: Int
 
-                        while (inputStream.read(buffer).also { len = it } > 0) {
-                            zipOutputStream.write(buffer, 0, len)
+        val md = MessageDigest.getInstance(SHA_256)
+
+        try {
+            FileOutputStream(tempArchive).use { fos ->
+                DigestOutputStream(fos, md).use { digestStream ->
+                    ZipOutputStream(digestStream, password.toCharArray()).use { zipOutputStream ->
+
+                        while (!files.isEmpty) {
+                            filesIds.addAll(files.map { it.id })
+                            files.forEach {
+                                if (it.isDir) {
+                                    foldersCount++
+                                } else {
+                                    val inputStream = fileStorageService.get(FILES, it.id.toString())
+                                    val zipParams = ZipParameters().apply {
+                                        fileNameInZip = it.fullPath
+                                        isEncryptFiles = true
+                                        encryptionMethod = AES
+                                        aesKeyStrength = KEY_STRENGTH_256
+                                    }
+
+                                    zipOutputStream.putNextEntry(zipParams)
+                                    val buffer = ByteArray(BUFFER_SIZE)
+                                    var len: Int
+                                    inputStream.use { stream ->
+                                        while (stream.read(buffer).also { len = it } > 0) {
+                                            zipOutputStream.write(buffer, 0, len)
+                                        }
+                                    }
+                                    zipOutputStream.closeEntry()
+                                }
+
+                                if (it.description != null) {
+                                    descriptions.append(it.fullPath).append("\n").append(it.description).append("\n\n")
+                                }
+                            }
+                            page = page.next()
+                            files = publicationFileRepository.findByPublicationIdOrderByCreationTimeAsc(publication.id, page)
                         }
-                        inputStream.close()
-                        zipOutputStream.closeEntry()
-                    }
-                    if (it.description != null) {
-                        descriptions.append(it.fullPath + "\n" + it.description + "\n\n")
+
+                        if (descriptions.isNotEmpty()) {
+                            val zipParms = ZipParameters().apply {
+                                fileNameInZip = getFileNameForDescriptionsFile(publication.id)
+                            }
+                            zipOutputStream.putNextEntry(zipParms)
+                            descriptions.toString().byteInputStream().use { descStream ->
+                                val buffer = ByteArray(BUFFER_SIZE)
+                                var len: Int
+                                while (descStream.read(buffer).also { len = it } > 0) {
+                                    zipOutputStream.write(buffer, 0, len)
+                                }
+                            }
+                            zipOutputStream.closeEntry()
+                        }
                     }
                 }
-                page = page.next()
-                files = publicationFileRepository.findByPublicationIdOrderByCreationTimeAsc(publication.id, page)
             }
-            if (descriptions.isNotEmpty()) {
-                val zipParms = ZipParameters()
-                zipParms.fileNameInZip = getFileNameForDescriptionsFile(publication.id)
-                zipOutputStream.putNextEntry(zipParms)
-                val buffer = ByteArray(1024)
-                var len: Int
-                descriptions.toString().byteInputStream().use {
-                    while (it.read(buffer).also { len = it } > 0) {
-                        zipOutputStream.write(buffer, 0, len)
-                    }
-                    zipOutputStream.closeEntry()
-                }
+
+            hash = Base64.getEncoder().encodeToString(md.digest())
+            archiveSize = tempArchive.length()
+
+            when (publication.storageType) {
+                CLOUD_SECURE_STORAGE -> saveArchiveToS3(ARCHIVED_PUBLICATION_FILES, publication.id, tempArchive)
+                IPFS -> saveArchiveToIPFS(publication, tempArchive)
+                else -> throw IllegalStateException("Storage type must be present")
             }
+
         } catch (ex: Exception) {
             log.error(ex) { "archive error" }
-            err = ex
+            tempArchive.delete()
             throw ex
-        } finally {
-            zipOutputStream.close()
-            fileOutputStream.close()
-            if (err == null) {
-                hash = calculateSHA256(tempArchive)
-                archiveSize = tempArchive.length()
-
-                when (publication.storageType) {
-                    CLOUD_SECURE_STORAGE -> saveArchiveToS3(ARCHIVED_PUBLICATION_FILES, publication.id, tempArchive)
-                    IPFS -> saveArchiveToIPFS(publication, tempArchive)
-                    else -> throw IllegalStateException("Storage type must be present")
-                }
-
-            } else {
-                tempArchive.delete()
-            }
         }
+
         return ArchiveResult(filesIds, archiveSize, filesCount.toInt(), foldersCount, hash!!)
     }
 
-    private fun archiveSampleFilesProcess(publication: Publication): ArchiveResult {
+    private fun archiveSampleFilesProcess(publication: Publication): ArchiveResult? {
         var page = PageRequest.of(0, BATCH_SIZE)
         var files = publicationSampleFileRepository.findByPublicationIdOrderByCreationTimeAsc(publication.id, page)
+
+        if (files.isEmpty) {
+            return null
+        }
+
         val filesCount = files.totalElements
         var foldersCount = 1
         val filesIds = mutableListOf<UUID>()
