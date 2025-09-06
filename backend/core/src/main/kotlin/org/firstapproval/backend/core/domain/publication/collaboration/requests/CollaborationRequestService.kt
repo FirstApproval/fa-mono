@@ -1,7 +1,5 @@
 package org.firstapproval.backend.core.domain.publication.collaboration.requests
 
-import com.amazonaws.AmazonServiceException
-import com.amazonaws.SdkClientException
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.firstapproval.api.server.model.CreateCollaborationRequest
 import org.firstapproval.backend.core.domain.publication.Publication
@@ -33,6 +31,7 @@ import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
+import software.amazon.awssdk.core.exception.SdkClientException
 import java.util.*
 import java.util.UUID.randomUUID
 import org.firstapproval.api.server.model.CollaborationRequestMessage as CollaborationRequestMessageApiObject
@@ -287,7 +286,7 @@ class CollaborationRequestService(
         }
     }
 
-    @Transactional(rollbackFor = [SdkClientException::class, AmazonServiceException::class])
+    @Transactional(rollbackFor = [SdkClientException::class])
     fun uploadMessageFile(messageId: UUID, publicationId: String, file: MultipartFile): CollaborationRequestMessageFile {
         val uploadFinalDraftMessage = collaborationMessageRepository.getReferenceById(messageId)
         val finalDraftAttachedMessage = uploadFinalDraftMessage.collaborationRequest.messages
