@@ -1,6 +1,5 @@
 package org.firstapproval.backend.core.domain.publication.file
 
-import com.amazonaws.services.s3.model.S3Object
 import org.apache.commons.io.FilenameUtils
 import org.firstapproval.backend.core.domain.publication.PublicationRepository
 import org.firstapproval.backend.core.domain.publication.checkAccessToPublication
@@ -103,16 +102,6 @@ class PublicationFileService(
             publicationFileRepository.delete(it)
             it.id
         }
-    }
-
-    @Transactional(readOnly = true)
-    fun getPublicationFileWithContent(user: User, fileId: UUID): FileResponse {
-        val file = publicationFileRepository.getReferenceById(fileId)
-        checkAccessToPublication(user, file.publication)
-        return FileResponse(
-            name = file.name,
-            s3Object = fileStorageService.get(FILES, fileId.toString())
-        )
     }
 
     fun deleteFiles(user: User, fileIds: List<UUID>) {
@@ -227,8 +216,3 @@ class PublicationFileService(
         }
     }
 }
-
-data class FileResponse(
-    val name: String,
-    val s3Object: S3Object
-)
