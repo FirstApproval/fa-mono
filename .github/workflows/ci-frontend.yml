@@ -91,7 +91,7 @@ jobs:
 
       - name: Pull image
         run: |
-          echo "Pulling the backend image..."
+          echo "Pulling the frontend image..."
           ssh ubuntu@$SERVER "docker compose pull frontend"
 
       - name: Deploy image
