@@ -7,7 +7,6 @@ import mu.KotlinLogging.logger
 import org.firstapproval.backend.core.config.Properties.S3Properties
 import software.amazon.awssdk.core.ResponseInputStream
 import software.amazon.awssdk.core.sync.ResponseTransformer
-import software.amazon.awssdk.services.s3.model.ChecksumAlgorithm.SHA256
 import software.amazon.awssdk.services.s3.presigner.S3Presigner
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest
 import java.io.ByteArrayInputStream
@@ -23,7 +22,6 @@ const val ARCHIVED_PUBLICATION_SAMPLE_FILES = "archived-publication-sample-files
 const val PROFILE_IMAGES = "profile-images"
 const val REPORT_FILES = "report-files"
 
-const val LARGE_FILE_SIZE = 50 * 1024 * 1024L
 const val BATCH_SIZE = 10 * 1024 * 1024
 
 class FileStorageService(private val s3Client: S3Client, private val s3Properties: S3Properties, private val s3Presigner: S3Presigner) {
@@ -39,24 +37,7 @@ class FileStorageService(private val s3Client: S3Client, private val s3Propertie
     ) {
         val bucket = bucketName + s3Properties.bucketPostfix
 
-
-        if (contentLength > LARGE_FILE_SIZE) {
-            uploadLargeFile(bucket, id, contentLength, sha256HexBase64, data)
-        } else {
-            val requestBuilder = PutObjectRequest.builder()
-                .bucket(bucket)
-                .key(id)
-                .contentLength(contentLength)
-                .storageClass(s3Properties.bucketStorageClass)
-
-            if (sha256HexBase64 != null) {
-                requestBuilder
-                    .checksumAlgorithm(SHA256)
-                    .checksumSHA256(sha256HexBase64)
-            }
-
-            s3Client.putObject(requestBuilder.build(), RequestBody.fromInputStream(data, contentLength))
-        }
+        uploadLargeFile(bucket, id, contentLength, sha256HexBase64, data)
     }
 
     fun delete(bucketName: String, id: UUID) {
