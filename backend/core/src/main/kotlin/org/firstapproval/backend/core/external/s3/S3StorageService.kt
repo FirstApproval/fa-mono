@@ -37,20 +37,25 @@ class FileStorageService(private val s3Client: S3Client, private val s3Propertie
         contentLength: Long,
         sha256HexBase64: String? = null
     ) {
-        val metadata = mutableMapOf("x-amz-storage-class" to s3Properties.bucketStorageClass)
+        val bucket = bucketName + s3Properties.bucketPostfix
+
 
         if (contentLength > LARGE_FILE_SIZE) {
-            uploadLargeFile(bucketName, id, contentLength, sha256HexBase64, data)
+            uploadLargeFile(bucket, id, contentLength, sha256HexBase64, data)
         } else {
-            val putRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
+            val requestBuilder = PutObjectRequest.builder()
+                .bucket(bucket)
                 .key(id)
-                .metadata(metadata)
-                .checksumSHA256(sha256HexBase64)
-                .checksumAlgorithm(SHA256)
-                .build()
+                .contentLength(contentLength)
+                .storageClass(s3Properties.bucketStorageClass)
 
-            s3Client.putObject(putRequest, RequestBody.fromInputStream(data, contentLength))
+            if (sha256HexBase64 != null) {
+                requestBuilder
+                    .checksumAlgorithm(SHA256)
+                    .checksumSHA256(sha256HexBase64)
+            }
+
+            s3Client.putObject(requestBuilder.build(), RequestBody.fromInputStream(data, contentLength))
         }
     }
 

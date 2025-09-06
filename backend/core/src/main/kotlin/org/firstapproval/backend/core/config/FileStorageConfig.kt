@@ -2,13 +2,14 @@ package org.firstapproval.backend.core.config
 
 import org.firstapproval.backend.core.config.Properties.IpfsProperties
 import org.firstapproval.backend.core.config.Properties.S3Properties
-import org.firstapproval.backend.core.external.s3.FileStorageService
 import org.firstapproval.backend.core.external.ipfs.IpfsClient
+import org.firstapproval.backend.core.external.s3.FileStorageService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.client.RestTemplate
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
+import software.amazon.awssdk.core.checksums.RequestChecksumCalculation.WHEN_REQUIRED
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.S3Configuration
@@ -33,13 +34,18 @@ class FileStorageConfig {
                 )
             )
             .forcePathStyle(true)
+            .serviceConfiguration(
+                S3Configuration.builder()
+                    .chunkedEncodingEnabled(false)
+                    .build()
+            )
+            .requestChecksumCalculation(WHEN_REQUIRED)
 
         if (s3Properties.localMode) {
-            builder.endpointOverride(URI.create(s3Properties.url.toString()))
-                .region(Region.US_EAST_1)
-        } else {
-            builder.region(Region.US_EAST_1)
+            builder
+                .endpointOverride(URI.create(s3Properties.url.toString()))
         }
+        builder.region(Region.US_EAST_1)
 
         return builder.build()
     }
@@ -68,6 +74,6 @@ class FileStorageConfig {
         return builder.build()
     }
 
-@Bean
+    @Bean
     fun ipfsClient(ipfsProperties: IpfsProperties, restTemplate: RestTemplate): IpfsClient = IpfsClient(ipfsProperties, restTemplate)
 }
