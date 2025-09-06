@@ -10,6 +10,7 @@ import software.amazon.awssdk.core.sync.ResponseTransformer
 import software.amazon.awssdk.services.s3.model.ChecksumAlgorithm.SHA256
 import software.amazon.awssdk.services.s3.presigner.S3Presigner
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest
+import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.security.MessageDigest
 import java.time.Duration
@@ -132,7 +133,9 @@ class FileStorageService(private val s3Client: S3Client, private val s3Propertie
                         .contentLength(bytesRead.toLong())
                         .build()
 
-                    val uploadResult = s3Client.uploadPart(uploadRequest, RequestBody.fromBytes(data.copyOf(bytesRead)))
+                    val uploadResult = s3Client.uploadPart(uploadRequest, RequestBody.fromInputStream(
+                        ByteArrayInputStream(data, 0, bytesRead), bytesRead.toLong()
+                    ))
                     completedParts.add(
                         CompletedPart.builder()
                             .partNumber(pageNumber)
