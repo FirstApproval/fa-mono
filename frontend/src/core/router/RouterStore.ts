@@ -131,7 +131,6 @@ export class RouterStore {
       }
 
       if (window.location.pathname.startsWith(contestPath)) {
-        debugger;
         this.navigatePage(Page.CONTEST_PAGE, path, true);
         return;
       }

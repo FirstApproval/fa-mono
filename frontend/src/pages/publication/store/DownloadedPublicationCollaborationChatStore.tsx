@@ -196,7 +196,6 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
 
   setIntendedJournalForPublication (intendedJournal: string) {
     this.intendedJournalForPublication = intendedJournal;
-    debugger;
   }
 
   setExpectedPublicationDate (expectedPublicationDate: string) {

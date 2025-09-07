@@ -9,7 +9,6 @@ import { mapAuthorWithLink } from "../utils"
 
 export const YourCollaborationIsEstablished = observer((
     props: { message: CollaborationRequestMessage, chatStore: CollaborationChatStoreInterface }): ReactElement => {
-    debugger;
     const { message, chatStore } = props
     const { author } = message.payload as YourCollaborationIsEstablishedPayload
     const authorFullName = getFullName(author!!)
