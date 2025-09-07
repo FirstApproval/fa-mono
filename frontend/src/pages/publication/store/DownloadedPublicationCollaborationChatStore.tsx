@@ -156,21 +156,25 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
     });
   }
 
-  uploadFile(messageId: string, file: File): Promise<CollaborationRequestMessageFile> {
-    return collaborationRequestChatService.uploadCollaborationRequestMessageFile(
-      this.publication!!.id, file, messageId
+  uploadFile(file: File, estimatedSubmissionDate: string, comment?: string): Promise<CollaborationRequestMessage[]> {
+    return collaborationRequestChatService.uploadCollaborationRequestFinalDraft(
+      this.publication!!.id,
+      file,
+      estimatedSubmissionDate,
+      comment
     ).then(response => {
-      const fileInfo: CollaborationRequestMessageFile = response.data;
-      const message = this.messages?.find(message => message.id === messageId)!!;
-      message.files!!.push(fileInfo);
-      return fileInfo;
+      const messages: CollaborationRequestMessage[] = response.data;
+      this.messages!!.push(...response.data);
+      this.messages!!.sort(this.sortMessages);
+      this.setStage(undefined)
+      return messages;
     })
   }
 
   sortMessages = (message1: CollaborationRequestMessage, message2: CollaborationRequestMessage) =>
     message1.sequenceIndex!! - message2.sequenceIndex!!
 
-  setStage (stage: CollaborationMessageType): void {
+  setStage (stage?: CollaborationMessageType): void {
     this.messageType = stage;
   }
 
@@ -192,6 +196,7 @@ export class DownloadedPublicationCollaborationChatStore implements Collaboratio
 
   setIntendedJournalForPublication (intendedJournal: string) {
     this.intendedJournalForPublication = intendedJournal;
+    debugger;
   }
 
   setExpectedPublicationDate (expectedPublicationDate: string) {

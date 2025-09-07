@@ -20,6 +20,7 @@ import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.toApiObject
 import org.hibernate.annotations.Type
 import java.time.ZonedDateTime
+import java.time.ZonedDateTime.now
 import java.util.*
 import java.util.UUID.randomUUID
 import org.firstapproval.api.server.model.CollaborationMessageType as CollaborationMessageTypeApiObject
@@ -49,11 +50,15 @@ class CollaborationRequestMessage(
 
     val sequenceIndex: Int,
 
-    val creationTime: ZonedDateTime = ZonedDateTime.now(),
+    val creationTime: ZonedDateTime = now(),
 
-    @OneToMany(cascade = [ALL], orphanRemoval = true)
-    @JoinColumn(name = "message_id", nullable = false, insertable = false, updatable = false)
-    val files: List<CollaborationRequestMessageFile> = mutableListOf(),
+    @OneToMany(
+        cascade = [ALL],
+        fetch = EAGER,
+        orphanRemoval = true
+    )
+    @JoinColumn(name = "message_id", nullable = false)
+    val files: MutableList<CollaborationRequestMessageFile> = mutableListOf()
 )
 
 enum class CollaborationRequestMessageType(

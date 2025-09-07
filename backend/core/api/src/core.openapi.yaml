@@ -1167,9 +1167,9 @@ paths:
       operationId: createCollaborationRequestMessage
       tags: [ collaboration-request-chat ]
 
-  /api/publication/{publicationId}/collaboration-request/upload-file:
+  /api/publication/{publicationId}/collaboration-request/upload-final-draft:
     post:
-      summary: Upload collaboration request message file
+      summary: Upload collaboration request final draft
       parameters:
         - in: path
           name: publicationId
@@ -1187,23 +1187,26 @@ paths:
                   type: string
                   format: binary
                   description: Message file
-                messageId:
+                estimatedSubmissionDate:
                   type: string
-                  format: uuid
-                  description: Message identifier
+                  format: date
+                comment:
+                  type: string
+                  maxLength: 4096
               required:
                 - file
-                - messageId
+                - estimatedSubmissionDate
       responses:
         200:
           description: Success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CollaborationRequestMessageFile'
+                items:
+                  $ref: '#/components/schemas/CollaborationRequestMessage'
       security:
         - TokenAuth: [ ]
-      operationId: uploadCollaborationRequestMessageFile
+      operationId: uploadCollaborationRequestFinalDraft
       tags: [ collaboration-request-chat ]
 
   /api/publication/collaboration-request/{collaborationRequestId}/messages:

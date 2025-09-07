@@ -1,7 +1,9 @@
 package org.firstapproval.backend.core.web
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.firstapproval.api.server.CollaborationRequestChatApi
 import org.firstapproval.api.server.model.CollaborationChatResponse
+import org.firstapproval.api.server.model.CollaborationMessageUploadFinalDraftPayload
 import org.firstapproval.api.server.model.CollaborationRequestMessage
 import org.firstapproval.api.server.model.CollaborationRequestMessageFile
 import org.firstapproval.api.server.model.Workplace
@@ -9,20 +11,16 @@ import org.firstapproval.backend.core.config.Properties.DoiProperties
 import org.firstapproval.backend.core.config.security.AuthHolderService
 import org.firstapproval.backend.core.config.security.user
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.files.toApiObject
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationMessageRepository
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.PotentialPublicationData
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.DONE_WHATS_NEXT
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.EVERYTHING_IS_CORRECT_SIGN_AND_SEND_REQUEST
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.I_CONFIRM_THAT_PROVIDED_INFO_IS_REAL
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.PersonalDataConfirmation
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.RecipientType.DATA_USER
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.*
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.*
 import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.RecipientType.DATA_AUTHOR
-import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.toApiObject
+import org.firstapproval.backend.core.domain.publication.collaboration.chats.messages.CollaborationRequestMessageType.RecipientType.DATA_USER
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequest
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestRepository
 import org.firstapproval.backend.core.domain.publication.collaboration.requests.CollaborationRequestService
 import org.firstapproval.backend.core.domain.user.UserService
 import org.firstapproval.backend.core.domain.user.toApiObject
+import org.firstapproval.backend.core.domain.user.toApiObjectWithoutPhoto
 import org.firstapproval.backend.core.infra.pdf.DocxPdfGenerator
 import org.springframework.core.io.Resource
 import org.springframework.http.HttpHeaders
@@ -31,8 +29,10 @@ import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter.ISO_DATE
 import java.time.format.DateTimeFormatter.ofPattern
-import java.util.UUID
+import java.util.*
 
 const val AGREEMENT_TEMPLATE = "templates/pdf/FA_Collaboration_Agreement.docx"
 const val DATE_PATTERN = "d MMM uuuu"
@@ -45,7 +45,8 @@ class CollaborationRequestChatController(
     private val collaborationRequestRepository: CollaborationRequestRepository,
     private val authHolderService: AuthHolderService,
     private val docxPdfGenerator: DocxPdfGenerator,
-    private val doiProperties: DoiProperties
+    private val doiProperties: DoiProperties,
+    private val objectMapper: ObjectMapper
 ) : CollaborationRequestChatApi {
 
     override fun getCollaborationChatByPublicationId(publicationId: String) =
@@ -84,17 +85,21 @@ class CollaborationRequestChatController(
         return ok(mappedMessages)
     }
 
-    override fun uploadCollaborationRequestMessageFile(
+    override fun uploadCollaborationRequestFinalDraft(
         publicationId: String,
         file: MultipartFile,
-        messageId: UUID
-    ): ResponseEntity<CollaborationRequestMessageFile> {
-        val savedFileRecord = collaborationRequestService.uploadMessageFile(
-            messageId = messageId,
+        estimatedSubmissionDate: LocalDate,
+        comment: String?
+    ): ResponseEntity<List<CollaborationRequestMessage>> {
+        val messagesForDataUser = collaborationRequestService.uploadFinalDraft(
             publicationId = publicationId,
-            file = file
-        ).toApiObject()
-        return ok(savedFileRecord)
+            file = file,
+            user = authHolderService.user,
+            payload = UploadFinalDraftPayload(estimatedSubmissionDate.format(ISO_DATE), comment)
+        )
+        val mappedMessagesForDataUserWithFiles = messagesForDataUser
+            .map { it.toApiObject(authHolderService.user.toApiObjectWithoutPhoto()) }
+        return ok(mappedMessagesForDataUserWithFiles)
     }
 
     override fun getCollaborationRequestAgreement(

@@ -266,13 +266,15 @@ class CollaborationRequestService(
         type: CollaborationRequestMessageType,
         targetUser: User? = null,
         payload: MessagePayload? = null,
+        files: MutableList<CollaborationRequestMessageFile> = mutableListOf()
     ) = CollaborationRequestMessage(
         collaborationRequest = collaborationRequest,
         type = type,
         emailNotificationStatus = if (type.emailNotificationRequired) EmailNotificationStatus.PENDING else NOT_REQUIRED,
         user = targetUser(type, collaborationRequest, targetUser),
         payload = payload,
-        sequenceIndex = type.step
+        sequenceIndex = type.step,
+        files = files
     )
 
     private fun targetUser(
@@ -287,40 +289,55 @@ class CollaborationRequestService(
     }
 
     @Transactional(rollbackFor = [SdkClientException::class])
-    fun uploadMessageFile(messageId: UUID, publicationId: String, file: MultipartFile): CollaborationRequestMessageFile {
-        val uploadFinalDraftMessage = collaborationMessageRepository.getReferenceById(messageId)
-        val finalDraftAttachedMessage = uploadFinalDraftMessage.collaborationRequest.messages
-            .find { it.type == ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER }!!
-
-        require(publicationId == uploadFinalDraftMessage.collaborationRequest.publication.id) {
-            "Publication ID does not match the message's publication."
-        }
+    fun uploadFinalDraft(publicationId: String, user: User, file: MultipartFile, payload: UploadFinalDraftPayload): List<CollaborationRequestMessage> {
+        val collaborationRequest = collaborationRequestRepository.findByPublicationIdAndUserId(publicationId, user.id)!!
 
         val fileId = randomUUID()
-        val uploadDraftMessageFile = CollaborationRequestMessageFile(
-            fileId = fileId,
-            message = uploadFinalDraftMessage,
-            name = file.originalFilename!!,
-            size = file.size
-        )
-        val finalDraftAttachedMessageFile = CollaborationRequestMessageFile(
-            fileId = fileId,
-            message = finalDraftAttachedMessage,
-            name = file.originalFilename!!,
-            size = file.size
+
+        val uploadFinalDraftMessage = collaborationRequestMessage(
+            collaborationRequest = collaborationRequest,
+            type = UPLOAD_FINAL_DRAFT,
+            payload = payload,
+            targetUser = user,
+            files = mutableListOf(
+                CollaborationRequestMessageFile(
+                    fileId = fileId,
+                    name = file.originalFilename!!,
+                    size = file.size
+                )
+            )
         )
 
-        collaborationMessageFileRepository.saveAll(listOf(uploadDraftMessageFile, finalDraftAttachedMessageFile))
+        val finalDraftAttachedMessages = collaborationRequest.authors.map {
+            collaborationRequestMessage(
+                collaborationRequest = collaborationRequest,
+                type = ASSISTANT_FINAL_DRAFT_ATTACHED_BY_DATA_USER,
+                payload = FinalDraftAttachedByDataUser(user.toApiObjectWithoutPhoto()),
+                targetUser = it.author.user,
+                files = mutableListOf(
+                    CollaborationRequestMessageFile(
+                        fileId = fileId,
+                        name = file.originalFilename!!,
+                        size = file.size
+                    )
+                )
+            )
+        }
+        val authorHas14DaysMessage = collaborationRequestMessage(collaborationRequest, AUTHOR_HAS_14_DAYS_TO_MAKE_REVISIONS_AND_APPROVE)
+
+
+        val dataUserMessages = listOf(uploadFinalDraftMessage, authorHas14DaysMessage)
+        collaborationMessageRepository.saveAll(dataUserMessages + finalDraftAttachedMessages)
         fileStorageService.save(COLLABORATION_REQUEST_MESSAGE_FILES, fileId.toString(), file.inputStream, file.size)
 
-        return uploadDraftMessageFile
+        return dataUserMessages
     }
 
     @Transactional
     fun getDownloadFileLink(collaborationRequestId: UUID, fileRecordId: UUID, user: User): String {
         val file = collaborationMessageFileRepository.getReferenceById(fileRecordId)
 
-        assert(collaborationRequestId == file.message.collaborationRequest.id)
+        assert(collaborationRequestId == file.message!!.collaborationRequest.id)
         assert(user.id == file.message.user.id)
 
         return fileStorageService.generateTemporaryDownloadLink(COLLABORATION_REQUEST_MESSAGE_FILES, file.fileId.toString(), file.name)
