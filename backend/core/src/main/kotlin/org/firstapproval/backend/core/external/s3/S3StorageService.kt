@@ -17,6 +17,7 @@ import java.util.*
 
 const val FILES = "files"
 const val SAMPLE_FILES = "sample-files"
+const val ACADEMIC_SUPERVISOR_LETTERS = "academic-supervisor-letters"
 const val ARCHIVED_PUBLICATION_FILES = "archived-publication-files"
 const val ARCHIVED_PUBLICATION_SAMPLE_FILES = "archived-publication-sample-files"
 const val PROFILE_IMAGES = "profile-images"
@@ -32,12 +33,12 @@ class FileStorageService(private val s3Client: S3Client, private val s3Propertie
         bucketName: String,
         id: String,
         data: InputStream,
-        contentLength: Long,
+        contentLength: Long? = null,
         sha256HexBase64: String? = null
     ) {
         val bucket = bucketName + s3Properties.bucketPostfix
 
-        uploadLargeFile(bucket, id, contentLength, sha256HexBase64, data)
+        uploadLargeFile(bucket, id, sha256HexBase64, data)
     }
 
     fun delete(bucketName: String, id: UUID) {
@@ -93,7 +94,7 @@ class FileStorageService(private val s3Client: S3Client, private val s3Propertie
         return presignedUrl.url().toString()
     }
 
-    private fun uploadLargeFile(bucketName: String, key: String, contentLength: Long, sha256HexBase64: String?, inputStream: InputStream) {
+    private fun uploadLargeFile(bucketName: String, key: String, sha256HexBase64: String?, inputStream: InputStream) {
         val createRequest = CreateMultipartUploadRequest.builder()
             .bucket(bucketName)
             .key(key)

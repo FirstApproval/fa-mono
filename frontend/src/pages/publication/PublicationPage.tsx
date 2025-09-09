@@ -38,7 +38,8 @@ import { ResearchAreaStore } from './research-area/ResearchAreaStore';
 import { Footer } from '../home/Footer';
 import { PublicationBody } from './PublicationBody';
 import { PublicationPageHeader } from './PublicationPageHeader';
-import { chooseDataCollectionPath, Page } from "../../core/router/constants"
+import { chooseDataCollectionPath, Page } from "../../core/router/constants";
+import { AcademicSupervisorLettersStore } from "./store/AcademicSupervisorLettersStore";
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -56,6 +57,10 @@ export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationStore] = useState(
     () => new PublicationStore(publicationId, fs, sfs)
   );
+
+  const [academicSupervisorLettersStore] = useState(
+    () => new AcademicSupervisorLettersStore(publicationId)
+  )
 
   const [researchAreaStore] = useState(
     () => new ResearchAreaStore(publicationStore)
@@ -178,6 +183,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
                 <PublicationBody
                   publicationId={publicationId}
                   publicationStore={publicationStore}
+                  academicSupervisorLettersStore={academicSupervisorLettersStore}
                   researchAreaStore={researchAreaStore}
                   publicationPageStore={publicationPageStore}
                   openDownloadersDialog={() => {

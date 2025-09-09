@@ -31,6 +31,9 @@ export class PublicationPageStore {
   }
 
   authorsEnabled = false;
+  academicSupervisorLettersEnabled = false;
+  addAcademicSupervisorLettersDialogOpen = false;
+  deleteAcademicSupervisorLetterDialogOpen = false;
 
   get grantingOrganizationsEnabled(): boolean {
     return this.publicationStore.grantingOrganizations.length > 0;
@@ -319,6 +322,26 @@ export class PublicationPageStore {
 
   openAuthors = (): void => {
     this.authorsEnabled = true;
+  };
+
+  enableAcademicSupervisorLetters = (): void => {
+    this.academicSupervisorLettersEnabled = true;
+  };
+
+  openAddAcademicLevelDialog = (): void => {
+    this.addAcademicSupervisorLettersDialogOpen = true;
+  };
+
+  closeAddAcademicLevelDialog = (): void => {
+    this.addAcademicSupervisorLettersDialogOpen = false;
+  };
+
+  openDeleteAcademicSupervisorLetterDialog = (): void => {
+    this.deleteAcademicSupervisorLetterDialogOpen = true;
+  };
+
+  closeDeleteAcademicSupervisorLetterDialog = (): void => {
+    this.deleteAcademicSupervisorLetterDialogOpen = false;
   };
 
   openGrantingOrganizations = (): void => {

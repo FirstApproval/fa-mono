@@ -350,6 +350,12 @@ class PublicationService(
         return publication
     }
 
+    fun getAndCheckPublicationCreator(id: String, user: User): Publication {
+        val publication = publicationRepository.findByIdAndIsBlockedIsFalse(id)
+        checkPublicationCreator(user, publication)
+        return publication
+    }
+
     @Transactional(readOnly = true)
     fun getPublished(id: String): Publication {
         val publication = publicationRepository.findByIdAndIsBlockedIsFalse(id)

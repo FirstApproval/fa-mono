@@ -1048,6 +1048,121 @@ paths:
       operationId: uploadReportFile
       tags: [ report ]
 
+  /api/publication/{publicationId}/academic-supervisor-letters:
+    post:
+      summary: Upload academic supervisor letter
+      parameters:
+        - in: path
+          name: publicationId
+          schema:
+            type: string
+            maxLength: 7
+          required: true
+          description: Publication id
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                academicSupervisorName:
+                  type: string
+                  maxLength: 255
+                file:
+                  type: string
+                  format: binary
+            encoding:
+              file:
+                contentType: application/octet-stream
+                x-maxSize: 10MB
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcademicSupervisorLetter'
+      security:
+        - TokenAuth: [ ]
+      operationId: uploadAcademicSupervisorLetter
+      tags: [ academic-supervisor-letter ]
+    get:
+      summary: Upload academic supervisor letter
+      parameters:
+        - in: path
+          name: publicationId
+          schema:
+            type: string
+            maxLength: 7
+          required: true
+          description: Publication id
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AcademicSupervisorLetter'
+      security:
+        - TokenAuth: [ ]
+      operationId: getAcademicSupervisorLetters
+      tags: [ academic-supervisor-letter ]
+
+  /api/publication/{publicationId}/academic-supervisor-letters/{letterId}:
+    get:
+      summary: Get download link for academic supervisor letter
+      parameters:
+        - in: path
+          name: publicationId
+          schema:
+            type: string
+            maxLength: 7
+          required: true
+          description: Publication id
+        - in: path
+          name: letterId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Academic supervisor letter id
+      responses:
+        200:
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+      security:
+        - TokenAuth: [ ]
+      operationId: downloadAcademicSupervisorLetter
+      tags: [ academic-supervisor-letter ]
+    delete:
+      summary: Delete academic supervisor letter
+      parameters:
+        - in: path
+          name: publicationId
+          schema:
+            type: string
+            maxLength: 7
+          required: true
+          description: Publication id
+        - in: path
+          name: letterId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Academic supervisor letter id
+      responses:
+        200:
+          description: Success
+      security:
+        - TokenAuth: [ ]
+      operationId: deleteAcademicSupervisorLetter
+      tags: [ academic-supervisor-letter ]
+
   /api/report/create:
     post:
       summary: Create report
@@ -2071,6 +2186,28 @@ components:
         id:
           type: string
           format: uuid
+
+    AcademicSupervisorLetter:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        fileName:
+          type: string
+          maxLength: 255
+        contentLength:
+          type: integer
+          format: int64
+          description: Content length
+        academicSupervisorName:
+          type: string
+          maxLength: 255
+      required:
+        - id
+        - fileName
+        - contentLength
+        - academicSupervisorName
 
     UserInfo:
       type: object
