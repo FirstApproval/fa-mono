@@ -6,6 +6,7 @@ import {
   FormControlLabel,
   FormGroup,
   IconButton,
+  Link,
   Switch,
   TextField,
   Tooltip,
@@ -317,8 +318,18 @@ export const SharingOptionsPage = (props: {
                   />
                 }
                 label={
-                  'I confirm that all authors agree to the content, distribution, \n' +
-                  '              and comply with the First Approval publishing policy.'
+                  <div>
+                    <span>I confirm that all authors agree to the content, distribution</span>
+                    <span>
+                      {'and comply with the First Approval '}
+                      <Link
+                        color="primary"
+                        href={'/docs/terms_and_conditions.pdf'}
+                        target={'_blank'}>
+                        publishing policy
+                      </Link>
+                    </span>
+                  </div>
                 }
               />
               <HeightElement value={'24px'} />
@@ -334,7 +345,20 @@ export const SharingOptionsPage = (props: {
                   />
                 }
                 label={
-                  "I understand that after publishing, my dataset cannot be edited or deleted. I've double-checked all details for accuracy."
+                  <div>
+                    <span>I understand that once published, my dataset cannot be edited or deleted.</span>
+                    <span>
+                      {'Withdrawal is possible only under '}
+                        <Link
+                          color="primary"
+                          href={'/docs/exceptional_circumstances.pdf'}
+                          target={'_blank'}
+                        >
+                          exceptional circumstances
+                        </Link>
+                      .
+                    </span>
+                  </div>
                 }
               />
             </FormGroup>
