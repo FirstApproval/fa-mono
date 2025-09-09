@@ -1,15 +1,14 @@
 import React, { type FunctionComponent, useState } from 'react';
-import { Box, Typography } from '@mui/material';
-import { Parent } from '../common.styled';
+import { Box, Link, Typography } from "@mui/material"
+import { FlexBodyJustifyContentCenterAlignItemsCenter, FlexWrapRow, Parent } from "../common.styled"
 import { observer } from 'mobx-react-lite';
 import styled from '@emotion/styled';
-import developer from '../../assets/developer.svg';
-import cloud from '../../assets/cloud.svg';
 import { Footer } from '../home/Footer';
 import { BetaDialog } from '../../components/BetaDialog';
 import { HeaderComponent } from '../../components/HeaderComponent';
 import { DownloadersDialog } from '../publication/DownloadersDialog';
 import { downloadersStore } from '../publication/store/downloadsStore';
+import { OpenInNewOutlined } from "@mui/icons-material"
 
 export const ContactsPage: FunctionComponent = observer(() => {
   const [isBetaDialogOpen, setIsBetaDialogOpen] = useState(() => false);
@@ -17,16 +16,23 @@ export const ContactsPage: FunctionComponent = observer(() => {
   return (
     <>
       <Parent>
-        <BetaBannerWrap
-          onClick={() => {
-            setIsBetaDialogOpen(true);
-          }}
-          style={{}}>
-          <img src={developer} />
-          <BetaHeaderText variant={'subtitle2'}>
-            We are fine-tuning the platform and would love your feedback
-          </BetaHeaderText>
-          <img src={cloud} />
+        <BetaBannerWrap>
+          <Link
+            color="inherit"
+            href={'/contest'}
+            underline="none"
+            target={'_blank'}>
+            <FlexBodyJustifyContentCenterAlignItemsCenter>
+              <BetaHeaderText variant={'subtitle1'}>
+                Participate in the Student Biological Data Competition
+              </BetaHeaderText>
+              <OpenInNewOutlined sx={{
+                width: '20px',
+                height: '20px',
+                color: 'white'
+              }}/>
+            </FlexBodyJustifyContentCenterAlignItemsCenter>
+          </Link>
         </BetaBannerWrap>
         <BetaDialog
           isOpen={isBetaDialogOpen}

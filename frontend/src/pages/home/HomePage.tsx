@@ -4,23 +4,20 @@ import {
   Divider,
   Grid,
   InputAdornment,
-  LinearProgress,
+  LinearProgress, Link,
   TextField,
   Typography
-} from '@mui/material';
-import { FlexBodyCenter, Parent } from '../common.styled';
+} from "@mui/material"
+import { FlexBodyCenter, FlexBodyJustifyContentCenterAlignItemsCenter, Parent } from "../common.styled"
 import { HomePageStore } from './HomePageStore';
 import { observer } from 'mobx-react-lite';
-import { Search } from '@mui/icons-material';
+import { OpenInNewOutlined, Search, Science, Biotech } from '@mui/icons-material';
 import styled from '@emotion/styled';
 import { PublicationSection } from '../../components/PublicationSection';
 import { CallToAction } from './CallToAction';
 import PopularAuthorsSection from './PopularAuthorsSection';
 import RecommendedPublicationsSection from './RecommendedPublicationsSection';
-import developer from '../../assets/developer.svg';
-import cloud from '../../assets/cloud.svg';
 import { Footer } from './Footer';
-import { BetaDialog } from '../../components/BetaDialog';
 import { HeaderComponent } from '../../components/HeaderComponent';
 import { DownloadersDialog } from '../publication/DownloadersDialog';
 import { downloadersStore } from '../publication/store/downloadsStore';
@@ -28,7 +25,6 @@ import { Publication } from '../../apis/first-approval-api';
 
 export const HomePage: FunctionComponent = observer(() => {
   const [store] = useState(() => new HomePageStore());
-  const [isBetaDialogOpen, setIsBetaDialogOpen] = useState(() => false);
 
   const hasSearch = store.searchQuery.length > 0;
 
@@ -49,21 +45,34 @@ export const HomePage: FunctionComponent = observer(() => {
   return (
     <>
       <Parent>
-        <BetaBannerWrap
-          onClick={() => {
-            setIsBetaDialogOpen(true);
-          }}
-          style={{}}>
-          <img src={developer} />
-          <BetaHeaderText variant={'subtitle2'}>
-            We are fine-tuning the platform and would love your feedback
-          </BetaHeaderText>
-          <img src={cloud} />
+        <BetaBannerWrap>
+          <Link
+            color="inherit"
+            href={'/contest'}
+            underline="none"
+            target={'_blank'}>
+            <FlexBodyJustifyContentCenterAlignItemsCenter>
+              <Science sx={{
+                width: '30px',
+                height: '30px',
+                color: 'white'
+              }}/>
+              <Biotech sx={{
+                width: '30px',
+                height: '30px',
+                color: 'white'
+              }}/>
+              <BetaHeaderText variant={'subtitle1'}>
+                Participate in the Student Biological Data Competition
+              </BetaHeaderText>
+              <OpenInNewOutlined sx={{
+                width: '20px',
+                height: '20px',
+                color: 'white'
+              }}/>
+            </FlexBodyJustifyContentCenterAlignItemsCenter>
+          </Link>
         </BetaBannerWrap>
-        <BetaDialog
-          isOpen={isBetaDialogOpen}
-          onClose={() => setIsBetaDialogOpen(false)}
-        />
         <HeaderComponent
           showAboutUsButton={true}
           showPublishButton={true}

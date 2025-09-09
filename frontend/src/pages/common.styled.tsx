@@ -15,6 +15,12 @@ export const FlexBodyCenter = styled.div`
   justify-content: center;
 `;
 
+export const FlexBodyJustifyContentCenterAlignItemsCenter = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
 export const FlexBody = styled.div`
   width: 580px;
   padding-left: 40px;
