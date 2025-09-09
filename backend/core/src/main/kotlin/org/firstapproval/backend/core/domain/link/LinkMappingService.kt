@@ -4,5 +4,5 @@ import org.springframework.stereotype.Service
 
 @Service
 class LinkMappingService(private val linkMappingRepository: LinkMappingRepository) {
-    fun findValidByAlias(alias: String): LinkMapping = linkMappingRepository.findValidByAlias(alias)
+    fun findValidByAlias(alias: String): LinkMapping? = linkMappingRepository.findValidByAlias(alias)
 }

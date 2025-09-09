@@ -247,11 +247,13 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
             linkMappingService.getLinkByAlias('contest-webinar')
               .then(response => {
                   const linkMapping = response.data;
-                  setWebinarLinkMapping(linkMapping)
-                  const timeZone = "America/Los_Angeles";
-                  const zoned = toZonedTime(linkMapping?.eventTime!!, timeZone);
-                  const formattedEventTime = format(zoned, "d MMMM yyyy. h:mm a zzz", { timeZone });
-                  setWebinarTime(formattedEventTime);
+                  if (linkMapping) {
+                    setWebinarLinkMapping(linkMapping)
+                    const timeZone = "America/Los_Angeles";
+                    const zoned = toZonedTime(linkMapping?.eventTime!!, timeZone);
+                    const formattedEventTime = format(zoned, "d MMMM yyyy. h:mm a zzz", { timeZone });
+                    setWebinarTime(formattedEventTime);
+                  }
               });
         }, []);
 
@@ -652,8 +654,9 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                             <img src={contestRightTop} style={{marginLeft: 8}}/>
                                         </div>
                                     </Link>
-                                    <div
-                                      style={{
+                                    {
+                                      webinarLinkMapping && <div
+                                        style={{
                                           width: 540,
                                           height: 80,
                                           color: 'white',
@@ -666,24 +669,25 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                           alignItems: "flex-start",
                                           borderRadius: 8,
                                           padding: "10px 24px"
-                                      }}
-                                    >
+                                        }}
+                                      >
                                         <span>Info session: {webinarTime}</span>
                                         <Link
                                           color="inherit"
                                           href={webinarLinkMapping?.url}
                                           target={'_blank'}>
-                                            <div
-                                              style={{
-                                                  display: 'flex',
-                                                  alignItems: 'center',
-                                                  cursor: 'pointer'
-                                              }}>
-                                                <span>Register now</span>
-                                                <OpenInNewOutlined sx={{ width: 24, height: 24, marginLeft: '8px' }} />
-                                            </div>
+                                          <div
+                                            style={{
+                                              display: 'flex',
+                                              alignItems: 'center',
+                                              cursor: 'pointer'
+                                            }}>
+                                            <span>Register now</span>
+                                            <OpenInNewOutlined sx={{ width: 24, height: 24, marginLeft: '8px' }} />
+                                          </div>
                                         </Link>
-                                    </div>
+                                      </div>
+                                    }
                                 </div>
                             </div>
                         </div>
