@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.Query
 interface LinkMappingRepository : JpaRepository<LinkMapping, Long> {
     @Cacheable("linkMappings")
     @Query("SELECT l FROM LinkMapping l WHERE l.alias = :alias AND l.expirationTime > CURRENT_TIMESTAMP")
-    fun findValidByAlias(alias: String): LinkMapping
+    fun findValidByAlias(alias: String): LinkMapping?
 }

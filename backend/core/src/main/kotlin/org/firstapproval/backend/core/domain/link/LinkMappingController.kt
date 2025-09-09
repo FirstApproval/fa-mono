@@ -10,6 +10,6 @@ import org.firstapproval.api.server.model.LinkMapping as LinkMappingApiObject
 class LinkMappingController(private val linkMappingService: LinkMappingService) : LinkMappingApi {
     override fun getLinkByAlias(alias: String): ResponseEntity<LinkMappingApiObject> {
         val linkMapping = linkMappingService.findValidByAlias(alias)
-        return ok(linkMapping.toApiObject())
+        return ok(linkMapping?.toApiObject())
     }
 }
