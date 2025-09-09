@@ -536,12 +536,13 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                         fontSize: 20,
                                         fontWeight: 400,
                                     }}>
-                                        To participate, you must be an undergraduate, graduate, or PhD student.
-                                        Participants are required to submit their original dataset for publication on
-                                        the First Approval platform by the submission deadline. All datasets in the
-                                        fields of biology, biotechnology, or biomedicine are eligible for the
-                                        competition, particularly those in the following areas:
-                                        <ul>
+                                      To participate, you must be an undergraduate, graduate, or PhD student.
+                                      Recent graduates (within 12 months of graduation) are also eligible.
+                                      Participants are required to submit their original dataset for publication
+                                      on the First Approval platform by the submission deadline. All datasets in the fields of biology,
+                                      biotechnology, or biomedicine are eligible for the competition,
+                                      particularly those in the following areas:
+                                      <ul>
                                             <li>Molecular Biology and Biochemistry</li>
                                             <li>Genetics</li>
                                             <li>Cell Biology and Histology</li>
@@ -1744,6 +1745,14 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                 }}>
                                     <span style={{fontWeight: 500}}>Submission is free of charge</span>
                                 </li>
+                                <li style={{
+                                    fontFamily: 'Roboto',
+                                    fontSize: 20,
+                                    fontWeight: 400,
+                                    marginBottom: 12,
+                                }}>
+                                    <span style={{fontWeight: 500}}>Upload a signed letter from your academic supervisor.</span>
+                                </li>
                             </ul>
                         </div>
                     </Box>
@@ -1822,6 +1831,22 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                           Link for Detailed Guidelines
                                         </span>
                                     </LinkWrap>
+                                    </li>
+                                    <li style={{
+                                      fontFamily: 'Roboto',
+                                      fontSize: 16,
+                                      fontWeight: 400,
+                                      marginBottom: 12,
+                                    }}>
+                                      <span style={{fontWeight: 500}}>Submission is free of charge</span>
+                                    </li>
+                                    <li style={{
+                                      fontFamily: 'Roboto',
+                                      fontSize: 16,
+                                      fontWeight: 400,
+                                      marginBottom: 12,
+                                    }}>
+                                      <span style={{fontWeight: 500}}>Upload a signed letter from your academic supervisor.</span>
                                     </li>
                                 </ul>
                             </div>

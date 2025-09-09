@@ -1,7 +1,6 @@
 package org.firstapproval.backend.core.domain.publication
 
 import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
-import org.firstapproval.api.server.model.AuthorShortInfo
 import org.firstapproval.api.server.model.CollaborationRequestStatus
 import org.firstapproval.api.server.model.DownloadLinkResponse
 import org.firstapproval.api.server.model.Paragraph
@@ -361,6 +360,12 @@ class PublicationService(
     fun get(user: User?, id: String): Publication {
         val publication = publicationRepository.findByIdAndIsBlockedIsFalse(id)
         checkAccessToPublication(user, publication)
+        return publication
+    }
+
+    fun getAndCheckPublicationCreator(id: String, user: User): Publication {
+        val publication = publicationRepository.findByIdAndIsBlockedIsFalse(id)
+        checkPublicationCreator(user, publication)
         return publication
     }
 

@@ -1,4 +1,4 @@
-import React, { type ReactElement } from 'react';
+import React, { type ReactElement } from "react"
 import styled from '@emotion/styled';
 import {
   AuthorsIcon,
@@ -15,7 +15,8 @@ import {
   TitleIcon,
   PreliminaryResultsIcon
 } from './SectionIcon';
-import { Typography } from '@mui/material';
+import { Tooltip, Typography } from '@mui/material';
+import { PostAdd } from "@mui/icons-material"
 
 export interface PlaceholderProps {
   onClick?: () => void;
@@ -136,6 +137,38 @@ export const AuthorsPlaceholder = (props: PlaceholderProps): ReactElement => {
       text={'Authors'}
       icon={<AuthorsIcon />}
     />
+  );
+};
+
+export const AcademicSupervisorLetterPlaceholder = (
+  props: PlaceholderProps
+): ReactElement => {
+  return (
+    <Tooltip
+      placement={'bottom-end'}
+      title={
+        "Your academic supervisor may be your thesis advisor, " +
+        "laboratory head, or another authorized university representative " +
+        "who can confirm your right to submit this dataset."
+      }
+    >
+      <div>
+        <ContentPlaceholder
+          onClick={props.onClick}
+          text={"Upload a signed letter from your academic supervisor"}
+          icon={
+            <PostAdd
+              sx={{
+                color: "gray",
+                height: "32px",
+                width: "32px",
+                marginLeft: "-3px",
+              }}
+            />
+          }
+        />
+      </div>
+    </Tooltip>
   );
 };
 

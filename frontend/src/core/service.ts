@@ -12,7 +12,8 @@ import {
   SampleFileApi, SubscriptionApi,
   UserApi,
   VisitorApi,
-  LinkMappingApi
+  LinkMappingApi,
+  AcademicSupervisorLetterApi
 } from "../apis/first-approval-api"
 import { SampleFileServiceAdapter } from './SampleFileServiceAdapter';
 import { authStore } from './auth';
@@ -66,5 +67,9 @@ export const subscriptionService = new SubscriptionApi(
 );
 
 export const linkMappingService = new LinkMappingApi(
+  configuration
+);
+
+export const academicSupervisorLetterService = new AcademicSupervisorLetterApi(
   configuration
 );

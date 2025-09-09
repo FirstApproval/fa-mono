@@ -21,6 +21,11 @@ export const FlexBodyJustifyContentCenterAlignItemsCenter = styled.div`
   align-items: center;
 `;
 
+export const FlexBodyAlignItemsCenter = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
 export const FlexBody = styled.div`
   width: 580px;
   padding-left: 40px;
@@ -117,6 +122,12 @@ export const FlexWrapColumn = styled.div`
 export const FlexWrapRow = styled.div`
   display: flex;
 `;
+
+export const FlexWrapRowSpaceBetween = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+`
 
 export const FullWidthTextField = styled(TextField)`
   width: 100%;

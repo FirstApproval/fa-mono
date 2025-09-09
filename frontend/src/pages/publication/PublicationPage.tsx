@@ -41,6 +41,7 @@ import { PublicationPageHeader } from './PublicationPageHeader';
 import { chooseDataCollectionPath, Page } from "../../core/router/constants"
 import { CollaboratorsDialog } from './CollaboratorsDialog';
 import { CollaborationRequestDialog } from '../../components/CollaborationRequestDialog';
+import { AcademicSupervisorLettersStore } from "./store/AcademicSupervisorLettersStore"
 
 export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationId] = useState(() => routerStore.lastPathSegment);
@@ -58,6 +59,10 @@ export const PublicationPage: FunctionComponent = observer(() => {
   const [publicationStore] = useState(
     () => new PublicationStore(publicationId, fs, sfs)
   );
+
+  const [academicSupervisorLettersStore] = useState(
+    () => new AcademicSupervisorLettersStore(publicationId)
+  )
 
   const [researchAreaStore] = useState(
     () => new ResearchAreaStore(publicationStore)
@@ -180,6 +185,7 @@ export const PublicationPage: FunctionComponent = observer(() => {
                 <PublicationBody
                   publicationId={publicationId}
                   publicationStore={publicationStore}
+                  academicSupervisorLettersStore={academicSupervisorLettersStore}
                   researchAreaStore={researchAreaStore}
                   publicationPageStore={publicationPageStore}
                   fs={fs}
