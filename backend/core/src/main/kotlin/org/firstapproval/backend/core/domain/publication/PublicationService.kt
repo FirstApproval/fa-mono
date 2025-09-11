@@ -116,6 +116,7 @@ class PublicationService(
                         ordinal = 0,
                         user = user,
                         isConfirmed = true,
+                        isAcademicSupervisor = false,
                         workplaces = user.workplaces.map {
                             AuthorWorkplace(
                                 organization = it.organization,
@@ -196,6 +197,7 @@ class PublicationService(
                         user = authorUser,
                         publication = publication,
                         isConfirmed = authorApiObject.isConfirmed,
+                        isAcademicSupervisor = authorApiObject.isAcademicSupervisor,
                         workplaces = authorApiObject.workplaces.map { unconfirmedWorkplace ->
                             val organization = organizationService.getOrSave(unconfirmedWorkplace.organization)
                             AuthorWorkplace(
@@ -627,6 +629,7 @@ fun Author.toApiObject(profileImage: ByteArray?) = AuthorApiObject().also {
     it.email = email
     it.ordinal = ordinal
     it.isConfirmed = isConfirmed
+    it.isAcademicSupervisor = isAcademicSupervisor
     it.user = user?.let { user ->
         UserInfo(
             user.id,

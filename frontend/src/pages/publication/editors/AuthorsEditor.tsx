@@ -16,6 +16,7 @@ import {
   Autocomplete,
   Avatar,
   Button,
+  Checkbox,
   Divider,
   IconButton,
   Snackbar,
@@ -38,11 +39,14 @@ import { getInitials, renderProfileImage } from '../../../util/userUtil';
 import { type EditorProps } from './types';
 import { WorkplacesEditor } from '../../../components/WorkplacesEditor';
 import {
+  FlexBodyAlignItemsCenter,
+  FlexBodyCenter,
   FlexWrapColumn,
-  FlexWrapRow,
+  FlexWrapRow, FlexWrapRowAlignTop,
+  FullWidthTextField,
   HeightElement,
   WidthElement
-} from '../../common.styled';
+} from "../../common.styled"
 import { LoadingButton } from '@mui/lab';
 import { PublicationStore } from '../store/PublicationStore';
 import { Flex, FlexAlignItems, FlexJustifyContent } from '../../../ui-kit/flex';
@@ -180,7 +184,8 @@ export const AuthorsEditor = observer((props: EditorProps): ReactElement => {
                           email: newValue.email,
                           firstName: newValue.firstName,
                           lastName: newValue.lastName,
-                          isConfirmed: true
+                          isConfirmed: true,
+                          isAcademicSupervisor: false
                         },
                         index: undefined
                       });
@@ -304,6 +309,7 @@ const AddAuthorDialog = observer(
         authorStore.profileImage = author.user?.profileImage;
         authorStore.user = author.user;
       }
+      authorStore.isAcademicSupervisor = author.isAcademicSupervisor;
       if (author.workplaces?.length) {
         authorStore.workplacesProps = [];
         authorStore.workplacesValidation = [];
@@ -376,6 +382,7 @@ const AddAuthorDialog = observer(
                     !authorStore.isValidEmail ? 'Invalid address' : undefined
                   }
                 />
+                <HeightElement value="32px" />
                 <FlexWrapRow>
                   <MarginTextField
                     value={authorStore.firstName}
@@ -408,6 +415,32 @@ const AddAuthorDialog = observer(
                     }
                   />
                 </FlexWrapRow>
+                {
+                  publicationStore.isStudentDataCollection ?
+                  <>
+                    <FlexBodyAlignItemsCenter>
+                      <Checkbox
+                        style={{ marginLeft: "-12px" }}
+                        checked={authorStore.isAcademicSupervisor}
+                        onChange={(e) =>
+                          authorStore.setIsAcademicSupervisor(e.currentTarget.checked)
+                        }
+                      />
+                      <span
+                        style={{ cursor: "pointer" }}
+                        onClick={() =>
+                          authorStore.setIsAcademicSupervisor(
+                            !authorStore.isAcademicSupervisor
+                          )
+                        }>
+                        I confirm that this is the academic supervisor of this research.
+                      </span>
+                    </FlexBodyAlignItemsCenter>
+                    <HeightElement value="16px" />
+                  </>
+                    :
+                  <HeightElement value="16px" />
+                }
                 <FlexWrapColumn>
                   <WorkplacesTitle variant={'h6'}>
                     Current workplaces (affiliations)
@@ -457,6 +490,31 @@ const AddAuthorDialog = observer(
                     }
                   />
                 </FlexWrapRow>
+                {
+                  publicationStore.isStudentDataCollection &&
+                  <>
+                    <HeightElement value="8px" />
+                    <FlexBodyAlignItemsCenter>
+                      <Checkbox
+                        style={{ marginLeft: "-12px" }}
+                        checked={authorStore.isAcademicSupervisor}
+                        onChange={(e) =>
+                          authorStore.setIsAcademicSupervisor(e.currentTarget.checked)
+                        }
+                      />
+                      <span
+                        style={{ cursor: "pointer" }}
+                        onClick={() =>
+                          authorStore.setIsAcademicSupervisor(
+                            !authorStore.isAcademicSupervisor
+                          )
+                        }>
+                        I confirm that this is the academic supervisor of this research.
+                      </span>
+                    </FlexBodyAlignItemsCenter>
+                    <HeightElement value="16px" />
+                  </>
+                }
                 {isGotItShowed && (
                   <>
                     <ChangesOnThisFormDoesntAffectProfileInfoWrap>
@@ -638,11 +696,6 @@ const MarginTextField = styled(TextField)`
 
 const FlexGrowWrap = styled.div`
   flex-grow: 1;
-`;
-
-const FullWidthTextField = styled(TextField)`
-  width: 100%;
-  margin-bottom: 32px;
 `;
 
 const SpaceBetweenWrap = styled.div`
