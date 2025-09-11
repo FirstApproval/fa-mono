@@ -72,6 +72,10 @@ export const SharingOptionsPage = (props: {
     understandAfterPublishingCannotBeEdited,
     setUnderstandAfterPublishingCannotBeEdited
   ] = useState(false);
+  const [
+    userConfirmedSubmissionCompliance,
+    setUserConfirmedSubmissionCompliance
+  ] = useState(false);
   const [useType, setUseType] = useState(UseType.CITATION);
   const [storageType, setStorageType] = useState(
     props.dataCollectionType === DataCollectionType.AGING
@@ -115,6 +119,7 @@ export const SharingOptionsPage = (props: {
   const isPublicationNotValid =
     !confirmThatAllAuthorsAgree ||
     !understandAfterPublishingCannotBeEdited ||
+    !userConfirmedSubmissionCompliance ||
     !previewTitle ||
     previewTitle.length > MAX_PREVIEW_LENGTH ||
     !previewSubtitle ||
@@ -352,6 +357,22 @@ export const SharingOptionsPage = (props: {
                       .
                     </span>
                   </div>
+                }
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={userConfirmedSubmissionCompliance}
+                    onChange={(e) => {
+                      setUserConfirmedSubmissionCompliance(
+                        e.currentTarget.checked
+                      );
+                    }}
+                  />
+                }
+                label={
+                  'I confirm that my submission does not contain sensitive information ' +
+                  'and complies with all institutional and legal requirements.'
                 }
               />
             </FormGroup>
