@@ -18,6 +18,18 @@ paths:
           required: false
           description: UTM source
         - in: query
+          name: utm_medium
+          schema:
+            type: string
+          required: false
+          description: UTM medium
+        - in: query
+          name: utm_campaign
+          schema:
+            type: string
+          required: false
+          description: UTM campaign
+        - in: query
           name: initialReferrer
           schema:
             type: string
@@ -2436,6 +2448,10 @@ components:
           type: string
           minLength: 8
         utmSource:
+          type: string
+        utmMedium:
+          type: string
+        utmCampaign:
           type: string
         initialReferrer:
           type: string

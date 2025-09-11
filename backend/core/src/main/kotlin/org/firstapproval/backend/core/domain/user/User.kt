@@ -44,6 +44,8 @@ class User(
     var isNameConfirmed: Boolean = false,
     var isWorkplacesConfirmed: Boolean = false,
     var utmSource: String? = null,
+    var utmMedium: String? = null,
+    var utmCampaign: String? = null,
     var initialReferrer: String? = null,
 ) {
     val workplacesNames: String

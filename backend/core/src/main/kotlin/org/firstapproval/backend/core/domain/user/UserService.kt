@@ -115,12 +115,16 @@ class UserService(
                 null
             } else {
                 newAttemptForRegistration(
-                    email = registrationRequest.email,
-                    password = registrationRequest.password,
-                    firstName = registrationRequest.firstName,
-                    lastName = registrationRequest.lastName,
-                    utmSource = registrationRequest.utmSource,
-                    initialReferrer = registrationRequest.initialReferrer
+                    AttemptRegistration(
+                        email = registrationRequest.email,
+                        password = registrationRequest.password,
+                        firstName = registrationRequest.firstName,
+                        lastName = registrationRequest.lastName,
+                        utmSource = registrationRequest.utmSource,
+                        utmMedium = registrationRequest.utmMedium,
+                        utmCampaign = registrationRequest.utmCampaign,
+                        initialReferrer = registrationRequest.initialReferrer
+                    )
                 )
             }
         }
@@ -152,13 +156,8 @@ class UserService(
         return prevTry.id
     }
 
-    private fun newAttemptForRegistration(email: String,
-                                          password: String,
-                                          firstName: String,
-                                          lastName: String,
-                                          utmSource: String?,
-                                          initialReferrer: String?): UUID {
-        if (userRepository.existsByEmail(email)) {
+    private fun newAttemptForRegistration(attemptRegistration: AttemptRegistration): UUID {
+        if (userRepository.existsByEmail(attemptRegistration.email)) {
             throw RecordConflictException("user already exists")
         }
         val code = generateCode(EMAIL_CONFIRMATION_CODE_LENGTH)
@@ -166,18 +165,20 @@ class UserService(
         emailRegistrationConfirmationRepository.save(
             EmailRegistrationConfirmation(
                 id = registrationToken,
-                email = email,
-                password = passwordEncoder.encode(password),
+                email = attemptRegistration.email,
+                password = passwordEncoder.encode(attemptRegistration.password),
                 code = code,
-                firstName = firstName,
-                lastName = lastName,
-                utmSource = utmSource,
-                initialReferrer = initialReferrer
+                firstName = attemptRegistration.firstName,
+                lastName = attemptRegistration.lastName,
+                utmSource = attemptRegistration.utmSource,
+                utmMedium = attemptRegistration.utmMedium,
+                utmCampaign = attemptRegistration.utmCampaign,
+                initialReferrer = attemptRegistration.initialReferrer
             )
         )
         // TODO CREATE LINK
         val link = "${frontendProperties.registrationConfirmationUrl}/${registrationToken}/${code}"
-        notificationService.sendConfirmationEmail(code, link, email, "email-template")
+        notificationService.sendConfirmationEmail(code, link, attemptRegistration.email, "email-template")
         return registrationToken
     }
 
@@ -199,6 +200,8 @@ class UserService(
                 firstName = emailRegistrationConfirmation.firstName,
                 lastName = emailRegistrationConfirmation.lastName,
                 utmSource = emailRegistrationConfirmation.utmSource,
+//                utmMedium = emailRegistrationConfirmation.utmMedium,
+//                utmCampaign = emailRegistrationConfirmation.utmCampaign,
                 initialReferrer = emailRegistrationConfirmation.initialReferrer,
                 username = if (userByUsername != null) userId.toString() else username,
                 isNameConfirmed = true
@@ -390,6 +393,17 @@ class UserService(
         }
     }
 }
+
+class AttemptRegistration(
+    val email: String,
+    val password: String,
+    val firstName: String,
+    val lastName: String,
+    val utmSource: String?,
+    val utmMedium: String?,
+    val utmCampaign: String?,
+    val initialReferrer: String?
+)
 
 enum class OauthType {
     GOOGLE,
