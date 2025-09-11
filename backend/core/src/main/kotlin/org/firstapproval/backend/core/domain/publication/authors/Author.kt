@@ -33,6 +33,7 @@ class Author(
     @ManyToOne(fetch = EAGER)
     var user: User? = null,
     var isConfirmed: Boolean,
+    var isAcademicSupervisor: Boolean = false,
     @Fetch(SELECT)
     @OneToMany(fetch = EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
     @JoinColumn(name = "author_id", nullable = false)

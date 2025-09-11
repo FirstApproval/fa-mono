@@ -201,6 +201,7 @@ export class PublicationStore {
       author.email = store.email;
       author.firstName = store.firstName;
       author.lastName = store.lastName;
+      author.isAcademicSupervisor = store.isAcademicSupervisor;
       author.workplaces = [...store.workplaces];
     } else {
       const newValue = [...this.authors];
@@ -211,6 +212,7 @@ export class PublicationStore {
         ordinal: this.authors.length,
         workplaces: store.workplaces,
         isConfirmed: store.isConfirmed,
+        isAcademicSupervisor: store.isAcademicSupervisor,
         user: store.user
       });
       this.authors = newValue;
@@ -706,6 +708,7 @@ export class PublicationStore {
             this.tags = new Set(publication.tags.map((p) => p.text));
           }
           if (publication.authors?.length) {
+            debugger;
             this.authors = publication.authors || [];
           }
           if (publication.publicationTime) {

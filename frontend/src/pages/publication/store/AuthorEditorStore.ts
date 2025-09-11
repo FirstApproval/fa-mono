@@ -16,6 +16,7 @@ export class AuthorEditorStore implements IWorkplaceStore {
   shortBio: string = '';
   profileImage?: string;
   isConfirmed: boolean = false;
+  isAcademicSupervisor: boolean = false;
   isNew: boolean = false;
   index?: number;
   workplaces: Workplace[] = [];
@@ -51,5 +52,9 @@ export class AuthorEditorStore implements IWorkplaceStore {
       this.isValidLastName &&
       this.workplacesValidation.every((v) => v.isValidOrganization)
     );
+  }
+
+  setIsAcademicSupervisor(agreeToTheFirstApprovalLicense: boolean) {
+    this.isAcademicSupervisor = agreeToTheFirstApprovalLicense;
   }
 }

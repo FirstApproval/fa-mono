@@ -2503,6 +2503,8 @@ components:
           format: int32
         isConfirmed:
           type: boolean
+        isAcademicSupervisor:
+          type: boolean
         user:
           $ref: '#/components/schemas/UserInfo'
         workplaces:
@@ -2514,6 +2516,7 @@ components:
         - firstName
         - lastName
         - isConfirmed
+        - isAcademicSupervisor
 
     Reviewer:
       type: object
