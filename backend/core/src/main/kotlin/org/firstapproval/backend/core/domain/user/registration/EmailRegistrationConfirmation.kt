@@ -22,6 +22,8 @@ class EmailRegistrationConfirmation(
     var code: String,
     var attemptCount: Int = 1,
     var utmSource: String? = null,
+    var utmMedium: String? = null,
+    var utmCampaign: String? = null,
     var initialReferrer: String? = null,
     var lastTryTime: ZonedDateTime? = now(),
     var creationTime: ZonedDateTime = now()

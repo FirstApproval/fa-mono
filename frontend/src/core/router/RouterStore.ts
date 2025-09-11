@@ -35,6 +35,8 @@ import { DataCollectionType } from '../../apis/first-approval-api';
 export const INTRO_VIEWED = 'intro_viewed';
 export const VISIT_MARK_KEY = 'visit-mark';
 export const UTM_SOURCE_KEY = 'utm_source';
+export const UTM_MEDIUM_KEY = 'utm_medium';
+export const UTM_CAMPAIGN_KEY = 'utm_campaign';
 export const REFERRER = 'initialReferrer';
 
 const history = createBrowserHistory();
@@ -84,13 +86,21 @@ export class RouterStore {
       if (utmSource) {
         localStorage.setItem(UTM_SOURCE_KEY, utmSource);
       }
+      const utmMedium = queryParams.get('utm_medium') ?? undefined;
+      if (utmMedium) {
+        localStorage.setItem(UTM_MEDIUM_KEY, utmMedium);
+      }
+      const utmCampaign = queryParams.get('utm_campaign') ?? undefined;
+      if (utmCampaign) {
+        localStorage.setItem(UTM_CAMPAIGN_KEY, utmCampaign);
+      }
       const referrer = document.referrer;
       if (referrer && !localStorage.getItem(REFERRER)) {
         localStorage.setItem(REFERRER, referrer);
       }
 
       if (localStorage.getItem(VISIT_MARK_KEY) !== 'true') {
-        void visitorService.saveVisitor(utmSource, referrer).then((response) => {
+        void visitorService.saveVisitor(utmSource, utmMedium, utmCampaign, referrer).then((response) => {
           if (response.status === 200) {
             localStorage.setItem(VISIT_MARK_KEY, 'true');
           }
