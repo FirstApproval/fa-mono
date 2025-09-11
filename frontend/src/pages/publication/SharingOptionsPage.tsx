@@ -72,6 +72,10 @@ export const SharingOptionsPage = (props: {
     understandAfterPublishingCannotBeEdited,
     setUnderstandAfterPublishingCannotBeEdited
   ] = useState(false);
+  const [
+    userConfirmedSubmissionCompliance,
+    setUserConfirmedSubmissionCompliance
+  ] = useState(false);
   const [useType, setUseType] = useState(UseType.CITATE);
   const [storageType, setStorageType] = useState(
     props.dataCollectionType === DataCollectionType.AGING
@@ -115,6 +119,7 @@ export const SharingOptionsPage = (props: {
   const isPublicationNotValid =
     !confirmThatAllAuthorsAgree ||
     !understandAfterPublishingCannotBeEdited ||
+    !userConfirmedSubmissionCompliance ||
     !previewTitle ||
     previewTitle.length > MAX_PREVIEW_LENGTH ||
     !previewSubtitle ||
@@ -202,21 +207,23 @@ export const SharingOptionsPage = (props: {
                   'All registered users can download your attached files instantly. Set the rules for your data use below.'
                 }
               />
-              <SharingOption
-                icon={<MessageOutlined fontSize={'medium'} />}
-                label={'Direct Share'}
-                isSelected={accessType === AccessType.PERSONAL_SHARE}
-                onClick={() => setAccessType(AccessType.PERSONAL_SHARE)}
-                description={
-                  'The dataset will not be published but will receive a reserved DOI and will be accessible through a direct link.'
-                }
-                isDisabled={true}
-                disabledChipLabel={
-                  props.dataCollectionType === DataCollectionType.STUDENT
-                    ? NOT_FOR_COMPETITION_CHIP_LABEL
-                    : SOON_CHIP_LABEL
-                }
-              />
+              <Tooltip title="Like science, we value openness and are excited to share what we're working on. New features currently in our 'lab', are being tested and perfected, so stay tuned.">
+                <SharingOption
+                  icon={<MessageOutlined fontSize={'medium'} />}
+                  label={'Direct Share'}
+                  isSelected={accessType === AccessType.PERSONAL_SHARE}
+                  onClick={() => setAccessType(AccessType.PERSONAL_SHARE)}
+                  description={
+                    'The dataset will not be published but will receive a reserved DOI and will be accessible through a direct link.'
+                  }
+                  isDisabled={true}
+                  disabledChipLabel={
+                    props.dataCollectionType === DataCollectionType.STUDENT
+                      ? NOT_FOR_COMPETITION_CHIP_LABEL
+                      : SOON_CHIP_LABEL
+                  }
+                />
+              </Tooltip>
             </SharingOptionsContainer>
             <SharingOptionSelectedDescription
               variant={'body2'}
@@ -359,6 +366,22 @@ export const SharingOptionsPage = (props: {
                       .
                     </span>
                   </div>
+                }
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={userConfirmedSubmissionCompliance}
+                    onChange={(e) => {
+                      setUserConfirmedSubmissionCompliance(
+                        e.currentTarget.checked
+                      );
+                    }}
+                  />
+                }
+                label={
+                  'I confirm that my submission does not contain sensitive information ' +
+                  'and complies with all institutional and legal requirements.'
                 }
               />
             </FormGroup>
