@@ -31,7 +31,7 @@ import StanislovasJanakuskas from 'src/assets/contest/judges/StanislovasJanakusk
 import ThomasStoeger from 'src/assets/contest/judges/ThomasStoeger.png';
 import { routerStore } from '../../core/router';
 import { Page } from '../../core/router/constants';
-import { Alert, Box, Button, Grid, InputAdornment, Link, Snackbar, Typography } from "@mui/material"
+import { Alert, Box, Button, Grid, InputAdornment, Link, Snackbar, Tooltip, Typography } from "@mui/material"
 import styled from '@emotion/styled';
 import { userStore } from '../../core/user';
 import { DataCollectionType, LinkMapping } from "../../apis/first-approval-api"
@@ -39,7 +39,7 @@ import { css } from '@emotion/react';
 import { INTRO_VIEWED } from "../../core/router/RouterStore"
 import { Helmet } from "react-helmet"
 import { ArrowForward, OpenInNewOutlined, MailOutlined } from "@mui/icons-material"
-import { FullWidthButton, FullWidthTextField, HeightElement } from "../common.styled"
+import { FlexWrapColumn, FullWidthButton, FullWidthTextField, HeightElement } from "../common.styled"
 import { validateEmail } from "../../util/emailUtil"
 import { linkMappingService, subscriptionService } from "../../core/service"
 import { format, toZonedTime } from "date-fns-tz";
@@ -562,8 +562,49 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                     </div>
                                 </div>
                                 <div>
+                                    {
+                                      webinarLinkMapping && <div
+                                        style={{
+                                          width: 540,
+                                          height: 80,
+                                          color: 'white',
+                                          backgroundColor: "#3b4eff",
+                                          fontFamily: "Roboto",
+                                          fontSize: 20,
+                                          fontWeight: 500,
+                                          display: "flex",
+                                          flexDirection: "column",
+                                          alignItems: "flex-start",
+                                          borderRadius: 8,
+                                          padding: "10px 24px"
+                                        }}
+                                      >
+                                        <Tooltip title={webinarLinkMapping.description}>
+                                          <Link
+                                            color="inherit"
+                                            href={webinarLinkMapping?.url}
+                                            underline={"none"}
+                                            target={"_blank"}>
+                                            <span>Info session: {webinarTime}</span>
+                                            <div
+                                              style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                cursor: "pointer"
+                                              }}>
+                                              <span>Register now</span>
+                                              <OpenInNewOutlined sx={{
+                                                width: 24,
+                                                height: 24,
+                                                marginLeft: "8px"
+                                              }} />
+                                            </div>
+                                          </Link>
+                                        </Tooltip>
+                                      </div>
+                                    }
                                     <div>
-                                        <Typography marginBottom='6px'>
+                                        <Typography marginBottom='6px' marginTop='18px'>
                                             Would you like to learn more about competition? Join our mailing list:
                                         </Typography>
                                         <FullWidthTextField
@@ -655,40 +696,6 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                                             <img src={contestRightTop} style={{marginLeft: 8}}/>
                                         </div>
                                     </Link>
-                                    {
-                                      webinarLinkMapping && <div
-                                        style={{
-                                          width: 540,
-                                          height: 80,
-                                          color: 'white',
-                                          backgroundColor: "#3b4eff",
-                                          fontFamily: "Roboto",
-                                          fontSize: 20,
-                                          fontWeight: 500,
-                                          display: "flex",
-                                          flexDirection: "column",
-                                          alignItems: "flex-start",
-                                          borderRadius: 8,
-                                          padding: "10px 24px"
-                                        }}
-                                      >
-                                        <span>Info session: {webinarTime}</span>
-                                        <Link
-                                          color="inherit"
-                                          href={webinarLinkMapping?.url}
-                                          target={'_blank'}>
-                                          <div
-                                            style={{
-                                              display: 'flex',
-                                              alignItems: 'center',
-                                              cursor: 'pointer'
-                                            }}>
-                                            <span>Register now</span>
-                                            <OpenInNewOutlined sx={{ width: 24, height: 24, marginLeft: '8px' }} />
-                                          </div>
-                                        </Link>
-                                      </div>
-                                    }
                                 </div>
                             </div>
                         </div>
