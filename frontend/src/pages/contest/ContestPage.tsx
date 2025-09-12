@@ -67,7 +67,7 @@ const organizationCommittee: ExpertElement[] = [
     {
         logo: DanielDominguez,
         name: "Daniel\nDominguez",
-        title: "Student Competion Lead, First Approval, CA",
+        title: "Student Competition Lead, First Approval, CA",
         url: "https://www.linkedin.com/in/daniel-dominguez-gomez/"
     },
     {
