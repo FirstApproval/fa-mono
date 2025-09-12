@@ -222,7 +222,8 @@ const Dropzone: React.FC<{ setFile: (file: File) => void, file: File | null }> =
     multiple: false,
     accept: {
       'application/pdf': ['.pdf'],
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
+      'image/jpeg': ['.jpeg', '.jpg'],
+      'image/png': ['.png']
     }
   })
 
@@ -266,7 +267,7 @@ const Dropzone: React.FC<{ setFile: (file: File) => void, file: File | null }> =
               <Typography variant={"body1"} style={{
                 color: "gray",
                 marginBottom: 0
-              }}>PDF or DOCX</Typography>
+              }}>PDF, JPEG or PNG</Typography>
             </SpaceBetweenColumn>
         )
       }
