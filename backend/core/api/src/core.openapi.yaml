@@ -2289,7 +2289,7 @@ components:
     UseType:
       type: string
       enum:
-        - CITATE
+        - CITATION
         - CO_AUTHORSHIP
 
     StorageType:
