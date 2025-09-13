@@ -339,7 +339,7 @@ export const SharingOptionsPage = (props: {
                   </div>
                 }
               />
-              <HeightElement value={'24px'} />
+              <HeightElement value={'6px'} />
               <FormControlLabel
                 control={
                   <Checkbox
@@ -368,6 +368,7 @@ export const SharingOptionsPage = (props: {
                   </div>
                 }
               />
+              <HeightElement value={'6px'} />
               <FormControlLabel
                 control={
                   <Checkbox
