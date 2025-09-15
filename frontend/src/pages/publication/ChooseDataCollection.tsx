@@ -12,7 +12,7 @@ import {
 } from '../common.styled';
 import { ArrowForward, Close, InfoOutlined } from '@mui/icons-material';
 import { routerStore } from '../../core/router';
-import { C04003661, C68676E } from '../../ui-kit/colors';
+import { C04003661, C3B4EFF, C68676E } from '../../ui-kit/colors';
 import { FormControlLabel, Link, Radio, Typography } from "@mui/material"
 import { DataCollectionType } from '../../apis/first-approval-api';
 import styled from '@emotion/styled';
@@ -78,14 +78,18 @@ export const ChooseDataCollectionPage: FunctionComponent<ChooseDataCollectionPag
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}>
-                <InfoOutlined htmlColor={C04003661}
-                              sx={{
+                <InfoOutlined sx={{
                                 width: 24,
                                 height: 24,
                                 marginLeft: '12px',
                                 marginBottom: '3px',
                                 cursor: 'pointer',
-                                verticalAlign: 'middle' }}
+                                verticalAlign: 'middle',
+                                color: C04003661,
+                                '&:hover': {
+                                  color: C3B4EFF,
+                                },
+                              }}
                 />
               </Link>
             </FlexWrapRow>
