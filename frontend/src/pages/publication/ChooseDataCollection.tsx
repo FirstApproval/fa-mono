@@ -13,7 +13,7 @@ import {
 import { ArrowForward, Close, InfoOutlined } from '@mui/icons-material';
 import { routerStore } from '../../core/router';
 import { C04003661, C3B4EFF, C68676E } from '../../ui-kit/colors';
-import { FormControlLabel, Link, Radio, Typography } from "@mui/material"
+import { FormControlLabel, Link, Radio, Tooltip, Typography } from "@mui/material"
 import { DataCollectionType } from '../../apis/first-approval-api';
 import styled from '@emotion/styled';
 import { LoadingButton } from '@mui/lab';
@@ -74,23 +74,25 @@ export const ChooseDataCollectionPage: FunctionComponent<ChooseDataCollectionPag
           <FlexWrapColumn style={{ marginLeft: '10px' }}>
             <FlexWrapRow style={{ alignItems: 'center' }}>
               <Typography variant={'h6'}>{title}</Typography>
-              <Link href={'https://docs.google.com/document/d/1Cq5OTm_gODN3JUjZCBzid2eY_kmKn9AwVhDc1klmva0/edit?tab=t.0'}
+              <Link href={"https://docs.google.com/document/d/1Cq5OTm_gODN3JUjZCBzid2eY_kmKn9AwVhDc1klmva0/edit?tab=t.0"}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}>
-                <InfoOutlined sx={{
-                                width: 24,
-                                height: 24,
-                                marginLeft: '12px',
-                                marginBottom: '3px',
-                                cursor: 'pointer',
-                                verticalAlign: 'middle',
-                                color: C04003661,
-                                '&:hover': {
-                                  color: C3B4EFF,
-                                },
-                              }}
-                />
+                <Tooltip title={"Click to learn more"} placement="right-start">
+                  <InfoOutlined sx={{
+                    width: 24,
+                    height: 24,
+                    marginLeft: "12px",
+                    marginBottom: "3px",
+                    cursor: "pointer",
+                    verticalAlign: "middle",
+                    color: C04003661,
+                    "&:hover": {
+                      color: C3B4EFF
+                    }
+                  }}
+                  />
+                </Tooltip>
               </Link>
             </FlexWrapRow>
             <OptionDescription variant={'body2'}>{description}</OptionDescription>
