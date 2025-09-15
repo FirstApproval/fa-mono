@@ -1949,6 +1949,42 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
             </div>
             <div
               style={{
+                paddingLeft: 128,
+                paddingRight: 128,
+                marginBottom: 80
+              }}>
+              <div
+                style={{
+                  marginBottom: 24,
+                  fontFamily: 'Roboto',
+                  fontSize: 24,
+                  fontWeight: 600
+                }}>
+                For Press and Partners
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  fontFamily: 'Roboto',
+                  fontSize: 20,
+                  fontWeight: 400,
+                  marginBottom: 30
+                }}>
+                <span>
+                  <span>Please find our </span>
+                  <Link href={'https://drive.google.com/drive/folders/11-gzHgrSi5_beHpAM4z2tDae2XujwJh-'}
+                        target={'_blank'}>
+                    media kit
+                  </Link>.
+                </span>
+                <span>
+                  We would greatly appreciate your support in sharing information about our competition within your network.
+                </span>
+              </div>
+            </div>
+            <div
+              style={{
                   paddingLeft: 128,
                   paddingRight: 128,
                   marginBottom: 80
@@ -2116,6 +2152,42 @@ export const ContestPage: FunctionComponent<ContestPageProps> = observer((props:
                   We believe that such practices will foster the reuse of
                   scientific data, enhance reproducibility, and improve data
                   quality.
+                </div>
+              </div>
+              <div
+                style={{
+                  paddingLeft: 20,
+                  paddingRight: 20,
+                  marginBottom: 40
+                }}>
+                <div
+                  style={{
+                    marginBottom: 24,
+                    fontFamily: 'Roboto',
+                    fontSize: 24,
+                    fontWeight: 600
+                  }}>
+                  For Press and Partners
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    fontFamily: 'Roboto',
+                    marginBottom: 24,
+                    fontSize: 16,
+                    fontWeight: 400,
+                  }}>
+                <span>
+                  <span>Please find our </span>
+                  <Link href={'https://drive.google.com/drive/folders/11-gzHgrSi5_beHpAM4z2tDae2XujwJh-'}
+                        target={'_blank'}>
+                    media kit
+                  </Link>.
+                </span>
+                  <span>
+                  We would greatly appreciate your support in sharing information about our competition within your network.
+                </span>
                 </div>
               </div>
               <div
