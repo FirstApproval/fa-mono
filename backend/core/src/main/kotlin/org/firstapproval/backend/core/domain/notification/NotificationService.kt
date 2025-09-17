@@ -28,8 +28,8 @@ class NotificationService(
     private val frontendProperties: FrontendProperties,
     @Value("\${tech-support-email}")
     private val techSupportEmail: String,
-    @Value("\${admin-email}")
-    private val adminEmail: String,
+    @Value("\${admin-emails}")
+    private val adminEmails: Array<String>
 ) {
     val log = logger {}
 
@@ -163,7 +163,7 @@ class NotificationService(
             return
         }
         val content = "ID: ${publication.id}, Title: ${publication.title}"
-        mailService.send(adminEmail, "[FirstApproval] New publication for moderation", content)
+        mailService.send(adminEmails, "[FirstApproval] New publication for moderation", content)
     }
 
     fun sendPublicationPassedModeration(publication: Publication) {
