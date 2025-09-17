@@ -40,6 +40,7 @@ class FileStorageConfig {
                     .build()
             )
             .requestChecksumCalculation(WHEN_REQUIRED)
+            .region(Region.of(s3Properties.region))
 
         if (s3Properties.localMode) {
             builder

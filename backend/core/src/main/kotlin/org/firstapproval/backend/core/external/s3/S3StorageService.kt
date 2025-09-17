@@ -43,7 +43,7 @@ class FileStorageService(private val s3Client: S3Client, private val s3Propertie
 
     fun delete(bucketName: String, id: UUID) {
         val deleteRequest = DeleteObjectRequest.builder()
-            .bucket(bucketName)
+            .bucket(bucketName + s3Properties.bucketPostfix)
             .key(id.toString())
             .build()
 
@@ -53,7 +53,7 @@ class FileStorageService(private val s3Client: S3Client, private val s3Propertie
     fun deleteByIds(bucketName: String, ids: List<UUID>) {
         if (ids.isEmpty()) return
         val deleteObjectsRequest = DeleteObjectsRequest.builder()
-            .bucket(bucketName)
+            .bucket(bucketName + s3Properties.bucketPostfix)
             .delete(
                 Delete.builder()
                     .objects(ids.map { ObjectIdentifier.builder().key(it.toString()).build() })
@@ -67,7 +67,7 @@ class FileStorageService(private val s3Client: S3Client, private val s3Propertie
     fun get(bucketName: String, id: String): ResponseInputStream<GetObjectResponse> =
         s3Client.getObject(
             GetObjectRequest.builder()
-                .bucket(bucketName)
+                .bucket(bucketName + s3Properties.bucketPostfix)
                 .key(id)
                 .build(),
             ResponseTransformer.toInputStream()

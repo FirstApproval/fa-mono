@@ -17,7 +17,7 @@ class Properties {
         var localMode by notNull<Boolean>()
         lateinit var downloadLinkTtl: Duration
         lateinit var bucketPostfix: String
-        lateinit var bucketStorageClass: String
+        lateinit var region: String
     }
 
     @Component
