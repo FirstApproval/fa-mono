@@ -222,8 +222,7 @@ class ArchiveService(
             archiveSize = tempArchive.length()
 
             when (publication.storageType) {
-                CLOUD_SECURE_STORAGE -> saveArchiveToS3(ARCHIVED_PUBLICATION_FILES, publication.id, tempArchive)
-                IPFS -> saveArchiveToIPFS(publication, tempArchive)
+                IPFS, CLOUD_SECURE_STORAGE -> saveArchiveToS3(ARCHIVED_PUBLICATION_FILES, publication.id, tempArchive)
                 else -> throw IllegalStateException("Storage type must be present")
             }
 
