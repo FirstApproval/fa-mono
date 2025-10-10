@@ -12,7 +12,6 @@ import contestTopImage from 'src/assets/contest-top-image.svg';
 import contest1 from 'src/assets/contest-1.svg';
 import contest2 from 'src/assets/contest-2.svg';
 import contest3 from 'src/assets/contest-3.svg';
-import TimofeyGlinin from 'src/assets/contest/organizing-сommittee/TimofeyGlinin.png';
 import AnastasiaShubina from 'src/assets/contest/organizing-сommittee/AnastasiaShubina.png';
 import AlexanderPanchin from 'src/assets/contest/organizing-сommittee/AlexanderPanchin.png';
 import DanielDominguez from 'src/assets/contest/organizing-сommittee/DanielDominguez.png';
@@ -52,12 +51,6 @@ export interface ExpertElement {
 }
 
 const organizationCommittee: ExpertElement[] = [
-    {
-        logo: TimofeyGlinin,
-        name: "Timofey\nGlinin",
-        title: "PhD, Co-founder, First Approval, CA",
-        url: "https://www.linkedin.com/in/timofey-glinin"
-    },
     {
         logo: AnastasiaShubina,
         name: "Anastasia\nShubina",
