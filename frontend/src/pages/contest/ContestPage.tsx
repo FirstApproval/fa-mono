@@ -52,16 +52,16 @@ export interface ExpertElement {
 
 const organizationCommittee: ExpertElement[] = [
     {
-        logo: AnastasiaShubina,
-        name: "Anastasia\nShubina",
-        title: "Co-founder, First Approval, CA",
-        url: "https://www.linkedin.com/in/anastasia-n-shubina"
-    },
-    {
         logo: DanielDominguez,
         name: "Daniel\nDominguez",
         title: "Student Competition Lead, First Approval, CA",
         url: "https://www.linkedin.com/in/daniel-dominguez-gomez/"
+    },
+    {
+        logo: AnastasiaShubina,
+        name: "Anastasia\nShubina",
+        title: "Operations manager, First Approval, CA",
+        url: "https://www.linkedin.com/in/anastasia-n-shubina"
     },
     {
         logo: AnastasiaEgorova,
