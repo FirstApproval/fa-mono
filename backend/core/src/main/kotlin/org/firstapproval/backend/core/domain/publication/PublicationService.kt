@@ -279,14 +279,12 @@ class PublicationService(
         checkStatusPublished(publication)
         val title = publication.title ?: id
         val link: DownloadLinkResponse = when (publication.storageType) {
-            CLOUD_SECURE_STORAGE -> {
+            IPFS, CLOUD_SECURE_STORAGE -> {
                 val link = fileStorageService.generateTemporaryDownloadLink(
                     ARCHIVED_PUBLICATION_FILES, publication.id, title + "_files.zip"
                 )
                 DownloadLinkResponse(link, publication.archivePassword, AVAILABLE)
             }
-
-            IPFS -> getIpfsDownloadLink(publication, user)
 
             else -> throw IllegalArgumentException("Unexpected storage type: ${publication.storageType}")
         }
