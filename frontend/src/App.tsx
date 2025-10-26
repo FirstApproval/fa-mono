@@ -1,5 +1,6 @@
 import './App.css';
-import React, {type FunctionComponent, useState} from 'react';
+import React, {type FunctionComponent, useEffect, useState} from "react"
+import {initAnalytics, trackPage} from './analytics';
 import {SignInPage} from './pages/login/SignInPage';
 import CssBaseline from '@mui/material/CssBaseline';
 import {ThemeProvider} from '@mui/material/styles';
@@ -38,6 +39,14 @@ const App: FunctionComponent = observer(() => {
   const [signInStore] = useState(() => new SignInStore());
   const [signUpStore] = useState(() => new SignUpStore());
   const [restorePasswordStore] = useState(() => new RestorePasswordStore());
+
+  useEffect(() => {
+    initAnalytics();
+  }, []);
+
+  useEffect(() => {
+    trackPage(page);
+  }, [page]);
 
   return (
     <>
