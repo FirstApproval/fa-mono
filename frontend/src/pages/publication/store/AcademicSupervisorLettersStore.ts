@@ -29,7 +29,6 @@ export class AcademicSupervisorLettersStore {
       this.publicationId!,
       letter.id
     ).then(response => {
-      debugger;
       const downloadLink = document.createElement('a');
       downloadLink.href = response.data;
       downloadLink.download = letter.fileName;
