@@ -2037,6 +2037,10 @@ components:
           $ref: '#/components/schemas/OauthType'
         utmSource:
           type: string
+        utmMedium:
+          type: string
+        utmCampaign:
+          type: string
         initialReferrer:
           type: string
       required:

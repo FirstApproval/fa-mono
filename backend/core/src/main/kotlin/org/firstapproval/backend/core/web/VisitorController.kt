@@ -20,8 +20,8 @@ class VisitorController(
         val visitor = Visitor(
             ip = ip,
             utmSource = utmSource,
-//            utmMedium = utmMedium,
-//            utmCampaign = utmCampaign,
+            utmMedium = utmMedium,
+            utmCampaign = utmCampaign,
             initialReferrer = initialReferrer
         )
         visitorRepository.save(visitor)

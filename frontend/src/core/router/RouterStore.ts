@@ -203,6 +203,8 @@ export class RouterStore {
             code: authCode,
             type: authType,
             utmSource: localStorage.getItem(UTM_SOURCE_KEY) ?? undefined,
+            utmMedium: localStorage.getItem(UTM_MEDIUM_KEY) ?? undefined,
+            utmCampaign: localStorage.getItem(UTM_CAMPAIGN_KEY) ?? undefined,
             initialReferrer: localStorage.getItem(REFERRER) ?? undefined
           })
           .then(async (response) => {

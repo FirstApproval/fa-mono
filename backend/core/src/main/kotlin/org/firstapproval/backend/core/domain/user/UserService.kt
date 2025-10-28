@@ -66,7 +66,11 @@ class UserService(
     fun getPublicUserProfile(username: String): User = userRepository.findByUsername(username).require()
 
     @Transactional(isolation = REPEATABLE_READ)
-    fun oauthSaveOrUpdate(oauthUser: OauthUser, utmSource: String?, initialReferrer: String?): User {
+    fun oauthSaveOrUpdate(oauthUser: OauthUser,
+                          utmSource: String?,
+                          utmMedium: String?,
+                          utmCampaign: String?,
+                          initialReferrer: String?): User {
         val user = userRepository.findByExternalIdAndType(
             externalId = oauthUser.externalId,
             type = oauthUser.type
@@ -91,6 +95,8 @@ class UserService(
                 middleName = oauthUser.middleName,
                 fullName = oauthUser.fullName,
                 utmSource = utmSource,
+                utmCampaign = utmCampaign,
+                utmMedium = utmMedium,
                 initialReferrer = initialReferrer
             )
         )
@@ -200,8 +206,8 @@ class UserService(
                 firstName = emailRegistrationConfirmation.firstName,
                 lastName = emailRegistrationConfirmation.lastName,
                 utmSource = emailRegistrationConfirmation.utmSource,
-//                utmMedium = emailRegistrationConfirmation.utmMedium,
-//                utmCampaign = emailRegistrationConfirmation.utmCampaign,
+                utmMedium = emailRegistrationConfirmation.utmMedium,
+                utmCampaign = emailRegistrationConfirmation.utmCampaign,
                 initialReferrer = emailRegistrationConfirmation.initialReferrer,
                 username = if (userByUsername != null) userId.toString() else username,
                 isNameConfirmed = true

@@ -16,8 +16,8 @@ class Visitor(
     var id: UUID = randomUUID(),
     var ip: String? = null,
     var utmSource: String? = null,
-//    var utmMedium: String? = null,
-//    var utmCampaign: String? = null,
+    var utmMedium: String? = null,
+    var utmCampaign: String? = null,
     var initialReferrer: String? = null,
     var creationTime: ZonedDateTime = now(),
 )

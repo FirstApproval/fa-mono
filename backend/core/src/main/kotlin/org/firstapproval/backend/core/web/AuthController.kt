@@ -25,6 +25,8 @@ class AuthController(
             code = request.code,
             type = OauthType.valueOf(request.type.toString()),
             utmSource = request.utmSource,
+            utmMedium = request.utmMedium,
+            utmCampaign = request.utmCampaign,
             initialReferrer = request.initialReferrer
         )
         return ok(AuthorizeResponse().token(token))

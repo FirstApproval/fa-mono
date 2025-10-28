@@ -15,9 +15,19 @@ class TokenService(
     private val jwtService: JwtService,
 ) {
 
-    fun exchangeOauthToken(code: String, type: OauthType, utmSource: String?, initialReferrer: String?): String {
+    fun exchangeOauthToken(code: String,
+                           type: OauthType,
+                           utmSource: String?,
+                           utmMedium: String?,
+                           utmCampaign: String?,
+                           initialReferrer: String?): String {
         val oauthUser = oauthUserSuppliers[type].require().getOauthUser(code)
-        val user = userService.oauthSaveOrUpdate(oauthUser, utmSource, initialReferrer)
+        val user = userService.oauthSaveOrUpdate(
+            oauthUser = oauthUser,
+            utmSource = utmSource,
+            utmMedium = utmMedium,
+            utmCampaign = utmCampaign,
+            initialReferrer = initialReferrer)
         return generateForUser(user.id.toString(), oauthUser.username, oauthUser.email)
     }
 
