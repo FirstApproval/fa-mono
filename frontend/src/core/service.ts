@@ -1,6 +1,7 @@
 import {
   AuthApi,
   AuthorApi,
+  ConfigApi,
   Configuration,
   FileApi,
   OrganizationApi,
@@ -63,3 +64,5 @@ export const linkMappingService = new LinkMappingApi(
 export const academicSupervisorLetterService = new AcademicSupervisorLetterApi(
   configuration
 );
+
+export const configService = new ConfigApi();

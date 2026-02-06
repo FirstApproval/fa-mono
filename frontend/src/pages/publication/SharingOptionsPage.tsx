@@ -42,6 +42,7 @@ import {
 } from '../common.styled';
 import { ContentLicensingDialog } from '../../components/ContentLicensingDialog';
 import { getContentLicensingAbbreviation } from '../../util/publicationUtils';
+import { getAppConfig } from '../../core/config';
 import { range } from 'lodash';
 import { validateEmail } from '../../util/emailUtil';
 import { isNonEmptyString } from '../../util/stringUtils';
@@ -76,7 +77,11 @@ export const SharingOptionsPage = (props: {
     userConfirmedSubmissionCompliance,
     setUserConfirmedSubmissionCompliance
   ] = useState(false);
-  const [useType, setUseType] = useState(UseType.CITATION);
+  const [useType, setUseType] = useState(
+    props.licenseType === LicenseType.FIRST_APPROVAL_COLLABORATION_REQUIREMENT
+      ? UseType.CO_AUTHORSHIP
+      : UseType.CITATION
+  );
   const [storageType, setStorageType] = useState(
     props.dataCollectionType === DataCollectionType.AGING
       ? StorageType.IPFS
@@ -161,14 +166,17 @@ export const SharingOptionsPage = (props: {
             itself.
           </LeftPanelSubtitle>
         </FlexWrapColumn>
-        <ContentLicensingButton
-          onClick={() => setContentLicensingDialogOpen(true)}>
-          {`Content licensing: ${licenseTypeAbbreviation}`}
-        </ContentLicensingButton>
         <ContentLicensingDialog
           licenseType={licenseType}
           isOpen={contentLicensingDialogOpen}
-          onConfirm={(licenseType) => setLicenseType(licenseType)}
+          onConfirm={(licenseType) => {
+            setLicenseType(licenseType);
+            if (licenseType === LicenseType.FIRST_APPROVAL_COLLABORATION_REQUIREMENT) {
+              setUseType(UseType.CO_AUTHORSHIP);
+            } else {
+              setUseType(UseType.CITATION);
+            }
+          }}
           onClose={() => setContentLicensingDialogOpen(false)}
         />
       </LeftPanel>
@@ -234,34 +242,48 @@ export const SharingOptionsPage = (props: {
             <Typography variant={'h6'}>Use of your dataset</Typography>
             <SharingOptionsContainer>
               <SharingOption
-                onClick={() => setUseType(UseType.CITATION)}
+                onClick={() => {
+                  setUseType(UseType.CITATION);
+                  setLicenseType(LicenseType.ATTRIBUTION_NO_DERIVATIVES);
+                }}
                 isSelected={useType === UseType.CITATION}
                 icon={<FormatQuoteIcon fontSize={'medium'} />}
-                label={'Citation is enough'}
+                label={'Standard citation model'}
                 description={
-                  'Others may use your data, provided that they cite your dataset in their research.'
+                  'Publish under standard Creative Commons license CC-BY-ND will make your dataset open access for users. ' +
+                  'Use of your data will result in standard scientific citation.'
                 }
               />
               <SharingOption
                 isDisabled={
                   props.dataCollectionType === DataCollectionType.STUDENT
                 }
-                onClick={() => setUseType(UseType.CO_AUTHORSHIP)}
+                onClick={() => {
+                  setUseType(UseType.CO_AUTHORSHIP);
+                  setLicenseType(LicenseType.FIRST_APPROVAL_COLLABORATION_REQUIREMENT);
+                }}
                 isSelected={useType === UseType.CO_AUTHORSHIP}
                 icon={<AlternateEmail fontSize={'medium'} />}
-                label={'Co-authorship requirement'}
+                label={'Author Curation model'}
                 disabledChipLabel={NOT_FOR_COMPETITION_CHIP_LABEL}
                 description={
-                  "Be credited as a co-author in journal publications when your data is vital to others' research. " +
-                  'You can accept or reject collaboration requests.'
+                  'Publish under FA Collaboration Required License allows you to be invited to collaborations ' +
+                  'for curate reuse of your data and get additional co-authorship publications.'
                 }
               />
             </SharingOptionsContainer>
             {useType === UseType.CO_AUTHORSHIP && (
               <SharingOptionSelectedDescription
                 variant={'body2'}
-                component={'div'}>
-                Co-authorship license is active for five years from the date of
+                component={'div'}
+                style={{ display: 'block' }}>
+                <a
+                  href={getAppConfig()?.collaborationLicenseDescriptionUrl ?? 'https://firstapproval.io/publication/XFJXD3J'}
+                  target="_blank"
+                  rel="noopener noreferrer">
+                  FA Collaboration Required License
+                </a>{' '}
+                is active for ten years from the date of
                 publication. After that, the data becomes available under an
                 open CC BY-ND license.
               </SharingOptionSelectedDescription>

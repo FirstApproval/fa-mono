@@ -7,6 +7,8 @@ import { SectionWrap, LabelWrap } from './styled';
 
 import { type EditorProps } from './types';
 import { TagsWrap } from '../ContentPlaceholder';
+import { DataCollectionType } from '../../../apis/first-approval-api';
+import biomedicalScience from '../asset/biomedicalScience.svg';
 
 export const TagsEditor = observer((props: EditorProps): ReactElement => {
   const [newTag, setNewTag] = useState('');
@@ -20,6 +22,18 @@ export const TagsEditor = observer((props: EditorProps): ReactElement => {
         <LabelWrap>Tags</LabelWrap>
         <FlexColumnWrap>
           <FlexWrap>
+            {props.publicationStore.dataCollectionType ===
+              DataCollectionType.AGING && (
+              <AgingChipWrap
+                icon={
+                  <img
+                    src={biomedicalScience}
+                    style={{ width: 24, height: 24 }}
+                  />
+                }
+                label="Aging Data Collection"
+              />
+            )}
             {Array.from(props.publicationStore.tags).map((tag, index) => (
               <ChipWrap
                 key={index}
@@ -90,6 +104,13 @@ const FlexWrap = styled.div`
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+`;
+
+const AgingChipWrap = styled(Chip)`
+  margin-right: 12px;
+  margin-bottom: 12px;
+  padding-left: 4px;
+  background-color: rgba(59, 78, 255, 0.12);
 `;
 
 const ChipWrap = styled(Chip)`

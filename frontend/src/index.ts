@@ -3,10 +3,12 @@ import './index.css';
 import { createRoot } from 'react-dom/client';
 import { initAuth } from './core/auth';
 import { initRouter } from './core/router';
+import { initConfig } from './core/config';
 import { initLinkMappingRedirects } from "./core/init-link-mapping-redirects"
 import axios from 'axios';
 
 void (async (): Promise<void> => {
+  await initConfig();
   await initAuth();
   await initRouter();
   await initLinkMappingRedirects();

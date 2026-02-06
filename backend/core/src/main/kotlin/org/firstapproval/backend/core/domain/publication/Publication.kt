@@ -125,6 +125,7 @@ enum class AccessType {
 enum class LicenseType {
     ATTRIBUTION_NO_DERIVATIVES,
     ATTRIBUTION_NO_DERIVATIVES_NON_COMMERCIAL,
+    FIRST_APPROVAL_COLLABORATION_REQUIREMENT,
 }
 
 enum class UseType {
