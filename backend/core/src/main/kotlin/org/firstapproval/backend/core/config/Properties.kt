@@ -104,4 +104,16 @@ class Properties {
         lateinit var login: String
         lateinit var password: String
     }
+
+    @Component
+    @ConfigurationProperties("collaboration")
+    class CollaborationProperties {
+        lateinit var licenseDescriptionUrl: String
+    }
+
+    @Component
+    @ConfigurationProperties("app")
+    class AppProperties {
+        var environment: String = ""
+    }
 }

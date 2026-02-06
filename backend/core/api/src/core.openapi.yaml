@@ -1811,8 +1811,32 @@ paths:
       operationId: getLinkByAlias
       tags: [ linkMapping ]
 
+  /api/v1/config:
+    get:
+      summary: Get public application config
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppConfig'
+      security:
+        - PublicAuth: [ ]
+      operationId: getConfig
+      tags: [ config ]
+
 components:
   schemas:
+    AppConfig:
+      type: object
+      properties:
+        collaborationLicenseDescriptionUrl:
+          type: string
+        environment:
+          type: string
+
+
     PublicationFile:
       type: object
       properties:
@@ -2319,6 +2343,7 @@ components:
       enum:
         - ATTRIBUTION_NO_DERIVATIVES
         - ATTRIBUTION_NO_DERIVATIVES_NON_COMMERCIAL
+        - FIRST_APPROVAL_COLLABORATION_REQUIREMENT
         - DUMMY
 
     DataCollectionType:

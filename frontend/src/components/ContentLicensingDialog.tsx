@@ -21,6 +21,7 @@ import { routerStore } from '../core/router';
 import humanInCircle from '../assets/human-in-circle.svg';
 import dollarStrikethrough from '../assets/dollar-strikethrough.svg';
 import equalInCircle from '../assets/equal-in-circle.svg';
+import { getAppConfig } from '../core/config';
 
 export const ContentLicensingDialog = (props: {
   licenseType: LicenseType | null;
@@ -38,6 +39,8 @@ export const ContentLicensingDialog = (props: {
     <Dialog
       open={isOpen}
       onClose={onClose}
+      maxWidth={'md'}
+      fullWidth
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description">
       <DeleteDialogTitle id="alert-dialog-title" variant={'h5'}>
@@ -54,7 +57,7 @@ export const ContentLicensingDialog = (props: {
             </span>
           </DescriptionElement>
           {newLicenseType ===
-            LicenseType.ATTRIBUTION_NO_DERIVATIVES_NON_COMMERCIAL && (
+            LicenseType.FIRST_APPROVAL_COLLABORATION_REQUIREMENT && (
             <DescriptionElement>
               <img src={dollarStrikethrough} />
               <WidthElement value={'8px'} />
@@ -101,17 +104,17 @@ export const ContentLicensingDialog = (props: {
           <HeightElement value={'8px'} />
           <SpaceBetween>
             <FormControlLabel
-              value={LicenseType.ATTRIBUTION_NO_DERIVATIVES_NON_COMMERCIAL}
-              label="Attribution, non-commercial, no derivatives"
+              value={LicenseType.FIRST_APPROVAL_COLLABORATION_REQUIREMENT}
+              label="First Approval Collaboration Requirement License, no derivatives"
               control={
                 <Radio
                   checked={
                     newLicenseType ===
-                    LicenseType.ATTRIBUTION_NO_DERIVATIVES_NON_COMMERCIAL
+                    LicenseType.FIRST_APPROVAL_COLLABORATION_REQUIREMENT
                   }
                   onChange={() => {
                     setNewLicenseType(
-                      LicenseType.ATTRIBUTION_NO_DERIVATIVES_NON_COMMERCIAL
+                      LicenseType.FIRST_APPROVAL_COLLABORATION_REQUIREMENT
                     );
                   }}
                 />
@@ -119,11 +122,13 @@ export const ContentLicensingDialog = (props: {
             />
             <LinkWrap
               onClick={() => {
+                const config = getAppConfig();
                 routerStore.openInNewTab(
-                  'https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode'
+                  config?.collaborationLicenseDescriptionUrl ??
+                    'https://firstapproval.io/publication/XFJXD3J'
                 );
               }}>
-              CC BY-NC-ND
+              FA-CRL-ND
               <Launch sx={{ width: 24, height: 24, marginLeft: '4px' }} />
             </LinkWrap>
           </SpaceBetween>

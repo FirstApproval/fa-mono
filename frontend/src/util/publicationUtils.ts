@@ -10,6 +10,9 @@ export const getContentLicensingAbbreviation = (
     case LicenseType.ATTRIBUTION_NO_DERIVATIVES_NON_COMMERCIAL: {
       return 'CC BY-NC-ND';
     }
+    case LicenseType.FIRST_APPROVAL_COLLABORATION_REQUIREMENT: {
+      return 'FA-CRL-ND';
+    }
     default: {
       return '';
     }

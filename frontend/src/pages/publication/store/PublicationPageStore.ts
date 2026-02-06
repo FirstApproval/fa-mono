@@ -3,7 +3,7 @@ import { makeAutoObservable, reaction } from 'mobx';
 import { PublicationStore } from './PublicationStore';
 import { FileSystemFA } from '../../../fire-browser/FileSystemFA';
 import { FileData } from '@first-approval/chonky/dist/types/file.types';
-import { PublicationContentStatus } from "../../../apis/first-approval-api"
+import { DataCollectionType, PublicationContentStatus } from "../../../apis/first-approval-api"
 import { authStore } from '../../../core/auth';
 
 export class PublicationPageStore {
@@ -165,6 +165,16 @@ export class PublicationPageStore {
       () => publicationStore.tags,
       (tags) => {
         if (tags.size > 0) {
+          this.openTags();
+        }
+      },
+      { fireImmediately: true }
+    );
+
+    reaction(
+      () => publicationStore.dataCollectionType,
+      (dataCollectionType) => {
+        if (dataCollectionType === DataCollectionType.AGING) {
           this.openTags();
         }
       },

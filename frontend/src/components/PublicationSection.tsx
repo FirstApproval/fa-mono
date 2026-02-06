@@ -42,6 +42,7 @@ import {
   FlexJustifyContent
 } from '../ui-kit/flex';
 import { sanitizer } from '../util/sanitizer';
+import biomedicalScience from '../pages/publication/asset/biomedicalScience.svg';
 
 export const PublicationSection = (props: {
   publication: Publication;
@@ -153,15 +154,34 @@ export const PublicationSection = (props: {
           <Width100Percent>
             <Flex direction={FlexDirection.column}>
               <div>
-                {publication.researchAreas && (
-                  <ResearchAreaShortList
-                    researchAreas={publication.researchAreas}
-                    isStudentDataCollection={
-                      publication.dataCollectionType ===
-                      DataCollectionType.STUDENT
-                    }
-                  />
-                )}
+                <Flex alignItems={FlexAlignItems.center} style={{ flexWrap: 'wrap' }}>
+                  {publication.dataCollectionType ===
+                    DataCollectionType.AGING && (
+                    <AgingBadge variant={'body2'}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          marginRight: 4
+                        }}>
+                        <img
+                          src={biomedicalScience}
+                          style={{ width: 24, height: 24 }}
+                        />
+                      </div>
+                      Aging Data Collection
+                    </AgingBadge>
+                  )}
+                  {publication.researchAreas && (
+                    <ResearchAreaShortList
+                      researchAreas={publication.researchAreas}
+                      isStudentDataCollection={
+                        publication.dataCollectionType ===
+                        DataCollectionType.STUDENT
+                      }
+                    />
+                  )}
+                </Flex>
               </div>
               <HeightElement value={'16px'} />
               <Footer>
@@ -432,4 +452,17 @@ const LastEdited = styled(Typography)`
 const CustomMenuItem = styled(MenuItem)`
   cursor: pointer;
   height: 52px;
+`;
+
+const AgingBadge = styled(Typography)`
+  display: inline-flex;
+  padding: 8px 8px;
+  align-items: center;
+  margin-right: 8px;
+  margin-bottom: 8px;
+
+  border-radius: 4px;
+  background: rgba(59, 78, 255, 0.12);
+
+  word-break: break-word;
 `;

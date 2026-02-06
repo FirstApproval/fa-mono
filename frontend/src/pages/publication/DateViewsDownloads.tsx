@@ -14,6 +14,7 @@ import styled from '@emotion/styled';
 import { getContentLicensingAbbreviation } from '../../util/publicationUtils';
 import { routerStore } from '../../core/router';
 import { LicenseType } from '../../apis/first-approval-api';
+import { getAppConfig } from '../../core/config';
 
 export const DateViewsDownloads = observer(
   (props: {
@@ -80,6 +81,20 @@ export const DateViewsDownloads = observer(
               </div>
             </div>
           </Tooltip>
+          {props.publicationStore.licenseType ===
+            LicenseType.FIRST_APPROVAL_COLLABORATION_REQUIREMENT && (
+            <CollaborationLink
+              onClick={() => {
+                const config = getAppConfig();
+                if (config?.collaborationLicenseDescriptionUrl) {
+                  routerStore.openInNewTab(
+                    config.collaborationLicenseDescriptionUrl
+                  );
+                }
+              }}>
+              Under Collaboration Requirements
+            </CollaborationLink>
+          )}
           <Menu
             anchorEl={utilAnchor}
             id="user-menu"
@@ -125,12 +140,20 @@ export const DateViewsDownloads = observer(
         </FlexWrapRow>
         <LicensingLinkWrap
           onClick={() => {
-            routerStore.openInNewTab(
-              props.publicationStore.licenseType ===
-                LicenseType.ATTRIBUTION_NO_DERIVATIVES
-                ? 'https://creativecommons.org/licenses/by-nd/4.0/legalcode'
-                : 'https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode'
-            );
+            const lt = props.publicationStore.licenseType;
+            if (lt === LicenseType.FIRST_APPROVAL_COLLABORATION_REQUIREMENT) {
+              routerStore.openInNewTab(
+                '/docs/first_approval_collaboration_requirement_license.pdf'
+              );
+            } else if (lt === LicenseType.ATTRIBUTION_NO_DERIVATIVES) {
+              routerStore.openInNewTab(
+                'https://creativecommons.org/licenses/by-nd/4.0/legalcode'
+              );
+            } else {
+              routerStore.openInNewTab(
+                'https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode'
+              );
+            }
           }}>
           {props.displayLicense && `License: ${licenseTypeAbbreviation}`}
         </LicensingLinkWrap>
@@ -164,4 +187,14 @@ export const FlexWrapRow = styled.div`
   display: flex;
   align-items: center;
   height: 100%;
+`;
+
+const CollaborationLink = styled.div`
+  margin-left: 24px;
+  cursor: pointer;
+  color: var(--primary-main, #3b4eff);
+  text-decoration: underline;
+  text-decoration-color: lightgray;
+  text-decoration-thickness: 1.5px;
+  font-size: 14px;
 `;
