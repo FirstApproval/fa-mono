@@ -105,7 +105,9 @@ export const ContentLicensingDialog = (props: {
           <SpaceBetween>
             <FormControlLabel
               value={LicenseType.FIRST_APPROVAL_COLLABORATION_REQUIREMENT}
-              label="First Approval Collaboration Requirement License, no derivatives"
+              label="Author-curated data reuse (collaboration required):
+                     Open access for exploration and analysis
+                     Publication requires inviting the data authors to collaborate"
               control={
                 <Radio
                   checked={
