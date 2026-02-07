@@ -5,6 +5,7 @@ import mu.KotlinLogging.logger
 import org.firstapproval.backend.core.config.Properties
 import org.firstapproval.backend.core.config.Properties.EmailProperties
 import org.firstapproval.backend.core.domain.publication.Publication
+import org.firstapproval.backend.core.domain.publication.UseType.CO_AUTHORSHIP
 import org.firstapproval.backend.core.domain.user.User
 import org.firstapproval.backend.core.infra.mail.MailService
 import org.firstapproval.backend.core.utils.require
@@ -105,19 +106,22 @@ class NotificationService(
         }
     }
 
-    fun sendArchivePassword(email: String, publicationName: String?, authors: String, password: String) {
+    fun sendArchivePassword(email: String, publication: Publication) {
         if (emailProperties.noopMode) {
-            log.info { "Archive password $password" }
+            log.info { "Archive password ${publication.archivePassword}" }
             return
         }
+        val password = publication.archivePassword.require()
         val context = Context()
         val model: MutableMap<String, Any> = HashMap()
-        model["publicationName"] = publicationName!!
+        model["publicationName"] = publication.title ?: publication.id
         model["password"] = password
         model["email"] = email
-        model["authors"] = authors
+        model["authors"] = publication.authorsNames
         context.setVariables(model)
-        val html = templateEngine.process("password-of-dataset", context)
+
+        val template = if (publication.useType == CO_AUTHORSHIP) "password-of-dataset-collaboration" else "password-of-dataset"
+        val html = templateEngine.process(template, context)
         mailService.send(email, "[FirstApproval] Password of dataset", html, true)
     }
 

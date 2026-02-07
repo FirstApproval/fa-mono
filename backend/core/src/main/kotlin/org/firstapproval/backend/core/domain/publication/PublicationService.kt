@@ -292,7 +292,7 @@ class PublicationService(
         addDownloadHistory(user, publication)
         publication.downloadsCount += 1
         user.email?.let {
-            notificationService.sendArchivePassword(it, title, publication.authorsNames, publication.archivePassword.require())
+            notificationService.sendArchivePassword(email = it, publication = publication)
         }
 
         return link
