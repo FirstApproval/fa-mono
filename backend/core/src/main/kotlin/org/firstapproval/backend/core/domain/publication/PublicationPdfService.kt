@@ -33,8 +33,8 @@ class PublicationPdfService(
             "title" to getDescriptionOrDraft(publication.title, "Draft. No title yet."),
             "authors" to getDescriptionOrDraft(publication.authorsNames, "Draft. No authors yet."),
             "publishDate" to getDescriptionOrDraft(
-                publication.publicationTime?.toLocalDate()?.toString().takeIf { publication.status != PUBLISHED },
-                "Draft. No description yet."
+                publication.publicationTime?.toLocalDate()?.toString().takeIf { publication.status == PUBLISHED },
+                "Dataset is not published yet."
             ),
             "description" to getDescriptionOrDraft(publication.description, "Draft. No description yet."),
             "hash" to hash(publication),
