@@ -40,6 +40,7 @@ import java.io.FileOutputStream
 import java.nio.file.Files
 import java.security.DigestOutputStream
 import java.security.MessageDigest
+import java.time.Instant
 import java.time.ZonedDateTime.now
 import java.util.Base64
 import java.util.UUID
@@ -71,25 +72,42 @@ class ArchiveService(
     val log = logger {}
 
     @Scheduled(cron = "\${archive-publication-files.cron}")
-    @SchedulerLock(name = "ArchiveService.archivePublicationFiles")
+    @SchedulerLock(
+        name = "ArchiveService.archivePublicationFiles",
+        lockAtLeastFor = "5m",
+        lockAtMostFor = "30m"
+    )
     fun archivePublicationFiles() {
-        val publications = publicationRepository.findAllByStatusOrderByCreationTime(READY_FOR_PUBLICATION)
-        publications.forEach { publication ->
-            runCatching {
-                log.info { "Publication files for id=${publication.id} started" }
-                val publicationFilesIds = mutableListOf<UUID>()
-                transactionTemplate.execute { _ ->
-                    val password = randomPrint(ARCHIVE_PASSWORD_LENGTH)
-                    publicationFilesIds.addAll(archiveProcess(publication, password))
+        val start = Instant.now()
+        log.info("Attempting to start 'archivePublicationFiles' at $start")
+
+        try {
+            val publications = publicationRepository.findAllByStatusOrderByCreationTime(READY_FOR_PUBLICATION)
+            publications.forEach { publication ->
+                runCatching {
+                    log.info { "Publication files for id=${publication.id} started" }
+
+                    val publicationFilesIds = mutableListOf<UUID>()
+
+                    transactionTemplate.execute { _ ->
+                        val password = randomPrint(ARCHIVE_PASSWORD_LENGTH)
+                        publicationFilesIds.addAll(archiveProcess(publication, password))
+                    }
+
+                    if (publicationFilesIds.isNotEmpty()) {
+                        fileStorageService.deleteByIds(FILES, publicationFilesIds)
+                    }
+
+                }.onSuccess {
+                    log.info { "Publication files for id=${publication.id} finished successfully" }
+                }.onFailure {
+                    log.error { "Publication files for id=${publication.id} failed: $it" }
                 }
-                if (publicationFilesIds.isNotEmpty()) {
-                    fileStorageService.deleteByIds(FILES, publicationFilesIds)
-                }
-            }.onSuccess {
-                log.info { "Publication files for id=${publication.id} finished successfully" }
-            }.onFailure {
-                log.error { "Publication files for id=${publication.id} failed: $it" }
             }
+
+        } finally {
+            val end = Instant.now()
+            log.info("Finished scheduled job 'archivePublicationFiles', duration=${end}")
         }
     }
 
@@ -148,6 +166,7 @@ class ArchiveService(
     }
 
     private fun archivePublicationFilesProcess(publication: Publication, password: String): ArchiveResult {
+        log.info { "Started 'archivePublicationFilesProcess' for publicationId=${publication.id}" }
         val filesIds = mutableListOf<UUID>()
         var page = PageRequest.of(0, BATCH_SIZE)
         var files = publicationFileRepository.findByPublicationIdOrderByCreationTimeAsc(publication.id, page)
@@ -166,9 +185,10 @@ class ArchiveService(
             FileOutputStream(tempArchive).use { fos ->
                 DigestOutputStream(fos, md).use { digestStream ->
                     ZipOutputStream(digestStream, password.toCharArray()).use { zipOutputStream ->
-
+                        log.info { "Started while cycle for 'archivePublicationFilesProcess' for publicationId=${publication.id}" }
                         while (!files.isEmpty) {
                             filesIds.addAll(files.map { it.id })
+                            log.info { "Started archiving for page ${page.pageNumber}" }
                             files.forEach {
                                 if (it.isDir) {
                                     foldersCount++
@@ -196,6 +216,7 @@ class ArchiveService(
                                     descriptions.append(it.fullPath).append("\n").append(it.description).append("\n\n")
                                 }
                             }
+                            log.info { "Finish archiving for page ${page.pageNumber}" }
                             page = page.next()
                             files = publicationFileRepository.findByPublicationIdOrderByCreationTimeAsc(publication.id, page)
                         }
