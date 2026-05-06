@@ -38,7 +38,7 @@ class FileStorageService(private val s3Client: S3Client, private val s3Propertie
     ) {
         val bucket = bucketName + s3Properties.bucketPostfix
 
-        uploadLargeFile(bucket, id, sha256HexBase64, data)
+        uploadLargeFile(bucket, id, sha256HexBase64, data, contentLength)
     }
 
     fun delete(bucketName: String, id: UUID) {
@@ -94,7 +94,20 @@ class FileStorageService(private val s3Client: S3Client, private val s3Propertie
         return presignedUrl.url().toString()
     }
 
-    private fun uploadLargeFile(bucketName: String, key: String, sha256HexBase64: String?, inputStream: InputStream) {
+    private fun uploadLargeFile(
+        bucketName: String, key: String,
+        sha256HexBase64: String?,
+        inputStream: InputStream,
+        contentLength: Long? = null
+    ) {
+        val partSize = if (contentLength != null) {
+            val min = 10 * 1024 * 1024L      // 10 MB (S3 minimum per part)
+            val calculated = (contentLength + 9_999) / 10_000  // ceiling to stay under 10k parts
+            maxOf(min, calculated)
+        } else {
+            BATCH_SIZE
+        }
+
         val createRequest = CreateMultipartUploadRequest.builder()
             .bucket(bucketName)
             .key(key)
@@ -103,7 +116,7 @@ class FileStorageService(private val s3Client: S3Client, private val s3Propertie
         val initResponse = s3Client.createMultipartUpload(createRequest)
 
         var bytesRead: Int
-        val data = ByteArray(BATCH_SIZE)
+        val data = ByteArray(partSize.toInt())
         var pageNumber = 1
         val completedParts = mutableListOf<CompletedPart>()
         val md = MessageDigest.getInstance("SHA-256")
@@ -119,9 +132,11 @@ class FileStorageService(private val s3Client: S3Client, private val s3Propertie
                         .contentLength(bytesRead.toLong())
                         .build()
 
-                    val uploadResult = s3Client.uploadPart(uploadRequest, RequestBody.fromInputStream(
-                        ByteArrayInputStream(data, 0, bytesRead), bytesRead.toLong()
-                    ))
+                    val uploadResult = s3Client.uploadPart(
+                        uploadRequest, RequestBody.fromInputStream(
+                            ByteArrayInputStream(data, 0, bytesRead), bytesRead.toLong()
+                        )
+                    )
                     completedParts.add(
                         CompletedPart.builder()
                             .partNumber(pageNumber)
